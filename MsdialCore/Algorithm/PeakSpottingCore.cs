@@ -668,7 +668,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 }
             }
 
-            return chromPeakFeatures.OrderBy(n => n.PeakID).ToList();
+            return chromPeakFeatures.OrderBy(n => n.MasterPeakID).ToList();
         }
         #endregion
 

@@ -69,8 +69,29 @@ namespace CompMs.MsdialCore.DataObj {
         public long SeekPointToDCLFile { get; set; } // deconvoluted spectrum is stored in dcl file, and this is the seek pointer
 
         public int GetMSDecResultID() {
-            if (IsMultiLayeredData()) return MasterPeakID;
-            return PeakID;
+            if (MSDecResultIdUsed == -1) {
+                if (IsMultiLayeredData())
+                    return MasterPeakID;
+                else
+                    return PeakID;
+            }
+            else {
+                return MSDecResultIdUsed;
+            }
+            //if (IsMultiLayeredData()) {
+            //    //public int MSDecResultIdUsedForAnnotation() {
+            //    //    if (MSDecResultIdUsed == -1) {
+            //    //        return MasterPeakID;
+            //    //    }
+            //    //    else {
+            //    //        return MSDecResultIdUsed;
+            //    //    }
+            //    //}
+            //    return MasterPeakID;
+            //}
+            //else {
+            //    return PeakID;
+            //}
         }
 
         // link to raw data
@@ -267,6 +288,8 @@ namespace CompMs.MsdialCore.DataObj {
             get => matchResults ?? (matchResults = new MsScanMatchResultContainer());
             set => matchResults = value;
         }
+
+        [Key(50)]
         private MsScanMatchResultContainer matchResults;
 
         [IgnoreMember]
@@ -300,6 +323,17 @@ namespace CompMs.MsdialCore.DataObj {
             if (DriftChromFeatures.IsEmptyOrNull()) return false;
             return true;
         }
+
+        [Key(51)]
+        public int MSDecResultIdUsed { get; set; } = -1;
+        //public int MSDecResultIdUsedForAnnotation() {
+        //    if (MSDecResultIdUsed == -1) {
+        //        return MasterPeakID;
+        //    }
+        //    else {
+        //        return MSDecResultIdUsed;
+        //    }
+        //}
     }
 
     [MessagePackObject]

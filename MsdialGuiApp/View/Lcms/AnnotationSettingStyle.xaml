@@ -396,27 +396,27 @@
                        FontStyle="Italic"
                        VerticalAlignment="Center"
                        Grid.Row="0"/>
-            <ContentControl Content="{Binding ParameterVM}"
+            <ContentControl Content="{Binding ParameterViewModel}"
                             ContentTemplate="{StaticResource ToleranceSettingWithMs2ForLcms}"
                             Margin="8" Grid.Row="1"/>
 
             <Expander Header="MS2 spectrum cut off" Margin="0,8"
                       Grid.Row="2">
-                <ContentControl Content="{Binding ParameterVM}"
+                <ContentControl Content="{Binding ParameterViewModel}"
                                 ContentTemplate="{StaticResource Ms2Setting}"
                                 Margin="8"/>
             </Expander>
 
             <Expander Header="Annotaion cut off" Margin="0,8"
                       Grid.Row="3">
-                <ContentControl Content="{Binding ParameterVM}"
+                <ContentControl Content="{Binding ParameterViewModel}"
                                 ContentTemplate="{StaticResource Ms2ScoreCutOffSetting}"
                                 Margin="8"/>
             </Expander>
 
             <Expander Header="Retention time setting" Margin="0,8"
                       Grid.Row="4">
-                <ContentControl Content="{Binding ParameterVM}"
+                <ContentControl Content="{Binding ParameterViewModel}"
                                 ContentTemplate="{StaticResource RetentionTimeSetting}"
                                 Margin="8"/>
             </Expander>

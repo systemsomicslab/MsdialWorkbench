@@ -37,14 +37,18 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         public MsScanMatchResult Annotate(IPepAnnotationQuery query) {
             var msrefParam = query.MsRefSearchParameter ?? MsRefSearchParameter;
             var proteomicsParam = query.ProteomicsParameter ?? ProteomicsParameter;
-            return FindCandidatesCore(query.Property, query.Scan, query.Isotopes, PeptideMsRef, msrefParam, proteomicsParam).FirstOrDefault();
+            return FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, PeptideMsRef, msrefParam, proteomicsParam).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IPepAnnotationQuery query) {
             var parameter = query.MsRefSearchParameter ?? MsRefSearchParameter;
             var proteomicsParam = query.ProteomicsParameter ?? ProteomicsParameter;
-            var pepResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, PeptideMsRef, parameter, proteomicsParam);
-            var decoyResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, DecoyPeptideMsRef, parameter, proteomicsParam);
+            var pepResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, PeptideMsRef, parameter, proteomicsParam);
+            var decoyResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, DecoyPeptideMsRef, parameter, proteomicsParam);
+
+            //if (Math.Abs(query.Property.PrecursorMz - 447.54460) < 0.01 && Math.Abs(query.Property.ChromXs.RT.Value - 21.866) < 0.1) {
+            //    Console.WriteLine();
+            //}
             if (pepResults.IsEmptyOrNull() || decoyResults.IsEmptyOrNull()) return new List<MsScanMatchResult>();
             else {
                 pepResults[0].IsDecoy = false;
@@ -54,9 +58,13 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         }
 
         private List<MsScanMatchResult> FindCandidatesCore(
-       IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, List<PeptideMsReference> pepMsRef,
+       IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, IonFeatureCharacter character, 
+       List<PeptideMsReference> pepMsRef, 
        MsRefSearchParameterBase msrefSearchParam, ProteomicsParameter proteomicsParam) {
-            (var lo, var hi) = SearchBoundIndex(property, pepMsRef, msrefSearchParam.Ms1Tolerance);
+            //if (Math.Abs(property.PrecursorMz - 447.54460) < 0.01 && Math.Abs(property.ChromXs.RT.Value - 21.866) < 0.1) {
+            //    Console.WriteLine();
+            //}
+            (var lo, var hi) = SearchBoundIndex(property, character, pepMsRef, msrefSearchParam.Ms1Tolerance);
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
                 var candidate = pepMsRef[i];
@@ -64,9 +72,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
                     && Math.Abs(property.ChromXs.RT.Value - candidate.ChromXs.RT.Value) > msrefSearchParam.RtTolerance) {
                     continue;
                 }
-                var result = CalculateScoreCore(property, scan, candidate, msrefSearchParam, proteomicsParam, this.SourceType, this.Key);
+                var result = CalculateScoreCore(property, scan, character, candidate, msrefSearchParam, proteomicsParam, this.SourceType, this.Key);
                 result.LibraryIDWhenOrdered = i;
-                ValidateCore(result, property, scan, candidate, msrefSearchParam, proteomicsParam);
+                ValidateCore(result, property, scan, character, candidate, msrefSearchParam, proteomicsParam);
                 results.Add(result);
             }
             return results.OrderByDescending(result => result.TotalScore).ToList();
@@ -75,18 +83,25 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         public MsScanMatchResult CalculateScore(IPepAnnotationQuery query, PeptideMsReference reference) {
             var parameter = query.MsRefSearchParameter ?? MsRefSearchParameter;
             var proteomicsParam = query.ProteomicsParameter ?? ProteomicsParameter;
-            var result = CalculateScoreCore(query.Property, query.Scan, reference, parameter, proteomicsParam, this.SourceType, this.Key);
-            ValidateCore(result, query.Property, query.Scan, reference, parameter, proteomicsParam);
+            var result = CalculateScoreCore(query.Property, query.Scan, query.IonFeature, reference, parameter, proteomicsParam, this.SourceType, this.Key);
+            ValidateCore(result, query.Property, query.Scan, query.IonFeature, reference, parameter, proteomicsParam);
             return result;
         }
 
         private MsScanMatchResult CalculateScoreCore(
-            IMSIonProperty property, IMSScanProperty scan, 
+            IMSIonProperty property, IMSScanProperty scan, IonFeatureCharacter character,
             PeptideMsReference reference, 
             MsRefSearchParameterBase msSearchParam, ProteomicsParameter proteomicsParam, SourceType type, string annotatorID) {
 
             var result = MsScanMatching.CompareMS2ScanProperties(scan, reference, msSearchParam, Common.Enum.TargetOmics.Proteomics, -1,
                 null, null, proteomicsParam.AndromedaDelta, proteomicsParam.AndromedaMaxPeaks);
+            var singlyChargedMz = MolecularFormulaUtility.ConvertSinglyChargedPrecursorMzAsProtonAdduct(property.PrecursorMz, character.Charge);
+            var ms1Tol = CalculateMassTolerance(msSearchParam.Ms1Tolerance, property.PrecursorMz);
+            var ms1Similarity = MsScanMatching.GetGaussianSimilarity(singlyChargedMz, reference.PrecursorMz, ms1Tol, out bool isMs1Match);
+
+            result.IsPrecursorMzMatch = isMs1Match;
+            result.TotalScore = (float)MsScanMatching.GetTotalScore(result, msSearchParam);
+
             result.Source = type;
             result.AnnotatorID = annotatorID;
             result.Priority = Priority;
@@ -94,19 +109,21 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             return result;
         }
 
-        private static (int lo, int hi) SearchBoundIndex(IMSIonProperty property, IReadOnlyList<PeptideMsReference> pepDB, double ms1Tolerance) {
+        private static (int lo, int hi) SearchBoundIndex(IMSIonProperty property, IonFeatureCharacter character, IReadOnlyList<PeptideMsReference> pepDB, double ms1Tolerance) {
 
-            ms1Tolerance = CalculateMassTolerance(ms1Tolerance, property.PrecursorMz);
-            var dummy = new MSScanProperty { PrecursorMz = property.PrecursorMz - ms1Tolerance };
+            var singlyChargedMz = MolecularFormulaUtility.ConvertSinglyChargedPrecursorMzAsProtonAdduct(property.PrecursorMz, character.Charge);
+
+            ms1Tolerance = CalculateMassTolerance(ms1Tolerance, singlyChargedMz);
+            var dummy = new MSScanProperty { PrecursorMz = singlyChargedMz - ms1Tolerance };
             var lo = SearchCollection.LowerBound(pepDB, dummy, comparer);
-            dummy.PrecursorMz = property.PrecursorMz + ms1Tolerance;
+            dummy.PrecursorMz = singlyChargedMz + ms1Tolerance;
             var hi = SearchCollection.UpperBound(pepDB, dummy, lo, pepDB.Count, comparer);
             return (lo, hi);
         }
 
         public List<PeptideMsReference> Search(IPepAnnotationQuery query) {
             var parameter = query.MsRefSearchParameter ?? MsRefSearchParameter;
-            (var lo, var hi) = SearchBoundIndex(query.Property, PeptideMsRef, parameter.Ms1Tolerance);
+            (var lo, var hi) = SearchBoundIndex(query.Property, query.IonFeature, PeptideMsRef, parameter.Ms1Tolerance);
             return PeptideMsRef.GetRange(lo, hi - lo);
         }
 
@@ -120,20 +137,20 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         public void Validate(MsScanMatchResult result, IPepAnnotationQuery query, PeptideMsReference reference) {
             var parameter = query.MsRefSearchParameter ?? MsRefSearchParameter;
             var proteomicsParam = query.ProteomicsParameter ?? ProteomicsParameter;
-            ValidateCore(result, query.Property, query.Scan, reference, parameter, proteomicsParam);
+            ValidateCore(result, query.Property, query.Scan, query.IonFeature, reference, parameter, proteomicsParam);
         }
 
         private static void ValidateCore(
             MsScanMatchResult result,
-            IMSIonProperty property, IMSScanProperty scan,
+            IMSIonProperty property, IMSScanProperty scan, IonFeatureCharacter character,
             PeptideMsReference reference,
             MsRefSearchParameterBase msrefSearchParam,
             ProteomicsParameter proteomicsParam) {
 
-            ValidateBase(result, property, reference, msrefSearchParam, proteomicsParam);
+            ValidateBase(result, property, character, reference, msrefSearchParam, proteomicsParam);
         }
 
-        private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, PeptideMsReference reference,
+        private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, IonFeatureCharacter character, PeptideMsReference reference,
             MsRefSearchParameterBase parameter, ProteomicsParameter proteomicsParam) {
             result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
                 && result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
@@ -143,7 +160,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
                 && result.AndromedaScore >= parameter.AndromedaScoreCutOff;
 
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
-            result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
+
+            var singlyChargedMz = MolecularFormulaUtility.ConvertSinglyChargedPrecursorMzAsProtonAdduct(property.PrecursorMz, character.Charge);
+            result.IsPrecursorMzMatch = Math.Abs(singlyChargedMz - reference.PrecursorMz) <= ms1Tol;
             result.IsRtMatch = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value) <= parameter.RtTolerance;
         }
 

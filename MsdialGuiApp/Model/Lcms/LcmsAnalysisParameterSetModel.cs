@@ -28,8 +28,17 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
             else if (Parameter.TargetOmics == TargetOmics.Proteomics) {
                 Parameter.MaxChargeNumber = 6;
-                Parameter.MinimumAmplitude = 100000;
+                Parameter.MinimumAmplitude = 500000;
                 Parameter.AmplitudeCutoff = 1000;
+
+                Parameter.MspSearchParam.SimpleDotProductCutOff = 0.0F;
+                Parameter.MspSearchParam.WeightedDotProductCutOff = 0.0F;
+                Parameter.MspSearchParam.ReverseDotProductCutOff = 0.0F;
+                Parameter.MspSearchParam.MatchedPeaksPercentageCutOff = 0.0F;
+                Parameter.MspSearchParam.MinimumSpectrumMatch = 0.0F;
+                Parameter.MspSearchParam.TotalScoreCutoff = 0.0F;
+
+                Parameter.MspSearchParam.AndromedaScoreCutOff = 0.0F;
             }
         }
 

@@ -132,7 +132,7 @@ namespace CompMs.MsdialCore.DataObj {
 
             Console.WriteLine("Preparing peptide queries");
             var peptides = LibraryHandler.GenerateTargetPeptideReference(FastaQueries, CleavageSites, ModificationContainer, ProteomicsParameter);
-            var decoyPeptides = LibraryHandler.GenerateTargetPeptideReference(DecoyQueries, CleavageSites, ModificationContainer, ProteomicsParameter);
+            var decoyPeptides = LibraryHandler.GenerateDecoyPeptideReference(peptides);
 
             Console.WriteLine("MS peptide queries");
             PeptideMsRef = MsfPepFileParser.GeneratePeptideMsObjcts(PeptideMsFile, PeptidesBinaryFile, peptides, ModificationContainer.Code2ID, MsRefSearchParameter.MassRangeBegin, MsRefSearchParameter.MassRangeEnd, out Stream pFS);

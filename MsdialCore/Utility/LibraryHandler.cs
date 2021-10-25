@@ -91,6 +91,15 @@ namespace CompMs.MsdialCore.Utility {
             return peptides.OrderBy(n => n.ExactMass).ToList();
         }
 
-       
+        public static List<Peptide> GenerateDecoyPeptideReference(List<Peptide> forwardPeps) {
+            if (forwardPeps.IsEmptyOrNull()) return null;
+            var pepArray = new Peptide[forwardPeps.Count];
+            Parallel.For(0, forwardPeps.Count, i => {
+                var decoyPep = DecoyCreator.Convert2DecoyPeptide(forwardPeps[i]);
+                pepArray[i] = decoyPep;
+            });
+
+            return new List<Peptide>(pepArray);
+        }
     }
 }

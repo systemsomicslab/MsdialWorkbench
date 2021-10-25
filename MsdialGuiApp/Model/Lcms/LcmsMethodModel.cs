@@ -168,6 +168,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     mapper.Add(pair.SerializableAnnotator, db.DataBase);
                 }
             }
+
             return mapper;
         }
 

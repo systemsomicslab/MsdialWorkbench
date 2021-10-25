@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.Extension;
+using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Parser;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Proteomics.Function;
@@ -37,7 +38,7 @@ namespace CompMs.App.MsdialConsole.ProteomicsTest {
             var variableMods = new List<string> { "Acetyl (Protein N-term)", "Oxidation (M)" };
 
             var enzymeList = new List<string>() { "Trypsin/P" };
-            var fasta_file = @"E:\6_Projects\PROJECT_Proteomics\jPOST_files_JPST000200.0\human_proteins_ref.fasta";
+            var fasta_file = @"E:\6_Projects\PROJECT_ChemProteomics\20210217_Imami_Lox15\fasta_alox15.fasta";
             var adduct = AdductIonParser.GetAdductIonBean("[M+H]+");
 
             var cleavageSites = ProteinDigestion.GetCleavageSites(this.Enzymes, enzymeList);
@@ -66,6 +67,9 @@ namespace CompMs.App.MsdialConsole.ProteomicsTest {
                         var mPeptides = ModificationUtility.GetModifiedPeptides(digestedPeptides, modContainer, maxNumberOfModificationsPerPeptide);
                         lock (syncObj) {
                             foreach (var peptide in mPeptides.OrderByDescending(n => n.ExactMass)) {
+                                var mass = peptide.ExactMass;
+                                var precursorMz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, mass);
+                                Console.WriteLine(mass + "\t" + peptide.ModifiedSequence);
                                 //var refSpec = SequenceToSpec.Convert2SpecObj(peptide, adduct, Common.Enum.CollisionType.HCD);
                                 //refSpecs.Add(refSpec);
                                 queries.Add(peptide);
