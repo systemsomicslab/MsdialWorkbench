@@ -253,32 +253,33 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
         private double focusMz;
 
-        public DelegateCommand<object[]> FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand<object[]>(FocusByID));
-        private DelegateCommand<object[]> focusByIDCommand;
+        public DelegateCommand FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand(FocusByID));
+        private DelegateCommand focusByIDCommand;
 
-        private void FocusByID(object[] axes) {
+        private void FocusByID() {
             var focus = model.Ms1Peaks.FirstOrDefault(peak => peak.InnerModel.MasterPeakID == FocusID);
-            Ms1PeaksView.MoveCurrentTo(focus);
-            if (axes?.Length == 2) {
-                (axes[0] as IAxisManager)?.Focus(focus.ChromXValue - RtTol, focus.ChromXValue + RtTol);
-                (axes[1] as IAxisManager)?.Focus(focus.Mass - MzTol, focus.Mass + MzTol);
+            if (focus is null) {
+                return;
             }
+            Ms1PeaksView.MoveCurrentTo(focus);
+            PlotViewModel?.HorizontalAxis?.Focus(focus.ChromXValue - RtTol, focus.ChromXValue + RtTol);
+            PlotViewModel?.VerticalAxis?.Focus(focus.Mass - MzTol, focus.Mass + MzTol);
         }
 
-        public DelegateCommand<IAxisManager> FocusByRtCommand => focusByRtCommand ?? (focusByRtCommand = new DelegateCommand<IAxisManager>(FocusByRt));
-        private DelegateCommand<IAxisManager> focusByRtCommand;
+        public DelegateCommand FocusByRtCommand => focusByRtCommand ?? (focusByRtCommand = new DelegateCommand(FocusByRt));
+        private DelegateCommand focusByRtCommand;
 
         private static readonly double RtTol = 0.5;
-        private void FocusByRt(IAxisManager axis) {
-            axis?.Focus(FocusRt - RtTol, FocusRt + RtTol);
+        private void FocusByRt() {
+            PlotViewModel?.HorizontalAxis?.Focus(FocusRt - RtTol, FocusRt + RtTol);
         }
 
-        public DelegateCommand<IAxisManager> FocusByMzCommand => focusByMzCommand ?? (focusByMzCommand = new DelegateCommand<IAxisManager>(FocusByMz));
-        private DelegateCommand<IAxisManager> focusByMzCommand;
+        public DelegateCommand FocusByMzCommand => focusByMzCommand ?? (focusByMzCommand = new DelegateCommand(FocusByMz));
+        private DelegateCommand focusByMzCommand;
 
         private static readonly double MzTol = 20;
-        private void FocusByMz(IAxisManager axis) {
-            axis?.Focus(FocusMz - MzTol, FocusMz + MzTol);
+        private void FocusByMz() {
+            PlotViewModel?.VerticalAxis?.Focus(FocusMz - MzTol, FocusMz + MzTol);
         }
 
         public ReactiveCommand SearchCompoundCommand { get; }

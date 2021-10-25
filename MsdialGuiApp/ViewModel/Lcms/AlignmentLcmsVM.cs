@@ -5,6 +5,7 @@ using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
+using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -43,6 +44,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             this.peakSpotTableService = peakSpotTableService;
 
             Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            Target.Where(x => !(x is null)).Subscribe(t => {
+                FocusID = t.MasterAlignmentID;
+                FocusRt = t.TimesCenter;
+                FocusMz = t.MassCenter;
+            }).AddTo(Disposables);
             Brushes = this.model.Brushes.AsReadOnly();
             SelectedBrush = this.model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
 
@@ -290,6 +296,53 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private void ShowIonTable() {
             peakSpotTableService.Show(AlignmentSpotTableViewModel);
+        }
+
+        public int FocusID {
+            get => focusID;
+            set => SetProperty(ref focusID, value);
+        }
+        private int focusID;
+
+        public double FocusRt {
+            get => focusRt;
+            set => SetProperty(ref focusRt, value);
+        }
+        private double focusRt;
+
+        public double FocusMz {
+            get => focusMz;
+            set => SetProperty(ref focusMz, value);
+        }
+        private double focusMz;
+
+        public DelegateCommand FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand(FocusByID));
+        private DelegateCommand focusByIDCommand;
+
+        private void FocusByID() {
+            var focus = model.Ms1Spots.FirstOrDefault(peak => peak.innerModel.MasterAlignmentID == FocusID);
+            if (focus is null) {
+                return;
+            }
+            Ms1Spots.MoveCurrentTo(focus);
+            PlotViewModel?.HorizontalAxis?.Focus(focus.TimesCenter - RtTol, focus.TimesCenter + RtTol);
+            PlotViewModel?.VerticalAxis?.Focus(focus.MassCenter - MzTol, focus.MassCenter + MzTol);
+        }
+
+        public DelegateCommand FocusByRtCommand => focusByRtCommand ?? (focusByRtCommand = new DelegateCommand(FocusByRt));
+        private DelegateCommand focusByRtCommand;
+
+        private static readonly double RtTol = 0.5;
+        private void FocusByRt() {
+            PlotViewModel?.HorizontalAxis?.Focus(FocusRt - RtTol, FocusRt + RtTol);
+        }
+
+        public DelegateCommand FocusByMzCommand => focusByMzCommand ?? (focusByMzCommand = new DelegateCommand(FocusByMz));
+        private DelegateCommand focusByMzCommand;
+
+        private static readonly double MzTol = 20;
+        private void FocusByMz() {
+            PlotViewModel?.VerticalAxis?.Focus(FocusMz - MzTol, FocusMz + MzTol);
         }
 
         public void SaveProject() {

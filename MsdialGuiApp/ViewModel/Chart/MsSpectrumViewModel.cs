@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             if (horizontalAxis is null) {
                 horizontalAxis = this.model.HorizontalRangeSource
-                    .ToReactiveAxisManager<double>(new ConstantMargin(30))
+                    .ToReactiveAxisManager<double>(new ConstantMargin(40))
                     .AddTo(Disposables);
             }
             HorizontalAxis = horizontalAxis;
