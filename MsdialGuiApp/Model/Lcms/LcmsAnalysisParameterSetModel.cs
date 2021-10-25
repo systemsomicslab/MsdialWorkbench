@@ -22,9 +22,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (Parameter.TargetOmics == TargetOmics.Lipidomics) {
                 string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
-                IdentitySettingModel.AddDataBase();
-                var databaseModel = IdentitySettingModel.DataBaseModels.Last();
-                databaseModel.DataBasePath = lbmFiles.First();
+                if (lbmFiles.Length > 0) {
+                    IdentitySettingModel.AddDataBase();
+                    var databaseModel = IdentitySettingModel.DataBaseModels.Last();
+                    databaseModel.DataBasePath = lbmFiles.First();
+                }
             }
             else if (Parameter.TargetOmics == TargetOmics.Proteomics) {
                 Parameter.MaxChargeNumber = 6;

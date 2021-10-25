@@ -3,8 +3,8 @@ using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialImmsCore.DataObj;
 using Reactive.Bindings.Extensions;
 using System.ComponentModel;
 using System.Windows;
@@ -13,17 +13,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 {
     class ImmsMethodVM : MethodViewModel
     {
-        static ImmsMethodVM() {
-            serializer = new MsdialImmsCore.Parser.MsdialImmsSerializer();
-        }
-        private static readonly MsdialSerializer serializer;
-
         public ImmsMethodVM(
             ImmsMethodModel model,
-            MsdialDataStorage storage,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
-            : base(model, serializer) {
+            : base(model) {
             if (compoundSearchService is null) {
                 throw new System.ArgumentNullException(nameof(compoundSearchService));
             }
@@ -39,13 +33,13 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         public ImmsMethodVM(
-            MsdialDataStorage storage,
+            MsdialImmsDataStorage storage,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : this(
                   new ImmsMethodModel(storage),
-                  storage,
-                  compoundSearchService, peakSpotTableService) {
+                  compoundSearchService,
+                  peakSpotTableService) {
 
         }
             

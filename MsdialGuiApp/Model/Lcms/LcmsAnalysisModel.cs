@@ -96,7 +96,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 peak => peak.Intensity) {
                 GraphTitle = "Measure vs. Reference",
                 HorizontalTitle = "m/z",
-                VerticalTitle = "Abundance",
+                VerticalTitle = "Relative abundance",
                 HorizontaProperty = nameof(SpectrumPeak.Mass),
                 VerticalProperty = nameof(SpectrumPeak.Intensity),
                 LabelProperty = nameof(SpectrumPeak.Mass),

@@ -16,6 +16,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CompMs.Common.DataObj.Result;
+using System.Threading.Tasks;
+using CompMs.MsdialImmsCore.DataObj;
 
 namespace CompMs.MsdialImmsCore.Export.Tests
 {
@@ -70,16 +72,17 @@ namespace CompMs.MsdialImmsCore.Export.Tests
             }
         }
 
-        private static void prepare() {
+        private static async Task prepare() {
             var project = @"D:\infusion_project\Bruker_20210521_original\Bruker_20210521\infusion\timsON_pos\2021_08_12_10_36_16.mtd2";
             var newmsdecfile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\input_dec2.cache";
             var newdatafile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\input_data2.cache";
             var expected = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\output2.tsv.cache";
 
-            var storage = new Parser.MsdialImmsSerializer().LoadMsdialDataStorageBase(project);
+            var streamManager = new DirectoryTreeStreamManager(Path.GetDirectoryName(project));
+            var storage = await MsdialImmsDataStorage.Serializer.LoadAsync(streamManager, Path.GetFileName(project), string.Empty);
             var analysisFile = storage.AnalysisFiles[0];
 
-            var features = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
+            var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
             var msdecResults = MsdecResultsReader.ReadMSDecResults(analysisFile.DeconvolutionFilePath, out _, out _);
             var rand = new Random();
 
@@ -101,7 +104,7 @@ namespace CompMs.MsdialImmsCore.Export.Tests
                     newFeatures, newDecs,
                     new ImmsAverageDataProvider(analysisFile, isGuiProcess: false, retry: 5),
                     msp, text,
-                    storage.ParameterBase, MachineCategory.IMMS);
+                    storage.Parameter, MachineCategory.IMMS);
             }
 
             var newMsp = new List<MoleculeMsReference>();
@@ -122,7 +125,7 @@ namespace CompMs.MsdialImmsCore.Export.Tests
             var data = new DataStorageForTest
             {
                 Features = newFeatures,
-                Parameter = storage.ParameterBase,
+                Parameter = storage.Parameter,
                 MsdecResultFile = newmsdecfile,
                 Files = storage.AnalysisFiles,
                 MspDB = msp,

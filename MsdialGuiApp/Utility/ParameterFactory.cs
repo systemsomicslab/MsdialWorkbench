@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Utility
         }
 
         public static void SetParameterFromStartUpVM(ParameterBase parameter, StartUpWindowVM vm) {
-            parameter.ProjectFilePath = vm.ProjectFilePath;
+            parameter.ProjectFileName = Path.GetFileName(vm.ProjectFilePath);
             parameter.ProjectFolderPath = Path.GetDirectoryName(vm.ProjectFilePath);
             parameter.Ionization = vm.Ionization;
             // parameter.SeparationType = vm.SeparationType;

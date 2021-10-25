@@ -40,7 +40,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
         }
 
         public override List<IMSScanProperty> GetMSScanProperties(AnalysisFileBean analysisFile) {
-            var chromatogram = MsdialSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
+            var chromatogram = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
             return new List<IMSScanProperty>(chromatogram);
         }
 

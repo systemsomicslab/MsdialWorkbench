@@ -82,7 +82,7 @@ namespace CompMs.App.Msdial.Model.Imms
             {
                 GraphTitle = "Measure vs. Reference",
                 HorizontalTitle = "m/z",
-                VerticalTitle = "Aubndance",
+                VerticalTitle = "Relative aubndance",
                 HorizontaProperty = nameof(SpectrumPeak.Mass),
                 VerticalProperty = nameof(SpectrumPeak.Intensity),
                 LabelProperty = nameof(SpectrumPeak.Mass),

@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.Mathematics.Basic;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -44,7 +45,7 @@ namespace CompMs.App.Msdial.Model
             // TODO: Implement other features (PeakHeight, PeakArea, Normalized PeakHeight, Normalized PeakArea)
             return target.AlignedPeakProperties
                 .GroupBy(peak => id2cls[peak.FileID])
-                .Select(pair => new BarItem { Class = pair.Key, Height = pair.Average(peak => peak.PeakHeightTop) })
+                .Select(pair => new BarItem(pair.Key, pair.Average(peak => peak.PeakHeightTop), BasicMathematics.Stdev(pair.Select(peak => peak.PeakHeightTop).ToArray())))
                 .ToList();
         }
     }
@@ -58,7 +59,7 @@ namespace CompMs.App.Msdial.Model
         protected override List<BarItem> LoadBarItemsCore(AlignmentSpotPropertyModel target) {
             return target.AlignedPeakProperties
                 .GroupBy(peak => id2cls[peak.FileID])
-                .Select(pair => new BarItem { Class = pair.Key, Height = pair.Average(peak => peak.PeakAreaAboveBaseline) })
+                .Select(pair => new BarItem(pair.Key, pair.Average(peak => peak.PeakAreaAboveBaseline), BasicMathematics.Stdev(pair.Select(peak => peak.PeakAreaAboveBaseline).ToArray())))
                 .ToList();
         }
     }
@@ -72,7 +73,7 @@ namespace CompMs.App.Msdial.Model
         protected override List<BarItem> LoadBarItemsCore(AlignmentSpotPropertyModel target) {
             return target.AlignedPeakProperties
                 .GroupBy(peak => id2cls[peak.FileID])
-                .Select(pair => new BarItem { Class = pair.Key, Height = pair.Average(peak => peak.PeakAreaAboveZero) })
+                .Select(pair => new BarItem(pair.Key, pair.Average(peak => peak.PeakAreaAboveZero), BasicMathematics.Stdev(pair.Select(peak => peak.PeakAreaAboveZero).ToArray())))
                 .ToList();
         }
     }
@@ -86,7 +87,7 @@ namespace CompMs.App.Msdial.Model
         protected override List<BarItem> LoadBarItemsCore(AlignmentSpotPropertyModel target) {
             return target.AlignedPeakProperties
                 .GroupBy(peak => id2cls[peak.FileID])
-                .Select(pair => new BarItem { Class = pair.Key, Height = pair.Average(peak => peak.NormalizedPeakHeight) })
+                .Select(pair => new BarItem(pair.Key, pair.Average(peak => peak.NormalizedPeakHeight), BasicMathematics.Stdev(pair.Select(peak => peak.NormalizedPeakHeight).ToArray())))
                 .ToList();
         }
     }
@@ -100,7 +101,7 @@ namespace CompMs.App.Msdial.Model
         protected override List<BarItem> LoadBarItemsCore(AlignmentSpotPropertyModel target) {
             return target.AlignedPeakProperties
                 .GroupBy(peak => id2cls[peak.FileID])
-                .Select(pair => new BarItem { Class = pair.Key, Height = pair.Average(peak => peak.NormalizedPeakAreaAboveBaseline) })
+                .Select(pair => new BarItem(pair.Key, pair.Average(peak => peak.NormalizedPeakAreaAboveBaseline), BasicMathematics.Stdev(pair.Select(peak => peak.NormalizedPeakAreaAboveBaseline).ToArray())))
                 .ToList();
         }
     }
@@ -114,7 +115,7 @@ namespace CompMs.App.Msdial.Model
         protected override List<BarItem> LoadBarItemsCore(AlignmentSpotPropertyModel target) {
             return target.AlignedPeakProperties
                 .GroupBy(peak => id2cls[peak.FileID])
-                .Select(pair => new BarItem { Class = pair.Key, Height = pair.Average(peak => peak.NormalizedPeakAreaAboveZero) })
+                .Select(pair => new BarItem(pair.Key, pair.Average(peak => peak.NormalizedPeakAreaAboveZero), BasicMathematics.Stdev(pair.Select(peak => peak.NormalizedPeakAreaAboveZero).ToArray())))
                 .ToList();
         }
     }

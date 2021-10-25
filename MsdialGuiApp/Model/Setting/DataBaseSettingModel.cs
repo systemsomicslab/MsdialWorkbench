@@ -15,6 +15,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public DataBaseSettingModel(ParameterBase parameter) {
             this.parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
             LipidQueryContainer = parameter.LipidQueryContainer;
+            LipidQueryContainer.IonMode = parameter.ProjectParam.IonMode;
         }
 
         public string DataBasePath {

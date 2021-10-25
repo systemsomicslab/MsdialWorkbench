@@ -28,7 +28,7 @@ namespace CompMs.CommonMVVM
             return null;
         }
 
-        public bool ContainsError(string propertyName) => errors.ContainsKey(propertyName);
+        public bool ContainsError(string propertyName) => errors.ContainsKey(propertyName) && errors[propertyName].Count > 0;
 
         protected override bool SetProperty<T>(ref T prop, T value, [CallerMemberName] string propertyname = "") {
             var setted = base.SetProperty(ref prop, value, propertyname);
@@ -65,6 +65,10 @@ namespace CompMs.CommonMVVM
                 errors[propertyname] = new List<string>();
             }
 
+            if (errors[propertyname].Contains(error)) {
+                return;
+            }
+
             errors[propertyname].Add(error);
             OnErrorsChanged(propertyname);
         } 
@@ -78,7 +82,7 @@ namespace CompMs.CommonMVVM
                 return;
             }
 
-            errors[propertyname].Remove(error);
+            errors[propertyname].RemoveAll(e => e == error);
             OnErrorsChanged(propertyname);
         } 
 

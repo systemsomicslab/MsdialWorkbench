@@ -26,27 +26,27 @@ namespace CompMs.MsdialImmsCore.Process
     {
         public static void Run(
             AnalysisFileBean file,
-            MsdialDataStorage container,
+            IMsdialDataStorage<MsdialImmsParameter> container,
             bool isGuiProcess = false,
             Action<int> reportAction = null,
             CancellationToken token = default) {
 
-            var mspAnnotator = new ImmsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.ParameterBase.MspSearchParam, container.ParameterBase.TargetOmics, "MspDB", -1);
-            var textDBAnnotator = new ImmsTextDBAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.ParameterBase.TextDbSearchParam, "TextDB", -1);
+            var mspAnnotator = new ImmsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.Parameter.MspSearchParam, container.Parameter.TargetOmics, "MspDB", -1);
+            var textDBAnnotator = new ImmsTextDBAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.Parameter.TextDbSearchParam, "TextDB", -1);
 
             Run(file, container, mspAnnotator, textDBAnnotator, new ImmsAverageDataProviderFactory(0.001, 0.002, retry: 5, isGuiProcess: isGuiProcess), isGuiProcess, reportAction, token);
         }
 
         public static void Run(
             AnalysisFileBean file,
-            MsdialDataStorage container,
+            IMsdialDataStorage<MsdialImmsParameter> container,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
             bool isGuiProcess = false,
             Action<int> reportAction = null, CancellationToken token = default) {
 
-            var parameter = container.ParameterBase as MsdialImmsParameter;
+            var parameter = container.Parameter;
             var iupacDB = container.IupacDatabase;
             var annotatorContainers = container.DataBaseMapper.Annotators;
 
@@ -182,7 +182,7 @@ namespace CompMs.MsdialImmsCore.Process
             Dictionary<double, List<MSDecResult>> targetCE2MSDecResults) {
 
             var paifile = file.PeakAreaBeanInformationFilePath;
-            MsdialSerializer.SaveChromatogramPeakFeatures(paifile, chromPeakFeatures);
+            MsdialPeakSerializer.SaveChromatogramPeakFeatures(paifile, chromPeakFeatures);
 
             var dclfile = file.DeconvolutionFilePath;
             var dclfiles = new List<string>();

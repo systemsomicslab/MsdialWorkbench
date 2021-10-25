@@ -75,9 +75,9 @@ namespace CompMs.App.Msdial.ViewModel.Export
             new ExportType("MS/MS included", "MSMS", "MsmsIncluded"),
         }.AsReadOnly();
 
-        private readonly MsdialDataStorage container;
+        private readonly IMsdialDataStorage<ParameterBase> container;
 
-        public AlignmentResultExportVM(AlignmentFileBean alignmentFile, ICollection<AlignmentFileBean> alignmentFiles, MsdialDataStorage container) {
+        public AlignmentResultExportVM(AlignmentFileBean alignmentFile, ICollection<AlignmentFileBean> alignmentFiles, IMsdialDataStorage<ParameterBase> container) {
             this.alignmentFiles = CollectionViewSource.GetDefaultView(alignmentFiles);
             if (alignmentFile != null)
                 this.alignmentFiles.MoveCurrentTo(alignmentFile);
@@ -102,7 +102,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         private DelegateCommand exportCommand;
 
         private void ExportAlignmentResult() {
-            var param = container.ParameterBase;
+            var param = container.Parameter;
             var mspDB = container.MspDB;
             var textDB = container.TextDB;
             var category = param.MachineCategory;

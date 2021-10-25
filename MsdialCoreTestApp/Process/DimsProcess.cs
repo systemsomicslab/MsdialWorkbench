@@ -3,12 +3,15 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
+using CompMs.MsdialDimsCore.DataObj;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.MsdialDimsCore.Parser;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,9 +24,9 @@ namespace CompMs.App.MsdialConsole.Process {
             CommonProcess.ParseLibraries(param, targetMz, out IupacDatabase iupacDB,
                 out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB, out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode);
 
-            var container = new MsdialDataStorage() {
+            var container = new MsdialDimsDataStorage() {
                 AnalysisFiles = analysisFiles, AlignmentFiles = new List<AlignmentFileBean>() { alignmentFile },
-                MspDB = mspDB, TextDB = txtDB, IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, ParameterBase = param
+                MspDB = mspDB, TextDB = txtDB, IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialDimsParameter = param
             };
 
             var providerFactory = new StandardDataProviderFactory();
@@ -31,14 +34,14 @@ namespace CompMs.App.MsdialConsole.Process {
             return Execute(container, providerFactory, outputFolder, isProjectSaved);
         }
 
-        private int Execute(MsdialDataStorage container, IDataProviderFactory<AnalysisFileBean> providerFactory, string outputFolder, bool isProjectSaved) {
+        private int Execute(MsdialDimsDataStorage container, IDataProviderFactory<AnalysisFileBean> providerFactory, string outputFolder, bool isProjectSaved) {
             var files = container.AnalysisFiles;
             foreach (var file in files) {
                 ProcessFile.Run(file, providerFactory, container);
             }
 
             var alignmentFile = container.AlignmentFiles.First();
-            var factory = new DimsAlignmentProcessFactory(container.ParameterBase as MsdialDimsParameter, container.IupacDatabase, container.DataBaseMapper);
+            var factory = new DimsAlignmentProcessFactory(container.MsdialDimsParameter as MsdialDimsParameter, container.IupacDatabase, container.DataBaseMapper);
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, null);
 
@@ -50,23 +53,25 @@ namespace CompMs.App.MsdialConsole.Process {
             }
 
             Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            new MsdialDimsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
+            var streamManager = new DirectoryTreeStreamManager(container.MsdialDimsParameter.ProjectFolderPath);
+            container.Save(streamManager, container.MsdialDimsParameter.ProjectFileName, string.Empty).Wait();
 
             return 0;
         }
 
-        private async Task<int> ExecuteAsync(MsdialDataStorage container, IDataProviderFactory<AnalysisFileBean> providerFactory, string outputFolder, bool isProjectSaved) {
+        private async Task<int> ExecuteAsync(MsdialDimsDataStorage container, IDataProviderFactory<AnalysisFileBean> providerFactory, string outputFolder, bool isProjectSaved) {
             var files = container.AnalysisFiles;
             var tasks = files.Select(file => Task.Run(() => ProcessFile.Run(file, providerFactory, container)));
             await Task.WhenAll(tasks);
 
             var alignmentFile = container.AlignmentFiles.First();
-            var factory = new DimsAlignmentProcessFactory(container.ParameterBase as MsdialDimsParameter, container.IupacDatabase, container.DataBaseMapper);
+            var factory = new DimsAlignmentProcessFactory(container.MsdialDimsParameter as MsdialDimsParameter, container.IupacDatabase, container.DataBaseMapper);
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, null);
 
             Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            new MsdialDimsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
+            var streamManager = new DirectoryTreeStreamManager(container.MsdialDimsParameter.ProjectFolderPath);
+            await container.Save(streamManager, container.MsdialDimsParameter.ProjectFileName, string.Empty);
             return 0;
         }
     }

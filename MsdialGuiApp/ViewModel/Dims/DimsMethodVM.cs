@@ -9,11 +9,10 @@ using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.UI.ProgressBar;
-using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialDimsCore.DataObj;
 using CompMs.MsdialDimsCore.Export;
-using CompMs.MsdialDimsCore.Parameter;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
@@ -26,15 +25,11 @@ using System.Windows;
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
     class DimsMethodVM : MethodViewModel {
-        static DimsMethodVM() {
-            serializer = new MsdialDimsCore.Parser.MsdialDimsSerializer();
-        }
-
         public DimsMethodVM(
             DimsMethodModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
-            : base(model, serializer) {
+            : base(model) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
@@ -50,7 +45,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         public DimsMethodVM(
-            MsdialDataStorage storage,
+            MsdialDimsDataStorage storage,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : this(
@@ -120,14 +115,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }
         }
 
-        private static readonly MsdialSerializer serializer;
-
         public override int InitializeNewProject(Window window) {
             // Set analysis param
             if (!ProcessSetAnalysisParameter(window))
                 return -1;
 
-            var processOption = Model.Storage.ParameterBase.ProcessOption;
+            var processOption = Model.Storage.MsdialDimsParameter.ProcessOption;
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
                 if (!ProcessAnnotaion(window, Model.Storage))
@@ -147,7 +140,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            var parameter = (MsdialDimsParameter)Model.Storage.ParameterBase;
+            var parameter = Model.Storage.MsdialDimsParameter;
             var analysisModel = new DimsAnalysisParameterSetModel(parameter, Model.AnalysisFiles);
             using (var analysisParamSetVM = new DimsAnalysisParameterSetViewModel(analysisModel)) {
 
@@ -167,7 +160,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             return true;
         }
 
-        private bool ProcessAnnotaion(Window owner, MsdialDataStorage storage) {
+        private bool ProcessAnnotaion(Window owner, MsdialDimsDataStorage storage) {
             var vm = new ProgressBarMultiContainerVM
             {
                 MaxValue = storage.AnalysisFiles.Count,
@@ -196,7 +189,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             return true;
         }
 
-        private bool ProcessAlignment(Window owner, MsdialDataStorage storage) {
+        private bool ProcessAlignment(Window owner, MsdialDimsDataStorage storage) {
             var vm = new ProgressBarVM
             {
                 IsIndeterminate = true,
@@ -262,13 +255,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             {
                 new Model.Export.SpectraType(
                     ExportspectraType.deconvoluted,
-                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.deconvoluted)),
+                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.MsdialDimsParameter, ExportspectraType.deconvoluted)),
                 new Model.Export.SpectraType(
                     ExportspectraType.centroid,
-                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.centroid)),
+                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.MsdialDimsParameter, ExportspectraType.centroid)),
                 new Model.Export.SpectraType(
                     ExportspectraType.profile,
-                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.profile)),
+                    new DimsAnalysisMetadataAccessor(container.DataBaseMapper, container.MsdialDimsParameter, ExportspectraType.profile)),
             };
             var spectraFormats = new List<Model.Export.SpectraFormat>
             {
@@ -293,19 +286,19 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private void ExportAlignment(Window owner) {
             var container = Model.Storage;
-            var metadataAccessor = new DimsMetadataAccessor(container.DataBaseMapper, container.ParameterBase);
+            var metadataAccessor = new DimsMetadataAccessor(container.DataBaseMapper, container.MsdialDimsParameter);
             var vm = new AlignmentResultExport2VM(Model.AlignmentFile, Model.AlignmentFiles, container);
             vm.ExportTypes.AddRange(
                 new List<ExportType2>
                 {
-                    new ExportType2("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", container.ParameterBase), "Height", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }, true),
-                    new ExportType2("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.ParameterBase), "Area", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.ParameterBase), "NormalizedHeight", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.ParameterBase), "NormalizedArea", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Alignment ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.ParameterBase), "PeakID"),
-                    new ExportType2("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.ParameterBase), "Mz"),
-                    new ExportType2("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.ParameterBase), "SN"),
-                    new ExportType2("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.ParameterBase), "MsmsIncluded"),
+                    new ExportType2("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", container.MsdialDimsParameter), "Height", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }, true),
+                    new ExportType2("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.MsdialDimsParameter), "Area", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
+                    new ExportType2("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.MsdialDimsParameter), "NormalizedHeight", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
+                    new ExportType2("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.MsdialDimsParameter), "NormalizedArea", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
+                    new ExportType2("Alignment ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.MsdialDimsParameter), "PeakID"),
+                    new ExportType2("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.MsdialDimsParameter), "Mz"),
+                    new ExportType2("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.MsdialDimsParameter), "SN"),
+                    new ExportType2("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.MsdialDimsParameter), "MsmsIncluded"),
                 });
             var dialog = new AlignmentResultExportWin
             {

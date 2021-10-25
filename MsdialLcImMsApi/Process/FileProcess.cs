@@ -24,12 +24,12 @@ namespace CompMs.MsdialLcImMsApi.Process
     {
         public static void Run(
             AnalysisFileBean file,
-            MsdialDataStorage container,
+            IMsdialDataStorage<MsdialLcImMsParameter> container,
             bool isGuiProcess = false,
             Action<int> reportAction = null,
             CancellationToken token = default) {
 
-            var parameter = (MsdialLcImMsParameter)container.ParameterBase;
+            var parameter = container.Parameter;
             var iupacDB = container.IupacDatabase;
 
             var rawObj = LoadMeasurement(file, isGuiProcess);
@@ -162,7 +162,7 @@ namespace CompMs.MsdialLcImMsApi.Process
             Dictionary<double, List<MSDecResult>> targetCE2MSDecResults) {
 
             var paifile = file.PeakAreaBeanInformationFilePath;
-            MsdialSerializer.SaveChromatogramPeakFeatures(paifile, chromPeakFeatures);
+            MsdialPeakSerializer.SaveChromatogramPeakFeatures(paifile, chromPeakFeatures);
 
             var dclfile = file.DeconvolutionFilePath;
             var dclfiles = new List<string>();

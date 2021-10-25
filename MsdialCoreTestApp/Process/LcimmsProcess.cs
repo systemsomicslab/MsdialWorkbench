@@ -1,7 +1,6 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
-using CompMs.Common.Extension;
 using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using CompMs.Common.Utility;
@@ -11,7 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CompMs.MsdialLcImMsApi.Parser;
+using CompMs.MsdialLcImMsApi.DataObj;
+using CompMs.MsdialCore.Parser;
+using System.IO;
 
 namespace CompMs.App.MsdialConsole.Process {
     public class LcimmsProcess {
@@ -22,20 +23,21 @@ namespace CompMs.App.MsdialConsole.Process {
             CommonProcess.ParseLibraries(param, targetMz, out IupacDatabase iupacDB,
                 out List<MoleculeMsReference> mspDB, out List<MoleculeMsReference> txtDB, out List<MoleculeMsReference> isotopeTextDB, out List<MoleculeMsReference> compoundsInTargetMode);
 
-            var container = new MsdialDataStorage() {
+            var container = new MsdialLcImMsDataStorage() {
                 AnalysisFiles = analysisFiles, AlignmentFiles = new List<AlignmentFileBean>() { alignmentFile },
-                MspDB = mspDB, TextDB = txtDB, IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, ParameterBase = param
+                MspDB = mspDB, TextDB = txtDB, IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialLcImMsParameter = param
             };
 
             Console.WriteLine("Start processing..");
             return Execute(container, outputFolder, isProjectSaved);
         }
 
-        private int Execute(MsdialDataStorage container, string outputFolder, bool isProjectSaved) {
+        private int Execute(MsdialLcImMsDataStorage container, string outputFolder, bool isProjectSaved) {
             var files = container.AnalysisFiles;
             foreach (var file in files) {
             }
-            new MsdialLcImMsSerializer().SaveMsdialDataStorage(container.ParameterBase.ProjectFilePath, container);
+            var streamManager = new DirectoryTreeStreamManager(container.MsdialLcImMsParameter.ProjectFolderPath);
+            container.Save(streamManager, container.MsdialLcImMsParameter.ProjectFileName, string.Empty).Wait();
             return 0;
         }
     }

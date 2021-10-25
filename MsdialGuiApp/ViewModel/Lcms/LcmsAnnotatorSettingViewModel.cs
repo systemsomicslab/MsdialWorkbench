@@ -4,7 +4,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
@@ -15,7 +14,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
     }
 
-    public class LcmsMspAnnotatorSettingViewModel : ViewModelBase, ILcmsAnnotatorSettingViewModel
+    public sealed class LcmsMspAnnotatorSettingViewModel : ViewModelBase, ILcmsAnnotatorSettingViewModel
     {
         private readonly LcmsMspAnnotatorSettingModel model;
 
@@ -55,7 +54,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
     }
 
-    public class LcmsTextDBAnnotatorSettingViewModel : ViewModelBase, ILcmsAnnotatorSettingViewModel
+    public sealed class LcmsTextDBAnnotatorSettingViewModel : ViewModelBase, ILcmsAnnotatorSettingViewModel
     {
         private readonly LcmsTextDBAnnotatorSettingModel model;
 

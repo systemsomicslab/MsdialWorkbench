@@ -20,6 +20,7 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
+using CompMs.MsdialLcMsApi.DataObj;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", CompMs.Common.Components.ChromXType.RT);
         }
 
-        public LcmsMethodModel(MsdialDataStorage storage, IDataProviderFactory<AnalysisFileBean> providerFactory)
+        public LcmsMethodModel(MsdialLcmsDataStorage storage, IDataProviderFactory<AnalysisFileBean> providerFactory)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
@@ -49,11 +50,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             this.providerFactory = providerFactory;
         }
 
-        public MsdialDataStorage Storage {
+        public MsdialLcmsDataStorage Storage {
             get => storage;
             set => SetProperty(ref storage, value);
         }
-        private MsdialDataStorage storage;
+        private MsdialLcmsDataStorage storage;
 
         public LcmsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -81,7 +82,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 analysisFile,
                 provider,
                 Storage.DataBaseMapper,
-                Storage.ParameterBase,
+                Storage.MsdialLcmsParameter,
                 Storage.DataBaseMapper.Annotators)
             .AddTo(Disposables);
         }
@@ -93,14 +94,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
             AlignmentModel = new LcmsAlignmentModel(
                 alignmentFile,
-                Storage.ParameterBase,
+                Storage.MsdialLcmsParameter,
                 Storage.DataBaseMapper,
                 Storage.DataBaseMapper.Annotators)
             .AddTo(Disposables);
         }
 
         public bool ProcessSetAnalysisParameter(Window owner) {
-            var parameter = (MsdialLcmsParameter)Storage.ParameterBase;
+            var parameter = Storage.MsdialLcmsParameter;
             var analysisParamSetModel = new LcmsAnalysisParameterSetModel(parameter, AnalysisFiles);
             using (var analysisParamSetVM = new LcmsAnalysisParameterSetViewModel(analysisParamSetModel)) {
                 var apsw = new AnalysisParamSetForLcWindow
@@ -124,9 +125,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                     {
                         FileID = AlignmentFiles.Count,
                         FileName = filename,
-                        FilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
-                        EicFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + ".EIC.aef"),
-                        SpectraFilePath = System.IO.Path.Combine(Storage.ParameterBase.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl)
+                        FilePath = System.IO.Path.Combine(Storage.MsdialLcmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
+                        EicFilePath = System.IO.Path.Combine(Storage.MsdialLcmsParameter.ProjectFolderPath, filename + ".EIC.aef"),
+                        SpectraFilePath = System.IO.Path.Combine(Storage.MsdialLcmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl)
                     }
                 );
                 Storage.AlignmentFiles = AlignmentFiles.ToList();
@@ -172,7 +173,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             return mapper;
         }
 
-        public bool ProcessAnnotaion(Window owner, MsdialDataStorage storage) {
+        public bool ProcessAnnotaion(Window owner, MsdialLcmsDataStorage storage) {
             var vm = new ProgressBarMultiContainerVM
             {
                 MaxValue = storage.AnalysisFiles.Count,
@@ -202,7 +203,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             return true;
         }
 
-        public bool ProcessAlignment(Window owner, MsdialDataStorage storage) {
+        public bool ProcessAlignment(Window owner, MsdialLcmsDataStorage storage) {
             var vm = new ProgressBarVM
             {
                 IsIndeterminate = true,
@@ -216,7 +217,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
             pbw.Show();
 
-            var factory = new LcmsAlignmentProcessFactory(storage.ParameterBase as MsdialLcmsParameter, storage.IupacDatabase, storage.DataBaseMapper);
+            var factory = new LcmsAlignmentProcessFactory(storage.MsdialLcmsParameter, storage.IupacDatabase, storage.DataBaseMapper);
             var aligner = factory.CreatePeakAligner();
             aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
             var alignmentFile = storage.AlignmentFiles.Last();
@@ -229,7 +230,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             return true;
         }
 
-        private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(MsdialDataStorage storage, IReadOnlyList<AlignmentSpotProperty> spots) {
+        private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(MsdialLcmsDataStorage storage, IReadOnlyList<AlignmentSpotProperty> spots) {
             var files = storage.AnalysisFiles;
 
             var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();

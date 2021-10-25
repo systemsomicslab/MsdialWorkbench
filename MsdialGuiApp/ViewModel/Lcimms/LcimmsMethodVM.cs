@@ -10,6 +10,7 @@ using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialLcImMsApi.DataObj;
 using CompMs.MsdialLcImMsApi.Parameter;
 using Reactive.Bindings.Extensions;
 using System;
@@ -23,7 +24,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
     class LcimmsMethodVM : MethodViewModel
     {
         public LcimmsMethodVM(
-            MsdialDataStorage storage,
+            MsdialLcImMsDataStorage storage,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : this(
@@ -37,7 +38,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             LcimmsMethodModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
-            : base(model, model.Serializer) {
+            : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -134,7 +135,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             if (!ProcessSetAnalysisParameter(window))
                 return -1;
 
-            var processOption = model.Storage.ParameterBase.ProcessOption;
+            var processOption = model.Storage.MsdialLcImMsParameter.ProcessOption;
             // Run Identification
             if (processOption.HasFlag(CompMs.Common.Enum.ProcessOption.Identification) || processOption.HasFlag(CompMs.Common.Enum.ProcessOption.PeakSpotting)) {
                 if (!ProcessAnnotaion(window, model.Storage))
@@ -152,7 +153,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            using (var analysisParamSetVM = new AnalysisParamSetVM<MsdialLcImMsParameter>(model.Storage.ParameterBase as MsdialLcImMsParameter, model.Storage.AnalysisFiles)) {
+            using (var analysisParamSetVM = new AnalysisParamSetVM<MsdialLcImMsParameter>(model.Storage.MsdialLcImMsParameter, model.Storage.AnalysisFiles)) {
                 var apsw = new AnalysisParamSetForLcimmsWindow
                 {
                     DataContext = analysisParamSetVM,
@@ -168,7 +169,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             return true;
         }
 
-        private bool ProcessAnnotaion(Window owner, MsdialDataStorage storage) {
+        private bool ProcessAnnotaion(Window owner, MsdialLcImMsDataStorage storage) {
             var vm = new ProgressBarMultiContainerVM
             {
                 MaxValue = storage.AnalysisFiles.Count,

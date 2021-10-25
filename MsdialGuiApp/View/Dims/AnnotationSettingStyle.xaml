@@ -8,6 +8,69 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/View/Setting/AnnotationSettingStyle.xaml"/>
     </ResourceDictionary.MergedDictionaries>
+    <DataTemplate DataType="{x:Type localVM:DimsMetabolomicsUseMs2AnnotatorSettingViewModel}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ui:LabeledContent PrependLabel="Annotation method name"
+                               Grid.Row="0">
+                <TextBox Text="{Binding AnnotatorID.Value, UpdateSourceTrigger=PropertyChanged}"/>
+            </ui:LabeledContent>
+
+            <GroupBox BorderThickness="0" Grid.Row="1">
+                <GroupBox.Header>
+                    <TextBlock Text="MS/MS identification setting"
+                               FontStyle="Italic"
+                               VerticalAlignment="Center"/>
+                </GroupBox.Header>
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource MassToleranceSetting}"
+                                Margin="8"/>
+            </GroupBox>
+
+            <Expander Header="MS2 spectrum cut off" Margin="0,8"
+                      Grid.Row="2">
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource Ms2Setting}"
+                                Margin="8"/>
+            </Expander>
+
+            <Expander Header="Annotaion cut off" Margin="0,8"
+                      Grid.Row="3">
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource Ms2ScoreCutOffSetting}"
+                                Margin="8"/>
+            </Expander>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type localVM:DimsMetabolomicsAnnotatorSettingViewModel}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ui:LabeledContent PrependLabel="Annotation method name"
+                               Grid.Row="0">
+                <TextBox Text="{Binding AnnotatorID.Value, UpdateSourceTrigger=PropertyChanged}"/>
+            </ui:LabeledContent>
+
+            <GroupBox BorderThickness="0" Grid.Row="1">
+                <GroupBox.Header>
+                    <TextBlock Text="Tolerance"/>
+                </GroupBox.Header>
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource MassToleranceSettingWithoutMs2}"
+                                Margin="8"/>
+            </GroupBox>
+        </Grid>
+    </DataTemplate>
+    
     <DataTemplate DataType="{x:Type localVM:DimsAnnotationSettingViewModel}">
         <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Visible">

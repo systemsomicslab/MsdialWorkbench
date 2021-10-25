@@ -257,22 +257,22 @@ namespace CompMs.Graphics.Chart
                 var hcenter = haxis.TranslateToRenderPoint(item.HorizontalCenter, flipx, actualWidth);
                 var vcenter = vaxis.TranslateToRenderPoint(item.VerticalCenter, flipy, actualHeight);
 
-                if (item.HorizontalLower != AxisValue.NaN) {
+                if (!item.HorizontalLower.IsNaN()) {
                     var hlower = haxis.TranslateToRenderPoint(item.HorizontalLower, flipx, actualWidth);
                     drawingContext.DrawLine(pen, new Point(hlower, vcenter), new Point(hcenter, vcenter));
                     drawingContext.DrawLine(pen, new Point(hlower, vcenter - halfcap), new Point(hlower, vcenter + halfcap));
                 }
-                if (item.HorizontalUpper != AxisValue.NaN) {
+                if (!item.HorizontalUpper.IsNaN()) {
                     var hupper = haxis.TranslateToRenderPoint(item.HorizontalUpper, flipx, actualWidth);
                     drawingContext.DrawLine(pen, new Point(hcenter, vcenter), new Point(hupper, vcenter));
                     drawingContext.DrawLine(pen, new Point(hupper, vcenter - halfcap), new Point(hupper, vcenter + halfcap));
                 }
-                if (item.VerticalLower != AxisValue.NaN) {
+                if (!item.VerticalLower.IsNaN()) {
                     var vlower = vaxis.TranslateToRenderPoint(item.VerticalLower, flipy, actualHeight);
                     drawingContext.DrawLine(pen, new Point(hcenter, vlower), new Point(hcenter, vcenter));
                     drawingContext.DrawLine(pen, new Point(hcenter - halfcap, vlower), new Point(hcenter + halfcap, vlower));
                 }
-                if (item.VerticalUpper != AxisValue.NaN) {
+                if (!item.VerticalUpper.IsNaN()) {
                     var vupper = vaxis.TranslateToRenderPoint(item.VerticalUpper, flipy, actualHeight);
                     drawingContext.DrawLine(pen, new Point(hcenter, vcenter), new Point(hcenter, vupper));
                     drawingContext.DrawLine(pen, new Point(hcenter - halfcap, vupper), new Point(hcenter + halfcap, vupper));

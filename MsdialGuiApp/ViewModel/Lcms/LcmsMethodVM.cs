@@ -5,8 +5,8 @@ using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialLcMsApi.DataObj;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Windows;
@@ -14,12 +14,8 @@ using System.Windows;
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
     class LcmsMethodVM : MethodViewModel {
-        static LcmsMethodVM() {
-            serializer = new MsdialLcMsApi.Parser.MsdialLcmsSerializer();
-        }
-
         public LcmsMethodVM(
-            MsdialDataStorage storage,
+            MsdialLcmsDataStorage storage,
             IWindowService<ViewModel.CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : this(
@@ -33,7 +29,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             LcmsMethodModel model,
             IWindowService<ViewModel.CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
-            : base(model, serializer) {
+            : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -53,7 +49,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             Storage = model.Storage;
         }
 
-        private static readonly MsdialSerializer serializer;
         private readonly LcmsMethodModel model;
         private readonly IWindowService<ViewModel.CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
@@ -70,11 +65,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
         private AlignmentLcmsVM alignmentVM;
 
-        public MsdialDataStorage Storage {
+        public MsdialLcmsDataStorage Storage {
             get => storage;
             set => SetProperty(ref storage, value);
         }
-        private MsdialDataStorage storage;
+        private MsdialLcmsDataStorage storage;
 
         public bool RefMatchedChecked {
             get => ReadDisplayFilters(DisplayFilter.RefMatched);
@@ -150,7 +145,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             if (!model.ProcessSetAnalysisParameter(window))
                 return -1;
 
-            var processOption = Storage.ParameterBase.ProcessOption;
+            var processOption = Storage.MsdialLcmsParameter.ProcessOption;
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
                 if (!model.ProcessAnnotaion(window, Storage))

@@ -34,7 +34,7 @@ namespace CompMs.App.MsdialConsole.Process {
             var projectFileName = "Project-" + dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString() + ".mtd2";
             var inputfolder = Directory.Exists(input) ? input : Path.GetDirectoryName(input);
             param.ProjectFolderPath = inputfolder;
-            param.ProjectFilePath = Path.Combine(inputfolder, projectFileName);
+            param.ProjectFileName = projectFileName;
 
             param.FileID_ClassName = analysisFiles.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileClass);
 

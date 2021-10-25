@@ -7,6 +7,7 @@
              mc:Ignorable="d" 
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
              d:DataContext="{d:DesignInstance Type={x:Type vm:BarChartViewModel}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <d:DesignerProperties.DesignStyle>
@@ -22,12 +23,21 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <chart:SimpleChartControl HorizontalAxis="{Binding HorizontalAxis}"
-                                  VerticalAxis="{Binding VerticalAxis}"
-                                  HorizontalTitle="{Binding HorizontalTitle.Value}"
-                                  VerticalTitle="{Binding VerticalTitle.Value}"
-                                  Style="{StaticResource BasicChart}">
-            <chart:BarControl ItemsSource="{Binding BarItems.Value}"
+        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
+                          VerticalAxis="{Binding VerticalAxis}"
+                          HorizontalTitle="{Binding HorizontalTitle.Value}"
+                          Style="{StaticResource OverlapChart}">
+            <chart:MultiChart.Resources>
+                <converter:MultiplyConverter x:Key="ByHalf" By="0.5"/>
+            </chart:MultiChart.Resources>
+            <chart:MultiChart.VerticalTitle>
+                <MultiBinding StringFormat="{}{0}({1})">
+                    <Binding Path="VerticalTitle.Value"/>
+                    <Binding Path="VerticalAxis.UnitLabel"/>
+                </MultiBinding>
+            </chart:MultiChart.VerticalTitle>
+            <chart:BarControl x:Name="bar"
+                              ItemsSource="{Binding BarItems.Value}"
                               HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                               VerticalPropertyName="{Binding VerticalProperty.Value}"
                               BrushMapper="{Binding BrushSource.Value}">
@@ -42,6 +52,11 @@
                     </ToolTip>
                 </chart:BarControl.ToolTip>
             </chart:BarControl>
-        </chart:SimpleChartControl>
+            <chart:ErrorBar ItemsSource="{Binding BarItems.Value}"
+                            HorizontalProperty="{Binding HorizontalProperty.Value}"
+                            VerticalProperty="{Binding VerticalProperty.Value}"
+                            VerticalErrors="{Binding Errors.Value}"
+                            ErrorCap="{Binding ActualBarWidth, ElementName=bar, Converter={StaticResource ByHalf}, Mode=OneWay}"/>
+        </chart:MultiChart>
     </Grid>
 </UserControl>

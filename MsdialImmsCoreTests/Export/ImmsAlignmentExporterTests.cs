@@ -14,6 +14,7 @@ using CompMs.Common.Enum;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.Common.DataObj.Result;
+using CompMs.MsdialImmsCore.DataObj;
 
 namespace CompMs.MsdialImmsCore.Export.Tests
 {
@@ -89,7 +90,8 @@ namespace CompMs.MsdialImmsCore.Export.Tests
             var newdatafile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\input_data1.cache";
             var expected = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\output1.tsv.cache";
 
-            var storage = new Parser.MsdialImmsSerializer().LoadMsdialDataStorageBase(project);
+            var streamManager = new DirectoryTreeStreamManager(Path.GetDirectoryName(project));
+            var storage = MsdialImmsDataStorage.Serializer.LoadAsync(streamManager, Path.GetFileName(project), string.Empty).Result;
             var alignmentFile = storage.AlignmentFiles[0];
             var container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(alignmentFile.FilePath);
             var msdecResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
@@ -110,7 +112,7 @@ namespace CompMs.MsdialImmsCore.Export.Tests
                 newSpots, newDecs,
                 storage.AnalysisFiles,
                 msp, text,
-                storage.ParameterBase, MachineCategory.IMMS);
+                storage.Parameter, MachineCategory.IMMS);
 
             var newMsp = new List<MoleculeMsReference>();
             var newText = new List<MoleculeMsReference>();
@@ -130,7 +132,7 @@ namespace CompMs.MsdialImmsCore.Export.Tests
             var data = new DataStorageForTest
             {
                 Spots = newSpots,
-                Parameter = storage.ParameterBase,
+                Parameter = storage.Parameter,
                 MsdecResultFile = newmsdecfile,
                 Files = storage.AnalysisFiles,
                 MspDB = msp,

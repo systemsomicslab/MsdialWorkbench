@@ -36,7 +36,7 @@ namespace CompMs.MsdialCore.Parameter {
         [IgnoreMember]
         public string ProjectFolderPath { get => ProjectParam.ProjectFolderPath; set => ProjectParam.ProjectFolderPath = value; }
         [IgnoreMember]
-        public string ProjectFilePath { get => ProjectParam.ProjectFilePath; set => ProjectParam.ProjectFilePath = value; }
+        public string ProjectFileName { get => ProjectParam.ProjectFileName; set => ProjectParam.ProjectFileName = value; }
         [IgnoreMember]
         public Dictionary<int, string> FileID_ClassName { get => ProjectParam.FileID_ClassName; set => ProjectParam.FileID_ClassName = value; }
         [IgnoreMember]
@@ -451,7 +451,7 @@ namespace CompMs.MsdialCore.Parameter {
             pStrings.Add(String.Join(": ", new string[] { "Final saved date", FinalSavedDate.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "MS-DIAL version number", MsdialVersionNumber.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "Project folder path", ProjectFolderPath.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "Project file path", ProjectFilePath.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "Project file path", Path.Combine(ProjectFolderPath, ProjectFileName).ToString() }));
 
             pStrings.Add(String.Join(": ", new string[] { "Acquisition type", AcquisitionType.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "MS1 data type", MSDataType.ToString() }));
@@ -716,7 +716,9 @@ namespace CompMs.MsdialCore.Parameter {
         [Key(3)]
         public string ProjectFolderPath { get; set; } = string.Empty;
         [Key(4)]
-        public string ProjectFilePath { get; set; } = string.Empty;
+        public string ProjectFileName { get; set; } = string.Empty;
+        [IgnoreMember]
+        public string ProjectFilePath => Path.Combine(ProjectFolderPath, ProjectFileName);
         [Key(5)]
         public Dictionary<int, string> FileID_ClassName { get; set; } = new Dictionary<int, string>();
         [Key(6)]

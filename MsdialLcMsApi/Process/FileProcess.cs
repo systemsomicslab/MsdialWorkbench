@@ -22,12 +22,12 @@ namespace CompMs.MsdialLcMsApi.Process {
         public static void Run(
             AnalysisFileBean file,
             IDataProvider provider,
-            MsdialDataStorage container,
+            IMsdialDataStorage<MsdialLcmsParameter> container,
             IAnnotationProcess annotationProcess,
             bool isGuiProcess = false,
             Action<int> reportAction = null,
             CancellationToken token = default) {
-            var param = (MsdialLcmsParameter)container.ParameterBase;
+            var param = container.Parameter;
             var mspDB = container.MspDB;
             var textDB = container.TextDB;
             var annotatorContainers = container.DataBaseMapper.Annotators;
@@ -109,7 +109,7 @@ namespace CompMs.MsdialLcMsApi.Process {
 
                 // file save
                 var paifile = file.PeakAreaBeanInformationFilePath;
-                MsdialSerializer.SaveChromatogramPeakFeatures(paifile, chromPeakFeatures);
+                MsdialPeakSerializer.SaveChromatogramPeakFeatures(paifile, chromPeakFeatures);
 
                 var dclfile = file.DeconvolutionFilePath;
                 var dclfiles = new List<string>();

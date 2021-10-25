@@ -10,15 +10,10 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     class BarChartModel : BindableBase {
         public BarChartModel(
-            IObservable<List<BarItem>> barItems,
-            Func<BarItem, string> horizontalSelector,
-            Func<BarItem, double> verticalSelector) {
+            IObservable<List<BarItem>> barItems) {
 
             BarItemsSource = barItems;
             BarItemsSource.Subscribe(items => BarItems = items);
-
-            HorizontalSelector = horizontalSelector;
-            VerticalSelector = verticalSelector;
         }
 
         public List<BarItem> BarItems {
@@ -33,17 +28,13 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public GraphElements Elements { get; } = new GraphElements();
 
-        public Func<BarItem, string> HorizontalSelector { get; }
-
-        public Func<BarItem, double> VerticalSelector { get; }
-
         public IObservable<List<BarItem>> BarItemsSource { get; }
 
         public Range VerticalRange {
             get {
-                if (BarItems.Any() && VerticalSelector != null) {
-                    var minimum = BarItems.Min(VerticalSelector);
-                    var maximum = BarItems.Max(VerticalSelector);
+                if (BarItems.Any()) {
+                    var minimum = BarItems.Min(item => item.Height - (double.IsNaN(item.Error) ? 0 : item.Error));
+                    var maximum = BarItems.Max(item => item.Height + (double.IsNaN(item.Error) ? 0 : item.Error));
                     return new Range(minimum, maximum);
                 }
                 return new Range(0, 1);
@@ -52,17 +43,14 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public static BarChartModel Create(
             IObservable<AlignmentSpotPropertyModel> source,
-            IBarItemsLoader loader,
-            Func<BarItem, string> horizontalSelector,
-            Func<BarItem, double> verticalSelector) {
+            IBarItemsLoader loader) {
 
             return new BarChartModel(
                 source.SelectMany(src =>
                     Observable.DeferAsync(async token => {
                         var result = await loader.LoadBarItemsAsync(src, token);
                         return Observable.Return(result);
-                    })),
-                horizontalSelector, verticalSelector);
+                    })));
         }
     }
 }

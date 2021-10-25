@@ -78,11 +78,13 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Model\Dims\DimsIdentifySettingModelTests.cs" />
     <Compile Include="Model\Imms\ImmsAnalysisParameterSetModelTests.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisParameterSetModelTests.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisParameterSetModelTests.cs" />
     <Compile Include="Model\Loader\MSDecLoaderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\Dims\DimsIdentifySettingViewModelTests.cs" />
     <Compile Include="ViewModel\MsRefSearchParameterBaseViewModelTests.cs" />
   </ItemGroup>
   <ItemGroup>

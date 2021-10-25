@@ -14,6 +14,8 @@ using System.IO;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Export;
 using CompMs.Common.DataObj.Result;
+using System.Threading.Tasks;
+using CompMs.MsdialDimsCore.DataObj;
 
 namespace CompMs.MsdialDimsCore.Export.Tests
 {
@@ -22,7 +24,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
     {
         [TestMethod()]
         public void ExportTest() {
-            // prepare();
+            // prepare().Wait();
             var datafile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\input_data1.cache";
             var expectedfile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\output1.tsv.cache";
 
@@ -80,13 +82,14 @@ namespace CompMs.MsdialDimsCore.Export.Tests
             }
         }
 
-        private static void prepare() {
+        private static async Task prepare() {
             var project = @"D:\infusion_project\Bruker_20210521_original\Bruker_20210521\infusion\timsOFF_pos\2021_08_11_14_34_01.mtd2";
             var newmsdecfile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\input_dec1.cache";
             var newdatafile = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\input_data1.cache";
             var expected = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\output1.tsv.cache";
 
-            var storage = new Parser.MsdialDimsSerializer().LoadMsdialDataStorageBase(project);
+            var streamManager = new DirectoryTreeStreamManager(Path.GetDirectoryName(project));
+            var storage = await MsdialDimsDataStorage.Serializer.LoadAsync(streamManager, Path.GetFileName(project), string.Empty);
             var alignmentFile = storage.AlignmentFiles[0];
             var container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(alignmentFile.FilePath);
             var msdecResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
@@ -107,7 +110,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
                 newSpots, newDecs,
                 storage.AnalysisFiles,
                 msp, text,
-                storage.ParameterBase, MachineCategory.IFMS);
+                storage.Parameter, MachineCategory.IFMS);
 
             var newMsp = new List<MoleculeMsReference>();
             var newText = new List<MoleculeMsReference>();
@@ -127,7 +130,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
             var data = new DataStorageForTest
             {
                 Spots = newSpots,
-                Parameter = storage.ParameterBase,
+                Parameter = storage.Parameter,
                 MsdecResultFile = newmsdecfile,
                 Files = storage.AnalysisFiles,
                 MspDB = msp,

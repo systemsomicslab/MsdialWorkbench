@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
@@ -34,7 +35,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             if (horizontalAxis is null) {
                 horizontalAxis = this.model.BarItemsSource
-                    .Select(items => items.Select(this.model.HorizontalSelector).ToArray())
+                    .Select(items => items.Select(item => item.Class).ToArray())
                     .ToReactiveCategoryAxisManager()
                     .AddTo(Disposables);
             }
@@ -42,7 +43,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             if (verticalAxis is null) {
                 verticalAxis = this.model.ObserveProperty(m => m.VerticalRange)
-                    .ToReactiveAxisManager<double>(new ChartMargin(0, 0.05), new Range(0, 0))
+                    .ToReactiveAxisManager<double>(new RelativeMargin(0, 0.05), new Range(0, 0), LabelType.Order)
                     .AddTo(Disposables);
             }
             VerticalAxis = verticalAxis;
@@ -56,6 +57,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                     ));
             }
             BrushSource = brushSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            Errors = BarItems.Select(items => items.Select(item => item.Error).ToArray())
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
 
             HorizontalTitle = this.model.Elements
                 .ObserveProperty(m => m.HorizontalTitle)
@@ -81,6 +86,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         private readonly BarChartModel model;
 
         public ReadOnlyReactivePropertySlim<List<BarItem>> BarItems { get; }
+
+        public ReadOnlyReactivePropertySlim<double[]> Errors { get; }
 
         public IAxisManager<string> HorizontalAxis { get; }
 

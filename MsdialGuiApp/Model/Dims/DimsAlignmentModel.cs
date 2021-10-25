@@ -83,10 +83,7 @@ namespace CompMs.App.Msdial.Model.Dims
             Ms2SpectrumModel.OrderingProperty = nameof(SpectrumPeak.Intensity);
 
             BarItemsLoader = new HeightBarItemsLoader(Parameter.FileID_ClassName);
-            BarChartModel = BarChartModel.Create(
-                Target, BarItemsLoader,
-                item => item.Class,
-                item => item.Height);
+            BarChartModel = BarChartModel.Create(Target, BarItemsLoader);
             BarChartModel.Elements.HorizontalTitle = "Class";
             BarChartModel.Elements.VerticalTitle = "Height";
             BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);

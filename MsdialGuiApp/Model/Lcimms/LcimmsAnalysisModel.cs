@@ -85,7 +85,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             {
                 GraphTitle = "Measure vs. Reference",
                 HorizontalTitle = "m/z",
-                VerticalTitle = "Aubndance",
+                VerticalTitle = "Relative abundance",
                 HorizontaProperty = nameof(SpectrumPeak.Mass),
                 VerticalProperty = nameof(SpectrumPeak.Intensity),
                 LabelProperty = nameof(SpectrumPeak.Mass),
