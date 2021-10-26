@@ -366,6 +366,36 @@ namespace Riken.Metabolomics.Lipidomics.Generator {
                     generateAhexstseSpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
                     break;
 
+                case LbmClass.CSLPHex:
+                    generateCSLPHexSpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+                    break;
+                case LbmClass.BRSLPHex:
+                    generateBRSLPHexSpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+                    break;
+                case LbmClass.CASLPHex:
+                    generateCASLPHexSpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+                    break;
+                case LbmClass.SISLPHex:
+                    generateSISLPHexSpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+                    break;
+                case LbmClass.STSLPHex:
+                    generateSTSLPHexSpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+                    break;
+                case LbmClass.CSPHex:
+                    generateCSPHexSpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+                    break;
+                case LbmClass.BRSPHex:
+                    generateBRSPHexSpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+                    break;
+                case LbmClass.CASPHex:
+                    generateCASPHexSpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+                    break;
+                case LbmClass.SISPHex:
+                    generateSISPHexSpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+                    break;
+                case LbmClass.STSPHex:
+                    generateSTSPHexSpecies(outputfolder, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond);
+                    break;
 
             }
         }
@@ -1280,6 +1310,82 @@ namespace Riken.Metabolomics.Lipidomics.Generator {
             var filepath = outputfolder + "\\" + "AHexSTSE" + "_" + adductString + ".txt";
             var headerFormula = FormulaStringParcer.OrganicElementsReader("C35H57O6");
             commonGlycerolipidsGenerator(filepath, "AHexSTSE", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond, 1);
+        }
+
+        private static void generateCSLPHexSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
+        {
+            var adductString = adduct.AdductIonName;
+            var filepath = outputfolder + "\\" + "CSLPHex" + "_" + adductString + ".txt";
+            var headerFormula = FormulaStringParcer.OrganicElementsReader("C36H62O11P");
+            commonGlycerolipidsGenerator(filepath, "CSLPHex", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond, 1);
+        }
+
+        private static void generateBRSLPHexSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
+        {
+            var adductString = adduct.AdductIonName;
+            var filepath = outputfolder + "\\" + "BRSLPHex" + "_" + adductString + ".txt";
+            var headerFormula = FormulaStringParcer.OrganicElementsReader("C37H62O11P");
+            commonGlycerolipidsGenerator(filepath, "BRSLPHex", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond, 1);
+        }
+        private static void generateCASLPHexSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
+        {
+            var adductString = adduct.AdductIonName;
+            var filepath = outputfolder + "\\" + "CASLPHex" + "_" + adductString + ".txt";
+            var headerFormula = FormulaStringParcer.OrganicElementsReader("C37H64O11P");
+            commonGlycerolipidsGenerator(filepath, "CASLPHex", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond, 1);
+        }
+        private static void generateSISLPHexSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
+        {
+            var adductString = adduct.AdductIonName;
+            var filepath = outputfolder + "\\" + "SISLPHex" + "_" + adductString + ".txt";
+            var headerFormula = FormulaStringParcer.OrganicElementsReader("C38H66O11P");
+            commonGlycerolipidsGenerator(filepath, "SISLPHex", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond, 1);
+        }
+
+        private static void generateSTSLPHexSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
+        {
+            var adductString = adduct.AdductIonName;
+            var filepath = outputfolder + "\\" + "STSLPHex" + "_" + adductString + ".txt";
+            var headerFormula = FormulaStringParcer.OrganicElementsReader("C38H64O11P");
+            commonGlycerolipidsGenerator(filepath, "STSLPHex", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond, 1);
+        }
+
+        private static void generateCSPHexSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
+        {
+            var adductString = adduct.AdductIonName;
+            var filepath = outputfolder + "\\" + "CSPHex" + "_" + adductString + ".txt";
+            var headerFormula = FormulaStringParcer.OrganicElementsReader("C36H60O12P");
+            commonGlycerolipidsGenerator(filepath, "CSPHex", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond, 1);
+        }
+
+        private static void generateBRSPHexSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
+        {
+            var adductString = adduct.AdductIonName;
+            var filepath = outputfolder + "\\" + "BRSPHex" + "_" + adductString + ".txt";
+            var headerFormula = FormulaStringParcer.OrganicElementsReader("C37H60O12P");
+            commonGlycerolipidsGenerator(filepath, "BRSPHex", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond, 1);
+        }
+        private static void generateCASPHexSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
+        {
+            var adductString = adduct.AdductIonName;
+            var filepath = outputfolder + "\\" + "CASPHex" + "_" + adductString + ".txt";
+            var headerFormula = FormulaStringParcer.OrganicElementsReader("C37H62O12P");
+            commonGlycerolipidsGenerator(filepath, "CASPHex", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond, 1);
+        }
+        private static void generateSISPHexSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
+        {
+            var adductString = adduct.AdductIonName;
+            var filepath = outputfolder + "\\" + "SISPHex" + "_" + adductString + ".txt";
+            var headerFormula = FormulaStringParcer.OrganicElementsReader("C38H64O12P");
+            commonGlycerolipidsGenerator(filepath, "SISPHex", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond, 1);
+        }
+
+        private static void generateSTSPHexSpecies(string outputfolder, AdductIon adduct, int minCarbonCount, int maxCarbonCount, int minDoubleBond, int maxDoubleBond)
+        {
+            var adductString = adduct.AdductIonName;
+            var filepath = outputfolder + "\\" + "STSPHex" + "_" + adductString + ".txt";
+            var headerFormula = FormulaStringParcer.OrganicElementsReader("C38H62O12P");
+            commonGlycerolipidsGenerator(filepath, "STSPHex", headerFormula, adduct, minCarbonCount, maxCarbonCount, minDoubleBond, maxDoubleBond, 1);
         }
 
 

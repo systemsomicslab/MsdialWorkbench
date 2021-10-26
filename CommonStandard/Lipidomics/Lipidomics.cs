@@ -764,6 +764,26 @@ namespace CompMs.Common.Lipidomics {
                             msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
                         break;
 
+                    case LbmClass.CSLPHex:
+                    case LbmClass.BRSLPHex:
+                    case LbmClass.CASLPHex:
+                    case LbmClass.SISLPHex:
+                    case LbmClass.STSLPHex:
+                        result = LipidMsmsCharacterization.JudgeIfSteroidWithLpa(molecule.LipidName, molecule.LipidClass,
+                            msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
+                        break;
+
+
+                    case LbmClass.CSPHex:
+                    case LbmClass.BRSPHex:
+                    case LbmClass.CASPHex:
+                    case LbmClass.SISPHex:
+                    case LbmClass.STSPHex:
+                        result = LipidMsmsCharacterization.JudgeIfSteroidWithPa(molecule.LipidName, molecule.LipidClass,
+                            msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+
+
                     default:
                         return null;
 
