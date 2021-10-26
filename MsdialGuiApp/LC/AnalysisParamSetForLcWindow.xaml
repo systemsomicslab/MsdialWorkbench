@@ -36,7 +36,7 @@
 
             <TabItem Header="Identification"
                      DataContext="{Binding IdentitySettingViewModel, Mode=OneTime}">
-                <setting:IdentitySettingView/>
+                <setting:IdentifySettingView/>
             </TabItem>
 
             <TabItem Name="TabItem_Adduct" Header="Adduct">

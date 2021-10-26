@@ -37,7 +37,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             SearchedAdductIons = new ObservableCollection<AdductIonVM>(Model.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
 
-            IdentitySettingViewModel = new LcmsIdentitySettingViewModel(Model.IdentitySettingModel).AddTo(Disposables);
+            IdentitySettingViewModel = new LcmsIdentifySettingViewModel(Model.IdentitySettingModel).AddTo(Disposables);
 
             ContinueProcessCommand = new[]{
                 IdentitySettingViewModel.ObserveHasErrors,
@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public LcmsAnalysisParameterSetModel Model { get; }
 
-        public LcmsIdentitySettingViewModel IdentitySettingViewModel { get; }
+        public LcmsIdentifySettingViewModel IdentitySettingViewModel { get; }
 
         public ParameterBaseVM Param {
             get => paramVM;

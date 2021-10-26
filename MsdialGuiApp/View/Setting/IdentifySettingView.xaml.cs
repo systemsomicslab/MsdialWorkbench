@@ -18,9 +18,9 @@ namespace CompMs.App.Msdial.View.Setting
     /// <summary>
     /// Interaction logic for IdentitySettingView.xaml
     /// </summary>
-    public partial class IdentitySettingView : UserControl
+    public partial class IdentifySettingView : UserControl
     {
-        public IdentitySettingView() {
+        public IdentifySettingView() {
             InitializeComponent();
         }
     }

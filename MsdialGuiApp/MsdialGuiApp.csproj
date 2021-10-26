@@ -195,7 +195,7 @@
     <Compile Include="Model\Setting\DelegateDataBaseAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsMethodModel.cs" />
     <Compile Include="Model\Lcms\LcmsPeakSpotTableModel.cs" />
-    <Compile Include="Model\Lcms\LcmsIdentitySettingModel.cs" />
+    <Compile Include="Model\Lcms\LcmsIdentifySettingModel.cs" />
     <Compile Include="Model\Setting\TextDBAnnotationSettingModel.cs" />
     <Compile Include="Model\Loader\EicLoader.cs" />
     <Compile Include="Model\Loader\MSDecLoader.cs" />
@@ -271,7 +271,7 @@
     <Compile Include="ViewModel\Lcimms\LcimmsMethodVM.cs" />
     <Compile Include="ViewModel\Lcms\LcmsAnalysisParameterSetViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsAnnotatorSettingViewModel.cs" />
-    <Compile Include="ViewModel\Lcms\LcmsIdentitySettingViewModel.cs" />
+    <Compile Include="ViewModel\Lcms\LcmsIdentifySettingViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Normalize\NormalizationSetViewModel.cs" />
     <Compile Include="ViewModel\Normalize\SplashSetViewModel.cs" />
@@ -507,8 +507,8 @@
     <Compile Include="View\Setting\EnzymeSettingWin.xaml.cs">
       <DependentUpon>EnzymeSettingWin.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Setting\IdentitySettingView.xaml.cs">
-      <DependentUpon>IdentitySettingView.xaml</DependentUpon>
+    <Compile Include="View\Setting\IdentifySettingView.xaml.cs">
+      <DependentUpon>IdentifySettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Setting\ModificationSettingWin.xaml.cs">
       <DependentUpon>ModificationSettingWin.xaml</DependentUpon>
@@ -856,7 +856,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Setting\IdentitySettingView.xaml">
+    <Page Include="View\Setting\IdentifySettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

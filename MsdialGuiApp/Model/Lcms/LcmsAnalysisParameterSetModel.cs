@@ -17,7 +17,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             Parameter = parameter;
 
-            IdentitySettingModel = new LcmsIdentitySettingModel(parameter, dataBaseStorages);
+            IdentitySettingModel = new LcmsIdentifySettingModel(parameter, dataBaseStorages);
             if (files.Count() <= 1) {
                 Parameter.TogetherWithAlignment = false;
             }
@@ -44,6 +44,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public MsdialLcmsParameter Parameter { get; }
-        public LcmsIdentitySettingModel IdentitySettingModel { get; }
+        public LcmsIdentifySettingModel IdentitySettingModel { get; }
     }
 }

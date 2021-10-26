@@ -11,16 +11,16 @@ using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    public class LcmsIdentitySettingViewModel : ViewModelBase
+    public class LcmsIdentifySettingViewModel : ViewModelBase
     {
-        private readonly LcmsIdentitySettingModel model;
+        private readonly LcmsIdentifySettingModel model;
         private readonly DataBaseSettingViewModelFactory dataBaseFactory;
         private readonly LcmsAnnotatorSettingViewModelFactory annotatorFactory;
 
         private static readonly string DataBaseIDDuplicateErrorMessage = "DataBase name is duplicated.";
         private static readonly string AnnotatorIDDuplicateErrorMessage = "Annotation method name is duplicated.";
 
-        public LcmsIdentitySettingViewModel(LcmsIdentitySettingModel model) {
+        public LcmsIdentifySettingViewModel(LcmsIdentifySettingModel model) {
             this.model = model;
             dataBaseFactory = new DataBaseSettingViewModelFactory();
             annotatorFactory = new LcmsAnnotatorSettingViewModelFactory();

@@ -13,9 +13,9 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    public class LcmsIdentitySettingModel : BindableBase
+    public class LcmsIdentifySettingModel : BindableBase
     {
-        public LcmsIdentitySettingModel(ParameterBase parameter, DataBaseStorage dataBaseStorage = null) {
+        public LcmsIdentifySettingModel(ParameterBase parameter, DataBaseStorage dataBaseStorage = null) {
             annotatorFactory = new LcmsAnnotatorSettingFactory();
             this.parameter = parameter;
             this.dataBaseStorage = dataBaseStorage ?? DataBaseStorage.CreateEmpty();
