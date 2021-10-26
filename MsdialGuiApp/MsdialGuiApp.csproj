@@ -185,7 +185,6 @@
     <Compile Include="Model\Lcimms\LcimmsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Core\AnalysisParameterSetModelBase.cs" />
     <Compile Include="Model\Setting\IAnnotatorSettingModel.cs" />
-    <Compile Include="Model\Lcms\ILcmsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Setting\AnalysisFilePropertySetModel.cs" />
     <Compile Include="Model\Setting\DataBaseSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsAlignmentModel.cs" />

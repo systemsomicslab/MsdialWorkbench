@@ -13,9 +13,26 @@ namespace CompMs.App.Msdial.Model.Dims
 {
     public sealed class DimsIdentifySettingModel : BindableBase
     {
-        public DimsIdentifySettingModel(ParameterBase parameter) {
+        public DimsIdentifySettingModel(ParameterBase parameter, DataBaseStorage dataBaseStorage = null) {
             annotatorFactory = new DimsAnnotatorSettingModelFactory();
             this.parameter = parameter;
+
+            if (!(dataBaseStorage is null)) {
+                foreach (var dataBase in dataBaseStorage.MetabolomicsDataBases) {
+                    var dbModel = new DataBaseSettingModel(this.parameter, dataBase.DataBase);
+                    DataBaseModels.Add(dbModel);
+                    foreach (var pair in dataBase.Pairs) {
+                        AnnotatorModels.Add(annotatorFactory.Create(dbModel, pair.AnnotatorID, pair.SearchParameter));
+                    }
+                }
+                foreach (var dataBase in dataBaseStorage.ProteomicsDataBases) {
+                    var dbModel = new DataBaseSettingModel(this.parameter, dataBase.DataBase);
+                    DataBaseModels.Add(dbModel);
+                    foreach (var pair in dataBase.Pairs) {
+                        AnnotatorModels.Add(annotatorFactory.Create(dbModel, pair.AnnotatorID, pair.SearchParameter));
+                    }
+                }
+            }
         }
 
         private readonly DimsAnnotatorSettingModelFactory annotatorFactory;
@@ -72,7 +89,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public void AddAnnotator() {
             var db = DataBaseModel;
             if (!(db is null)) {
-                var annotatorModel = annotatorFactory.Create(db, serialNumber++);
+                var annotatorModel = annotatorFactory.Create(db, $"{db.DataBaseID}_{serialNumber++}");
                 AnnotatorModels.Add(annotatorModel);
                 AnnotatorModel = annotatorModel;
             }
@@ -108,7 +125,13 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
-        public void SetAnnotatorContainer(DataBaseStorage storage) {
+        public DataBaseStorage Create() {
+            var result = DataBaseStorage.CreateEmpty();
+            SetAnnotatorContainer(result);
+            return result;
+        } 
+
+        private void SetAnnotatorContainer(DataBaseStorage storage) {
             foreach (var group in AnnotatorModels.OfType<IMetabolomicsAnnotatorSettingModel>().GroupBy(m => m.DataBaseSettingModel)) {
                 var dbModel = group.Key;
                 var db = dbModel.CreateMoleculeDataBase();

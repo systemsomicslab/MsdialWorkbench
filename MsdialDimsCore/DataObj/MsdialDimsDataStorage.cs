@@ -21,6 +21,10 @@ namespace CompMs.MsdialDimsCore.DataObj
             MessagePackDefaultHandler.SaveToStream(this, stream);
         }
 
+        protected override void SaveDataBaseMapper(Stream stream) {
+
+        }
+
         public static IMsdialSerializer Serializer { get; } = new MsdialDimsSerializer();
 
         class MsdialDimsSerializer : MsdialSerializer, IMsdialSerializer
@@ -31,10 +35,22 @@ namespace CompMs.MsdialDimsCore.DataObj
                 }
             }
 
-            protected async override Task LoadDataBaseMapperAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage) {
-                using (var stream = await streamManager.Get(path).ConfigureAwait(false)) {
-                    storage.DataBaseMapper?.Restore(new DimsLoadAnnotatorVisitor(storage.Parameter), stream);
+            protected override Task LoadDataBaseMapperAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage) {
+                var mapper = new DataBaseMapper();
+                if (!(storage.DataBases is null)) {
+                    foreach (var db in storage.DataBases.MetabolomicsDataBases) {
+                        foreach (var pair in db.Pairs) {
+                            mapper.Add(pair.SerializableAnnotator, db.DataBase);
+                        }
+                    }
+                    foreach (var db in storage.DataBases.ProteomicsDataBases) {
+                        foreach (var pair in db.Pairs) {
+                            mapper.Add(pair.SerializableAnnotator, db.DataBase);
+                        }
+                    }
                 }
+                storage.DataBaseMapper = mapper;
+                return Task.CompletedTask;
             }
 
             protected override async Task LoadDataBasesAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage) {

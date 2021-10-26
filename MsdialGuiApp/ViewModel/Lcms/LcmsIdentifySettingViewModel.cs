@@ -218,11 +218,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public ReadOnlyReactiveCollection<IDataBaseSettingViewModel> DataBaseViewModels { get; }
 
-        public ReadOnlyReactiveCollection<ILcmsAnnotatorSettingViewModel> AnnotatorViewModels { get; }
+        public ReadOnlyReactiveCollection<IAnnotatorSettingViewModel> AnnotatorViewModels { get; }
 
         public ReactivePropertySlim<IDataBaseSettingViewModel> DataBaseViewModel { get; }
 
-        public ReactivePropertySlim<ILcmsAnnotatorSettingViewModel> AnnotatorViewModel { get; }
+        public ReactivePropertySlim<IAnnotatorSettingViewModel> AnnotatorViewModel { get; }
 
         public ReadOnlyReactivePropertySlim<object> SelectedViewModel { get; }
         public ReactiveProperty<bool> IsDataBaseExpanded { get; }

@@ -1,7 +1,5 @@
-﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.Model.Dims;
+﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.View;
-using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Enum;
 using CompMs.Common.Query;
 using CompMs.CommonMVVM;
@@ -12,9 +10,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 
@@ -37,27 +33,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             SearchedAdductIons = new ObservableCollection<AdductIonVM>(Model.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
 
-            DataCollectionSettingViewModel = new DimsDataCollectionSettingViewModel(Model.DataCollectionSettingModel);
+            DataCollectionSettingViewModel = new DimsDataCollectionSettingViewModel(Model.DataCollectionSettingModel).AddTo(Disposables);
 
             IdentifySettingViewModel = new DimsIdentifySettingViewModel(Model.IdentifySettingModel).AddTo(Disposables);
 
-            var factory = new DimsAnnotationSettingViewModelFactory(Model.Parameter);
-            AnnotationProcessSettingViewModel = new AnnotationProcessSettingViewModel(
-                    Model.AnnotationProcessSettingModel,
-                    factory.Create)
-                .AddTo(Disposables);
-
-            if (Model.ParameterBase.TargetOmics == TargetOmics.Lipidomics) {
-                string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
-                AnnotationProcessSettingViewModel.AddNewAnnotationCommand.Execute(null);
-                var annotationMethod = AnnotationProcessSettingViewModel.Annotations.Last();
-                (annotationMethod as DimsAnnotationSettingViewModel).DataBasePath.Value = lbmFiles.First();
-            }
-
             ContinueProcessCommand = new[]{
                 IdentifySettingViewModel.ObserveHasErrors,
-                AnnotationProcessSettingViewModel.ObserveHasErrors,
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand<Window>()
             .WithSubscribe(ContinueProcess)
@@ -85,7 +66,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public DimsDataCollectionSettingViewModel DataCollectionSettingViewModel { get; }
         public DimsIdentifySettingViewModel IdentifySettingViewModel { get; }
-        public AnnotationProcessSettingViewModel AnnotationProcessSettingViewModel { get; }
 
         public bool TogetherWithAlignment {
             get {
@@ -155,7 +135,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             return true;
         }
-
 
         public DelegateCommand<Window> CancelProcessCommand {
             get => cancelProcessCommand ?? (cancelProcessCommand = new DelegateCommand<Window>(CancelProcess));

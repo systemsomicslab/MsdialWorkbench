@@ -1,9 +1,6 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.Core;
-using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialDimsCore.Parameter;
 using System.Collections.Generic;
@@ -42,15 +39,5 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public DimsDataCollectionSettingModel DataCollectionSettingModel { get; }
         public DimsIdentifySettingModel IdentifySettingModel { get; private set; }
-
-        public IAnnotationProcess BuildAnnotationProcess() {
-            var annotators = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
-            foreach (var annotation in AnnotationProcessSettingModel.Annotations) {
-                annotators.Add(annotation.Build(ParameterBase));
-            }
-            return new StandardAnnotationProcess<IAnnotationQuery>(
-                new AnnotationQueryWithoutIsotopeFactory(),
-                annotators);
-        }
     }
 }

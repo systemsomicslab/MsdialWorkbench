@@ -75,9 +75,9 @@ namespace CompMs.App.Msdial.Model.Core
             }
         }
 
+        [Obsolete("AnnotationProcessSettingModel will be removed.")]
         public AnnotationProcessSettingModel AnnotationProcessSettingModel { get; }
 
-        [Obsolete("AnnotationProcessSettingModel will be removed.")]
         public DataBaseMapper BuildAnnotator() {
             var dbm = new DataBaseMapper();
             foreach (var annotation in AnnotationProcessSettingModel.Annotations) {

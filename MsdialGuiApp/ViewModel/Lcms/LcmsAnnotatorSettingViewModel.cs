@@ -1,4 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -7,14 +9,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    public interface ILcmsAnnotatorSettingViewModel : IDisposable
-    {
-        ILcmsAnnotatorSettingModel Model { get; }
-        ReactiveProperty<string> AnnotatorID { get; }
-        ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
-    }
-
-    public sealed class LcmsMspAnnotatorSettingViewModel : ViewModelBase, ILcmsAnnotatorSettingViewModel
+    public sealed class LcmsMspAnnotatorSettingViewModel : ViewModelBase, IAnnotatorSettingViewModel
     {
         private readonly LcmsMspAnnotatorSettingModel model;
 
@@ -47,14 +42,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .AddTo(Disposables);
         }
 
-        ILcmsAnnotatorSettingModel ILcmsAnnotatorSettingViewModel.Model => model;
+        IAnnotatorSettingModel IAnnotatorSettingViewModel.Model => model;
         public MsRefSearchParameterBaseViewModel ParameterViewModel { get; }
         [Required(ErrorMessage = "Annotator id is required.")]
         public ReactiveProperty<string> AnnotatorID { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
     }
 
-    public sealed class LcmsTextDBAnnotatorSettingViewModel : ViewModelBase, ILcmsAnnotatorSettingViewModel
+    public sealed class LcmsTextDBAnnotatorSettingViewModel : ViewModelBase, IAnnotatorSettingViewModel
     {
         private readonly LcmsTextDBAnnotatorSettingModel model;
 
@@ -77,14 +72,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .AddTo(Disposables);
         }
 
-        ILcmsAnnotatorSettingModel ILcmsAnnotatorSettingViewModel.Model => model;
+        IAnnotatorSettingModel IAnnotatorSettingViewModel.Model => model;
         public MsRefSearchParameterBaseViewModel ParameterViewModel { get; }
         [Required(ErrorMessage = "Annotator id is required.")]
         public ReactiveProperty<string> AnnotatorID { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
     }
 
-    public class LcmsProteomicsAnnotatorSettingViewModel : ViewModelBase, ILcmsAnnotatorSettingViewModel
+    public class LcmsProteomicsAnnotatorSettingViewModel : ViewModelBase, IAnnotatorSettingViewModel
     {
         private readonly LcmsProteomicsAnnotatorSettingModel model;
 
@@ -116,7 +111,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .AddTo(Disposables);
         }
 
-        ILcmsAnnotatorSettingModel ILcmsAnnotatorSettingViewModel.Model => model;
+        IAnnotatorSettingModel IAnnotatorSettingViewModel.Model => model;
         [Required(ErrorMessage = "Annotator id is required.")]
         public ReactiveProperty<string> AnnotatorID { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
@@ -127,7 +122,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
     public class LcmsAnnotatorSettingViewModelFactory
     {
-        public ILcmsAnnotatorSettingViewModel Create(ILcmsAnnotatorSettingModel model) {
+        public IAnnotatorSettingViewModel Create(IAnnotatorSettingModel model) {
             switch (model) {
                 case LcmsMspAnnotatorSettingModel mspModel:
                     return new LcmsMspAnnotatorSettingViewModel(mspModel);

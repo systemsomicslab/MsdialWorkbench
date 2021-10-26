@@ -14,7 +14,7 @@ using System.Collections.Generic;
 namespace CompMs.App.Msdial.Model.Lcms
 {
 
-    public class LcmsMspAnnotatorSettingModel : BindableBase, ILcmsMetabolomicsAnnotatorSettingModel
+    public sealed class LcmsMspAnnotatorSettingModel : BindableBase, IMetabolomicsAnnotatorSettingModel
     {
         public LcmsMspAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter) {
             DataBaseSettingModel = dataBaseSettingModel;
@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
     }
 
-    public class LcmsTextDBAnnotatorSettingModel : BindableBase, ILcmsMetabolomicsAnnotatorSettingModel
+    public sealed class LcmsTextDBAnnotatorSettingModel : BindableBase, IMetabolomicsAnnotatorSettingModel
     {
         public LcmsTextDBAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter) {
             DataBaseSettingModel = dataBaseSettingModel;
@@ -68,7 +68,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
     }
 
-    public class LcmsProteomicsAnnotatorSettingModel : BindableBase, ILcmsProteomicsAnnotatorSettingModel
+    public sealed class LcmsProteomicsAnnotatorSettingModel : BindableBase, IProteomicsAnnotatorSettingModel
     {
         public LcmsProteomicsAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter) {
             DataBaseSettingModel = dataBaseSettingModel;
@@ -104,9 +104,9 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
     }
 
-    public class LcmsAnnotatorSettingFactory
+    public sealed class LcmsAnnotatorSettingFactory
     {
-        public ILcmsAnnotatorSettingModel Create(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter) {
+        public IAnnotatorSettingModel Create(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter = null) {
             switch (dataBaseSettingModel.DBSource) {
                 case DataBaseSource.Msp:
                 case DataBaseSource.Lbm:

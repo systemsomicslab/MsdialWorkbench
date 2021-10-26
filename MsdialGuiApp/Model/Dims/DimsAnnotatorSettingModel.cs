@@ -13,12 +13,13 @@ using System.Collections.Generic;
 namespace CompMs.App.Msdial.Model.Dims
 {
     public sealed class DimsMetabolomicsUseMs2AnnotatorSettingModel : BindableBase, IMetabolomicsAnnotatorSettingModel {
-        public DimsMetabolomicsUseMs2AnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, int serialNumber) {
+        public DimsMetabolomicsUseMs2AnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter) {
             DataBaseSettingModel = dataBaseSettingModel;
-            AnnotatorID = $"{DataBaseSettingModel.DataBaseID}_{serialNumber}";
+            AnnotatorID = annotatorID;
+            SearchParameter = searchParameter ?? new MsRefSearchParameterBase();
         }
 
-        public MsRefSearchParameterBase SearchParameter { get; } = new MsRefSearchParameterBase();
+        public MsRefSearchParameterBase SearchParameter { get; }
 
         public SourceType AnnotationSource { get; } = SourceType.MspDB;
 
@@ -40,12 +41,13 @@ namespace CompMs.App.Msdial.Model.Dims
 
     public sealed class DimsMetabolomicsAnnotatorSettingModel : BindableBase, IMetabolomicsAnnotatorSettingModel
     {
-        public DimsMetabolomicsAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, int serialNumber) {
+        public DimsMetabolomicsAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter) {
             DataBaseSettingModel = dataBaseSettingModel;
-            AnnotatorID = $"{DataBaseSettingModel.DataBaseID}_{serialNumber}";
+            AnnotatorID = annotatorID;
+            SearchParameter = searchParameter ?? new MsRefSearchParameterBase();
         }
 
-        public MsRefSearchParameterBase SearchParameter { get; } = new MsRefSearchParameterBase();
+        public MsRefSearchParameterBase SearchParameter { get; }
 
         public SourceType AnnotationSource { get; } = SourceType.TextDB;
 
@@ -63,18 +65,17 @@ namespace CompMs.App.Msdial.Model.Dims
                 new DimsTextDBAnnotator(db, SearchParameter, annotatorID, priority),
             };
         }
-
     }
 
     public sealed class DimsAnnotatorSettingModelFactory
     {
-        public IAnnotatorSettingModel Create(DataBaseSettingModel dataBaseSettingModel, int serialNumber) {
+        public IAnnotatorSettingModel Create(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter = null) {
             switch (dataBaseSettingModel.DBSource) {
                 case DataBaseSource.Msp:
                 case DataBaseSource.Lbm:
-                    return new DimsMetabolomicsUseMs2AnnotatorSettingModel(dataBaseSettingModel, serialNumber);
+                    return new DimsMetabolomicsUseMs2AnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
                 case DataBaseSource.Text:
-                    return new DimsMetabolomicsAnnotatorSettingModel(dataBaseSettingModel, serialNumber);
+                    return new DimsMetabolomicsAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
                 default:
                     throw new NotSupportedException(nameof(dataBaseSettingModel.DBSource));
             }

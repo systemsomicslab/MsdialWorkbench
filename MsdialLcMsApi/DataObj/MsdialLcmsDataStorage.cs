@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace CompMs.MsdialLcMsApi.DataObj
 {
     [MessagePackObject]
-    public class MsdialLcmsDataStorage : MsdialDataStorageBase, IMsdialDataStorage<MsdialLcmsParameter> {
+    public sealed class MsdialLcmsDataStorage : MsdialDataStorageBase, IMsdialDataStorage<MsdialLcmsParameter> {
         [Key(6)]
         public MsdialLcmsParameter MsdialLcmsParameter { get; set; }
 
@@ -45,6 +45,11 @@ namespace CompMs.MsdialLcMsApi.DataObj
                 var mapper = new DataBaseMapper();
                 if (!(storage.DataBases is null)) {
                     foreach (var db in storage.DataBases.MetabolomicsDataBases) {
+                        foreach (var pair in db.Pairs) {
+                            mapper.Add(pair.SerializableAnnotator, db.DataBase);
+                        }
+                    }
+                    foreach (var db in storage.DataBases.ProteomicsDataBases) {
                         foreach (var pair in db.Pairs) {
                             mapper.Add(pair.SerializableAnnotator, db.DataBase);
                         }

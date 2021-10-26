@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
@@ -7,6 +8,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
@@ -75,6 +77,7 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         public void AnalysisParamSetProcess(DimsAnalysisParameterSetModel parameterSetModel) {
+            Storage.DataBases = parameterSetModel.IdentifySettingModel.Create();
             if (parameterSetModel.TogetherWithAlignment) {
                 var alignmentResultFileName = parameterSetModel.AlignmentResultFileName;
                 AlignmentFiles.Add(
@@ -90,9 +93,27 @@ namespace CompMs.App.Msdial.Model.Dims
                 Storage.AlignmentFiles = AlignmentFiles.ToList();
             }
 
-            Storage.DataBaseMapper = parameterSetModel.BuildAnnotator();
-            annotationProcess = parameterSetModel.BuildAnnotationProcess();
+            Storage.DataBaseMapper = BuildDataBaseMapper(Storage.DataBases);
+            annotationProcess = BuildAnnotationProcess(Storage.DataBases);
             ProviderFactory = parameterSetModel.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
+        }
+
+        private DataBaseMapper BuildDataBaseMapper(DataBaseStorage storage) {
+            var mapper = new DataBaseMapper();
+            foreach (var db in storage.MetabolomicsDataBases) {
+                foreach (var pair in db.Pairs) {
+                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
+                }
+            }
+            return mapper;
+        }
+
+        private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage) {
+            var containers = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
+            foreach (var annotators in storage.MetabolomicsDataBases) {
+                containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
+            }
+            return new StandardAnnotationProcess<IAnnotationQuery>(new AnnotationQueryWithoutIsotopeFactory(), containers);
         }
 
         public async Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {
