@@ -2,6 +2,7 @@
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
