@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -107,11 +108,23 @@ namespace CompMs.App.Msdial.Model
 
     class MsRefSpectrumLoader : IMsSpectrumLoader<IAnnotatedObject>
     {
-        public MsRefSpectrumLoader(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
-            this.refer = refer;
+        public MsRefSpectrumLoader(DataBaseMapper mapper) {
+            this.mapper = mapper;
         }
 
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
+        //public MsRefSpectrumLoader(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+        //    this.moleculeRefer = refer;
+        //}
+
+        //public MsRefSpectrumLoader(IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer) {
+        //    this.peptideRefer = refer;
+        //}
+
+        //private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> moleculeRefer;
+        //private readonly IMatchResultRefer<PeptideMsReference, MsScanMatchResult> peptideRefer;
+        private readonly DataBaseMapper mapper;
+
+        
 
         public List<SpectrumPeak> LoadSpectrum(IAnnotatedObject target) {
             if (target == null) {
@@ -133,10 +146,20 @@ namespace CompMs.App.Msdial.Model
 
         private List<SpectrumPeak> LoadSpectrumCore(IAnnotatedObject target) {
             var representative = target.MatchResults.Representative;
-            var reference = refer.Refer(representative);
-            if (reference != null) {
-                return reference.Spectrum;
+            if (representative.Source == SourceType.FastaDB) {
+                //var reference = peptideRefer.Refer(representative);
+                var reference = mapper.PeptideMsRefer(representative);
+                if (reference != null) {
+                    return reference.Spectrum;
+                }
             }
+            else {
+                var reference = mapper.MoleculeMsRefer(representative);
+                if (reference != null) {
+                    return reference.Spectrum;
+                }
+            }
+           
             return new List<SpectrumPeak>();
         }
     }

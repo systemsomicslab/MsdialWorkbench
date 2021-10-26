@@ -231,7 +231,6 @@
             </Expander>
         </Grid>
     </DataTemplate>
-
     <DataTemplate DataType="{x:Type vm:CompoundSearchVM}"
                   x:Key="LcmsAnnotatorSetting">
         <ScrollViewer>

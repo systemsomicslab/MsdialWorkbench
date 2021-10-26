@@ -81,35 +81,43 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             IDataProvider provider, 
             Action<double> reportAction) {
             var spectrums = provider.LoadMs1Spectrums();
-            
-
-
+            var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
 
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
                 if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
-                    var msdecResult = msdecResults[i];
-                    if (msdecResult.Spectrum.IsEmptyOrNull()) {
-                        // seek [M+1]
-
-                    }
-
-
+                    var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults, parentID2IsotopePeakIDs);
                     RunAnnotationCore(chromPeakFeature, msdecResult, spectrums);
                 }
                 reportAction?.Invoke((double)(i + 1) / chromPeakFeatures.Count);
             };
         }
 
+        private MSDecResult GetRepresentativeMSDecResult(ChromatogramPeakFeature chromPeakFeature, int index, IReadOnlyList<MSDecResult> msdecResults, Dictionary<int, List<int>> parentID2IsotopePeakIDs) {
+            var msdecResult = msdecResults[index];
+            if (msdecResult.Spectrum.IsEmptyOrNull()) {
+                var ids = parentID2IsotopePeakIDs[chromPeakFeature.PeakCharacter.IsotopeParentPeakID];
+                foreach (var id in ids) {
+                    if (!msdecResults[id].Spectrum.IsEmptyOrNull()) {
+                        msdecResult = msdecResults[id];
+                        chromPeakFeature.MSDecResultIdUsed = id;
+                    }
+                }
+            }
+            return msdecResult;
+        }
+
         private void RunByMultiThread(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, IDataProvider provider, int numThreads, CancellationToken token, Action<double> reportAction) {
             var spectrums = provider.LoadMs1Spectrums();
+            var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
             Enumerable.Range(0, chromPeakFeatures.Count)
                 .AsParallel()
                 .WithCancellation(token)
                 .WithDegreeOfParallelism(numThreads)
                 .ForAll(i => {
                     var chromPeakFeature = chromPeakFeatures[i];
-                    var msdecResult = msdecResults[i];
+                    var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults, parentID2IsotopePeakIDs);
+                    //var msdecResult = msdecResults[i];
                     if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                         RunAnnotationCore(chromPeakFeature, msdecResult, spectrums);
                     }
@@ -124,9 +132,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
              CancellationToken token,
              Action<double> reportAction) {
             var spectrums = provider.LoadMs1Spectrums();
+            var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
-                var msdecResult = msdecResults[i];
+                var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults, parentID2IsotopePeakIDs);
+                //var msdecResult = msdecResults[i];
                 if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                     await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token);
                 }
@@ -142,6 +152,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             CancellationToken token,
             Action<double> reportAction) {
             var spectrums = provider.LoadMs1Spectrums();
+            var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
             using (var sem = new SemaphoreSlim(numThreads)) {
                 var annotationTasks = new List<Task>();
                 for (int i = 0; i < chromPeakFeatures.Count; i++) {
@@ -150,7 +161,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
 
                         try {
                             var chromPeakFeature = chromPeakFeatures[i];
-                            var msdecResult = msdecResults[i];
+                            //var msdecResult = msdecResults[i];
+                            var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults, parentID2IsotopePeakIDs);
                             if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                                 await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token);
                             }

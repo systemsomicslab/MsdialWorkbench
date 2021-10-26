@@ -33,6 +33,9 @@ namespace CompMs.Common.Proteomics.DataObj {
         [IgnoreMember]
         public List<AminoAcid> SequenceObj { get; set; } // N -> C, including modified amino acid information
 
+        [Key(6)]
+        public bool IsDecoy { get; set; } = false;
+
         public int CountModifiedAminoAcids() { return SequenceObj.Count(n => n.IsModified()); }
     }
 }

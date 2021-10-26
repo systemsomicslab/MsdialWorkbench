@@ -84,7 +84,15 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public SourceType AnnotationSource { get; } = SourceType.FastaDB;
 
-        public MsRefSearchParameterBase SearchParameter { get; } = new MsRefSearchParameterBase();
+        public MsRefSearchParameterBase SearchParameter { get; } = new MsRefSearchParameterBase() {
+            SimpleDotProductCutOff = 0.0F,
+            WeightedDotProductCutOff = 0.0F,
+            ReverseDotProductCutOff = 0.0F,
+            MatchedPeaksPercentageCutOff = 0.0F,
+            MinimumSpectrumMatch = 0.0F,
+            TotalScoreCutoff = 0.0F,
+            AndromedaScoreCutOff = 0.0F
+        };
 
         public ProteomicsParameter ProteomicsParameter { get; } = new ProteomicsParameter();
 

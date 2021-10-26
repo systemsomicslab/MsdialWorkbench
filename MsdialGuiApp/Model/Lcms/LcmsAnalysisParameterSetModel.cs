@@ -18,6 +18,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             Parameter = parameter;
 
             IdentitySettingModel = new LcmsIdentitySettingModel(parameter);
+            if (files.Count() <= 1) {
+                Parameter.TogetherWithAlignment = false;
+            }
 
             if (Parameter.TargetOmics == TargetOmics.Lipidomics) {
                 string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -30,8 +33,13 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
             else if (Parameter.TargetOmics == TargetOmics.Proteomics) {
                 Parameter.MaxChargeNumber = 6;
-                Parameter.MinimumAmplitude = 100000;
+                Parameter.MinimumAmplitude = 500000;
                 Parameter.AmplitudeCutoff = 1000;
+
+                Parameter.RetentionTimeBegin = 10;
+                Parameter.RetentionTimeEnd = 30;
+                Parameter.MassRangeBegin = 400;
+                Parameter.MassRangeEnd = 900;
             }
         }
 

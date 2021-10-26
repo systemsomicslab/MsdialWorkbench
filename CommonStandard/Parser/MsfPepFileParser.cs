@@ -5,6 +5,7 @@ using CompMs.Common.Proteomics.Function;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace CompMs.Common.Parser {
@@ -20,17 +21,20 @@ namespace CompMs.Common.Parser {
             fs.Write(BitConverter.GetBytes(MSRefStorageFileVersionNumber), 0, 4);
 
             using (var ps = File.Open(pepfile, FileMode.Create, FileAccess.ReadWrite)) {
-                foreach (var pep in peptides) {
+                var counter = 0;
+                foreach (var pep in peptides.OrderBy(n => n.ExactMass)) {
                     var sp = fs.Position;
                     var psp = ps.Position;
                     var spec = SequenceToSpec.Convert2SpecPeaks(pep, adduct, CollisionType.HCD, minMz, maxMz);
-                    var msObj = new PeptideMsReference(pep, fs, sp, adduct);
+                    var msObj = new PeptideMsReference(pep, fs, sp, adduct, counter);
                     pepMsQueries.Add(msObj);
 
                     WriteMsfData(fs, spec);
 
                     var aaIDs = GetIDs(pep, Code2ID);
                     WritePepData(ps, aaIDs);
+
+                    counter++;
                 }
             }
             

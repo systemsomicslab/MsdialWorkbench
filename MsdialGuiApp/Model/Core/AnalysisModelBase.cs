@@ -31,7 +31,8 @@ namespace CompMs.App.Msdial.Model.Core
 
             decLoader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
             MsdecResult = Target.Where(t => !(t is null))
-                .Select(t => decLoader.LoadMSDecResult(t.MasterPeakID))
+                .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
+                //.Select(t => decLoader.LoadMSDecResult(t.MasterPeakID))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
         }

@@ -12,6 +12,11 @@ namespace CompMs.Common.FormulaGenerator.Function {
     {
         private MolecularFormulaUtility() { }
 
+        public static double ConvertSinglyChargedPrecursorMzAsProtonAdduct(double precursorMz, double chargeNum) {
+            var hydrogen = 1.00782504;
+            return precursorMz * chargeNum - (chargeNum - 1) * hydrogen;
+        }
+
         public static double ConvertPrecursorMzToExactMass(AdductIon adductIon, double precursorMz)
         {
             double monoIsotopicMass = (precursorMz * (double)adductIon.ChargeNumber - adductIon.AdductIonAccurateMass) / (double)adductIon.AdductIonXmer;

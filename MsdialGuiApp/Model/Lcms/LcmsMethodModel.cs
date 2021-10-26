@@ -83,7 +83,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 provider,
                 Storage.DataBaseMapper,
                 Storage.MsdialLcmsParameter,
-                Storage.DataBaseMapper.Annotators)
+                Storage.DataBaseMapper.MoleculeAnnotators)
             .AddTo(Disposables);
         }
 
@@ -96,7 +96,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 alignmentFile,
                 Storage.MsdialLcmsParameter,
                 Storage.DataBaseMapper,
-                Storage.DataBaseMapper.Annotators)
+                Storage.DataBaseMapper.MoleculeAnnotators)
             .AddTo(Disposables);
         }
 
@@ -169,6 +169,12 @@ namespace CompMs.App.Msdial.Model.Lcms
                     mapper.Add(pair.SerializableAnnotator, db.DataBase);
                 }
             }
+            foreach (var db in storage.ProteomicsDataBases) {
+                foreach (var pair in db.Pairs) {
+                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
+                }
+            }
+
             return mapper;
         }
 

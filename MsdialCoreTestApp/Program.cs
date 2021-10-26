@@ -82,13 +82,14 @@ namespace CompMs.App.MsdialConsole {
             var immsfile = @"D:\msdial_test\Msdial\out\infusion_neg_timsON_pasef\kidney1_3times_timsON_pasef_neg000001.d";
             var lcimmsfile = @"D:\BugReport\20201216_MS2missing\PS78_Plasma1_4_1_4029.d";
             var samplefile = @"D:\infusion_project\Bruker_20210521_original\Bruker_20210521\infusion\timsOFF_pos\kidney1_1-47_1_14919.d";
-            DumpSpectrum(samplefile, 1206, 800, 100);
+            //DumpSpectrum(samplefile, 1206, 800, 100);
 
             //new FileParser().FastaParserTest(@"E:\6_Projects\PROJECT_Proteomics\jPOST_files_JPST000200.0\human_proteins_ref_wrong.fasta");
             //new EnzymesXmlRefParser().Read();
             //new ModificationsXmlRefParser().Read();
 
-            // new TestProteomicsProcess().PDFTest();
+            //new TestProteomicsProcess().PDFTest();
+            new TestProteomicsProcess().ProcessTest();
 
             //FormulaStringParcer.Convert2FormulaObjV2("C6H12O6");
             //FormulaStringParcer.Convert2FormulaObjV2("CH3COONa");

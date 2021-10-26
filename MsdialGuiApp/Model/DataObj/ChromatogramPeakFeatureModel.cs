@@ -108,6 +108,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double KMR => NominalKM % KMNominalUnit;
 
         public ChromatogramPeakFeature InnerModel => innerModel;
+        public int MSDecResultIDUsedForAnnotation => innerModel.GetMSDecResultID();
         #endregion
 
         #region Field
