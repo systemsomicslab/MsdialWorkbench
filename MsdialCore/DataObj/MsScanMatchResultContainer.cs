@@ -41,11 +41,12 @@ namespace CompMs.MsdialCore.DataObj
                             return null;
                         }
                         else {
-                            return results.Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore));
+                            cacheRepresentative = results.Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore));
+                            return cacheRepresentative;
                         }
                     }
                     else {
-                        cacheDecoyRepresentative = null;
+                        cacheRepresentative = null;
                     }
                     //cacheRepresentative = MatchResults.Any()
                     //    ? MatchResults.Where(n => !n.IsDecoy).Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore))
@@ -66,7 +67,8 @@ namespace CompMs.MsdialCore.DataObj
                             return null;
                         }
                         else {
-                            return decoyResults.Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore));
+                            cacheDecoyRepresentative = decoyResults.Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore));
+                            return cacheDecoyRepresentative;
                         }
                     }
                     else {
@@ -95,11 +97,20 @@ namespace CompMs.MsdialCore.DataObj
             if (representative.IsManuallyModified && !representative.IsUnknown) {
                 return true; // confidense or unsettled
             }
-            var annotator = mapper.FindAnnotator(representative)?.Annotator;
-            if (annotator is null) {
-                return false;
+            if (representative.Source == SourceType.FastaDB) {
+                var annotator = mapper.FindPeptideAnnotator(representative)?.Annotator;
+                if (annotator is null) {
+                    return false;
+                }
+                return annotator.IsReferenceMatched(representative);
             }
-            return annotator.IsReferenceMatched(representative);
+            else {
+                var annotator = mapper.FindMoleculeAnnotator(representative)?.Annotator;
+                if (annotator is null) {
+                    return false;
+                }
+                return annotator.IsReferenceMatched(representative);
+            }
         }
 
         public bool IsAnnotationSuggested(DataBaseMapper mapper) {
@@ -107,11 +118,20 @@ namespace CompMs.MsdialCore.DataObj
             if (representative.IsManuallyModified && !representative.IsUnknown) {
                 return false; // confidense or unsettled
             }
-            var annotator = mapper.FindAnnotator(representative)?.Annotator;
-            if (annotator is null) {
-                return false;
+            if (representative.Source == SourceType.FastaDB) {
+                var annotator = mapper.FindPeptideAnnotator(representative)?.Annotator;
+                if (annotator is null) {
+                    return false;
+                }
+                return annotator.IsAnnotationSuggested(representative);
             }
-            return annotator.IsAnnotationSuggested(representative);
+            else {
+                var annotator = mapper.FindMoleculeAnnotator(representative)?.Annotator;
+                if (annotator is null) {
+                    return false;
+                }
+                return annotator.IsAnnotationSuggested(representative);
+            }
         }
 
         [IgnoreMember]

@@ -30,7 +30,7 @@ namespace CompMs.MsdialLcMsApi.Process {
             var param = container.Parameter;
             var mspDB = container.MspDB;
             var textDB = container.TextDB;
-            var annotatorContainers = container.DataBaseMapper.Annotators;
+            var annotatorContainers = container.DataBaseMapper.MoleculeAnnotators;
             var isotopeTextDB = container.IsotopeTextDB;
             var iupacDB = container.IupacDatabase;
             var filepath = file.AnalysisFilePath;

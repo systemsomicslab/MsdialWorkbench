@@ -274,6 +274,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             var ms1Similarity = GetGaussianSimilarity(scanProp.PrecursorMz, refSpec.PrecursorMz, ms1Tol, out isMs1Match);
 
             var result = new MsScanMatchResult() {
+                LibraryID = refSpec.ScanID,
                 WeightedDotProduct = (float)weightedDotProduct,
                 SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
                 AcurateMassSimilarity = (float)ms1Similarity,

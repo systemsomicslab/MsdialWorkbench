@@ -48,7 +48,7 @@ namespace CompMs.MsdialImmsCore.Process
 
             var parameter = container.Parameter;
             var iupacDB = container.IupacDatabase;
-            var annotatorContainers = container.DataBaseMapper.Annotators;
+            var annotatorContainers = container.DataBaseMapper.MoleculeAnnotators;
 
             var rawObj = LoadMeasurement(file, isGuiProcess);
             var provider = providerFactory.Create(file);

@@ -149,7 +149,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 ProviderFactory.Create(analysisFile),
                 Storage.DataBaseMapper,
                 Storage.MsdialDimsParameter,
-                Storage.DataBaseMapper.Annotators).AddTo(Disposables);;
+                Storage.DataBaseMapper.MoleculeAnnotators).AddTo(Disposables);;
         }
 
         protected override void LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
@@ -161,7 +161,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 alignmentFile,
                 Storage.DataBaseMapper,
                 Storage.MsdialDimsParameter,
-                Storage.DataBaseMapper.Annotators).AddTo(Disposables);
+                Storage.DataBaseMapper.MoleculeAnnotators).AddTo(Disposables);
         }
     }
 }

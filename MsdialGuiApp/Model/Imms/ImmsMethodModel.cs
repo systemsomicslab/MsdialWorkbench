@@ -231,7 +231,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 provider,
                 Storage.DataBaseMapper,
                 Storage.MsdialImmsParameter,
-                Storage.DataBaseMapper.Annotators)
+                Storage.DataBaseMapper.MoleculeAnnotators)
             .AddTo(Disposables);
         }
 
@@ -245,7 +245,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 alignmentFile,
                 Storage.MsdialImmsParameter,
                 Storage.DataBaseMapper,
-                Storage.DataBaseMapper.Annotators)
+                Storage.DataBaseMapper.MoleculeAnnotators)
             .AddTo(Disposables);
         }
 

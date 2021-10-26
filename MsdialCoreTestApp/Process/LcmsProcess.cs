@@ -51,7 +51,7 @@ namespace CompMs.App.MsdialConsole.Process {
                 var provider = new StandardDataProvider(file, false, 5);
                 var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery>(
                     new AnnotationQueryFactory(container.Parameter.PeakPickBaseParam),
-                    container.DataBaseMapper.Annotators);
+                    container.DataBaseMapper.MoleculeAnnotators);
                 tasks[idx] = Task.Run(() => FileProcess.Run(file, provider, container, annotationProcess));
             }
             Task.WaitAll(tasks);
