@@ -12,12 +12,12 @@ namespace CompMs.App.Msdial.Model.Lcms
 {
     public class LcmsAnalysisParameterSetModel : AnalysisParameterSetModelBase
     {
-        public LcmsAnalysisParameterSetModel(MsdialLcmsParameter parameter, IEnumerable<AnalysisFileBean> files)
+        public LcmsAnalysisParameterSetModel(MsdialLcmsParameter parameter, IEnumerable<AnalysisFileBean> files, DataBaseStorage dataBaseStorages)
             : base(parameter, files) {
 
             Parameter = parameter;
 
-            IdentitySettingModel = new LcmsIdentitySettingModel(parameter);
+            IdentitySettingModel = new LcmsIdentitySettingModel(parameter, dataBaseStorages);
             if (files.Count() <= 1) {
                 Parameter.TogetherWithAlignment = false;
             }

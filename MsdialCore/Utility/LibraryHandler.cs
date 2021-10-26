@@ -57,7 +57,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         public static ShotgunProteomicsDB GenerateShotgunProteomicsDB(string file, string id, ProteomicsParameter proteomicsParam, MsRefSearchParameterBase msrefSearchParam) {
-            var db = new ShotgunProteomicsDB(file, id, proteomicsParam, msrefSearchParam);
+            var db = new ShotgunProteomicsDB(file, id, proteomicsParam, msrefSearchParam.MassRangeBegin, msrefSearchParam.MassRangeEnd);
             return db;
         }
 

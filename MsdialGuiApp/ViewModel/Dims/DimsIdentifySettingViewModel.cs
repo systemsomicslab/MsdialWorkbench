@@ -97,11 +97,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 removedDataBase.ToUnit(),
                 DataBaseViewModels.ObserveElementObservableProperty(vm => vm.ObserveHasErrors).ToUnit(),
             }.Merge()
-            .Select(_ => Observable.Defer(() =>
-                DataBaseViewModels.Select(vm => vm.ObserveHasErrors)
-                    .CombineLatestValuesAreAllFalse()
-                    .Inverse()))
-            .Switch();
+            .Select(_ => DataBaseViewModels.Any(vm => vm.ObserveHasErrors.Value));
 
             var addedAnnotator = AnnotatorViewModels.ObserveAddChanged();
             addedAnnotator.Subscribe(vm => AnnotatorViewModel.Value = vm).AddTo(Disposables);
@@ -182,13 +178,15 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 .Where(vm => !(vm is null))
                 .SelectMany(vm => dataBasesDoesnotHaveError
                     .Where(x => x)
+                    .Where(_ => DataBaseViewModel.Value == vm)
                     .Where(_ => AnnotatorViewModels.All(avm => avm.Model.DataBaseSettingModel != vm.Model))
                     .TakeUntil(removedDataBase.Where(x => x == vm))
                     .Take(1)
                     .SelectMany(_ => Observable.Interval(TimeSpan.FromMilliseconds(100)))
                     .Do(_ => this.model.AddAnnotator())
                     .Retry(5)
-                    .Take(1))
+                    .Take(1)
+                    .Catch((Exception ex) => Observable.Empty<long>()))
                 .Subscribe();
 
             RemoveAnnotatorCommand = annotatorIsNotNull

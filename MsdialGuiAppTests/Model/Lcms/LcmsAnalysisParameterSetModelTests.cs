@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.Model.Lcms.Tests
                 new AnalysisFileBean { },
                 new AnalysisFileBean { },
             };
-            var model = new LcmsAnalysisParameterSetModel(parameter, files);
+            var model = new LcmsAnalysisParameterSetModel(parameter, files, null);
 
             model.Parameter.MaxChargeNumber = 0;
             model.Parameter.QcAtLeastFilter = true;

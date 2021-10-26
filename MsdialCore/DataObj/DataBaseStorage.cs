@@ -17,11 +17,12 @@ namespace CompMs.MsdialCore.DataObj
     public class DataBaseStorage
     {
         // MessagePack use this constructor
+        [SerializationConstructor]
         public DataBaseStorage(
             List<DataBaseItem<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> metabolomicsDataBases,
             List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> proteomicsDataBases) {
-            MetabolomicsDataBases = metabolomicsDataBases ?? throw new System.ArgumentNullException(nameof(metabolomicsDataBases));
-            ProteomicsDataBases = proteomicsDataBases ?? throw new System.ArgumentNullException(nameof(proteomicsDataBases));
+            MetabolomicsDataBases = metabolomicsDataBases ?? new List<DataBaseItem<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>();
+            ProteomicsDataBases = proteomicsDataBases ?? new List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>();
         }
 
         [Key(nameof(MetabolomicsDataBases))]
@@ -165,6 +166,7 @@ namespace CompMs.MsdialCore.DataObj
     public interface IAnnotatorParameterPair<TQuery, TReference, TResult, TDataBase> where TDataBase : IReferenceDataBase
     {
         string AnnotatorID { get; }
+        MsRefSearchParameterBase SearchParameter { get; }
         ISerializableAnnotator<TQuery, TReference, TResult, TDataBase> SerializableAnnotator { get; }
         void Save(Stream stream);
         void Load(Stream stream, ILoadAnnotatorVisitor visitor, TDataBase database);

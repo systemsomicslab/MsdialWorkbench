@@ -26,14 +26,11 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         private readonly TargetOmics omics;
 
         public ImmsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey, int priority)
-            : base(mspDB.Database, parameter, sourceKey, SourceType.MspDB){
+            : base(mspDB.Database, parameter, sourceKey, priority, SourceType.MspDB) {
             this.db.Sort(comparer);
             this.omics = omics;
-            Priority = priority;
             this.ReferObject = mspDB;
         }
-
-        public int Priority { get; }
 
         public MsScanMatchResult Annotate(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;

@@ -94,7 +94,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .SetValidateAttribute(() => AnnotatorID)
                 .AddTo(Disposables);
             ParameterViewModel = new MsRefSearchParameterBaseViewModel(this.model.SearchParameter).AddTo(Disposables);
-            ProteomicsParameterVM = new ProteomicsParameterVM(this.model.ProteomicsParameter).AddTo(Disposables);
             ObserveHasErrors = new[]
             {
                 AnnotatorID.ObserveHasErrors,
@@ -111,10 +110,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 ParameterViewModel.MatchedPeaksPercentageCutOff.ObserveHasErrors,
                 ParameterViewModel.MinimumSpectrumMatch.ObserveHasErrors,
                 ParameterViewModel.TotalScoreCutoff.ObserveHasErrors,
-                ProteomicsParameterVM.AndromedaDelta.ObserveHasErrors,
-                ProteomicsParameterVM.AndromedaMaxPeaks.ObserveHasErrors,
-                ProteomicsParameterVM.FalseDiscoveryRateForPeptide.ObserveHasErrors,
-                ProteomicsParameterVM.FalseDiscoveryRateForProtein.ObserveHasErrors
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()

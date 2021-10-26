@@ -15,12 +15,29 @@ namespace CompMs.App.Msdial.Model.Lcms
 {
     public class LcmsIdentitySettingModel : BindableBase
     {
-        public LcmsIdentitySettingModel(ParameterBase parameter) {
+        public LcmsIdentitySettingModel(ParameterBase parameter, DataBaseStorage dataBaseStorage = null) {
             annotatorFactory = new LcmsAnnotatorSettingFactory();
             this.parameter = parameter;
+            this.dataBaseStorage = dataBaseStorage ?? DataBaseStorage.CreateEmpty();
+
+            foreach (var dataBase in this.dataBaseStorage.MetabolomicsDataBases) {
+                var dbModel = new DataBaseSettingModel(this.parameter, dataBase.DataBase);
+                DataBaseModels.Add(dbModel);
+                foreach (var pair in dataBase.Pairs) {
+                    AnnotatorModels.Add(annotatorFactory.Create(dbModel, pair.AnnotatorID, pair.SearchParameter));
+                }
+            }
+            foreach (var dataBase in this.dataBaseStorage.ProteomicsDataBases) {
+                var dbModel = new DataBaseSettingModel(this.parameter, dataBase.DataBase);
+                DataBaseModels.Add(dbModel);
+                foreach (var pair in dataBase.Pairs) {
+                    AnnotatorModels.Add(annotatorFactory.Create(dbModel, pair.AnnotatorID, pair.SearchParameter));
+                }
+            }
         }
 
         private readonly LcmsAnnotatorSettingFactory annotatorFactory;
+        private readonly DataBaseStorage dataBaseStorage;
         private readonly ParameterBase parameter;
         private int serialNumber = 1;
 
@@ -30,13 +47,25 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public DataBaseSettingModel DataBaseModel {
             get => dataBaseModel;
-            set => SetProperty(ref dataBaseModel, value);
+            set {
+                if (SetProperty(ref dataBaseModel, value)) {
+                    if (AnnotatorModel?.DataBaseSettingModel != value) {
+                        AnnotatorModel = AnnotatorModels.LastOrDefault(annotator => annotator.DataBaseSettingModel == value);
+                    }
+                }
+            }
         }
         private DataBaseSettingModel dataBaseModel;
 
         public ILcmsAnnotatorSettingModel AnnotatorModel {
             get => annotatorModel;
-            set => SetProperty(ref annotatorModel, value);
+            set {
+                if (SetProperty(ref annotatorModel, value)) {
+                    if (!(value is null) && DataBaseModel != value.DataBaseSettingModel) {
+                        DataBaseModel = value.DataBaseSettingModel;
+                    }
+                }
+            }
         }
         private ILcmsAnnotatorSettingModel annotatorModel;
 
@@ -52,11 +81,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             var db = DataBaseModel;
             if (!(db is null)) {
                 DataBaseModels.Remove(db);
-                DataBaseModel = DataBaseModels.LastOrDefault();
                 var removeAnnotators = AnnotatorModels.Where(annotator => annotator.DataBaseSettingModel == db).ToArray();
                 foreach (var annotator in removeAnnotators) {
                     AnnotatorModels.Remove(annotator);
                 }
+                DataBaseModel = DataBaseModels.LastOrDefault();
             }
         }
 
@@ -68,8 +97,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             //    return;
             //}
             Debug.WriteLine("5\t" + db.DataBasePath + "\t" + db.DBSource);
-            if (!(db is null) && db.DBSource != DataBaseSource.None) {
-                var annotatorModel = annotatorFactory.Create(db, serialNumber++);
+            if (!(db is null)) {
+                var annotatorModel = annotatorFactory.Create(db, $"{db.DataBaseID}_{serialNumber++}", null);
                 AnnotatorModels.Add(annotatorModel);
                 AnnotatorModel = annotatorModel;
             }
@@ -106,6 +135,13 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
         }
 
+        public DataBaseStorage Create() {
+            var result = DataBaseStorage.CreateEmpty();
+            SetAnnotatorContainer(result);
+            SetProteomicsAnnotatorContainer(result);
+            return result;
+        }
+
         public void SetAnnotatorContainer(DataBaseStorage storage) {
             foreach (var group in AnnotatorModels.OfType<ILcmsMetabolomicsAnnotatorSettingModel>().GroupBy(m => m.DataBaseSettingModel)) {
                 var dbModel = group.Key;
@@ -134,7 +170,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 foreach (var annotatorModel in group) {
                     var index = AnnotatorModels.IndexOf(annotatorModel);
                     var annotators = annotatorModel.CreateAnnotator(db, AnnotatorModels.Count - index, parameter.TargetOmics);
-                    results.AddRange(annotators.Select(annotator => new ProteomicsAnnotatorParameterPair(annotator, annotatorModel.SearchParameter, annotatorModel.ProteomicsParameter)));
+                    results.AddRange(annotators.Select(annotator => new ProteomicsAnnotatorParameterPair(annotator, annotatorModel.SearchParameter, db.ProteomicsParameter)));
                 }
                 storage.AddProteomicsDataBase(db, results);
             }

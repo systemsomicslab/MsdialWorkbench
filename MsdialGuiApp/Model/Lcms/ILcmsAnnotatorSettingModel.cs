@@ -6,7 +6,6 @@ using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parameter;
 using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.Lcms
@@ -26,7 +25,6 @@ namespace CompMs.App.Msdial.Model.Lcms
     public interface ILcmsProteomicsAnnotatorSettingModel : ILcmsAnnotatorSettingModel
     {
         MsRefSearchParameterBase SearchParameter { get; }
-        ProteomicsParameter ProteomicsParameter { get; }
 
         List<ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> CreateAnnotator(ShotgunProteomicsDB db, int priority, TargetOmics omics);
     }

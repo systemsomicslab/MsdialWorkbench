@@ -16,11 +16,13 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             IEnumerable<MoleculeMsReference> db,
             MsRefSearchParameterBase parameter,
             string key,
+            int priority,
             SourceType sourceType) {
 
             this.db = db.ToList();
             Parameter = parameter;
             Key = key;
+            Priority = priority;
             SourceType = sourceType;
         }
        
@@ -30,12 +32,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public string Key { get; }
 
+        public int Priority { get; }
+
         public SourceType SourceType { get; }
 
         public abstract MoleculeMsReference Refer(MsScanMatchResult result);
 
         public virtual IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Save() {
-            return new StandardRestorationKey(Key, Parameter, SourceType);
+            return new StandardRestorationKey(Key, Priority, Parameter, SourceType);
         }
     }
 
@@ -46,12 +50,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
            MsRefSearchParameterBase msrefSearchParameter,
            ProteomicsParameter proteomicsParameter,
            string key,
+           int priority,
            SourceType sourceType) {
             ProteomicsParameter = proteomicsParameter;
             ShotgunProteomicsDB = db;
             MsRefSearchParameter = msrefSearchParameter;
             SourceType = sourceType;
             Key = key;
+            Priority = priority;
         }
 
         protected readonly ShotgunProteomicsDB ShotgunProteomicsDB;
@@ -64,11 +70,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public ProteomicsParameter ProteomicsParameter { get; }
         public MsRefSearchParameterBase MsRefSearchParameter { get; }
         public string Key { get; }
+        public int Priority { get; }
         public SourceType SourceType { get; }
         public abstract PeptideMsReference Refer(MsScanMatchResult result);
 
         public virtual IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Save() {
-            return new ShotgunProteomicsRestorationKey(Key, MsRefSearchParameter, ProteomicsParameter, SourceType);
+            return new ShotgunProteomicsRestorationKey(Key, Priority, MsRefSearchParameter, ProteomicsParameter, SourceType);
         }
     }
 }

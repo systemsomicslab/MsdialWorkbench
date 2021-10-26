@@ -252,9 +252,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Save() {
             switch (source) {
                 case SourceType.MspDB:
-                    return new MspDbRestorationKey(sourceKey);
+                    return new MspDbRestorationKey(sourceKey, Priority);
                 case SourceType.TextDB:
-                    return new TextDbRestorationKey(sourceKey);
+                    return new TextDbRestorationKey(sourceKey, Priority);
             }
             throw new NotSupportedException(source.ToString());
         }

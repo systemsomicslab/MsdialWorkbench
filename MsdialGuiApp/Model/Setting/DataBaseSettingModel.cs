@@ -16,6 +16,25 @@ namespace CompMs.App.Msdial.Model.Setting
             this.parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
             LipidQueryContainer = parameter.LipidQueryContainer;
             LipidQueryContainer.IonMode = parameter.ProjectParam.IonMode;
+
+            ProteomicsParameter = parameter.ProteomicsParam ?? new ProteomicsParameter();
+            IsLoaded = false;
+        }
+
+        public DataBaseSettingModel(ParameterBase parameter, MoleculeDataBase metabolomicsDB) {
+            this.parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
+            this.metabolomicsDB = metabolomicsDB;
+            DataBaseID = metabolomicsDB.Id;
+            DBSource = metabolomicsDB.DataBaseSource;
+            IsLoaded = true;
+        }
+
+        public DataBaseSettingModel(ParameterBase parameter, ShotgunProteomicsDB proteomicsDB) {
+            this.parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
+            this.proteomicsDB = proteomicsDB;
+            DataBaseID = proteomicsDB.Id;
+            DBSource = proteomicsDB.DataBaseSource;
+            IsLoaded = true;
         }
 
         public string DataBasePath {
@@ -30,21 +49,36 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private string dataBaseID = string.Empty;
 
-
         public DataBaseSource DBSource {
             get => dBSource;
             set => SetProperty(ref dBSource, value);
         }
         private DataBaseSource dBSource = DataBaseSource.None;
 
-        public LipidQueryBean LipidQueryContainer {
-            get => lipidQueryContainer;
-            set => SetProperty(ref lipidQueryContainer, value);
+        public double MassRangeBegin {
+            get => massRangeBegin;
+            set => SetProperty(ref massRangeBegin, value);
         }
-        private LipidQueryBean lipidQueryContainer;
+        private double massRangeBegin;
+
+        public double MassRangeEnd {
+            get => massRangeEnd;
+            set => SetProperty(ref massRangeEnd, value);
+        }
+        private double massRangeEnd;
+
+        public LipidQueryBean LipidQueryContainer { get; }
+
+        public ProteomicsParameter ProteomicsParameter { get; }
 
         private readonly ParameterBase parameter;
         public TargetOmics TargetOmics => parameter.TargetOmics;
+
+        public bool IsLoaded { get; }
+
+        private readonly MoleculeDataBase metabolomicsDB = null;
+
+        private readonly ShotgunProteomicsDB proteomicsDB = null;
 
         public override string ToString() {
             return $"{DataBaseID}({DBSource})";
@@ -66,11 +100,11 @@ namespace CompMs.App.Msdial.Model.Setting
         public MoleculeDataBase CreateMoleculeDataBase() {
             switch (DBSource) {
                 case DataBaseSource.Msp:
-                    return LoadMspDataBase();
+                    return metabolomicsDB ?? LoadMspDataBase();
                 case DataBaseSource.Lbm:
-                    return LoadLipidDataBase();
+                    return metabolomicsDB ?? LoadLipidDataBase();
                 case DataBaseSource.Text:
-                    return LoadTextDataBase();
+                    return metabolomicsDB ?? LoadTextDataBase();
                 default:
                     return null;
             }
@@ -79,7 +113,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public ShotgunProteomicsDB CreatePorteomicsDB() {
             switch (DBSource) {
                 case DataBaseSource.Fasta:
-                    return new ShotgunProteomicsDB(DataBasePath, DataBaseID, parameter.ProteomicsParam, parameter.MspSearchParam);
+                    return proteomicsDB ?? new ShotgunProteomicsDB(DataBasePath, DataBaseID, ProteomicsParameter, MassRangeBegin, MassRangeEnd);
                 default:
                     return null;
             }

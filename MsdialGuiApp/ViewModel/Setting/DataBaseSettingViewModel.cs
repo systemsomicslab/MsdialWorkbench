@@ -18,7 +18,15 @@ using System.Text.RegularExpressions;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public class DataBaseSettingViewModel : ViewModelBase
+    public interface IDataBaseSettingViewModel
+    {
+        DataBaseSettingModel Model { get; }
+        IReadOnlyReactiveProperty<string> DataBaseID { get; }
+        IReadOnlyReactiveProperty<DataBaseSource> DBSource { get; }
+        IReadOnlyReactiveProperty<bool> ObserveHasErrors { get; }
+    }
+
+    public class DataBaseSettingViewModel : ViewModelBase, IDataBaseSettingViewModel
     {
         public DataBaseSettingViewModel(DataBaseSettingModel model) {
             Model = model;
@@ -46,10 +54,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                     else if (Regex.IsMatch(ext, @"\.lbm\d*")) {
                         return DataBaseSource.Lbm;
                     }
-                    else if (Regex.IsMatch(ext, @"\.txt\d*")) {
+                    else if (Regex.IsMatch(ext, @"\.txt")) {
                         return DataBaseSource.Text;
                     }
-                    else if (Regex.IsMatch(ext, @"\.fasta\d*")) {
+                    else if (Regex.IsMatch(ext, @"\.fa(sta)?")) {
                         return DataBaseSource.Fasta;
                     }
                     return DataBaseSource.None;
@@ -59,12 +67,43 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .AddTo(Disposables);
             DBSource.Where(_ => !DBSource.HasErrors).Subscribe(source => Model.DBSource = source).AddTo(Disposables);
 
-            ObserveHasErrors = new[]
+            ProteomicsParameterVM = new ProteomicsParameterVM(model.ProteomicsParameter);
+
+            MassRangeBegin = Model.ToReactivePropertyAsSynchronized(
+                m => m.MassRangeBegin,
+                m => m.ToString(),
+                mv => double.Parse(mv))
+                .SetValidateAttribute(() => MassRangeBegin)
+                .AddTo(Disposables);
+
+            MassRangeEnd = Model.ToReactivePropertyAsSynchronized(
+                m => m.MassRangeEnd,
+                m => m.ToString(),
+                mv => double.Parse(mv))
+                .SetValidateAttribute(() => MassRangeEnd)
+                .AddTo(Disposables);
+
+            var commonNoError = new[]
             {
                 DataBasePath.ObserveHasErrors,
                 DataBaseID.ObserveHasErrors,
                 DBSource.ObserveHasErrors,
+            }.CombineLatestValuesAreAllFalse();
+
+            var proteomicsNoError = new[]
+            {
+                MassRangeBegin.ObserveHasErrors,
+                MassRangeEnd.ObserveHasErrors,
+                ProteomicsParameterVM.ObserveHasErrors,
             }.CombineLatestValuesAreAllFalse()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
+
+            ObserveHasErrors = new[]
+            {
+                commonNoError,
+                DBSource.Select(src => src == DataBaseSource.Fasta ? proteomicsNoError : Observable.Return(true)).Switch(),
+            }.CombineLatestValuesAreAllTrue()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
@@ -73,7 +112,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .WithSubscribe(Browse)
                 .AddTo(Disposables);
 
-            IsLipidDataBase = Model.ObserveProperty(m => m.DBSource)
+            IsLipidDataBase = DBSource
                 .Select(src => src == DataBaseSource.Lbm)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -94,6 +133,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactiveProperty<DataBaseSource> DBSource { get; }
 
         public ReadOnlyCollection<DataBaseSource> DBSources { get; }
+
+        public ProteomicsParameterVM ProteomicsParameterVM { get; }
+
+        [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid format.")]
+        public ReactiveProperty<string> MassRangeBegin { get; }
+
+        [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid format.")]
+        public ReactiveProperty<string> MassRangeEnd { get; }
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
@@ -131,5 +178,45 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 window.ShowDialog();
             }
         }
+
+        // IDataBaseSettingViewModel interface
+        IReadOnlyReactiveProperty<string> IDataBaseSettingViewModel.DataBaseID => DataBaseID;
+        IReadOnlyReactiveProperty<DataBaseSource> IDataBaseSettingViewModel.DBSource => DBSource;
+        IReadOnlyReactiveProperty<bool> IDataBaseSettingViewModel.ObserveHasErrors => ObserveHasErrors;
+    }
+
+    public class LoadedDataBaseSettingViewModel : ViewModelBase, IDataBaseSettingViewModel
+    {
+        public LoadedDataBaseSettingViewModel(DataBaseSettingModel model) {
+            Model = model;
+            DataBaseID = Observable.Return(model.DataBaseID).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            DBSource = Observable.Return(model.DBSource).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            ObserveHasErrors = Observable.Return(false).ToReadOnlyReactivePropertySlim(false).AddTo(Disposables);
+        }
+
+        public DataBaseSettingModel Model { get; }
+
+        public ReadOnlyReactivePropertySlim<string> DataBaseID { get; }
+
+        public ReadOnlyReactivePropertySlim<DataBaseSource> DBSource { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
+
+        // IDataBaseSettingViewModel interface
+        IReadOnlyReactiveProperty<string> IDataBaseSettingViewModel.DataBaseID => DataBaseID;
+        IReadOnlyReactiveProperty<DataBaseSource> IDataBaseSettingViewModel.DBSource => DBSource;
+        IReadOnlyReactiveProperty<bool> IDataBaseSettingViewModel.ObserveHasErrors => ObserveHasErrors;
+    }
+
+    public class DataBaseSettingViewModelFactory
+    {
+        public IDataBaseSettingViewModel Create(DataBaseSettingModel model) {
+            if (model.IsLoaded) {
+                return new LoadedDataBaseSettingViewModel(model);
+            }
+            else {
+                return new DataBaseSettingViewModel(model);
+            }
+        }  
     }
 }

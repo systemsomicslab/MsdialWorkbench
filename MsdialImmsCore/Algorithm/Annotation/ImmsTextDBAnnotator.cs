@@ -21,13 +21,10 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         private static readonly IComparer<IMSIonProperty> comparer = CompositeComparer.Build<IMSIonProperty>(MassComparer.Comparer, CollisionCrossSectionComparer.Comparer);
 
         public ImmsTextDBAnnotator(MoleculeDataBase textDB, MsRefSearchParameterBase parameter, string sourceKey, int priority)
-            : base(textDB.Database, parameter, sourceKey, SourceType.TextDB) {
+            : base(textDB.Database, parameter, sourceKey, priority, SourceType.TextDB) {
             this.db.Sort(comparer);
             this.ReferObject = textDB;
-            Priority = priority;
         }
-
-        public int Priority { get; }
 
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
 
