@@ -14,8 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
@@ -56,8 +54,6 @@ namespace CompMs.MsdialCore.DataObj {
         public List<string> CleavageSites { get; set; }
         [Key(12)]
         public ProteomicsParameter ProteomicsParameter { get; set; }
-        [Key(13)]
-        public MsRefSearchParameterBase MsRefSearchParameter { get; set; }
         [Key(14)]
         public string PeptideMsFile { get; set; }
         [IgnoreMember]
@@ -69,6 +65,12 @@ namespace CompMs.MsdialCore.DataObj {
 
         [IgnoreMember]
         string IMatchResultRefer<PeptideMsReference, MsScanMatchResult>.Key => Id;
+
+        [Key(16)]
+        public double MassRangeBegin { get; set; } = 0;
+
+        [Key(17)]
+        public double MassRangeEnd { get; set; } = 2000;
 
         PeptideMsReference IMatchResultRefer<PeptideMsReference, MsScanMatchResult>.Refer(MsScanMatchResult result) {
             if (result.IsDecoy) {
@@ -93,11 +95,12 @@ namespace CompMs.MsdialCore.DataObj {
 
         }
 
-        public ShotgunProteomicsDB(string file, string id, ProteomicsParameter proteomicsParam, MsRefSearchParameterBase msrefSearchParam) {
+        public ShotgunProteomicsDB(string file, string id, ProteomicsParameter proteomicsParam, double massRangeBegin, double massRangeEnd) {
             FastaFile = file;
             Id = id;
             ProteomicsParameter = proteomicsParam;
-            MsRefSearchParameter = msrefSearchParam;
+            MassRangeBegin = massRangeBegin;
+            MassRangeEnd = massRangeEnd;
             DataBaseSource = DataBaseSource.Fasta;
 
             var dt = DateTime.Now;
@@ -135,8 +138,8 @@ namespace CompMs.MsdialCore.DataObj {
             var decoyPeptides = LibraryHandler.GenerateDecoyPeptideReference(peptides);
 
             Console.WriteLine("MS peptide queries");
-            PeptideMsRef = MsfPepFileParser.GeneratePeptideMsObjcts(PeptideMsFile, PeptidesBinaryFile, peptides, ModificationContainer.Code2ID, MsRefSearchParameter.MassRangeBegin, MsRefSearchParameter.MassRangeEnd, out Stream pFS);
-            DecoyPeptideMsRef = MsfPepFileParser.GeneratePeptideMsObjcts(DecoyMsFile, DecoyPeptidesBinaryFile, decoyPeptides, ModificationContainer.Code2ID, MsRefSearchParameter.MassRangeBegin, MsRefSearchParameter.MassRangeEnd, out Stream dFS);
+            PeptideMsRef = MsfPepFileParser.GeneratePeptideMsObjcts(PeptideMsFile, PeptidesBinaryFile, peptides, ModificationContainer.Code2ID, MassRangeBegin, MassRangeEnd, out Stream pFS);
+            DecoyPeptideMsRef = MsfPepFileParser.GeneratePeptideMsObjcts(DecoyMsFile, DecoyPeptidesBinaryFile, decoyPeptides, ModificationContainer.Code2ID, MassRangeBegin, MassRangeEnd, out Stream dFS);
 
             PeptideMsStream = pFS;
             DecoyMsStream = dFS;

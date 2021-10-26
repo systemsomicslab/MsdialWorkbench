@@ -10,8 +10,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel {
     public class ProteomicsParameterVM : ViewModelBase {
@@ -44,41 +42,53 @@ namespace CompMs.App.Msdial.ViewModel {
         public List<Modification> FixedModifications { get => model.FixedModifications; }
         public int MaxNumberOfModificationsPerPeptide { get => model.MaxNumberOfModificationsPerPeptide; }
 
+        public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
+
         public ProteomicsParameterVM(ProteomicsParameter model) {
             this.model = model;
           
             AndromedaDelta = new ReactiveProperty<string>(model.AndromedaDelta.ToString())
               .SetValidateAttribute(() => AndromedaDelta)
               .AddTo(Disposables);
-            AndromedaDelta.ObserveHasErrors.Where(e => !e)
-                .Select(_ => float.Parse(AndromedaDelta.Value))
+            AndromedaDelta.Where(_ => !AndromedaDelta.HasErrors)
+                .Select(x => float.Parse(x))
                 .Subscribe(x => this.model.AndromedaDelta = x)
                 .AddTo(Disposables);
 
             AndromedaMaxPeaks = new ReactiveProperty<string>(model.AndromedaMaxPeaks.ToString())
             .SetValidateAttribute(() => AndromedaMaxPeaks)
             .AddTo(Disposables);
-            AndromedaMaxPeaks.ObserveHasErrors.Where(e => !e)
-                .Select(_ => int.Parse(AndromedaMaxPeaks.Value))
+            AndromedaMaxPeaks.Where(_ => !AndromedaMaxPeaks.HasErrors)
+                .Select(x => int.Parse(x))
                 .Subscribe(x => this.model.AndromedaMaxPeaks = x)
                 .AddTo(Disposables);
 
             FalseDiscoveryRateForPeptide = new ReactiveProperty<string>(model.FalseDiscoveryRateForPeptide.ToString())
              .SetValidateAttribute(() => FalseDiscoveryRateForPeptide)
              .AddTo(Disposables);
-            FalseDiscoveryRateForPeptide.ObserveHasErrors.Where(e => !e)
-                .Select(_ => float.Parse(FalseDiscoveryRateForPeptide.Value))
+            FalseDiscoveryRateForPeptide.Where(e => !FalseDiscoveryRateForPeptide.HasErrors)
+                .Select(x => float.Parse(x))
                 .Subscribe(x => this.model.FalseDiscoveryRateForPeptide = x)
                 .AddTo(Disposables);
 
             FalseDiscoveryRateForProtein = new ReactiveProperty<string>(model.FalseDiscoveryRateForProtein.ToString())
              .SetValidateAttribute(() => FalseDiscoveryRateForProtein)
              .AddTo(Disposables);
-            FalseDiscoveryRateForProtein.ObserveHasErrors.Where(e => !e)
-                .Select(_ => float.Parse(FalseDiscoveryRateForProtein.Value))
+            FalseDiscoveryRateForProtein.Where(e => !FalseDiscoveryRateForProtein.HasErrors)
+                .Select(x => float.Parse(x))
                 .Subscribe(x => this.model.FalseDiscoveryRateForProtein = x)
                 .AddTo(Disposables);
 
+            ObserveHasErrors = new[]
+            {
+                AndromedaDelta.ObserveHasErrors,
+                AndromedaMaxPeaks.ObserveHasErrors,
+                FalseDiscoveryRateForPeptide.ObserveHasErrors,
+                FalseDiscoveryRateForProtein.ObserveHasErrors,
+            }.CombineLatestValuesAreAllFalse()
+            .Inverse()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
         }
 
         public DelegateCommand EnzymeSetCommand => enzymeSetCommand ?? (enzymeSetCommand = new DelegateCommand(EnzymeSet));
@@ -94,6 +104,7 @@ namespace CompMs.App.Msdial.ViewModel {
         }
 
         public DelegateCommand ModificationSetCommand => modificationSetCommand ?? (modificationSetCommand = new DelegateCommand(ModificationSet));
+
         private DelegateCommand modificationSetCommand;
 
         private void ModificationSet() {
@@ -104,8 +115,5 @@ namespace CompMs.App.Msdial.ViewModel {
                 window.ShowDialog();
             }
         }
-
-
-
     }
 }

@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -23,14 +24,14 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             if (horizontalAxis is null) {
                 horizontalAxis = this.model.HorizontalRangeSource
-                    .ToReactiveAxisManager<double>(new ChartMargin(0.05))
+                    .ToReactiveAxisManager<double>(new RelativeMargin(0.05))
                     .AddTo(Disposables);
             }
             HorizontalAxis = horizontalAxis;
 
             if (verticalAxis is null) {
                 verticalAxis = this.model.VerticalRangeSource
-                    .ToReactiveAxisManager<double>(new ChartMargin(0, 0.05), new Range(0d, 0d))
+                    .ToReactiveAxisManager<double>(new ConstantMargin(0, 40), new Range(0d, 0d), LabelType.Order)
                     .AddTo(Disposables);
             }
             VerticalAxis = verticalAxis;

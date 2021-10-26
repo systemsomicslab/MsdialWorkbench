@@ -15,7 +15,7 @@ namespace CompMs.MsdialCore.Parser.Tests
     {
         [TestMethod()]
         public void MspDbRestorationKeyTest() {
-            IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> key = new MspDbRestorationKey("MspKey");
+            IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> key = new MspDbRestorationKey("MspKey", -1);
             IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> expected = key;
             IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> actual;
 
@@ -29,7 +29,7 @@ namespace CompMs.MsdialCore.Parser.Tests
 
         [TestMethod()]
         public void AcceptTest() {
-            var key = new MspDbRestorationKey("MspKey");
+            var key = new MspDbRestorationKey("MspKey", -1);
             var visitor = new MockLoadAnnotator(key);
             key.Accept(visitor, null);
             Assert.IsTrue(visitor.Called);

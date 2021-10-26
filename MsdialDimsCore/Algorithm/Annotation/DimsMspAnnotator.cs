@@ -1,5 +1,4 @@
-﻿using CompMs.Common.Algorithm.Scoring;
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -21,17 +20,14 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
         private readonly TargetOmics omics;
 
         public DimsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey, int priority)
-            : base(mspDB.Database, parameter, sourceKey, SourceType.MspDB) {
+            : base(mspDB.Database, parameter, sourceKey, priority, SourceType.MspDB) {
             this.omics = omics;
-            Priority = priority;
             ReferObject = mspDB;
             searcher = new MassReferenceSearcher<MoleculeMsReference>(mspDB.Database);
         }
 
         private readonly MassReferenceSearcher<MoleculeMsReference> searcher;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
-
-        public int Priority { get; }
 
         public MsScanMatchResult Annotate(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;

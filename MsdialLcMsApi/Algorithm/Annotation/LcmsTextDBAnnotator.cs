@@ -21,13 +21,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
         private static readonly IComparer<IMSProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
 
         public LcmsTextDBAnnotator(MoleculeDataBase textDB, MsRefSearchParameterBase parameter, string annotatorID, int priority)
-            : base(textDB.Database, parameter, annotatorID, SourceType.TextDB) {
+            : base(textDB.Database, parameter, annotatorID, priority, SourceType.TextDB) {
             this.db.Sort(comparer);
             this.ReferObject = textDB;
-            Priority = priority;
         }
-
-        public int Priority { get; }
 
         public MsScanMatchResult Annotate(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;

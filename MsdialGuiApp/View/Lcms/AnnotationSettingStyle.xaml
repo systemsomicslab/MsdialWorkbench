@@ -25,56 +25,6 @@
         </StackPanel>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type vm:ProteomicsParameterVM}"
-                  x:Key="ProteomicsParameterSetting">
-        <StackPanel>
-            <ui:LabeledContent PrependLabel="Andromeda delta:"
-                               AppendLabel="Da">
-                <TextBox Text="{Binding AndromedaDelta.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Andromeda max peaks:"
-                               AppendLabel="Num of peaks">
-                <TextBox Text="{Binding AndromedaMaxPeaks.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="False discovery rate for peptide:"
-                               AppendLabel="%">
-                <TextBox Text="{Binding FalseDiscoveryRateForPeptide.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="False discovery rate for protein:"
-                               AppendLabel="%">
-                <TextBox Text="{Binding FalseDiscoveryRateForProtein.Value}"/>
-            </ui:LabeledContent>
-
-            <Grid Margin="8,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Enzyme setting:" VerticalAlignment="Center" Grid.Column="0"/>
-                <Button Content="Browse"
-                                Command="{Binding EnzymeSetCommand, Mode=OneTime}"
-                                Width="64" Height="24" Grid.Column="1"/>
-                <TextBlock Text="{Binding SelectedEnzymes, Mode=OneWay}" VerticalAlignment="Center" Grid.Column="2"/>
-                
-            </Grid>
-
-            <Grid Margin="8,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Modification setting:" VerticalAlignment="Center" Grid.Column="0"/>
-                <Button Content="Browse"
-                                Command="{Binding ModificationSetCommand, Mode=OneTime}"
-                                Width="64" Height="24" Grid.Column="1"/>
-                <TextBlock Text="{Binding SelectedModifications, Mode=OneWay}" VerticalAlignment="Center" Grid.Column="2"/>
-
-            </Grid>
-        </StackPanel>
-    </DataTemplate>
-
     <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
                   x:Key="ToleranceSettingForLcms">
         <StackPanel>
@@ -220,13 +170,6 @@
                       Grid.Row="4">
                 <ContentControl Content="{Binding ParameterViewModel}"
                                 ContentTemplate="{StaticResource RetentionTimeSetting}"
-                                Margin="8"/>
-            </Expander>
-
-            <Expander Header="Shotgun proteomics parameter setting" Margin="0,8"
-                      Grid.Row="5">
-                <ContentControl Content="{Binding ProteomicsParameterVM}"
-                                ContentTemplate="{StaticResource ProteomicsParameterSetting}"
                                 Margin="8"/>
             </Expander>
         </Grid>

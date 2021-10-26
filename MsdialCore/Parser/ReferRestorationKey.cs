@@ -25,18 +25,24 @@ namespace CompMs.MsdialCore.Parser
         ISerializableAnnotator<T, U, V, W> Accept(ILoadAnnotatorVisitor visitor, W database);
 
         string Key { get; }
+
+        int Priority { get; }
     }
 
    
     [MessagePack.MessagePackObject]
     public abstract class DataBaseRestorationKey : IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
     {
-        public DataBaseRestorationKey(string key) {
+        public DataBaseRestorationKey(string key, int priority) {
             Key = key;
+            Priority = priority;
         }
 
         [MessagePack.Key(nameof(Key))]
-        public string Key { get; set; }
+        public string Key { get; }
+
+        [MessagePack.Key(nameof(Priority))]
+        public int Priority { get; }
 
         public abstract ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database);
     }
@@ -44,7 +50,7 @@ namespace CompMs.MsdialCore.Parser
     [MessagePack.MessagePackObject]
     public class MspDbRestorationKey : DataBaseRestorationKey
     {
-        public MspDbRestorationKey(string key) : base(key) {
+        public MspDbRestorationKey(string key, int priority) : base(key, priority) {
 
         }
 
@@ -56,7 +62,7 @@ namespace CompMs.MsdialCore.Parser
     [MessagePack.MessagePackObject]
     public class TextDbRestorationKey : DataBaseRestorationKey
     {
-        public TextDbRestorationKey(string key) : base(key) {
+        public TextDbRestorationKey(string key, int priority) : base(key, priority) {
 
         }
 
@@ -68,7 +74,7 @@ namespace CompMs.MsdialCore.Parser
     [MessagePack.MessagePackObject]
     public class StandardRestorationKey : DataBaseRestorationKey
     {
-        public StandardRestorationKey(string key, MsRefSearchParameterBase parameter, SourceType sourceType) : base(key) {
+        public StandardRestorationKey(string key, int priority, MsRefSearchParameterBase parameter, SourceType sourceType) : base(key, priority) {
             Parameter = parameter;
             SourceType = sourceType;
         }
@@ -86,19 +92,23 @@ namespace CompMs.MsdialCore.Parser
 
     [MessagePack.MessagePackObject]
     public abstract class FastaDbRestorationKey : IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> {
-        public FastaDbRestorationKey(string key) {
+        public FastaDbRestorationKey(string key, int priority) {
             Key = key;
+            Priority = priority;
         }
 
         [MessagePack.Key(nameof(Key))]
-        public string Key { get; set; }
+        public string Key { get; }
+
+        [MessagePack.Key(nameof(Priority))]
+        public int Priority { get; }
 
         public abstract ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Accept(ILoadAnnotatorVisitor visitor, ShotgunProteomicsDB database);
     }
 
     [MessagePack.MessagePackObject]
     public class ShotgunProteomicsRestorationKey : FastaDbRestorationKey {
-        public ShotgunProteomicsRestorationKey(string key, MsRefSearchParameterBase msrefSearchParameter, ProteomicsParameter proteomicsParameter, SourceType sourceType) : base(key) {
+        public ShotgunProteomicsRestorationKey(string key, int priority, MsRefSearchParameterBase msrefSearchParameter, ProteomicsParameter proteomicsParameter, SourceType sourceType) : base(key, priority) {
             MsRefSearchParameter = msrefSearchParameter;
             ProteomicsParameter = proteomicsParameter;
             SourceType = sourceType;

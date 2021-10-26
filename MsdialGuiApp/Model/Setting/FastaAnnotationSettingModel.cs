@@ -81,7 +81,7 @@ namespace CompMs.App.Msdial.Model.Setting {
 
         protected static ShotgunProteomicsDB LoadShotgunProteomicsDB(string path, string id, 
             ProteomicsParameter proteomicsParam, MsRefSearchParameterBase msrefSearchParam) {
-            return new ShotgunProteomicsDB(path, id, proteomicsParam, msrefSearchParam);
+            return new ShotgunProteomicsDB(path, id, proteomicsParam, msrefSearchParam.MassRangeBegin, msrefSearchParam.MassRangeEnd);
         }
     }
 }

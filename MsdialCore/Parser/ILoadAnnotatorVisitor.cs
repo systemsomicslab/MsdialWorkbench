@@ -1,10 +1,8 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Interfaces;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using System;
 
 namespace CompMs.MsdialCore.Parser
 {

@@ -11,25 +11,34 @@ using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    public class LcmsIdentitySettingViewModel : ViewModelBase
+    public class LcmsIdentifySettingViewModel : ViewModelBase
     {
-        private readonly LcmsIdentitySettingModel model;
+        private readonly LcmsIdentifySettingModel model;
+        private readonly DataBaseSettingViewModelFactory dataBaseFactory;
         private readonly LcmsAnnotatorSettingViewModelFactory annotatorFactory;
 
         private static readonly string DataBaseIDDuplicateErrorMessage = "DataBase name is duplicated.";
         private static readonly string AnnotatorIDDuplicateErrorMessage = "Annotation method name is duplicated.";
 
-        public LcmsIdentitySettingViewModel(LcmsIdentitySettingModel model) {
+        public LcmsIdentifySettingViewModel(LcmsIdentifySettingModel model) {
             this.model = model;
+            dataBaseFactory = new DataBaseSettingViewModelFactory();
             annotatorFactory = new LcmsAnnotatorSettingViewModelFactory();
 
-            DataBaseViewModels = this.model.DataBaseModels.ToReadOnlyReactiveCollection(m => new DataBaseSettingViewModel(m)).AddTo(Disposables);
-            AnnotatorViewModels = this.model.AnnotatorModels.ToReadOnlyReactiveCollection(m => annotatorFactory.Create(m)).AddTo(Disposables);
-            DataBaseViewModel = new ReactivePropertySlim<DataBaseSettingViewModel>(null).AddTo(Disposables);
-            DataBaseViewModel.Where(vm => !(vm is null)).Subscribe(vm => this.model.DataBaseModel = vm.Model).AddTo(Disposables);
-            AnnotatorViewModel = new ReactivePropertySlim<ILcmsAnnotatorSettingViewModel>(null).AddTo(Disposables);
-            AnnotatorViewModel.Where(vm => !(vm is null)).Subscribe(vm => this.model.AnnotatorModel = vm.Model).AddTo(Disposables);
-            SelectedViewModel = new IObservable<object>[]{
+            DataBaseViewModels = this.model.DataBaseModels.ToReadOnlyReactiveCollection(dataBaseFactory.Create).AddTo(Disposables);
+            AnnotatorViewModels = this.model.AnnotatorModels.ToReadOnlyReactiveCollection(annotatorFactory.Create).AddTo(Disposables);
+            DataBaseViewModel = this.model.ToReactivePropertySlimAsSynchronized(
+                m => m.DataBaseModel,
+                dbm => DataBaseViewModels.FirstOrDefault(vm => vm.Model == dbm),
+                dbvm => dbvm?.Model)
+                .AddTo(Disposables);
+            AnnotatorViewModel = this.model.ToReactivePropertySlimAsSynchronized(
+                m => m.AnnotatorModel,
+                am => AnnotatorViewModels.FirstOrDefault(vm => vm.Model == am),
+                avm => avm?.Model)
+                .AddTo(Disposables);
+            SelectedViewModel = new IObservable<object>[]
+            {
                 DataBaseViewModel,
                 AnnotatorViewModel,
             }.Merge()
@@ -44,8 +53,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .AddTo(Disposables);
             IsAnnotatorExpanded = new[]
             {
-                AnnotatorViewModel.Select(_ => true),
                 DataBaseViewModel.Select(_ => false),
+                AnnotatorViewModel.Select(_ => true),
             }.Merge()
             .ToReactiveProperty()
             .AddTo(Disposables);
@@ -74,11 +83,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 removedDataBase.ToUnit(),
                 DataBaseViewModels.ObserveElementObservableProperty(vm => vm.ObserveHasErrors).ToUnit(),
             }.Merge()
-            .Select(_ => Observable.Defer(() =>
-                DataBaseViewModels.Select(vm => vm.ObserveHasErrors)
-                    .CombineLatestValuesAreAllFalse()
-                    .Inverse()))
-            .Switch();
+            .Select(_ => DataBaseViewModels.Any(vm => vm.ObserveHasErrors.Value));
 
             var addedAnnotator = AnnotatorViewModels.ObserveAddChanged();
             addedAnnotator.Subscribe(vm => AnnotatorViewModel.Value = vm).AddTo(Disposables);
@@ -112,20 +117,31 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     .Inverse()))
             .Switch();
 
-            ObserveHasErrors = new[]
+            var dataBasesDoesnotHaveError = new[]
             {
-                dataBaseIDDuplicate,
-                dataBaseHasError,
+                dataBaseIDDuplicate.Do(_ => Console.WriteLine("dataBaseIDDuplicate fire!")),
+                dataBaseHasError.Do(_ => Console.WriteLine("dataBaseHasError fire!")),
+                this.ErrorsChangedAsObservable().Select(_ => ContainsError(nameof(DataBaseViewModels))).StartWith(false).Do(_ => Console.WriteLine("ErrorChanged fire!")),
+            }.CombineLatestValuesAreAllFalse().Do(_ => Console.WriteLine("dataBasesDoesnotHaveError fire!"));
+            var annotatorsDoesnotHaveError = new[]
+            {
                 annotatorIDDuplicate,
                 annotatorHasError,
-            }.CombineLatestValuesAreAllFalse()
+                this.ErrorsChangedAsObservable().Select(_ => ContainsError(nameof(AnnotatorViewModels))).StartWith(false),
+            }.CombineLatestValuesAreAllFalse();
+
+            ObserveHasErrors = new[]
+            {
+                dataBasesDoesnotHaveError,
+                annotatorsDoesnotHaveError,
+            }.CombineLatestValuesAreAllTrue()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
             var dbIsNotNull = DataBaseViewModel.Select(m => !(m is null));
             var annotatorIsNotNull = AnnotatorViewModel.Select(m => !(m is null));
-            AddDataBaseCommand = new ReactiveCommand()
+            AddDataBaseCommand = dataBasesDoesnotHaveError.ToReactiveCommand()
                 .WithSubscribe(this.model.AddDataBase)
                 .AddTo(Disposables);
             RemoveDataBaseCommand = dbIsNotNull
@@ -133,32 +149,31 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .WithSubscribe(this.model.RemoveDataBase)
                 .AddTo(Disposables);
             
-            
             AddAnnotatorCommand = new[]{
-                dbIsNotNull.Inverse(),
-                DataBaseViewModel.Where(vm => !(vm is null)).Select(vm => vm.ObserveHasErrors).Switch()
-            }.CombineLatestValuesAreAllFalse()
+                dbIsNotNull,
+                DataBaseViewModel.Where(vm => !(vm is null)).Select(vm => vm.ObserveHasErrors).Switch().Inverse(),
+                dataBasesDoesnotHaveError,
+                annotatorsDoesnotHaveError,
+            }.CombineLatestValuesAreAllTrue()
                 .ToReactiveCommand()
                 .WithSubscribe(this.model.AddAnnotator)
                 .AddTo(Disposables);
 
-            var noAnnotator = DataBaseViewModel.Select(m => !(m is null) && AnnotatorViewModels.All(vm => vm.Model.DataBaseSettingModel != m.Model)); // All => And And And...
-            var noDBErrors = DataBaseViewModel.Where(vm => !(vm is null)).Select(vm => vm.ObserveHasErrors.Inverse()).Switch(); //inverse() => IObserbable<bool> 's inverse (e.g. false -> true), http://reactivex.io/documentation/operators/switch.html
-            new[]
-            {
-                noAnnotator,
-                noDBErrors,
-            }.CombineLatestValuesAreAllTrue() // e.g. if both true of noAnnotator & noDBerros, provide true otherwise false.
-            .Where(x => x) // only true passed
-            .Delay(TimeSpan.FromSeconds(1))
-            .Subscribe(_ => {
-                try {
-                    this.model.AddAnnotator();
-                }
-                catch (NotSupportedException ex) {
-                }
-            }
-            ); // execute this.model.AddAnnotator()
+            DataBaseViewModels.ToObservable()
+                .Concat(addedDataBase)
+                .Where(vm => !(vm is null))
+                .SelectMany(vm => dataBasesDoesnotHaveError
+                    .Where(x => x)
+                    .Where(_ => DataBaseViewModel.Value == vm)
+                    .Where(_ => AnnotatorViewModels.All(avm => avm.Model.DataBaseSettingModel != vm.Model))
+                    .TakeUntil(removedDataBase.Where(x => x == vm))
+                    .Take(1)
+                    .SelectMany(_ => Observable.Interval(TimeSpan.FromMilliseconds(100)))
+                    .Do(_ => this.model.AddAnnotator())
+                    .Retry(5)
+                    .Take(1)
+                    .Catch((Exception ex) => Observable.Empty<long>()))
+                .Subscribe();
 
             RemoveAnnotatorCommand = annotatorIsNotNull
                 .ToReactiveCommand()
@@ -169,6 +184,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             MoveUpAnnotatorCommand = new[]
             {
                 annotatorIsNotNull,
+                annotatorsDoesnotHaveError,
                 moveDownTrigger.Merge(AnnotatorViewModel.ToUnit())
                     .Select(_ => AnnotatorViewModels.FirstOrDefault() != AnnotatorViewModel.Value),
             }.CombineLatestValuesAreAllTrue()
@@ -179,6 +195,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             MoveDownAnnotatorCommand = new[]
             {
                 annotatorIsNotNull,
+                annotatorsDoesnotHaveError,
                 moveUpTrigger.Merge(AnnotatorViewModel.ToUnit())
                     .Select(_ => AnnotatorViewModels.LastOrDefault() != AnnotatorViewModel.Value),
             }.CombineLatestValuesAreAllTrue()
@@ -199,11 +216,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .AddTo(Disposables);
         }
 
-        public ReadOnlyReactiveCollection<DataBaseSettingViewModel> DataBaseViewModels { get; }
+        public ReadOnlyReactiveCollection<IDataBaseSettingViewModel> DataBaseViewModels { get; }
 
         public ReadOnlyReactiveCollection<ILcmsAnnotatorSettingViewModel> AnnotatorViewModels { get; }
 
-        public ReactivePropertySlim<DataBaseSettingViewModel> DataBaseViewModel { get; }
+        public ReactivePropertySlim<IDataBaseSettingViewModel> DataBaseViewModel { get; }
 
         public ReactivePropertySlim<ILcmsAnnotatorSettingViewModel> AnnotatorViewModel { get; }
 

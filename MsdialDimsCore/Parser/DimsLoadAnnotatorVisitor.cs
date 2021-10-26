@@ -20,20 +20,20 @@ namespace CompMs.MsdialDimsCore.Parser
 
         public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(StandardRestorationKey key, MoleculeDataBase database) {
             if (key.SourceType.HasFlag(SourceType.MspDB)) {
-                return new DimsMspAnnotator(database, key.Parameter, Parameter.TargetOmics, key.Key, -1);
+                return new DimsMspAnnotator(database, key.Parameter, Parameter.TargetOmics, key.Key, key.Priority);
             }
             if (key.SourceType.HasFlag(SourceType.TextDB)) {
-                return new DimsTextDBAnnotator(database, key.Parameter, key.Key, -1);
+                return new DimsTextDBAnnotator(database, key.Parameter, key.Key, key.Priority);
             }
             throw new NotSupportedException(key.SourceType.ToString());
         }
 
         public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(MspDbRestorationKey key, MoleculeDataBase database) {
-            return new DimsMspAnnotator(database, Parameter.MspSearchParam, Parameter.TargetOmics, key.Key, -1);
+            return new DimsMspAnnotator(database, Parameter.MspSearchParam, Parameter.TargetOmics, key.Key, key.Priority);
         }
 
         public ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Visit(TextDbRestorationKey key, MoleculeDataBase database) {
-            return new DimsTextDBAnnotator(database, Parameter.TextDbSearchParam, key.Key, -1);
+            return new DimsTextDBAnnotator(database, Parameter.TextDbSearchParam, key.Key, key.Priority);
         }
 
         public ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Visit(ShotgunProteomicsRestorationKey key, ShotgunProteomicsDB database) {

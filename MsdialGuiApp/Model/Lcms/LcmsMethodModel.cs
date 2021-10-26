@@ -102,7 +102,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public bool ProcessSetAnalysisParameter(Window owner) {
             var parameter = Storage.MsdialLcmsParameter;
-            var analysisParamSetModel = new LcmsAnalysisParameterSetModel(parameter, AnalysisFiles);
+            var analysisParamSetModel = new LcmsAnalysisParameterSetModel(parameter, AnalysisFiles, Storage.DataBases);
             using (var analysisParamSetVM = new LcmsAnalysisParameterSetViewModel(analysisParamSetModel)) {
                 var apsw = new AnalysisParamSetForLcWindow
                 {
@@ -115,8 +115,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 }
             }
 
-            analysisParamSetModel.IdentitySettingModel.SetAnnotatorContainer(Storage.DataBases);
-            analysisParamSetModel.IdentitySettingModel.SetProteomicsAnnotatorContainer(Storage.DataBases);
+            Storage.DataBases = analysisParamSetModel.IdentitySettingModel.Create();
+            // analysisParamSetModel.IdentitySettingModel.SetAnnotatorContainer(Storage.DataBases);
+            // analysisParamSetModel.IdentitySettingModel.SetProteomicsAnnotatorContainer(Storage.DataBases);
 
             if (parameter.TogetherWithAlignment) {
                 var filename = analysisParamSetModel.AlignmentResultFileName;
