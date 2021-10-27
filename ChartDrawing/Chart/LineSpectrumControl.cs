@@ -47,6 +47,8 @@ namespace CompMs.Graphics.Chart
             nameof(FocusedPoint), typeof(Point), typeof(LineSpectrumControl),
             new PropertyMetadata(default)
             );
+
+        
         #endregion
 
         #region Property

@@ -47,6 +47,9 @@ namespace CompMs.MsdialCore.Parameter {
         public Dictionary<string, int> ClassnameToOrder { get => ProjectParam.ClassnameToOrder; set => ProjectParam.ClassnameToOrder = value; }
         [IgnoreMember]
         public Dictionary<string, List<byte>> ClassnameToColorBytes { get => ProjectParam.ClassnameToColorBytes; set => ProjectParam.ClassnameToColorBytes = value; }
+        [IgnoreMember]
+        public Dictionary<string, List<byte>> SpectrumCommentToColorBytes { get => ProjectParam.SpectrumCommentToColorBytes; set => ProjectParam.SpectrumCommentToColorBytes = value; }
+
 
         // Project type
         [IgnoreMember]
@@ -729,7 +732,28 @@ namespace CompMs.MsdialCore.Parameter {
         public Dictionary<string, int> ClassnameToOrder { get; set; } = new Dictionary<string, int>();
         [Key(9)]
         public Dictionary<string, List<byte>> ClassnameToColorBytes { get; set; } = new Dictionary<string, List<byte>>();
+        [Key(23)]
+        public Dictionary<string, List<byte>> SpectrumCommentToColorBytes { get; set; } = new Dictionary<string, List<byte>>();
 
+        public ProjectBaseParameter() {
+            SpectrumCommentToColorBytes = new Dictionary<string, List<byte>>() {
+                { SpectrumComment.none.ToString(), new List<byte>(){ 0, 0, 0, 255 } }, //black
+                { SpectrumComment.experiment.ToString(), new List<byte>(){ 0, 90, 160, 255 } }, // blue
+                { SpectrumComment.reference.ToString(), new List<byte>(){ 230, 0, 18, 255 } }, // red
+                { SpectrumComment.precursor.ToString(), new List<byte>(){ 0, 153, 68, 255 } }, // green
+                { SpectrumComment.b.ToString(), new List<byte>(){ 230, 0, 18, 255 } },  // red
+                { SpectrumComment.y.ToString(), new List<byte>(){ 0, 138, 131, 255 } }, // lime
+                { SpectrumComment.b2.ToString(), new List<byte>(){ 230, 0, 18, 255 } }, // red
+                { SpectrumComment.y2.ToString(), new List<byte>(){ 0, 138, 131, 255 } },// lime
+                { SpectrumComment.b_h2o.ToString(), new List<byte>(){ 230, 0, 18, 255 } }, // red
+                { SpectrumComment.y_h2o.ToString(), new List<byte>(){ 0, 138, 131, 255 } },// lime
+                { SpectrumComment.b_nh3.ToString(), new List<byte>(){ 230, 0, 18, 255 } }, // red
+                { SpectrumComment.y_nh3.ToString(), new List<byte>(){ 0, 138, 131, 255 } },// lime
+                { SpectrumComment.b_h3po4.ToString(), new List<byte>(){ 230, 0, 18, 255 } }, // red
+                { SpectrumComment.y_h3po4.ToString(), new List<byte>(){ 0, 138, 131, 255 } },// lime
+                { SpectrumComment.tyrosinep.ToString(), new List<byte>(){ 214, 0, 119, 255 } } // pink
+            };
+        } 
         // Project type
         [Key(10)]
         public AcquisitionType AcquisitionType { get; set; } = AcquisitionType.DDA;

@@ -132,7 +132,7 @@ namespace CompMs.App.Msdial.Model.Imms
             Target.Subscribe(t => OnTargetChanged(t));
         }
 
-        private readonly MsdialImmsParameter parameter;
+        public MsdialImmsParameter parameter { get; }
         private readonly IDataProvider provider;
 
         public AnalysisPeakPlotModel PlotModel { get; }
