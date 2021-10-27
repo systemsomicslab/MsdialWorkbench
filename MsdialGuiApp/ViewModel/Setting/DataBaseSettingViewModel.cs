@@ -28,7 +28,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
     public class DataBaseSettingViewModel : ViewModelBase, IDataBaseSettingViewModel
     {
-        public DataBaseSettingViewModel(DataBaseSettingModel model) {
+        public DataBaseSettingViewModel(
+            DataBaseSettingModel model,
+            IObservable<DataBaseSettingModel> notEditableModel,
+            IObservable<DataBaseSettingModel> isEditableModel) {
             Model = model;
 
             DataBasePath = Model.ToReactivePropertyAsSynchronized(m => m.DataBasePath)
@@ -120,6 +123,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReactiveCommand()
                 .WithSubscribe(LipidDBSet)
                 .AddTo(Disposables);
+
+            IsEditable = isEditableModel.Where(m => m == Model).Select(_ => true)
+                .Merge(notEditableModel.Where(m => m == Model).Select(_ => false))
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
         }
 
         public DataBaseSettingModel Model { get; }
@@ -141,6 +149,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid format.")]
         public ReactiveProperty<string> MassRangeEnd { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> IsEditable { get; }
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
@@ -210,12 +220,20 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
     public class DataBaseSettingViewModelFactory
     {
+        private readonly IObservable<DataBaseSettingModel> notEditableModel;
+        private readonly IObservable<DataBaseSettingModel> isEditableModel;
+
+        public DataBaseSettingViewModelFactory(IObservable<DataBaseSettingModel> isEditableModel, IObservable<DataBaseSettingModel> notEditableModel) {
+            this.isEditableModel = isEditableModel;
+            this.notEditableModel = notEditableModel;
+        }
+
         public IDataBaseSettingViewModel Create(DataBaseSettingModel model) {
             if (model.IsLoaded) {
                 return new LoadedDataBaseSettingViewModel(model);
             }
             else {
-                return new DataBaseSettingViewModel(model);
+                return new DataBaseSettingViewModel(model, notEditableModel, isEditableModel);
             }
         }  
     }

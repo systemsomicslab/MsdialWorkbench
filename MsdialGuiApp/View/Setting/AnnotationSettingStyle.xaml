@@ -141,7 +141,7 @@
                          HorizontalContentAlignment="Left"/>
             </ui:LabeledContent>
             <ui:LabeledContent PrependLabel="Database type">
-                <ComboBox ItemsSource="{Binding DBSources, Mode=OneTime}" SelectedItem="{Binding DBSource.Value}"/>
+                <ComboBox ItemsSource="{Binding DBSources, Mode=OneTime}" SelectedItem="{Binding DBSource.Value}" IsEnabled="{Binding IsEditable.Value}"/>
             </ui:LabeledContent>
             <ui:LabeledContent PrependLabel="Lipid database:">
                 <ui:LabeledContent.Style>

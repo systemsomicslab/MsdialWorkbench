@@ -78,7 +78,6 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Model\Dims\DimsIdentifySettingModelTests.cs" />
     <Compile Include="Model\Imms\ImmsAnalysisParameterSetModelTests.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisParameterSetModelTests.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisParameterSetModelTests.cs" />
@@ -124,6 +123,9 @@
       <Project>{a45c80bc-85bb-4953-aa7d-941633964f08}</Project>
       <Name>MsdialLcMsApi</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Model\Dims\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

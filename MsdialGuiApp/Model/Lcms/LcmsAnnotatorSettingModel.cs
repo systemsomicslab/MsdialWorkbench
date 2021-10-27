@@ -104,7 +104,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
     }
 
-    public sealed class LcmsAnnotatorSettingFactory
+    public sealed class LcmsAnnotatorSettingFactory : IAnnotatorSettingModelFactory
     {
         public IAnnotatorSettingModel Create(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter = null) {
             switch (dataBaseSettingModel.DBSource) {

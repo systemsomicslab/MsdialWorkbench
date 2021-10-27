@@ -120,7 +120,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ProteomicsParameterVM ProteomicsParameterVM { get; }
     }
 
-    public class LcmsAnnotatorSettingViewModelFactory
+    public class LcmsAnnotatorSettingViewModelFactory : IAnnotatorSettingViewModelFactory
     {
         public IAnnotatorSettingViewModel Create(IAnnotatorSettingModel model) {
             switch (model) {

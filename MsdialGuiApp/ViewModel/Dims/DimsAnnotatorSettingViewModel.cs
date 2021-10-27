@@ -73,7 +73,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
     }
 
-    public sealed class DimsAnnotatorSettingViewModelFactory
+    public sealed class DimsAnnotatorSettingViewModelFactory : IAnnotatorSettingViewModelFactory
     {
         public IAnnotatorSettingViewModel Create(IAnnotatorSettingModel model) {
             switch (model) {

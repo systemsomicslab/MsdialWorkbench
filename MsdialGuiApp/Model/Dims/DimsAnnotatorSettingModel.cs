@@ -67,7 +67,7 @@ namespace CompMs.App.Msdial.Model.Dims
         }
     }
 
-    public sealed class DimsAnnotatorSettingModelFactory
+    public sealed class DimsAnnotatorSettingModelFactory : IAnnotatorSettingModelFactory
     {
         public IAnnotatorSettingModel Create(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter = null) {
             switch (dataBaseSettingModel.DBSource) {

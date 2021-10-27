@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var lbmFiles = Directory.GetFiles(mainDirectory, $"*.{SaveFileFormat.lbm}?", SearchOption.TopDirectoryOnly);
                 if (lbmFiles.Length > 0) {
-                    IdentifySettingModel.AddDataBase();
+                    IdentifySettingModel.AddDataBaseZZZ();
                     var databaseModel = IdentifySettingModel.DataBaseModels.Last();
                     databaseModel.DataBasePath = lbmFiles.First();
                 }

@@ -26,7 +26,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
                 if (lbmFiles.Length > 0) {
-                    IdentitySettingModel.AddDataBase();
+                    IdentitySettingModel.AddDataBaseZZZ();
                     var databaseModel = IdentitySettingModel.DataBaseModels.Last();
                     databaseModel.DataBasePath = lbmFiles.First();
                 }

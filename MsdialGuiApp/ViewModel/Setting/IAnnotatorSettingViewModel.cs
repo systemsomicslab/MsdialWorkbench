@@ -11,4 +11,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
     }
 
+    public interface IAnnotatorSettingViewModelFactory
+    {
+        IAnnotatorSettingViewModel Create(IAnnotatorSettingModel model);
+    }
 }
