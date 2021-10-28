@@ -1277,7 +1277,7 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.SISPHex:
                 case LbmClass.STSPHex:
                     return LipidMsmsCharacterization.JudgeIfSteroidWithPa(molecule.LipidName, molecule.LipidClass,
-                        msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1Carbon, sn1Carbon, adduct);
+                        msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
 
                 default:

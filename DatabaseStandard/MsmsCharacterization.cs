@@ -13114,6 +13114,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                             }
                         }
                     }
+                    if (candidates == null || candidates.Count == 0) return null;
+
                     return returnAnnotationResult(PaHex[lipidclass.ToString()], lipidclass, "", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
