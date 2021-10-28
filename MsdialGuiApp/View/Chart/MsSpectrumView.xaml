@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
              mc:Ignorable="d" 
-             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
              d:DesignHeight="600" d:DesignWidth="370" >
@@ -26,12 +25,11 @@
                           Background="WhiteSmoke" BorderBrush="Black">
             <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis}">
                 <chart:LineSpectrumControl x:Name="MS2Line"
-                                              ItemsSource="{Binding UpperSpectrum.Value}"
-                                              HorizontalPropertyName="{Binding HorizontalProperty.Value}"
-                                              VerticalPropertyName="{Binding VerticalProperty}">
-                    <chart:LineSpectrumControl.LinePen>
-                        <Pen Thickness="2" Brush="Blue" PresentationOptions:Freeze="True" />
-                    </chart:LineSpectrumControl.LinePen>
+                                           ItemsSource="{Binding UpperSpectrum.Value}"
+                                           HorizontalPropertyName="{Binding HorizontalProperty.Value}"
+                                           VerticalPropertyName="{Binding VerticalProperty}"
+                                           BrushMapper="{Binding UpperSpectrumBrushSource.Value}"
+                                           HueProperty="SpectrumComment">
                     <chart:LineSpectrumControl.ToolTip>
                         <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel Orientation="Horizontal">
@@ -57,12 +55,11 @@
             <Grid core:ChartBaseControl.VerticalAxis="{Binding LowerVerticalAxis}"
                   core:ChartBaseControl.FlippedY="False">
                 <chart:LineSpectrumControl x:Name="MS2Ref"
-                                              ItemsSource="{Binding LowerSpectrum.Value}"
-                                              HorizontalPropertyName="{Binding HorizontalProperty.Value}"
-                                              VerticalPropertyName="{Binding VerticalProperty.Value}">
-                    <chart:LineSpectrumControl.LinePen>
-                        <Pen Thickness="2" Brush="Red" PresentationOptions:Freeze="true"/>
-                    </chart:LineSpectrumControl.LinePen>
+                                           ItemsSource="{Binding LowerSpectrum.Value}"
+                                           HorizontalPropertyName="{Binding HorizontalProperty.Value}"
+                                           VerticalPropertyName="{Binding VerticalProperty.Value}"
+                                           BrushMapper="{Binding LowerSpectrumBrushSource.Value}"
+                                           HueProperty="SpectrumComment">
                     <chart:LineSpectrumControl.ToolTip>
                         <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel Orientation="Horizontal">

@@ -83,12 +83,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 .ToReactiveAxisManager<double>(new ChartMargin(0.05))
                 .AddTo(Disposables);
 
-            PlotViewModel = new AnalysisPeakPlotViewModel(model.PlotModel, brushSource: Observable.Return(model.Brush), horizontalAxis: hAxis, verticalAxis: vAxis).AddTo(Disposables);
-            EicViewModel = new EicViewModel(model.EicModel, horizontalAxis: hAxis).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(this.model.PlotModel, brushSource: Observable.Return(this.model.Brush), horizontalAxis: hAxis, verticalAxis: vAxis).AddTo(Disposables);
+            EicViewModel = new EicViewModel(this.model.EicModel, horizontalAxis: hAxis).AddTo(Disposables);
 
 
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-                model.parameter.ProjectParam.SpectrumCommentToColorBytes
+                this.model.parameter.ProjectParam.SpectrumCommentToColorBytes
                 .ToDictionary(
                     kvp => kvp.Key,
                     kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
@@ -97,7 +97,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 Colors.Blue);
 
             var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-               model.parameter.ProjectParam.SpectrumCommentToColorBytes
+               this.model.parameter.ProjectParam.SpectrumCommentToColorBytes
                .ToDictionary(
                    kvp => kvp.Key,
                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
@@ -105,13 +105,13 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                item => item.ToString(),
                Colors.Red);
 
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(Model.Ms2SpectrumModel,
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel,
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
                 lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
-            SurveyScanViewModel = new SurveyScanViewModel(model.SurveyScanModel, horizontalAxis: vAxis).AddTo(Disposables);
+            SurveyScanViewModel = new SurveyScanViewModel(this.model.SurveyScanModel, horizontalAxis: vAxis).AddTo(Disposables);
             PeakTableViewModel = new ImmsAnalysisPeakTableViewModel(
                 this.model.PeakTableModel,
-                Observable.Return(model.EicLoader),
+                Observable.Return(this.model.EicLoader),
                 MassLower,
                 MassUpper,
                 DriftLower,
