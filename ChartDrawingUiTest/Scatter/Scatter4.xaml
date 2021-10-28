@@ -95,21 +95,17 @@
             </chart:ScatterControl>
         </Border>
         <chart:HorizontalColorAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
-                                         LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
                                          LabelBrushes="{StaticResource AxisBrushes1}"
                                          Margin="2,0,5,0"
                                          Grid.Row="1" Grid.Column="2" />
         <chart:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
-                                    LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
                                     Margin="2,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
         <chart:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
-                                  LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                   Margin="5,5,0,2"
                                   FlippedY="False"
                                   Grid.Row="0" Grid.Column="0" />
         <chart:VerticalColorAxisControl VerticalAxis="{StaticResource VerticalAxis}"
-                                       LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                        LabelBrushes="{StaticResource AxisBrushes2}"
                                        Margin="0,5,0,2"
                                        FlippedY="False"

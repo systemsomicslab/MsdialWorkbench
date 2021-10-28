@@ -59,11 +59,9 @@
             </chart:DendrogramControl>
         </Border>
         <chart:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
-                                    LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
                                     Margin="2,0,0,0"
                                     Grid.Column="1" Grid.Row="1" />
         <chart:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
-                                  LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                   Margin="0,0,0,2"
                                   Grid.Column="0" Grid.Row="0" />
         <StackPanel Orientation="Horizontal"

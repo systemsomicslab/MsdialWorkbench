@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -14,12 +13,6 @@ namespace CompMs.Graphics.Chart
     public class HorizontalAxisControl : ChartBaseControl
     {
         #region DependencyProperty
-        [Obsolete]
-        public static readonly DependencyProperty LabelTicksProperty = DependencyProperty.Register(
-            nameof(LabelTicks), typeof(List<LabelTickData>), typeof(HorizontalAxisControl),
-            new PropertyMetadata(null)
-            );
-
         public static readonly DependencyProperty TickPenProperty = DependencyProperty.Register(
             nameof(TickPen), typeof(Pen), typeof(HorizontalAxisControl),
             new PropertyMetadata(new Pen(Brushes.Black, 1), ChartUpdate)
@@ -52,12 +45,6 @@ namespace CompMs.Graphics.Chart
         #endregion
 
         #region Property
-        [Obsolete]
-        public List<LabelTickData> LabelTicks {
-            get => (List<LabelTickData>)GetValue(LabelTicksProperty);
-            set => SetValue(LabelTicksProperty, value);
-        }
-
         public Pen TickPen {
             get => (Pen)GetValue(TickPenProperty);
             set => SetValue(TickPenProperty, value);

@@ -12,12 +12,6 @@ namespace CompMs.Graphics.Chart
     public class HorizontalColorAxisControl : ChartBaseControl
     {
         #region DependencyProperty
-        [Obsolete]
-        public static readonly DependencyProperty LabelTicksProperty = DependencyProperty.Register(
-            nameof(LabelTicks), typeof(List<LabelTickData>), typeof(HorizontalColorAxisControl),
-            new PropertyMetadata(null)
-            );
-
         public static readonly DependencyProperty LabelBrushesProperty = DependencyProperty.Register(
             nameof(LabelBrushes), typeof(IList<Brush>), typeof(HorizontalColorAxisControl),
             new PropertyMetadata(null)
@@ -40,12 +34,6 @@ namespace CompMs.Graphics.Chart
         #endregion
 
         #region Property
-        [Obsolete]
-        public List<LabelTickData> LabelTicks {
-            get => (List<LabelTickData>)GetValue(LabelTicksProperty);
-            set => SetValue(LabelTicksProperty, value);
-        }
-
         public IList<Brush> LabelBrushes {
             get => (IList<Brush>)GetValue(LabelBrushesProperty);
             set => SetValue(LabelBrushesProperty, value);

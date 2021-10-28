@@ -59,10 +59,8 @@
                 </chart:BarControl.ToolTip>
             </chart:BarControl>
             <chart:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
-                                      LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                       Grid.Row="1" Grid.Column="0" />
             <chart:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalContinuousAxis}"
-                                        LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalContinuousAxis}}"
                                         Grid.Row="2" Grid.Column="1" />
             <GridSplitter HorizontalAlignment="Right"
                           VerticalAlignment="Stretch"
@@ -107,10 +105,8 @@
                 </chart:BarControl.ToolTip>
             </chart:BarControl>
             <chart:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
-                                      LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                       Grid.Row="1" Grid.Column="0" />
             <chart:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalCategoryAxis}"
-                                        LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalCategoryAxis}}"
                                         Grid.Row="2" Grid.Column="1" />
             <GridSplitter HorizontalAlignment="Right"
                           VerticalAlignment="Stretch"
