@@ -40,6 +40,14 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Parameter.RetentionTimeEnd = 30;
                 Parameter.MassRangeBegin = 400;
                 Parameter.MassRangeEnd = 900;
+
+                Parameter.MspSearchParam.SimpleDotProductCutOff = 0.0F;
+                Parameter.MspSearchParam.WeightedDotProductCutOff = 0.0F;
+                Parameter.MspSearchParam.ReverseDotProductCutOff = 0.0F;
+                Parameter.MspSearchParam.MatchedPeaksPercentageCutOff = 0.0F;
+                Parameter.MspSearchParam.MinimumSpectrumMatch = 0.0F;
+                Parameter.MspSearchParam.TotalScoreCutoff = 0.0F;
+                Parameter.MspSearchParam.AndromedaScoreCutOff = 0.0F;
             }
         }
 

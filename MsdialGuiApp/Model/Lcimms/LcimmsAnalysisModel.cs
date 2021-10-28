@@ -127,7 +127,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Target.Subscribe(OnTargetChanged);
         }
 
-        private readonly ParameterBase parameter;
+        public ParameterBase parameter { get; }
 
         public double RtMin => Ms1Peaks.Min(peak => peak.InnerModel?.ChromXs.RT.Value) ?? 0;
         public double RtMax => Ms1Peaks.Max(peak => peak.InnerModel?.ChromXs.RT.Value) ?? 0;

@@ -162,6 +162,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             var result = CompareBasicMSScanProperties(scanProp, refSpec, param, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
             var matchedPeaks = GetMachedSpectralPeaks(scanProp, refSpec, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
 
+            result.Name = refSpec.Peptide.ModifiedSequence;
             result.AndromedaScore = (float)GetAndromedaScore(matchedPeaks, andromedaDelta, andromedaMaxPeaks);
             result.MatchedPeaksCount = matchedPeaks.Count(n => n.IsMatched);
             result.MatchedPeaksPercentage = (float)(result.MatchedPeaksCount / matchedPeaks.Count());
@@ -274,7 +275,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             var ms1Similarity = GetGaussianSimilarity(scanProp.PrecursorMz, refSpec.PrecursorMz, ms1Tol, out isMs1Match);
 
             var result = new MsScanMatchResult() {
-                LibraryID = refSpec.ScanID,
+                LibraryID = refSpec.ScanID, 
                 WeightedDotProduct = (float)weightedDotProduct,
                 SimpleDotProduct = (float)simpleDotProduct, ReverseDotProduct = (float)reverseDotProduct,
                 AcurateMassSimilarity = (float)ms1Similarity,

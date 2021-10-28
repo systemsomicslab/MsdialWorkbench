@@ -29,7 +29,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AlignmentFileBean alignmentFileBean,
             ParameterBase parameter,
             DataBaseMapper mapper) {
-
+            Parameter = parameter;
             AlignmentFile = alignmentFileBean;
             DataBaseMapper = mapper;
             ResultFile = alignmentFileBean.FilePath;
@@ -130,7 +130,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
-
+        public ParameterBase Parameter { get; }
         public AlignmentFileBean AlignmentFile { get; }
         public DataBaseMapper DataBaseMapper { get; }
         public string ResultFile { get; }

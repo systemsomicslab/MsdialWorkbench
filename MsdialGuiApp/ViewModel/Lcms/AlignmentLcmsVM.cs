@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
@@ -108,7 +109,28 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
 
             PlotViewModel = new AlignmentPeakPlotViewModel(this.model.PlotModel, SelectedBrush).AddTo(Disposables);
-            Ms2SpectrumViewModel = new MsSpectrumViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
+
+            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
+               model.Parameter.ProjectParam.SpectrumCommentToColorBytes
+               .ToDictionary(
+                   kvp => kvp.Key,
+                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+               ),
+               item => item.ToString(),
+               Colors.Blue);
+
+            var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
+               model.Parameter.ProjectParam.SpectrumCommentToColorBytes
+               .ToDictionary(
+                   kvp => kvp.Key,
+                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+               ),
+               item => item.ToString(),
+               Colors.Red);
+
+            Ms2SpectrumViewModel = new MsSpectrumViewModel(this.model.Ms2SpectrumModel,
+                upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
+                lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
             BarChartViewModel = new BarChartViewModel(this.model.BarChartModel, brushSource: Observable.Return(classBrush)).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(this.model.AlignmentEicModel).AddTo(Disposables);
             AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(

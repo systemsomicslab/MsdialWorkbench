@@ -1,12 +1,18 @@
-﻿using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Chart;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Design;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Reactive.Linq;
+using System.Windows.Media;
+using System.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
@@ -16,7 +22,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             MsSpectrumModel model,
             IAxisManager<double> horizontalAxis = null,
             IAxisManager<double> upperVerticalAxis = null,
-            IAxisManager<double> lowerVerticalAxis = null) {
+            IAxisManager<double> lowerVerticalAxis = null,
+            IObservable<IBrushMapper<SpectrumComment>> upperSpectrumBrushSource = null,
+            IObservable<IBrushMapper<SpectrumComment>> lowerSpectrumBrushSource = null) {
 
             this.model = model ?? throw new ArgumentNullException(nameof(model));
 
@@ -76,6 +84,28 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             OrderingProperty = this.model.ObserveProperty(m => m.OrderingProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+           
+            if (upperSpectrumBrushSource is null) {
+                upperSpectrumBrushSource = LowerSpectrum.Select(
+                    items => new KeyBrushMapper<SpectrumComment>(
+                        items.Zip(ChartBrushes.SolidColorBrushList, (item, brush) => (item, brush))
+                            .ToDictionary(p => p.item.SpectrumComment, p => (Brush)p.brush),
+                        Brushes.Blue
+                    ));
+            }
+            UpperSpectrumBrushSource = upperSpectrumBrushSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            if (lowerSpectrumBrushSource is null) {
+                lowerSpectrumBrushSource = LowerSpectrum.Select(
+                    items => new KeyBrushMapper<SpectrumComment>(
+                        items.Zip(ChartBrushes.SolidColorBrushList, (item, brush) => (item, brush))
+                            .ToDictionary(p => p.item.SpectrumComment, p => (Brush)p.brush),
+                        Brushes.Red
+                    ));
+            }
+            LowerSpectrumBrushSource = lowerSpectrumBrushSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            
         }
 
         private readonly MsSpectrumModel model;
@@ -103,5 +133,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<string> LabelProperty { get; }
 
         public ReadOnlyReactivePropertySlim<string> OrderingProperty { get; }
+
+        public ReadOnlyReactivePropertySlim<IBrushMapper<SpectrumComment>> UpperSpectrumBrushSource { get; }
+        public ReadOnlyReactivePropertySlim<IBrushMapper<SpectrumComment>> LowerSpectrumBrushSource { get; }
     }
 }

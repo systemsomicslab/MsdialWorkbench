@@ -3,10 +3,12 @@ using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.Common.Components;
 using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Design;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.Win32;
 using Reactive.Bindings;
@@ -15,6 +17,7 @@ using System;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
@@ -74,7 +77,28 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             PlotViewModel = new AnalysisPeakPlotViewModel(Model.PlotModel, brushSource: Observable.Return(Model.Brush), horizontalAxis: hAxis, verticalAxis: vAxis).AddTo(Disposables);
             EicViewModel = new EicViewModel(Model.EicModel, horizontalAxis: hAxis).AddTo(Disposables);
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(Model.Ms2SpectrumModel).AddTo(Disposables);
+            
+            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
+                model.Parameter.ProjectParam.SpectrumCommentToColorBytes
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+                ),
+                item => item.ToString(),
+                Colors.Blue);
+
+            var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
+               model.Parameter.ProjectParam.SpectrumCommentToColorBytes
+               .ToDictionary(
+                   kvp => kvp.Key,
+                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+               ),
+               item => item.ToString(),
+               Colors.Red);
+
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(Model.Ms2SpectrumModel, 
+                upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
+                lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
             PeakTableViewModel = new DimsAnalysisPeakTableViewModel(
                 Model.PeakTableModel,
                 Observable.Return(Model.EicLoader),

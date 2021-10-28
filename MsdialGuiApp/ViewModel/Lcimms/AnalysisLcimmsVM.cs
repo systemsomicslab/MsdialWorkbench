@@ -3,15 +3,18 @@ using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Design;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
@@ -106,7 +109,28 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             EicViewModel = new EicViewModel(
                 this.model.EicModel,
                 horizontalAxis: hAxis).AddTo(Disposables);
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
+
+            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
+                this.model.parameter.ProjectParam.SpectrumCommentToColorBytes
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+                ),
+                item => item.ToString(),
+                Colors.Blue);
+
+            var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
+               this.model.parameter.ProjectParam.SpectrumCommentToColorBytes
+               .ToDictionary(
+                   kvp => kvp.Key,
+                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+               ),
+               item => item.ToString(),
+               Colors.Red);
+
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel,
+                upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
+                lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
             SurveyScanViewModel = new SurveyScanViewModel(
                 this.model.SurveyScanModel,
                 horizontalAxis: vAxis).AddTo(Disposables);
