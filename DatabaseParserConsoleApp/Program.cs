@@ -145,10 +145,10 @@ namespace DatabaseParserConsoleApp {
 
         private static void runLipidChalacterization() {
 
-            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20210525_LCMS_QualityCheck\annotation_check\";
-            var testFilename = @"\pos_CerP36_2.msp";
+            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20211026_sterolPHex\";
+            var testFilename = @"\27_1_LPA_181_pos.msp";
             var querypath = testFolder + testFilename;
-            var reffile = testFolder + @"\CerP_H_Pos.msp.txt";
+            var reffile = testFolder + @"\library.txt";
 
             var query = LipidAnnotation.ReadTestSpectrum(querypath);
             var refMolecules = LipidLibraryParser.ReadLibrary(reffile);
@@ -160,7 +160,7 @@ namespace DatabaseParserConsoleApp {
         }
 
         private static void runLipidMassGenerator() {
-            var path = @"D:\takahashi\desktop\Tsugawa-san_work\20210115_HexCerChk\";
+            var path = @"D:\takahashi\desktop\Tsugawa-san_work\20211026_sterolPHex\";
             //LipidMassLibraryGenerator.Run(path, LbmClass.PC, AdductIonParcer.GetAdductIonBean("[M+CH3COO]-"), 4, 88, 0, 24, 0);
             //LipidMassLibraryGenerator.Run(path, LbmClass.PC, AdductIonParcer.GetAdductIonBean("[M+HCOO]-"), 4, 88, 0, 24, 0);
             //LipidMassLibraryGenerator.Run(path, LbmClass.PE, AdductIonParcer.GetAdductIonBean("[M-H]-"), 4, 88, 0, 24, 0);
@@ -419,6 +419,27 @@ namespace DatabaseParserConsoleApp {
             //LipidMassLibraryGenerator.Run(path, LbmClass.CASE, AdductIonParcer.GetAdductIonBean("[M+NH4]+"), 2, 44, 0, 12, 0);
             //LipidMassLibraryGenerator.Run(path, LbmClass.SISE, AdductIonParcer.GetAdductIonBean("[M+NH4]+"), 2, 44, 0, 12, 0);
             //LipidMassLibraryGenerator.Run(path, LbmClass.STSE, AdductIonParcer.GetAdductIonBean("[M+NH4]+"), 2, 44, 0, 12, 0);
+
+            //LipidMassLibraryGenerator.Run(path, LbmClass.CSLPHex, AdductIonParcer.GetAdductIonBean("[M+NH4]+"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.CSLPHex, AdductIonParcer.GetAdductIonBean("[M-H]-"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.BRSLPHex, AdductIonParcer.GetAdductIonBean("[M+NH4]+"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.BRSLPHex, AdductIonParcer.GetAdductIonBean("[M-H]-"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.CASLPHex, AdductIonParcer.GetAdductIonBean("[M+NH4]+"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.CASLPHex, AdductIonParcer.GetAdductIonBean("[M-H]-"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.SISLPHex, AdductIonParcer.GetAdductIonBean("[M+NH4]+"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.SISLPHex, AdductIonParcer.GetAdductIonBean("[M-H]-"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.STSLPHex, AdductIonParcer.GetAdductIonBean("[M+NH4]+"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.STSLPHex, AdductIonParcer.GetAdductIonBean("[M-H]-"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.CSPHex, AdductIonParcer.GetAdductIonBean("[M+NH4]+"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.CSPHex, AdductIonParcer.GetAdductIonBean("[M-H]-"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.BRSPHex, AdductIonParcer.GetAdductIonBean("[M+NH4]+"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.BRSPHex, AdductIonParcer.GetAdductIonBean("[M-H]-"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.CASPHex, AdductIonParcer.GetAdductIonBean("[M+NH4]+"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.CASPHex, AdductIonParcer.GetAdductIonBean("[M-H]-"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.SISPHex, AdductIonParcer.GetAdductIonBean("[M+NH4]+"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.SISPHex, AdductIonParcer.GetAdductIonBean("[M-H]-"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.STSPHex, AdductIonParcer.GetAdductIonBean("[M+NH4]+"), 2, 44, 0, 12, 0);
+            //LipidMassLibraryGenerator.Run(path, LbmClass.STSPHex, AdductIonParcer.GetAdductIonBean("[M-H]-"), 2, 44, 0, 12, 0);
 
 
             var output = path + "\\Library.txt";

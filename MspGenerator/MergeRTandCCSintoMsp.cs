@@ -132,6 +132,69 @@ namespace CompMs.MspGenerator
 
         }
 
+
+        public static void generateInchikeyAndSmilesAndChainsListFromMsp(string mspFilePath)
+        {
+            var outputFilePath = Path.GetDirectoryName(mspFilePath) + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_InChIKey-SMILES-Chains.txt";
+            var mspDB = MspFileParser.MspFileReader(mspFilePath);
+            var inchikeySmilesAndChains = new Dictionary<string, List<int>>();
+
+            foreach (var query in mspDB)
+            {
+                var chainString = query.Name.Replace(";", "_").Replace("/", "_").Replace(" ", "_").Replace("(", "_").Replace(")", "").Replace(":", "_");
+                var chainStringArray = chainString.Split('_');
+                var chainList = new List<int>();
+                foreach (var item in chainStringArray)
+                {
+                    int result = 0;
+                    if (int.TryParse(item, out result))
+                    {
+                        chainList.Add(result);
+                    }
+                }
+                var inchikeySmiles = query.InChIKey + "\t" + query.SMILES;
+
+                if (inchikeySmilesAndChains.ContainsKey(inchikeySmiles))
+                {
+                    var itemValueNum = inchikeySmilesAndChains[inchikeySmiles].Count;
+                    if (itemValueNum < chainList.Count)
+                    {
+                        inchikeySmilesAndChains.Remove(inchikeySmiles);
+                        inchikeySmilesAndChains[inchikeySmiles] = chainList;
+                    }
+                }
+                else
+                {
+                    inchikeySmilesAndChains[inchikeySmiles] = chainList;
+                }
+            }
+            using (var sw = new StreamWriter(outputFilePath, false, Encoding.ASCII))
+            {
+                sw.WriteLine("InChIKey\tSMILES\tChain1C\tChain1DB\tChain2C\tChain2DB\tChain3C\tChain3DB\tChain4C\tChain4DB");
+                foreach (var quary in inchikeySmilesAndChains)
+                {
+                    var chain = "\t0\t0\t0\t0\t0\t0\t0\t0";
+                    if (quary.Value.Count > 0)
+                    {
+                        chain = "";
+                        for (int i = 0; i < 8; i++)
+                        {
+                            var item = 0;
+                            if (quary.Value.Count > i)
+                            {
+                                item = quary.Value[i];
+                            }
+                            chain = chain + "\t" + item;
+                        }
+
+                    }
+                    sw.WriteLine(quary.Key + chain);
+                }
+            }
+
+        }
+
+
         public static void mergeRTandCCSintoMsp(string mspFilePath, string calculatedFilePath, string outputFolderPath)
         {
             var outputFileName = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_converted.lbm2";
@@ -223,7 +286,7 @@ namespace CompMs.MspGenerator
                     {
                         continue;
                     }
-                    else if (query.ChromXs.RT.Value==-1)
+                    else if (query.ChromXs.RT.Value == -1)
                     {
                         query.ChromXs = new ChromXs(inchikeyToPredictedRt[query.InChIKey], ChromXType.RT, ChromXUnit.Min);
                     }
@@ -298,9 +361,9 @@ namespace CompMs.MspGenerator
                         {
                             continue;
                         }
-                        else if(query.RetentionTime == -1)
+                        else if (query.RetentionTime == -1)
                         {
-                        query.RetentionTime = inchikeyToPredictedRt[query.InchiKey];
+                            query.RetentionTime = inchikeyToPredictedRt[query.InchiKey];
                         }
                     }
                     else

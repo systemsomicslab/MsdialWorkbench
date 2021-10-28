@@ -766,6 +766,26 @@ namespace Riken.Metabolomics.Lipidomics
                             spectrum, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
                         break;
 
+                    case LbmClass.CSLPHex:
+                    case LbmClass.BRSLPHex:
+                    case LbmClass.CASLPHex:
+                    case LbmClass.SISLPHex:
+                    case LbmClass.STSLPHex:
+                        result = LipidMsmsCharacterization.JudgeIfSteroidWithLpa(molecule.LipidName, molecule.LipidClass,
+                            spectrum, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
+                        break;
+
+
+                    case LbmClass.CSPHex:
+                    case LbmClass.BRSPHex:
+                    case LbmClass.CASPHex:
+                    case LbmClass.SISPHex:
+                    case LbmClass.STSPHex:
+                        result = LipidMsmsCharacterization.JudgeIfSteroidWithPa(molecule.LipidName, molecule.LipidClass,
+                            spectrum, ms2tol, refMz, totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
+
+
                 }
 
                 if (result != null)
@@ -775,11 +795,11 @@ namespace Riken.Metabolomics.Lipidomics
 
                 if (result != null && result.AnnotationLevel == 2)
                 {
-                    // Console.WriteLine("candidate {0}, suggested {1}, score {2}", molecule.LipidName, result.LipidName, result.Score);
+                    Console.WriteLine("candidate {0}, suggested {1}, score {2}", molecule.LipidName, result.LipidName, result.Score);
                 }
                 else
                 {
-                    // Console.WriteLine("candidate {0}, suggested {1}, score {2}", molecule.LipidName, "NA", "-1");
+                    Console.WriteLine("candidate {0}, suggested {1}, score {2}", molecule.LipidName, "NA", "-1");
                 }
             }
 

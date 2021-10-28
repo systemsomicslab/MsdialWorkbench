@@ -1284,6 +1284,22 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return LipidMsmsCharacterization.JudgeIfnoChainSterol(molecule.LipidName, molecule.LipidClass, 
                         msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
 
+                case LbmClass.CSLPHex:
+                case LbmClass.BRSLPHex:
+                case LbmClass.CASLPHex:
+                case LbmClass.SISLPHex:
+                case LbmClass.STSLPHex:
+                    return LipidMsmsCharacterization.JudgeIfSteroidWithLpa(molecule.LipidName, molecule.LipidClass,
+                        msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
+
+                case LbmClass.CSPHex:
+                case LbmClass.BRSPHex:
+                case LbmClass.CASPHex:
+                case LbmClass.SISPHex:
+                case LbmClass.STSPHex:
+                    return LipidMsmsCharacterization.JudgeIfSteroidWithPa(molecule.LipidName, molecule.LipidClass,
+                        msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
 
                 default:
                     return null;
