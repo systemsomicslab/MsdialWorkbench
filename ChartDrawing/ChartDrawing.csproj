@@ -65,6 +65,7 @@
     <Compile Include="AxisManager\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\Generic\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\Generic\BaseAxisManager.cs" />
+    <Compile Include="Design\PenSelector.cs" />
     <Compile Include="Design\ConstantBrushMapper.cs" />
     <Compile Include="Design\DelegateBrushMapper.cs" />
     <Compile Include="AxisManager\Generic\CategoryAxisManager.cs" />

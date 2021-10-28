@@ -124,7 +124,11 @@
     <Compile Include="LineSpectrum\LineSpectrum2.xaml.cs">
       <DependentUpon>LineSpectrum2.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LineSpectrum\LineSpectrum3.xaml.cs">
+      <DependentUpon>LineSpectrum3.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LineSpectrum\LineSpectrumVM2.cs" />
+    <Compile Include="LineSpectrum\LineSpectrumVM3.cs" />
     <Compile Include="Scatter\Scatter3.xaml.cs">
       <DependentUpon>Scatter3.xaml</DependentUpon>
     </Compile>
@@ -212,6 +216,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LineSpectrum\LineSpectrum2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LineSpectrum\LineSpectrum3.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,0 +1,35 @@
+﻿<Page x:Class="ChartDrawingUiTest.LineSpectrum.LineSpectrum3"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ChartDrawingUiTest.LineSpectrum"
+      xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="LineSpectrum3">
+    <Page.DataContext>
+        <local:LineSpectrumVM3/>
+    </Page.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <chart:SimpleChartControl HorizontalAxis="{Binding HorizontalAxis}"
+                                  VerticalAxis="{Binding VerticalAxis}"
+                                  Background="WhiteSmoke"
+                                  BorderBrush="Black"
+                                  Grid.Row="0">
+            <chart:LineSpectrumControl ItemsSource="{Binding Source}"
+                                       HorizontalPropertyName="X"
+                                       VerticalPropertyName="Y"
+                                       BrushMapper="{Binding SpectrumBrush}"
+                                       HueProperty="Type"/>
+        </chart:SimpleChartControl>
+        <ComboBox ItemsSource="{Binding SpectrumBrushes}"
+                  SelectedValue="{Binding SpectrumBrush}"
+                  Grid.Row="1"/>
+    </Grid>
+</Page>
