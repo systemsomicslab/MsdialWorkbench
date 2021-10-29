@@ -57,11 +57,9 @@
                 </chart:AreaChartControl>
             </Border>
             <chart:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
-                                        LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
                                         Margin="0,0,5,5"
                                         Grid.Row="1" Grid.Column="1" />
             <chart:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
-                                      LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                       Margin="5,5,0,0"
                                       Grid.Row="0" Grid.Column="0" />
             <TextBlock Text="Binding axismapper" Grid.Row="2" Grid.Column="1"/>
@@ -100,11 +98,9 @@
                 </chart:AreaChartControl>
             </Border>
             <chart:HorizontalAxisControl HorizontalAxis="{Binding Source={StaticResource HorizontalAxis}}"
-                                        LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
                                         Margin="0,0,5,5"
                                         Grid.Row="1" Grid.Column="1" />
             <chart:VerticalAxisControl VerticalAxis="{Binding Source={StaticResource VerticalAxis}}"
-                                      LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                       Margin="5,5,0,0"
                                       Grid.Row="0" Grid.Column="0" />
             <TextBlock Text="Binding axis directly" Grid.Row="2" Grid.Column="1"/>
@@ -143,11 +139,9 @@
                 </chart:AreaChartControl>
             </Border>
             <chart:HorizontalAxisControl HorizontalAxis="{StaticResource HorizontalAxis}"
-                                        LabelTicks="{Binding LabelTicks, Source={StaticResource HorizontalAxis}}"
                                         Margin="0,0,5,5"
                                         Grid.Row="1" Grid.Column="1" />
             <chart:VerticalAxisControl VerticalAxis="{StaticResource VerticalAxis}"
-                                      LabelTicks="{Binding LabelTicks, Source={StaticResource VerticalAxis}}"
                                       Margin="5,5,0,0"
                                       Grid.Row="0" Grid.Column="0" />
             <TextBlock Text="static resource" Grid.Row="2" Grid.Column="1"/>

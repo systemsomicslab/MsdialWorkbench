@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -17,7 +18,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             Parameter = parameter;
 
-            IdentitySettingModel = new LcmsIdentifySettingModel(parameter, dataBaseStorages);
+            IdentitySettingModel = new IdentifySettingModel(parameter, new LcmsAnnotatorSettingFactory(), dataBaseStorages);
             if (files.Count() <= 1) {
                 Parameter.TogetherWithAlignment = false;
             }
@@ -52,6 +53,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public MsdialLcmsParameter Parameter { get; }
-        public LcmsIdentifySettingModel IdentitySettingModel { get; }
+        public IdentifySettingModel IdentitySettingModel { get; }
     }
 }

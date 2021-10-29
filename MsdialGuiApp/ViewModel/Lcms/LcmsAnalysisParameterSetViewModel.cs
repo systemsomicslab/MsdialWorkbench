@@ -1,9 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.View;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
-using CompMs.Common.Parser;
 using CompMs.Common.Query;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.Message;
@@ -11,7 +10,6 @@ using CompMs.MsdialCore.DataObj;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -37,7 +35,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             SearchedAdductIons = new ObservableCollection<AdductIonVM>(Model.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
 
-            IdentitySettingViewModel = new LcmsIdentifySettingViewModel(Model.IdentitySettingModel).AddTo(Disposables);
+            IdentitySettingViewModel = new IdentifySettingViewModel(Model.IdentitySettingModel, new LcmsAnnotatorSettingViewModelFactory()).AddTo(Disposables);
 
             ContinueProcessCommand = new[]{
                 IdentitySettingViewModel.ObserveHasErrors,
@@ -49,7 +47,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public LcmsAnalysisParameterSetModel Model { get; }
 
-        public LcmsIdentifySettingViewModel IdentitySettingViewModel { get; }
+        public IdentifySettingViewModel IdentitySettingViewModel { get; }
 
         public ParameterBaseVM Param {
             get => paramVM;

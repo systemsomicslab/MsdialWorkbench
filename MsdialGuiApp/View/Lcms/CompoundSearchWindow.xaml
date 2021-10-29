@@ -263,17 +263,14 @@
                 <chart:HorizontalAxisControl x:Name="MzAxis"
                                             DataContext="{Binding Source={StaticResource MassAxisManager}}"
                                             HorizontalAxis="{Binding}"
-                                            LabelTicks="{Binding LabelTicks}"
                                             Grid.Row="3" Grid.Column="2" />
                 <chart:VerticalAxisControl x:Name="MeasureIntensityAxis"
                                           DataContext="{Binding Source={StaticResource MeasureIntensityAxisManager}}"
                                           VerticalAxis="{Binding}"
-                                          LabelTicks="{Binding LabelTicks}"
                                           Grid.Row="1" Grid.Column="1" />
                 <chart:VerticalAxisControl x:Name="ReferenceIntensityAxis"
                                           DataContext="{Binding Source={StaticResource ReferenceIntensityAxisManager}}"
                                           VerticalAxis="{Binding}"
-                                          LabelTicks="{Binding LabelTicks}"
                                           FlippedY="False"
                                           Grid.Row="2" Grid.Column="1" />
                 <TextBlock Text="m/z"

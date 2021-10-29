@@ -14,12 +14,6 @@ namespace CompMs.Graphics.Chart
     public class VerticalAxisControl : ChartBaseControl
     {
         #region DependencyProperty
-        [Obsolete]
-        public static readonly DependencyProperty LabelTicksProperty = DependencyProperty.Register(
-            nameof(LabelTicks), typeof(List<LabelTickData>), typeof(VerticalAxisControl),
-            new PropertyMetadata(null)
-            );
-
         public static readonly DependencyProperty TickPenProperty = DependencyProperty.Register(
             nameof(TickPen), typeof(Pen), typeof(VerticalAxisControl),
             new PropertyMetadata(new Pen(Brushes.Black, 1), ChartUpdate)
@@ -52,12 +46,6 @@ namespace CompMs.Graphics.Chart
         #endregion
 
         #region Property
-        [Obsolete]
-        public List<LabelTickData> LabelTicks {
-            get => (List<LabelTickData>)GetValue(LabelTicksProperty);
-            set => SetValue(LabelTicksProperty, value);
-        }
-
         public Pen TickPen {
             get => (Pen)GetValue(TickPenProperty);
             set => SetValue(TickPenProperty, value);

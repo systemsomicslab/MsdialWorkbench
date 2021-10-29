@@ -178,18 +178,9 @@ namespace CompMs.App.Msdial.Model.Chart
             where T: U, V {
 
             return new MsSpectrumModel(
-                source.SelectMany(src =>
-                    Observable.DeferAsync(async token => {
-                        var result = await upperLoader.LoadSpectrumAsync(src, token);
-                        return Observable.Return(result);
-                    })),
-                source.SelectMany(src =>
-                    Observable.DeferAsync(async token => {
-                        var result = await lowerLoader.LoadSpectrumAsync(src, token);
-                        return Observable.Return(result);
-                    })),
-                horizontalSelector, verticalSelector
-            );
+                source.Select(src => Observable.FromAsync(token => upperLoader.LoadSpectrumAsync(src, token))).Switch(),
+                source.Select(src => Observable.FromAsync(token => lowerLoader.LoadSpectrumAsync(src, token))).Switch(),
+                horizontalSelector, verticalSelector);
         }
     }
 }
