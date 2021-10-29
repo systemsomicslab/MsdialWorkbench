@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.View;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Enum;
 using CompMs.Common.Query;
 using CompMs.CommonMVVM;
@@ -35,7 +36,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             DataCollectionSettingViewModel = new DimsDataCollectionSettingViewModel(Model.DataCollectionSettingModel).AddTo(Disposables);
 
-            IdentifySettingViewModel = new DimsIdentifySettingViewModel(Model.IdentifySettingModel).AddTo(Disposables);
+            IdentifySettingViewModel = new IdentifySettingViewModel(Model.IdentifySettingModel, new DimsAnnotatorSettingViewModelFactory()).AddTo(Disposables);
 
             ContinueProcessCommand = new[]{
                 IdentifySettingViewModel.ObserveHasErrors,
@@ -65,7 +66,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public ObservableCollection<AdductIonVM> SearchedAdductIons { get; }
 
         public DimsDataCollectionSettingViewModel DataCollectionSettingViewModel { get; }
-        public DimsIdentifySettingViewModel IdentifySettingViewModel { get; }
+        public IdentifySettingViewModel IdentifySettingViewModel { get; }
 
         public bool TogetherWithAlignment {
             get {
