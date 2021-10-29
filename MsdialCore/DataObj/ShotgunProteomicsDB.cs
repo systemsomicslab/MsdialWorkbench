@@ -171,20 +171,20 @@ namespace CompMs.MsdialCore.DataObj {
 
         public void Load(Stream stream) {
             if (this.FastaQueries != null) return;
-            using (var fs = File.Open(FastaQueryBinaryFile, FileMode.Create)) {
+            using (var fs = File.Open(FastaQueryBinaryFile, FileMode.Open)) {
                 this.FastaQueries = LargeListMessagePack.Deserialize<FastaProperty>(fs);
             }
 
-            using (var fs = File.Open(DecoyQueryBinaryFile, FileMode.Create)) {
+            using (var fs = File.Open(DecoyQueryBinaryFile, FileMode.Open)) {
                 this.DecoyQueries = LargeListMessagePack.Deserialize<FastaProperty>(fs);
             }
 
-            using (var fs = File.Open(PeptidesSerializeFile, FileMode.Create)) {
+            using (var fs = File.Open(PeptidesSerializeFile, FileMode.Open)) {
                 this.PeptideMsRef = LargeListMessagePack.Deserialize<PeptideMsReference>(fs);
             }
             MsfPepFileParser.LoadPeptideInformation(PeptidesBinaryFile, PeptideMsRef, ModificationContainer.ID2Code, ModificationContainer.Code2AminoAcidObj);
 
-            using (var fs = File.Open(DecoyPeptidesSerializeFile, FileMode.Create)) {
+            using (var fs = File.Open(DecoyPeptidesSerializeFile, FileMode.Open)) {
                 this.DecoyPeptideMsRef = LargeListMessagePack.Deserialize<PeptideMsReference>(fs);
             }
             MsfPepFileParser.LoadPeptideInformation(DecoyPeptidesBinaryFile, DecoyPeptideMsRef, ModificationContainer.ID2Code, ModificationContainer.Code2AminoAcidObj);

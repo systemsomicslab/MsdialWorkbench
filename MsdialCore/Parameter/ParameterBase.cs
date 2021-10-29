@@ -737,7 +737,7 @@ namespace CompMs.MsdialCore.Parameter {
 
         public ProjectBaseParameter() {
             SpectrumCommentToColorBytes = new Dictionary<string, List<byte>>() {
-                { SpectrumComment.none.ToString(), new List<byte>(){ 0, 0, 0, 255 } }, //black
+                // { SpectrumComment.none.ToString(), new List<byte>(){ 0, 0, 0, 255 } }, //black
                 { SpectrumComment.experiment.ToString(), new List<byte>(){ 0, 90, 160, 255 } }, // blue
                 { SpectrumComment.reference.ToString(), new List<byte>(){ 230, 0, 18, 255 } }, // red
                 { SpectrumComment.precursor.ToString(), new List<byte>(){ 0, 153, 68, 255 } }, // green
