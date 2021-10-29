@@ -13,6 +13,7 @@ using Reactive.Bindings.Extensions;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -22,7 +23,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     {
         public LcmsAnalysisParameterSetViewModel(LcmsAnalysisParameterSetModel model) {
             Model = model;
-            Param = MsdialProjectParameterFactory.Create(Model.Parameter);
+            Param = new ParameterBaseVM(Model.Parameter);
 
             AlignmentResultFileName = model.AlignmentResultFileName;
 
@@ -39,6 +40,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             ContinueProcessCommand = new[]{
                 IdentitySettingViewModel.ObserveHasErrors,
+                Param.ObserveProperty(m => m.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange)
+                    .Select(v => v && AnalysisFiles.All(file => file.AnalysisFileType != AnalysisFileType.Blank)),
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand<Window>()
             .WithSubscribe(ContinueProcess)
@@ -133,7 +136,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             if (Model.ParameterBase.TogetherWithAlignment && AnalysisFiles.Count > 1) {
 
-                if (Model.ParameterBase.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange && !AnalysisFiles.All(file => file.AnalysisFileType != AnalysisFileType.Blank)) {
+                if (Model.ParameterBase.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange && AnalysisFiles.All(file => file.AnalysisFileType != AnalysisFileType.Blank)) {
                     if (MessageBox.Show("If you use blank sample filter, please set at least one file's type as Blank in file property setting. " +
                         "Do you continue this analysis without the filter option?",
                         "Messsage", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.Cancel)
