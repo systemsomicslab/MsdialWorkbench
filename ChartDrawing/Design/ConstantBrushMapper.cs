@@ -3,7 +3,7 @@ using System.Windows.Media;
 
 namespace CompMs.Graphics.Design
 {
-    public class ConstantBrushMapper : IBrushMapper
+    public class ConstantBrushMapper<T> : IBrushMapper<T>
     {
         private readonly Brush brush;
 
@@ -16,8 +16,10 @@ namespace CompMs.Graphics.Design
             brush.Freeze();
         }
 
-        public Brush Map(object key) {
-            return brush;
-        }
+        public Brush Map(T key) => brush;
+
+        public Brush Map(object key) => brush;
+
+        public ConstantBrushMapper<U> As<U>() => new ConstantBrushMapper<U>(brush);
     }
 }
