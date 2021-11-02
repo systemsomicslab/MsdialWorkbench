@@ -187,7 +187,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 return null;
             }
 
-            return new CompoundSearchModel<AlignmentSpotProperty>(
+            return new LcmsCompoundSearchModel<AlignmentSpotProperty>(
                 AlignmentFile,
                 Target.Value.innerModel,
                 MsdecResult.Value,

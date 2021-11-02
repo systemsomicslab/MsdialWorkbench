@@ -16,7 +16,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    class MsSpectrumViewModel : ViewModelBase
+    public class MsSpectrumViewModel : ViewModelBase
     {
         static MsSpectrumViewModel() {
             SpectrumBrushes = Enum.GetValues(typeof(SpectrumComment))
