@@ -153,11 +153,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialImmsCoreTests", "Msdi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialGuiAppTests", "MsdialGuiAppTests\MsdialGuiAppTests.csproj", "{B8DA58FB-1A95-40CF-9F2D-FC980FC8A5C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialLcImMsApiTests", "MsdialLcImMsApiTests\MsdialLcImMsApiTests.csproj", "{4187672A-07AB-4D45-BFE4-845C5323D0D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialLcImMsApiTests", "MsdialLcImMsApiTests\MsdialLcImMsApiTests.csproj", "{4187672A-07AB-4D45-BFE4-845C5323D0D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialIntegrate", "MsdialIntegrate\MsdialIntegrate.csproj", "{9A103A62-9578-48A1-B967-D046925D3AC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialIntegrate", "MsdialIntegrate\MsdialIntegrate.csproj", "{9A103A62-9578-48A1-B967-D046925D3AC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialIntegrateTests", "MsdialIntegrateTests\MsdialIntegrateTests.csproj", "{4CC31723-8ECF-43DD-9399-BDEB31E75CBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialIntegrateTests", "MsdialIntegrateTests\MsdialIntegrateTests.csproj", "{4CC31723-8ECF-43DD-9399-BDEB31E75CBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpectrumViewer", "SpectrumViewer\SpectrumViewer.csproj", "{0780A32F-D596-447F-8E46-95E9491EE19F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -791,12 +793,20 @@ Global
 		{4CC31723-8ECF-43DD-9399-BDEB31E75CBC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4CC31723-8ECF-43DD-9399-BDEB31E75CBC}.Release|x64.ActiveCfg = Release|Any CPU
 		{4CC31723-8ECF-43DD-9399-BDEB31E75CBC}.Release|x64.Build.0 = Release|Any CPU
+		{0780A32F-D596-447F-8E46-95E9491EE19F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0780A32F-D596-447F-8E46-95E9491EE19F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0780A32F-D596-447F-8E46-95E9491EE19F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0780A32F-D596-447F-8E46-95E9491EE19F}.Debug|x64.Build.0 = Debug|Any CPU
+		{0780A32F-D596-447F-8E46-95E9491EE19F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0780A32F-D596-447F-8E46-95E9491EE19F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0780A32F-D596-447F-8E46-95E9491EE19F}.Release|x64.ActiveCfg = Release|Any CPU
+		{0780A32F-D596-447F-8E46-95E9491EE19F}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 	EndGlobalSection
 EndGlobal
