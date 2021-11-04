@@ -1,11 +1,7 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.Common.Utility;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
-using System.Linq;
 using System.Collections.ObjectModel;
-using System.Security.Cryptography.X509Certificates;
+using System.Linq;
 
 namespace CompMs.Common.Utility.Tests
 {
@@ -241,6 +237,30 @@ namespace CompMs.Common.Utility.Tests
 
             actual = SearchCollection.UpperBound(lst.ToArray(), value, (a, b) => a.Y.CompareTo(b.Y));
             Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void PermutationTest() {
+            var collection = new[] { 1, 2, 3, 4, };
+            var actuals = SearchCollection.Permutations(collection).Select(arr => (arr[0], arr[1], arr[2], arr[3])).ToArray();
+            var expects = new[]
+            {
+                ( 1, 2, 3, 4), ( 1, 2, 4, 3), ( 1, 3, 2, 4), ( 1, 3, 4, 2), ( 1, 4, 2, 3), ( 1, 4, 3, 2),
+                ( 2, 1, 3, 4), ( 2, 1, 4, 3), ( 2, 3, 1, 4), ( 2, 3, 4, 1), ( 2, 4, 1, 3), ( 2, 4, 3, 1),
+                ( 3, 1, 2, 4), ( 3, 1, 4, 2), ( 3, 2, 1, 4), ( 3, 2, 4, 1), ( 3, 4, 1, 2), ( 3, 4, 2, 1),
+                ( 4, 1, 2, 3), ( 4, 1, 3, 2), ( 4, 2, 1, 3), ( 4, 2, 3, 1), ( 4, 3, 1, 2), ( 4, 3, 2, 1),
+            };
+            CollectionAssert.AreEquivalent(expects, actuals);
+
+            collection = new[] { 1, 1, 2, 3, };
+            actuals = SearchCollection.Permutations(collection).Select(arr => (arr[0], arr[1], arr[2], arr[3])).ToArray();
+            expects = new[]
+            {
+                ( 1, 1, 2, 3), ( 1, 1, 3, 2), ( 1, 2, 1, 3), ( 1, 2, 3, 1), ( 1, 3, 1, 2), ( 1, 3, 2, 1),
+                ( 2, 1, 1, 3), ( 2, 1, 3, 1), ( 2, 3, 1, 1),
+                ( 3, 1, 1, 2), ( 3, 1, 2, 1), ( 3, 2, 1, 1),
+            };
+            CollectionAssert.AreEquivalent(expects, actuals);
         }
     }
 }
