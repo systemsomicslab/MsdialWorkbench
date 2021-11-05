@@ -47,6 +47,18 @@ namespace CompMs.Common.Proteomics.Function {
             SetID2ProbDistUsed(minPepLength, minMissedCleavages, minMods);
         }
 
+        public double GetPosteriorErrorProbability(float score, int peptideLength, int modificationNum, int missedCleavageNum) {
+            var key = new Tuple<int, int, int>(peptideLength, modificationNum, missedCleavageNum);
+            var keyUsed = ID2ProbDictUsed[key];
+            var probAll = ProbAllDict[keyUsed];
+            var probFalse = ProbFalseDict[keyUsed];
+
+            var scoreDensity = new double[] { score };
+            var probSL = probAll.ProbabilityDensityFunction(scoreDensity);
+            var probSLF = probFalse.ProbabilityDensityFunction(scoreDensity);
+            return 0.5 * probSLF / probSL;
+        }
+
         private void SetID2ProbDistUsed(int minPepLength, int minMissedCleavages, int minMods) {
             foreach (var item in ID2Availability) {
                 var key = item.Key;

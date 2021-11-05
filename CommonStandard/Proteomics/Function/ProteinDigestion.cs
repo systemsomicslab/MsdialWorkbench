@@ -87,6 +87,7 @@ namespace CompMs.Common.Proteomics.Function {
                     var peptide = new Peptide() { DatabaseOrigin = database, DatabaseOriginID = databaseID, SequenceObj = proteinSeqObj.GetRange(start, end - start + 1), Position = new Range(start, end) };
                     peptide.IsProteinNterminal = start == 0 ? true : false;
                     peptide.IsProteinCterminal = end == proteinSequence.Length - 1 ? true : false;
+                    peptide.MissedCleavages = i;
 
                     if (peptide.SequenceObj.Count >= minimumPeptideLength)
                         peptides.Add(peptide);

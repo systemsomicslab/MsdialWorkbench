@@ -201,10 +201,27 @@ namespace CompMs.App.Msdial.Model.Lcms
                     await Task.Run(() => MsdialLcMsApi.Process.FileProcess.Run(analysisfile, provider, storage, annotationProcess, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
                     vm.CurrentValue++;
                 }
+
                 pbmcw.Close();
             };
 
             pbmcw.ShowDialog();
+
+            return true;
+        }
+
+        public bool ProcessSeccondAnnotaion4ShotgunProteomics(Window owner, MsdialLcmsDataStorage storage) {
+            var vm = new ProgressBarVM {
+                IsIndeterminate = true,
+                Label = "Process second annotation..",
+            };
+            var pbw = new ProgressBarWindow {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            
+
 
             return true;
         }

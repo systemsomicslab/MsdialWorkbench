@@ -273,7 +273,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
         private void SetPepAnnotationResult(
             ChromatogramPeakFeature chromPeakFeature, T query,
             IAnnotatorContainer<T, PeptideMsReference, MsScanMatchResult> annotatorContainer) {
-
             var annotator = annotatorContainer.Annotator;
             var candidates = annotator.FindCandidates(query);
             if (candidates.Count == 2) {

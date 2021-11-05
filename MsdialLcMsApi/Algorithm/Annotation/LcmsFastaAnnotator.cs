@@ -38,6 +38,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         }
 
         public List<MsScanMatchResult> FindCandidates(IPepAnnotationQuery query) {
+
+            if (query.Scan.Spectrum.IsEmptyOrNull()) return new List<MsScanMatchResult>();
             var parameter = query.MsRefSearchParameter ?? MsRefSearchParameter;
             var proteomicsParam = query.ProteomicsParameter ?? ProteomicsParameter;
             var pepResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, PeptideMsRef, parameter, proteomicsParam);
