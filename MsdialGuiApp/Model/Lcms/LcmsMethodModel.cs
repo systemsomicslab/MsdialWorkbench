@@ -220,8 +220,17 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Owner = owner,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
-            
 
+            pbw.Show();
+
+            var proteomicsAnnotator = new ProteomeDataAnnotator();
+            proteomicsAnnotator.ExecuteSecondRoundAnnotationProcess(
+                storage.AnalysisFiles, 
+                storage.DataBaseMapper, 
+                storage.MsdialLcmsParameter.ProteomicsParam, 
+                v => vm.CurrentValue = v);
+
+            pbw.Close();
 
             return true;
         }

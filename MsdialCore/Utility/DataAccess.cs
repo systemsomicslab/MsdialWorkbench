@@ -1353,5 +1353,16 @@ namespace CompMs.MsdialCore.Utility {
                 default: return -1;
             }
         }
+
+        public static List<object> GetChromPeakFeatureObjectsIntegratingRtAndDriftData(List<ChromatogramPeakFeature> features) {
+            var objects = new List<object>();
+            foreach (var spot in features) {
+                objects.Add(spot);
+                foreach (var dSpot in spot.DriftChromFeatures.OrEmptyIfNull()) {
+                    objects.Add(dSpot);
+                }
+            }
+            return objects;
+        }
     }
 }

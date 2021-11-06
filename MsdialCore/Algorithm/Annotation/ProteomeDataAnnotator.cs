@@ -12,7 +12,7 @@ using System.Text;
 namespace CompMs.MsdialCore.Algorithm.Annotation {
     public class ProteomeDataAnnotator {
 
-        public List<PeptideScore> GetPeptideScoreList(
+        public void ExecuteSecondRoundAnnotationProcess(
             IReadOnlyList<AnalysisFileBean> files, 
             DataBaseMapper mapper, 
             ProteomicsParameter param, 
@@ -37,9 +37,44 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             }
             ReportProgress.Show(0, 100, 75, 100, reportAction);
 
+            var cutoff = param.FalseDiscoveryRateForPeptide * 0.01;
+            foreach (var file in files) {
+                ResetPeptideAnnotationInformationByPEPScore(file, scores, mapper, param);
+            }
+        }
 
+        public void ResetPeptideAnnotationInformationByPEPScore(
+            AnalysisFileBean file, 
+            List<PeptideScore> scores,
+            DataBaseMapper mapper,
+            ProteomicsParameter param) {
+            var fileID = file.AnalysisFileId;
+            var paiFile = file.PeakAreaBeanInformationFilePath;
+            var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(paiFile);
 
-            return scores;
+            var scoresOnFile = scores.Where(n => n.FileID == fileID).OrderBy(n => n.PosteriorErrorProb).ToList();
+            var annotatedNum = scoresOnFile.Count;
+            var decoyCutOffNum = annotatedNum * param.FalseDiscoveryRateForPeptide * 0.01;
+
+            var counter = 0;
+            var featureObjs = DataAccess.GetChromPeakFeatureObjectsIntegratingRtAndDriftData(features);
+            foreach (var score in scoresOnFile) {
+                if (score.IsDecoy) counter++;
+                var feature = (ChromatogramPeakFeature)featureObjs[score.PeakID];
+                if (counter > decoyCutOffNum) {
+                    feature.MatchResults.Representative.IsSpectrumMatch = false;
+                }
+            }
+
+            if (features.Count != featureObjs.Count) { // meaning lc-im-ms data (4D data)
+                foreach (var feature in features) {
+                    if (feature.AllDriftFeaturesAreNotAnnotated(mapper)) {
+                        //feature.MatchResults.Representative.IsSpectrumMatch = false;
+                    }
+                }
+            }
+
+            MsdialPeakSerializer.SaveChromatogramPeakFeatures(paiFile, features);
         }
 
         public List<PeptideScore> IntegrateAnnotatedPeptides(IReadOnlyList<AnalysisFileBean> files, DataBaseMapper mapper) {
@@ -59,6 +94,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                     var decoyScore = GetPeptideScore(fileID, feature.MasterPeakID, decoyRepresentive, decoySpec);
                     scores.Add(refPepScore);
                     scores.Add(decoyScore);
+
+                    Console.WriteLine("Score\t{0}\tType\t{1}", refPepScore.AndromedaScore, "Forward");
+                    Console.WriteLine("Score\t{0}\tType\t{1}", decoyScore.AndromedaScore, "Decoy");
                 }
             }
             return scores;

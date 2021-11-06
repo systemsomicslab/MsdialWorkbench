@@ -132,6 +132,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     SelectedBrush = Brushes[0].Mapper;
                     break;
                 case TargetOmics.Metabolomics:
+                case TargetOmics.Proteomics:
                     SelectedBrush = Brushes[1].Mapper;
                     break;
             }
