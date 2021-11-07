@@ -100,7 +100,7 @@
                 <TextBlock Text="Enzyme setting:" VerticalAlignment="Center" Grid.Column="0"/>
                 <Button Content="Browse"
                                 Command="{Binding EnzymeSetCommand, Mode=OneTime}"
-                                Width="64" Height="24" Grid.Column="1"/>
+                                Width="64" Height="24" Grid.Column="1" Margin="5,5,0,0"/>
                 <TextBlock Text="{Binding SelectedEnzymes, Mode=OneWay}" VerticalAlignment="Center" Grid.Column="2"/>
                 
             </Grid>
@@ -114,7 +114,7 @@
                 <TextBlock Text="Modification setting:" VerticalAlignment="Center" Grid.Column="0"/>
                 <Button Content="Browse"
                                 Command="{Binding ModificationSetCommand, Mode=OneTime}"
-                                Width="64" Height="24" Grid.Column="1"/>
+                                Width="64" Height="24" Grid.Column="1" Margin="5,5,0,0"/>
                 <TextBlock Text="{Binding SelectedModifications, Mode=OneWay}" VerticalAlignment="Center" Grid.Column="2"/>
             </Grid>
         </StackPanel>
