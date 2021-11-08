@@ -8,7 +8,7 @@ namespace CompMs.Common.Lipidomics.Tests
     {
         [TestMethod()]
         public void SeparateTest() {
-            var generator = new AcylChainGenerator(begin: 2, skip: 3);
+            var generator = new AcylChainGenerator(minLength: 6, begin: 2, skip: 3);
             var totalChain = new TotalAcylChain(34, 2, 0);
 
             var actual = totalChain.GetCandidateSets(generator, 2).ToArray();
@@ -19,11 +19,6 @@ namespace CompMs.Common.Lipidomics.Tests
             }
             var expects = new[]
             {
-                ( 1, 0, 0, 33, 2, 0),
-                ( 2, 0, 0, 32, 2, 0),
-                ( 3, 0, 0, 31, 2, 0), ( 3, 1, 0, 31, 1, 0),
-                ( 4, 0, 0, 30, 2, 0), ( 4, 1, 0, 30, 1, 0),
-                ( 5, 0, 0, 29, 2, 0), ( 5, 1, 0, 29, 1, 0),
                 ( 6, 0, 0, 28, 2, 0), ( 6, 1, 0, 28, 1, 0), ( 6, 2, 0, 28, 0, 0),
                 ( 7, 0, 0, 27, 2, 0), ( 7, 1, 0, 27, 1, 0), ( 7, 2, 0, 27, 0, 0),
                 ( 8, 0, 0, 26, 2, 0), ( 8, 1, 0, 26, 1, 0), ( 8, 2, 0, 26, 0, 0),
@@ -42,7 +37,7 @@ namespace CompMs.Common.Lipidomics.Tests
 
         [TestMethod()]
         public void GenerateTest() {
-            var generator = new AcylChainGenerator(begin: 3, skip: 3);
+            var generator = new AcylChainGenerator(minLength: 6, begin: 3, skip: 3);
             var acylChain = new AcylChain(18, 2, 0);
 
             var actual = acylChain.GetCandidates(generator).OfType<SpecificAcylChain>().ToArray();

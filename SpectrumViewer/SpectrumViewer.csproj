@@ -82,6 +82,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\IScanCollection.cs" />
+    <Compile Include="Model\LipidReferenceCollection.cs" />
+    <Compile Include="ViewModel\IScanCollectionViewModel.cs" />
+    <Compile Include="ViewModel\LipidReferenceCollectionViewModel.cs" />
+    <Compile Include="ViewModel\SpectrumViewModel.cs" />
+    <Compile Include="View\AddItemTemplateSelector.cs" />
+    <Compile Include="View\ScanCollectionView.xaml.cs">
+      <DependentUpon>ScanCollectionView.xaml</DependentUpon>
+    </Compile>
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -90,14 +99,26 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Model\DisplayScan.cs" />
     <Compile Include="Model\FileOpenRequest.cs" />
     <Compile Include="Model\MainModel.cs" />
+    <Compile Include="Model\ScanCollection.cs" />
+    <Compile Include="Model\SpectrumModel.cs" />
     <Compile Include="ViewModel\LipidQueryBeanViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\ScanCollectionViewModel.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\ScanCollectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ViewTemplates.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

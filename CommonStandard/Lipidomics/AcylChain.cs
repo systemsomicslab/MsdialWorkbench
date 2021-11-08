@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.FormulaGenerator.DataObj;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
@@ -76,7 +77,7 @@ namespace CompMs.Common.Lipidomics
         public double Mass => AcylChainUtility.CalculateMass(CarbonCount, DoubleBondCount, OxidizedCount);
 
         public IEnumerable<IAcylChain> GetCandidates(IAcylChainGenerator generator) {
-            yield return this;
+            return Enumerable.Empty<IAcylChain>();
         }
 
         public override string ToString() {

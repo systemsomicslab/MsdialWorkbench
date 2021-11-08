@@ -11,11 +11,13 @@ namespace CompMs.Common.Lipidomics
 
     public class AcylChainGenerator : IAcylChainGenerator
     {
-        public AcylChainGenerator(int begin = 3, int skip = 3) {
+        public AcylChainGenerator(int minLength = 6, int begin = 3, int skip = 3) {
+            MinLength = minLength;
             Begin = begin;
             Skip = skip;
         }
 
+        public int MinLength { get; }
         public int Begin { get; } // if begin is 3, first double bond is 3-4 at the earliest counting from ketone carbon.
         public int Skip { get; } // if skip is 3 and 6-7 is double bond, next one is 9-10 at the earliest.
 
@@ -25,13 +27,18 @@ namespace CompMs.Common.Lipidomics
 
         private IEnumerable<AcylChain[]> RecurseGenerate(int carbon, int db, int ox, int prevCarbon, int prevDb, int prevOx, int num, AcylChain[] set) {
             if (num == 1) {
-                if (IsLexicographicOrder(prevCarbon, prevDb, prevOx, carbon, db, ox) && DoubleChainIsValid(carbon, db)) {
+                if (CarbonNumberValid(carbon)
+                    && IsLexicographicOrder(prevCarbon, prevDb, prevOx, carbon, db, ox)
+                    && DoubleChainIsValid(carbon, db)) {
                     set[set.Length - num] = CreateAcylChain(carbon, db, ox);
                     yield return set.ToArray();
                 }
             }
             else {
                 for (var c = prevCarbon; c < carbon; c++) {
+                    if (!CarbonNumberValid(c)) {
+                        continue;
+                    }
                     for (var d = 0; d <= db && DoubleChainIsValid(c, d); d++) {
                         if (!IsLexicographicOrder(prevCarbon, prevDb, carbon, d)) {
                             continue;
@@ -48,6 +55,10 @@ namespace CompMs.Common.Lipidomics
                     }
                 }
             }
+        }
+
+        private bool CarbonNumberValid(int curCarbon) {
+            return curCarbon >= MinLength;
         }
 
         private bool DoubleChainIsValid(int carbon, int db) {

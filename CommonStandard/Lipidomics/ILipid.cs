@@ -1,4 +1,6 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,6 +16,7 @@ namespace CompMs.Common.Lipidomics
         int ChainCount { get; }
 
         IEnumerable<ILipid> Generate(ILipidGenerator generator);
+        IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct); 
     }
 
     public abstract class BaseLipid
@@ -24,8 +27,6 @@ namespace CompMs.Common.Lipidomics
             AnnotationLevel = annotationLevel;
         }
 
-        // TODO: temporary name
-        public string Name => ToString();
         public LbmClass LipidClass { get; }
         public double Mass { get; }
         public int AnnotationLevel { get; } = 1;
@@ -39,11 +40,16 @@ namespace CompMs.Common.Lipidomics
             Chain = chain;
         }
 
+        public string Name => ToString();
         public int ChainCount { get; }
         public TotalAcylChain Chain { get; }
 
         public IEnumerable<ILipid> Generate(ILipidGenerator generator) {
             return generator.Generate(this);
+        }
+
+        public IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct) {
+            return generator.Generate(this, adduct);
         }
 
         public override string ToString() {
@@ -59,12 +65,17 @@ namespace CompMs.Common.Lipidomics
             Chains = new ReadOnlyCollection<IAcylChain>(this.chains);
         }
 
+        public string Name => ToString();
         public int ChainCount => Chains.Count;
         public ReadOnlyCollection<IAcylChain> Chains { get; }
         private IAcylChain[] chains;
 
         public IEnumerable<ILipid> Generate(ILipidGenerator generator) {
             return generator.Generate(this);
+        }
+
+        public IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct) {
+            return generator.Generate(this, adduct);
         }
 
         public override string ToString() {
@@ -80,12 +91,17 @@ namespace CompMs.Common.Lipidomics
             Chains = new ReadOnlyCollection<IAcylChain>(this.chains);
         }
 
+        public string Name => ToString();
         public int ChainCount => Chains.Count;
         public ReadOnlyCollection<IAcylChain> Chains { get; }
         private IAcylChain[] chains;
 
         public IEnumerable<ILipid> Generate(ILipidGenerator generator) {
             return generator.Generate(this);
+        }
+
+        public IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct) {
+            return generator.Generate(this, adduct);
         }
 
         public override string ToString() {

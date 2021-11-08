@@ -17,7 +17,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new PositionSpecificAcylChainLipid(LbmClass.PC, 785.5935, acyl1, acyl2);
 
             var generator = new PCSpectrumGenerator();
-            var scan = generator.Generate(lipid, AdductIonParser.GetAdductIonBean("[M+H]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
 
             var expects = new[]
             {

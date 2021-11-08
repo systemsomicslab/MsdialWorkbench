@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 namespace CompMs.Common.Lipidomics
 {
     public class PCLipidParser {
-        private readonly AcylChainParser acylParser = new AcylChainParser();
+        private static readonly AcylChainParser acylParser = new AcylChainParser();
 
         public static readonly string Pattern = $"PC\\s*(?<sn1>{AcylChainParser.Pattern})((?<sep>[_/])(?<sn2>{AcylChainParser.Pattern}))?";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
