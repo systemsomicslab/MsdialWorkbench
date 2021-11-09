@@ -33,8 +33,8 @@
         <Grid Grid.Column="0">
             
             <Grid.RowDefinitions>
-                <RowDefinition Height="50" />
-                <RowDefinition Height="50" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition/>
             </Grid.RowDefinitions>
@@ -60,75 +60,80 @@
 
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal"
-                        Margin="8"
+            <StackPanel Margin="8"
                         Grid.Row="1">
-                <ComboBox ItemsSource="{Binding Annotators}"
-                          SelectedItem="{Binding Annotator.Value}"
-                          DisplayMemberPath="AnnotatorID"
-                          VerticalAlignment="Center"
-                          Width="70"
-                          Margin="4,0"/>
-
-                <ui:LabeledContent PrependLabel="MS1 tol. [Da]:" Height="25">
-                    <TextBox Name="TextBox_Ms1Tolerance"
-                             DataContext="{Binding ParameterVM.Value}"
-                             Text="{Binding Ms1Tolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
-                             HorizontalAlignment="Left" VerticalAlignment="Center"
-                             Width="70"/>
-                </ui:LabeledContent>
-                <ui:LabeledContent PrependLabel="MS2 tol. [Da]:"
-                                   Height="25" 
-                                   Margin="10,0,0,0">
-                    <TextBox Name="TextBox_Ms2Tolerance"
-                             DataContext="{Binding ParameterVM.Value}"
-                             Text="{Binding Ms2Tolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
-                             HorizontalAlignment="Left" VerticalAlignment="Center"
-                             Width="70"/>
-                </ui:LabeledContent>
-
-                <ToggleButton x:Name="ToggleAdvancedSetting"
+                <ui:LabeledContent PrependLabel="Select annotation method:"
+                                   HorizontalAlignment="Left"
+                                   Margin="4">
+                    <ComboBox ItemsSource="{Binding Annotators}"
+                              SelectedItem="{Binding Annotator.Value}"
+                              DisplayMemberPath="AnnotatorID"
                               VerticalAlignment="Center"
-                              Margin="4,0">
-                    <ToggleButton.Style>
-                        <Style TargetType="ToggleButton">
-                            <Setter Property="Foreground" Value="Blue"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Foreground" Value="Red"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ToggleButton.Style>
-                    <ToggleButton.Template>
-                        <ControlTemplate TargetType="ToggleButton">
-                            <TextBlock Text="Advanced"
-                                       TextDecorations="Underline"
-                                       Foreground="{TemplateBinding Foreground}"/>
-                        </ControlTemplate>
-                    </ToggleButton.Template>
-                </ToggleButton>
-                <Popup IsOpen="{Binding IsChecked, ElementName=ToggleAdvancedSetting}"
-                       StaysOpen="False"
-                       Placement="Bottom"
-                       PlacementTarget="{Binding ElementName=ToggleAdvancedSetting, Mode=OneTime}">
-                    <Border Background="White" BorderBrush="Black">
-                        <Border.Resources>
-                            <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource AlignedContent}"/>
-                        </Border.Resources>
-                        <ContentControl Content="{Binding}"
-                                        ContentTemplateSelector="{StaticResource AnnotatorSettingTemplateSelector}"/>
-                    </Border>
-                </Popup>
+                              Width="200"/>
+                </ui:LabeledContent>
+
+                <StackPanel Orientation="Horizontal"
+                            Margin="4">
+                    <ui:LabeledContent PrependLabel="MS1 tol. [Da]:" Height="25">
+                        <TextBox Name="TextBox_Ms1Tolerance"
+                                 DataContext="{Binding ParameterVM.Value}"
+                                 Text="{Binding Ms1Tolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
+                                 HorizontalAlignment="Left" VerticalAlignment="Center"
+                                 Width="70"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="MS2 tol. [Da]:"
+                                       Height="25" 
+                                       Margin="10,0,0,0">
+                        <TextBox Name="TextBox_Ms2Tolerance"
+                                 DataContext="{Binding ParameterVM.Value}"
+                                 Text="{Binding Ms2Tolerance.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Validation.ErrorTemplate="{StaticResource BasicErrorTemplate}"
+                                 HorizontalAlignment="Left" VerticalAlignment="Center"
+                                 Width="70"/>
+                    </ui:LabeledContent>
+
+                    <ToggleButton x:Name="ToggleAdvancedSetting"
+                                  VerticalAlignment="Center"
+                                  Margin="4,0">
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton">
+                                <Setter Property="Foreground" Value="Blue"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground" Value="Red"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
+                        <ToggleButton.Template>
+                            <ControlTemplate TargetType="ToggleButton">
+                                <TextBlock Text="Advanced"
+                                           TextDecorations="Underline"
+                                           Foreground="{TemplateBinding Foreground}"/>
+                            </ControlTemplate>
+                        </ToggleButton.Template>
+                    </ToggleButton>
+                    <Popup IsOpen="{Binding IsChecked, ElementName=ToggleAdvancedSetting}"
+                           StaysOpen="False"
+                           Placement="Bottom"
+                           PlacementTarget="{Binding ElementName=ToggleAdvancedSetting, Mode=OneTime}">
+                        <Border Background="White" BorderBrush="Black">
+                            <Border.Resources>
+                                <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource AlignedContent}"/>
+                            </Border.Resources>
+                            <ContentControl Content="{Binding}"
+                                            ContentTemplateSelector="{StaticResource AnnotatorSettingTemplateSelector}"/>
+                        </Border>
+                    </Popup>
+                </StackPanel>
 
                 <Button Name="Button_ReAnalysis"
                         Content="Search"
                         Command="{Binding SearchCommand, Mode=OneTime}"
-                        Width="85" Height="25"
-                        HorizontalAlignment="Left" VerticalAlignment="Center"
-                        Margin="30,0,0,0"/>
+                        Width="100" Height="25"
+                        Margin="4"
+                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
             </StackPanel>
 
             <WrapPanel Orientation="Horizontal"
@@ -155,7 +160,7 @@
                        HorizontalAlignment="Left" VerticalAlignment="Top"
                        Grid.Row="0"/>
                 <DataGrid Name="DataGrid_LibraryInformation"
-                          ItemsSource="{Binding Path=Compounds, IsAsync=True}"
+                          ItemsSource="{Binding Path=Compounds.Value.Results, IsAsync=True}"
                           SelectedItem="{Binding SelectedCompound.Value, Mode=OneWayToSource}"
                           IsSynchronizedWithCurrentItem="True"
                           CanUserAddRows="False" CanUserDeleteRows="False"
@@ -235,23 +240,23 @@
                     </Style>
                 </StackPanel.Resources>
                     <ui:LabeledContent PrependLabel="Selected Library ID:"
-                                       Content="{Binding Compounds/LibraryID, Mode=OneWay}"/>
+                                       Content="{Binding Compounds.Value.Results/LibraryID, Mode=OneWay}"/>
                     <ui:LabeledContent PrependLabel="Name:"
-                                       Content="{Binding Compounds/Name, Mode=OneWay}"/>
+                                       Content="{Binding Compounds.Value.Results/Name, Mode=OneWay}"/>
                     <ui:LabeledContent PrependLabel="Accurate mass similarity score:"
-                                       Content="{Binding Compounds/MassSimilarity, StringFormat=N4, Mode=OneWay}"
+                                       Content="{Binding Compounds.Value.Results/MassSimilarity, StringFormat=N4, Mode=OneWay}"
                                        Style="{StaticResource N4}"/>
                     <ui:LabeledContent PrependLabel="Weighted dot product similarity score:"
-                                       Content="{Binding Compounds/WeightedDotProduct, StringFormat=N4, Mode=OneWay}"
+                                       Content="{Binding Compounds.Value.Results/WeightedDotProduct, StringFormat=N4, Mode=OneWay}"
                                        Style="{StaticResource N4}"/>
                     <ui:LabeledContent PrependLabel="Dot product similarity score:"
-                                       Content="{Binding Compounds/SimpleDotProduct, StringFormat=N4, Mode=OneWay}"
+                                       Content="{Binding Compounds.Value.Results/SimpleDotProduct, StringFormat=N4, Mode=OneWay}"
                                        Style="{StaticResource N4}"/>
                     <ui:LabeledContent PrependLabel="Reverse dot product similarity score:"
-                                       Content="{Binding Compounds/ReverseDotProduct, StringFormat=N4, Mode=OneWay}"
+                                       Content="{Binding Compounds.Value.Results/ReverseDotProduct, StringFormat=N4, Mode=OneWay}"
                                        Style="{StaticResource N4}"/>
                     <ui:LabeledContent PrependLabel="Total score:"
-                                       Content="{Binding Compounds/TotalScore, StringFormat=N4, Mode=OneWay}"
+                                       Content="{Binding Compounds.Value.Results/TotalScore, StringFormat=N4, Mode=OneWay}"
                                        Style="{StaticResource N4}"/>
             </StackPanel>
 

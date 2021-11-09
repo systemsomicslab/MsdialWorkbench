@@ -170,6 +170,8 @@
     <Compile Include="Model\Core\AnalysisModelBase.cs" />
     <Compile Include="Model\Core\AlignmentModelBase.cs" />
     <Compile Include="Model\Dims\DimsTextDBAnnotationSettingModel.cs" />
+    <Compile Include="Model\Lcms\LcmsCompoundSearchModel.cs" />
+    <Compile Include="Model\Search\CompoundResultCollection.cs" />
     <Compile Include="Model\Setting\IdentifySettingModel.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
     <Compile Include="Model\Chart\AlignmentEicModel.cs" />
@@ -234,7 +236,7 @@
     <Compile Include="ViewModel\AlignmentPeakPlotVM.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\Chart\SurveyScanViewModel.cs" />
-    <Compile Include="Model\DataObj\CompoundResult.cs" />
+    <Compile Include="Model\Search\CompoundResult.cs" />
     <Compile Include="ViewModel\Converter\PeakToChromatogramConverter.cs" />
     <Compile Include="ViewModel\Converter\SpotToBarItemConverter.cs" />
     <Compile Include="ViewModel\DataObj\AnalysisFileBeanViewModel.cs" />
@@ -250,6 +252,7 @@
     <Compile Include="ViewModel\Dims\DimsMspAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsTextDBAnnotationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Lcms\LcmsCompoundSearchViewModel.cs" />
     <Compile Include="ViewModel\Setting\IdentifySettingViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
@@ -395,6 +398,9 @@
     <Compile Include="View\Lcms\LcmsAnalysisPeakTableView.xaml.cs">
       <DependentUpon>LcmsAnalysisPeakTableView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Lcms\LcmsCompoundSearchView.xaml.cs">
+      <DependentUpon>LcmsCompoundSearchView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Normalize\NormalizationSetView.xaml.cs">
       <DependentUpon>NormalizationSetView.xaml</DependentUpon>
     </Compile>
@@ -440,7 +446,6 @@
     <Compile Include="Model\DataObj\ChromatogramPeakWrapper.cs" />
     <Compile Include="Model\DataObj\AlignmentSpotPropertyModel.cs" />
     <Compile Include="Model\DataObj\ChromatogramPeakFeatureModel.cs" />
-    <Compile Include="ViewModel\Lcms\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Lcms\LcmsMethodVM.cs" />
     <Compile Include="ViewModel\MethodVM.cs" />
     <Compile Include="ViewModel\ParameterBaseVM.cs" />
@@ -518,9 +523,6 @@
     </Compile>
     <Compile Include="View\Lcms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Lcms\CompoundSearchWindow.xaml.cs">
-      <DependentUpon>CompoundSearchWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\PeakPropertyView.xaml.cs">
       <DependentUpon>PeakPropertyView.xaml</DependentUpon>
@@ -741,6 +743,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Lcms\LcmsCompoundSearchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Normalize\NormalizationSetView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -872,10 +878,6 @@
     <Page Include="View\Lcms\CompoundDetailView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Lcms\CompoundSearchWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Lcms\PeakPropertyView.xaml">
       <SubType>Designer</SubType>
@@ -1034,6 +1036,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Property\" />
+    <Folder Include="ViewModel\Search\" />
     <Folder Include="View\Core\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

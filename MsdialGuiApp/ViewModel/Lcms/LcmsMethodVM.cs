@@ -152,6 +152,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     return -1;
             }
 
+            // Run second process
+            var param = Storage.MsdialLcmsParameter;
+            if (param.TargetOmics == TargetOmics.Proteomics) {
+                if (!model.ProcessSeccondAnnotaion4ShotgunProteomics(window, Storage))
+                    return -1;
+            } 
+
             // Run Alignment
             if (processOption.HasFlag(ProcessOption.Alignment)) {
                 if (!model.ProcessAlignment(window, Storage))

@@ -1,20 +1,17 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Search;
+﻿using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
-using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
-    class ImmsCompoundSearchModel<T> : CompoundSearchModel<T> where T : IMSIonProperty, IMoleculeProperty
+    public class ImmsCompoundSearchModel<T> : CompoundSearchModel<T> where T : IMSIonProperty, IMoleculeProperty
     {
         public ImmsCompoundSearchModel(
             IFileBean fileBean,
@@ -31,39 +28,32 @@ namespace CompMs.App.Msdial.Model.Imms
 
         }
 
-        public ImmsCompoundSearchModel(
-            IFileBean fileBean,
-            T property,
-            MSDecResult msdecResult,
-            IReadOnlyList<IsotopicPeak> isotopes,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotator,
-            MsRefSearchParameterBase parameter = null) : base(
-                fileBean,
-                property,
-                msdecResult,
-                isotopes,
-                annotator,
-                parameter) {
-        }
-
-        protected override IEnumerable<CompoundResult> SearchCore() {
-            return base.SearchCore().Select(c => new ImmsCompoundResult(c));
+        public override CompoundResultCollection Search() {
+            return new ImmsCompoundResultCollection
+            {
+                Results = SearchCore().Select(c => new ImmsCompoundResult(c)).ToList<ICompoundResult>(),
+            };
         }
     }
 
-    class ImmsCompoundResult : CompoundResult
+    public class ImmsCompoundResult : CompoundResult
     {
         public ImmsCompoundResult(MoleculeMsReference msReference, MsScanMatchResult matchResult)
             : base(msReference, matchResult) {
 
         }
 
-        public ImmsCompoundResult(CompoundResult compound)
-            : this(compound.msReference, compound.matchResult) {
+        public ImmsCompoundResult(ICompoundResult compound)
+            : this(compound.MsReference, compound.MatchResult) {
 
         }
 
         public double CollisionCrossSection => msReference.CollisionCrossSection;
         public double CcsSimilarity => matchResult.CcsSimilarity;
+    }
+
+    public class ImmsCompoundResultCollection : CompoundResultCollection
+    {
+
     }
 }

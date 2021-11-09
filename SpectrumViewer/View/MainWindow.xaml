@@ -1,0 +1,151 @@
+﻿<Window x:Class="CompMs.App.SpectrumViewer.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CompMs.App.SpectrumViewer.View"
+        xmlns:vm="clr-namespace:CompMs.App.SpectrumViewer.ViewModel"
+        xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+        xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+        mc:Ignorable="d"
+        Background="Black"
+        AllowDrop="True"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:MainViewModel}}"
+        Title="MainWindow" Height="800" Width="1200">
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="1" UseAeroCaptionButtons="False" CaptionHeight="24"/>
+    </WindowChrome.WindowChrome>
+    <Window.Resources>
+        <Pen x:Key="TickColor" Brush="White" Thickness="2" PresentationOptions:Freeze="True"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.ColumnSpan="2" Grid.Row="0" Grid.Column="0">
+            <Button Content="x" Command="Close"
+                    Width="24" Height="24"
+                    Background="Red" Foreground="White"
+                    BorderThickness="0"
+                    HorizontalAlignment="Right"
+                    WindowChrome.IsHitTestVisibleInChrome="True"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="0">
+            <StackPanel.Resources>
+                <Style TargetType="Button">
+                    <Style.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Style.Resources>
+                    <Setter Property="Width" Value="40"/>
+                    <Setter Property="Height" Value="40"/>
+                    <Setter Property="Margin" Value="0,4"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="Black"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+                <Style TargetType="ToggleButton">
+                    <Style.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Style.Resources>
+                    <Setter Property="Width" Value="40"/>
+                    <Setter Property="Height" Value="40"/>
+                    <Setter Property="Margin" Value="0,4"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="Black"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Resources>
+            <ToggleButton Content="&#xE700;" FontFamily="Segoe MDL2 Assets" FontSize="24"/>
+            <Button Content="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="24"
+                    Command="Open"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <ListBox ItemsSource="{Binding Scans.Value}"
+                     SelectedItem="{Binding Scan.Value}"
+                     Background="LightGray"
+                     Grid.Column="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate xmlns:reference="clr-namespace:CompMs.Common.Components;assembly=Common"
+                                  DataType="{x:Type reference:MoleculeMsReference}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal" Grid.Row="0">
+                                <TextBlock Text="{Binding Name, Mode=OneTime}"/>
+                                <TextBlock Text="Class:" Margin="4,0"/>
+                                <TextBlock Text="{Binding CompoundClass}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Grid.Row="1">
+                                <TextBlock Text="Precursor m/z:"/>
+                                <TextBlock Text="{Binding PrecursorMz, StringFormat=N4}"/>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <GridSplitter Width="2" Grid.Column="0" VerticalAlignment="Stretch"/>
+            <chart:MultiChart GraphTitle="{Binding Scan.Value.Name}"
+                              HorizontalTitle="m/z"
+                              VerticalTitle="{Binding VerticalAxis.UnitLabel, StringFormat=Intensity ({0})}"
+                              HorizontalAxis="{Binding HorizontalAxis}"
+                              VerticalAxis="{Binding VerticalAxis}"
+                              Background="#FF202020" BorderBrush="White"
+                              Margin="16"
+                              Grid.Column="2">
+                <chart:LineSpectrumControl ItemsSource="{Binding Scan.Value.Spectrum}"
+                                           HorizontalPropertyName="Mass"
+                                           VerticalPropertyName="Intensity"
+                                           BrushMapper="{Binding SpectrumCommentBrushes}"
+                                           HueProperty="SpectrumComment">
+                    <chart:LineSpectrumControl.ToolTip>
+                        <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding FocusedItem.Mass, StringFormat=m/z: {0}}"/>
+                                <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0}}"/>
+                            </StackPanel>
+                        </ToolTip>
+                    </chart:LineSpectrumControl.ToolTip>
+                </chart:LineSpectrumControl>
+                <chart:Annotator ItemsSource="{Binding Scan.Value.Spectrum}"
+                                 HorizontalPropertyName="Mass"
+                                 VerticalPropertyName="Intensity"
+                                 Overlap="Direct,Horizontal"
+                                 OrderingPropertyName="Intensity"
+                                 LabelPropertyName="Mass"
+                                 Format="N3"
+                                 TopN="5"
+                                 Brush="White"/>
+            </chart:MultiChart>
+        </Grid>
+    </Grid>
+</Window>

@@ -132,6 +132,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     SelectedBrush = Brushes[0].Mapper;
                     break;
                 case TargetOmics.Metabolomics:
+                case TargetOmics.Proteomics:
                     SelectedBrush = Brushes[1].Mapper;
                     break;
             }
@@ -187,7 +188,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 return null;
             }
 
-            return new CompoundSearchModel<AlignmentSpotProperty>(
+            return new LcmsCompoundSearchModel<AlignmentSpotProperty>(
                 AlignmentFile,
                 Target.Value.innerModel,
                 MsdecResult.Value,

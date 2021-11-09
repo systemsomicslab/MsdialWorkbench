@@ -1,11 +1,18 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CompMs.App.Msdial.Model.DataObj
+namespace CompMs.App.Msdial.Model.Search
 {
-    public class CompoundResult
+    public interface ICompoundResult
+    {
+        MoleculeMsReference MsReference { get; }
+        MsScanMatchResult MatchResult { get; }
+    }
+
+    public class CompoundResult : ICompoundResult
     {
         public int LibraryID => matchResult.LibraryID;
         public string Name => msReference.Name;
@@ -23,8 +30,12 @@ namespace CompMs.App.Msdial.Model.DataObj
         public List<SpectrumPeakWrapper> Spectrum => spectrum ?? (spectrum = msReference.Spectrum.Select(spec => new SpectrumPeakWrapper(spec)).ToList());
         private List<SpectrumPeakWrapper> spectrum = null;
 
-        internal readonly MoleculeMsReference msReference;
-        internal readonly MsScanMatchResult matchResult;
+        protected readonly MoleculeMsReference msReference;
+        protected readonly MsScanMatchResult matchResult;
+
+        MoleculeMsReference ICompoundResult.MsReference => msReference;
+        MsScanMatchResult ICompoundResult.MatchResult => matchResult;
+
         public CompoundResult(MoleculeMsReference msReference, MsScanMatchResult matchResult) {
             this.msReference = msReference;
             this.matchResult = matchResult;

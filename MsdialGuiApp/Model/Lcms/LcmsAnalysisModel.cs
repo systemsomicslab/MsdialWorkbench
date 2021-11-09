@@ -183,7 +183,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 return null;
             }
 
-            return new CompoundSearchModel<ChromatogramPeakFeature>(
+            return new LcmsCompoundSearchModel<ChromatogramPeakFeature>(
                 AnalysisFile,
                 Target.Value.InnerModel,
                 MsdecResult.Value,

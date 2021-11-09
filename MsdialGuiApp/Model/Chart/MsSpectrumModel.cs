@@ -8,7 +8,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    class MsSpectrumModel : BindableBase {
+    public class MsSpectrumModel : BindableBase {
         public MsSpectrumModel(
             Func<SpectrumPeak, double> horizontalSelector,
             Func<SpectrumPeak, double> verticalSelector)
