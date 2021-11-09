@@ -35,6 +35,8 @@ namespace CompMs.Common.Proteomics.DataObj {
 
         [Key(6)]
         public bool IsDecoy { get; set; } = false;
+        [Key(7)]
+        public int MissedCleavages { get; set; } = 0;
 
         public int CountModifiedAminoAcids() { return SequenceObj.Count(n => n.IsModified()); }
     }

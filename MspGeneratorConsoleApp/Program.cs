@@ -690,6 +690,10 @@ namespace CompMs.MspGenerator
                 //RtCcsPredictOnR.runPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, workingDirectry+ @"\xgb_padel_evaluation_RT_2021-03-29.rds", workingDirectry + @"\xgb_padel_evaluation_CCS_2021-03-29.rds");
 
                 ////////// 上記で算出したpredict結果をmerge
+                ///
+                //20211008
+                // RtとCCSの予測用に側鎖の構成を追加
+                //MergeRTandCCSintoMsp.generateInchikeyAndSmilesAndChainsListFromMsp(@"Z:\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\LBM\Msp20210527163602.jointedmsp");
 
             }
         }

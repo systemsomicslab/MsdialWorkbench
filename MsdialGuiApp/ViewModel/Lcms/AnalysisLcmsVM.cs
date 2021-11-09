@@ -122,9 +122,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
                 lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
 
-
-
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
+            //RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
             SurveyScanViewModel = new SurveyScanViewModel(
                 this.model.SurveyScanModel,
                 horizontalAxis: vAxis).AddTo(Disposables);

@@ -119,6 +119,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 case TargetOmics.Lipidomics:
                     SelectedBrush = Brushes[0].Mapper;
                     break;
+                case TargetOmics.Proteomics:
                 case TargetOmics.Metabolomics:
                     SelectedBrush = Brushes[1].Mapper;
                     break;
