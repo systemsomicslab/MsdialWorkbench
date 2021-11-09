@@ -20,7 +20,10 @@ namespace CompMs.Common.Proteomics.DataObj {
         [Key(1)]
         private long SeekPoint2MS { get; set; }
 
-        public PeptideMsReference() { }
+        public PeptideMsReference(Peptide peptide) {
+            Peptide = peptide;
+        }
+
         public PeptideMsReference(Peptide peptide, Stream fs, long seekPoint, AdductIon adduct, int id) {
             Peptide = peptide; Fs = fs; SeekPoint2MS = seekPoint; AdductType = adduct;
             PrecursorMz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, peptide.ExactMass);
