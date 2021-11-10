@@ -72,7 +72,7 @@ namespace CompMs.MsdialCore.DataObj
                 storage = MessagePackDefaultHandler.LoadFromStream<ProjectDataStorage>(projectStream);
             }
 
-            var tasks = storage.ProjectPaths.Select(projectPath => serializer.LoadAsync(streamManager, projectPath, string.Empty));
+            var tasks = storage.ProjectPaths.Select(projectPath => serializer.LoadAsync(streamManager, projectPath, null, string.Empty));
             var datas = await Task.WhenAll(tasks).ConfigureAwait(false);
             storage.InnerStorages.AddRange(datas);
 

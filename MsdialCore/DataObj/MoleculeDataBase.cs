@@ -49,7 +49,7 @@ namespace CompMs.MsdialCore.DataObj
             LargeListMessagePack.Serialize(stream, Database);
         }
 
-        public void Load(Stream stream) {
+        public void Load(Stream stream, string folderpath) {
             Database?.Clear();
             var db = LargeListMessagePack.Deserialize<MoleculeMsReference>(stream);
             Database = new MoleculeMsReferenceCollection(db);

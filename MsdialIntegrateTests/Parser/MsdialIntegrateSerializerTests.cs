@@ -63,7 +63,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             }
 
             using (var manager = ZipStreamManager.OpenGet(memory)) {
-                var actual = await serializer.LoadAsync(manager, "Test", "TestFolder");
+                var actual = await serializer.LoadAsync(manager, "Test", null, "TestFolder");
 
                 AreAnalysisFilesEqual(storage.AnalysisFiles, actual.AnalysisFiles);
                 AreAlignmentFilesEqual(storage.AlignmentFiles, actual.AlignmentFiles);
@@ -118,7 +118,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             }
 
             using (var manager = ZipStreamManager.OpenGet(memory)) {
-                var actual = await serializer.LoadAsync(manager, "Test", "TestFolder");
+                var actual = await serializer.LoadAsync(manager, "Test", null, "TestFolder");
 
                 AreAnalysisFilesEqual(storage.AnalysisFiles, actual.AnalysisFiles);
                 AreAlignmentFilesEqual(storage.AlignmentFiles, actual.AlignmentFiles);
@@ -167,7 +167,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             }
 
             using (var manager = ZipStreamManager.OpenGet(memory)) {
-                var actual = await serializer.LoadAsync(manager, "Test", "TestFolder");
+                var actual = await serializer.LoadAsync(manager, "Test", null, "TestFolder");
 
                 AreAnalysisFilesEqual(storage.AnalysisFiles, actual.AnalysisFiles);
                 AreAlignmentFilesEqual(storage.AlignmentFiles, actual.AlignmentFiles);
@@ -220,7 +220,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             }
 
             using (var manager = ZipStreamManager.OpenGet(memory)) {
-                var actual = await serializer.LoadAsync(manager, "Test", "TestFolder");
+                var actual = await serializer.LoadAsync(manager, "Test", null, "TestFolder");
 
                 AreAnalysisFilesEqual(storage.AnalysisFiles, actual.AnalysisFiles);
                 AreAlignmentFilesEqual(storage.AlignmentFiles, actual.AlignmentFiles);
@@ -271,7 +271,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             }
 
             using (var manager = ZipStreamManager.OpenGet(memory)) {
-                var actual = await serializer.LoadAsync(manager, "Test", "TestFolder");
+                var actual = await serializer.LoadAsync(manager, "Test", null, "TestFolder");
 
                 AreAnalysisFilesEqual(storage.AnalysisFiles, actual.AnalysisFiles);
                 AreAlignmentFilesEqual(storage.AlignmentFiles, actual.AlignmentFiles);

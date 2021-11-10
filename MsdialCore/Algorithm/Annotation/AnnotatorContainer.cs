@@ -196,7 +196,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public void Load(Stream stream, ILoadAnnotatorVisitor visitor) {
-            Database.Load(stream);
+            Database.Load(stream, null);
             Annotator = AnnotatorKey.Accept(visitor, Database);
         }
     }
@@ -268,7 +268,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public void Load(Stream stream, ILoadAnnotatorVisitor visitor) {
-            Database.Load(null);
+            Database.Load(null, null);
             Annotator = AnnotatorKey.Accept(visitor, Database);
         }
     }

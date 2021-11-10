@@ -91,7 +91,7 @@ namespace CompMs.MsdialImmsCore.Export.Tests
             var expected = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialImmsCoreTests\Resources\output1.tsv.cache";
 
             var streamManager = new DirectoryTreeStreamManager(Path.GetDirectoryName(project));
-            var storage = MsdialImmsDataStorage.Serializer.LoadAsync(streamManager, Path.GetFileName(project), string.Empty).Result;
+            var storage = MsdialImmsDataStorage.Serializer.LoadAsync(streamManager, Path.GetFileName(project), null, string.Empty).Result;
             var alignmentFile = storage.AlignmentFiles[0];
             var container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(alignmentFile.FilePath);
             var msdecResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);

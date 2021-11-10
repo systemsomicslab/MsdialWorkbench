@@ -79,7 +79,7 @@ namespace CompMs.MsdialDimsCore.Export.Tests
             var expected = @"C:\Users\YUKI MATSUZAWA\works\msdialworkbench\MsdialDimsCoreTests\Resources\output2.tsv.cache";
 
             var streamManager = new DirectoryTreeStreamManager(Path.GetDirectoryName(project));
-            var storage = await MsdialDimsDataStorage.Serializer.LoadAsync(streamManager, Path.GetFileName(project), string.Empty);
+            var storage = await MsdialDimsDataStorage.Serializer.LoadAsync(streamManager, Path.GetFileName(project), null, string.Empty);
             var analysisFile = storage.AnalysisFiles[0];
 
             var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);

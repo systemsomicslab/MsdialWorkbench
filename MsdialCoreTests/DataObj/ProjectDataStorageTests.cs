@@ -66,7 +66,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
     {
         // private List<IMsdialDataStorage<ParameterBase>> storages = new List<IMsdialDataStorage<ParameterBase>>();
         private Dictionary<string, IMsdialDataStorage<ParameterBase>> storages = new Dictionary<string, IMsdialDataStorage<ParameterBase>>();
-        public Task<IMsdialDataStorage<ParameterBase>> LoadAsync(IStreamManager streamManager, string projectTitle, string prefix) {
+        public Task<IMsdialDataStorage<ParameterBase>> LoadAsync(IStreamManager streamManager, string projectTitle, string projectFolderPath, string prefix) {
             var storage = storages[$"{prefix}/{projectTitle}"];
             storages.Remove(projectTitle);
             return Task.FromResult(storage);

@@ -50,7 +50,7 @@ namespace CompMs.MsdialGcMsApi.DataObj.Tests
             }
 
             using (var manager = ZipStreamManager.OpenGet(memory)) {
-                var actual = await MsdialGcmsDataStorage.Serializer.LoadAsync(manager, "Test", "TestFolder");
+                var actual = await MsdialGcmsDataStorage.Serializer.LoadAsync(manager, "Test", null, "TestFolder");
 
                 Assert.AreEqual(storage.AnalysisFiles.Count, actual.AnalysisFiles.Count);
                 Assert.AreEqual(storage.AnalysisFiles[0].AnalysisFileId, actual.AnalysisFiles[0].AnalysisFileId);

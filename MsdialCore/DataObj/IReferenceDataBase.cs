@@ -7,7 +7,7 @@ namespace CompMs.MsdialCore.DataObj
     {
         string Id { get; }
         void Save(Stream stream);
-        void Load(Stream stream);
+        void Load(Stream stream, string folderpath);
     }
 }
 
