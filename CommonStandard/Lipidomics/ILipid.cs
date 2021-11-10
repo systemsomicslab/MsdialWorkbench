@@ -1,7 +1,6 @@
 ﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -27,6 +26,7 @@ namespace CompMs.Common.Lipidomics
             AnnotationLevel = annotationLevel;
         }
 
+        public string Name => ToString();
         public LbmClass LipidClass { get; }
         public double Mass { get; }
         public int AnnotationLevel { get; } = 1;
@@ -40,7 +40,6 @@ namespace CompMs.Common.Lipidomics
             Chain = chain;
         }
 
-        public string Name => ToString();
         public int ChainCount { get; }
         public TotalAcylChain Chain { get; }
 
@@ -59,16 +58,15 @@ namespace CompMs.Common.Lipidomics
 
     public class SomeAcylChainLipid : BaseLipid, ILipid
     {
-        public SomeAcylChainLipid(LbmClass lipidClass, double mass, params IAcylChain[] chains)
+        public SomeAcylChainLipid(LbmClass lipidClass, double mass, params IChain[] chains)
             : base(lipidClass, mass, 2) {
             this.chains = chains;
-            Chains = new ReadOnlyCollection<IAcylChain>(this.chains);
+            Chains = new ReadOnlyCollection<IChain>(this.chains);
         }
 
-        public string Name => ToString();
         public int ChainCount => Chains.Count;
-        public ReadOnlyCollection<IAcylChain> Chains { get; }
-        private IAcylChain[] chains;
+        public ReadOnlyCollection<IChain> Chains { get; }
+        private IChain[] chains;
 
         public IEnumerable<ILipid> Generate(ILipidGenerator generator) {
             return generator.Generate(this);
@@ -85,16 +83,15 @@ namespace CompMs.Common.Lipidomics
 
     public class PositionSpecificAcylChainLipid : BaseLipid, ILipid
     {
-        public PositionSpecificAcylChainLipid(LbmClass lipidClass, double mass, params IAcylChain[] chains)
+        public PositionSpecificAcylChainLipid(LbmClass lipidClass, double mass, params IChain[] chains)
             : base(lipidClass, mass, 3) {
             this.chains = chains;
-            Chains = new ReadOnlyCollection<IAcylChain>(this.chains);
+            Chains = new ReadOnlyCollection<IChain>(this.chains);
         }
 
-        public string Name => ToString();
         public int ChainCount => Chains.Count;
-        public ReadOnlyCollection<IAcylChain> Chains { get; }
-        private IAcylChain[] chains;
+        public ReadOnlyCollection<IChain> Chains { get; }
+        private IChain[] chains;
 
         public IEnumerable<ILipid> Generate(ILipidGenerator generator) {
             return generator.Generate(this);

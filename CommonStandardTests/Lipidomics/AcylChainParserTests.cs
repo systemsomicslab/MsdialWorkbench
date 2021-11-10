@@ -33,7 +33,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(4, acyl.DoubleBondCount);
             Assert.AreEqual(4, acyl.OxidizedCount);
 
-            acyl = parser.Parse("18:2(d6,12)");
+            acyl = parser.Parse("18:2(6,12)");
             Assert.IsInstanceOfType(acyl, typeof(SpecificAcylChain));
             Assert.AreEqual(18, acyl.CarbonCount);
             Assert.AreEqual(2, acyl.DoubleBondCount);

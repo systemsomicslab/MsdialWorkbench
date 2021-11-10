@@ -13,7 +13,7 @@ namespace CompMs.Common.Lipidomics
 
     public class LipidGenerator : ILipidGenerator
     {
-        public LipidGenerator(IAcylChainGenerator acylChainGenerator) {
+        public LipidGenerator(IChainGenerator acylChainGenerator) {
             AcylChainGenerator = acylChainGenerator;
         }
 
@@ -21,14 +21,14 @@ namespace CompMs.Common.Lipidomics
 
         }
 
-        public IAcylChainGenerator AcylChainGenerator { get; }
+        public IChainGenerator AcylChainGenerator { get; }
 
         public bool CanGenerate(ILipid lipid) {
             return lipid.ChainCount >= 1;
         }
 
         public IEnumerable<ILipid> Generate(SubLevelLipid lipid) {
-            return lipid.Chain.GetCandidateSets(AcylChainGenerator, lipid.ChainCount)
+            return lipid.Chain.GetCandidateSets(AcylChainGenerator)
                 .Select(set => new SomeAcylChainLipid(lipid.LipidClass, lipid.Mass, set));
         }
 
@@ -40,7 +40,7 @@ namespace CompMs.Common.Lipidomics
         public IEnumerable<ILipid> Generate(PositionSpecificAcylChainLipid lipid) {
             var iters = lipid.Chains.Select(c => c.GetCandidates(AcylChainGenerator)).ToArray();
             
-            IEnumerable<IAcylChain[]> recurse(int i, IAcylChain[] set) {
+            IEnumerable<IChain[]> recurse(int i, IChain[] set) {
                 if (i == lipid.ChainCount) {
                     yield return set.ToArray();
                 }
@@ -54,7 +54,7 @@ namespace CompMs.Common.Lipidomics
                 }
             }
 
-            return recurse(0, new IAcylChain[lipid.ChainCount])
+            return recurse(0, new IChain[lipid.ChainCount])
                 .Select(chains => new PositionSpecificAcylChainLipid(lipid.LipidClass, lipid.Mass, chains));
         }
     }

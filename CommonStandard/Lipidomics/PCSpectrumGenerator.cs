@@ -57,7 +57,10 @@ namespace CompMs.Common.Lipidomics
         public IMSScanProperty Generate(SubLevelLipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetPCSpectrum(lipid));
-            spectrum = spectrum.OrderBy(peak => peak.Mass).ToList();
+            spectrum = spectrum.GroupBy(spec => spec, comparer)
+                .Select(specs => new SpectrumPeak(specs.First().Mass, specs.First().Intensity, string.Join(", ", specs.Select(spec => spec.Comment))))
+                .OrderBy(peak => peak.Mass)
+                .ToList();
             return CreateReference(lipid, adduct, spectrum, molecule);
         }
 
@@ -66,7 +69,10 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetPCSpectrum(lipid));
             spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains));
             spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.OfType<SpecificAcylChain>()));
-            spectrum = spectrum.OrderBy(peak => peak.Mass).ToList();
+            spectrum = spectrum.GroupBy(spec => spec, comparer)
+                .Select(specs => new SpectrumPeak(specs.First().Mass, specs.First().Intensity, string.Join(", ", specs.Select(spec => spec.Comment))))
+                .OrderBy(peak => peak.Mass)
+                .ToList();
             return CreateReference(lipid, adduct, spectrum, molecule);
         }
 
@@ -92,8 +98,8 @@ namespace CompMs.Common.Lipidomics
                 Name = lipid.Name,
                 Formula = molecule?.Formula,
                 Ontology = molecule?.Ontology,
-                // SMILES = molecule?.SMILES,
-                // InChIKey = molecule?.InChIKey,
+                SMILES = molecule?.SMILES,
+                InChIKey = molecule?.InChIKey,
                 AdductType = adduct,
                 CompoundClass = lipid.LipidClass.ToString(),
                 Charge = adduct.ChargeNumber,
@@ -109,22 +115,22 @@ namespace CompMs.Common.Lipidomics
             };
         }
 
-        private IEnumerable<SpectrumPeak> GetAcylLevelSpectrum(ILipid lipid, IEnumerable<IAcylChain> acylChains) {
+        private IEnumerable<SpectrumPeak> GetAcylLevelSpectrum(ILipid lipid, IEnumerable<IChain> acylChains) {
             return acylChains.SelectMany(acylChain => GetAcylLevelSpectrum(lipid, acylChain));
         }
 
-        private SpectrumPeak[] GetAcylLevelSpectrum(ILipid lipid, IAcylChain acylChain) {
+        private SpectrumPeak[] GetAcylLevelSpectrum(ILipid lipid, IChain acylChain) {
             var lipidMass = lipid.Mass;
             var chainMass = acylChain.Mass - MassDiffDictionary.HydrogenMass;
             return new[]
             {
                 new SpectrumPeak(lipidMass - chainMass + MassDiffDictionary.ProtonMass, 750d, $"-{acylChain}"),
                 new SpectrumPeak(lipidMass - chainMass - H2O + MassDiffDictionary.ProtonMass, 750d, $"-{acylChain}-H2O"),
-                new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.OxygenMass, 500d, $"-{acylChain}-O"),
+                new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.OxygenMass, 750d, $"-{acylChain}-O"),
             };
         }
 
-        private SpectrumPeak[] GetAcylPositionSpectrum(ILipid lipid, IAcylChain acylChain) {
+        private SpectrumPeak[] GetAcylPositionSpectrum(ILipid lipid, IChain acylChain) {
             var lipidMass = lipid.Mass;
             var chainMass = acylChain.Mass;
             return new[]

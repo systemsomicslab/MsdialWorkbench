@@ -10,7 +10,7 @@ namespace CompMs.Common.Lipidomics.Tests
     {
         [TestMethod()]
         public void SubLevelGenerateTest() {
-            ILipid lipid = new SubLevelLipid(LbmClass.PC, 2, 785.5935, new TotalAcylChain(36, 2, 0));
+            ILipid lipid = new SubLevelLipid(LbmClass.PC, 2, 785.5935, new TotalAcylChain(36, 2, 0, 2));
             var generator = new LipidGenerator(new MockAcylChainGenerator());
 
             var lipids = lipid.Generate(generator).ToArray();
@@ -42,7 +42,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.IsTrue(lipids.All(l => l.Mass == lipid.Mass));
             Assert.IsTrue(lipids.All(l => l.LipidClass == lipid.LipidClass));
 
-            var expects = new (IAcylChain, IAcylChain)[]
+            var expects = new (IChain, IChain)[]
             {
                 (acyl1, acyl2),
                 (acyl2, acyl1),
@@ -60,7 +60,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.IsTrue(lipids.All(l => l.Mass == lipid.Mass));
             Assert.IsTrue(lipids.All(l => l.LipidClass == lipid.LipidClass));
 
-            expects = new (IAcylChain, IAcylChain)[]
+            expects = new (IChain, IChain)[]
             {
                 (acyl3, acyl3),
             };
@@ -95,7 +95,7 @@ namespace CompMs.Common.Lipidomics.Tests
         }
     }
 
-    class MockAcylChainGenerator : IAcylChainGenerator
+    class MockAcylChainGenerator : IChainGenerator
     {
         private int c = 0;
         public IEnumerable<SpecificAcylChain> Generate(AcylChain chain) {
@@ -105,7 +105,19 @@ namespace CompMs.Common.Lipidomics.Tests
             yield return new SpecificAcylChain(18, new List<int> { 12, }, 0);
         }
 
-        public IEnumerable<AcylChain[]> Separate(TotalAcylChain chain, int numChain) {
+        public IEnumerable<SpecificAlkylChain> Generate(AlkylChain chain) {
+            yield return new SpecificAlkylChain(18, new List<int> { 6, }, 0);
+            yield return new SpecificAlkylChain(18, new List<int> { 9, }, 0);
+            yield return new SpecificAlkylChain(18, new List<int> { 12, }, 0);
+        }
+
+        public IEnumerable<SpecificAlkylChain> Generate(PlasmalogenAlkylChain chain) {
+            yield return new SpecificAlkylChain(18, new List<int> { 1, 6, }, 0);
+            yield return new SpecificAlkylChain(18, new List<int> { 1, 9, }, 0);
+            yield return new SpecificAlkylChain(18, new List<int> { 1, 12, }, 0);
+        }
+
+        IEnumerable<IChain[]> IChainGenerator.Separate(TotalAcylChain chain, int numChain) {
             yield return Enumerable.Range(10, numChain).Select(v => new AcylChain(v, 0, 0)).ToArray();
             yield return Enumerable.Range(20, numChain).Select(v => new AcylChain(v, 1, 0)).ToArray();
             yield return Enumerable.Range(30, numChain).Select(v => new AcylChain(v, 0, 1)).ToArray();

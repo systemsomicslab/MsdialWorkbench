@@ -5,42 +5,46 @@ using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface IAcylChain {
+    public interface IChain {
         int CarbonCount { get; }
         int DoubleBondCount { get; }
         int OxidizedCount { get; }
         double Mass { get; }
 
-        IEnumerable<IAcylChain> GetCandidates(IAcylChainGenerator generator);
+        IEnumerable<IChain> GetCandidates(IChainGenerator generator);
     }
 
     public class TotalAcylChain {
-        public TotalAcylChain(int carbonCount, int doubleBondCount, int oxidizedCount) {
+        public TotalAcylChain(int carbonCount, int doubleBondCount, int oxidizedCount, int chainCount, int alkylChainCount = 0) {
             CarbonCount = carbonCount;
             DoubleBondCount = doubleBondCount;
             OxidizedCount = oxidizedCount;
+            ChainCount = chainCount;
+            AlkylChainCount = alkylChainCount;
         }
 
         public int CarbonCount { get; }
         public int DoubleBondCount { get; }
         public int OxidizedCount { get; }
+        public int ChainCount { get; }
+        public int AlkylChainCount { get; }
 
-        public double Mass => CalculateSubLevelMass(CarbonCount, DoubleBondCount, OxidizedCount);
+        public double Mass => CalculateSubLevelMass(CarbonCount, DoubleBondCount, OxidizedCount, ChainCount, AlkylChainCount);
 
-        public IEnumerable<AcylChain[]> GetCandidateSets(IAcylChainGenerator generator, int numChain) {
-            return generator.Separate(this, numChain);
+        public IEnumerable<IChain[]> GetCandidateSets(IChainGenerator generator) {
+            return generator.Separate(this, ChainCount);
         }
 
         public override string ToString() {
-            return AcylChainUtility.ToString(CarbonCount, DoubleBondCount, OxidizedCount);
+            return ChainUtility.ToString(CarbonCount, DoubleBondCount, OxidizedCount);
         }
 
-        private static double CalculateSubLevelMass(int carbon, int doubleBond, int oxidize) {
-            return carbon * MassDiffDictionary.CarbonMass + (2 * carbon - 2 * doubleBond - 2) * MassDiffDictionary.HydrogenMass + (2 + oxidize) * MassDiffDictionary.OxygenMass;
+        private static double CalculateSubLevelMass(int carbon, int doubleBond, int oxidize, int chain, int alkyl) {
+            return carbon * MassDiffDictionary.CarbonMass + (2 * (carbon - chain + alkyl - doubleBond) + 2) * MassDiffDictionary.HydrogenMass + (chain - alkyl + oxidize) * MassDiffDictionary.OxygenMass;
         }
     }
 
-    public class AcylChain : IAcylChain {
+    public class AcylChain : IChain {
         public AcylChain(int carbonCount, int doubleBondCount, int oxidizedCount) {
             CarbonCount = carbonCount;
             DoubleBondCount = doubleBondCount;
@@ -50,18 +54,18 @@ namespace CompMs.Common.Lipidomics
         public int CarbonCount { get; }
         public int DoubleBondCount { get; }
         public int OxidizedCount { get; }
-        public double Mass => AcylChainUtility.CalculateMass(CarbonCount, DoubleBondCount, OxidizedCount);
+        public double Mass => ChainUtility.CalculateAcylMass(CarbonCount, DoubleBondCount, OxidizedCount);
 
-        public IEnumerable<IAcylChain> GetCandidates(IAcylChainGenerator generator) {
+        public IEnumerable<IChain> GetCandidates(IChainGenerator generator) {
             return generator.Generate(this);
         }
 
         public override string ToString() {
-            return AcylChainUtility.ToString(CarbonCount, DoubleBondCount, OxidizedCount);
+            return ChainUtility.ToString(CarbonCount, DoubleBondCount, OxidizedCount);
         }
     }
 
-    public class SpecificAcylChain : IAcylChain {
+    public class SpecificAcylChain : IChain {
         public SpecificAcylChain(int carbonCount, List<int> doubleBondPosition, int oxidizedCount) {
             CarbonCount = carbonCount;
             this.doubleBondPosition = doubleBondPosition;
@@ -74,18 +78,87 @@ namespace CompMs.Common.Lipidomics
         private List<int> doubleBondPosition;
         public int DoubleBondCount => DoubleBondPosition.Count;
         public int OxidizedCount { get; }
-        public double Mass => AcylChainUtility.CalculateMass(CarbonCount, DoubleBondCount, OxidizedCount);
+        public double Mass => ChainUtility.CalculateAcylMass(CarbonCount, DoubleBondCount, OxidizedCount);
 
-        public IEnumerable<IAcylChain> GetCandidates(IAcylChainGenerator generator) {
-            return Enumerable.Empty<IAcylChain>();
+        public IEnumerable<IChain> GetCandidates(IChainGenerator generator) {
+            return Enumerable.Empty<IChain>();
         }
 
         public override string ToString() {
-            return AcylChainUtility.ToString(CarbonCount, DoubleBondPosition, OxidizedCount);
+            return ChainUtility.ToString(CarbonCount, DoubleBondPosition, OxidizedCount);
         }
     }
 
-    static class AcylChainUtility {
+    public class AlkylChain : IChain
+    {
+        public AlkylChain(int carbonCount, int doubleBondCount, int oxidizedCount) {
+            CarbonCount = carbonCount;
+            DoubleBondCount = doubleBondCount;
+            OxidizedCount = oxidizedCount;
+        }
+
+        public int CarbonCount { get; }
+        public int DoubleBondCount { get; }
+        public int OxidizedCount { get; }
+        public double Mass => ChainUtility.CalculateAlkylMass(CarbonCount, DoubleBondCount, OxidizedCount);
+
+        public IEnumerable<IChain> GetCandidates(IChainGenerator generator) {
+            return generator.Generate(this);
+        }
+
+        public override string ToString() {
+            return "O-" + ChainUtility.ToString(CarbonCount, DoubleBondCount, OxidizedCount);
+        }
+    }
+
+    public class PlasmalogenAlkylChain : IChain
+    {
+        public PlasmalogenAlkylChain(int carbonCount, int doubleBondCount, int oxidizedCount) {
+            CarbonCount = carbonCount;
+            DoubleBondCount = doubleBondCount + 1;
+            OxidizedCount = oxidizedCount;
+        }
+
+        public int CarbonCount { get; }
+        public int DoubleBondCount { get; }
+        public int OxidizedCount { get; }
+        public double Mass => ChainUtility.CalculateAlkylMass(CarbonCount, DoubleBondCount, OxidizedCount);
+
+        public IEnumerable<IChain> GetCandidates(IChainGenerator generator) {
+            return generator.Generate(this);
+        }
+
+        public override string ToString() {
+            return "P-" + ChainUtility.ToString(CarbonCount, DoubleBondCount - 1, OxidizedCount);
+        }
+    }
+
+    public class SpecificAlkylChain : IChain
+    {
+        public SpecificAlkylChain(int carbonCount, List<int> doubleBondPosition, int oxidizedCount) {
+            CarbonCount = carbonCount;
+            this.doubleBondPosition = doubleBondPosition;
+            DoubleBondPosition = this.doubleBondPosition.AsReadOnly();
+            OxidizedCount = oxidizedCount;
+        }
+
+        public int CarbonCount { get; }
+        public ReadOnlyCollection<int> DoubleBondPosition { get; }
+        private List<int> doubleBondPosition;
+        public int DoubleBondCount => DoubleBondPosition.Count;
+        public int OxidizedCount { get; }
+        public double Mass => ChainUtility.CalculateAlkylMass(CarbonCount, DoubleBondCount, OxidizedCount);
+
+        public IEnumerable<IChain> GetCandidates(IChainGenerator generator) {
+            return Enumerable.Empty<IChain>();
+        }
+
+        public override string ToString() {
+            return ChainUtility.ToString(CarbonCount, DoubleBondPosition, OxidizedCount);
+        }
+    }
+
+    static class ChainUtility {
         public static string ToString(int carbon, int doubleBond, int oxidize) {
             return string.Format("{0}:{1}{2}", carbon, doubleBond, OxidizeSymbol(oxidize));
         }
@@ -98,7 +171,7 @@ namespace CompMs.Common.Lipidomics
             if (doubleBonds.Count == 0) {
                 return "0";
             }
-            return $"{doubleBonds.Count}(d{string.Join(",", doubleBonds)})";
+            return $"{doubleBonds.Count}({string.Join(",", doubleBonds)})";
         }
 
         private static string OxidizeSymbol(int oxidize) {
@@ -111,8 +184,12 @@ namespace CompMs.Common.Lipidomics
             return $";{oxidize}O";
         }
 
-        public static double CalculateMass(int carbon, int doubleBond, int oxidize) {
-            return carbon * MassDiffDictionary.CarbonMass + (2 * carbon - 2 * doubleBond - 1) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass + (MassDiffDictionary.OxygenMass * oxidize);
+        public static double CalculateAcylMass(int carbon, int doubleBond, int oxidize) {
+            return carbon * MassDiffDictionary.CarbonMass + (2 * carbon - 2 * doubleBond - 1) * MassDiffDictionary.HydrogenMass + (1 + oxidize) * MassDiffDictionary.OxygenMass;
+        }
+
+        public static double CalculateAlkylMass(int carbon, int doubleBond, int oxidize) {
+            return carbon * MassDiffDictionary.CarbonMass + (2 * carbon - 2 * doubleBond + 1) * MassDiffDictionary.HydrogenMass + oxidize * MassDiffDictionary.OxygenMass;
         }
     }
 

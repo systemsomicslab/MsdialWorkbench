@@ -35,7 +35,7 @@ namespace CompMs.Common.Lipidomics
                     }
                 }
                 else {
-                    var subAcyl = new TotalAcylChain(acyl1.CarbonCount, acyl1.DoubleBondCount, acyl1.OxidizedCount);
+                    var subAcyl = new TotalAcylChain(acyl1.CarbonCount, acyl1.DoubleBondCount, acyl1.OxidizedCount, 2);
                     return new SubLevelLipid(LbmClass.PC, 2, Skelton + subAcyl.Mass, subAcyl);
                 }
             }

@@ -5,10 +5,10 @@ namespace CompMs.Common.Lipidomics
 {
     public class AcylChainParser
     {
-        public static readonly string Pattern = @"(?<carbon>\d+):(?<db>\d)(\(d(?<dbpos>\d+(,\d+)*)\))?(;(?<ox>\d*)O)?";
+        public static readonly string Pattern = @"(?<carbon>\d+):(?<db>\d)(\((?<dbpos>\d+(,\d+)*)\))?(;(?<ox>\d*)O)?";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
-        public IAcylChain Parse(string chainStr) {
+        public IChain Parse(string chainStr) {
             var match = pattern.Match(chainStr);
             if (match.Success) {
                 var groups = match.Groups;
