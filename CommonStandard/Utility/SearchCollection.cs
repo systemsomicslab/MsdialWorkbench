@@ -121,5 +121,27 @@ namespace CompMs.Common.Utility
 
             return recurse(0);
         }
+
+        public static IEnumerable<T[]> CartesianProduct<T>(IReadOnlyList<IReadOnlyList<T>> collections) {
+            var set = new T[collections.Count];
+
+            IEnumerable<T[]> rec(int i) {
+                if (i == collections.Count) {
+                    yield return set.ToArray();
+                }
+                else {
+                    var collection = collections[i];
+
+                    foreach (var item in collection) {
+                        set[i] = item;
+                        foreach (var res in rec(i + 1)) {
+                            yield return res;
+                        }
+                    }
+                }
+            }
+
+            return rec(0);
+        }
     }
 }

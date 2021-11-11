@@ -262,5 +262,40 @@ namespace CompMs.Common.Utility.Tests
             };
             CollectionAssert.AreEquivalent(expects, actuals);
         }
+
+        [TestMethod]
+        public void CartesianProductTest() {
+            var collection = new[] {
+                new[] { 1, 2, 3, 4, },
+                new[] { 5, 6, },
+                new[] { 7, },
+                new[] { 8, 9, },
+            };
+
+            var expects = new[]
+            {
+                new[] { 1, 5, 7, 8, },
+                new[] { 1, 5, 7, 9, },
+                new[] { 1, 6, 7, 8, },
+                new[] { 1, 6, 7, 9, },
+                new[] { 2, 5, 7, 8, },
+                new[] { 2, 5, 7, 9, },
+                new[] { 2, 6, 7, 8, },
+                new[] { 2, 6, 7, 9, },
+                new[] { 3, 5, 7, 8, },
+                new[] { 3, 5, 7, 9, },
+                new[] { 3, 6, 7, 8, },
+                new[] { 3, 6, 7, 9, },
+                new[] { 4, 5, 7, 8, },
+                new[] { 4, 5, 7, 9, },
+                new[] { 4, 6, 7, 8, },
+                new[] { 4, 6, 7, 9, },
+            };
+            var actuals = SearchCollection.CartesianProduct(collection);
+
+            foreach ((var exp, var act) in expects.Zip(actuals)) {
+                CollectionAssert.AreEqual(exp, act);
+            }
+        }
     }
 }
