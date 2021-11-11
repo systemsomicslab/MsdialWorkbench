@@ -37,35 +37,23 @@ namespace CompMs.Common.Lipidomics
             return adduct.AdductIonName == "[M+H]+" && lipid.LipidClass == LbmClass.EtherPE;
         }
 
-        public IMSScanProperty Generate(SubLevelLipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
+        public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetEtherPESpectrum(lipid));
-            spectrum = spectrum.GroupBy(spec => spec, comparer)
-                .Select(specs => new SpectrumPeak(specs.First().Mass, specs.First().Intensity, string.Join(", ", specs.Select(spec => spec.Comment))))
-                .OrderBy(peak => peak.Mass)
-                .ToList();
-            return CreateReference(lipid, adduct, spectrum, molecule);
-        }
-
-        public IMSScanProperty Generate(SomeAcylChainLipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
-            throw new NotSupportedException();
-        }
-
-        public IMSScanProperty Generate(PositionSpecificAcylChainLipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
-            var spectrum = new List<SpectrumPeak>();
-            spectrum.AddRange(GetEtherPESpectrum(lipid));
-            spectrum.AddRange(GetAlkylPositionSpectrum(lipid, lipid.Chains[0]));
-            if (lipid.Chains[0] is SpecificAlkylChain alkyl) {
-                if (alkyl.DoubleBondPosition.Contains(1)) {
-                    spectrum.AddRange(GetEtherPEPSpectrum(lipid, alkyl, lipid.Chains[1]));
+            if (lipid.Chains is PositionLevelChains plChains) {
+                spectrum.AddRange(GetAlkylPositionSpectrum(lipid, plChains.Chains[0]));
+                if (plChains.Chains[0] is SpecificAlkylChain alkyl) {
+                    if (alkyl.DoubleBondPosition.Contains(1)) {
+                        spectrum.AddRange(GetEtherPEPSpectrum(lipid, alkyl, plChains.Chains[1]));
+                    }
+                    else {
+                        spectrum.AddRange(GetEtherPEOSpectrum(lipid, plChains.Chains[0], plChains.Chains[1]));
+                    }
+                    spectrum.AddRange(GetAlkylDoubleBondSpectrum(lipid, alkyl));
                 }
-                else {
-                    spectrum.AddRange(GetEtherPEOSpectrum(lipid, lipid.Chains[0], lipid.Chains[1]));
+                if (plChains.Chains[1] is SpecificAcylChain acyl) {
+                    spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, acyl));
                 }
-                spectrum.AddRange(GetAlkylDoubleBondSpectrum(lipid, alkyl));
-            }
-            if (lipid.Chains[1] is SpecificAcylChain acyl) {
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, acyl));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.First().Intensity, string.Join(", ", specs.Select(spec => spec.Comment))))

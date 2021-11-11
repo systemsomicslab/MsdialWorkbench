@@ -9,7 +9,7 @@ namespace CompMs.Common.Lipidomics.Tests
         [TestMethod()]
         public void SeparateTest() {
             var generator = new AcylChainGenerator(minLength: 6, begin: 2, skip: 3);
-            var totalChain = new TotalAcylChain(34, 2, 0, 2);
+            var totalChain = new TotalChains(34, 2, 0, 2);
 
             var actual = totalChain.GetCandidateSets(generator).ToArray();
             Assert.IsTrue(actual.All(set => set.Length == 2));
@@ -38,7 +38,7 @@ namespace CompMs.Common.Lipidomics.Tests
             };
             CollectionAssert.AreEquivalent(expects, tuples);
 
-            totalChain = new TotalAcylChain(34, 2, 0, 2, 1);
+            totalChain = new TotalChains(34, 2, 0, 2, 1);
             actual = totalChain.GetCandidateSets(generator).ToArray();
             Assert.IsTrue(actual.All(set => set.Length == 2));
             foreach (var a in actual) {

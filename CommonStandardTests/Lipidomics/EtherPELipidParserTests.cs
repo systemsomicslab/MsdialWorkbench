@@ -11,32 +11,26 @@ namespace CompMs.Common.Lipidomics.Tests
             var parser = new EtherPELipidParser();
 
             var lipid = parser.Parse("PE O-38:7");
-            Assert.IsInstanceOfType(lipid, typeof(SubLevelLipid));
             Assert.AreEqual(747.5199, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.EtherPE, lipid.LipidClass);
 
             lipid = parser.Parse("PE O-18:2_20:5");
-            Assert.IsInstanceOfType(lipid, typeof(PositionSpecificAcylChainLipid));
             Assert.AreEqual(747.5199, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.EtherPE, lipid.LipidClass);
 
             lipid = parser.Parse("PE O-18:2/20:5");
-            Assert.IsInstanceOfType(lipid, typeof(PositionSpecificAcylChainLipid));
             Assert.AreEqual(747.5199, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.EtherPE, lipid.LipidClass);
 
             lipid = parser.Parse("PE P-38:6");
-            Assert.IsInstanceOfType(lipid, typeof(SubLevelLipid));
             Assert.AreEqual(747.5199, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.EtherPE, lipid.LipidClass);
 
             lipid = parser.Parse("PE P-18:1_20:5");
-            Assert.IsInstanceOfType(lipid, typeof(PositionSpecificAcylChainLipid));
             Assert.AreEqual(747.5199, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.EtherPE, lipid.LipidClass);
 
             lipid = parser.Parse("PE P-18:1/20:5");
-            Assert.IsInstanceOfType(lipid, typeof(PositionSpecificAcylChainLipid));
             Assert.AreEqual(747.5199, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.EtherPE, lipid.LipidClass);
         }

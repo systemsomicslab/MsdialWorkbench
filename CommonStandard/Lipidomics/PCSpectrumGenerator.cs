@@ -54,34 +54,18 @@ namespace CompMs.Common.Lipidomics
             return adduct.AdductIonName == "[M+H]+" && lipid.LipidClass == LbmClass.PC;
         }
 
-        public IMSScanProperty Generate(SubLevelLipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
+        public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
             var spectrum = new List<SpectrumPeak>();
             spectrum.AddRange(GetPCSpectrum(lipid));
-            spectrum = spectrum.GroupBy(spec => spec, comparer)
-                .Select(specs => new SpectrumPeak(specs.First().Mass, specs.First().Intensity, string.Join(", ", specs.Select(spec => spec.Comment))))
-                .OrderBy(peak => peak.Mass)
-                .ToList();
-            return CreateReference(lipid, adduct, spectrum, molecule);
-        }
-
-        public IMSScanProperty Generate(SomeAcylChainLipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
-            var spectrum = new List<SpectrumPeak>();
-            spectrum.AddRange(GetPCSpectrum(lipid));
-            spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains));
-            spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.OfType<SpecificAcylChain>()));
-            spectrum = spectrum.GroupBy(spec => spec, comparer)
-                .Select(specs => new SpectrumPeak(specs.First().Mass, specs.First().Intensity, string.Join(", ", specs.Select(spec => spec.Comment))))
-                .OrderBy(peak => peak.Mass)
-                .ToList();
-            return CreateReference(lipid, adduct, spectrum, molecule);
-        }
-
-        public IMSScanProperty Generate(PositionSpecificAcylChainLipid lipid, AdductIon adduct, IMoleculeProperty molecule = null) {
-            var spectrum = new List<SpectrumPeak>();
-            spectrum.AddRange(GetPCSpectrum(lipid));
-            spectrum.AddRange(GetAcylLevelSpectrum(lipid, lipid.Chains));
-            spectrum.AddRange(GetAcylPositionSpectrum(lipid, lipid.Chains[0]));
-            spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, lipid.Chains.OfType<SpecificAcylChain>()));
+            if (lipid.Chains is MolecularSpeciesLevelChains mlChains) {
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.Chains));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<SpecificAcylChain>()));
+            }
+            if (lipid.Chains is PositionLevelChains plChains) {
+                spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.Chains));
+                spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.Chains[0]));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<SpecificAcylChain>()));
+            }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.First().Intensity, string.Join(", ", specs.Select(spec => spec.Comment))))
                 .OrderBy(peak => peak.Mass)

@@ -11,17 +11,14 @@ namespace CompMs.Common.Lipidomics.Tests
             var parser = new PCLipidParser();
 
             var lipid = parser.Parse("PC 34:2");
-            Assert.IsInstanceOfType(lipid, typeof(SubLevelLipid));
             Assert.AreEqual(757.5621552, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.PC, lipid.LipidClass);
 
             lipid = parser.Parse("PC 16:0_18:2");
-            Assert.IsInstanceOfType(lipid, typeof(SomeAcylChainLipid));
             Assert.AreEqual(757.5621552, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.PC, lipid.LipidClass);
 
             lipid = parser.Parse("PC 16:0/18:2");
-            Assert.IsInstanceOfType(lipid, typeof(PositionSpecificAcylChainLipid));
             Assert.AreEqual(757.5621552, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.PC, lipid.LipidClass);
         }

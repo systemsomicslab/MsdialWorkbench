@@ -29,14 +29,14 @@ namespace CompMs.Common.Lipidomics
                     var acyl2 = acylParser.Parse(group["sn2"].Value);
                     switch (group["sep"].Value) {
                         case "_":
-                            return new SomeAcylChainLipid(LbmClass.PC, Skelton + acyl1.Mass + acyl2.Mass, acyl1, acyl2);
+                            return new Lipid(LbmClass.PC, Skelton + acyl1.Mass + acyl2.Mass, new MolecularSpeciesLevelChains(acyl1, acyl2));
                         case "/":
-                            return new PositionSpecificAcylChainLipid(LbmClass.PC, Skelton + acyl1.Mass + acyl2.Mass, acyl1, acyl2);
+                            return new Lipid(LbmClass.PC, Skelton + acyl1.Mass + acyl2.Mass, new PositionLevelChains(acyl1, acyl2));
                     }
                 }
                 else {
-                    var subAcyl = new TotalAcylChain(acyl1.CarbonCount, acyl1.DoubleBondCount, acyl1.OxidizedCount, 2);
-                    return new SubLevelLipid(LbmClass.PC, 2, Skelton + subAcyl.Mass, subAcyl);
+                    var subAcyl = new TotalChains(acyl1.CarbonCount, acyl1.DoubleBondCount, acyl1.OxidizedCount, 2);
+                    return new Lipid(LbmClass.PC, Skelton + subAcyl.Mass, subAcyl);
                 }
             }
             return null;

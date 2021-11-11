@@ -2,7 +2,6 @@
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace CompMs.Common.Lipidomics
 {
@@ -18,30 +17,22 @@ namespace CompMs.Common.Lipidomics
         IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct); 
     }
 
-    public abstract class BaseLipid
+    public class Lipid : ILipid
     {
-        public BaseLipid(LbmClass lipidClass, double mass, int annotationLevel) {
+        public Lipid(LbmClass lipidClass, double mass, ITotalChain chains) {
             LipidClass = lipidClass;
             Mass = mass;
-            AnnotationLevel = annotationLevel;
+            AnnotationLevel = GetAnnotationLevel(chains);
+            Chains = chains;
         }
 
         public string Name => ToString();
         public LbmClass LipidClass { get; }
         public double Mass { get; }
         public int AnnotationLevel { get; } = 1;
-    }
 
-    public class SubLevelLipid : BaseLipid, ILipid
-    {
-        public SubLevelLipid(LbmClass lipidClass, int chainCount, double mass, TotalAcylChain chain)
-            : base(lipidClass, mass, 1) {
-            ChainCount = chainCount;
-            Chain = chain;
-        }
-
-        public int ChainCount { get; }
-        public TotalAcylChain Chain { get; }
+        public int ChainCount => Chains.CarbonCount;
+        public ITotalChain Chains { get; }
 
         public IEnumerable<ILipid> Generate(ILipidGenerator generator) {
             return generator.Generate(this);
@@ -51,58 +42,22 @@ namespace CompMs.Common.Lipidomics
             return generator.Generate(this, adduct);
         }
 
+        // temporary ToString method.
         public override string ToString() {
-            return $"{LipidClass} {Chain}";
-        }
-    }
-
-    public class SomeAcylChainLipid : BaseLipid, ILipid
-    {
-        public SomeAcylChainLipid(LbmClass lipidClass, double mass, params IChain[] chains)
-            : base(lipidClass, mass, 2) {
-            this.chains = chains;
-            Chains = new ReadOnlyCollection<IChain>(this.chains);
+            return $"{LipidClass} {Chains}";
         }
 
-        public int ChainCount => Chains.Count;
-        public ReadOnlyCollection<IChain> Chains { get; }
-        private IChain[] chains;
-
-        public IEnumerable<ILipid> Generate(ILipidGenerator generator) {
-            return generator.Generate(this);
-        }
-
-        public IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct) {
-            return generator.Generate(this, adduct);
-        }
-
-        public override string ToString() {
-            return $"{LipidClass} {string.Join("_", Chains)}";
-        }
-    }
-
-    public class PositionSpecificAcylChainLipid : BaseLipid, ILipid
-    {
-        public PositionSpecificAcylChainLipid(LbmClass lipidClass, double mass, params IChain[] chains)
-            : base(lipidClass, mass, 3) {
-            this.chains = chains;
-            Chains = new ReadOnlyCollection<IChain>(this.chains);
-        }
-
-        public int ChainCount => Chains.Count;
-        public ReadOnlyCollection<IChain> Chains { get; }
-        private IChain[] chains;
-
-        public IEnumerable<ILipid> Generate(ILipidGenerator generator) {
-            return generator.Generate(this);
-        }
-
-        public IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct) {
-            return generator.Generate(this, adduct);
-        }
-
-        public override string ToString() {
-            return $"{LipidClass} {string.Join("/", Chains)}";
+        private static int GetAnnotationLevel(ITotalChain chains) {
+            switch (chains) {
+                case TotalChains _:
+                    return 1;
+                case MolecularSpeciesLevelChains _:
+                    return 2;
+                case PositionLevelChains _:
+                    return 3;
+                default:
+                    return 0;
+            }
         }
     }
 }

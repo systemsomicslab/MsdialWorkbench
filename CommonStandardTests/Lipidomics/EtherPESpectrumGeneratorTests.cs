@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Enum;
-using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -15,7 +14,7 @@ namespace CompMs.Common.Lipidomics.Tests
         public void GenerateEtherPEPTest() {
             var alkyl = new SpecificAlkylChain(18, new List<int> { 1, 12, }, 0);
             var acyl = new SpecificAcylChain(20, new List<int> { 5, 8, 11, 14, 17, }, 0);
-            var lipid = new PositionSpecificAcylChainLipid(LbmClass.EtherPE, 747.5199, alkyl, acyl);
+            var lipid = new Lipid(LbmClass.EtherPE, 747.5199, new PositionLevelChains(alkyl, acyl));
 
             var generator = new EtherPESpectrumGenerator();
             var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
@@ -66,8 +65,6 @@ namespace CompMs.Common.Lipidomics.Tests
                 719.488, // Sn1 16 Sn2 18
                 733.504, // Sn1 17 Sn2 19
                 748.527, // Sn1 18 Sn2 20 MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ adduct
-
-
             };
 
             scan.Spectrum.ForEach(spec => Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
@@ -80,7 +77,7 @@ namespace CompMs.Common.Lipidomics.Tests
         public void GenerateEtherPEOTest() {
             var alkyl = new SpecificAlkylChain(18, new List<int> { 9, 12, }, 0);
             var acyl = new SpecificAcylChain(20, new List<int> { 5, 8, 11, 14, 17, }, 0);
-            var lipid = new PositionSpecificAcylChainLipid(LbmClass.EtherPE, 747.5199, alkyl, acyl);
+            var lipid = new Lipid(LbmClass.EtherPE, 747.5199, new PositionLevelChains(alkyl, acyl));
 
             var generator = new EtherPESpectrumGenerator();
             var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));

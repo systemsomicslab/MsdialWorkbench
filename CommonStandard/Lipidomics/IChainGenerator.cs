@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Common.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,7 +7,14 @@ namespace CompMs.Common.Lipidomics
 {
     public interface IChainGenerator
     {
-        IEnumerable<IChain[]> Separate(TotalAcylChain chain, int numChain);
+        IEnumerable<IChain[]> Separate(TotalChains chain, int numChain);
+
+        IEnumerable<ITotalChain> Separate(TotalChains chain);
+
+        IEnumerable<ITotalChain> Permutate(MolecularSpeciesLevelChains chains);
+
+        IEnumerable<ITotalChain> Product(PositionLevelChains chains);
+
         IEnumerable<SpecificAcylChain> Generate(AcylChain chain);
 
         IEnumerable<SpecificAlkylChain> Generate(AlkylChain chain);
@@ -26,8 +34,21 @@ namespace CompMs.Common.Lipidomics
         public int Begin { get; } // if begin is 3, first double bond is 3-4 at the earliest counting from ketone carbon.
         public int Skip { get; } // if skip is 3 and 6-7 is double bond, next one is 9-10 at the earliest.
 
-        public IEnumerable<IChain[]> Separate(TotalAcylChain chain, int numChain) {
+        public IEnumerable<IChain[]> Separate(TotalChains chain, int numChain) {
             return RecurseGenerate(chain.CarbonCount, chain.DoubleBondCount, chain.OxidizedCount, numChain - chain.AlkylChainCount, chain.AlkylChainCount);
+        }
+
+        public IEnumerable<ITotalChain> Separate(TotalChains chain) {
+            return RecurseGenerate(chain.CarbonCount, chain.DoubleBondCount, chain.OxidizedCount, chain.ChainCount - chain.AlkylChainCount, chain.AlkylChainCount)
+                .Select(set => new MolecularSpeciesLevelChains(set));
+        }
+
+        public IEnumerable<ITotalChain> Permutate(MolecularSpeciesLevelChains chains) {
+            return SearchCollection.Permutations(chains.Chains).Select(set => new PositionLevelChains(set));
+        }
+
+        public IEnumerable<ITotalChain> Product(PositionLevelChains chains) {
+            return SearchCollection.CartesianProduct(chains.Chains.Select(c => c.GetCandidates(this).ToArray()).ToArray()).Select(set => new PositionLevelChains(set));
         }
 
         private bool CarbonNumberValid(int curCarbon) {

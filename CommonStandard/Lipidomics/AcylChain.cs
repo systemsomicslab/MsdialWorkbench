@@ -14,8 +14,94 @@ namespace CompMs.Common.Lipidomics
         IEnumerable<IChain> GetCandidates(IChainGenerator generator);
     }
 
-    public class TotalAcylChain {
-        public TotalAcylChain(int carbonCount, int doubleBondCount, int oxidizedCount, int chainCount, int alkylChainCount = 0) {
+    public interface ITotalChain
+    {
+        int CarbonCount { get; }
+        int DoubleBondCount { get; }
+        int OxidizedCount { get; }
+        double Mass { get; }
+
+        IEnumerable<ITotalChain> GetCandidateSets(IChainGenerator generator);
+    }
+
+    public enum DoubleBondState
+    {
+        Unknown, E, Z,
+    }
+
+    public interface IDoubleBondInfo
+    {
+        int Position { get; }
+        DoubleBondState State { get; }
+    }
+
+    public class DoubleBondInfo : IDoubleBondInfo
+    {
+        private DoubleBondInfo(int position, DoubleBondState state) {
+            Position = position;
+            State = state;
+        }
+
+        public int Position { get; }
+        public DoubleBondState State { get; }
+
+        static readonly Dictionary<(int, DoubleBondState), DoubleBondInfo> cache = new Dictionary<(int, DoubleBondState), DoubleBondInfo>();
+
+        public static DoubleBondInfo Create(int position, DoubleBondState state = DoubleBondState.Unknown) {
+            return cache.TryGetValue((position, state), out var info)
+                ? info
+                : (cache[(position, state)] = new DoubleBondInfo(position, state));
+        }
+
+        public static DoubleBondInfo E(int position) => Create(position, DoubleBondState.E);
+
+        public static DoubleBondInfo Z(int position) => Create(position, DoubleBondState.Z);
+    }
+
+    public interface IDoubleBond
+    {
+        int Count { get; }
+        int DecidedCount { get; }
+        int UnDecidedCount { get; }
+
+        ReadOnlyCollection<IDoubleBondInfo> Bonds { get; }
+    }
+
+    public class DoubleBond : IDoubleBond
+    {
+        public DoubleBond(int count, params IDoubleBondInfo[] bonds) {
+            Count = count;
+            Bonds = new ReadOnlyCollection<IDoubleBondInfo>(bonds);
+        }
+
+        public DoubleBond(params IDoubleBondInfo[] bonds) : this(bonds.Length, bonds) {
+
+        }
+
+        public int Count { get; }
+
+        public int DecidedCount => Bonds.Count;
+
+        public int UnDecidedCount => Count - DecidedCount;
+
+        public ReadOnlyCollection<IDoubleBondInfo> Bonds { get; }
+
+        public static DoubleBond CreateFromPosition(params int[] positions) {
+            return new DoubleBond(positions.Length, positions.Select(p => DoubleBondInfo.Create(p)).ToArray());
+        }
+    }
+
+    public interface IOxidized
+    {
+        int Count { get; }
+        int DecidedCount { get; }
+        int UnDecidedCount { get; }
+
+        ReadOnlyCollection<int> Oxidises { get; }
+    }
+
+    public class TotalChains : ITotalChain {
+        public TotalChains(int carbonCount, int doubleBondCount, int oxidizedCount, int chainCount, int alkylChainCount = 0) {
             CarbonCount = carbonCount;
             DoubleBondCount = doubleBondCount;
             OxidizedCount = oxidizedCount;
@@ -35,12 +121,66 @@ namespace CompMs.Common.Lipidomics
             return generator.Separate(this, ChainCount);
         }
 
+        IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(IChainGenerator generator) {
+            return generator.Separate(this);
+        }
+
         public override string ToString() {
             return ChainUtility.ToString(CarbonCount, DoubleBondCount, OxidizedCount);
         }
 
         private static double CalculateSubLevelMass(int carbon, int doubleBond, int oxidize, int chain, int alkyl) {
             return carbon * MassDiffDictionary.CarbonMass + (2 * (carbon - chain + alkyl - doubleBond) + 2) * MassDiffDictionary.HydrogenMass + (chain - alkyl + oxidize) * MassDiffDictionary.OxygenMass;
+        }
+    }
+
+    public class MolecularSpeciesLevelChains : ITotalChain
+    {
+        public MolecularSpeciesLevelChains(params IChain[] chains) {
+            Chains = new ReadOnlyCollection<IChain>(chains);
+        }
+
+        public int CarbonCount => Chains.Sum(c => c.CarbonCount);
+
+        public int DoubleBondCount => Chains.Sum(c => c.DoubleBondCount);
+
+        public int OxidizedCount => Chains.Sum(c => c.OxidizedCount);
+
+        public double Mass => Chains.Sum(c => c.Mass);
+
+        public ReadOnlyCollection<IChain> Chains { get; }
+
+        public IEnumerable<ITotalChain> GetCandidateSets(IChainGenerator generator) {
+            return generator.Permutate(this);
+        }
+
+        public override string ToString() {
+            return string.Join("_", Chains.Select(c => c.ToString()));
+        }
+    }
+
+    public class PositionLevelChains : ITotalChain
+    {
+        public PositionLevelChains(params IChain[] chains) {
+            Chains = new ReadOnlyCollection<IChain>(chains);
+        }
+
+        public int CarbonCount => Chains.Sum(c => c.CarbonCount);
+
+        public int DoubleBondCount => Chains.Sum(c => c.DoubleBondCount);
+
+        public int OxidizedCount => Chains.Sum(c => c.OxidizedCount);
+
+        public double Mass => Chains.Sum(c => c.Mass);
+
+        public ReadOnlyCollection<IChain> Chains { get; }
+
+        public IEnumerable<ITotalChain> GetCandidateSets(IChainGenerator generator) {
+            return generator.Product(this);
+        }
+
+        public override string ToString() {
+            return string.Join("/", Chains.Select(c => c.ToString()));
         }
     }
 

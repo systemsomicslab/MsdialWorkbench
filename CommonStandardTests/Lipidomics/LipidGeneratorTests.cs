@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Enum;
+using CompMs.Common.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,11 @@ namespace CompMs.Common.Lipidomics.Tests
     {
         [TestMethod()]
         public void SubLevelGenerateTest() {
-            ILipid lipid = new SubLevelLipid(LbmClass.PC, 2, 785.5935, new TotalAcylChain(36, 2, 0, 2));
+            ILipid lipid = new Lipid(LbmClass.PC, 785.5935, new TotalChains(36, 2, 0, 2));
             var generator = new LipidGenerator(new MockAcylChainGenerator());
 
             var lipids = lipid.Generate(generator).ToArray();
-            Assert.IsTrue(lipids.All(l => l is SomeAcylChainLipid));
+            Assert.IsTrue(lipids.All(l => l is Lipid));
             Assert.IsTrue(lipids.All(l => l.Mass == lipid.Mass));
             Assert.IsTrue(lipids.All(l => l.LipidClass == lipid.LipidClass));
 
@@ -24,8 +25,9 @@ namespace CompMs.Common.Lipidomics.Tests
                 ( 20, 1, 0, 21, 1, 0),
                 ( 30, 0, 1, 31, 0, 1),
             };
-            var actuals = lipids.OfType<SomeAcylChainLipid>()
-                .Select(l => (l.Chains[0].CarbonCount, l.Chains[0].DoubleBondCount, l.Chains[0].OxidizedCount, l.Chains[1].CarbonCount, l.Chains[1].DoubleBondCount, l.Chains[1].OxidizedCount))
+            var actuals = lipids.OfType<Lipid>()
+                .Select(l => l.Chains as MolecularSpeciesLevelChains)
+                .Select(chains => (chains.Chains[0].CarbonCount, chains.Chains[0].DoubleBondCount, chains.Chains[0].OxidizedCount, chains.Chains[1].CarbonCount, chains.Chains[1].DoubleBondCount, chains.Chains[1].OxidizedCount))
                 .ToArray();
             CollectionAssert.AreEquivalent(expects, actuals);
         }
@@ -34,11 +36,11 @@ namespace CompMs.Common.Lipidomics.Tests
         public void SomeAcylChainGenerateTest() {
             var acyl1 = new AcylChain(18, 0, 0);
             var acyl2 = new AcylChain(18, 2, 0);
-            ILipid lipid = new SomeAcylChainLipid(LbmClass.PC, 785.5935, acyl1, acyl2);
+            ILipid lipid = new Lipid(LbmClass.PC, 785.5935, new MolecularSpeciesLevelChains(acyl1, acyl2));
             var generator = new LipidGenerator(new MockAcylChainGenerator());
 
             var lipids = lipid.Generate(generator).ToArray();
-            Assert.IsTrue(lipids.All(l => l is PositionSpecificAcylChainLipid));
+            Assert.IsTrue(lipids.All(l => l is Lipid));
             Assert.IsTrue(lipids.All(l => l.Mass == lipid.Mass));
             Assert.IsTrue(lipids.All(l => l.LipidClass == lipid.LipidClass));
 
@@ -47,16 +49,16 @@ namespace CompMs.Common.Lipidomics.Tests
                 (acyl1, acyl2),
                 (acyl2, acyl1),
             };
-            var actuals = lipids.OfType<PositionSpecificAcylChainLipid>()
-                .Select(l => (l.Chains[0], l.Chains[1]))
+            var actuals = lipids.OfType<Lipid>()
+                .Select(l => ((l.Chains as PositionLevelChains).Chains[0], (l.Chains as PositionLevelChains).Chains[1]))
                 .ToArray();
             CollectionAssert.AreEquivalent(expects, actuals);
 
             var acyl3 = new AcylChain(18, 1, 0);
-            lipid = new SomeAcylChainLipid(LbmClass.PC, 785.5935, acyl3, acyl3);
+            lipid = new Lipid(LbmClass.PC, 785.5935, new MolecularSpeciesLevelChains(acyl3, acyl3));
 
             lipids = lipid.Generate(generator).ToArray();
-            Assert.IsTrue(lipids.All(l => l is PositionSpecificAcylChainLipid));
+            Assert.IsTrue(lipids.All(l => l is Lipid));
             Assert.IsTrue(lipids.All(l => l.Mass == lipid.Mass));
             Assert.IsTrue(lipids.All(l => l.LipidClass == lipid.LipidClass));
 
@@ -64,8 +66,8 @@ namespace CompMs.Common.Lipidomics.Tests
             {
                 (acyl3, acyl3),
             };
-            actuals = lipids.OfType<PositionSpecificAcylChainLipid>()
-                .Select(l => (l.Chains[0], l.Chains[1]))
+            actuals = lipids.OfType<Lipid>()
+                .Select(l => ((l.Chains as PositionLevelChains).Chains[0], (l.Chains as PositionLevelChains).Chains[1]))
                 .ToArray();
             CollectionAssert.AreEquivalent(expects, actuals);
         }
@@ -74,11 +76,11 @@ namespace CompMs.Common.Lipidomics.Tests
         public void PositionSpecificAcylChainLipid() {
             var acyl1 = new AcylChain(18, 1, 0);
             var acyl2 = new AcylChain(18, 1, 0);
-            ILipid lipid = new PositionSpecificAcylChainLipid(LbmClass.PC, 785.5935, acyl1, acyl2);
+            var lipid = new Lipid(LbmClass.PC, 785.5935, new PositionLevelChains(acyl1, acyl2));
             var generator = new LipidGenerator(new MockAcylChainGenerator());
 
-            var lipids = lipid.Generate(generator).ToArray();
-            Assert.IsTrue(lipids.All(l => l is PositionSpecificAcylChainLipid));
+            var lipids = generator.Generate(lipid).ToArray();
+            Assert.IsTrue(lipids.All(l => l is Lipid));
             Assert.IsTrue(lipids.All(l => l.Mass == lipid.Mass));
             Assert.IsTrue(lipids.All(l => l.LipidClass == lipid.LipidClass));
 
@@ -88,8 +90,8 @@ namespace CompMs.Common.Lipidomics.Tests
                 ( 9,  6), ( 9,  9), ( 9, 12),
                 (12,  6), (12,  9), (12, 12),
             };
-            var actuals = lipids.OfType<PositionSpecificAcylChainLipid>()
-                .Select(l => ((l.Chains[0] as SpecificAcylChain).DoubleBondPosition[0], (l.Chains[1] as SpecificAcylChain).DoubleBondPosition[0]))
+            var actuals = lipids.OfType<Lipid>()
+                .Select(l => (((l.Chains as PositionLevelChains).Chains[0] as SpecificAcylChain).DoubleBondPosition[0], ((l.Chains as PositionLevelChains).Chains[1] as SpecificAcylChain).DoubleBondPosition[0]))
                 .ToArray();
             CollectionAssert.AreEquivalent(expects, actuals);
         }
@@ -117,10 +119,24 @@ namespace CompMs.Common.Lipidomics.Tests
             yield return new SpecificAlkylChain(18, new List<int> { 1, 12, }, 0);
         }
 
-        IEnumerable<IChain[]> IChainGenerator.Separate(TotalAcylChain chain, int numChain) {
+        IEnumerable<IChain[]> IChainGenerator.Separate(TotalChains chain, int numChain) {
             yield return Enumerable.Range(10, numChain).Select(v => new AcylChain(v, 0, 0)).ToArray();
             yield return Enumerable.Range(20, numChain).Select(v => new AcylChain(v, 1, 0)).ToArray();
             yield return Enumerable.Range(30, numChain).Select(v => new AcylChain(v, 0, 1)).ToArray();
+        }
+
+        public IEnumerable<ITotalChain> Separate(TotalChains chain) {
+            yield return new MolecularSpeciesLevelChains(Enumerable.Range(10, chain.ChainCount).Select(v => new AcylChain(v, 0, 0)).ToArray());
+            yield return new MolecularSpeciesLevelChains(Enumerable.Range(20, chain.ChainCount).Select(v => new AcylChain(v, 1, 0)).ToArray());
+            yield return new MolecularSpeciesLevelChains(Enumerable.Range(30, chain.ChainCount).Select(v => new AcylChain(v, 0, 1)).ToArray());
+        }
+
+        public IEnumerable<ITotalChain> Permutate(MolecularSpeciesLevelChains chains) {
+            return SearchCollection.Permutations(chains.Chains).Select(chains => new PositionLevelChains(chains));
+        }
+
+        public IEnumerable<ITotalChain> Product(PositionLevelChains chains) {
+            return SearchCollection.CartesianProduct(chains.Chains.Select(c => c.GetCandidates(this).ToArray()).ToArray()).Select(chains => new PositionLevelChains(chains));
         }
     }
 }

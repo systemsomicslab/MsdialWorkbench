@@ -29,11 +29,11 @@ namespace CompMs.Common.Lipidomics
                 var alkyl = alkylParser.Parse(group["sn1"].Value);
                 if (group["sn2"].Success) {
                     var acyl = acylParser.Parse(group["sn2"].Value);
-                    return new PositionSpecificAcylChainLipid(LbmClass.EtherPE, Skelton + alkyl.Mass + acyl.Mass, alkyl, acyl);
+                    return new Lipid(LbmClass.EtherPE, Skelton + alkyl.Mass + acyl.Mass, new PositionLevelChains(alkyl, acyl));
                 }
                 else {
-                    var subTotal = new TotalAcylChain(alkyl.CarbonCount, alkyl.DoubleBondCount, alkyl.OxidizedCount, 2, 1);
-                    return new SubLevelLipid(LbmClass.EtherPE, 2, Skelton + subTotal.Mass, subTotal);
+                    var subTotal = new TotalChains(alkyl.CarbonCount, alkyl.DoubleBondCount, alkyl.OxidizedCount, 2, 1);
+                    return new Lipid(LbmClass.EtherPE, Skelton + subTotal.Mass, subTotal);
                 }
             }
 
