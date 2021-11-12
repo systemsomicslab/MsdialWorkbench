@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests
 {
@@ -34,11 +35,11 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(4, acyl.OxidizedCount);
 
             acyl = parser.Parse("18:2(6,12)");
-            Assert.IsInstanceOfType(acyl, typeof(SpecificAcylChain));
+            Assert.IsInstanceOfType(acyl, typeof(AcylChain));
             Assert.AreEqual(18, acyl.CarbonCount);
             Assert.AreEqual(2, acyl.DoubleBondCount);
             Assert.AreEqual(0, acyl.OxidizedCount);
-            CollectionAssert.AreEqual(new[] { 6, 12 }, ((SpecificAcylChain)acyl).DoubleBondPosition);
+            CollectionAssert.AreEqual(new[] { 6, 12 }, ((AcylChain)acyl).DoubleBond.Bonds.Select(b => b.Position).ToArray());
         }
     }
 }

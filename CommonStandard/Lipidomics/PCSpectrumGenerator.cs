@@ -59,12 +59,12 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetPCSpectrum(lipid));
             if (lipid.Chains is MolecularSpeciesLevelChains mlChains) {
                 spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.Chains));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<SpecificAcylChain>()));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>()));
             }
             if (lipid.Chains is PositionLevelChains plChains) {
                 spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.Chains));
                 spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.Chains[0]));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<SpecificAcylChain>()));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>()));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.First().Intensity, string.Join(", ", specs.Select(spec => spec.Comment))))
@@ -123,20 +123,20 @@ namespace CompMs.Common.Lipidomics
             };
         }
 
-        private IEnumerable<SpectrumPeak> GetAcylDoubleBondSpectrum(ILipid lipid, IEnumerable<SpecificAcylChain> acylChains) {
+        private IEnumerable<SpectrumPeak> GetAcylDoubleBondSpectrum(ILipid lipid, IEnumerable<AcylChain> acylChains) {
             return acylChains.SelectMany(acylChain => GetAcylDoubleBondSpectrum(lipid, acylChain));
         }
 
-        private SpectrumPeak[] GetAcylDoubleBondSpectrum(ILipid lipid, SpecificAcylChain acylChain) {
+        private SpectrumPeak[] GetAcylDoubleBondSpectrum(ILipid lipid, AcylChain acylChain) {
             var chainLoss = lipid.Mass - acylChain.Mass + MassDiffDictionary.ProtonMass;
             var diffs = new double[acylChain.CarbonCount];
             for (int i = 0; i < acylChain.CarbonCount; i++) {
                 diffs[i] = CH2;
             }
             diffs[0] += MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass * 2;
-            foreach (var i in acylChain.DoubleBondPosition) {
-                diffs[i - 1] -= MassDiffDictionary.HydrogenMass;
-                diffs[i] -= MassDiffDictionary.HydrogenMass;
+            foreach (var bond in acylChain.DoubleBond.Bonds) {
+                diffs[bond.Position - 1] -= MassDiffDictionary.HydrogenMass;
+                diffs[bond.Position] -= MassDiffDictionary.HydrogenMass;
             }
             for (int i = 1; i < acylChain.CarbonCount; i++) {
                 diffs[i] += diffs[i - 1];

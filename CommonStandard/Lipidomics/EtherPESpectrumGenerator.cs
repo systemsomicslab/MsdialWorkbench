@@ -42,8 +42,8 @@ namespace CompMs.Common.Lipidomics
             spectrum.AddRange(GetEtherPESpectrum(lipid));
             if (lipid.Chains is PositionLevelChains plChains) {
                 spectrum.AddRange(GetAlkylPositionSpectrum(lipid, plChains.Chains[0]));
-                if (plChains.Chains[0] is SpecificAlkylChain alkyl) {
-                    if (alkyl.DoubleBondPosition.Contains(1)) {
+                if (plChains.Chains[0] is AlkylChain alkyl) {
+                    if (alkyl.DoubleBond.Bonds.Any(b => b.Position == 1)) {
                         spectrum.AddRange(GetEtherPEPSpectrum(lipid, alkyl, plChains.Chains[1]));
                     }
                     else {
@@ -51,7 +51,7 @@ namespace CompMs.Common.Lipidomics
                     }
                     spectrum.AddRange(GetAlkylDoubleBondSpectrum(lipid, alkyl));
                 }
-                if (plChains.Chains[1] is SpecificAcylChain acyl) {
+                if (plChains.Chains[1] is AcylChain acyl) {
                     spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, acyl));
                 }
             }
@@ -118,16 +118,16 @@ namespace CompMs.Common.Lipidomics
             };
         }
 
-        private IEnumerable<SpectrumPeak> GetAcylDoubleBondSpectrum(ILipid lipid, SpecificAcylChain acylChain) {
+        private IEnumerable<SpectrumPeak> GetAcylDoubleBondSpectrum(ILipid lipid, AcylChain acylChain) {
             var chainLoss = lipid.Mass - acylChain.Mass + MassDiffDictionary.ProtonMass;
             var diffs = new double[acylChain.CarbonCount];
             for (int i = 0; i < acylChain.CarbonCount; i++) {
                 diffs[i] = CH2;
             }
             diffs[0] += MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass * 2;
-            foreach (var i in acylChain.DoubleBondPosition) {
-                diffs[i - 1] -= MassDiffDictionary.HydrogenMass;
-                diffs[i] -= MassDiffDictionary.HydrogenMass;
+            foreach (var bond in acylChain.DoubleBond.Bonds) {
+                diffs[bond.Position - 1] -= MassDiffDictionary.HydrogenMass;
+                diffs[bond.Position] -= MassDiffDictionary.HydrogenMass;
             }
             for (int i = 1; i < acylChain.CarbonCount; i++) {
                 diffs[i] += diffs[i - 1];
@@ -136,15 +136,15 @@ namespace CompMs.Common.Lipidomics
                 .Select((diff, i) => new SpectrumPeak(chainLoss + diff, 250d, $"{acylChain} C{i + 1}"));
         }
 
-        private IEnumerable<SpectrumPeak> GetAlkylDoubleBondSpectrum(ILipid lipid, SpecificAlkylChain alkylChain) {
+        private IEnumerable<SpectrumPeak> GetAlkylDoubleBondSpectrum(ILipid lipid, AlkylChain alkylChain) {
             var chainLoss = lipid.Mass - alkylChain.Mass + MassDiffDictionary.ProtonMass;
             var diffs = new double[alkylChain.CarbonCount];
             for (int i = 0; i < alkylChain.CarbonCount; i++) {
                 diffs[i] = CH2;
             }
-            foreach (var i in alkylChain.DoubleBondPosition) {
-                diffs[i - 1] -= MassDiffDictionary.HydrogenMass;
-                diffs[i] -= MassDiffDictionary.HydrogenMass;
+            foreach (var bond in alkylChain.DoubleBond.Bonds) {
+                diffs[bond.Position - 1] -= MassDiffDictionary.HydrogenMass;
+                diffs[bond.Position] -= MassDiffDictionary.HydrogenMass;
             }
             for (int i = 1; i < alkylChain.CarbonCount; i++) {
                 diffs[i] += diffs[i - 1];
@@ -152,7 +152,6 @@ namespace CompMs.Common.Lipidomics
             return diffs.Take(alkylChain.CarbonCount - 1)
                 .Select((diff, i) => new SpectrumPeak(chainLoss + diff, 250d, $"{alkylChain} C{i + 1}"));
         }
-
 
         private static readonly IEqualityComparer<SpectrumPeak> comparer = new SpectrumComparer();
         class SpectrumComparer : IEqualityComparer<SpectrumPeak>

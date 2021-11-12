@@ -18,17 +18,17 @@ namespace CompMs.Common.Lipidomics
                 if (groups["dbpos"].Success) {
                     switch (groups["plasm"].Value) {
                         case "P":
-                            return new SpecificAlkylChain(numCarbon, new[] { 1, }.Concat(groups["dbpos"].Value.Split(',').Select(p => int.Parse(p))).ToList(), numOx);
+                            return new AlkylChain(numCarbon, DoubleBond.CreateFromPosition(new[] { 1, }.Concat(groups["dbpos"].Value.Split(',').Select(p => int.Parse(p))).ToArray()), new Oxidized(numOx));
                         case "O":
-                            return new SpecificAlkylChain(numCarbon, groups["dbpos"].Value.Split(',').Select(p => int.Parse(p)).ToList(), numOx);
+                            return new AlkylChain(numCarbon, DoubleBond.CreateFromPosition(groups["dbpos"].Value.Split(',').Select(p => int.Parse(p)).ToArray()), new Oxidized(numOx));
                     }
                 }
                 else {
                     switch (groups["plasm"].Value) {
                         case "P":
-                            return new PlasmalogenAlkylChain(numCarbon, int.Parse(groups["db"].Value), numOx);
+                            return new AlkylChain(numCarbon, new DoubleBond(int.Parse(groups["db"].Value) + 1, DoubleBondInfo.Create(1)), new Oxidized(numOx));
                         case "O":
-                            return new AlkylChain(numCarbon, int.Parse(groups["db"].Value), numOx);
+                            return new AlkylChain(numCarbon, new DoubleBond(int.Parse(groups["db"].Value)), new Oxidized(numOx));
                     }
                 }
             }

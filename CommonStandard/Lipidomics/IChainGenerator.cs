@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Utility;
+﻿using CompMs.Common.Extension;
+using CompMs.Common.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,19 +8,15 @@ namespace CompMs.Common.Lipidomics
 {
     public interface IChainGenerator
     {
-        IEnumerable<IChain[]> Separate(TotalChains chain, int numChain);
-
         IEnumerable<ITotalChain> Separate(TotalChains chain);
 
         IEnumerable<ITotalChain> Permutate(MolecularSpeciesLevelChains chains);
 
         IEnumerable<ITotalChain> Product(PositionLevelChains chains);
 
-        IEnumerable<SpecificAcylChain> Generate(AcylChain chain);
+        IEnumerable<IChain> Generate(AcylChain chain);
 
-        IEnumerable<SpecificAlkylChain> Generate(AlkylChain chain);
-
-        IEnumerable<SpecificAlkylChain> Generate(PlasmalogenAlkylChain chain);
+        IEnumerable<IChain> Generate(AlkylChain chain);
     }
 
     public class AcylChainGenerator : IChainGenerator
@@ -34,13 +31,18 @@ namespace CompMs.Common.Lipidomics
         public int Begin { get; } // if begin is 3, first double bond is 3-4 at the earliest counting from ketone carbon.
         public int Skip { get; } // if skip is 3 and 6-7 is double bond, next one is 9-10 at the earliest.
 
-        public IEnumerable<IChain[]> Separate(TotalChains chain, int numChain) {
-            return RecurseGenerate(chain.CarbonCount, chain.DoubleBondCount, chain.OxidizedCount, numChain - chain.AlkylChainCount, chain.AlkylChainCount);
-        }
-
         public IEnumerable<ITotalChain> Separate(TotalChains chain) {
-            return RecurseGenerate(chain.CarbonCount, chain.DoubleBondCount, chain.OxidizedCount, chain.ChainCount - chain.AlkylChainCount, chain.AlkylChainCount)
-                .Select(set => new MolecularSpeciesLevelChains(set));
+            var acyl = chain.ChainCount - chain.AlkylChainCount;
+            var carbon = chain.CarbonCount;
+            var alkyl = chain.AlkylChainCount;
+            var db = chain.DoubleBondCount;
+            var ox = chain.OxidizedCount;
+            return Enumerable.Range(MinLength * acyl, carbon - MinLength * (alkyl + acyl) + 1)
+                .SelectMany(c => Enumerable.Range(0, db + 1)
+                    .SelectMany(d => Enumerable.Range(0, ox + 1)
+                        .SelectMany(o => RecurseGenerate(c, d, o, acyl, CreateAcylChain)
+                            .SelectMany(x => RecurseGenerate(carbon - c, db - d, ox - o, alkyl, CreateAlkylChain),
+                                (x, y) => new MolecularSpeciesLevelChains(x.Concat<IChain>(y).ToArray())))));
         }
 
         public IEnumerable<ITotalChain> Permutate(MolecularSpeciesLevelChains chains) {
@@ -65,15 +67,6 @@ namespace CompMs.Common.Lipidomics
 
         private bool IsLexicographicOrder(int prevCarbon, int prevDb, int prevOx, int curCarbon, int curDb, int curOx) {
             return (prevCarbon, prevDb, prevOx).CompareTo((curCarbon, curDb, curOx)) <= 0;
-        }
-
-        private IEnumerable<IChain[]> RecurseGenerate(int carbon, int db, int ox, int acyl, int alkyl) {
-            return Enumerable.Range(MinLength * acyl, carbon - MinLength * (alkyl + acyl) + 1)
-                .SelectMany(c => Enumerable.Range(0, db + 1)
-                    .SelectMany(d => Enumerable.Range(0, ox + 1)
-                        .SelectMany(o => RecurseGenerate(c, d, o, acyl, CreateAcylChain)
-                            .SelectMany(x => RecurseGenerate(carbon - c, db - d, ox - o,  alkyl, CreateAlkylChain),
-                                (x, y) => x.Concat<IChain>(y).ToArray()))));
         }
 
         private IEnumerable<T[]> RecurseGenerate<T>(int carbon, int db, int ox, int chain, Func<int, int, int, T> create) {
@@ -125,7 +118,7 @@ namespace CompMs.Common.Lipidomics
             if (acylCache.TryGetValue((carbon, db, ox), out var chain)) {
                 return chain;
             }
-            return acylCache[(carbon, db, ox)] = new AcylChain(carbon, db, ox);
+            return acylCache[(carbon, db, ox)] = new AcylChain(carbon, new DoubleBond(db), new Oxidized(ox));
         }
 
         private Dictionary<(int, int, int), AlkylChain> alkylCache = new Dictionary<(int, int, int), AlkylChain>();
@@ -133,42 +126,80 @@ namespace CompMs.Common.Lipidomics
             if (alkylCache.TryGetValue((carbon, db, ox), out var chain)) {
                 return chain;
             }
-            return alkylCache[(carbon, db, ox)] = new AlkylChain(carbon, db, ox);
+            return alkylCache[(carbon, db, ox)] = new AlkylChain(carbon, new DoubleBond(db), new Oxidized(ox));
         }
 
-        public IEnumerable<SpecificAcylChain> Generate(AcylChain chain) {
-            return RecurseGenerate(chain.CarbonCount, chain.DoubleBondCount, Begin, new List<int>())
-                .Select(set => new SpecificAcylChain(chain.CarbonCount, set, chain.OxidizedCount));   
+        public IEnumerable<IChain> Generate(AcylChain chain) {
+            return Products(chain.CarbonCount, chain.DoubleBond, chain.Oxidized, (c, b, o) => new AcylChain(c, b, o));
         }
 
-        public IEnumerable<SpecificAlkylChain> Generate(AlkylChain chain) {
-            return RecurseGenerate(chain.CarbonCount, chain.DoubleBondCount, Begin, new List<int>())
-                .Select(set => new SpecificAlkylChain(chain.CarbonCount, set, chain.OxidizedCount));   
+        public IEnumerable<IChain> Generate(AlkylChain chain) {
+            return Products(chain.CarbonCount, chain.DoubleBond, chain.Oxidized, (c, b, o) => new AlkylChain(c, b, o));
         }
 
-        public IEnumerable<SpecificAlkylChain> Generate(PlasmalogenAlkylChain chain) {
-            return RecurseGenerate(chain.CarbonCount, chain.DoubleBondCount - 1, 1 + Skip, new List<int> { 1 })
-                .Select(set => new SpecificAlkylChain(chain.CarbonCount, set, chain.OxidizedCount));
+        private IEnumerable<IChain> Products(int carbon, IDoubleBond doubleBond, IOxidized oxidized, Func<int, IDoubleBond, IOxidized, IChain> create) {
+            return EnumerateBonds(carbon, doubleBond).SelectMany(_ => EnumerateOxidized(carbon, oxidized), (b, o) => create(carbon, b, o));
         }
 
-        private IEnumerable<List<int>> RecurseGenerate(int carbon, int db, int delta, List<int> set) {
-            if (delta < carbon || db == 0) {
-                if (db == 0) {
-                    yield return set.ToList();
+        private IEnumerable<IDoubleBond> EnumerateBonds(int carbon, IDoubleBond doubleBond) {
+            if (doubleBond.UnDecidedCount == 0) {
+                return IEnumerableExtension.Return(doubleBond);
+            }
+            var used = new bool[carbon];
+            for(int i = 1; i < Begin; i++) {
+                used[i - 1] = true;
+            }
+            foreach (var bond in doubleBond.Bonds) {
+                for (int i = Math.Max(1, bond.Position - Skip + 1); i < bond.Position + Skip; i++) {
+                    used[i - 1] = true;
+                }
+            }
+
+            IEnumerable<IDoubleBond> rec(int i, List<IDoubleBondInfo> infos) {
+                if (infos.Count == doubleBond.UnDecidedCount) {
+                    yield return new DoubleBond(doubleBond.Bonds.Concat(infos).OrderBy(b => b.Position).ToArray());
                 }
                 else {
-                    set.Add(delta);
-                    foreach (var res in RecurseGenerate(carbon, db - 1, delta + Skip, set)) {
-                        yield return res;
-                    }
-                    set.RemoveAt(set.Count - 1);
-
-                    foreach (var res in RecurseGenerate(carbon, db, delta + 1, set)) {
-                        yield return res;
+                    for (var j = i; j < carbon; j++){
+                        if (used[j - 1]) {
+                            continue;
+                        }
+                        infos.Add(DoubleBondInfo.Create(j));
+                        foreach (var res in rec(j + Skip, infos)) {
+                            yield return res;
+                        }
+                        infos.RemoveAt(infos.Count - 1);
                     }
                 }
             }
+
+            return rec(Begin, new List<IDoubleBondInfo>(doubleBond.UnDecidedCount));
+        }
+
+        private IEnumerable<IOxidized> EnumerateOxidized(int carbon, IOxidized oxidized) {
+            if (oxidized.UnDecidedCount == 0) {
+                return IEnumerableExtension.Return(oxidized);
+            }
+
+            IEnumerable<IOxidized> rec(int i, List<int> infos) {
+                if (infos.Count == oxidized.UnDecidedCount) {
+                    yield return Oxidized.CreateFromPosition(oxidized.Oxidises.Concat(infos).OrderBy(p => p).ToArray());
+                }
+                else {
+                    for (var j = i; j < carbon; j++){
+                        if (oxidized.Oxidises.Contains(j)) {
+                            continue;
+                        }
+                        infos.Add(j);
+                        foreach (var res in rec(j + Skip, infos)) {
+                            yield return res;
+                        }
+                        infos.RemoveAt(infos.Count - 1);
+                    }
+                }
+            }
+
+            return rec(Begin, new List<int>(oxidized.UnDecidedCount));
         }
     }
-
 }

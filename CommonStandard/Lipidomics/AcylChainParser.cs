@@ -16,10 +16,10 @@ namespace CompMs.Common.Lipidomics
                 var numOx = groups["ox"].Success ? int.TryParse(groups["ox"].Value, out var ox) ? ox : 1 : 0;
 
                 if (groups["dbpos"].Success) {
-                    return new SpecificAcylChain(numCarbon, groups["dbpos"].Value.Split(',').Select(p => int.Parse(p)).ToList(), numOx);
+                    return new AcylChain(numCarbon, DoubleBond.CreateFromPosition(groups["dbpos"].Value.Split(',').Select(p => int.Parse(p)).ToArray()), new Oxidized(numOx));
                 }
                 else {
-                    return new AcylChain(numCarbon, int.Parse(groups["db"].Value), numOx);
+                    return new AcylChain(numCarbon, new DoubleBond(int.Parse(groups["db"].Value)), new Oxidized(numOx));
                 }
             }
             return null;

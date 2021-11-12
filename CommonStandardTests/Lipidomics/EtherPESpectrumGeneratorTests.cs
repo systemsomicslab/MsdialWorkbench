@@ -12,8 +12,8 @@ namespace CompMs.Common.Lipidomics.Tests
     {
         [TestMethod()]
         public void GenerateEtherPEPTest() {
-            var alkyl = new SpecificAlkylChain(18, new List<int> { 1, 12, }, 0);
-            var acyl = new SpecificAcylChain(20, new List<int> { 5, 8, 11, 14, 17, }, 0);
+            var alkyl = new AlkylChain(18, DoubleBond.CreateFromPosition(1, 12), new Oxidized(0));
+            var acyl = new AcylChain(20, DoubleBond.CreateFromPosition(5, 8, 11, 14, 17), new Oxidized(0));
             var lipid = new Lipid(LbmClass.EtherPE, 747.5199, new PositionLevelChains(alkyl, acyl));
 
             var generator = new EtherPESpectrumGenerator();
@@ -75,8 +75,8 @@ namespace CompMs.Common.Lipidomics.Tests
 
         [TestMethod()]
         public void GenerateEtherPEOTest() {
-            var alkyl = new SpecificAlkylChain(18, new List<int> { 9, 12, }, 0);
-            var acyl = new SpecificAcylChain(20, new List<int> { 5, 8, 11, 14, 17, }, 0);
+            var alkyl = new AlkylChain(18, DoubleBond.CreateFromPosition( 9, 12), new Oxidized(0));
+            var acyl = new AcylChain(20, DoubleBond.CreateFromPosition(5, 8, 11, 14, 17), new Oxidized(0));
             var lipid = new Lipid(LbmClass.EtherPE, 747.5199, new PositionLevelChains(alkyl, acyl));
 
             var generator = new EtherPESpectrumGenerator();

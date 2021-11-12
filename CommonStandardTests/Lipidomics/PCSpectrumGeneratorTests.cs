@@ -12,8 +12,8 @@ namespace CompMs.Common.Lipidomics.Tests
     {
         [TestMethod()]
         public void GenerateTest() {
-            var acyl1 = new SpecificAcylChain(18, new List<int>(0), 0);
-            var acyl2 = new SpecificAcylChain(18, new List<int> { 9, 12 }, 0);
+            var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(), new Oxidized(0));
+            var acyl2 = new AcylChain(18, DoubleBond.CreateFromPosition(9, 12), new Oxidized(0));
             var lipid = new Lipid(LbmClass.PC, 785.5935, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new PCSpectrumGenerator();

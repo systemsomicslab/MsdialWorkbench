@@ -9,15 +9,15 @@ namespace CompMs.Common.Lipidomics.Tests
         [TestMethod()]
         public void SeparateTest() {
             var generator = new AcylChainGenerator(minLength: 6, begin: 2, skip: 3);
-            var totalChain = new TotalChains(34, 2, 0, 2);
+            ITotalChain totalChain = new TotalChains(34, 2, 0, 2);
 
-            var actual = totalChain.GetCandidateSets(generator).ToArray();
-            Assert.IsTrue(actual.All(set => set.Length == 2));
+            var actual = totalChain.GetCandidateSets(generator).Cast<MolecularSpeciesLevelChains>().ToArray();
+            Assert.IsTrue(actual.All(set => set.Chains.Count == 2));
             foreach (var a in actual) {
-                Assert.IsInstanceOfType(a[0], typeof(AcylChain));
-                Assert.IsInstanceOfType(a[1], typeof(AcylChain));
+                Assert.IsInstanceOfType(a.Chains[0], typeof(AcylChain));
+                Assert.IsInstanceOfType(a.Chains[1], typeof(AcylChain));
             }
-            var tuples = actual.Select(set => (set[0].CarbonCount, set[0].DoubleBondCount, set[0].OxidizedCount, set[1].CarbonCount, set[1].DoubleBondCount, set[1].OxidizedCount)).ToArray();
+            var tuples = actual.Select(act => act.Chains).Select(set => (set[0].CarbonCount, set[0].DoubleBondCount, set[0].OxidizedCount, set[1].CarbonCount, set[1].DoubleBondCount, set[1].OxidizedCount)).ToArray();
             foreach (var tuple in tuples) {
                 System.Console.WriteLine(tuple);
             }
@@ -39,13 +39,13 @@ namespace CompMs.Common.Lipidomics.Tests
             CollectionAssert.AreEquivalent(expects, tuples);
 
             totalChain = new TotalChains(34, 2, 0, 2, 1);
-            actual = totalChain.GetCandidateSets(generator).ToArray();
-            Assert.IsTrue(actual.All(set => set.Length == 2));
+            actual = totalChain.GetCandidateSets(generator).Cast<MolecularSpeciesLevelChains>().ToArray();
+            Assert.IsTrue(actual.All(set => set.Chains.Count == 2));
             foreach (var a in actual) {
-                Assert.IsInstanceOfType(a[0], typeof(AcylChain));
-                Assert.IsInstanceOfType(a[1], typeof(AlkylChain));
+                Assert.IsInstanceOfType(a.Chains[0], typeof(AcylChain));
+                Assert.IsInstanceOfType(a.Chains[1], typeof(AlkylChain));
             }
-            tuples = actual.Select(set => (set[0].CarbonCount, set[0].DoubleBondCount, set[0].OxidizedCount, set[1].CarbonCount, set[1].DoubleBondCount, set[1].OxidizedCount)).ToArray();
+            tuples = actual.Select(act => act.Chains).Select(set => (set[0].CarbonCount, set[0].DoubleBondCount, set[0].OxidizedCount, set[1].CarbonCount, set[1].DoubleBondCount, set[1].OxidizedCount)).ToArray();
             foreach (var tuple in tuples) {
                 System.Console.WriteLine(tuple);
             }
@@ -81,11 +81,11 @@ namespace CompMs.Common.Lipidomics.Tests
         [TestMethod()]
         public void GenerateTest() {
             var generator = new AcylChainGenerator(minLength: 6, begin: 3, skip: 3);
-            var acylChain = new AcylChain(18, 2, 0);
+            var acylChain = new AcylChain(18, new DoubleBond(2), new Oxidized(0));
 
-            var actual = acylChain.GetCandidates(generator).OfType<SpecificAcylChain>().ToArray();
-            Assert.IsTrue(actual.All(chain => chain.DoubleBondPosition.Count == 2));
-            var tuples = actual.Select(chain => (chain.DoubleBondPosition[0], chain.DoubleBondPosition[1])).ToArray();
+            var actual = acylChain.GetCandidates(generator).OfType<AcylChain>().ToArray();
+            Assert.IsTrue(actual.All(chain => chain.DoubleBond.Count == 2));
+            var tuples = actual.Select(chain => (chain.DoubleBond.Bonds[0].Position, chain.DoubleBond.Bonds[1].Position)).ToArray();
             var expects = new[]
             {
                 ( 3,  6), ( 3,  7), ( 3,  8), ( 3,  9), ( 3, 10), ( 3, 11), ( 3, 12), ( 3, 13), ( 3, 14), ( 3, 15), ( 3, 16), ( 3, 17),
@@ -107,11 +107,11 @@ namespace CompMs.Common.Lipidomics.Tests
         [TestMethod()]
         public void GenerateAlkylTest() {
             var generator = new AcylChainGenerator(minLength: 6, begin: 3, skip: 3);
-            var alkylChain = new AlkylChain(18, 2, 0);
+            var alkylChain = new AlkylChain(18, new DoubleBond(2), new Oxidized(0));
 
-            var actual = alkylChain.GetCandidates(generator).OfType<SpecificAlkylChain>().ToArray();
-            Assert.IsTrue(actual.All(chain => chain.DoubleBondPosition.Count == 2));
-            var tuples = actual.Select(chain => (chain.DoubleBondPosition[0], chain.DoubleBondPosition[1])).ToArray();
+            var actual = alkylChain.GetCandidates(generator).OfType<AlkylChain>().ToArray();
+            Assert.IsTrue(actual.All(chain => chain.DoubleBond.Count == 2));
+            var tuples = actual.Select(chain => (chain.DoubleBond.Bonds[0].Position, chain.DoubleBond.Bonds[1].Position)).ToArray();
             var expects = new[]
             {
                 ( 3,  6), ( 3,  7), ( 3,  8), ( 3,  9), ( 3, 10), ( 3, 11), ( 3, 12), ( 3, 13), ( 3, 14), ( 3, 15), ( 3, 16), ( 3, 17),
@@ -133,11 +133,11 @@ namespace CompMs.Common.Lipidomics.Tests
         [TestMethod()]
         public void GeneratePlasmalogenAlkylTest() {
             var generator = new AcylChainGenerator(minLength: 6, begin: 3, skip: 3);
-            var alkylChain = new PlasmalogenAlkylChain(18, 2, 0);
+            var alkylChain = new AlkylChain(18, new DoubleBond(3, DoubleBondInfo.Create(1)), new Oxidized(0));
 
-            var actual = alkylChain.GetCandidates(generator).OfType<SpecificAlkylChain>().ToArray();
-            Assert.IsTrue(actual.All(chain => chain.DoubleBondPosition.Count == 3));
-            var tuples = actual.Select(chain => (chain.DoubleBondPosition[0], chain.DoubleBondPosition[1], chain.DoubleBondPosition[2])).ToArray();
+            var actual = alkylChain.GetCandidates(generator).OfType<AlkylChain>().ToArray();
+            Assert.IsTrue(actual.All(chain => chain.DoubleBond.Count == 3));
+            var tuples = actual.Select(chain => (chain.DoubleBond.Bonds[0].Position, chain.DoubleBond.Bonds[1].Position, chain.DoubleBond.Bonds[2].Position)).ToArray();
             var expects = new[]
             {
                 (1,  4,  7), (1,  4,  8), (1,  4,  9), (1,  4, 10), (1,  4, 11), (1,  4, 12), (1,  4, 13), (1,  4, 14), (1,  4, 15), (1,  4, 16), (1,  4, 17),
