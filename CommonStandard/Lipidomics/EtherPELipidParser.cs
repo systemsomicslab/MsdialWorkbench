@@ -5,8 +5,10 @@ using System.Text.RegularExpressions;
 
 namespace CompMs.Common.Lipidomics
 {
-    public class EtherPELipidParser
+    public class EtherPELipidParser : ILipidParser
     {
+        public string Target { get; } = "PE";
+
         private static readonly AcylChainParser acylParser = new AcylChainParser();
         private static readonly AlkylChainParser alkylParser = new AlkylChainParser();
 

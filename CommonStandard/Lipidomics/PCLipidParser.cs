@@ -5,7 +5,9 @@ using System.Text.RegularExpressions;
 
 namespace CompMs.Common.Lipidomics
 {
-    public class PCLipidParser {
+    public class PCLipidParser : ILipidParser {
+        public string Target { get; } = "PC";
+
         private static readonly AcylChainParser acylParser = new AcylChainParser();
 
         public static readonly string Pattern = $"PC\\s*(?<sn1>{AcylChainParser.Pattern})((?<sep>[_/])(?<sn2>{AcylChainParser.Pattern}))?";
