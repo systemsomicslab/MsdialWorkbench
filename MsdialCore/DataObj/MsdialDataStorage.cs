@@ -56,8 +56,6 @@ namespace CompMs.MsdialCore.DataObj
                 SaveDataBases(stream);
             }
 
-            SaveProteomicsDatabases(streamManager, MsdialSerializer.Combine(prefix, MsdialSerializer.GetProteomicsDataBasesFolderName(projectTitle)));
-
             using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, projectTitle)).ConfigureAwait(false)) {
                 var mspList = MspDB;
                 MspDB = new List<MoleculeMsReference>();
@@ -65,10 +63,6 @@ namespace CompMs.MsdialCore.DataObj
                 MspDB = mspList;
             }
 
-        }
-
-        private void SaveProteomicsDatabases(IStreamManager streamManager, string prefix) {
-            throw new System.NotImplementedException();
         }
 
         protected virtual void SaveMspDB(Stream stream) {
@@ -138,10 +132,7 @@ namespace CompMs.MsdialCore.DataObj
                 return GetNewMspFileName(path) + ".dbs";
             }
 
-            internal static string GetProteomicsDataBasesFolderName(string path) {
-                return GetNewMspFileName(path) + "_ProteomicsDB";
-            }
-
+           
             internal static string Combine(string path1, string path2) {
                 if (string.IsNullOrEmpty(path1)) {
                     return path2;

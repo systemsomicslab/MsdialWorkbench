@@ -112,7 +112,7 @@ namespace CompMs.MsdialCore.DataObj {
             var filename = System.IO.Path.GetFileNameWithoutExtension(file) + refid;
             //var folderpath = Path.GetDirectoryName(file);
 
-            var folderpath = Path.Combine(projectFolder, "_ProteomicsDB");
+            var folderpath = Path.Combine(projectFolder, "ProteomicsDB");
             if (!Directory.Exists(folderpath)) Directory.CreateDirectory(folderpath);
 
             var filetemp = Path.Combine(folderpath, filename);
@@ -237,7 +237,7 @@ namespace CompMs.MsdialCore.DataObj {
 
         public void Load(string projectFolder) {
             if (this.FastaQueries != null) return;
-            var folderpath = Path.Combine(projectFolder, "_ProteomicsDB");
+            var folderpath = Path.Combine(projectFolder, "ProteomicsDB");
 
             var filetemp = Path.Combine(folderpath, Path.GetFileNameWithoutExtension(PeptideMsFile));
             PeptideMsFile = filetemp + "." + MsdialDataStorageFormat.msf;
@@ -269,8 +269,8 @@ namespace CompMs.MsdialCore.DataObj {
                 this.DecoyPeptideMsRef = LargeListMessagePack.Deserialize<PeptideMsReference>(fs);
             }
             MsfPepFileParser.LoadPeptideInformation(DecoyPeptidesBinaryFile, DecoyPeptideMsRef, ModificationContainer.ID2Code, ModificationContainer.Code2AminoAcidObj);
-            PeptideMsStream = File.Open(PeptideMsFile, FileMode.Create, FileAccess.ReadWrite);
-            DecoyMsStream = File.Open(DecoyMsFile, FileMode.Create, FileAccess.ReadWrite);
+            PeptideMsStream = File.Open(PeptideMsFile, FileMode.Open, FileAccess.ReadWrite);
+            DecoyMsStream = File.Open(DecoyMsFile, FileMode.Open, FileAccess.ReadWrite);
 
             foreach (var query in this.PeptideMsRef) {
                 query.Fs = PeptideMsStream;
@@ -282,6 +282,7 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         public void Load(Stream stream, string folderpath) {
+            Load(folderpath);
             //if (this.FastaQueries != null) return;
 
             //using (var fs = File.Open(FastaQueryBinaryFile, FileMode.Open)) {
