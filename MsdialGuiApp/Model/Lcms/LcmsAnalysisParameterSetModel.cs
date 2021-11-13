@@ -34,13 +34,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
             else if (Parameter.TargetOmics == TargetOmics.Proteomics) {
                 Parameter.MaxChargeNumber = 6;
-                Parameter.MinimumAmplitude = 500000;
-                Parameter.AmplitudeCutoff = 1000;
+                Parameter.RemoveAfterPrecursor = false;
+                //Parameter.MinimumAmplitude = 500000;
+                //Parameter.AmplitudeCutoff = 1000;
 
-                Parameter.RetentionTimeBegin = 10;
-                Parameter.RetentionTimeEnd = 30;
-                Parameter.MassRangeBegin = 400;
-                Parameter.MassRangeEnd = 900;
+                //Parameter.RetentionTimeBegin = 10;
+                //Parameter.RetentionTimeEnd = 30;
+                //Parameter.MassRangeBegin = 400;
+                //Parameter.MassRangeEnd = 900;
 
                 Parameter.MspSearchParam.SimpleDotProductCutOff = 0.0F;
                 Parameter.MspSearchParam.WeightedDotProductCutOff = 0.0F;

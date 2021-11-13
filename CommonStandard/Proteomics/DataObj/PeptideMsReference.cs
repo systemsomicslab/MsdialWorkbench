@@ -18,7 +18,7 @@ namespace CompMs.Common.Proteomics.DataObj {
         [IgnoreMember]
         public Stream Fs { get; set; }
         [Key(1)]
-        private long SeekPoint2MS { get; set; }
+        public long SeekPoint2MS { get; set; }
 
         public PeptideMsReference(Peptide peptide) {
             Peptide = peptide;
