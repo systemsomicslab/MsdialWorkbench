@@ -28,11 +28,18 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(0, acyl.DoubleBondCount);
             Assert.AreEqual(1, acyl.OxidizedCount);
 
-            acyl = parser.Parse("20:4;4O");
+            acyl = parser.Parse("20:4;O4");
             Assert.IsInstanceOfType(acyl, typeof(AcylChain));
             Assert.AreEqual(20, acyl.CarbonCount);
             Assert.AreEqual(4, acyl.DoubleBondCount);
             Assert.AreEqual(4, acyl.OxidizedCount);
+
+            acyl = parser.Parse("20:4;5OH,6OH,13OH,15OH");
+            Assert.IsInstanceOfType(acyl, typeof(AcylChain));
+            Assert.AreEqual(20, acyl.CarbonCount);
+            Assert.AreEqual(4, acyl.DoubleBondCount);
+            Assert.AreEqual(4, acyl.OxidizedCount);
+            CollectionAssert.AreEqual(new[] { 5, 6, 13, 15 }, ((AcylChain)acyl).Oxidized.Oxidises);
 
             acyl = parser.Parse("18:2(6,12)");
             Assert.IsInstanceOfType(acyl, typeof(AcylChain));
@@ -40,6 +47,14 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(2, acyl.DoubleBondCount);
             Assert.AreEqual(0, acyl.OxidizedCount);
             CollectionAssert.AreEqual(new[] { 6, 12 }, ((AcylChain)acyl).DoubleBond.Bonds.Select(b => b.Position).ToArray());
+
+            acyl = parser.Parse("18:2(9Z,11E)");
+            Assert.IsInstanceOfType(acyl, typeof(AcylChain));
+            Assert.AreEqual(18, acyl.CarbonCount);
+            Assert.AreEqual(2, acyl.DoubleBondCount);
+            Assert.AreEqual(0, acyl.OxidizedCount);
+            CollectionAssert.AreEqual(new[] { 9, 11 }, ((AcylChain)acyl).DoubleBond.Bonds.Select(b => b.Position).ToArray());
+            CollectionAssert.AreEqual(new[] { DoubleBondState.Z, DoubleBondState.E }, ((AcylChain)acyl).DoubleBond.Bonds.Select(b => b.State).ToArray());
         }
     }
 }

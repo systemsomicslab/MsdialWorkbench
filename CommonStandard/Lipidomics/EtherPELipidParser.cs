@@ -9,10 +9,8 @@ namespace CompMs.Common.Lipidomics
     {
         public string Target { get; } = "PE";
 
-        private static readonly AcylChainParser acylParser = new AcylChainParser();
-        private static readonly AlkylChainParser alkylParser = new AlkylChainParser();
-
-        public static readonly string Pattern = $"PE (?<sn1>{AlkylChainParser.Pattern})([_/](?<sn2>{AcylChainParser.Pattern}))?";
+        private static readonly TotalChainParser chainsParser = new TotalChainParser(2);
+        public static readonly string Pattern = $"PE\\s+(?<sn>{chainsParser.Pattern})";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         private static readonly double Skelton = new[]
@@ -28,17 +26,9 @@ namespace CompMs.Common.Lipidomics
             var match = pattern.Match(lipidStr);
             if (match.Success) {
                 var group = match.Groups;
-                var alkyl = alkylParser.Parse(group["sn1"].Value);
-                if (group["sn2"].Success) {
-                    var acyl = acylParser.Parse(group["sn2"].Value);
-                    return new Lipid(LbmClass.EtherPE, Skelton + alkyl.Mass + acyl.Mass, new PositionLevelChains(alkyl, acyl));
-                }
-                else {
-                    var subTotal = new TotalChains(alkyl.CarbonCount, alkyl.DoubleBondCount, alkyl.OxidizedCount, 2, 1);
-                    return new Lipid(LbmClass.EtherPE, Skelton + subTotal.Mass, subTotal);
-                }
+                var chains = chainsParser.Parse(group["sn"].Value);
+                return new Lipid(LbmClass.EtherPE, Skelton + chains.Mass, chains);
             }
-
             return null;
         }
     }

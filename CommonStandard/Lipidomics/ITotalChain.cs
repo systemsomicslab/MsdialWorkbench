@@ -10,6 +10,7 @@ namespace CompMs.Common.Lipidomics
         int CarbonCount { get; }
         int DoubleBondCount { get; }
         int OxidizedCount { get; }
+        int ChainCount { get; }
         double Mass { get; }
 
         IEnumerable<ITotalChain> GetCandidateSets(IChainGenerator generator);
@@ -68,6 +69,8 @@ namespace CompMs.Common.Lipidomics
         public int OxidizedCount => Chains.Sum(c => c.OxidizedCount);
 
         public double Mass => Chains.Sum(c => c.Mass);
+
+        public int ChainCount => Chains.Count;
 
         public ReadOnlyCollection<IChain> Chains { get; }
     }
