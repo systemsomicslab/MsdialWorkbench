@@ -279,6 +279,11 @@ namespace CompMs.MsdialCore.DataObj {
             foreach (var query in this.DecoyPeptideMsRef) {
                 query.Fs = DecoyMsStream;
             }
+
+            // test
+            //foreach (var obj in this.PeptideMsRef) {
+            //    Console.WriteLine(obj.Peptide.ExactMass + "\t" + obj.Peptide.ModifiedSequence);
+            //}
         }
 
         public void Load(Stream stream, string folderpath) {
