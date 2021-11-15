@@ -154,5 +154,27 @@ namespace CompMs.Common.Lipidomics.Tests
             };
             CollectionAssert.AreEquivalent(expects, tuples);
         }
+
+        [TestMethod()]
+        public void GeneratePositionSpecifiedAcylChainTest() {
+            var generator = new AcylChainGenerator(minLength: 6, begin: 3, skip: 3);
+            var alkylChain = new AcylChain(18, DoubleBond.CreateFromPosition(1, 9, 12), new Oxidized(2, 4, 5));
+
+            var actual = alkylChain.GetCandidates(generator).OfType<AcylChain>().ToArray();
+            Assert.IsTrue(actual.All(chain => chain.DoubleBond.Count == 3));
+            var tuples = actual.Select(chain => (chain.DoubleBond.Bonds[0].Position, chain.DoubleBond.Bonds[1].Position, chain.DoubleBond.Bonds[2].Position)).ToArray();
+            Assert.AreEqual(1, tuples.Length);
+        }
+
+        [TestMethod()]
+        public void GeneratePositionSpecifiedAlkylChainTest() {
+            var generator = new AcylChainGenerator(minLength: 6, begin: 3, skip: 3);
+            var alkylChain = new AlkylChain(18, DoubleBond.CreateFromPosition(1, 9, 12), new Oxidized(2, 4, 5));
+
+            var actual = alkylChain.GetCandidates(generator).OfType<AlkylChain>().ToArray();
+            Assert.IsTrue(actual.All(chain => chain.DoubleBond.Count == 3));
+            var tuples = actual.Select(chain => (chain.DoubleBond.Bonds[0].Position, chain.DoubleBond.Bonds[1].Position, chain.DoubleBond.Bonds[2].Position)).ToArray();
+            Assert.AreEqual(1, tuples.Length);
+        }
     }
 }

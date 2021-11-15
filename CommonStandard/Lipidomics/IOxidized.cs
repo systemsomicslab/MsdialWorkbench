@@ -16,15 +16,14 @@ namespace CompMs.Common.Lipidomics
     {
         public Oxidized(int count, params int[] oxidises) {
             Count = count;
-            UnDecidedCount = count;
             Oxidises = new ReadOnlyCollection<int>(oxidises);
         }
 
         public int Count { get; }
 
-        public int DecidedCount { get; }
+        public int DecidedCount => Oxidises.Count;
 
-        public int UnDecidedCount { get; }
+        public int UnDecidedCount => Count - DecidedCount;
 
         public ReadOnlyCollection<int> Oxidises { get; }
 
