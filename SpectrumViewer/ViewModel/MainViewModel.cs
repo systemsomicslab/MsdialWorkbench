@@ -32,9 +32,21 @@ namespace CompMs.App.SpectrumViewer.ViewModel
             var spectrumViewModels = CollectionViewSource.GetDefaultView(SpectrumViewModels) as IEditableCollectionView;
             spectrumViewModels.NewItemPlaceholderPosition = NewItemPlaceholderPosition.AtEnd;
 
-            NewSpectrumCommand = new ReactiveCommand()
-                .WithSubscribe(model.AddSpectrumModel)
-                .AddTo(Disposables);
+            GeneratorEditorViewModels = model.GeneratorEditorModels.ToReadOnlyReactiveCollection(gm => new SpectrumGeneratorEditorViewModel(gm)).AddTo(Disposables);
+            GeneratorEditorViewModel = GeneratorEditorViewModels.ObserveAddChanged().ToReactiveProperty().AddTo(Disposables);
+
+            ViewModels = new IObservable<ViewModelBase>[]
+            {
+                SpectrumViewModels.ToObservable(),
+                SpectrumViewModels.ObserveAddChanged(),
+                GeneratorEditorViewModels.ToObservable(),
+                GeneratorEditorViewModels.ObserveAddChanged(),
+            }.Merge().ToReactiveCollection().AddTo(Disposables);
+            SpectrumViewModels.ObserveRemoveChanged().Subscribe(ViewModels.RemoveOnScheduler);
+            GeneratorEditorViewModels.ObserveRemoveChanged().Subscribe(ViewModels.RemoveOnScheduler);
+            ViewModel = ViewModels.ObserveAddChanged().ToReactiveProperty().AddTo(Disposables);
+            var viewModels = CollectionViewSource.GetDefaultView(ViewModels) as IEditableCollectionView;
+            viewModels.NewItemPlaceholderPosition = NewItemPlaceholderPosition.AtEnd;
 
             AddLipidReferenceCollectionCommand = new ReactiveCommand()
                 .WithSubscribe(model.AddLipidReferenceGeneration)
@@ -51,11 +63,23 @@ namespace CompMs.App.SpectrumViewer.ViewModel
                 .Subscribe(p => p.Second.AddScan(p.First))
                 .AddTo(Disposables);
 
+            NewSpectrumCommand = new ReactiveCommand()
+                .WithSubscribe(model.AddSpectrumModel)
+                .AddTo(Disposables);
+
             SpectrumViewModels.ObserveElementObservableProperty(sv => sv.CloseCommand)
                 .Select(prop => prop.Instance.Model)
                 .Subscribe(model.RemoveSpectrumModel)
                 .AddTo(Disposables);
 
+            NewGeneratorEditorCommand = new ReactiveCommand()
+                .WithSubscribe(model.AddSpectrumGeneratorEditorModel)
+                .AddTo(Disposables);
+
+            GeneratorEditorViewModels.ObserveElementObservableProperty(gv => gv.CloseCommand)
+                .Select(prop => prop.Instance.Model)
+                .Subscribe(model.RemoveSpectrumGeneratorEditorModel)
+                .AddTo(Disposables);
 
             broker.ToObservable<FileOpenRequest>()
                 .Subscribe(model.FileOpen)
@@ -74,7 +98,17 @@ namespace CompMs.App.SpectrumViewer.ViewModel
 
         public ReactiveProperty<SpectrumViewModel> SpectrumViewModel { get; }
 
+        public ReadOnlyReactiveCollection<SpectrumGeneratorEditorViewModel> GeneratorEditorViewModels { get; }
+
+        public ReactiveProperty<SpectrumGeneratorEditorViewModel> GeneratorEditorViewModel { get; }
+
+        public ReactiveCollection<ViewModelBase> ViewModels { get; }
+
+        public ReactiveProperty<ViewModelBase> ViewModel { get; }
+
         public ReactiveCommand NewSpectrumCommand { get; }
+
+        public ReactiveCommand NewGeneratorEditorCommand { get; }
 
         public ReactiveCommand AddLipidReferenceCollectionCommand { get; }
 

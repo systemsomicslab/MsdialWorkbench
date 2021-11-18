@@ -28,14 +28,16 @@ namespace CompMs.App.SpectrumViewer.ViewModel
                 DisplayScans.ObserveResetChanged().ToUnit(),
             }.Merge();
             HorizontalAxis = collectionChanged
+                .Where(_ => DisplayScans.Any())
                 .Select(_ => DisplayScans
-                    .Select(scan => new Range(scan.Spectrum.Min(s => s.Mass), scan.Spectrum.Max(s => s.Mass)))
+                    .Select(scan => new Range(scan.Spectrum.DefaultIfEmpty().Min(s => s?.Mass) ?? 0d, scan.Spectrum.DefaultIfEmpty().Max(s => s?.Mass) ?? 0d))
                     .Aggregate((acc, range) => acc.Union(range)))
                 .ToReactiveContinuousAxisManager<double>(new ConstantMargin(30), labelType: LabelType.Standard)
                 .AddTo(Disposables);
             VerticalAxis = collectionChanged
+                .Where(_ => DisplayScans.Any())
                 .Select(_ => DisplayScans
-                    .Select(scan => new Range(scan.Spectrum.Min(s => s.Intensity), scan.Spectrum.Max(s => s.Intensity)))
+                    .Select(scan => new Range(scan.Spectrum.DefaultIfEmpty().Min(s => s?.Intensity) ?? 0d, scan.Spectrum.DefaultIfEmpty().Max(s => s?.Intensity) ?? 0d))
                     .Aggregate((acc, range) => acc.Union(range)))
                 .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0, 0), labelType: LabelType.Order)
                 .AddTo(Disposables);
@@ -67,10 +69,6 @@ namespace CompMs.App.SpectrumViewer.ViewModel
         public ReactiveCommand<DragEventArgs> DropCommand { get; }
 
         public ReactiveCommand CloseCommand { get; }
-
-        public void AddScan(IObservable<DisplayScan> scan) {
-            scan.Subscribe(Model.AddScan).AddTo(Disposables);
-        }
         
         public void AddScan(IMSScanProperty scan) {
             Model.AddScan(scan);

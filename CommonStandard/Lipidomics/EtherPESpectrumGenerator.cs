@@ -3,7 +3,6 @@ using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -153,17 +152,6 @@ namespace CompMs.Common.Lipidomics
                 .Select((diff, i) => new SpectrumPeak(chainLoss + diff, 250d, $"{alkylChain} C{i + 1}"));
         }
 
-        private static readonly IEqualityComparer<SpectrumPeak> comparer = new SpectrumComparer();
-        class SpectrumComparer : IEqualityComparer<SpectrumPeak>
-        {
-            private static readonly double EPS = 1e6;
-            public bool Equals(SpectrumPeak x, SpectrumPeak y) {
-                return Math.Abs(x.Mass - y.Mass) <= EPS;
-            }
-
-            public int GetHashCode(SpectrumPeak obj) {
-                return Math.Round(obj.Mass, 6).GetHashCode();
-            }
-        }
+        private static readonly IEqualityComparer<SpectrumPeak> comparer = new SpectrumEqualityComparer();
     }
 }

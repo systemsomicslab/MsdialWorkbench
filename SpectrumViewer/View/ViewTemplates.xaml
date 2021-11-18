@@ -6,8 +6,12 @@
                     xmlns:vm="clr-namespace:CompMs.App.SpectrumViewer.ViewModel"
                     xmlns:model="clr-namespace:CompMs.App.SpectrumViewer.Model"
                     xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
+                    xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+                    xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
                     xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
                     xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing">
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
+
     <Style TargetType="{x:Type chart:MultiChart}" x:Key="OverlapChart">
         <Setter Property="Background" Value="WhiteSmoke"/>
         <Setter Property="BorderBrush" Value="Black"/>
@@ -182,6 +186,87 @@
         </Grid>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type vm:SpectrumGeneratorEditorViewModel}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="240"/>
+                <ColumnDefinition Width="200"/>
+            </Grid.ColumnDefinitions>
+
+            <ContentControl Content="{Binding SpectrumViewModel, Mode=OneTime}"
+                            Grid.Row="0" Grid.Column="0"/>
+            <StackPanel Grid.Row="0" Grid.Column="2">
+                <TextBlock Text="Preview setting" Foreground="White"/>
+                <ContentControl Content="{Binding PreviewLipidViewModel, Mode=OneTime}"
+                                Margin="8"/>
+                <ui:LabeledContent PrependLabel="Adduct:" Foreground="White" Margin="8">
+                    <ComboBox ItemsSource="{Binding Adducts, Mode=OneTime}"
+                              SelectedItem="{Binding PreviewAdduct.Value}"/>
+                </ui:LabeledContent>
+                <Button Content="Preview" Command="{Binding PreviewSpectrumCommand, Mode=OneTime}"/>
+            </StackPanel>
+
+            <Grid Grid.Row="0" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <ui:LabeledContent PrependLabel="Lipid class:" Foreground="White">
+                        <ComboBox ItemsSource="{Binding LipidClasses, Mode=OneTime}"
+                                  SelectedItem="{Binding LipidClass.Value}"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Adduct:" Foreground="White">
+                        <ComboBox ItemsSource="{Binding Adducts, Mode=OneTime}"
+                                  SelectedItem="{Binding Adduct.Value}"/>
+                    </ui:LabeledContent>
+                </StackPanel>
+                <GridSplitter BorderThickness="2"
+                              BorderBrush="Gray"
+                              HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                              Grid.Row="1"/>
+                <GroupBox BorderBrush="Gray" Grid.Row="1">
+                    <GroupBox.Header>
+                        <ui:LabeledContent PrependLabel="Variables" Foreground="White">
+                            <Button Content="&#xE710;" FontFamily="Segoe MDL2 Assets" Command="{Binding AddVariableCommand, Mode=OneTime}"/>
+                        </ui:LabeledContent>
+                    </GroupBox.Header>
+                    <ItemsControl ItemsSource="{Binding Variables}" AlternationCount="100">
+                        <ItemsControl.Template>
+                            <ControlTemplate TargetType="ItemsControl">
+                                <ScrollViewer>
+                                    <ItemsPresenter/>
+                                </ScrollViewer>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+                    </ItemsControl>
+                </GroupBox>
+                <GroupBox BorderBrush="Gray" Grid.Row="2">
+                    <GroupBox.Header>
+                        <ui:LabeledContent PrependLabel="Rules" Foreground="White">
+                            <Button Content="&#xE710;" FontFamily="Segoe MDL2 Assets" Command="{Binding AddRuleCommand, Mode=OneTime}"/>
+                        </ui:LabeledContent>
+                    </GroupBox.Header>
+                    <ItemsControl ItemsSource="{Binding Rules}" AlternationCount="100">
+                        <ItemsControl.Template>
+                            <ControlTemplate TargetType="ItemsControl">
+                                <ScrollViewer>
+                                    <ItemsPresenter/>
+                                </ScrollViewer>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+                    </ItemsControl>
+                </GroupBox>
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
     <DataTemplate xmlns:ref="clr-namespace:CompMs.Common.Components;assembly=Common"
                   DataType="{x:Type ref:MoleculeMsReference}">
         <StackPanel>
@@ -225,5 +310,126 @@
                      Background="LightGray"
                      Grid.Row="2"/>
         </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:LipidSelectionViewModel}">
+        <StackPanel>
+            <ui:LabeledContent  PrependLabel="Lipid class: " Foreground="White">
+                <ComboBox ItemsSource="{Binding LipidClasses, Mode=OneTime}"
+                          SelectedItem="{Binding LipidClass.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Exact mass:" Foreground="White">
+                <TextBox Text="{Binding Mass.Value}"/>
+            </ui:LabeledContent>
+            <TextBlock Text="Chains Setting" Foreground="White"/>
+            <ComboBox ItemsSource="{Binding ChainsTypes, Mode=OneTime}"
+                      SelectedItem="{Binding ChainsType.Value}"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="# of chain:" Foreground="White"/>
+                <TextBox Text="{Binding ChainCount.Value}" Width="40" Margin="4,0,0,0"/>
+                <Button Content="&#xE710;" FontFamily="Segoe MDL2 Assets" Command="{Binding AddChainCommand, Mode=OneTime}"
+                        Visibility="{Binding IsNotSubMolecularLevel.Value, Converter={StaticResource BooleanToVisibility}}"/>
+                <Button Content="&#xE711;" FontFamily="Segoe MDL2 Assets" Command="{Binding RemoveChainCommand, Mode=OneTime}"
+                        Visibility="{Binding IsNotSubMolecularLevel.Value, Converter={StaticResource BooleanToVisibility}}"/>
+            </StackPanel>
+            <ItemsControl ItemsSource="{Binding Chains}"
+                          AlternationCount="100"
+                          Margin="8,0,0,0"
+                          Visibility="{Binding IsNotSubMolecularLevel.Value, Converter={StaticResource BooleanToVisibility}}"/>
+            <ui:LabeledContent PrependLabel="chains string" Foreground="White"
+                               Visibility="{Binding IsSubMolecularLevel.Value, Converter={StaticResource BooleanToVisibility}}">
+                <TextBox Text="{Binding ChainsStr.Value}" Width="60"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:ChainSelectionViewModel}">
+        <StackPanel>
+            <TextBlock Text="{Binding Path=(ItemsControl.AlternationIndex), StringFormat=Chain {0}, RelativeSource={RelativeSource AncestorType=ContentPresenter}}" Foreground="White"/>
+            <ComboBox ItemsSource="{Binding ChainTypes, Mode=OneTime}"
+                      SelectedItem="{Binding ChainType.Value}"/>
+            <ui:LabeledContent PrependLabel="# of Carbon" Foreground="White">
+                <TextBox Text="{Binding CarbonCount.Value}" Width="40" VerticalContentAlignment="Center"/>
+            </ui:LabeledContent>
+
+            <TextBlock Text="DoubleBond" Foreground="White"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBox Text="{Binding DoubleBondCount.Value}" Width="40" VerticalContentAlignment="Center"/>
+                <Button Content="&#xE710;" FontFamily="Segoe MDL2 Assets" Command="{Binding AddDoubleBondCommand, Mode=OneTime}"/>
+            </StackPanel>
+            <ItemsControl ItemsSource="{Binding DoubleBonds}"
+                          Margin="8,0,0,8"/>
+
+            <TextBlock Text="Oxidized" Foreground="White"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBox Text="{Binding OxidizedCount.Value}" Width="40"/>
+                <Button Content="&#xE710;" FontFamily="Segoe MDL2 Assets" Command="{Binding AddOxidizedCommand, Mode=OneTime}"/>
+            </StackPanel>
+            <ItemsControl ItemsSource="{Binding Oxidises}"
+                          Margin="8,0,0,8"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:DoubleBondSetViewModel}">
+        <StackPanel Orientation="Horizontal">
+            <TextBox Text="{Binding Position.Value}" Width="40"/>
+            <ComboBox ItemsSource="{Binding BondTypes, Mode=OneTime}"
+                      SelectedItem="{Binding BondType.Value}"/>
+            <Button Content="&#xE711;" FontFamily="Segoe MDL2 Assets" Command="{Binding RemoveCommand, Mode=OneTime}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:OxidizedSetViewModel}">
+        <StackPanel Orientation="Horizontal">
+            <TextBox Text="{Binding Position.Value}"/>
+            <Button Content="&#xE711;" FontFamily="Segoe MDL2 Assets" Command="{Binding RemoveCommand, Mode=OneTime}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:SpectrumGenerationRuleViewModel}">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="{Binding Path=(ItemsControl.AlternationIndex), StringFormat=Rule {0}, RelativeSource={RelativeSource AncestorType=ContentPresenter}}" Foreground="White">
+                <Button Content="&#xE711;" FontFamily="Segoe MDL2 Assets" Command="{Binding RemoveCommand, Mode=OneTime}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Variable:" Foreground="White">
+                <ComboBox ItemsSource="{Binding Variables}"
+                          SelectedItem="{Binding Variable.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Intensity:" Foreground="White">
+                <TextBox Text="{Binding Intensity.Value}"/>
+            </ui:LabeledContent>
+            <TextBlock Text="Comment:" Foreground="White"/>
+            <TextBox Text="{Binding Comment.Value}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:MzVariableViewModel}">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="{Binding Path=(ItemsControl.AlternationIndex), StringFormat=Variable {0}, RelativeSource={RelativeSource AncestorType=ContentPresenter}}" Foreground="White">
+                <Button Content="&#xE711;" FontFamily="Segoe MDL2 Assets" Command="{Binding RemoveCommand, Mode=OneTime}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Variable type:" Foreground="White">
+                <ComboBox ItemsSource="{x:Static Member=model:MzVariableModel.VariableTypes}"
+                          SelectedItem="{Binding VariableType.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Placeholder type:" Foreground="White" Visibility="{Binding IsPlaceholder.Value, Converter={StaticResource BooleanToVisibility}}">
+                <ComboBox ItemsSource="{x:Static Member=model:MzVariableModel.PlaceholderTypes}"
+                          SelectedItem="{Binding PlaceholderType.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Exact mass:" Foreground="White" Visibility="{Binding IsConstant.Value, Converter={StaticResource BooleanToVisibility}}">
+                <TextBox Text="{Binding ExactMass.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Chain position:" Foreground="White" Visibility="{Binding ShouldSelectChain.Value, Converter={StaticResource BooleanToVisibility}}">
+                <TextBox Text="{Binding ChainPosition.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Left variable:" Foreground="White" Visibility="{Binding ShouldSelectReference.Value, Converter={StaticResource BooleanToVisibility}}">
+                <ComboBox ItemsSource="{Binding Mzs}"
+                          SelectedItem="{Binding Left.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Right variable:" Foreground="White" Visibility="{Binding ShouldSelectReference.Value, Converter={StaticResource BooleanToVisibility}}">
+                <ComboBox ItemsSource="{Binding Mzs}"
+                          SelectedItem="{Binding Right.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
     </DataTemplate>
 </ResourceDictionary>

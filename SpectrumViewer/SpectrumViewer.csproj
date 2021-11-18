@@ -84,8 +84,16 @@
     </ApplicationDefinition>
     <Compile Include="Model\IScanCollection.cs" />
     <Compile Include="Model\LipidReferenceCollection.cs" />
+    <Compile Include="Model\LipidSelectionModel.cs" />
+    <Compile Include="Model\MzVariableModel.cs" />
+    <Compile Include="Model\SpectrumGenerationRuleModel.cs" />
+    <Compile Include="Model\SpectrumGeneratorEditorModel.cs" />
     <Compile Include="ViewModel\IScanCollectionViewModel.cs" />
     <Compile Include="ViewModel\LipidReferenceCollectionViewModel.cs" />
+    <Compile Include="ViewModel\LipidSelectionViewModel.cs" />
+    <Compile Include="ViewModel\MzVariableViewModel.cs" />
+    <Compile Include="ViewModel\SpectrumGenerationRuleViewModel.cs" />
+    <Compile Include="ViewModel\SpectrumGeneratorEditorViewModel.cs" />
     <Compile Include="ViewModel\SpectrumViewModel.cs" />
     <Compile Include="View\AddItemTemplateSelector.cs" />
     <Compile Include="View\ScanCollectionView.xaml.cs">

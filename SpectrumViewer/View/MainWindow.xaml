@@ -98,8 +98,8 @@
 
             <GridSplitter Width="2" Grid.Column="0" VerticalAlignment="Stretch"/>
 
-            <TabControl ItemsSource="{Binding SpectrumViewModels}"
-                        SelectedItem="{Binding SpectrumViewModel.Value}"
+            <TabControl ItemsSource="{Binding ViewModels}"
+                        SelectedItem="{Binding ViewModel.Value}"
                         Background="Transparent"
                         Grid.Column="2">
                 <TabControl.ItemTemplateSelector>
@@ -186,6 +186,8 @@
                     Command="Open"/>
             <Button Content="&#xEB42; Lipid parser" FontFamily="Segoe MDL2 Assets" FontSize="32"
                     Command="{Binding AddLipidReferenceCollectionCommand, Mode=OneTime}"/>
+            <Button Content="&#xE70F; Edit spectrum generator" FontFamily="Segoe MDL2 Assets" FontSize="32"
+                    Command="{Binding NewGeneratorEditorCommand, Mode=OneTime}"/>
         </StackPanel>
     </Grid>
 </Window>

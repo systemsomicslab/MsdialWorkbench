@@ -21,14 +21,16 @@ namespace CompMs.Common.Lipidomics
 
     public class AcylChainGenerator : IChainGenerator
     {
-        public AcylChainGenerator(int minLength = 6, int begin = 3, int skip = 3) {
+        public AcylChainGenerator(int minLength = 6, int begin = 3, int end = 3, int skip = 3) {
             MinLength = minLength;
             Begin = begin;
+            End = end;
             Skip = skip;
         }
 
         public int MinLength { get; }
         public int Begin { get; } // if begin is 3, first double bond is 3-4 at the earliest counting from ketone carbon.
+        public int End { get; } // if end is 3 and number of carbon is 18, last double bond is 15-16 at latest.
         public int Skip { get; } // if skip is 3 and 6-7 is double bond, next one is 9-10 at the earliest.
 
         public IEnumerable<ITotalChain> Separate(TotalChains chain) {
@@ -46,10 +48,13 @@ namespace CompMs.Common.Lipidomics
         }
 
         public IEnumerable<ITotalChain> Permutate(MolecularSpeciesLevelChains chains) {
-            return SearchCollection.Permutations(chains.Chains).Select(set => new PositionLevelChains(set));
+            return SearchCollection.Permutations(chains.Chains).Select<IChain[], ITotalChain>(set => new PositionLevelChains(set));
         }
 
         public IEnumerable<ITotalChain> Product(PositionLevelChains chains) {
+            if (chains.Chains.All(chain => chain.DoubleBond.UnDecidedCount == 0 && chain.Oxidized.UnDecidedCount == 0)) {
+                return Enumerable.Empty<ITotalChain>();
+            }
             return SearchCollection.CartesianProduct(chains.Chains.Select(c => c.GetCandidates(this).ToArray()).ToArray()).Select(set => new PositionLevelChains(set));
         }
 
@@ -58,7 +63,7 @@ namespace CompMs.Common.Lipidomics
         }
 
         private bool DoubleChainIsValid(int carbon, int db) {
-            return db == 0 || carbon >= Begin + 1 + Skip * (db - 1);
+            return db == 0 || carbon >= Begin + Skip * (db - 1) + End;
         }
 
         private bool IsLexicographicOrder(int prevCarbon, int prevDb, int curCarbon, int curDb) {
@@ -160,7 +165,7 @@ namespace CompMs.Common.Lipidomics
                     yield return new DoubleBond(doubleBond.Bonds.Concat(infos).OrderBy(b => b.Position).ToArray());
                 }
                 else {
-                    for (var j = i; j < carbon; j++){
+                    for (var j = i; j <= carbon - End; j++){
                         if (used[j - 1]) {
                             continue;
                         }

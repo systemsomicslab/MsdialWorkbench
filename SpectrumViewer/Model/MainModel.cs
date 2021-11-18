@@ -23,6 +23,9 @@ namespace CompMs.App.SpectrumViewer.Model
             spectrumModels = new ObservableCollection<SpectrumModel>();
             SpectrumModels = new ReadOnlyObservableCollection<SpectrumModel>(spectrumModels);
             spectrumModels.Add(new SpectrumModel(spectrumModelSerialNumber++));
+
+            generatorEditorModels = new ObservableCollection<SpectrumGeneratorEditorModel>();
+            GeneratorEditorModels = new ReadOnlyObservableCollection<SpectrumGeneratorEditorModel>(generatorEditorModels);
         }
 
         public LipidQueryBean LipidQueries { get; }
@@ -70,6 +73,17 @@ namespace CompMs.App.SpectrumViewer.Model
 
         public void RemoveSpectrumModel(SpectrumModel spectrumModel) {
             spectrumModels.Remove(spectrumModel);
+        }
+
+        public ReadOnlyObservableCollection<SpectrumGeneratorEditorModel> GeneratorEditorModels { get; }
+        private readonly ObservableCollection<SpectrumGeneratorEditorModel> generatorEditorModels;
+
+        public void AddSpectrumGeneratorEditorModel() {
+            generatorEditorModels.Add(new SpectrumGeneratorEditorModel());
+        }
+
+        public void RemoveSpectrumGeneratorEditorModel(SpectrumGeneratorEditorModel editorModel) {
+            generatorEditorModels.Remove(editorModel);
         }
     }
 }

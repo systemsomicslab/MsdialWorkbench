@@ -3,7 +3,6 @@ using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -93,9 +92,9 @@ namespace CompMs.Common.Lipidomics
         private SpectrumPeak[] GetPCSpectrum(ILipid lipid) {
             return new[] {
                 new SpectrumPeak(lipid.Mass + MassDiffDictionary.ProtonMass, 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                new SpectrumPeak(C5H15NO4P, 999d, "Header"),
-                new SpectrumPeak(Gly_C, 999d, "Gly-C"),
-                new SpectrumPeak(Gly_O, 999d, "Gly-O"),
+                new SpectrumPeak(C5H15NO4P, 500d, "Header"),
+                new SpectrumPeak(Gly_C, 100d, "Gly-C"),
+                new SpectrumPeak(Gly_O, 100d, "Gly-O"),
             };
         }
 
@@ -108,9 +107,9 @@ namespace CompMs.Common.Lipidomics
             var chainMass = acylChain.Mass - MassDiffDictionary.HydrogenMass;
             return new[]
             {
-                new SpectrumPeak(lipidMass - chainMass + MassDiffDictionary.ProtonMass, 750d, $"-{acylChain}"),
-                new SpectrumPeak(lipidMass - chainMass - H2O + MassDiffDictionary.ProtonMass, 750d, $"-{acylChain}-H2O"),
-                new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.OxygenMass, 750d, $"-{acylChain}-O"),
+                new SpectrumPeak(lipidMass - chainMass + MassDiffDictionary.ProtonMass, 100d, $"-{acylChain}"),
+                new SpectrumPeak(lipidMass - chainMass - H2O + MassDiffDictionary.ProtonMass, 100d, $"-{acylChain}-H2O"),
+                new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.OxygenMass, 100d, $"-{acylChain}-O"),
             };
         }
 
@@ -119,7 +118,7 @@ namespace CompMs.Common.Lipidomics
             var chainMass = acylChain.Mass;
             return new[]
             {
-                new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.OxygenMass - CH2 + MassDiffDictionary.ProtonMass, 500d, "-CH2(Sn1)"),
+                new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.OxygenMass - CH2 + MassDiffDictionary.ProtonMass, 100d, "-CH2(Sn1)"),
             };
         }
 
@@ -142,21 +141,10 @@ namespace CompMs.Common.Lipidomics
                 diffs[i] += diffs[i - 1];
             }
             return Enumerable.Range(0, acylChain.CarbonCount - 1)
-                .Select(i => new SpectrumPeak(chainLoss + diffs[i], 250d, $"{acylChain} C{i+1}"))
+                .Select(i => new SpectrumPeak(chainLoss + diffs[i], 50d, $"{acylChain} C{i+1}"))
                 .ToArray();
         }
 
-        private static readonly IEqualityComparer<SpectrumPeak> comparer = new SpectrumComparer();
-        class SpectrumComparer : IEqualityComparer<SpectrumPeak>
-        {
-            private static readonly double EPS = 1e6;
-            public bool Equals(SpectrumPeak x, SpectrumPeak y) {
-                return Math.Abs(x.Mass - y.Mass) <= EPS;
-            }
-
-            public int GetHashCode(SpectrumPeak obj) {
-                return Math.Round(obj.Mass, 6).GetHashCode();
-            }
-        }
+        private static readonly IEqualityComparer<SpectrumPeak> comparer = new SpectrumEqualityComparer();
     }
 }

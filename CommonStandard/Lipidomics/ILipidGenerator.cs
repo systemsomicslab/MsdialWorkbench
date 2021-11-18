@@ -1,5 +1,4 @@
-﻿using CompMs.Common.Utility;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics
@@ -15,7 +14,7 @@ namespace CompMs.Common.Lipidomics
             AcylChainGenerator = acylChainGenerator;
         }
 
-        public LipidGenerator() : this(new AcylChainGenerator(minLength: 6, begin: 3, skip: 3)) {
+        public LipidGenerator() : this(new AcylChainGenerator(minLength: 6, begin: 3, end: 3, skip: 3)) {
 
         }
 
