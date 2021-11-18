@@ -170,6 +170,7 @@
     <Compile Include="Model\Core\AnalysisModelBase.cs" />
     <Compile Include="Model\Core\AlignmentModelBase.cs" />
     <Compile Include="Model\Dims\DimsTextDBAnnotationSettingModel.cs" />
+    <Compile Include="Model\Lcimms\LcimmsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsCompoundSearchModel.cs" />
     <Compile Include="Model\Search\CompoundResultCollection.cs" />
     <Compile Include="Model\Setting\IdentifySettingModel.cs" />
@@ -252,6 +253,8 @@
     <Compile Include="ViewModel\Dims\DimsMspAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsTextDBAnnotationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParameterSetViewModel.cs" />
+    <Compile Include="ViewModel\Lcimms\LcimmsAnnotatorSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsCompoundSearchViewModel.cs" />
     <Compile Include="ViewModel\Setting\IdentifySettingViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />

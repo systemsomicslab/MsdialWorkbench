@@ -116,8 +116,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             Storage.DataBases = analysisParamSetModel.IdentitySettingModel.Create();
-            // analysisParamSetModel.IdentitySettingModel.SetAnnotatorContainer(Storage.DataBases);
-            // analysisParamSetModel.IdentitySettingModel.SetProteomicsAnnotatorContainer(Storage.DataBases);
 
             if (parameter.TogetherWithAlignment) {
                 var filename = analysisParamSetModel.AlignmentResultFileName;
@@ -134,7 +132,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.AlignmentFiles = AlignmentFiles.ToList();
             }
 
-            //annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
             annotationProcess = BuildProteoMetabolomicsAnnotationProcess(Storage.DataBases, parameter);
             Storage.DataBaseMapper = CreateDataBaseMapper(Storage.DataBases);
             return true;

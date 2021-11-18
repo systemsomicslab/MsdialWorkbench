@@ -16,7 +16,7 @@ namespace CompMs.App.Msdial.Model.Lcimms.Tests
                 new AnalysisFileBean { },
                 new AnalysisFileBean { },
             };
-            var model = new LcimmsAnalysisParameterSetModel(parameter, files);
+            var model = new LcimmsAnalysisParameterSetModel(parameter, files, null);
 
             model.Parameter.MaxChargeNumber = 0;
             model.Parameter.QcAtLeastFilter = true;
@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Lcimms.Tests
                 new AnalysisFileBean { AnalysisFileId = 3, },
             };
 
-            var model = new LcimmsAnalysisParameterSetModel(parameter, files);
+            var model = new LcimmsAnalysisParameterSetModel(parameter, files, null);
             model.ClosingMethod();
 
             CollectionAssert.AreEquivalent(new[] { 0, 1, 3 }, parameter.FileID2CcsCoefficients.Keys);

@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             IdentitySettingModel = new IdentifySettingModel(parameter, new LcmsAnnotatorSettingFactory(), dataBaseStorages);
             if (files.Count() <= 1) {
-                Parameter.TogetherWithAlignment = false;
+                Parameter.ProcessOption &= ~ProcessOption.Alignment;
             }
 
             if (Parameter.TargetOmics == TargetOmics.Lipidomics) {

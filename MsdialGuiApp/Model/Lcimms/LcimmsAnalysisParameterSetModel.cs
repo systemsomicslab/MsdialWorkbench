@@ -1,23 +1,42 @@
-﻿using CompMs.App.Msdial.Model.Core;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.DataObj;
+using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Parameter;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
     public class LcimmsAnalysisParameterSetModel : AnalysisParameterSetModelBase
     {
-        public LcimmsAnalysisParameterSetModel(MsdialLcImMsParameter parameter, IEnumerable<AnalysisFileBean> files)
+        public LcimmsAnalysisParameterSetModel(MsdialLcImMsParameter parameter, IReadOnlyCollection<AnalysisFileBean> files, DataBaseStorage dataBaseStorage)
             : base(parameter, files) {
             if (parameter is null) {
                 throw new ArgumentNullException(nameof(parameter));
             }
 
+            IdentifySettingModel = new IdentifySettingModel(parameter, new LcimmsAnnotatorSettingFactory(), dataBaseStorage);
+            if (files.Count <= 1) {
+                Parameter.ProcessOption &= ~ProcessOption.Alignment;
+            }
             Parameter = parameter;
+
+            if (Parameter.TargetOmics == TargetOmics.Lipidomics) {
+                var mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var lbmFiles = Directory.GetFiles(mainDirectory, $"*.{SaveFileFormat.lbm}?", SearchOption.TopDirectoryOnly);
+                if (lbmFiles.FirstOrDefault() is string lbmFile) {
+                    var databaseModel = IdentifySettingModel.AddDataBaseZZZ();
+                    databaseModel.DataBasePath = lbmFile;
+                }
+            }
 
             if (parameter.FileID2CcsCoefficients is null) {
                 parameter.FileID2CcsCoefficients = new Dictionary<int, CoefficientsForCcsCalculation>();
@@ -32,6 +51,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public MsdialLcImMsParameter Parameter { get; }
+
+        public IdentifySettingModel IdentifySettingModel { get; }
 
         public Dictionary<int, CoefficientsForCcsCalculation> FileID2CcsCoefficients { get; } 
     }
