@@ -432,6 +432,15 @@ namespace Rfx.Riken.OsakaUniv {
                     var massSpectra = ms2Dec.MassSpectra;
                     if (massSpectra == null || massSpectra.Count == 0) continue;
 
+
+                    // temp 20211121
+                    var cutoff = 100000;
+                    var isCharacterized = spot.LibraryID >= 0 && !spot.MetaboliteName.Contains("w/o MS2") && !spot.MetaboliteName.Contains("RIKEN") ? true : false;
+                    if (!isCharacterized) {
+                        var maxIntensity = spot.AlignedPeakPropertyBeanCollection.Max(n => n.Variable);
+                        if (maxIntensity < cutoff) continue;
+                    }
+
                     var node = new Node() {
                         //classes = "fuchsia b_pink hits",
                         data = new NodeData() {
@@ -450,7 +459,7 @@ namespace Rfx.Riken.OsakaUniv {
                     };
 
                     var backgroundcolor = "rgb(0,0,0)";
-                    if (spot.LibraryID >= 0 && MetaboliteColorCode.metabolite_colorcode.ContainsKey(node.data.Ontology))
+                    if (isCharacterized && MetaboliteColorCode.metabolite_colorcode.ContainsKey(node.data.Ontology))
                         backgroundcolor = MetaboliteColorCode.metabolite_colorcode[node.data.Ontology];
                     node.data.backgroundcolor = backgroundcolor;
 

@@ -423,6 +423,18 @@ namespace Rfx.Riken.OsakaUniv
                 case "NAGlySer": return new SolidColorBrush(Color.FromArgb(180, 225, 39, 30)); // orangered modified
                 case "NAOrn": return new SolidColorBrush(Color.FromArgb(180, 215, 29, 40)); // orangered
                 case "GM3": return new SolidColorBrush(Color.FromArgb(180, 168, 0, 47)); //wine red
+                case "GD1a": return new SolidColorBrush(Color.FromArgb(180, 158, 0, 47)); //wine red modified
+                case "GD1b": return new SolidColorBrush(Color.FromArgb(180, 148, 0, 47)); //wine red modified
+                case "GD2": return new SolidColorBrush(Color.FromArgb(180, 138, 0, 47)); //wine red modified
+                case "GD3": return new SolidColorBrush(Color.FromArgb(180, 128, 0, 47)); //wine red modified
+                case "GM1": return new SolidColorBrush(Color.FromArgb(180, 118, 0, 47)); //wine red modified
+                case "GQ1b": return new SolidColorBrush(Color.FromArgb(180, 108, 0, 47)); //wine red modified
+                case "GT1b": return new SolidColorBrush(Color.FromArgb(180, 168, 10, 47)); //wine red modified
+                case "NGcGM3": return new SolidColorBrush(Color.FromArgb(180, 168, 20, 47)); //wine red modified
+                case "DGMG": return new SolidColorBrush(Color.FromArgb(180, 129, 0, 0)); // darkred modified
+                case "MGMG": return new SolidColorBrush(Color.FromArgb(180, 10, 0, 255)); // blue modified
+                case "GPNAE": return new SolidColorBrush(Color.FromArgb(180, 119, 69, 19)); // saddlebrown modified
+                case "ST": return new SolidColorBrush(Color.FromArgb(180, 210, 105, 30)); // chocolate
                 case "Others": return new SolidColorBrush(Color.FromArgb(180, 220, 20, 60)); //wine red
                 case "Unknown": return new SolidColorBrush(Color.FromArgb(180, 181, 181, 181)); //wine red 2
                 default: return new SolidColorBrush(Color.FromArgb(180, 0, 0, 0)); // if nothing, black
