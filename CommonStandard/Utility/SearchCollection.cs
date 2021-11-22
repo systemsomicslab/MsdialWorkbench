@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.Common.Utility
 {
-    public class SearchCollection
+    public static class SearchCollection
     {
         public static int LowerBound<T>(IReadOnlyList<T> collection, T value, int start, int end, Comparison<T> compare)
         {
@@ -86,6 +87,61 @@ namespace CompMs.Common.Utility
         public static int UpperBound<T>(IReadOnlyList<T> collection, T value, IComparer<T> comparer)
         {
             return UpperBound(collection, value, 0, collection.Count, comparer.Compare);
+        }
+
+        public static IEnumerable<T[]> Permutations<T>(IReadOnlyList<T> collection) {
+            var n = collection.Count;
+            var used = new bool[n];
+            var result = new T[n];
+            var memo = new Dictionary<T, int>();
+            
+            IEnumerable<T[]> recurse(int m) {
+                if (m == n) {
+                    yield return result.ToArray();
+                }
+                else {
+                    if (!memo.TryGetValue(collection[m], out var j)) {
+                        j = 0;
+                    }
+                    for (int i = j; i < n; i++) {
+                        if (used[i]) {
+                            continue;
+                        }
+                        used[i] = true;
+                        result[i] = collection[m];
+                        memo[collection[m]] = i + 1;
+                        foreach (var res in recurse(m + 1)) {
+                            yield return res;
+                        }
+                        used[i] = false;
+                        memo[collection[m]] = j;
+                    }
+                }
+            }
+
+            return recurse(0);
+        }
+
+        public static IEnumerable<T[]> CartesianProduct<T>(IReadOnlyList<IReadOnlyList<T>> collections) {
+            var set = new T[collections.Count];
+
+            IEnumerable<T[]> rec(int i) {
+                if (i == collections.Count) {
+                    yield return set.ToArray();
+                }
+                else {
+                    var collection = collections[i];
+
+                    foreach (var item in collection) {
+                        set[i] = item;
+                        foreach (var res in rec(i + 1)) {
+                            yield return res;
+                        }
+                    }
+                }
+            }
+
+            return rec(0);
         }
     }
 }

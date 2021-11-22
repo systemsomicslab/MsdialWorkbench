@@ -11,6 +11,22 @@ namespace CompMs.App.Msdial.Model.Imms
             Parameter = parameter;
             ProcessParameter = parameter.ProcessBaseParam;
             PeakPickParameter = parameter.PeakPickBaseParam;
+
+            switch (parameter.ProviderFactoryParameter) {
+                case ImmsTicDataProviderFactoryParameter ticParameter:
+                    UseMs1WithHighestTic = true;
+                    TimeBegin = ticParameter.TimeBegin;
+                    TimeEnd = ticParameter.TimeEnd;
+                    break;
+                case ImmsAverageDataProviderFactoryParameter averageParameter:
+                    UseMs1WithHighestTic = false;
+                    UseAverageMs1 = true;
+                    TimeBegin = averageParameter.TimeBegin;
+                    TimeEnd = averageParameter.TimeEnd;
+                    MassTolerance = averageParameter.MassTolerance;
+                    DriftTolerance = averageParameter.DriftTolerance;
+                    break;
+            }
         }
 
         public bool UseMs1WithHighestTic {

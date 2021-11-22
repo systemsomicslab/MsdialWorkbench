@@ -1,20 +1,13 @@
 ﻿using CompMs.App.SpectrumViewer.Model;
-using CompMs.Common.Components;
-using CompMs.Common.Extension;
-using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.AxisManager.Generic;
-using CompMs.Graphics.Base;
-using CompMs.Graphics.Core.Base;
-using CompMs.Graphics.Design;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows.Media;
+using System.Windows.Data;
 
 namespace CompMs.App.SpectrumViewer.ViewModel
 {
@@ -27,32 +20,107 @@ namespace CompMs.App.SpectrumViewer.ViewModel
             this.broker = broker;
             model = new MainModel();
 
-            LipidQueries = new LipidQueryBeanViewModel(model.LipidQueries).AddTo(Disposables);
-            Scans = model.ToReactivePropertySlimAsSynchronized(m => m.Scans).AddTo(Disposables);
-            Scan = new ReactivePropertySlim<IMSScanProperty>().AddTo(Disposables);
+            IsExpanded = new ReactivePropertySlim<bool>().AddTo(Disposables);
 
-            var spectrum = Scan.Where(scan => scan != null && !scan.Spectrum.IsEmptyOrNull()).Select(scan => scan.Spectrum);
-            HorizontalAxis = spectrum.Select(spec => new Range(spec.Min(s => s.Mass), spec.Max(s => s.Mass)))
-                .ToReactiveContinuousAxisManager<double>(new ConstantMargin(30), labelType: LabelType.Standard)
+            LipidQueries = new LipidQueryBeanViewModel(model.LipidQueries).AddTo(Disposables);
+
+            ScanCollections = model.ScanCollections.ToReadOnlyReactiveCollection(MapScanModelToViewModel).AddTo(Disposables);
+            ScanCollection = ScanCollections.ObserveAddChanged().ToReactiveProperty().AddTo(Disposables);
+
+            SpectrumViewModels = model.SpectrumModels.ToReadOnlyReactiveCollection(sm => new SpectrumViewModel(sm)).AddTo(Disposables);
+            SpectrumViewModel = SpectrumViewModels.ObserveAddChanged().ToReactiveProperty().AddTo(Disposables);
+            var spectrumViewModels = CollectionViewSource.GetDefaultView(SpectrumViewModels) as IEditableCollectionView;
+            spectrumViewModels.NewItemPlaceholderPosition = NewItemPlaceholderPosition.AtEnd;
+
+            GeneratorEditorViewModels = model.GeneratorEditorModels.ToReadOnlyReactiveCollection(gm => new SpectrumGeneratorEditorViewModel(gm)).AddTo(Disposables);
+            GeneratorEditorViewModel = GeneratorEditorViewModels.ObserveAddChanged().ToReactiveProperty().AddTo(Disposables);
+
+            ViewModels = new IObservable<ViewModelBase>[]
+            {
+                SpectrumViewModels.ToObservable(),
+                SpectrumViewModels.ObserveAddChanged(),
+                GeneratorEditorViewModels.ToObservable(),
+                GeneratorEditorViewModels.ObserveAddChanged(),
+            }.Merge().ToReactiveCollection().AddTo(Disposables);
+            SpectrumViewModels.ObserveRemoveChanged().Subscribe(ViewModels.RemoveOnScheduler);
+            GeneratorEditorViewModels.ObserveRemoveChanged().Subscribe(ViewModels.RemoveOnScheduler);
+            ViewModel = ViewModels.ObserveAddChanged().ToReactiveProperty().AddTo(Disposables);
+            var viewModels = CollectionViewSource.GetDefaultView(ViewModels) as IEditableCollectionView;
+            viewModels.NewItemPlaceholderPosition = NewItemPlaceholderPosition.AtEnd;
+
+            AddLipidReferenceCollectionCommand = new ReactiveCommand()
+                .WithSubscribe(model.AddLipidReferenceGeneration)
                 .AddTo(Disposables);
-            VerticalAxis = spectrum.Select(spec => new Range(spec.Min(s => s.Intensity), spec.Max(s => s.Intensity)))
-                .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0, 0), labelType: LabelType.Order)
+
+            ScanCollections.ObserveElementObservableProperty(sc => sc.CloseCommand)
+                .Select(prop => prop.Instance.Model)
+                .Subscribe(model.RemoveScanCollection)
                 .AddTo(Disposables);
-            SpectrumCommentBrushes = new ConstantBrushMapper<SpectrumComment>(Brushes.White);
+            ScanCollections.ObserveElementObservableProperty(sc => sc.ScanSource)
+                .Select(prop => prop.Value)
+                .WithLatestFrom(SpectrumViewModel)
+                .Where(p => p.First != null && p.Second != null)
+                .Subscribe(p => p.Second.AddScan(p.First))
+                .AddTo(Disposables);
+
+            NewSpectrumCommand = new ReactiveCommand()
+                .WithSubscribe(model.AddSpectrumModel)
+                .AddTo(Disposables);
+
+            SpectrumViewModels.ObserveElementObservableProperty(sv => sv.CloseCommand)
+                .Select(prop => prop.Instance.Model)
+                .Subscribe(model.RemoveSpectrumModel)
+                .AddTo(Disposables);
+
+            NewGeneratorEditorCommand = new ReactiveCommand()
+                .WithSubscribe(model.AddSpectrumGeneratorEditorModel)
+                .AddTo(Disposables);
+
+            GeneratorEditorViewModels.ObserveElementObservableProperty(gv => gv.CloseCommand)
+                .Select(prop => prop.Instance.Model)
+                .Subscribe(model.RemoveSpectrumGeneratorEditorModel)
+                .AddTo(Disposables);
 
             broker.ToObservable<FileOpenRequest>()
                 .Subscribe(model.FileOpen)
                 .AddTo(Disposables);
         }
 
+        public ReactivePropertySlim<bool> IsExpanded { get; }
+
         public LipidQueryBeanViewModel LipidQueries { get; }
 
-        public ReactivePropertySlim<ObservableCollection<IMSScanProperty>> Scans { get; }
+        public ReadOnlyReactiveCollection<IScanCollectionViewModel> ScanCollections { get; }
 
-        public ReactivePropertySlim<IMSScanProperty> Scan { get; }
+        public ReactiveProperty<IScanCollectionViewModel> ScanCollection { get; }
 
-        public ReactiveContinuousAxisManager<double> HorizontalAxis { get; }
-        public ReactiveContinuousAxisManager<double> VerticalAxis { get; }
-        public IBrushMapper<SpectrumComment> SpectrumCommentBrushes { get; }
+        public ReadOnlyReactiveCollection<SpectrumViewModel> SpectrumViewModels { get; }
+
+        public ReactiveProperty<SpectrumViewModel> SpectrumViewModel { get; }
+
+        public ReadOnlyReactiveCollection<SpectrumGeneratorEditorViewModel> GeneratorEditorViewModels { get; }
+
+        public ReactiveProperty<SpectrumGeneratorEditorViewModel> GeneratorEditorViewModel { get; }
+
+        public ReactiveCollection<ViewModelBase> ViewModels { get; }
+
+        public ReactiveProperty<ViewModelBase> ViewModel { get; }
+
+        public ReactiveCommand NewSpectrumCommand { get; }
+
+        public ReactiveCommand NewGeneratorEditorCommand { get; }
+
+        public ReactiveCommand AddLipidReferenceCollectionCommand { get; }
+
+        private static IScanCollectionViewModel MapScanModelToViewModel(IScanCollection scanCollection) {
+            switch (scanCollection) {
+                case ScanCollection sc:
+                    return new ScanCollectionViewModel(sc);
+                case LipidReferenceCollection lc:
+                    return new LipidReferenceCollectionViewModel(lc);
+                default:
+                    return null;
+            }
+        }
     }
 }

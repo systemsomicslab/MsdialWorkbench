@@ -28,13 +28,16 @@ namespace CompMs.App.SpectrumViewer.View
                 h => (s, e) => h(e),
                 h => Drop += h,
                 h => Drop -= h);
-            drop.Select(e => e.Data.GetData(DataFormats.FileDrop) as string[])
-                .Select(files => files.LastOrDefault())
+            drop.Select(e => e.Data.GetData(DataFormats.FileDrop))
+                .OfType<string[]>()
+                .SelectMany(files => files.ToObservable())
                 .Where(file => file != null)
                 .Subscribe(file => broker.Publish(new FileOpenRequest(file)));
 
-            if (Environment.GetCommandLineArgs().Length == 2) {
-                broker.Publish(new FileOpenRequest(Environment.GetCommandLineArgs().LastOrDefault()));
+            if (Environment.GetCommandLineArgs().Length >= 2) {
+                foreach (var file in Environment.GetCommandLineArgs().Skip(1)) {
+                    broker.Publish(new FileOpenRequest(file));
+                }
             }
         }
 

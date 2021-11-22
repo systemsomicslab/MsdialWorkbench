@@ -3,6 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
         xmlns:local="clr-namespace:CompMs.App.SpectrumViewer.View"
         xmlns:vm="clr-namespace:CompMs.App.SpectrumViewer.ViewModel"
         xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
@@ -11,12 +13,48 @@
         Background="Black"
         AllowDrop="True"
         d:DataContext="{d:DesignInstance Type={x:Type vm:MainViewModel}}"
+        x:Name="Root"
         Title="MainWindow" Height="800" Width="1200">
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="1" UseAeroCaptionButtons="False" CaptionHeight="24"/>
     </WindowChrome.WindowChrome>
     <Window.Resources>
-        <Pen x:Key="TickColor" Brush="White" Thickness="2" PresentationOptions:Freeze="True"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/ViewTemplates.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Pen x:Key="TickColor" Brush="White" Thickness="2" PresentationOptions:Freeze="True"/>
+            <DataTemplate x:Key="ContentTabHeader"
+                          DataType="{x:Type vm:SpectrumViewModel}">
+                <StackPanel Orientation="Horizontal">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Drop">
+                            <rp:EventToReactiveCommand Command="{Binding DropCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <TextBlock Text="{Binding Name.Value}"/>
+                    <Button Content="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                            Command="{Binding CloseCommand, Mode=OneTime}"/>
+                </StackPanel>
+            </DataTemplate>
+            <DataTemplate x:Key="ContentTabItem"
+                          DataType="{x:Type vm:SpectrumViewModel}">
+                <ContentControl Content="{Binding}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Drop">
+                            <rp:EventToReactiveCommand Command="{Binding DropCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ContentControl>
+            </DataTemplate>
+            <DataTemplate x:Key="NewItemTabHeader">
+                <Button Content="+"
+                        Command="{Binding DataContext.NewSpectrumCommand, ElementName=Root}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="NewItemTabItem">
+                <Grid/>
+            </DataTemplate>
+        </ResourceDictionary>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -24,7 +62,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
@@ -37,17 +75,51 @@
                     WindowChrome.IsHitTestVisibleInChrome="True"/>
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Grid.Column="0">
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <TabControl ItemsSource="{Binding ScanCollections}"
+                        SelectedItem="{Binding ScanCollection.Value}"
+                        Grid.Column="0">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name.Value}"/>
+                            <Button Content="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                    Command="{Binding CloseCommand, Mode=OneTime}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+            </TabControl>
+
+            <GridSplitter Width="2" Grid.Column="0" VerticalAlignment="Stretch"/>
+
+            <TabControl ItemsSource="{Binding ViewModels}"
+                        SelectedItem="{Binding ViewModel.Value}"
+                        Background="Transparent"
+                        Grid.Column="2">
+                <TabControl.ItemTemplateSelector>
+                    <local:AddItemTemplateSelector ContentTemplate="{StaticResource ContentTabHeader}"
+                                                   NewItemTemplate="{StaticResource NewItemTabHeader}"/>
+                </TabControl.ItemTemplateSelector>
+                <TabControl.ContentTemplateSelector>
+                    <local:AddItemTemplateSelector ContentTemplate="{StaticResource ContentTabItem}"
+                                                   NewItemTemplate="{StaticResource NewItemTabItem}"/>
+                </TabControl.ContentTemplateSelector>
+            </TabControl>
+        </Grid>
+
+        <StackPanel x:Name="menu" Grid.Row="1" Grid.Column="0">
             <StackPanel.Resources>
                 <Style TargetType="Button">
-                    <Style.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="8"/>
-                        </Style>
-                    </Style.Resources>
                     <Setter Property="Width" Value="40"/>
                     <Setter Property="Height" Value="40"/>
                     <Setter Property="Margin" Value="0,4"/>
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
                     <Setter Property="Background" Value="Transparent"/>
                     <Setter Property="BorderBrush" Value="Transparent"/>
                     <Setter Property="Foreground" Value="White"/>
@@ -58,14 +130,10 @@
                     </Style.Triggers>
                 </Style>
                 <Style TargetType="ToggleButton">
-                    <Style.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="8"/>
-                        </Style>
-                    </Style.Resources>
                     <Setter Property="Width" Value="40"/>
                     <Setter Property="Height" Value="40"/>
                     <Setter Property="Margin" Value="0,4"/>
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
                     <Setter Property="Background" Value="Transparent"/>
                     <Setter Property="BorderBrush" Value="Transparent"/>
                     <Setter Property="Foreground" Value="White"/>
@@ -76,76 +144,50 @@
                     </Style.Triggers>
                 </Style>
             </StackPanel.Resources>
-            <ToggleButton Content="&#xE700;" FontFamily="Segoe MDL2 Assets" FontSize="24"/>
-            <Button Content="&#xE8E5;" FontFamily="Segoe MDL2 Assets" FontSize="24"
+            <i:Interaction.Triggers>
+                <i:DataTrigger Binding="{Binding IsExpanded.Value}" Value="True">
+                    <i:DataTrigger.Actions>
+                        <i:ControlStoryboardAction ControlStoryboardOption="Play">
+                            <i:ControlStoryboardAction.Storyboard>
+                                <Storyboard>
+                                    <DoubleAnimation From="40" To="200" Duration="0:0:0.2"
+                                                     Storyboard.TargetName="menu"
+                                                     Storyboard.TargetProperty="Width">
+                                        <DoubleAnimation.EasingFunction>
+                                            <ExponentialEase Exponent="2" EasingMode="EaseInOut"/>
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </i:ControlStoryboardAction.Storyboard>
+                        </i:ControlStoryboardAction>
+                    </i:DataTrigger.Actions>
+                </i:DataTrigger>
+                <i:DataTrigger Binding="{Binding IsExpanded.Value}" Value="False">
+                    <i:DataTrigger.Actions>
+                        <i:ControlStoryboardAction ControlStoryboardOption="Play">
+                            <i:ControlStoryboardAction.Storyboard>
+                                <Storyboard>
+                                    <DoubleAnimation From="200" To="40" Duration="0:0:0.2"
+                                                     Storyboard.TargetName="menu"
+                                                     Storyboard.TargetProperty="Width">
+                                        <DoubleAnimation.EasingFunction>
+                                            <ExponentialEase Exponent="2" EasingMode="EaseInOut"/>
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </i:ControlStoryboardAction.Storyboard>
+                        </i:ControlStoryboardAction>
+                    </i:DataTrigger.Actions>
+                </i:DataTrigger>
+            </i:Interaction.Triggers>
+            <ToggleButton Content="&#xE700;" FontFamily="Segoe MDL2 Assets" FontSize="32"
+                          IsChecked="{Binding IsExpanded.Value}"/>
+            <Button Content="&#xE8E5; Load" FontFamily="Segoe MDL2 Assets" FontSize="32"
                     Command="Open"/>
+            <Button Content="&#xEB42; Lipid parser" FontFamily="Segoe MDL2 Assets" FontSize="32"
+                    Command="{Binding AddLipidReferenceCollectionCommand, Mode=OneTime}"/>
+            <Button Content="&#xE70F; Edit spectrum generator" FontFamily="Segoe MDL2 Assets" FontSize="32"
+                    Command="{Binding NewGeneratorEditorCommand, Mode=OneTime}"/>
         </StackPanel>
-
-        <Grid Grid.Row="1" Grid.Column="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-
-            <ListBox ItemsSource="{Binding Scans.Value}"
-                     SelectedItem="{Binding Scan.Value}"
-                     Background="LightGray"
-                     Grid.Column="0">
-                <ListBox.ItemTemplate>
-                    <DataTemplate xmlns:reference="clr-namespace:CompMs.Common.Components;assembly=Common"
-                                  DataType="{x:Type reference:MoleculeMsReference}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <StackPanel Orientation="Horizontal" Grid.Row="0">
-                                <TextBlock Text="{Binding Name, Mode=OneTime}"/>
-                                <TextBlock Text="Class:" Margin="4,0"/>
-                                <TextBlock Text="{Binding CompoundClass}"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Grid.Row="1">
-                                <TextBlock Text="Precursor m/z:"/>
-                                <TextBlock Text="{Binding PrecursorMz, StringFormat=N4}"/>
-                            </StackPanel>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <GridSplitter Width="2" Grid.Column="0" VerticalAlignment="Stretch"/>
-            <chart:MultiChart GraphTitle="{Binding Scan.Value.Name}"
-                              HorizontalTitle="m/z"
-                              VerticalTitle="{Binding VerticalAxis.UnitLabel, StringFormat=Intensity ({0})}"
-                              HorizontalAxis="{Binding HorizontalAxis}"
-                              VerticalAxis="{Binding VerticalAxis}"
-                              Background="#FF202020" BorderBrush="White"
-                              Margin="16"
-                              Grid.Column="2">
-                <chart:LineSpectrumControl ItemsSource="{Binding Scan.Value.Spectrum}"
-                                           HorizontalPropertyName="Mass"
-                                           VerticalPropertyName="Intensity"
-                                           BrushMapper="{Binding SpectrumCommentBrushes}"
-                                           HueProperty="SpectrumComment">
-                    <chart:LineSpectrumControl.ToolTip>
-                        <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                            <StackPanel>
-                                <TextBlock Text="{Binding FocusedItem.Mass, StringFormat=m/z: {0}}"/>
-                                <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0}}"/>
-                            </StackPanel>
-                        </ToolTip>
-                    </chart:LineSpectrumControl.ToolTip>
-                </chart:LineSpectrumControl>
-                <chart:Annotator ItemsSource="{Binding Scan.Value.Spectrum}"
-                                 HorizontalPropertyName="Mass"
-                                 VerticalPropertyName="Intensity"
-                                 Overlap="Direct,Horizontal"
-                                 OrderingPropertyName="Intensity"
-                                 LabelPropertyName="Mass"
-                                 Format="N3"
-                                 TopN="5"
-                                 Brush="White"/>
-            </chart:MultiChart>
-        </Grid>
     </Grid>
 </Window>
