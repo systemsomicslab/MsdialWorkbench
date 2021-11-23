@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View.Lcimms"
         xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
+        xmlns:setting="clr-namespace:CompMs.App.Msdial.View.Setting"
         mc:Ignorable="d"
         Title="Analysis parameter setting" 
         Name="AnalysisParamSetView"
@@ -28,8 +29,9 @@
                 <commonview:DeconvolutionView />
             </TabItem>
 
-            <TabItem Name="TabItem_Identification" Header="Identification">
-                <local:IdentificationView />
+            <TabItem Header="Identification"
+                     DataContext="{Binding IdentitySettingViewModel, Mode=OneTime}">
+                <setting:IdentifySettingView/>
             </TabItem>
 
             <TabItem Name="TabItem_Adduct" Header="Adduct">

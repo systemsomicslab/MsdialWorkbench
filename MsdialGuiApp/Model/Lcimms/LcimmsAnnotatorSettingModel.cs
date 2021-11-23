@@ -6,6 +6,7 @@ using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
 using System;
 using System.Collections.Generic;
 
@@ -34,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, int priority, TargetOmics omics) {
             return new List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>
             {
-                // new MassAnnotator(db, SearchParameter, omics, SourceType.MspDB, annotatorID, priority),
+                new LcimmsMspAnnotator(db, SearchParameter, omics, AnnotatorID, priority),
             };
         }
     }
@@ -61,7 +62,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, int priority, TargetOmics omics) {
             return new List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
-                // new LcimmsTextDBAnnotator(db, SearchParameter, AnnotatorID, priority)
+                new LcimmsTextDBAnnotator(db, SearchParameter, AnnotatorID, priority),
             };
         }
     }

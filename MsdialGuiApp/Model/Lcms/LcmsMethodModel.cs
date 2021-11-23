@@ -18,7 +18,6 @@ using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcMsApi.DataObj;
 using Reactive.Bindings.Extensions;
@@ -31,7 +30,7 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    class LcmsMethodModel : MethodModelBase
+    sealed class LcmsMethodModel : MethodModelBase
     {
         static LcmsMethodModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", CompMs.Common.Components.ChromXType.RT);

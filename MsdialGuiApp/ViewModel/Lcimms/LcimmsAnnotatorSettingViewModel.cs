@@ -55,12 +55,51 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
     }
 
+    public sealed class LcimmsTextDBAnnotatorSettingViewModel : ViewModelBase, IAnnotatorSettingViewModel
+    {
+        private readonly LcimmsTextDBAnnotatorSettingModel model;
+
+        public LcimmsTextDBAnnotatorSettingViewModel(LcimmsTextDBAnnotatorSettingModel model) {
+            this.model = model;
+
+            AnnotatorID = this.model.ToReactivePropertyAsSynchronized(m => m.AnnotatorID)
+                .SetValidateAttribute(() => AnnotatorID)
+                .AddTo(Disposables);
+            ParameterViewModel = new MsRefSearchParameterBaseViewModel(this.model.SearchParameter).AddTo(Disposables);
+            ObserveHasErrors = new[]
+            {
+                AnnotatorID.ObserveHasErrors,
+                ParameterViewModel.Ms1Tolerance.ObserveHasErrors,
+                ParameterViewModel.RtTolerance.ObserveHasErrors,
+                ParameterViewModel.CcsTolerance.ObserveHasErrors,
+                ParameterViewModel.IsUseTimeForAnnotationFiltering.ObserveHasErrors,
+                ParameterViewModel.IsUseTimeForAnnotationScoring.ObserveHasErrors,
+                ParameterViewModel.IsUseCcsForAnnotationFiltering.ObserveHasErrors,
+                ParameterViewModel.IsUseCcsForAnnotationScoring.ObserveHasErrors,
+            }.CombineLatestValuesAreAllFalse()
+            .Inverse()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
+        }
+
+        IAnnotatorSettingModel IAnnotatorSettingViewModel.Model => model;
+
+        public MsRefSearchParameterBaseViewModel ParameterViewModel { get; }
+
+        [Required(ErrorMessage = "Annotator id is required.")]
+        public ReactiveProperty<string> AnnotatorID { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
+    }
+
     public sealed class LcimmsAnnotatorSettingViewModel : IAnnotatorSettingViewModelFactory
     {
         public IAnnotatorSettingViewModel Create(IAnnotatorSettingModel model) {
             switch (model) {
                 case LcimmsMspAnnotatorSettingModel mspModel:
                     return new LcimmsMspAnnotatorSettingViewModel(mspModel);
+                case LcimmsTextDBAnnotatorSettingModel textModel:
+                    return new LcimmsTextDBAnnotatorSettingViewModel(textModel);
                 default:
                     throw new NotSupportedException(model.GetType().Name);
             }
