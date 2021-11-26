@@ -123,6 +123,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj">
+      <Project>{EB161441-A663-485F-8CD6-D1D5794F7AD9}</Project>
+      <Name>CommonStandard</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MspGenerator\MspGenerator.csproj">
       <Project>{72f4e904-e10a-4e3a-bc95-2412f776fdb6}</Project>
       <Name>MspGenerator</Name>

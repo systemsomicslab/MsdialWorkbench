@@ -13,7 +13,7 @@ namespace CompMs.MspGenerator
 {
     public class Common
     {
-        public static void jointMspFiles(string path,string filename)
+        public static void jointMspFiles(string path, string filename)
         {
             var mspFiles = Directory.GetFiles(path, "*.msp");
             using (var wfs = new FileStream(path + "\\" + filename, FileMode.Create, FileAccess.Write))
@@ -109,7 +109,7 @@ namespace CompMs.MspGenerator
 
         public static List<string> GenerateAcylChains(int minCarbon, int minDouble, int maxCarbon, int maxDouble)
         {
-                var acylChains = new List<string>();
+            var acylChains = new List<string>();
             foreach (var item in AcylChainDic.FattyAcylChainDictionary)
             {
                 var chainCarbon = int.Parse(item.Value[0]);
@@ -124,7 +124,7 @@ namespace CompMs.MspGenerator
 
         public static List<string> GenerateSphingoChains(int minCarbon, int minDouble, int maxCarbon, int maxDouble)
         {
-                var sphingoChains = new List<string>();
+            var sphingoChains = new List<string>();
             foreach (var item in AcylChainDic.sphingoBaseSDictionary)
             {
                 var chainCarbon = int.Parse(item.Value[0]);
@@ -156,7 +156,7 @@ namespace CompMs.MspGenerator
         {
             switch (lipidClass)
             {
-            // cer
+                // cer
                 //normal
                 case "Cer_AS":
                 case "Cer_ADS":
@@ -298,26 +298,26 @@ namespace CompMs.MspGenerator
                     CeramideMspGenerator.singleChainCeramideGenerator(chain1, lipidClass, output);
                     break;
                 //two Equally Acyl Cains GP
-                case "PC":  
-                case "PE":  
-                case "PG":  
-                case "PI":  
-                case "PS":  
-                case "PA":  
-                case "PEtOH":  
-                case "PMeOH":  
+                case "PC":
+                case "PE":
+                case "PG":
+                case "PI":
+                case "PS":
+                case "PA":
+                case "PEtOH":
+                case "PMeOH":
                 case "BMP":
                 case "MMPE":
                 case "DMPE":
                 // two Equally Acyl Cains GL
-                case "DG":  
-                case "MGDG":  
-                case "DGDG":  
-                case "SQDG":  
-                case "DGTS":  
-                case "DGGA":  
-                case "DLCL":  
-                case "SMGDG":  
+                case "DG":
+                case "MGDG":
+                case "DGDG":
+                case "SQDG":
+                case "DGTS":
+                case "DGGA":
+                case "DLCL":
+                case "SMGDG":
                 case "DGCC":
                     GlyceroLipidsMspGenerator.twoEquallyAcylCainsGlyceroLipidGenerator(chain1, lipidClass, output);
                     break;
@@ -343,7 +343,7 @@ namespace CompMs.MspGenerator
                     break;
 
                 // three Equally chains
-                case "TG": 
+                case "TG":
                     GlyceroLipidsMspGenerator.threeEquallyCainsGlyceroLipidGenerator(chain1, lipidClass, output);
                     break;
                 // four Equally chains
@@ -360,7 +360,7 @@ namespace CompMs.MspGenerator
                 case "alphaOxFA":
                     OtherLipidMspGenerator.alphaOxFaGenerator(chain1, lipidClass, output);
                     break;
-                    //single chain
+                //single chain
                 case "CAR":
                 case "VAE":
                 case "NAE":
@@ -370,7 +370,7 @@ namespace CompMs.MspGenerator
                 case "NAOrn_OxFA":
 
                     OtherLipidMspGenerator.singleAcylChainLipidGenerator(chain1, lipidClass, output);
-                     break;
+                    break;
                 case "CE":
                 case "DCAE":
                 case "GDCAE":
@@ -461,7 +461,80 @@ namespace CompMs.MspGenerator
         }
 
 
-        public static void GenerateSmilesList(List<string> acylChain1, List<string> acylChain2,string lipidClass, string nameSurfix,string output)
+
+        public static List<Dictionary<string, List<string>>> CeramideChainConbinationDicList(string lipidClass)
+        {
+            var dicList = new List<Dictionary<string, List<string>>>();
+            switch (lipidClass)
+            {
+                // cer
+                //normal
+                case "Cer_AS":
+                case "Cer_ADS":
+                case "SHexCer+O":
+                case "SL+O":
+                    dicList.Add(AcylChainDic.sphingoBaseSDictionary);
+                    dicList.Add(AcylChainDic.AcylChainAlphaOxDictionary);
+                    return dicList;
+                case "Cer_AP":
+                case "HexCer_AP":
+                case "MIPC":
+                    dicList.Add(AcylChainDic.sphingoBasePDictionary);
+                    dicList.Add(AcylChainDic.AcylChainAlphaOxDictionary);
+                    return dicList;
+                case "SM":
+                case "Cer_NS":
+                case "Cer_NDS":
+                case "HexCer_NS":
+                case "HexCer_NDS":
+                case "Hex2Cer":
+                case "Hex3Cer":
+                case "CerP":
+                case "GM3":
+                case "GD1a":
+                case "GD1b":
+                case "GD2":
+                case "GD3":
+                case "GM1":
+                case "GT1b":
+                case "GQ1b":
+                case "NGcGM3":
+                case "SHexCer":
+                case "SL":
+                case "PE_Cer_d":
+                case "PI_Cer_d":
+                    dicList.Add(AcylChainDic.sphingoBaseSDictionary);
+                    dicList.Add(AcylChainDic.FattyAcylChainDictionary);
+                    return dicList;
+                case "Cer_NP":
+                case "SM+O":
+                    dicList.Add(AcylChainDic.sphingoBasePDictionary);
+                    dicList.Add(AcylChainDic.FattyAcylChainDictionary);
+                    return dicList;
+                case "Cer_BS":
+                case "Cer_BDS":
+                case "PE_Cer_d+O":
+                case "PI_Cer_d+O":
+                    dicList.Add(AcylChainDic.sphingoBaseSDictionary);
+                    dicList.Add(AcylChainDic.AcylChainBetaOxDictionary);
+                    return dicList;
+                case "Cer_HS":
+                case "Cer_HDS":
+                case "HexCer_HS":
+                case "HexCer_HDS":
+                    dicList.Add(AcylChainDic.sphingoBaseSDictionary);
+                    dicList.Add(AcylChainDic.AcylChainAlphaOxDictionary);
+                    return dicList;
+
+
+                default:
+                    Console.WriteLine("Error in lipidClass switch. Please check settings...");
+                    Console.ReadKey();
+                    return dicList;
+            }
+        }
+
+        public static void GenerateSmilesList(List<string> acylChain1, List<string> acylChain2, string lipidClass, string nameSurfix, string output)
         {
             var wholeChainList = new List<string>();
             var headerSmiles = SmilesLipidHeader.HeaderDictionary[lipidClass];
@@ -490,11 +563,11 @@ namespace CompMs.MspGenerator
                     chain2Smiles = new List<string>(AcylChainDic.FattyAcylChainDictionary[FA2])[3];
 
                     rawSmiles = headerSmiles + chain1Smiles + "%10" + "." + chain2Smiles + "%11";
-                    name = lipidClass + nameSurfix + " " + FA1 + "_"+FA2;
+                    name = lipidClass + nameSurfix + " " + FA1 + "_" + FA2;
                     meta = Common.getMetaProperty(rawSmiles);
-                    smileslist.Add(name +"\t" + meta.Smiles);
+                    smileslist.Add(name + "\t" + meta.Smiles);
 
-                    smileslist2.Add(meta.ExactMass + "\t" + meta.Formula +"\t" + name + "\t" + meta.Smiles);
+                    smileslist2.Add(meta.ExactMass + "\t" + meta.Formula + "\t" + name + "\t" + meta.Smiles);
                 }
             }
 
@@ -517,11 +590,11 @@ namespace CompMs.MspGenerator
             var metaList = new List<string>();
             var meta = new MetaProperty();
 
-            var adducts = new List<string>() { "[M+H]+", "[M+NH4]+", "[M+Na]+", "[M-H]-", "[M+HCOO]-", "[M+CH3COO]-","[M-2H]2-", "[M+H-H2O]+"};
+            var adducts = new List<string>() { "[M+H]+", "[M+NH4]+", "[M+Na]+", "[M-H]-", "[M+HCOO]-", "[M+CH3COO]-", "[M-2H]2-", "[M+H-H2O]+" };
 
             using (var sw = new StreamWriter(Path.GetDirectoryName(outputFile) + "\\" + Path.GetFileNameWithoutExtension(outputFile) + "_meta.txt", false, Encoding.ASCII))
             {
-                sw.WriteLine(String.Join("\t", new string[] { "NAME", "ExactMass","LogP", "Formula", "SMILES","InChIKey", "[M+H]+", "[M+NH4]+", "[M+Na]+", "[M-H]-", "[M+HCOO]-", "[M+CH3COO]-", "[M-2H]2-", "[M+H-H2O]+" }));
+                sw.WriteLine(String.Join("\t", new string[] { "NAME", "ExactMass", "LogP", "Formula", "SMILES", "InChIKey", "[M+H]+", "[M+NH4]+", "[M+Na]+", "[M-H]-", "[M+HCOO]-", "[M+CH3COO]-", "[M-2H]2-", "[M+H-H2O]+" }));
 
                 using (var sr = new StreamReader(inputFile, Encoding.ASCII))
                 {
@@ -546,13 +619,30 @@ namespace CompMs.MspGenerator
 
                         sw.WriteLine
                             (
-                            name + "\t" + meta.ExactMass + "\t" + meta.LogP + "\t" + meta.Formula + "\t" + meta.Smiles + "\t" + meta.inChIKey + "\t" + adductMzList 
+                            name + "\t" + meta.ExactMass + "\t" + meta.LogP + "\t" + meta.Formula + "\t" + meta.Smiles + "\t" + meta.inChIKey + "\t" + adductMzList
                             );
 
                     }
                 }
             }
         }
+
+    }
+    public class CeramideChainDic
+    {
+        private Dictionary<string, List<string>> sphChainDic;
+        private Dictionary<string, List<string>> acylChainDic;
+        private Dictionary<string, List<string>> extraChainDic;
+
+        public CeramideChainDic()
+        {
+            sphChainDic = null;
+            acylChainDic = null;
+            extraChainDic = null;
+        }
+        public Dictionary<string, List<string>> SphChainDic { get; set; }
+        public Dictionary<string, List<string>> AcylChainDic { get; set; }
+        public Dictionary<string, List<string>> ExtraChainDic { get; set; }
 
     }
 }
