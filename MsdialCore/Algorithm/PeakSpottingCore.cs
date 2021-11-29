@@ -105,10 +105,8 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
         #region ion mobility utilities
-        public static List<ChromatogramPeakFeature> ExecutePeakDetectionOnDriftTimeAxis(List<ChromatogramPeakFeature> chromPeakFeatures, RawMeasurement rawObj,
-           ParameterBase param, float accumulatedRtRange) {
+        public static List<ChromatogramPeakFeature> ExecutePeakDetectionOnDriftTimeAxis(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<RawSpectrum> spectrumList, ParameterBase param, float accumulatedRtRange) {
             var newSpots = new List<ChromatogramPeakFeature>();
-            var spectrumList = rawObj.SpectrumList;
             foreach (var peakSpot in chromPeakFeatures) {
                 peakSpot.DriftChromFeatures = new List<ChromatogramPeakFeature>();
 
@@ -123,7 +121,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 // accumulatedRtRange can be replaced by rtWidth actually, but for alignment results, we have to adjust the RT range to equally estimate the peaks on drift axis
                 var peaklist = DataAccess.GetDriftChromatogramByScanRtMz(spectrumList, scanID, (float)rt, accumulatedRtRange, (float)mz, mztol);
                 if (peaklist.Count == 0) continue;
-                var peaksOnDriftTime = GetPeakAreaBeanListOnDriftTimeAxis(peaklist, peakSpot, rawObj, param);
+                var peaksOnDriftTime = GetPeakAreaBeanListOnDriftTimeAxis(peaklist, peakSpot, spectrumList, param);
                 if (peaksOnDriftTime == null || peaksOnDriftTime.Count == 0) continue;
                 peakSpot.DriftChromFeatures = peaksOnDriftTime;
                 newSpots.Add(peakSpot);
@@ -131,15 +129,12 @@ namespace CompMs.MsdialCore.Algorithm {
             return newSpots;
         }
 
-        private static List<ChromatogramPeakFeature> GetPeakAreaBeanListOnDriftTimeAxis(List<ChromatogramPeak> peaklist,
-          ChromatogramPeakFeature rtPeakFeature, RawMeasurement rawObj, ParameterBase param) {
+        private static List<ChromatogramPeakFeature> GetPeakAreaBeanListOnDriftTimeAxis(List<ChromatogramPeak> peaklist, ChromatogramPeakFeature rtPeakFeature, IReadOnlyList<RawSpectrum> spectrumList, ParameterBase param) {
 
-            var spectrumList = rawObj.SpectrumList;
             var smoothedPeaklist = DataAccess.GetSmoothedPeaklist(peaklist, param.SmoothingMethod, param.SmoothingLevel);
             var minDatapoints = param.MinimumDatapoints;
             var minAmps = param.MinimumAmplitude * 0.25;
             var detectedPeaks = PeakDetection.PeakDetectionVS1(smoothedPeaklist, minDatapoints, minAmps);
-            var ceTargets = rawObj.CollisionEnergyTargets;
 
             if (detectedPeaks == null || detectedPeaks.Count == 0) return null;
 
@@ -154,9 +149,9 @@ namespace CompMs.MsdialCore.Algorithm {
             var scanPolarity = param.IonMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
             var mass = rtPeakFeature.Mass;
             var ms2Tol = param.CentroidMs2Tolerance;
-            var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms2Tol));
             #region // practical parameter changes
             if (mass > 500) {
+                var ppm = Math.Abs(MolecularFormulaUtility.PpmCalculator(500.00, 500.00 + ms2Tol));
                 ms2Tol = (float)MolecularFormulaUtility.ConvertPpmToMassAccuracy(mass, ppm);
             }
             #endregion
@@ -179,25 +174,21 @@ namespace CompMs.MsdialCore.Algorithm {
                 var dt = driftFeature.ChromXs.Drift.Value;
                 var scanTop = driftFeature.MS1RawSpectrumIdTop;
                 var minDiff = int.MaxValue;
-                var ce2MinDiff = new Dictionary<double, double>(); // ce to diff
-                if (!ceTargets.IsEmptyOrNull()) {
-                    foreach (var ce in ceTargets) ce2MinDiff[ce] = double.MaxValue;
-                }
+                var ce2MinDiff = new Dictionary<double, int>(); // ce to diff
 
                 for (int i = rtPeakLeftScanID; i <= rtPeakRightScanID; i++) {
                     var spec = spectrumList[i];
                     if (spec.MsLevel != 2 || scanPolarity != spec.ScanPolarity) continue;
 
                     var IsMassInWindow = IsInMassWindow(mass, spec, ms2Tol, param.AcquisitionType);
-                    var IsDtInWindow = Math.Min(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd) <= dt && dt < Math.Max(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd)
-                        ? true : false; // used for diapasef
+                    var IsDtInWindow = Math.Min(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd) <= dt && dt < Math.Max(spec.Precursor.TimeBegin, spec.Precursor.TimeEnd); // used for diapasef
                     if (spec.Precursor.TimeBegin == spec.Precursor.TimeEnd) IsDtInWindow = true; // normal dia
 
                     if (IsMassInWindow && IsMassInWindow) {
                         var ce = spec.CollisionEnergy;
                         if (param.AcquisitionType == AcquisitionType.AIF) {
                             var ceRounded = Math.Round(ce, 2); // must be rounded by 2 decimal points
-                            if (ce2MinDiff[ceRounded] > Math.Abs(spec.OriginalIndex - scanTop)) {
+                            if (!ce2MinDiff.TryGetValue(ceRounded, out var diff) || diff > Math.Abs(spec.OriginalIndex - scanTop)) {
                                 ce2MinDiff[ceRounded] = Math.Abs(spec.OriginalIndex - scanTop);
                                 driftFeature.MS2RawSpectrumID2CE[spec.OriginalIndex] = ce;
                             }
@@ -259,14 +250,14 @@ namespace CompMs.MsdialCore.Algorithm {
         /// <param name="accSpecList"></param>
         /// <param name="peaklist"></param>
         /// <param name="param"></param>
-        public void SetRawDataAccessID2ChromatogramPeakFeaturesFor4DChromData(List<ChromatogramPeakFeature> chromPeakFeatures, List<RawSpectrum> accSpecList,
+        public void SetRawDataAccessID2ChromatogramPeakFeaturesFor4DChromData(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<RawSpectrum> accSpecList,
             List<ChromatogramPeak> peaklist, ParameterBase param) {
             foreach (var feature in chromPeakFeatures) {
                 SetRawDataAccessID2ChromatogramPeakFeatureFor4DChromData(feature, accSpecList, peaklist, param);
             }
         }
 
-        private void SetRawDataAccessID2ChromatogramPeakFeatureFor4DChromData(ChromatogramPeakFeature feature, List<RawSpectrum> accSpecList, 
+        private void SetRawDataAccessID2ChromatogramPeakFeatureFor4DChromData(ChromatogramPeakFeature feature, IReadOnlyList<RawSpectrum> accSpecList, 
             List<ChromatogramPeak> peaklist, ParameterBase param) {
 
             var chromLeftID = feature.ChromScanIdLeft;

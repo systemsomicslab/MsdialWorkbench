@@ -61,7 +61,7 @@ namespace CompMs.MsdialCore.Algorithm {
                         }
                     }
 
-                    CharacterAssigner(searchedPeakSpots, spectrumList, msdecResults, mapper, param);
+                    // CharacterAssigner(searchedPeakSpots, spectrumList, msdecResults, mapper, param); // TODO: temporarily comment out. fix algorithm
                     ReportProgress.Show(InitialProgress, ProgressMax, i, chromPeakFeatures.Count, reportAction);
                 }
             }

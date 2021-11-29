@@ -499,81 +499,52 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         // get chromatogram (ion mobility data)
-        public static List<ChromatogramPeak> GetDriftChromatogramByScanRtMz(List<RawSpectrum> spectrumList,
-          int scanID, float rt, float rtWidth, float mz, float mztol) {
+        public static List<ChromatogramPeak> GetDriftChromatogramByScanRtMz(IReadOnlyList<RawSpectrum> spectrumList, int scanID, float rt, float rtWidth, float mz, float mztol) {
 
             var driftBinToChromPeak = new Dictionary<int, ChromatogramPeak>();
-            var driftBinToSpecPeak = new Dictionary<int, SpectrumPeak>();
+            var driftBinToBasePeakIntensity = new Dictionary<int, double>();
+
+            void SetChromatogramPeak(RawSpectrum spectrum) {
+                var driftTime = spectrum.DriftTime;
+                var driftBin = (int)(driftTime * 1000);
+
+                var intensity = GetIonAbundanceOfMzInSpectrum(spectrum.Spectrum, mz, mztol, out double basepeakMz, out double basepeakIntensity);
+                if (driftBinToChromPeak.TryGetValue(driftBin, out var chromPeak)) {
+                    chromPeak.Intensity += intensity;
+                    if (driftBinToBasePeakIntensity[driftBin] < basepeakIntensity) {
+                        driftBinToBasePeakIntensity[driftBin] = basepeakIntensity;
+                        chromPeak.Mass = basepeakMz;
+                    }
+                }
+                else {
+                    driftBinToChromPeak[driftBin] = new ChromatogramPeak()
+                    {
+                        ID = spectrum.OriginalIndex,
+                        ChromXs = new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec),
+                        Mass = basepeakMz,
+                        Intensity = intensity
+                    };
+                    driftBinToBasePeakIntensity[driftBin] = basepeakIntensity;
+                }
+            }
 
             //accumulating peaks from peak top to peak left
             for (int i = scanID + 1; i >= 0; i--) {
                 var spectrum = spectrumList[i];
                 if (spectrum.MsLevel > 1) continue;
-                var massSpectra = spectrum.Spectrum;
-                var retention = spectrum.ScanStartTime;
-                var driftTime = spectrum.DriftTime;
-                var driftIndex = spectrum.OriginalIndex;
-                var driftBin = (int)(driftTime * 1000);
-                if (retention < rt - rtWidth * 0.5) break;
-
-                var basepeakMz = 0.0;
-                var basepeakIntensity = 0.0;
-                var intensity = GetIonAbundanceOfMzInSpectrum(massSpectra, mz, mztol,
-                    out basepeakMz, out basepeakIntensity);
-                if (!driftBinToChromPeak.ContainsKey(driftBin)) {
-                    driftBinToChromPeak[driftBin] = new ChromatogramPeak() {
-                        ID = driftIndex, ChromXs = new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec), Mass = basepeakMz, Intensity = intensity
-                    };
-                    driftBinToSpecPeak[driftBin] = new SpectrumPeak() { Mass = basepeakMz, Intensity = basepeakIntensity };
-                }
-                else {
-                    driftBinToChromPeak[driftBin].Intensity += intensity;
-                    if (driftBinToSpecPeak[driftBin].Intensity < basepeakIntensity) {
-                        driftBinToSpecPeak[driftBin].Mass = basepeakMz;
-                        driftBinToSpecPeak[driftBin].Intensity = basepeakIntensity;
-                        driftBinToChromPeak[driftBin].Mass = basepeakMz;
-                    }
-                }
+                if (spectrum.ScanStartTime < rt - rtWidth * 0.5) break;
+                SetChromatogramPeak(spectrum);
             }
 
             //accumulating peaks from peak top to peak right
             for (int i = scanID + 2; i < spectrumList.Count; i++) {
                 var spectrum = spectrumList[i];
                 if (spectrum.MsLevel > 1) continue;
-                var massSpectra = spectrum.Spectrum;
-                var retention = spectrum.ScanStartTime;
-                var driftTime = spectrum.DriftTime;
-                var driftIndex = spectrum.OriginalIndex;
-                var driftBin = (int)(driftTime * 1000);
-                if (retention > rt + rtWidth * 0.5) break;
-
-                var basepeakMz = 0.0;
-                var basepeakIntensity = 0.0;
-                var intensity = GetIonAbundanceOfMzInSpectrum(massSpectra, mz, mztol,
-                   out basepeakMz, out basepeakIntensity);
-                if (!driftBinToChromPeak.ContainsKey(driftBin)) {
-                    driftBinToChromPeak[driftBin] = new ChromatogramPeak() {
-                        ID = driftIndex, ChromXs = new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec), Mass = basepeakMz, Intensity = intensity
-                    };
-                    driftBinToSpecPeak[driftBin] = new SpectrumPeak() { Mass = basepeakMz, Intensity = basepeakIntensity };
-                }
-                else {
-                    driftBinToChromPeak[driftBin].Intensity += intensity;
-                    if (driftBinToSpecPeak[driftBin].Intensity < basepeakIntensity) {
-                        driftBinToSpecPeak[driftBin].Mass = basepeakMz;
-                        driftBinToSpecPeak[driftBin].Intensity = basepeakIntensity;
-                        driftBinToChromPeak[driftBin].Mass = basepeakMz;
-                    }
-                }
+                if (spectrum.ScanStartTime > rt + rtWidth * 0.5) break;
+                SetChromatogramPeak(spectrum);
             }
 
-            var peaklist = new List<ChromatogramPeak>();
-            foreach (var value in driftBinToChromPeak.Values) {
-                peaklist.Add(value);
-            }
-
-            peaklist = peaklist.OrderBy(n => n.ChromXs.Value).ToList();
-            return peaklist;
+            return driftBinToChromPeak.Values.OrderBy(n => n.ChromXs.Value).ToList();
         }
 
         public static List<ChromatogramPeak> GetDriftChromatogramByRtMz(IReadOnlyList<RawSpectrum> spectrumList,

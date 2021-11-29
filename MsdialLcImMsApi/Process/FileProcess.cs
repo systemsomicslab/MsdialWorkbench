@@ -1,5 +1,4 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
+﻿using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Extension;
 using CompMs.Common.Parameter;
@@ -24,6 +23,9 @@ namespace CompMs.MsdialLcImMsApi.Process
     {
         public static void Run(
             AnalysisFileBean file,
+            IDataProviderFactory<RawMeasurement> spectrumProviderFactory,
+            IDataProviderFactory<RawMeasurement> accSpectrumProviderFactory,
+            IAnnotationProcess annotationProcess,
             IMsdialDataStorage<MsdialLcImMsParameter> container,
             bool isGuiProcess = false,
             Action<int> reportAction = null,
@@ -33,10 +35,12 @@ namespace CompMs.MsdialLcImMsApi.Process
             var iupacDB = container.IupacDatabase;
 
             var rawObj = LoadMeasurement(file, isGuiProcess);
+            var spectrumProvider = spectrumProviderFactory.Create(rawObj);
+            var accSpectrumProvider = accSpectrumProviderFactory.Create(rawObj);
 
             Console.WriteLine("Peak picking started");
             parameter.FileID2CcsCoefficients.TryGetValue(file.AnalysisFileId, out var coeff);
-            var chromPeakFeatures = PeakSpotting(rawObj, parameter, iupacDB, coeff, reportAction);
+            var chromPeakFeatures = PeakSpotting(spectrumProvider, accSpectrumProvider, parameter, iupacDB, coeff, reportAction);
 
             var spectrumList = rawObj.SpectrumList;
             var accumulatedSpecList = rawObj.AccumulatedSpectrumList;
@@ -48,7 +52,7 @@ namespace CompMs.MsdialLcImMsApi.Process
 
             // annotations
             Console.WriteLine("Annotation started");
-            PeakAnnotation(targetCE2MSDecResults, spectrumList, accumulatedSpecList, chromPeakFeatures, container.MspDB, container.TextDB, parameter, reportAction, token);
+            PeakAnnotation(annotationProcess, accSpectrumProvider, chromPeakFeatures, targetCE2MSDecResults, parameter, reportAction, token);
 
             // characterizatin
             PeakCharacterization(targetCE2MSDecResults, spectrumList, chromPeakFeatures, container.DataBaseMapper, parameter, reportAction);
@@ -72,13 +76,14 @@ namespace CompMs.MsdialLcImMsApi.Process
         }
 
         private static List<ChromatogramPeakFeature> PeakSpotting(
-            RawMeasurement rawObj,
+            IDataProvider spectrumProvider,
+            IDataProvider accSpectrumProvider,
             MsdialLcImMsParameter parameter,
             IupacDatabase iupacDB,
             CoefficientsForCcsCalculation coeff,
             Action<int> reportAction) {
 
-            var chromPeakFeatures = new PeakSpotting(0, 30).Execute4DFeatureDetection(rawObj, parameter, reportAction);
+            var chromPeakFeatures = new PeakSpotting(0, 30).Execute4DFeatureDetection(spectrumProvider, accSpectrumProvider, parameter, reportAction);
             IsotopeEstimator.Process(chromPeakFeatures, parameter, iupacDB);
             CcsEstimator.Process(chromPeakFeatures, parameter, parameter.IonMobilityType, coeff, parameter.IsAllCalibrantDataImported);
             return chromPeakFeatures;
@@ -120,26 +125,21 @@ namespace CompMs.MsdialLcImMsApi.Process
         }
 
         private static void PeakAnnotation(
-            Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
-            List<RawSpectrum> spectrumList,
-            List<RawSpectrum> accumulatedSpecList,
+            IAnnotationProcess annotationProcess,
+            IDataProvider accSpectrumProvider,
             List<ChromatogramPeakFeature> chromPeakFeatures,
-            List<MoleculeMsReference> mspDB,
-            List<MoleculeMsReference> textDB,
+            Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
             MsdialLcImMsParameter parameter,
             Action<int> reportAction,
             CancellationToken token) {
 
             var initial_annotation = 60.0;
             var max_annotation = 30.0;
+            var max_annotation_local = max_annotation / targetCE2MSDecResults.Count;
             foreach (var (ce2msdecs, index) in targetCE2MSDecResults.WithIndex()) {
-                var targetCE = ce2msdecs.Key;
                 var msdecResults = ce2msdecs.Value;
-                var max_annotation_local = max_annotation / targetCE2MSDecResults.Count;
                 var initial_annotation_local = initial_annotation + max_annotation_local * index;
-                new AnnotationProcess(initial_annotation_local, max_annotation_local).MainProcess(
-                    spectrumList, accumulatedSpecList, chromPeakFeatures, msdecResults,
-                    mspDB, textDB, parameter, reportAction);
+                annotationProcess.RunAnnotation(chromPeakFeatures, msdecResults, accSpectrumProvider, parameter.NumThreads - 1, token, v => ReportProgress.Show(initial_annotation_local, max_annotation_local, v, chromPeakFeatures.Count, reportAction));
             }
         }
 

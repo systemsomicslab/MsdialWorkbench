@@ -30,7 +30,7 @@
             </TabItem>
 
             <TabItem Header="Identification"
-                     DataContext="{Binding IdentitySettingViewModel, Mode=OneTime}">
+                     DataContext="{Binding IdentifySettingViewModel, Mode=OneTime}">
                 <setting:IdentifySettingView/>
             </TabItem>
 

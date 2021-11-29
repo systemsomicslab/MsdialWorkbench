@@ -255,6 +255,7 @@
     <Compile Include="ViewModel\Dims\DimsTextDBAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParameterSetViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsAnnotatorSettingViewModel.cs" />
+    <Compile Include="ViewModel\Lcimms\MsdialLcimmsParameterViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsCompoundSearchViewModel.cs" />
     <Compile Include="ViewModel\Setting\IdentifySettingViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />

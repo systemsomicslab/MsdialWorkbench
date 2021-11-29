@@ -16,7 +16,7 @@ namespace CompMs.MsdialCore.Algorithm
         protected readonly List<RawSpectrum> spectrums;
 
         protected BaseDataProvider(IEnumerable<RawSpectrum> spectrums) {
-            this.spectrums = spectrums.ToList();
+            this.spectrums = (spectrums as List<RawSpectrum>) ?? spectrums.ToList();
         }
 
         protected BaseDataProvider(AnalysisFileBean file, bool isGuiProcess, int retry)

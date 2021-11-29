@@ -10,6 +10,7 @@ using CompMs.MsdialCore.DataObj;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
     {
         public LcimmsAnalysisParameterSetViewModel(LcimmsAnalysisParameterSetModel model) {
             Model = model;
-            Param = new ParameterBaseVM(Model.Parameter);
+            Parameter = new MsdialLcimmsParameterViewModel(Model.Parameter);
 
             AlignmentResultFileName = Model.AlignmentResultFileName;
 
@@ -37,10 +38,59 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
             IdentifySettingViewModel = new IdentifySettingViewModel(Model.IdentifySettingModel, new LcimmsAnnotatorSettingViewModel()).AddTo(Disposables);
 
+            var rep = Model.FileID2CcsCoefficients.Values.FirstOrDefault();
+            if (rep != null) {
+                if (rep.IsAgilentIM) {
+                    Parameter.IonMobilityType.Value = IonMobilityType.Dtims;
+                }
+                else if (rep.IsWatersIM) {
+                    Parameter.IonMobilityType.Value = IonMobilityType.Twims;
+                }
+                else if (rep.IsBrukerIM) {
+                    Parameter.IonMobilityType.Value = IonMobilityType.Tims;
+                }
+            }
+
+            ccsCalibrationInfoVSs = new ObservableCollection<CcsCalibrationInfoVS>();
+            foreach (var file in Model.AnalysisFiles) {
+                ccsCalibrationInfoVSs.Add(new CcsCalibrationInfoVS(file, Model.FileID2CcsCoefficients[file.AnalysisFileId]));
+            }
+
+            CcsCalibrationInfoVSs = new ReadOnlyObservableCollection<CcsCalibrationInfoVS>(ccsCalibrationInfoVSs);
+            var TimsInfoImported = Parameter.IsTIMS;
+            var DtimsInfoImported = new[]
+            {
+                Parameter.IsDTIMS,
+                CcsCalibrationInfoVSs.ObserveElementProperty(m => m.AgilentBeta)
+                    .Select(_ => CcsCalibrationInfoVSs.All(info => info.AgilentBeta > -1)),
+                CcsCalibrationInfoVSs.ObserveElementProperty(m => m.AgilentTFix)
+                    .Select(_ => CcsCalibrationInfoVSs.All(info => info.AgilentTFix > -1)),
+            }.CombineLatestValuesAreAllTrue();
+            var TwimsInfoImported = new[]
+            {
+                Parameter.IsTWIMS,
+                CcsCalibrationInfoVSs.ObserveElementProperty(m => m.WatersCoefficient)
+                    .Select(_ => CcsCalibrationInfoVSs.All(info => info.WatersCoefficient > -1)),
+                CcsCalibrationInfoVSs.ObserveElementProperty(m => m.WatersT0)
+                    .Select(_ => CcsCalibrationInfoVSs.All(info => info.WatersT0 > -1)),
+                CcsCalibrationInfoVSs.ObserveElementProperty(m => m.WatersExponent)
+                    .Select(_ => CcsCalibrationInfoVSs.All(info => info.WatersExponent > -1)),
+            }.CombineLatestValuesAreAllTrue();
+            IsAllCalibrantDataImported = new[]
+            {
+                TimsInfoImported,
+                DtimsInfoImported,
+                TwimsInfoImported,
+            }.CombineLatest(xs => xs.Any(x => x))
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
+            IsAllCalibrantDataImported.Subscribe(x => Parameter.IsAllCalibrantDataImported.Value = x)
+                .AddTo(Disposables);
+
             ContinueProcessCommand = new[]
             {
                 IdentifySettingViewModel.ObserveHasErrors,
-                Param.ObserveProperty(m => m.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange)
+                Parameter.ObserveProperty(m => m.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange)
                     .Select(v => v && AnalysisFiles.All(file => file.AnalysisFileType != AnalysisFileType.Blank)),
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand<Window>()
@@ -52,11 +102,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         public IdentifySettingViewModel IdentifySettingViewModel { get; }
 
-        public ParameterBaseVM Param {
-            get => param;
-            set => SetProperty(ref param, value);
-        }
-        private ParameterBaseVM param;
+        public MsdialLcimmsParameterViewModel Parameter { get; }
+
+        [Obsolete]
+        public MsdialLcimmsParameterViewModel Param => Parameter;
 
         public string AlignmentResultFileName {
             get => alignmentResultFileName;
@@ -98,6 +147,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             }
         }
 
+        private readonly ObservableCollection<CcsCalibrationInfoVS> ccsCalibrationInfoVSs;
+
         public ReactiveCommand<Window> ContinueProcessCommand { get; }
 
         private void ContinueProcess(Window window) {
@@ -128,6 +179,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 MessageBox.Show("M + H or M - H must be included.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
+
+            Parameter.Commit();
 
             Model.Parameter.ExcludedMassList = ExcludedMassList
                 .Where(query => query.Mass.HasValue && query.Tolerance.HasValue && query.Mass > 0 && query.Tolerance > 0)
@@ -175,6 +228,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public DelegateCommand IsotopeTextDBFileSelectCommand {
             get => isotopeTextDBFileSelectCommand ?? (isotopeTextDBFileSelectCommand = new DelegateCommand(IsotopeTextDBFileSelect));
         }
+        public ReadOnlyObservableCollection<CcsCalibrationInfoVS> CcsCalibrationInfoVSs { get; }
+        public ReadOnlyReactivePropertySlim<bool> IsAllCalibrantDataImported { get; }
+
         private DelegateCommand isotopeTextDBFileSelectCommand;
 
         private void IsotopeTextDBFileSelect() {

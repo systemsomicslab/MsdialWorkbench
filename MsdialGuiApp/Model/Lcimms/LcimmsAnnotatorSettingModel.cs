@@ -70,7 +70,15 @@ namespace CompMs.App.Msdial.Model.Lcimms
     public sealed class LcimmsAnnotatorSettingFactory : IAnnotatorSettingModelFactory
     {
         public IAnnotatorSettingModel Create(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter = null) {
-            throw new NotSupportedException(nameof(dataBaseSettingModel.DBSource));
+            switch (dataBaseSettingModel.DBSource) {
+                case DataBaseSource.Msp:
+                case DataBaseSource.Lbm:
+                    return new LcimmsMspAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
+                case DataBaseSource.Text:
+                    return new LcimmsTextDBAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
+                default:
+                    throw new NotSupportedException(nameof(dataBaseSettingModel.DBSource));
+            }
         }
     }
 }

@@ -4,25 +4,17 @@ using CompMs.App.Msdial.View.Lcimms;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Enum;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialLcImMsApi.DataObj;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Windows;
 
@@ -68,7 +60,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private readonly LcimmsMethodModel model;
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
-        private IAnnotationProcess annotationProcess;
 
         public AnalysisLcimmsVM AnalysisVM {
             get => analysisVM;
@@ -175,45 +166,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                     return false;
             }
 
-            if (parameter.ProcessOption.HasFlag(ProcessOption.Alignment)) {
-                var filename = analysisParamSetModel.AlignmentResultFileName;
-                model.AlignmentFiles.Add(
-                    new AlignmentFileBean
-                    {
-                        FileID = model.AlignmentFiles.Count,
-                        FileName = filename,
-                        FilePath = Path.Combine(model.Storage.MsdialLcImMsParameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.arf}"),
-                        EicFilePath = Path.Combine(model.Storage.MsdialLcImMsParameter.ProjectFolderPath, $"{filename}.EIC.aef"),
-                        SpectraFilePath = Path.Combine(model.Storage.MsdialLcImMsParameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.dcl}"),
-                    });
-            }
-
-            annotationProcess = BuildAnnotationProcess(model.Storage.DataBases, parameter.PeakPickBaseParam);
-            model.Storage.DataBaseMapper = CreateDataBaseMapper(model.Storage.DataBases);
+            model.SetAnalysisParameter(analysisParamSetModel);
             return true;
-        }
-
-        private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
-            var containers = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
-            foreach (var annotators in storage.MetabolomicsDataBases) {
-                containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
-            }
-            return new StandardAnnotationProcess<IAnnotationQuery>(new AnnotationQueryFactory(parameter), containers);
-        }
-
-        private DataBaseMapper CreateDataBaseMapper(DataBaseStorage storage) {
-            var mapper = new DataBaseMapper();
-            foreach (var db in storage.MetabolomicsDataBases) {
-                foreach (var pair in db.Pairs) {
-                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
-                }
-            }
-            foreach (var db in storage.ProteomicsDataBases) {
-                foreach (var pair in db.Pairs) {
-                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
-                }
-            }
-            return mapper;
         }
 
         private bool ProcessAnnotaion(Window owner, MsdialLcImMsDataStorage storage) {
