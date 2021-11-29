@@ -434,7 +434,7 @@ namespace Rfx.Riken.OsakaUniv {
 
 
                     // temp 20211121
-                    var cutoff = 100000;
+                    var cutoff = 0;
                     var isCharacterized = spot.LibraryID >= 0 && !spot.MetaboliteName.Contains("w/o MS2") && !spot.MetaboliteName.Contains("RIKEN") ? true : false;
                     if (!isCharacterized) {
                         var maxIntensity = spot.AlignedPeakPropertyBeanCollection.Max(n => n.Variable);

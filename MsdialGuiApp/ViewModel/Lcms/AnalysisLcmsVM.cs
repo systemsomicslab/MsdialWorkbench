@@ -123,6 +123,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
 
             //RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
+
+            RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(this.model.RawPurifiedSpectrumsModel,
+                upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
+                lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
+
+
             SurveyScanViewModel = new SurveyScanViewModel(
                 this.model.SurveyScanModel,
                 horizontalAxis: vAxis).AddTo(Disposables);
@@ -152,6 +158,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public AnalysisPeakPlotViewModel PlotViewModel { get; }
         public EicViewModel EicViewModel { get; }
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
+        public RawPurifiedSpectrumsViewModel RawPurifiedSpectrumsViewModel { get; }
         public SurveyScanViewModel SurveyScanViewModel { get; }
         public LcmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
         public List<ChromatogramPeakFeature> Peaks { get; }

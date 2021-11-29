@@ -177,7 +177,7 @@
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" MinWidth="370"/>
-                    <ColumnDefinition Width="370" MinWidth="370" MaxWidth="730" />
+                    <ColumnDefinition Width="370" MinWidth="370" />
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0">
@@ -375,9 +375,18 @@
 
                         <TabItem Header="Raw vs. Purified" 
                                  Name="TabItem_RawVsDeconvolution" 
+                                 DataContext="{Binding AnalysisVM}"
                                  Height="25"
-                                 IsEnabled="False"
+                                 IsEnabled="True"
                                  Background="{StaticResource MainThemeColor}">
+                            <chart:RawPurifiedView>
+                                <chart:RawPurifiedView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Save spectra table as.."
+                                                  Command="{Binding SaveMs2SpectrumCommand}"/>
+                                    </ContextMenu>
+                                </chart:RawPurifiedView.ContextMenu>
+                            </chart:RawPurifiedView>
                         </TabItem>
 
                         <TabItem Name="TabItem_RepresentativeVsReference"
