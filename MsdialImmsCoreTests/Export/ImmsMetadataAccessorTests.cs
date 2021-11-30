@@ -1,52 +1,55 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
-namespace CompMs.MsdialLcMsApi.Export.Tests
+namespace CompMs.MsdialImmsCore.Export.Tests
 {
     [TestClass()]
-    public class LcmsMetadataAccessorTests
+    public class ImmsMetadataAccessorTests
     {
-        private static readonly string[] lcHeaders = new string[] {
+        private static readonly string[] imHeaders = new string[] {
             "Alignment ID",
-            "Average Rt(min)", "Average Mz",
+            "Average Mz", "Average mobility", "Average CCS",
             "Metabolite name", "Adduct type", "Post curation result", "Fill %", "MS/MS assigned",
-            "Reference RT", "Reference m/z",
+            "Reference CCS", "Reference m/z",
             "Formula", "Ontology", "INCHIKEY", "SMILES", "Annotation tag (VS1.0)",
-            "RT matched", "m/z matched", "MS/MS matched",
+            "CCS matched", "m/z matched", "MS/MS matched",
             "Comment", "Manually modified for quantification", "Manually modified for annotation",
-            "Isotope tracking parent ID",  "Isotope tracking weight number", "RT similarity", "m/z similarity", 
+            "Isotope tracking parent ID",  "Isotope tracking weight number",
+            "CCS similarity", "m/z similarity", 
             "Simple dot product", "Weighted dot product", "Reverse dot product",
             "Matched peaks count", "Matched peaks percentage", "Total score", "S/N average",
             "Spectrum reference file name", "MS1 isotopic spectrum", "MS/MS spectrum" };
 
         [TestMethod()]
         public void GetHeadersTest() {
-            var accessor = new LcmsMetadataAccessor(null, null);
-            CollectionAssert.AreEqual(lcHeaders, accessor.GetHeaders());
+            var accessor = new ImmsMetadataAccessor(null, null);
+            CollectionAssert.AreEqual(imHeaders, accessor.GetHeaders());
         }
 
         [TestMethod()]
         public void GetContentTest() {
-            var accessor = new LcmsMetadataAccessor(new MockRefer(), new MsdialCore.Parameter.ParameterBase { MachineCategory = Common.Enum.MachineCategory.LCMS });
+            var accessor = new ImmsMetadataAccessor(new MockRefer(), new MsdialCore.Parameter.ParameterBase { MachineCategory = MachineCategory.IMMS });
             var spot = new AlignmentSpotProperty
             {
-                TimesCenter = new ChromXs(3d, ChromXType.RT, ChromXUnit.Min),
+                TimesCenter = new ChromXs(20.001, ChromXType.Drift, ChromXUnit.Msec),
                 MassCenter = 700d,
+                CollisionCrossSection = 5.002,
                 MatchResults = new MsScanMatchResultContainer
                 {
                     MatchResults = new List<MsScanMatchResult>
                     {
                         new MsScanMatchResult
                         {
-                            IsRtMatch = true,
                             IsPrecursorMzMatch = true,
                             IsSpectrumMatch = true,
-                            RtSimilarity = 0.92f,
+                            IsCcsMatch = true,
+                            CcsSimilarity = 0.81f,
                         }
                     }
                 },
@@ -70,27 +73,29 @@ namespace CompMs.MsdialLcMsApi.Export.Tests
 
             var dict = accessor.GetContent(spot, null);
 
-            Assert.AreEqual("3.000", dict["Average Rt(min)"]);
             Assert.AreEqual("700.00000", dict["Average Mz"]);
-            Assert.AreEqual("3.100", dict["Reference RT"]);
+            Assert.AreEqual("20.001", dict["Average mobility"]);
+            Assert.AreEqual("5.002", dict["Average CCS"]);
+            Assert.AreEqual("6.001", dict["Reference CCS"]);
             Assert.AreEqual("700.00100", dict["Reference m/z"]);
-            Assert.AreEqual("True", dict["RT matched"]);
+            Assert.AreEqual("True", dict["CCS matched"]);
             Assert.AreEqual("True", dict["m/z matched"]);
             Assert.AreEqual("True", dict["MS/MS matched"]);
-            Assert.AreEqual("0.92", dict["RT similarity"]);
+            Assert.AreEqual("0.81", dict["CCS similarity"]);
         }
-    }
 
-    class MockRefer : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>
-    {
-        public string Key => "Mock";
+        class MockRefer : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>
+        {
+            public string Key => "Mock";
 
-        public MoleculeMsReference Refer(MsScanMatchResult result) {
-            return new MoleculeMsReference
-            {
-                PrecursorMz = 700.00100d,
-                ChromXs = new ChromXs(3.100d, ChromXType.RT, ChromXUnit.Min),
-            };
+            public MoleculeMsReference Refer(MsScanMatchResult result) {
+                return new MoleculeMsReference
+                {
+                    PrecursorMz = 700.00100d,
+                    ChromXs = new ChromXs(20.003d, ChromXType.Drift, ChromXUnit.Msec),
+                    CollisionCrossSection = 6.001,
+                };
+            }
         }
     }
 }

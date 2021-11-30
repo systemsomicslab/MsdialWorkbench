@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="CompMs\MsdialDimsCore\Common\" />
     <Folder Include="Resources\" />
   </ItemGroup>
 

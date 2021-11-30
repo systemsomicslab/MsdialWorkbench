@@ -1,41 +1,42 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
-namespace CompMs.MsdialLcMsApi.Export.Tests
+namespace CompMs.MsdialDimsCore.Export.Tests
 {
     [TestClass()]
-    public class LcmsMetadataAccessorTests
+    public class DimsMetadataAccessorTests
     {
-        private static readonly string[] lcHeaders = new string[] {
+        private static readonly string[] diHeaders = new string[] {
             "Alignment ID",
-            "Average Rt(min)", "Average Mz",
+            "Average Mz",
             "Metabolite name", "Adduct type", "Post curation result", "Fill %", "MS/MS assigned",
-            "Reference RT", "Reference m/z",
+            "Reference m/z",
             "Formula", "Ontology", "INCHIKEY", "SMILES", "Annotation tag (VS1.0)",
-            "RT matched", "m/z matched", "MS/MS matched",
+            "m/z matched", "MS/MS matched",
             "Comment", "Manually modified for quantification", "Manually modified for annotation",
-            "Isotope tracking parent ID",  "Isotope tracking weight number", "RT similarity", "m/z similarity", 
+            "Isotope tracking parent ID",  "Isotope tracking weight number", "m/z similarity", 
             "Simple dot product", "Weighted dot product", "Reverse dot product",
             "Matched peaks count", "Matched peaks percentage", "Total score", "S/N average",
             "Spectrum reference file name", "MS1 isotopic spectrum", "MS/MS spectrum" };
 
         [TestMethod()]
         public void GetHeadersTest() {
-            var accessor = new LcmsMetadataAccessor(null, null);
-            CollectionAssert.AreEqual(lcHeaders, accessor.GetHeaders());
+            var accessor = new DimsMetadataAccessor(null, null);
+            CollectionAssert.AreEqual(diHeaders, accessor.GetHeaders());
         }
 
         [TestMethod()]
         public void GetContentTest() {
-            var accessor = new LcmsMetadataAccessor(new MockRefer(), new MsdialCore.Parameter.ParameterBase { MachineCategory = Common.Enum.MachineCategory.LCMS });
+            var accessor = new DimsMetadataAccessor(new MockRefer(), new MsdialCore.Parameter.ParameterBase { MachineCategory = MachineCategory.IFMS });
             var spot = new AlignmentSpotProperty
             {
-                TimesCenter = new ChromXs(3d, ChromXType.RT, ChromXUnit.Min),
+                TimesCenter = new ChromXs(700d, ChromXType.Mz, ChromXUnit.Mz),
                 MassCenter = 700d,
                 MatchResults = new MsScanMatchResultContainer
                 {
@@ -43,10 +44,8 @@ namespace CompMs.MsdialLcMsApi.Export.Tests
                     {
                         new MsScanMatchResult
                         {
-                            IsRtMatch = true,
                             IsPrecursorMzMatch = true,
                             IsSpectrumMatch = true,
-                            RtSimilarity = 0.92f,
                         }
                     }
                 },
@@ -70,27 +69,23 @@ namespace CompMs.MsdialLcMsApi.Export.Tests
 
             var dict = accessor.GetContent(spot, null);
 
-            Assert.AreEqual("3.000", dict["Average Rt(min)"]);
             Assert.AreEqual("700.00000", dict["Average Mz"]);
-            Assert.AreEqual("3.100", dict["Reference RT"]);
             Assert.AreEqual("700.00100", dict["Reference m/z"]);
-            Assert.AreEqual("True", dict["RT matched"]);
             Assert.AreEqual("True", dict["m/z matched"]);
             Assert.AreEqual("True", dict["MS/MS matched"]);
-            Assert.AreEqual("0.92", dict["RT similarity"]);
         }
-    }
 
-    class MockRefer : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>
-    {
-        public string Key => "Mock";
+        class MockRefer : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>
+        {
+            public string Key => "Mock";
 
-        public MoleculeMsReference Refer(MsScanMatchResult result) {
-            return new MoleculeMsReference
-            {
-                PrecursorMz = 700.00100d,
-                ChromXs = new ChromXs(3.100d, ChromXType.RT, ChromXUnit.Min),
-            };
+            public MoleculeMsReference Refer(MsScanMatchResult result) {
+                return new MoleculeMsReference
+                {
+                    PrecursorMz = 700.00100d,
+                    ChromXs = new ChromXs(700.00100d, ChromXType.Mz, ChromXUnit.Mz),
+                };
+            }
         }
     }
 }
