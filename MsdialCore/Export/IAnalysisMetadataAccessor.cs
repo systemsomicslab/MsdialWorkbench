@@ -112,7 +112,7 @@ namespace CompMs.MsdialCore.Export
         }
 
         protected string GetIsotopesListContent(ChromatogramPeakFeature feature, IReadOnlyList<RawSpectrum> spectrumList) {
-            var spectrum = spectrumList.FirstOrDefault(spec => spec.ScanNumber == feature.MS1RawSpectrumIdTop);
+            var spectrum = spectrumList.FirstOrDefault(spec => spec.OriginalIndex == feature.MS1RawSpectrumIdTop);
             if (spectrum is null) {
                 return "null";
             }

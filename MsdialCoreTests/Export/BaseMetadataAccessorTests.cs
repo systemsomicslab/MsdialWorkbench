@@ -114,7 +114,7 @@ namespace CompMs.MsdialCore.Export.Tests
             Assert.AreEqual("BBB", dict["Ontology"]);
             Assert.AreEqual("DDD", dict["INCHIKEY"]);
             Assert.AreEqual("EEE", dict["SMILES"]);
-            Assert.AreEqual(DataAccess.GetAnnotationCode(null, parameter).ToString(), dict["Annotation tag (VS1.0)"]);
+            Assert.AreEqual(DataAccess.GetAnnotationCode(spot.MatchResults.Representative, parameter).ToString(), dict["Annotation tag (VS1.0)"]);
             Assert.AreEqual("FFF", dict["Comment"]);
             Assert.AreEqual("True", dict["Manually modified for quantification"]);
             Assert.AreEqual("True", dict["Manually modified for annotation"]);
