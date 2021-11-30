@@ -33,7 +33,7 @@ namespace CompMs.MsdialCore.Export
 
         public ReadOnlyDictionary<string, string> GetContent(AlignmentSpotProperty spot, MSDecResult msdec) {
             var matchResult = spot.MatchResults.Representative;
-            var reference = refer.Refer(matchResult);
+            var reference = refer?.Refer(matchResult);
             return new ReadOnlyDictionary<string, string>(GetContentCore(spot, msdec, reference, matchResult));
         }
 
@@ -105,7 +105,7 @@ namespace CompMs.MsdialCore.Export
                 { "Matched peaks percentage", ValueOrNull(matchResult.MatchedPeaksPercentage, "F2") },
                 { "Total score", ValueOrNull(matchResult.TotalScore, "F2") },
                 { "S/N average", spot.SignalToNoiseAve.ToString("0.00") },
-                { "Spectrum reference file name", spot.AlignedPeakProperties[spot.RepresentativeFileID].FileName },
+                { "Spectrum reference file name", ValueOrNull(spot.AlignedPeakProperties.FirstOrDefault(peak => peak.FileID == spot.RepresentativeFileID)?.FileName) },
                 { "MS1 isotopic spectrum", GetIsotopesListContent(spot) },
                 { "MS/MS spectrum", GetSpectrumListContent(msdec) },
             };
@@ -120,7 +120,7 @@ namespace CompMs.MsdialCore.Export
         }
 
         protected string GetSpectrumListContent(MSDecResult msdec) {
-            var spectrum = msdec.Spectrum;
+            var spectrum = msdec?.Spectrum;
             if (spectrum.IsEmptyOrNull()) {
                 return "null";
             }

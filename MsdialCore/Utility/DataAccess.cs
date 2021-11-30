@@ -1164,10 +1164,8 @@ namespace CompMs.MsdialCore.Utility {
             property.InChIKey = string.Empty;
         }
 
-        public static int GetAnnotationCode(MsScanMatchResult result, ParameterBase param) {
-            var category = param.MachineCategory;
+        public static int GetAnnotationCode(MsScanMatchResult result, MachineCategory category) {
             var code = 999; // unknown
-            var mspSearchParam = param.MspSearchParam;
             if (result == null) return code;
             if (category == MachineCategory.GCMS) {
                 if (result.IsSpectrumMatch) code = 440; //440: EI-MS matched
@@ -1262,6 +1260,10 @@ namespace CompMs.MsdialCore.Utility {
 
                 return code;
             }
+        }
+
+        public static int GetAnnotationCode(MsScanMatchResult result, ParameterBase param) {
+            return GetAnnotationCode(result, param.MachineCategory);
         }
 
         // Alignment result
