@@ -37,14 +37,14 @@ namespace CompMs.App.Msdial.ViewModel.Chart {
 
             if (upperVerticalAxis is null) {
                 upperVerticalAxis = this.model.UpperVerticalRangeSource
-                    .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Order)
+                    .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Standard)
                     .AddTo(Disposables);
             }
             UpperVerticalAxis = upperVerticalAxis;
 
             if (lowerVerticalAxis is null) {
                 lowerVerticalAxis = this.model.LowerVerticalRangeSource
-                    .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Order)
+                    .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Standard)
                     .AddTo(Disposables);
             }
             LowerVerticalAxis = lowerVerticalAxis;

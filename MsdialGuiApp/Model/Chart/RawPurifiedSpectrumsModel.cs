@@ -22,8 +22,8 @@ namespace CompMs.App.Msdial.Model.Chart {
 
             RawLoader = rawLoader;
             DecLoader = decLoader;
-            var upperSpectrum = targetSource.Select(target => rawLoader.LoadSpectrum(target));
-            var lowerSpectrum = targetSource.Select(target => rawLoader.LoadSpectrum(target));
+            var upperSpectrum = targetSource.Select(target => RawLoader.LoadSpectrum(target));
+            var lowerSpectrum = targetSource.Select(target => DecLoader.LoadSpectrum(target));
 
             if (upperSpectrum is null) {
                 throw new ArgumentNullException(nameof(upperSpectrum));

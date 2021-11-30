@@ -31,15 +31,15 @@
                           Style="{StaticResource VerticalConcatChart}"
                           Background="WhiteSmoke" BorderBrush="Black">
             <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis}">
-                <TextBlock Text="Raw spectrum" FontStyle="Italic" FontFamily="Calibri"
-                   VerticalAlignment="Top" HorizontalAlignment="Left" />
+                <!--<TextBlock Text="Raw spectrum" FontStyle="Italic" FontFamily="Calibri"
+                   VerticalAlignment="Top" HorizontalAlignment="Left" />-->
                 <chart:LineSpectrumControl x:Name="MS2Line"
                                            ItemsSource="{Binding UpperSpectrum.Value}"
                                            HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                                            VerticalPropertyName="{Binding VerticalProperty}"
                                            BrushMapper="{Binding UpperSpectrumBrushSource.Value}"
                                            HueProperty="SpectrumComment"
-                                           Margin="0,15,0,0">
+                                           >
                     <chart:LineSpectrumControl.ToolTip>
                         <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel Orientation="Horizontal">
@@ -63,15 +63,15 @@
             </Grid>
 
             <Grid core:ChartBaseControl.VerticalAxis="{Binding LowerVerticalAxis}">
-                <TextBlock Text="Purified spectrum" FontStyle="Italic" FontFamily="Calibri"
-                   VerticalAlignment="Top" HorizontalAlignment="Left" />
+                <!--<TextBlock Text="Purified spectrum" FontStyle="Italic" FontFamily="Calibri"
+                   VerticalAlignment="Top" HorizontalAlignment="Left" />-->
                 <chart:LineSpectrumControl x:Name="MS2Ref"
                                            ItemsSource="{Binding LowerSpectrum.Value}"
                                            HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                                            VerticalPropertyName="{Binding VerticalProperty.Value}"
                                            BrushMapper="{Binding LowerSpectrumBrushSource.Value}"
                                            HueProperty="SpectrumComment"
-                                           Margin="0,15,0,0">
+                                           >
                     <chart:LineSpectrumControl.ToolTip>
                         <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel Orientation="Horizontal">
@@ -88,7 +88,6 @@
                                  VerticalPropertyName="{Binding VerticalProperty.Value}"
                                  LabelPropertyName="{Binding LabelProperty.Value}"
                                  OrderingPropertyName="{Binding OrderingProperty.Value}"
-                                 ContentAlignment="BottomCenter"
                                  Format="N2"
                                  Brush="Black"
                                  Overlap="Horizontal, Direct"
