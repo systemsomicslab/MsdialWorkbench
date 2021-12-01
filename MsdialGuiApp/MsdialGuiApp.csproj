@@ -439,7 +439,6 @@
     <Compile Include="ViewModel\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Dims\DimsMethodVM.cs" />
     <Compile Include="ViewModel\DisplayFilter.cs" />
-    <Compile Include="ViewModel\Export\AlignmentResultExportVM.cs" />
     <Compile Include="ViewModel\AdductIonVM.cs" />
     <Compile Include="ViewModel\Imms\AlignmentImmsVM.cs" />
     <Compile Include="ViewModel\Imms\AnalysisImmsVM.cs" />

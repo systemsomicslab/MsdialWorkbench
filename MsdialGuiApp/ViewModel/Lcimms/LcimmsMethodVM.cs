@@ -2,7 +2,6 @@
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Lcimms;
 using CompMs.App.Msdial.ViewModel.DataObj;
-using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -265,10 +264,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private DelegateCommand<Window> exportAlignmentResultCommand;
 
         private void ExportAlignment(Window owner) {
-            var vm = new AlignmentResultExportVM(model.AlignmentFile, model.Storage.AlignmentFiles, model.Storage);
             var dialog = new AlignmentResultExportWin
             {
-                DataContext = vm,
                 Owner = owner,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
