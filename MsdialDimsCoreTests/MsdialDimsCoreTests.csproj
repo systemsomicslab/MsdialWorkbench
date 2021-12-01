@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <Folder Include="CompMs\MsdialDimsCore\Common\" />
-    <Folder Include="Resources\" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
