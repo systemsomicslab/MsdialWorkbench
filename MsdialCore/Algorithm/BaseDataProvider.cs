@@ -3,6 +3,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using CompMs.RawDataHandler.Core;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -43,16 +44,14 @@ namespace CompMs.MsdialCore.Algorithm
             return LoadMsNSpectrums(1);
         }
 
-        private Dictionary<int, ReadOnlyCollection<RawSpectrum>> cache = new Dictionary<int, ReadOnlyCollection<RawSpectrum>>();
+        private ConcurrentDictionary<int, Lazy<ReadOnlyCollection<RawSpectrum>>> cache = new ConcurrentDictionary<int, Lazy<ReadOnlyCollection<RawSpectrum>>>();
         public virtual ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-            if (cache.TryGetValue(level, out var cacheSpectrum)) {
-                return cacheSpectrum;
-            }
-            return cache[level] = spectrums.Where(spectrum => spectrum.MsLevel == level).ToList().AsReadOnly();
+            return cache.GetOrAdd(level, i => new Lazy<ReadOnlyCollection<RawSpectrum>>(() => spectrums.Where(spectrum => spectrum.MsLevel == i).ToList().AsReadOnly())).Value;
         }
 
+        private ReadOnlyCollection<RawSpectrum> spectrumsCache;
         public virtual ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-            return spectrums.AsReadOnly();
+            return spectrumsCache ?? (spectrumsCache = spectrums.AsReadOnly());
         }
     }
 }

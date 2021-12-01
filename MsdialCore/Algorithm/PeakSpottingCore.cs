@@ -104,20 +104,21 @@ namespace CompMs.MsdialCore.Algorithm {
             var targetMasses = getFocusedMassList(startMass, endMass, massStep, param.MassRangeBegin, param.MassRangeEnd);
             var syncObj = new object();
             var counter = 0;
-            var chromPeakFeaturesArray = new List<ChromatogramPeakFeature>[targetMasses.Count];
-            Enumerable.Range(0, targetMasses.Count)
+            var chromPeakFeaturesArray = targetMasses
                 .AsParallel()
+                .AsOrdered()
                 .WithCancellation(token)
                 .WithDegreeOfParallelism(numThreads)
-                .ForAll(i => {
-                    var chromPeakFeatures = GetChromatogramPeakFeatures(provider, targetMasses[i], param, type, unit, chromBegin, chromEnd);
-                    chromPeakFeaturesArray[i] = chromPeakFeatures;
+                .Select(targetMass => {
+                    var chromPeakFeatures = GetChromatogramPeakFeatures(provider, targetMass, param, type, unit, chromBegin, chromEnd);
 ;
                     lock (syncObj) {
                         counter++;
                         ReportProgress.Show(InitialProgress, ProgressMax, counter, targetMasses.Count, reportAction);
                     }
-                });
+                    return chromPeakFeatures;
+                })
+                .ToArray();
 
             // finalization
             return FinalizePeakSpottingResult(chromPeakFeaturesArray, massStep, provider, param, type, unit);
@@ -214,23 +215,16 @@ namespace CompMs.MsdialCore.Algorithm {
         private List<ChromatogramPeakFeature> Execute3DFeatureDetectionTargetModeByMultiThread(IDataProvider provider, ParameterBase param,
             float chromBegin, float chromEnd, ChromXType type, ChromXUnit unit, int numThreads, CancellationToken token,
             Action<int> reportAction) {
-            var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
             var targetedScans = param.CompoundListInTargetMode;
             if (targetedScans.IsEmptyOrNull()) return null;
-            var syncObj = new object();
-            Enumerable.Range(0, targetedScans.Count)
+            var chromPeakFeaturesList = targetedScans
                 .AsParallel()
+                .AsOrdered()
                 .WithCancellation(token)
                 .WithDegreeOfParallelism(numThreads)
-                .ForAll(i => {
-                    var chromPeakFeatures = GetChromatogramPeakFeatures(provider, (float)targetedScans[i].PrecursorMz, param, type, unit, chromBegin, chromEnd);
-                    if (!chromPeakFeatures.IsEmptyOrNull()) {
-                        lock (syncObj) {
-                            chromPeakFeaturesList.Add(chromPeakFeatures);
-                        }
-                    }
-                });
-
+                .Select(targetedScan => GetChromatogramPeakFeatures(provider, (float)targetedScan.PrecursorMz, param, type, unit, chromBegin, chromEnd))
+                .Where(features => !features.IsEmptyOrNull())
+                .ToList();
             return GetCombinedChromPeakFeatures(chromPeakFeaturesList, provider, param, type, unit);
         }
 
