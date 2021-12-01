@@ -253,7 +253,7 @@ namespace CompMs.App.Msdial
 
             var serializer = new MsdialIntegrateSerializer();
             var streamManager = new DirectoryTreeStreamManager(Path.GetDirectoryName(projectfile));
-            var storage = serializer.LoadAsync(streamManager, Path.GetFileName(projectfile), string.Empty).Result;
+            var storage = serializer.LoadAsync(streamManager, Path.GetFileName(projectfile), Path.GetDirectoryName(projectfile), string.Empty).Result;
             storage.Parameter.ProjectFileName = Path.GetFileName(storage.Parameter.ProjectFileName);
 
             var previousFolder = storage.Parameter.ProjectFolderPath;

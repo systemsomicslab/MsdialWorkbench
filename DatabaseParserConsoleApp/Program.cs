@@ -16,8 +16,8 @@ namespace DatabaseParserConsoleApp {
             //runLipidMassGenerator();
             #endregion
 
-            runLipidChalacterization(); // characterize lipid structure by understanding MS/MS spectra
-            
+            //runLipidChalacterization(); // characterize lipid structure by understanding MS/MS spectra
+            var results = MspFileParcer.MspFileReader(@"C:\Users\hiros\Downloads\MSMS-Pos-MRI_CES-3515.txt");
             //convertAsciiToBinary();
 
             // 

@@ -20,9 +20,9 @@ namespace CompMs.MsdialIntegrate.Parser
             { MachineCategory.GCMS, MsdialGcMsApi.DataObj.MsdialGcmsDataStorage.Serializer },
         };
 
-        public async Task<IMsdialDataStorage<ParameterBase>> LoadAsync(IStreamManager streamManager, string projectTitle, string prefix) {
+        public async Task<IMsdialDataStorage<ParameterBase>> LoadAsync(IStreamManager streamManager, string projectTitle, string projectFolderPath, string prefix) {
             var serializer = await ResolveSerializer(streamManager, Combine(prefix, projectTitle));
-            return await serializer.LoadAsync(streamManager, projectTitle, prefix).ConfigureAwait(false);
+            return await serializer.LoadAsync(streamManager, projectTitle, projectFolderPath, prefix).ConfigureAwait(false);
         }
 
         private async Task<IMsdialSerializer> ResolveSerializer(IStreamManager streamManager, string path) {

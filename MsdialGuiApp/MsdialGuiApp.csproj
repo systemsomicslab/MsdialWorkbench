@@ -159,6 +159,7 @@
     <Compile Include="Model\Chart\GraphElements.cs" />
     <Compile Include="Model\Chart\MsSpectrumModel.cs" />
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
+    <Compile Include="Model\Chart\RawPurifiedSpectrumsModel.cs" />
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
     <Compile Include="Model\Core\MainWindowModel.cs" />
     <Compile Include="Model\Dims\DimsAnalysisParameterSetModel.cs" />
@@ -215,6 +216,7 @@
     <Compile Include="ViewModel\Chart\AlignmentPeakPlotViewModel.cs" />
     <Compile Include="ViewModel\Chart\AnalysisPeakPlotViewModel.cs" />
     <Compile Include="ViewModel\Chart\BarChartViewModel.cs" />
+    <Compile Include="ViewModel\Chart\RawPurifiedSpectrumsViewModel.cs" />
     <Compile Include="ViewModel\Chart\ReactiveCategoryAxisManager.cs" />
     <Compile Include="ViewModel\Chart\EicViewModel.cs" />
     <Compile Include="ViewModel\Chart\MsSpectrumViewModel.cs" />
@@ -320,6 +322,9 @@
     </Compile>
     <Compile Include="View\Chart\PeakView.xaml.cs">
       <DependentUpon>PeakView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\RawPurifiedView.xaml.cs">
+      <DependentUpon>RawPurifiedView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\RepRefView.xaml.cs">
       <DependentUpon>RepRefView.xaml</DependentUpon>
@@ -626,6 +631,10 @@
     <Page Include="View\Chart\PeakView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\RawPurifiedView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Chart\RepRefView.xaml">
       <SubType>Designer</SubType>

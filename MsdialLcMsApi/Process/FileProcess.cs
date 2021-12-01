@@ -55,7 +55,7 @@ namespace CompMs.MsdialLcMsApi.Process {
 
                 // feature detections
                 Console.WriteLine("Peak picking started");
-                var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, param, reportAction);
+                var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, param, token, reportAction);
                 IsotopeEstimator.Process(chromPeakFeatures, param, iupacDB);
                 var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures, param);
                 file.ChromPeakFeaturesSummary = summary;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Common.Lipidomics;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -694,6 +695,15 @@ namespace CompMs.MspGenerator
                 //20211008
                 // RtとCCSの予測用に側鎖の構成を追加
                 //MergeRTandCCSintoMsp.generateInchikeyAndSmilesAndChainsListFromMsp(@"Z:\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\LBM\Msp20210527163602.jointedmsp");
+
+
+                //temp 20211108
+                //LipidStructureGenerator.LipidInchikeySmiles(LbmClass.EtherPC, "PC P-16:1/18:2(9Z,12Z)");
+
+                var parameter01 = new LipidChainInfo { CNum =18, DoubleNum =3, DoublePosition = new string[] { "12Z","6Z","9Z"}, EtherFlag = true, OxNum =0, SnPosition =0};
+                var parameter02 = new LipidChainInfo { CNum =26, DoubleNum =0, DoublePosition = new string[] { }, EtherFlag = false, OxNum =0, SnPosition =0};
+                var chainList = new List<LipidChainInfo>() { parameter01, parameter02 };
+                LipidStructureGenerator.LipidInchikeySmiles(LbmClass.EtherPC, chainList);
 
             }
         }

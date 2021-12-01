@@ -10,6 +10,7 @@ using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
+using CompMs.Common.Parser;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
@@ -1098,7 +1099,13 @@ namespace CompMs.MsdialCore.Utility {
             if (reference == null) return;
             SetPeptidePropertyCore(feature, reference);
             feature.Name = result.Name;
-            feature.AddAdductType(reference.AdductType);
+
+            var chargeNum = feature.PeakCharacter.Charge;
+            var chargeString = chargeNum == 1 ? string.Empty : chargeNum.ToString();
+            var adductString = "[M+" + chargeString + "H]" + chargeString + "+";
+            var type = AdductIonParser.GetAdductIonBean(adductString);
+
+            feature.AddAdductType(type);
         }
 
         private static void SetPeptidePropertyCore(IMoleculeProperty property, PeptideMsReference reference) {
@@ -1111,7 +1118,13 @@ namespace CompMs.MsdialCore.Utility {
         public static void SetPeptideMsPropertyAsSuggested(ChromatogramPeakFeature feature, PeptideMsReference reference, MsScanMatchResult result) {
             if (reference == null) return;
             SetPeptidePropertyCore(feature, reference);
-            feature.AddAdductType(reference.AdductType);
+
+            var chargeNum = feature.PeakCharacter.Charge;
+            var chargeString = chargeNum == 1 ? string.Empty : chargeNum.ToString();
+            var adductString = "[M+" + chargeString + "H]" + chargeString + "+";
+            var type = AdductIonParser.GetAdductIonBean(adductString);
+
+            feature.AddAdductType(type);
             feature.Name = "w/o MS2: " + result.Name;
         }
 

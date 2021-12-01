@@ -1,0 +1,98 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Chart.RawPurifiedView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+             mc:Ignorable="d" 
+             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
+             Name="RawPurePlot"
+             d:DesignHeight="600" d:DesignWidth="370">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/ChartStyles.xaml"/>
+                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid DataContext="{Binding RawPurifiedSpectrumsViewModel}">
+        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
+                          GraphTitle="{Binding GraphTitle.Value}"
+                          HorizontalTitle="{Binding HorizontalTitle.Value}"
+                          VerticalTitle="{Binding VerticalTitle.Value}"
+                          Style="{StaticResource VerticalConcatChart}"
+                          Background="WhiteSmoke" BorderBrush="Black">
+            <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis}">
+                <!--<TextBlock Text="Raw spectrum" FontStyle="Italic" FontFamily="Calibri"
+                   VerticalAlignment="Top" HorizontalAlignment="Left" />-->
+                <chart:LineSpectrumControl x:Name="MS2Line"
+                                           ItemsSource="{Binding UpperSpectrum.Value}"
+                                           HorizontalPropertyName="{Binding HorizontalProperty.Value}"
+                                           VerticalPropertyName="{Binding VerticalProperty}"
+                                           BrushMapper="{Binding UpperSpectrumBrushSource.Value}"
+                                           HueProperty="SpectrumComment"
+                                           >
+                    <chart:LineSpectrumControl.ToolTip>
+                        <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="m/z: "/>
+                                <TextBlock Text="{Binding FocusedItem.Mass}"/>
+                                <TextBlock Text=" Intensity: "/>
+                                <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                            </StackPanel>
+                        </ToolTip>
+                    </chart:LineSpectrumControl.ToolTip>
+                </chart:LineSpectrumControl>
+                <chart:Annotator ItemsSource="{Binding UpperSpectrum.Value}"
+                                 HorizontalPropertyName="{Binding HorizontalProperty.Value}"
+                                 VerticalPropertyName="{Binding VerticalProperty.Value}"
+                                 LabelPropertyName="{Binding LabelProperty.Value}"
+                                 OrderingPropertyName="{Binding OrderingProperty.Value}"
+                                 Format="N2"
+                                 Brush="Black"
+                                 Overlap="Horizontal, Direct"
+                                 ClipToBounds="True"/>
+            </Grid>
+
+            <Grid core:ChartBaseControl.VerticalAxis="{Binding LowerVerticalAxis}">
+                <!--<TextBlock Text="Purified spectrum" FontStyle="Italic" FontFamily="Calibri"
+                   VerticalAlignment="Top" HorizontalAlignment="Left" />-->
+                <chart:LineSpectrumControl x:Name="MS2Ref"
+                                           ItemsSource="{Binding LowerSpectrum.Value}"
+                                           HorizontalPropertyName="{Binding HorizontalProperty.Value}"
+                                           VerticalPropertyName="{Binding VerticalProperty.Value}"
+                                           BrushMapper="{Binding LowerSpectrumBrushSource.Value}"
+                                           HueProperty="SpectrumComment"
+                                           >
+                    <chart:LineSpectrumControl.ToolTip>
+                        <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="m/z: "/>
+                                <TextBlock Text="{Binding FocusedItem.Mass}"/>
+                                <TextBlock Text=" Intensity: "/>
+                                <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                            </StackPanel>
+                        </ToolTip>
+                    </chart:LineSpectrumControl.ToolTip>
+                </chart:LineSpectrumControl>
+                <chart:Annotator ItemsSource="{Binding LowerSpectrum.Value}"
+                                 HorizontalPropertyName="{Binding HorizontalProperty.Value}"
+                                 VerticalPropertyName="{Binding VerticalProperty.Value}"
+                                 LabelPropertyName="{Binding LabelProperty.Value}"
+                                 OrderingPropertyName="{Binding OrderingProperty.Value}"
+                                 Format="N2"
+                                 Brush="Black"
+                                 Overlap="Horizontal, Direct"
+                                 ClipToBounds="True"/>
+            </Grid>
+        </chart:MultiChart>
+    </Grid>
+</UserControl>

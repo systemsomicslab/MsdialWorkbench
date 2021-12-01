@@ -43,7 +43,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             using (var stream = new MemoryStream()) {
                 db.Save(stream);
                 stream.Seek(0, SeekOrigin.Begin);
-                db.Load(stream);
+                db.Load(stream, null);
             }
 
             CollectionAssert.AreEqual(references.Select(item => item.ScanID).ToArray(), db.Database.Select(item => item.ScanID).ToArray());
