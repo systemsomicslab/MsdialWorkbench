@@ -21,7 +21,9 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.MsdialCore.Utility {
     public sealed class DataAccess {
@@ -55,6 +57,18 @@ namespace CompMs.MsdialCore.Utility {
                 var measurment = GetRawDataMeasurement(rawDataAccess);
                 allSpectrumList = measurment.SpectrumList;
                 accumulatedSpectrumList = measurment.AccumulatedSpectrumList;
+            }
+        }
+
+        public static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isGuiProcess, int retry, int sleepMilliSeconds) {
+            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, isGuiProcess)) {
+                for (var i = 0; i < retry; i++) {
+                    var rawObj = GetRawDataMeasurement(access);
+                    if (rawObj != null)
+                        return rawObj;
+                    Thread.Sleep(sleepMilliSeconds);
+                }
+                throw new FileLoadException($"Loading {file.AnalysisFilePath} failed.");
             }
         }
 

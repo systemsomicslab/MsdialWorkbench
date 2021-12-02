@@ -9,7 +9,6 @@
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj" 
              mc:Ignorable="d" 
-             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              behavior:SuppressContextMenuBehavior.IsEnabled="True"
              Name="MainControl"
@@ -25,15 +24,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
-            <manager:ContinuousAxisManager x:Key="ChromAxis"
-                                           MinValue="{Binding DataContext.AnalysisVM.ChromMin, Source={x:Reference Name=MainControl}}"
-                                           MaxValue="{Binding DataContext.AnalysisVM.ChromMax, Source={x:Reference Name=MainControl}}"
-                                           ChartMargin="0.05" />
-            <manager:ContinuousAxisManager x:Key="MassAxis"
-                                           MinValue="{Binding DataContext.AnalysisVM.MassMin, Source={x:Reference Name=MainControl}}"
-                                           MaxValue="{Binding DataContext.AnalysisVM.MassMax, Source={x:Reference Name=MainControl}}"
-                                           ChartMargin="0.05" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -50,7 +40,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!--<local:MainRibbon Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>-->
+        <local:MainRibbon Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
         <commonview:Navigator Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
 
         <GridSplitter Margin="0, 0, 0, 0" Width="2" ResizeDirection="Columns" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" />
@@ -105,7 +95,7 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
 
-                                <chart:PeakView DataContext="{Binding RtMzPlotViewModel}">
+                                <chart:PeakView DataContext="{Binding RtMzPlotViewModel}" Grid.Column="0">
                                     <chart:PeakView.LabelTemplate>
                                         <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
                                             <StackPanel Orientation="Horizontal">
@@ -124,7 +114,7 @@
                                     </chart:PeakView.LabelTemplate>
                                 </chart:PeakView>
 
-                                <chart:PeakView DataContext="{Binding DtMzPlotViewModel}">
+                                <chart:PeakView DataContext="{Binding DtMzPlotViewModel}" Grid.Column="1">
                                     <chart:PeakView.LabelTemplate>
                                         <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
                                             <StackPanel Orientation="Horizontal">

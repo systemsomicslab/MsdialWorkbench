@@ -33,17 +33,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
             IDataProvider spectrumProvider,
             IDataProvider accSpectrumProvider,
             DataBaseMapper mapper,
-            ParameterBase parameter,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator)
+            ParameterBase parameter)
             : base(analysisFile) {
 
             this.spectrumProvider = spectrumProvider;
             this.accSpectrumProvider = accSpectrumProvider;
             DataBaseMapper = mapper;
             this.parameter = parameter;
-            MspAnnotator = mspAnnotator;
-            TextDBAnnotator = textDBAnnotator;
 
             FileName = analysisFile.AnalysisFileName;
 

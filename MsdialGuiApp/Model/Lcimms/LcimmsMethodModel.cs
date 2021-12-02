@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
@@ -11,6 +12,7 @@ using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Algorithm;
 using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcImMsApi.DataObj;
@@ -30,18 +32,15 @@ namespace CompMs.App.Msdial.Model.Lcimms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
-        public LcimmsMethodModel(MsdialLcImMsDataStorage storage, IDataProviderFactory<AnalysisFileBean> providerFactory)
+        public LcimmsMethodModel(MsdialLcImMsDataStorage storage)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
             }
 
-            if (providerFactory is null) {
-                throw new ArgumentNullException(nameof(providerFactory));
-            }
-
             Storage = storage;
-            this.providerFactory = providerFactory;
+            providerFactory = new StandardDataProviderFactory();
+            accProviderFactory = new LcimmsAccumulateDataProviderFactory();
         }
 
         public MsdialLcImMsDataStorage Storage {
@@ -64,19 +63,21 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         private IAnnotationProcess annotationProcess;
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
-        private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
+        private readonly IDataProviderFactory<RawMeasurement> providerFactory;
+        private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
 
         protected override void LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
-            var provider = providerFactory.Create(analysisFile);
+            var rawObj = DataAccess.LoadMeasurement(analysisFile, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000);
             AnalysisModel = new LcimmsAnalysisModel(
                 analysisFile,
-                provider,
-                null, null, Storage.MsdialLcImMsParameter,
-                null, null)
+                providerFactory.Create(rawObj),
+                accProviderFactory.Create(rawObj),
+                Storage.DataBaseMapper,
+                Storage.MsdialLcImMsParameter)
             .AddTo(Disposables);
         }
 
@@ -134,7 +135,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public async Task RunAnnotationProcess(AnalysisFileBean analysisfile, Action<int> action) {
-            await Task.Run(() => FileProcess.Run(analysisfile, new StandardDataProviderFactory(), new LcimmsAccumulateDataProviderFactory(), annotationProcess, storage, isGuiProcess: true, reportAction: action));
+            await Task.Run(() => FileProcess.Run(analysisfile, providerFactory, accProviderFactory, annotationProcess, storage, isGuiProcess: true, reportAction: action));
         }
 
         public void RunAlignmentProcess() {
