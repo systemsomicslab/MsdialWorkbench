@@ -18,9 +18,9 @@ using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcMsApi.DataObj;
+using CompMs.MsdialLcMsApi.Export;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
@@ -31,7 +31,7 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    class LcmsMethodModel : MethodModelBase
+    sealed class LcmsMethodModel : MethodModelBase
     {
         static LcmsMethodModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", CompMs.Common.Components.ChromXType.RT);
@@ -116,8 +116,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             Storage.DataBases = analysisParamSetModel.IdentitySettingModel.Create();
-            // analysisParamSetModel.IdentitySettingModel.SetAnnotatorContainer(Storage.DataBases);
-            // analysisParamSetModel.IdentitySettingModel.SetProteomicsAnnotatorContainer(Storage.DataBases);
 
             if (parameter.TogetherWithAlignment) {
                 var filename = analysisParamSetModel.AlignmentResultFileName;
@@ -134,7 +132,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.AlignmentFiles = AlignmentFiles.ToList();
             }
 
-            //annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
             annotationProcess = BuildProteoMetabolomicsAnnotationProcess(Storage.DataBases, parameter);
             Storage.DataBaseMapper = CreateDataBaseMapper(Storage.DataBases);
             return true;
@@ -290,19 +287,19 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public void ExportAlignment(Window owner) {
             var container = Storage;
-            // var metadataAccessor = new ImmsMetadataAccessor(container.DataBaseMapper, container.ParameterBase);
+            var metadataAccessor = new LcmsMetadataAccessor(container.DataBaseMapper, container.MsdialLcmsParameter);
             var vm = new AlignmentResultExport2VM(AlignmentFile, container.AlignmentFiles, container);
             vm.ExportTypes.AddRange(
                 new List<ExportType2>
                 {
-                    // new ExportType2("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", container.ParameterBase), "Height", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }, true),
-                    // new ExportType2("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.ParameterBase), "Area", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    // new ExportType2("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.ParameterBase), "NormalizedHeight", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    // new ExportType2("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.ParameterBase), "NormalizedArea", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    // new ExportType2("Alignment ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.ParameterBase), "PeakID"),
-                    // new ExportType2("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.ParameterBase), "Mz"),
-                    // new ExportType2("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.ParameterBase), "SN"),
-                    // new ExportType2("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.ParameterBase), "MsmsIncluded"),
+                    new ExportType2("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", container.MsdialLcmsParameter), "Height", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }, true),
+                    new ExportType2("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.MsdialLcmsParameter), "Area", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
+                    new ExportType2("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.MsdialLcmsParameter), "NormalizedHeight", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
+                    new ExportType2("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.MsdialLcmsParameter), "NormalizedArea", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
+                    new ExportType2("Alignment ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.MsdialLcmsParameter), "PeakID"),
+                    new ExportType2("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.MsdialLcmsParameter), "Mz"),
+                    new ExportType2("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.MsdialLcmsParameter), "SN"),
+                    new ExportType2("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.MsdialLcmsParameter), "MsmsIncluded"),
                 });
             var dialog = new AlignmentResultExportWin
             {

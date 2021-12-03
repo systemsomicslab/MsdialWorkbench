@@ -5,52 +5,10 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.MsdialImmsCore.Algorithm
 {
-    public abstract class ImmsBaseDataProvider : BaseDataProvider
-    {
-        protected readonly List<RawSpectrum> rawSpectrums;
-        private readonly Dictionary<int, ReadOnlyCollection<RawSpectrum>> msSpectrums;
-
-        public ImmsBaseDataProvider(IEnumerable<RawSpectrum> spectrums)
-            : base(spectrums) {
-
-            rawSpectrums = this.spectrums.Select(spec => spec.ShallowCopy()).ToList();
-            msSpectrums = rawSpectrums
-                .GroupBy(spectrum => spectrum.MsLevel)
-                .ToDictionary(
-                    group => group.Key,
-                    group => group.OrderBy(spectrum => spectrum.DriftTime).ToList().AsReadOnly());
-        }
-
-        public ImmsBaseDataProvider(RawMeasurement rawObj) : this(rawObj.SpectrumList) {
-
-        }
-
-        public ImmsBaseDataProvider(AnalysisFileBean file) : this(LoadMeasurement(file, false, 5)) {
-
-        }
-
-        public ImmsBaseDataProvider(AnalysisFileBean file, bool isGuiProcess, int retry)
-            : this(LoadMeasurement(file, isGuiProcess, retry)) {
-
-        }
-
-        public override ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-            if (msSpectrums.ContainsKey(level))
-                return msSpectrums[level];
-            else
-                return new List<RawSpectrum>(0).AsReadOnly();
-        }
-
-        public override ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-            return rawSpectrums.AsReadOnly();
-        }
-    }
-
     public class ImmsRepresentativeDataProvider : BaseDataProvider
     {
         public ImmsRepresentativeDataProvider(IEnumerable<RawSpectrum> spectrums, double timeBegin, double timeEnd)

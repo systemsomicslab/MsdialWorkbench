@@ -55,6 +55,7 @@ namespace CompMs.MsdialCore.DataObj
             using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, MsdialSerializer.GetDataBasesFileName(projectTitle))).ConfigureAwait(false)) {
                 SaveDataBases(stream);
             }
+
             using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, projectTitle)).ConfigureAwait(false)) {
                 var mspList = MspDB;
                 MspDB = new List<MoleculeMsReference>();
@@ -85,9 +86,9 @@ namespace CompMs.MsdialCore.DataObj
                 return dataStorage.Save(streamManager, projectTitle, prefix);
             }
 
-            public virtual async Task<IMsdialDataStorage<ParameterBase>> LoadAsync(IStreamManager streamManager, string projectTitle, string prefix = "") {
+            public virtual async Task<IMsdialDataStorage<ParameterBase>> LoadAsync(IStreamManager streamManager, string projectTitle, string projectFolderPath, string prefix = "") {
                 var storage = await LoadMsdialDataStorageCoreAsync(streamManager, Combine(prefix, projectTitle)).ConfigureAwait(false);
-                await LoadDataBasesAsync(streamManager, Combine(prefix, GetDataBasesFileName(projectTitle)), storage).ConfigureAwait(false);
+                await LoadDataBasesAsync(streamManager, Combine(prefix, GetDataBasesFileName(projectTitle)), storage, projectFolderPath).ConfigureAwait(false);
                 await LoadDataBaseMapperAsync(streamManager, Combine(prefix, GetNewZippedDatabaseFileName(projectTitle)), storage).ConfigureAwait(false);
                 storage.MspDB = await LoadMspDBAsync(streamManager, Combine(prefix, GetNewMspFileName(projectTitle))).ConfigureAwait(false);
                 return storage;
@@ -111,9 +112,9 @@ namespace CompMs.MsdialCore.DataObj
                 }
             }
 
-            protected virtual async Task LoadDataBasesAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage) {
+            protected virtual async Task LoadDataBasesAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage, string projectFolderPath) {
                 using (var stream = await streamManager.Get(path).ConfigureAwait(false)) {
-                    storage.DataBases = DataBaseStorage.Load(stream, new StandardLoadAnnotatorVisitor(storage.Parameter));
+                    storage.DataBases = DataBaseStorage.Load(stream, new StandardLoadAnnotatorVisitor(storage.Parameter), projectFolderPath);
                 }
             }
 
@@ -131,6 +132,7 @@ namespace CompMs.MsdialCore.DataObj
                 return GetNewMspFileName(path) + ".dbs";
             }
 
+           
             internal static string Combine(string path1, string path2) {
                 if (string.IsNullOrEmpty(path1)) {
                     return path2;

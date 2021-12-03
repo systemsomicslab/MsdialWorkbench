@@ -159,6 +159,7 @@
     <Compile Include="Model\Chart\GraphElements.cs" />
     <Compile Include="Model\Chart\MsSpectrumModel.cs" />
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
+    <Compile Include="Model\Chart\RawPurifiedSpectrumsModel.cs" />
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
     <Compile Include="Model\Core\MainWindowModel.cs" />
     <Compile Include="Model\Dims\DimsAnalysisParameterSetModel.cs" />
@@ -170,6 +171,7 @@
     <Compile Include="Model\Core\AnalysisModelBase.cs" />
     <Compile Include="Model\Core\AlignmentModelBase.cs" />
     <Compile Include="Model\Dims\DimsTextDBAnnotationSettingModel.cs" />
+    <Compile Include="Model\Lcimms\LcimmsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsCompoundSearchModel.cs" />
     <Compile Include="Model\Search\CompoundResultCollection.cs" />
     <Compile Include="Model\Setting\IdentifySettingModel.cs" />
@@ -214,6 +216,7 @@
     <Compile Include="ViewModel\Chart\AlignmentPeakPlotViewModel.cs" />
     <Compile Include="ViewModel\Chart\AnalysisPeakPlotViewModel.cs" />
     <Compile Include="ViewModel\Chart\BarChartViewModel.cs" />
+    <Compile Include="ViewModel\Chart\RawPurifiedSpectrumsViewModel.cs" />
     <Compile Include="ViewModel\Chart\ReactiveCategoryAxisManager.cs" />
     <Compile Include="ViewModel\Chart\EicViewModel.cs" />
     <Compile Include="ViewModel\Chart\MsSpectrumViewModel.cs" />
@@ -252,6 +255,9 @@
     <Compile Include="ViewModel\Dims\DimsMspAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsTextDBAnnotationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParameterSetViewModel.cs" />
+    <Compile Include="ViewModel\Lcimms\LcimmsAnnotatorSettingViewModel.cs" />
+    <Compile Include="ViewModel\Lcimms\MsdialLcimmsParameterViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsCompoundSearchViewModel.cs" />
     <Compile Include="ViewModel\Setting\IdentifySettingViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
@@ -316,6 +322,9 @@
     </Compile>
     <Compile Include="View\Chart\PeakView.xaml.cs">
       <DependentUpon>PeakView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\RawPurifiedView.xaml.cs">
+      <DependentUpon>RawPurifiedView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\RepRefView.xaml.cs">
       <DependentUpon>RepRefView.xaml</DependentUpon>
@@ -430,7 +439,6 @@
     <Compile Include="ViewModel\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Dims\DimsMethodVM.cs" />
     <Compile Include="ViewModel\DisplayFilter.cs" />
-    <Compile Include="ViewModel\Export\AlignmentResultExportVM.cs" />
     <Compile Include="ViewModel\AdductIonVM.cs" />
     <Compile Include="ViewModel\Imms\AlignmentImmsVM.cs" />
     <Compile Include="ViewModel\Imms\AnalysisImmsVM.cs" />
@@ -623,6 +631,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Chart\RawPurifiedView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\Chart\RepRefView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -716,6 +728,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Lcimms\AnalysisParamSetForLcimmsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcimms\AnnotationSettingStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

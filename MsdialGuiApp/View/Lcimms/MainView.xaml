@@ -5,12 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Lcimms"
              xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
-             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
+             xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj" 
              mc:Ignorable="d" 
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              behavior:SuppressContextMenuBehavior.IsEnabled="True"
              Name="MainControl"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:LcimmsMethodVM}}"
              d:DesignHeight="775" d:DesignWidth="1280">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -57,7 +60,7 @@
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" MinWidth="370"/>
-                    <ColumnDefinition Width="370" MinWidth="370" MaxWidth="730" />
+                    <ColumnDefinition Width="370" MinWidth="370" />
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0">
@@ -101,10 +104,9 @@
                                     <ColumnDefinition/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                <!--
-                                <commonview:PeakView DataContext="{Binding PlotViewModel}"
-                                                     Grid.Column="0">
-                                    <commonview:PeakView.LabelTemplate>
+
+                                <chart:PeakView DataContext="{Binding RtMzPlotViewModel}">
+                                    <chart:PeakView.LabelTemplate>
                                         <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
                                             <StackPanel Orientation="Horizontal">
                                                 <StackPanel.Resources>
@@ -115,15 +117,15 @@
                                                 </StackPanel.Resources>
                                                 <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime, StringFormat=Spot ID: {0}; }"/>
                                                 <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime, StringFormat=Scan #: {0}; }"/>
-                                                <TextBlock Text="{Binding InnerModel.ChromXs.Value, Mode=OneTime, StringFormat=DT[1/k0]: {0:N4}; }"/>
+                                                <TextBlock Text="{Binding InnerModel.ChromXs.Value, Mode=OneTime, StringFormat=RT[min]: {0:N3}; }"/>
                                                 <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
                                             </StackPanel>
                                         </DataTemplate>
-                                    </commonview:PeakView.LabelTemplate>
-                                </commonview:PeakView>
-                                <commonview:PeakView DataContext="{Binding PlotViewModel}"
-                                                     Grid.Column="1">
-                                    <commonview:PeakView.LabelTemplate>
+                                    </chart:PeakView.LabelTemplate>
+                                </chart:PeakView>
+
+                                <chart:PeakView DataContext="{Binding DtMzPlotViewModel}">
+                                    <chart:PeakView.LabelTemplate>
                                         <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
                                             <StackPanel Orientation="Horizontal">
                                                 <StackPanel.Resources>
@@ -134,13 +136,12 @@
                                                 </StackPanel.Resources>
                                                 <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime, StringFormat=Spot ID: {0}; }"/>
                                                 <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime, StringFormat=Scan #: {0}; }"/>
-                                                <TextBlock Text="{Binding InnerModel.ChromXs.Value, Mode=OneTime, StringFormat=DT[1/k0]: {0:N4}; }"/>
+                                                <TextBlock Text="{Binding InnerModel.ChromXs.Value, Mode=OneTime, StringFormat=RT[min]: {0:N3}; }"/>
                                                 <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
                                             </StackPanel>
                                         </DataTemplate>
-                                    </commonview:PeakView.LabelTemplate>
-                                </commonview:PeakView>
-                                -->
+                                    </chart:PeakView.LabelTemplate>
+                                </chart:PeakView>
                             </Grid>
                         </TabItem>
 

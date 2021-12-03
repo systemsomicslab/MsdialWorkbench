@@ -30,7 +30,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var memory = new MemoryStream();
             dbs.Save(memory);
             memory.Seek(0, SeekOrigin.Begin);
-            var actual = DataBaseStorage.Load(memory, new StandardLoadAnnotatorVisitor(parameter));
+            var actual = DataBaseStorage.Load(memory, new StandardLoadAnnotatorVisitor(parameter), null);
 
             Assert.AreEqual(dbs.MetabolomicsDataBases.Count, actual.MetabolomicsDataBases.Count);
             Assert.AreEqual(dbs.MetabolomicsDataBases[0].DataBaseID, actual.MetabolomicsDataBases[0].DataBaseID);

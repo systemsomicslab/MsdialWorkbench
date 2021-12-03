@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <Folder Include="Algorithm\Alignment\" />
-    <Folder Include="Algorithm\Annotation\" />
     <Folder Include="Parser\" />
   </ItemGroup>
 

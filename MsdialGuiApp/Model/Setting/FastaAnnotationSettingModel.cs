@@ -79,9 +79,9 @@ namespace CompMs.App.Msdial.Model.Setting {
         }
         private ProteomicsParameter proteomicsParameter = new ProteomicsParameter();
 
-        protected static ShotgunProteomicsDB LoadShotgunProteomicsDB(string path, string id, 
-            ProteomicsParameter proteomicsParam, MsRefSearchParameterBase msrefSearchParam) {
-            return new ShotgunProteomicsDB(path, id, proteomicsParam, msrefSearchParam.MassRangeBegin, msrefSearchParam.MassRangeEnd);
-        }
+        //protected static ShotgunProteomicsDB LoadShotgunProteomicsDB(string path, string id, 
+        //    ProteomicsParameter proteomicsParam, MsRefSearchParameterBase msrefSearchParam) {
+        //    return new ShotgunProteomicsDB(path, id, proteomicsParam, msrefSearchParam.MassRangeBegin, msrefSearchParam.MassRangeEnd);
+        //}
     }
 }

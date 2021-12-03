@@ -30,14 +30,16 @@ namespace CompMs.App.Msdial.Model.Lcimms
     {
         public LcimmsAnalysisModel(
             AnalysisFileBean analysisFile,
-            IDataProvider provider,
+            IDataProvider spectrumProvider,
+            IDataProvider accSpectrumProvider,
             DataBaseMapper mapper,
             ParameterBase parameter,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator)
             : base(analysisFile) {
 
-            this.provider = provider;
+            this.spectrumProvider = spectrumProvider;
+            this.accSpectrumProvider = accSpectrumProvider;
             DataBaseMapper = mapper;
             this.parameter = parameter;
             MspAnnotator = mspAnnotator;
@@ -49,35 +51,49 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AmplitudeOrderMax = Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0;
 
             var labelsource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource)
+            RtMzPlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource)
+            {
+                HorizontalTitle = "Retention time [min]",
+                VerticalTitle = "m/z",
+                HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
+                VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
+            };
+            RtEicLoader = new EicLoader(accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, this.parameter.RetentionTimeBegin, this.parameter.RetentionTimeEnd);
+            RtEicModel = new EicModel(Target, RtEicLoader)
+            {
+                HorizontalTitle = RtMzPlotModel.HorizontalTitle,
+                VerticalTitle = "Abundance",
+            };
+
+            DtMzPlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource)
             {
                 HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "m/z",
-                HorizontalProperty = nameof(ChromatogramPeakWrapper.ChromXValue),
+                HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             };
             Target.Select(
                 t => t is null
                     ? string.Empty
                     : $"Spot ID: {t.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5} RT min: {t.InnerModel.ChromXsTop.RT.Value} Drift time msec: {t.InnerModel.ChromXsTop.Drift.Value}")
-                .Subscribe(title => PlotModel.GraphTitle = title);
+                .Subscribe(title => DtMzPlotModel.GraphTitle = title);
 
-            EicLoader = new EicLoader(provider, parameter, ChromXType.RT, ChromXUnit.Min, this.parameter.RetentionTimeBegin, this.parameter.RetentionTimeEnd);
-            EicModel = new EicModel(Target, EicLoader)
+            DtEicLoader = new EicLoader(spectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, this.parameter.RetentionTimeBegin, this.parameter.RetentionTimeEnd);
+            DtEicModel = new EicModel(Target, DtEicLoader)
             {
-                HorizontalTitle = PlotModel.HorizontalTitle,
+                HorizontalTitle = DtMzPlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
             };
             Target.CombineLatest(
-                EicModel.MaxIntensitySource,
+                DtEicModel.MaxIntensitySource,
                 (t, i) => t is null
                     ? string.Empty
                     : $"EIC chromatogram of {t.Mass:N4} tolerance [Da]: {this.parameter.CentroidMs1Tolerance:F} Max intensity: {i:F0}")
-                .Subscribe(title => EicModel.GraphTitle = title);
+                .Subscribe(title => DtEicModel.GraphTitle = title);
 
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
-                new MsRawSpectrumLoader(provider, parameter),
+                new MsRawSpectrumLoader(spectrumProvider, parameter),
                 new MsDecSpectrumLoader(decLoader, Ms1Peaks),
                 new MsRefSpectrumLoader(mapper),
                 peak => peak.Mass,
@@ -123,6 +139,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                             (byte)(255 - 255 * peak.InnerModel.PeakShape.AmplitudeScoreValue)),
                         enableCache: true);
                     break;
+                default:
+                    Brush = new ConstantBrushMapper<ChromatogramPeakFeatureModel>(Brushes.Black);
+                    break;
             }
             Target.Subscribe(OnTargetChanged);
         }
@@ -139,16 +158,20 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public double IntensityMax => Ms1Peaks.Max(peak => peak.Intensity);
 
         public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
-        public AnalysisPeakPlotModel PlotModel { get; }
-        public EicLoader EicLoader { get; }
-        public EicModel EicModel { get; }
+        public AnalysisPeakPlotModel RtMzPlotModel { get; }
+        public EicLoader RtEicLoader { get; }
+        public EicModel RtEicModel { get; }
+        public AnalysisPeakPlotModel DtMzPlotModel { get; }
+        public EicLoader DtEicLoader { get; }
+        public EicModel DtEicModel { get; }
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public SurveyScanModel SurveyScanModel { get; }
 
         public double AmplitudeOrderMin { get; }
         public double AmplitudeOrderMax { get; }
 
-        private readonly IDataProvider provider;
+        private readonly IDataProvider spectrumProvider;
+        private readonly IDataProvider accSpectrumProvider;
 
         public DataBaseMapper DataBaseMapper { get; }
         public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> MspAnnotator { get; }
@@ -196,7 +219,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     if (target.MS1RawSpectrumIdTop < 0) {
                         return;
                     }
-                    var spectra = DataAccess.GetCentroidMassSpectra(provider.LoadMs1Spectrums()[target.MS1RawSpectrumIdTop], parameter.MSDataType, 0, float.MinValue, float.MaxValue);
+                    var spectra = DataAccess.GetCentroidMassSpectra(spectrumProvider.LoadMs1Spectrums()[target.MS1RawSpectrumIdTop], parameter.MSDataType, 0, float.MinValue, float.MaxValue);
                     token.ThrowIfCancellationRequested();
                     ms1Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
                 }, token);

@@ -2,16 +2,14 @@
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Lcimms;
 using CompMs.App.Msdial.ViewModel.DataObj;
-using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcImMsApi.DataObj;
-using CompMs.MsdialLcImMsApi.Parameter;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
@@ -21,7 +19,7 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
-    class LcimmsMethodVM : MethodViewModel
+    sealed class LcimmsMethodVM : MethodViewModel
     {
         public LcimmsMethodVM(
             MsdialLcImMsDataStorage storage,
@@ -137,13 +135,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
             var processOption = model.Storage.MsdialLcImMsParameter.ProcessOption;
             // Run Identification
-            if (processOption.HasFlag(CompMs.Common.Enum.ProcessOption.Identification) || processOption.HasFlag(CompMs.Common.Enum.ProcessOption.PeakSpotting)) {
+            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(CompMs.Common.Enum.ProcessOption.PeakSpotting)) {
                 if (!ProcessAnnotaion(window, model.Storage))
                     return -1;
             }
 
             // Run Alignment
-            if (processOption.HasFlag(CompMs.Common.Enum.ProcessOption.Alignment)) {
+            if (processOption.HasFlag(ProcessOption.Alignment)) {
                 if (!ProcessAlignment(window))
                     return -1;
             }
@@ -153,7 +151,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            using (var analysisParamSetVM = new AnalysisParamSetVM<MsdialLcImMsParameter>(model.Storage.MsdialLcImMsParameter, model.Storage.AnalysisFiles)) {
+            var parameter = model.Storage.MsdialLcImMsParameter;
+            var analysisParamSetModel = new LcimmsAnalysisParameterSetModel(parameter, model.Storage.AnalysisFiles, model.Storage.DataBases);
+            using (var analysisParamSetVM = new LcimmsAnalysisParameterSetViewModel(analysisParamSetModel)) {
                 var apsw = new AnalysisParamSetForLcimmsWindow
                 {
                     DataContext = analysisParamSetVM,
@@ -163,9 +163,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
                 if (apsw.ShowDialog() != true)
                     return false;
-
-                model.SetStorageContent(analysisParamSetVM);
             }
+
+            model.SetAnalysisParameter(analysisParamSetModel);
             return true;
         }
 
@@ -187,6 +187,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
             pbmcw.Loaded += async (s, e) => {
                 foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
+                    // use annotationProcess
                     await model.RunAnnotationProcess(analysisfile, v => pbvm.CurrentValue = v);
                     vm.CurrentValue++;
                 }
@@ -263,10 +264,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private DelegateCommand<Window> exportAlignmentResultCommand;
 
         private void ExportAlignment(Window owner) {
-            var vm = new AlignmentResultExportVM(model.AlignmentFile, model.Storage.AlignmentFiles, model.Storage);
             var dialog = new AlignmentResultExportWin
             {
-                DataContext = vm,
                 Owner = owner,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };

@@ -69,7 +69,11 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
-        public static DataBaseStorage Load(Stream stream, ILoadAnnotatorVisitor visitor) {
+        //public void SaveProteomicsDB(IStreamManager streamManager, string prefix) {
+            
+        //}
+
+        public static DataBaseStorage Load(Stream stream, ILoadAnnotatorVisitor visitor, string projectFolderPath) {
             DataBaseStorage result;
             try {
                 using (var archive = new ZipArchive(stream, ZipArchiveMode.Read, leaveOpen: true)) {
@@ -81,14 +85,14 @@ namespace CompMs.MsdialCore.DataObj
                     foreach (var item in result.MetabolomicsDataBases) {
                         var dbEntry = archive.GetEntry(Path.Combine(MetabolomicsDataBasePath, item.DataBaseID));
                         using (var dbStream = dbEntry.Open()) {
-                            item.Load(dbStream, visitor);
+                            item.Load(dbStream, visitor, null);
                         }
                     }
 
                     foreach (var item in result.ProteomicsDataBases) {
                         var dbEntry = archive.GetEntry(Path.Combine(ProteomicsDataBasePath, item.DataBaseID));
                         using (var dbStream = dbEntry.Open()) {
-                            item.Load(dbStream, visitor);
+                            item.Load(dbStream, visitor, projectFolderPath);
                         }
                     }
                 }
@@ -145,11 +149,11 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
-        public void Load(Stream stream, ILoadAnnotatorVisitor visitor) {
+        public void Load(Stream stream, ILoadAnnotatorVisitor visitor, string projectFolderPath) {
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Read, leaveOpen: true)) {
                 var dbEntry = archive.GetEntry(DataBasePath);
                 using (var dbStream = dbEntry.Open()) {
-                    DataBase.Load(dbStream);
+                    DataBase.Load(dbStream, projectFolderPath);
                 }
                 foreach (var container in Pairs) {
                     var annotatorEntry = archive.GetEntry(Path.Combine(AnnotatorsPath, container.AnnotatorID));

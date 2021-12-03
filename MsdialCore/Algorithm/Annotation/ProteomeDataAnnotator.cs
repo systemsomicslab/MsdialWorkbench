@@ -61,7 +61,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             foreach (var score in scoresOnFile) {
                 if (score.IsDecoy) counter++;
                 var feature = (ChromatogramPeakFeature)featureObjs[score.PeakID];
-                if (counter > decoyCutOffNum) {
+                if (counter > 50 && counter > decoyCutOffNum && score.IsDecoy == false) {
                     feature.MatchResults.Representative.IsSpectrumMatch = false;
                 }
             }

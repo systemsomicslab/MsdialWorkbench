@@ -107,6 +107,20 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             return UpperLimitCore();
         }
 
+        public static MSIonSearchQuery CreateMassRtQuery(
+            double mass, double massTolerance,
+            double rt, double rtTolerance,
+            IonMode ionMode = IonMode.Positive,
+            AdductIon adduct = null) {
+            return new MSIonSearchQuery(
+                mass, massTolerance,
+                rt, rtTolerance,
+                0, double.PositiveInfinity,
+                0, double.PositiveInfinity,
+                0, double.PositiveInfinity,
+                ionMode, adduct);
+        }
+
         public static MSIonSearchQuery CreateMassCcsQuery(
             double mass, double massTolerance,
             double ccs, double ccsTolerance,

@@ -946,6 +946,10 @@ namespace CompMs.MsdialCore.Parameter {
         public int NumThreads { get; set; } = 2;
     }
 
+    // MS-CleanR (post curator) parameters
+
+
+
     [MessagePackObject]
     public class PeakPickBaseParameter {
         [Key(0)]
