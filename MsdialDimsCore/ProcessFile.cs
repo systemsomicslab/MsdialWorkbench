@@ -12,40 +12,16 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialDimsCore.Algorithm.Annotation;
-using CompMs.MsdialDimsCore.Common;
-using CompMs.MsdialDimsCore.DataObj;
-using CompMs.MsdialDimsCore.MsmsAll;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 
 namespace CompMs.MsdialDimsCore
 {
-
-    public enum ProcessType { MSMSALL }
-    public class ProcessError {
-        public string Messeage { get; set; } = string.Empty;
-        public bool IsErrorOccured { get; set; } = false;
-        public ProcessError() { }
-        public ProcessError(bool isError, string message) {
-            this.Messeage = message;
-            this.IsErrorOccured = isError;
-        }
-    }
     public class ProcessFile {
-        public void Run(string filepath, MsdialDimsParameter param, ProcessType type = ProcessType.MSMSALL) {
-            switch (type) {
-                case ProcessType.MSMSALL:
-                    var msmsAllProcess = new MsmsAllProcess(filepath, param);
-                    var error = msmsAllProcess.Run();
-                    break;
-            }
-        }
-
         public static void Run(
             AnalysisFileBean file,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
@@ -56,8 +32,8 @@ namespace CompMs.MsdialDimsCore
             var textAnnotator = new MassAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.Parameter.TextDbSearchParam, container.Parameter.TargetOmics, SourceType.TextDB, "TextDB", -1);
             var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery>(
                 new AnnotationQueryWithoutIsotopeFactory(),
-                new[] { new AnnotatorContainer(mspAnnotator, container.Parameter.MspSearchParam),
-                        new AnnotatorContainer(textAnnotator, container.Parameter.TextDbSearchParam), }); 
+                new[] { new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(mspAnnotator, container.Parameter.MspSearchParam),
+                        new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(textAnnotator, container.Parameter.TextDbSearchParam), }); 
             Run(file, providerFactory, container, annotationProcess, isGuiProcess, reportAction, token);
         }
 
@@ -131,17 +107,6 @@ namespace CompMs.MsdialDimsCore
 
                 reportAction?.Invoke(100);
             }
-        }
-
-        private static RawMeasurement LoadRawMeasurement(RawDataAccess access) {
-            foreach (var _ in Enumerable.Range(0, 5)) {
-                var rawObj = DataAccess.GetRawDataMeasurement(access);
-                if (rawObj != null)
-                    return rawObj;
-                Thread.Sleep(2000);
-            }
-
-            throw new FileLoadException($"Loading {access.Filepath} failed.");
         }
 
         private static List<ChromatogramPeakFeature> ConvertPeaksToPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, IReadOnlyList<RawSpectrum> allSpectra, AcquisitionType type) {
