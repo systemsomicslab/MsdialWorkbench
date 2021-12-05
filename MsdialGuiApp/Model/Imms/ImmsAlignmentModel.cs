@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Imms
@@ -39,7 +40,12 @@ namespace CompMs.App.Msdial.Model.Imms
             DataBaseMapper = mapper;
             AnnotatorContainers = annotatorContainers;
             container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(ResultFile);
-            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(
+            if (container == null) {
+                MessageBox.Show("No aligned spot information.");
+            }
+
+            Ms1Spots = container == null ? new ObservableCollection<AlignmentSpotPropertyModel>() : 
+                new ObservableCollection<AlignmentSpotPropertyModel>(
                 container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
 
             MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
