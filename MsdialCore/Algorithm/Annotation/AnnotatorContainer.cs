@@ -42,30 +42,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public MsRefSearchParameterBase Parameter { get; set; }
     }
 
-    [Obsolete]
-    public sealed class AnnotatorContainer : IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
-    {
-        public AnnotatorContainer(
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotator,
-            MsRefSearchParameterBase parameter) {
-            if (annotator is null) {
-                throw new ArgumentNullException(nameof(annotator));
-            }
-
-            if (parameter is null) {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-            Annotator = annotator;
-            AnnotatorID = Annotator.Key;
-            Parameter = parameter;
-        }
-
-        public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Annotator { get; }
-        public string AnnotatorID { get; }
-
-        public MsRefSearchParameterBase Parameter { get; set; }
-    }
-
     [Union(0, typeof(DatabaseAnnotatorContainer))]
     [Union(1, typeof(SerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>))]
     [Union(2, typeof(SerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>))]
