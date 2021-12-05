@@ -101,7 +101,7 @@ namespace CompMs.MsdialCore.Algorithm {
             float focusedMass = startMass, massStep = param.MassSliceWidth;
 
             if (param.AccuracyType == AccuracyType.IsNominal) { massStep = 1.0F; }
-            var targetMasses = getFocusedMassList(startMass, endMass, massStep, param.MassRangeBegin, param.MassRangeEnd);
+            var targetMasses = GetFocusedMassList(startMass, endMass, massStep, param.MassRangeBegin, param.MassRangeEnd);
             var syncObj = new object();
             var counter = 0;
             var chromPeakFeaturesArray = targetMasses
@@ -111,7 +111,6 @@ namespace CompMs.MsdialCore.Algorithm {
                 .WithDegreeOfParallelism(numThreads)
                 .Select(targetMass => {
                     var chromPeakFeatures = GetChromatogramPeakFeatures(provider, targetMass, param, type, unit, chromBegin, chromEnd);
-;
                     lock (syncObj) {
                         counter++;
                         ReportProgress.Show(InitialProgress, ProgressMax, counter, targetMasses.Count, reportAction);
@@ -136,7 +135,7 @@ namespace CompMs.MsdialCore.Algorithm {
             float focusedMass = startMass, massStep = param.MassSliceWidth;
 
             if (param.AccuracyType == AccuracyType.IsNominal) { massStep = 1.0F; }
-            var targetMasses = getFocusedMassList(startMass, endMass, massStep, param.MassRangeBegin, param.MassRangeEnd);
+            var targetMasses = GetFocusedMassList(startMass, endMass, massStep, param.MassRangeBegin, param.MassRangeEnd);
             var syncObj = new object();
             var counter = 0;
             var chromPeakFeaturesArray = new List<ChromatogramPeakFeature>[targetMasses.Count];
@@ -184,7 +183,7 @@ namespace CompMs.MsdialCore.Algorithm {
             return GetCombinedChromPeakFeatures(chromPeakFeaturesList, provider, param, type, unit);
         }
 
-        private List<float> getFocusedMassList(float startMass, float endMass, float massStep, float massBegin, float massEnd) {
+        public List<float> GetFocusedMassList(float startMass, float endMass, float massStep, float massBegin, float massEnd) {
             var massList = new List<float>();
             var focusedMass = startMass;
             while (focusedMass < endMass) {

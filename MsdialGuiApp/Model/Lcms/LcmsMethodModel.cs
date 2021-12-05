@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.LC;
 using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.View;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Lcms;
@@ -9,6 +10,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.Common.Proteomics.DataObj;
+using CompMs.Graphics.UI.Message;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -28,6 +30,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
@@ -115,7 +118,14 @@ namespace CompMs.App.Msdial.Model.Lcms
                 }
             }
 
+            var message = new ShortMessageWindow() {
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Text = "Loading library files..",
+            };
+            message.Show();
             Storage.DataBases = analysisParamSetModel.IdentitySettingModel.Create();
+            message.Close();
 
             if (parameter.TogetherWithAlignment) {
                 var filename = analysisParamSetModel.AlignmentResultFileName;
@@ -252,7 +262,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var alignmentFile = storage.AlignmentFiles.Last();
             var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
             MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
+            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList());
 
             pbw.Close();
 
@@ -271,7 +281,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var streams = new List<System.IO.FileStream>();
             try {
                 streams = files.Select(file => System.IO.File.OpenRead(file.DeconvolutionFilePath)).ToList();
-                foreach (var spot in spots) {
+                foreach (var spot in spots.OrEmptyIfNull()) {
                     var repID = spot.RepresentativeFileID;
                     var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
                     var decResult = MsdecResultsReader.ReadMSDecResult(

@@ -12,22 +12,20 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace CompMs.Graphics.UI.Message
-{
+namespace CompMs.App.Msdial.View {
     /// <summary>
-    /// Interaction logic for ShortMessageWindow.xaml
+    /// Interaction logic for ShortMessageView.xaml
     /// </summary>
-    public partial class ShortMessageWindow : System.Windows.Window
-    {
-        public ShortMessageWindow() {
+    public partial class ShortMessageView : Window {
+        public ShortMessageView() {
             InitializeComponent();
         }
 
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register(
-                nameof(Text), 
-                typeof(string), 
-                typeof(ShortMessageWindow),
+                nameof(Text),
+                typeof(string),
+                typeof(ShortMessageView),
                 new PropertyMetadata("Loading files..", TextPropertyChanged));
 
         private static void TextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {

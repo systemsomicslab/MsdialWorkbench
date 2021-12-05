@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
@@ -8,6 +9,8 @@ using CompMs.MsdialLcImMsApi.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialLcImMsApi.Algorithm {
     public class PeakSpotting {
@@ -23,44 +26,182 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
         }
 
         // feature detection for rt, ion mobility, m/z, and intensity (3D) data 
-        public List<ChromatogramPeakFeature> Execute4DFeatureDetection(IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, MsdialLcImMsParameter param, Action<int> reportAction) {
+        public List<ChromatogramPeakFeature> Execute4DFeatureDetection(
+            IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, 
+            MsdialLcImMsParameter param, int numThreads, CancellationToken token, Action<int> reportAction) {
 
             // used for rt, mz, intensity (3D) data
-            var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
             var isTargetedMode = !param.CompoundListInTargetMode.IsEmptyOrNull();
             if (isTargetedMode) {
-                chromPeakFeaturesList = param.CompoundListInTargetMode
+                if (numThreads <= 1) {
+                    return Execute4DFeatureDetectionTargetMode(spectrumProvider, accSpectrumProvider, param);
+                }
+                else {
+                    return Execute4DFeatureDetectionTargetModeByMultiThread(spectrumProvider, accSpectrumProvider, param, numThreads, token, reportAction);
+                }
+            }
+            else {
+                if (numThreads <= 1) {
+                    return Execute4DFeatureDetectionNormalMode(spectrumProvider, accSpectrumProvider, param, reportAction);
+                }
+                else {
+                    return Execute4DFeatureDetectionNormalModeByMultiThread(spectrumProvider, accSpectrumProvider, param, numThreads, token, reportAction);
+                }
+            }
+        }
+
+        private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalMode(
+            IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, MsdialLcImMsParameter param, Action<int> reportAction) {
+
+            var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
+
+            float[] mzRange = DataAccess.GetMs1Range(accSpectrumProvider.LoadMs1Spectrums(), param.IonMode);
+            float startMass = Math.Max(mzRange[0], param.MassRangeBegin);
+            float endMass = Math.Min(mzRange[1], param.MassRangeEnd);
+            float massStep = param.MassSliceWidth;
+
+            for (var focusedMass = startMass; focusedMass < endMass; focusedMass += massStep, ReportProgress.Show(InitialProgress, ProgressMax, focusedMass, endMass, reportAction)) {
+                var chromPeakFeatures = GetChromatogramPeakFeatures(spectrumProvider, accSpectrumProvider, focusedMass, param);
+                if (chromPeakFeatures.IsEmptyOrNull()) {
+                    continue;
+                }
+
+                //removing peak spot redundancies among slices
+                chromPeakFeatures = PeakSpottingCore.RemovePeakAreaBeanRedundancy(chromPeakFeaturesList, chromPeakFeatures, massStep);
+                if (chromPeakFeatures.IsEmptyOrNull()) {
+                    continue;
+                }
+
+                chromPeakFeaturesList.Add(chromPeakFeatures);
+            }
+            return PeakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider, param, ChromXType.RT, ChromXUnit.Min);
+        }
+
+        private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalModeByMultiThread(
+            IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, MsdialLcImMsParameter param, int numThreads, CancellationToken token, Action<int> reportAction) {
+
+            float[] mzRange = DataAccess.GetMs1Range(accSpectrumProvider.LoadMs1Spectrums(), param.IonMode);
+            float startMass = mzRange[0]; if (startMass < param.MassRangeBegin) startMass = param.MassRangeBegin;
+            float endMass = mzRange[1]; if (endMass > param.MassRangeEnd) endMass = param.MassRangeEnd;
+            float focusedMass = startMass, massStep = param.MassSliceWidth;
+
+            if (param.AccuracyType == AccuracyType.IsNominal) { massStep = 1.0F; }
+            var targetMasses = PeakSpottingCore.GetFocusedMassList(startMass, endMass, massStep, param.MassRangeBegin, param.MassRangeEnd);
+            var syncObj = new object();
+            var counter = 0;
+            var chromPeakFeaturesArray = targetMasses
+                .AsParallel()
+                .AsOrdered()
+                .WithCancellation(token)
+                .WithDegreeOfParallelism(numThreads)
+                .Select(targetMass => {
+                    var chromPeakFeatures = GetChromatogramPeakFeatures(spectrumProvider, accSpectrumProvider, targetMass, param);
+                    lock (syncObj) {
+                        counter++;
+                        ReportProgress.Show(InitialProgress, ProgressMax, counter, targetMasses.Count, reportAction);
+                    }
+                    return chromPeakFeatures;
+                })
+                .ToArray();
+
+            // finalization
+            return PeakSpottingCore.FinalizePeakSpottingResult(chromPeakFeaturesArray, massStep, accSpectrumProvider, param, ChromXType.RT, ChromXUnit.Min);
+        }
+
+        private async Task<List<ChromatogramPeakFeature>> Execute4DFeatureDetectionNormalModeByMultiThreadAsync(
+            IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, MsdialLcImMsParameter param, 
+            int numThreads, CancellationToken token, Action<int> reportAction) {
+
+            float[] mzRange = DataAccess.GetMs1Range(accSpectrumProvider.LoadMs1Spectrums(), param.IonMode);
+            float startMass = mzRange[0]; if (startMass < param.MassRangeBegin) startMass = param.MassRangeBegin;
+            float endMass = mzRange[1]; if (endMass > param.MassRangeEnd) endMass = param.MassRangeEnd;
+            float focusedMass = startMass, massStep = param.MassSliceWidth;
+
+            if (param.AccuracyType == AccuracyType.IsNominal) { massStep = 1.0F; }
+            var targetMasses = PeakSpottingCore.GetFocusedMassList(startMass, endMass, massStep, param.MassRangeBegin, param.MassRangeEnd);
+            var syncObj = new object();
+            var counter = 0;
+            var chromPeakFeaturesArray = new List<ChromatogramPeakFeature>[targetMasses.Count];
+
+            using (var sem = new SemaphoreSlim(numThreads)) {
+                var tasks = new List<Task>();
+                for (int i = 0; i < targetMasses.Count; i++) {
+                    var v = Task.Run(async () => {
+                        await sem.WaitAsync();
+                        try {
+                            var chromPeakFeatures = await Task.Run(() => GetChromatogramPeakFeatures(spectrumProvider, accSpectrumProvider, targetMasses[i], param), token);
+                            chromPeakFeaturesArray[i] = chromPeakFeatures;
+                        }
+                        finally {
+                            sem.Release();
+                            lock (syncObj) {
+                                counter++;
+                                ReportProgress.Show(InitialProgress, ProgressMax, counter, targetMasses.Count, reportAction);
+                            }
+                        }
+                    });
+                    tasks.Add(v);
+                }
+                await Task.WhenAll(tasks);
+            }
+            return PeakSpottingCore.FinalizePeakSpottingResult(chromPeakFeaturesArray, massStep, accSpectrumProvider, param, ChromXType.RT, ChromXUnit.Min);
+        }
+
+
+        private List<ChromatogramPeakFeature> Execute4DFeatureDetectionTargetMode(IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, MsdialLcImMsParameter param) {
+            var chromPeakFeaturesList = param.CompoundListInTargetMode
                     .Select(targetComp => GetChromatogramPeakFeatures(spectrumProvider, accSpectrumProvider, (float)targetComp.PrecursorMz, param))
                     .Where(chromPeakFeatures => !chromPeakFeatures.IsEmptyOrNull())
                     .ToList();
-            }
-            else {
-                float[] mzRange = DataAccess.GetMs1Range(accSpectrumProvider.LoadMs1Spectrums(), param.IonMode);
-                float startMass = Math.Max(mzRange[0], param.MassRangeBegin);
-                float endMass = Math.Min(mzRange[1], param.MassRangeEnd);
-                float massStep = param.MassSliceWidth;
+            return PeakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider, param, ChromXType.RT, ChromXUnit.Min);
+        }
 
-                for (var focusedMass = startMass; focusedMass < endMass; focusedMass += massStep, ReportProgress.Show(InitialProgress, ProgressMax, focusedMass, endMass, reportAction)) {
-                    var chromPeakFeatures = GetChromatogramPeakFeatures(spectrumProvider, accSpectrumProvider, focusedMass, param);
-                    if (chromPeakFeatures.IsEmptyOrNull()) {
-                        continue;
-                    }
+        private List<ChromatogramPeakFeature> Execute4DFeatureDetectionTargetModeByMultiThread(
+            IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, MsdialLcImMsParameter param,
+            int numThreads, CancellationToken token, Action<int> reportAction) {
+            var targetedScans = param.CompoundListInTargetMode;
+            if (targetedScans.IsEmptyOrNull()) return null;
+            var chromPeakFeaturesList = targetedScans
+                .AsParallel()
+                .AsOrdered()
+                .WithCancellation(token)
+                .WithDegreeOfParallelism(numThreads)
+                .Select(targetedScan => GetChromatogramPeakFeatures(spectrumProvider, accSpectrumProvider, (float)targetedScan.PrecursorMz, param))
+                .Where(features => !features.IsEmptyOrNull())
+                .ToList();
+            return PeakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider, param, ChromXType.RT, ChromXUnit.Min);
+        }
 
-                    //removing peak spot redundancies among slices
-                    chromPeakFeatures = PeakSpottingCore.RemovePeakAreaBeanRedundancy(chromPeakFeaturesList, chromPeakFeatures, massStep);
-                    if (chromPeakFeatures.IsEmptyOrNull()) {
-                        continue;
-                    }
+        private async Task<List<ChromatogramPeakFeature>> Execute4DFeatureDetectionTargetModeByMultiThreadAsync(
+             IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, MsdialLcImMsParameter param,
+            int numThreads, CancellationToken token, Action<int> reportAction) {
+            var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
+            var targetedScans = param.CompoundListInTargetMode;
+            if (targetedScans.IsEmptyOrNull()) return null;
+            var syncObj = new object();
 
-                    chromPeakFeaturesList.Add(chromPeakFeatures);
+            using (var sem = new SemaphoreSlim(numThreads)) {
+                var tasks = new List<Task>();
+                for (int i = 0; i < targetedScans.Count; i++) {
+                    var v = Task.Run(async () => {
+                        await sem.WaitAsync();
+                        try {
+                            var chromPeakFeatures = await Task.Run(() => GetChromatogramPeakFeatures(spectrumProvider, accSpectrumProvider, (float)targetedScans[i].PrecursorMz, param), token);
+                            if (!chromPeakFeatures.IsEmptyOrNull()) {
+                                lock (syncObj) {
+                                    chromPeakFeaturesList.Add(chromPeakFeatures);
+                                }
+                            }
+                        }
+                        finally {
+                            sem.Release();
+                        }
+                    });
+                    tasks.Add(v);
                 }
+                await Task.WhenAll(tasks);
             }
-
-            var cmbinedFeatures = PeakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList);
-            cmbinedFeatures = PeakSpottingCore.GetRecalculatedChromPeakFeaturesByMs1MsTolerance(cmbinedFeatures, accSpectrumProvider, param, ChromXType.RT, ChromXUnit.Min);
-            cmbinedFeatures = PeakSpottingCore.GetOtherChromPeakFeatureProperties(cmbinedFeatures);
-
-            return cmbinedFeatures;
+            return PeakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider, param, ChromXType.RT, ChromXUnit.Min);
         }
 
         public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, float focusedMass, MsdialLcImMsParameter param) {
