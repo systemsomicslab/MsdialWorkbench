@@ -425,6 +425,9 @@
     </Compile>
     <Compile Include="MainWindowVM.cs" />
     <Compile Include="ViewModel\Setting\AnalysisFilePropertySetViewModel.cs" />
+    <Compile Include="View\Setting\AnalysisFilePropertyResettingWindow.xaml.cs">
+      <DependentUpon>AnalysisFilePropertyResettingWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Setting\AnalysisFilePropertySetWindow.xaml.cs">
       <DependentUpon>AnalysisFilePropertySetWindow.xaml</DependentUpon>
     </Compile>
@@ -794,6 +797,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\Setting\AnalysisFilePropertyResettingWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Setting\AnalysisFilePropertySetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

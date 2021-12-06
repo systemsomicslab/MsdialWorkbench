@@ -196,7 +196,8 @@
                    KeyTip="O">
             <RibbonGroup>
                 <RibbonButton Label="File property setting" LargeImageSource="{StaticResource File_property_setting_is}"
-                              IsEnabled="False"
+                              IsEnabled="True"
+                              Command="{Binding DataContext.FilePropertyResetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                               KeyTip="F">
                     <RibbonButton.ToolTip>
                         The file properties including type, analytical order, class, and included/not included can be modified here.

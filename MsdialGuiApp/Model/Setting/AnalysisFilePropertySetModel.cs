@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
@@ -19,13 +20,25 @@ namespace CompMs.App.Msdial.Model.Setting
             AnalysisFilePropertyCollection = new ObservableCollection<AnalysisFileBean>();
         }
 
+        public AnalysisFilePropertySetModel(List<AnalysisFileBean> files) {
+            AnalysisFilePropertyCollection = new ObservableCollection<AnalysisFileBean>(files);
+        }
+
         public string ProjectFolderPath { get; }
         public MachineCategory Category { get; }
 
         public ObservableCollection<AnalysisFileBean> AnalysisFilePropertyCollection { get; }
 
         public List<AnalysisFileBean> GetAnalysisFileBeanCollection() {
-            return AnalysisFilePropertyCollection.ToList();
+
+            var importedFiles = AnalysisFilePropertyCollection.Where(n => n.AnalysisFileIncluded).ToList();
+            var counter = 0;
+            foreach (var file in importedFiles) {
+                file.AnalysisFileId = counter; 
+                counter++;
+            }
+
+            return importedFiles;
         }
 
         public void ReadImportedFiles(IReadOnlyList<string> filenames) {
@@ -44,7 +57,8 @@ namespace CompMs.App.Msdial.Model.Setting
                         AnalysisFilePath = filename,
                         AnalysisFileType = AnalysisFileType.Sample,
                         AnalysisBatch = 1,
-                        InjectionVolume = 1d,
+                        DilutionFactor = 1d,
+                        ResponseVariable = 0
                     });
             var dt = DateTime.Now;
             foreach (var analysisFile in analysisFiles) {
