@@ -34,7 +34,7 @@ namespace CompMs.Common.Lipidomics
         public double Mass => CalculateSubLevelMass(CarbonCount, DoubleBondCount, OxidizedCount, ChainCount, AlkylChainCount);
 
         private static double CalculateSubLevelMass(int carbon, int doubleBond, int oxidize, int chain, int alkyl) {
-            return carbon * MassDiffDictionary.CarbonMass + (2 * (carbon - chain + alkyl - doubleBond) + 2) * MassDiffDictionary.HydrogenMass + (chain - alkyl + oxidize) * MassDiffDictionary.OxygenMass;
+            return carbon * MassDiffDictionary.CarbonMass + (2 * (carbon - chain + alkyl - doubleBond) + chain) * MassDiffDictionary.HydrogenMass + (chain - alkyl + oxidize) * MassDiffDictionary.OxygenMass;
         }
 
         IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(IChainGenerator generator) {
