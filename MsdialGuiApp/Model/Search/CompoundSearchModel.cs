@@ -47,7 +47,7 @@ namespace CompMs.App.Msdial.Model.Search
             MSIonProperty = msIonProperty;
             MoleculeProperty = moleculeProperty;
             Annotators = annotators.Select(
-                annotator => new AnnotatorContainer(
+                annotator => new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(
                     annotator.Annotator,
                     new MsRefSearchParameterBase(annotator.Parameter)
                 )).ToList();
@@ -160,7 +160,7 @@ namespace CompMs.App.Msdial.Model.Search
                   msdecResult,
                   isotopes,
                   new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> {
-                      new AnnotatorContainer(annotator, parameter ?? new MsRefSearchParameterBase())
+                      new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(annotator, parameter ?? new MsRefSearchParameterBase())
                   }) {
 
         }

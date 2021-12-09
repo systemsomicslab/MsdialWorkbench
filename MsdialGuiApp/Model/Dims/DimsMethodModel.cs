@@ -117,7 +117,7 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         public async Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {
-            await Task.Run(() => ProcessFile.Run(analysisfile, ProviderFactory, storage, annotationProcess, isGuiProcess: true, reportAction: action));
+            await Task.Run(() => ProcessFile.Run(analysisfile, ProviderFactory, storage, annotationProcess, reportAction: action));
         }
 
         public void RunAlignmentProcess() {
