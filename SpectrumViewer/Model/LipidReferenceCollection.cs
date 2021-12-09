@@ -16,9 +16,9 @@ namespace CompMs.App.SpectrumViewer.Model
             Adduct = Adducts.First();
             Scans = new ObservableCollection<IMSScanProperty>();
 
-            lipidParser = new PGLipidParser();
+            lipidParser = new PCLipidParser();
             lipidGenerator = new LipidGenerator();
-            spectrumGenerator = new PGSpectrumGenerator();
+            spectrumGenerator = new PCSpectrumGenerator();
         }
 
         public string Name { get => Lipid.ToString(); }
@@ -44,8 +44,8 @@ namespace CompMs.App.SpectrumViewer.Model
         public ObservableCollection<IMSScanProperty> Scans { get; }
 
         private readonly LipidGenerator lipidGenerator;
-        private readonly PGSpectrumGenerator spectrumGenerator;
-        private readonly PGLipidParser lipidParser;
+        private readonly PCSpectrumGenerator spectrumGenerator;
+        private readonly PCLipidParser lipidParser;
 
         public void SetLipid(string lipidStr) {
             Lipid = lipidParser.Parse(lipidStr);
