@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
+using CompMs.Common.FormulaGenerator.Parser;
 using CompMs.Common.Mathematics.Basic;
 using CompMs.Common.Parser;
 using CompMs.StructureFinder.NcdkDescriptor;
@@ -16,6 +17,42 @@ using System.Threading.Tasks;
 namespace StructureFinderConsoleApp {
     public sealed class Code4NPR2020 {
         private Code4NPR2020() { }
+
+        public static void CalculatePrecursorMzVS2(string input, string output) {
+
+            // input: @"E:\6_Projects\1_naturalproductprofiling_protocol\agc_compoundlist_formula.txt"
+            // output: @"E:\6_Projects\1_naturalproductprofiling_protocol\agc_compoundlist_preMzList.txt"
+
+            input = @"E:\6_Projects\1_naturalproductprofiling_protocol\agc_compoundlist_formula.txt";
+            output = @"E:\6_Projects\1_naturalproductprofiling_protocol\agc_compoundlist_preMzList.txt";
+            var formulaList = new List<string>();
+            using (var sr = new StreamReader(input, true)) {
+                while (sr.Peek() > -1) {
+                    var line = sr.ReadLine();
+                    formulaList.Add(line);
+                }
+            }
+            using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
+                foreach (var formulaString in formulaList) {
+                    var formulaObj = FormulaStringParcer.Convert2FormulaObjV2(formulaString);
+                    var mass = formulaObj.Mass;
+
+                    var adductproton = AdductIonParser.GetAdductIonBean("[M+H]+");
+                    var protonMass = adductproton.AdductIonAccurateMass;
+                    var mass_proton = mass + protonMass;
+
+                    sw.WriteLine(formulaObj.FormulaString + "\t" + mass + "\t" + mass_proton);
+
+
+                    //Console.WriteLine("Formula {0}, ExactMass {1}, [M+H]+ {2}", formulaObj.FormulaString, mass, mass + protonMass);
+                }
+            }
+
+            Console.ReadLine();
+           
+
+        }
+
 
         public static void CalculatePrecursorMz(string input, string output) {
             var smilescodes = new List<string>();

@@ -40,7 +40,8 @@ namespace CompMs.App.Msdial
             IWindowService<StartUpWindowVM> startUpService,
             IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertySetService,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService) {
             if (startUpService is null) {
                 throw new ArgumentNullException(nameof(startUpService));
             }
@@ -57,18 +58,24 @@ namespace CompMs.App.Msdial
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
 
+            if (analysisFilePropertyResetService is null) {
+                throw new ArgumentNullException(nameof(analysisFilePropertyResetService));
+            }
+
             Model = new MainWindowModel();
 
             this.startUpService = startUpService;
             this.analysisFilePropertySetService = analysisFilePropertySetService;
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
+            this.analysisFilePropertyResetService = analysisFilePropertyResetService;
         }
 
         private readonly IWindowService<StartUpWindowVM> startUpService;
         private readonly IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertySetService;
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
+        private readonly IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService;
 
         public MainWindowModel Model { get; }
 
@@ -184,6 +191,8 @@ namespace CompMs.App.Msdial
             }
             throw new NotImplementedException("This method is not implemented");
         }
+
+        
 
         private static ParameterBase ProcessStartUp(IWindowService<StartUpWindowVM> service) {
             var startUpWindowVM = new StartUpWindowVM();
@@ -371,6 +380,23 @@ namespace CompMs.App.Msdial
             }
         }
 
+        public DelegateCommand FilePropertyResetCommand {
+            get => filePropertyResetCommand ?? (filePropertyResetCommand = new DelegateCommand(FilePropertyResettingWindow));
+        }
+
+        private void FilePropertyResettingWindow() {
+            var files = Storage.AnalysisFiles;
+            var analysisFilePropertySetModel = new AnalysisFilePropertySetModel(files);
+            using (var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetViewModel(analysisFilePropertySetModel)) {
+                var afpsw_result = analysisFilePropertyResetService.ShowDialog(analysisFilePropertySetWindowVM);
+                if (afpsw_result != true) {
+                    return;
+                }
+            }
+        }
+
+        private DelegateCommand filePropertyResetCommand;
+
         public DelegateCommand GoToTutorialCommand {
             get => goToTutorialCommand ?? (goToTutorialCommand = new DelegateCommand(GoToTutorial));
         }
@@ -380,6 +406,5 @@ namespace CompMs.App.Msdial
         }
 
         private DelegateCommand goToTutorialCommand;
-
     }
 }

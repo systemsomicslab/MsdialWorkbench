@@ -40,7 +40,7 @@ namespace CompMs.MsdialLcImMsApi.Process
 
             Console.WriteLine("Peak picking started");
             parameter.FileID2CcsCoefficients.TryGetValue(file.AnalysisFileId, out var coeff);
-            var chromPeakFeatures = PeakSpotting(spectrumProvider, accSpectrumProvider, parameter, iupacDB, coeff, reportAction);
+            var chromPeakFeatures = PeakSpotting(spectrumProvider, accSpectrumProvider, parameter, iupacDB, coeff, token, reportAction);
 
             var spectrumList = rawObj.SpectrumList;
             var accumulatedSpecList = rawObj.AccumulatedSpectrumList;
@@ -81,9 +81,11 @@ namespace CompMs.MsdialLcImMsApi.Process
             MsdialLcImMsParameter parameter,
             IupacDatabase iupacDB,
             CoefficientsForCcsCalculation coeff,
+            CancellationToken token,
             Action<int> reportAction) {
 
-            var chromPeakFeatures = new PeakSpotting(0, 30).Execute4DFeatureDetection(spectrumProvider, accSpectrumProvider, parameter, reportAction);
+            var chromPeakFeatures = new PeakSpotting(0, 30).Execute4DFeatureDetection(spectrumProvider, accSpectrumProvider, 
+                parameter, parameter.NumThreads, token, reportAction);
             IsotopeEstimator.Process(chromPeakFeatures, parameter, iupacDB);
             CcsEstimator.Process(chromPeakFeatures, parameter, parameter.IonMobilityType, coeff, parameter.IsAllCalibrantDataImported);
             return chromPeakFeatures;

@@ -37,11 +37,13 @@ namespace CompMs.App.Msdial
             var analysisFilePropertySetService = new DialogService<AnalysisFilePropertySetWindow, AnalysisFilePropertySetViewModel>(this);
             var compoundSearchService = new DialogService<CompoundSearchWindow, CompoundSearchVM>(this);
             var peakSpotTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
+            var analysisFilePropertyResetService = new DialogService<AnalysisFilePropertyResettingWindow, AnalysisFilePropertySetViewModel>(this);
             DataContext = new MainWindowVM(
                 startUpService,
                 analysisFilePropertySetService,
                 compoundSearchService,
-                peakSpotTableService);
+                peakSpotTableService,
+                analysisFilePropertyResetService);
         }
 
         public void CloseOwnedWindows() {

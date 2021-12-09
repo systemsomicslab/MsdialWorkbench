@@ -102,8 +102,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private void ContinueProcess(Window window) {
             Mouse.OverrideCursor = Cursors.Wait;
 
-            var message = new ShortMessageWindow
-            {
+            var message = new ShortMessageWindow {
                 Owner = window,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 Text = Model.ParameterBase.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection

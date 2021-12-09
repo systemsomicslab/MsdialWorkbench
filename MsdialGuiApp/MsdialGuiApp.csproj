@@ -155,6 +155,7 @@
     <Compile Include="Model\Chart\AnalysisPeakPlotModel.cs" />
     <Compile Include="Model\Chart\BarChartModel.cs" />
     <Compile Include="Model\Chart\BrushMapData.cs" />
+    <Compile Include="Model\Chart\ChromatogramsModel.cs" />
     <Compile Include="Model\Chart\EicModel.cs" />
     <Compile Include="Model\Chart\GraphElements.cs" />
     <Compile Include="Model\Chart\MsSpectrumModel.cs" />
@@ -173,6 +174,7 @@
     <Compile Include="Model\Dims\DimsTextDBAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsCompoundSearchModel.cs" />
+    <Compile Include="Model\Loader\TicLoader.cs" />
     <Compile Include="Model\Search\CompoundResultCollection.cs" />
     <Compile Include="Model\Setting\IdentifySettingModel.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
@@ -216,6 +218,7 @@
     <Compile Include="ViewModel\Chart\AlignmentPeakPlotViewModel.cs" />
     <Compile Include="ViewModel\Chart\AnalysisPeakPlotViewModel.cs" />
     <Compile Include="ViewModel\Chart\BarChartViewModel.cs" />
+    <Compile Include="ViewModel\Chart\ChromatogramsViewModel.cs" />
     <Compile Include="ViewModel\Chart\RawPurifiedSpectrumsViewModel.cs" />
     <Compile Include="ViewModel\Chart\ReactiveCategoryAxisManager.cs" />
     <Compile Include="ViewModel\Chart\EicViewModel.cs" />
@@ -310,6 +313,9 @@
     </Compile>
     <Compile Include="View\Chart\BarChartView.xaml.cs">
       <DependentUpon>BarChartView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\ChromatogramsView.xaml.cs">
+      <DependentUpon>ChromatogramsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\EicView.xaml.cs">
       <DependentUpon>EicView.xaml</DependentUpon>
@@ -425,6 +431,9 @@
     </Compile>
     <Compile Include="MainWindowVM.cs" />
     <Compile Include="ViewModel\Setting\AnalysisFilePropertySetViewModel.cs" />
+    <Compile Include="View\Setting\AnalysisFilePropertyResettingWindow.xaml.cs">
+      <DependentUpon>AnalysisFilePropertyResettingWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Setting\AnalysisFilePropertySetWindow.xaml.cs">
       <DependentUpon>AnalysisFilePropertySetWindow.xaml</DependentUpon>
     </Compile>
@@ -523,6 +532,9 @@
     <Compile Include="View\Setting\ModificationSettingWin.xaml.cs">
       <DependentUpon>ModificationSettingWin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\ShortMessageView.xaml.cs">
+      <DependentUpon>ShortMessageView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Table\AlignmentSpotTable.xaml.cs">
       <DependentUpon>AlignmentSpotTable.xaml</DependentUpon>
     </Compile>
@@ -612,6 +624,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Chart\BarChartView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\ChromatogramsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -791,6 +807,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\Setting\AnalysisFilePropertyResettingWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Setting\AnalysisFilePropertySetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -880,6 +900,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\ModificationSettingWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ShortMessageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
@@ -11,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Core
 {
@@ -26,6 +28,9 @@ namespace CompMs.App.Msdial.Model.Core
             Ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
                 peaks.Select(peak => new ChromatogramPeakFeatureModel(peak))
             );
+            if (Ms1Peaks.IsEmptyOrNull()) {
+                MessageBox.Show("No peak information. Check your polarity setting.");
+            }
 
             Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
 
