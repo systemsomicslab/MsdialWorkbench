@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Lipidomics;
 using CompMs.Common.Parser;
@@ -16,9 +17,17 @@ namespace CompMs.App.SpectrumViewer.Model
             Adduct = Adducts.First();
             Scans = new ObservableCollection<IMSScanProperty>();
 
-            lipidParser = new PGLipidParser();
+            var facadeParser = new FacadeLipidParser(); // TODO: build by static methods.
+            facadeParser.Add(new PCLipidParser());
+            facadeParser.Add(new EtherPELipidParser());
+            facadeParser.Add(new PGLipidParser());
+            lipidParser = facadeParser;
             lipidGenerator = new LipidGenerator();
-            spectrumGenerator = new PGSpectrumGenerator();
+            var facadeGenerator = new FacadeLipidSpectrumGenerator(); // TODO: build by static methods.
+            facadeGenerator.Add(LbmClass.PC, new PCSpectrumGenerator());
+            facadeGenerator.Add(LbmClass.EtherPE, new EtherPESpectrumGenerator());
+            facadeGenerator.Add(LbmClass.PG, new PGSpectrumGenerator());
+            spectrumGenerator = facadeGenerator;
         }
 
         public string Name { get => Lipid.ToString(); }
@@ -44,8 +53,8 @@ namespace CompMs.App.SpectrumViewer.Model
         public ObservableCollection<IMSScanProperty> Scans { get; }
 
         private readonly LipidGenerator lipidGenerator;
-        private readonly PGSpectrumGenerator spectrumGenerator;
-        private readonly PGLipidParser lipidParser;
+        private readonly ILipidSpectrumGenerator spectrumGenerator;
+        private readonly ILipidParser lipidParser;
 
         public void SetLipid(string lipidStr) {
             Lipid = lipidParser.Parse(lipidStr);
