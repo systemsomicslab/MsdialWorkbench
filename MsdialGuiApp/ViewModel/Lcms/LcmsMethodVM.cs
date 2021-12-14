@@ -222,6 +222,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(model.ExportAlignment));
         private DelegateCommand<Window> exportAlignmentResultCommand;
 
-        
+        public DelegateCommand<Window> ShowTicCommand => showTicCommand ?? (showTicCommand = new DelegateCommand<Window>(model.ShowTIC));
+        private DelegateCommand<Window> showTicCommand;
     }
 }

@@ -7,19 +7,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Loader {
-    class TicLoader {
-        public TicLoader(
+    class BpcLoader {
+        public BpcLoader(
             IDataProvider provider,
             ParameterBase parameter,
             ChromXType chromXType,
             ChromXUnit chromXUnit,
             double rangeBegin,
             double rangeEnd) {
-            
+
             this.provider = provider;
             this.parameter = parameter;
             this.chromXType = chromXType;
@@ -34,21 +33,20 @@ namespace CompMs.App.Msdial.Model.Loader {
         protected readonly ChromXUnit chromXUnit;
         protected readonly double rangeBegin, rangeEnd;
 
-
         internal List<ChromatogramPeakWrapper>
-            LoadTic() {
+            LoadBpc() {
 
-            var tic = LoadTicCore();
-            if (tic.Count == 0) {
+            var bpc = LoadBpcCore();
+            if (bpc.Count == 0) {
                 return new List<ChromatogramPeakWrapper>();
             }
 
-            return tic;
+            return bpc;
         }
 
-        protected virtual List<ChromatogramPeakWrapper> LoadTicCore() {
+        protected virtual List<ChromatogramPeakWrapper> LoadBpcCore() {
             return DataAccess.GetSmoothedPeaklist(
-                DataAccess.GetTicPeaklist(
+                DataAccess.GetBpcPeaklist(
                         provider.LoadMs1Spectrums(),
                         parameter.IonMode,
                         chromXType, chromXUnit,

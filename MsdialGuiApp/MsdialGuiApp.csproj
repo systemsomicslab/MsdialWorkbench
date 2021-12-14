@@ -163,6 +163,7 @@
     <Compile Include="Model\Chart\RawPurifiedSpectrumsModel.cs" />
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
     <Compile Include="Model\Core\MainWindowModel.cs" />
+    <Compile Include="Model\DataObj\DisplayChromatogram.cs" />
     <Compile Include="Model\Dims\DimsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Dims\DimsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Dims\DimsDataCollectionSettingModel.cs" />
@@ -174,6 +175,7 @@
     <Compile Include="Model\Dims\DimsTextDBAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsCompoundSearchModel.cs" />
+    <Compile Include="Model\Loader\BpcLoader.cs" />
     <Compile Include="Model\Loader\TicLoader.cs" />
     <Compile Include="Model\Search\CompoundResultCollection.cs" />
     <Compile Include="Model\Setting\IdentifySettingModel.cs" />
@@ -316,6 +318,9 @@
     </Compile>
     <Compile Include="View\Chart\ChromatogramsView.xaml.cs">
       <DependentUpon>ChromatogramsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\DisplayChromatogramsView.xaml.cs">
+      <DependentUpon>DisplayChromatogramsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\EicView.xaml.cs">
       <DependentUpon>EicView.xaml</DependentUpon>
@@ -628,6 +633,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Chart\ChromatogramsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\DisplayChromatogramsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

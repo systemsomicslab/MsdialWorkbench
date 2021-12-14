@@ -1,7 +1,11 @@
 ﻿using CompMs.App.Msdial.LC;
+using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.View;
+using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Export;
+using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Lcms;
 using CompMs.Common.Components;
@@ -350,6 +354,21 @@ namespace CompMs.App.Msdial.Model.Lcms
 
                 dialog.ShowDialog();
             }
+        }
+
+        public void ShowTIC(Window owner) {
+            var container = Storage;
+            var analysisModel = AnalysisModel;
+            if (analysisModel is null) return;
+
+            var tic = analysisModel.EicLoader.LoadTic();
+            var vm = new ChromatogramsViewModel(new ChromatogramsModel("Total ion chromatogram", new DisplayChromatogram(tic, "TIC")));
+            var view = new DisplayChromatogramsView() {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            view.Show();
         }
     }
 }

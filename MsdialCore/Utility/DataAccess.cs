@@ -613,6 +613,16 @@ namespace CompMs.MsdialCore.Utility {
             return driftBinToChromPeak.Values.OrderBy(n => n.ChromXs.Value).ToList();
         }
 
+        public static List<ChromatogramPeak> GetDriftChromatogramByRtRange(IReadOnlyList<RawSpectrum> spectrumList,
+           float rtBegin, float rtEnd, float mz, float mztol, float minDt, float maxDt) {
+            var minRt = Math.Min(rtBegin, rtEnd);
+            var maxRt = Math.Max(rtBegin, rtEnd);
+            var centerRt = (maxRt + minRt) * 0.5F;
+            var rtWidth = maxRt - minRt;
+
+            return GetDriftChromatogramByRtMz(spectrumList, centerRt, rtWidth, mz, mztol, minDt, maxDt);
+        }
+
         public static List<ChromatogramPeak> GetDriftChromatogramByRtMz(IReadOnlyList<RawSpectrum> spectrumList,
            float rt, float rtWidth, float mz, float mztol, float minDt, float maxDt) {
 

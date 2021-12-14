@@ -192,6 +192,10 @@ MGDG	[M+CH3COO]-	Negative	FALSE
 MGDG	[M+HCOO]-	Negative	FALSE
 DGDG	[M+CH3COO]-	Negative	FALSE
 DGDG	[M+HCOO]-	Negative	FALSE
+LDGTS	[M+CH3COO]-	Negative	FALSE
+DGTS	[M+CH3COO]-	Negative	FALSE
+LDGTS	[M+HCOO]-	Negative	FALSE
+DGTS	[M+HCOO]-	Negative	FALSE
 #MGMG	[M+CH3COO]-	Negative	FALSE
 #MGMG	[M+HCOO]-	Negative	FALSE
 #DGMG	[M+CH3COO]-	Negative	FALSE
