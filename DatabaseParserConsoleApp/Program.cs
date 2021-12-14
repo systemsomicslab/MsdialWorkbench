@@ -16,8 +16,8 @@ namespace DatabaseParserConsoleApp {
             //runLipidMassGenerator();
             #endregion
 
-            //runLipidChalacterization(); // characterize lipid structure by understanding MS/MS spectra
-            var results = MspFileParcer.MspFileReader(@"C:\Users\hiros\Downloads\MSMS-Pos-MRI_CES-3515.txt");
+            runLipidChalacterization(); // characterize lipid structure by understanding MS/MS spectra
+            //var results = MspFileParcer.MspFileReader(@"C:\Users\hiros\Downloads\MSMS-Pos-MRI_CES-3515.txt");
             //convertAsciiToBinary();
 
             // 
@@ -145,8 +145,8 @@ namespace DatabaseParserConsoleApp {
 
         private static void runLipidChalacterization() {
 
-            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20211026_sterolPHex\";
-            var testFilename = @"\27_1_LPA_181_pos.msp";
+            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20211209_add_DGTS_Na\check\";
+            var testFilename = @"\DGTS_160_183_Na.msp";
             var querypath = testFolder + testFilename;
             var reffile = testFolder + @"\library.txt";
 

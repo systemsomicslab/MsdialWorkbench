@@ -71,7 +71,7 @@ namespace CompMs.MspGenerator
                 {   "EtherLPE" ,    new List<string>(){ "[M-H]-", "[M+H]+" }    },
                 {   "EtherLPE_P" ,    new List<string>(){"[M-H]-" }    },
                 {   "EtherLPG" ,    new List<string>(){ "[M-H]-"}    },
-                {   "LDGTS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+H]+"  }    },
+                {   "LDGTS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+H]+","[M+Na]+" }    },
                 {   "LDGCC" ,    new List<string>(){ "[M+H]+"  }    },
                 {   "GPNAE" ,    new List<string>(){ "[M-H]-", "[M+H]+"}    },
 
@@ -82,7 +82,7 @@ namespace CompMs.MspGenerator
                 {   "DGDG" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+NH4]+" }    },
                 {   "MGDG" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+NH4]+" }    },
                 {   "SQDG" ,    new List<string>(){ "[M-H]-", "[M+NH4]+"  , }    },
-                {   "DGTS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+H]+"  }    },
+                {   "DGTS" ,    new List<string>(){ "[M+HCOO]-", "[M+CH3COO]-", "[M+H]+", "[M+Na]+" }    },
                 {   "DGGA" ,    new List<string>(){ "[M-H]-", "[M+NH4]+"  , }    },
                 {   "DLCL" ,    new List<string>(){ "[M-H]-"  }    },
                 {   "SMGDG" ,    new List<string>(){ "[M-H]-"  }    },

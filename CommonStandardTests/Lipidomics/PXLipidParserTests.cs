@@ -88,4 +88,27 @@ namespace CompMs.Common.Lipidomics.Tests
         }
     }
 
+    [TestClass()]
+    public class PALipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new PGLipidParser();
+
+            var lipid = parser.Parse("PA 38:5");
+            Assert.AreEqual(722.4886, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.PA, lipid.LipidClass);
+
+            lipid = parser.Parse("PA 18:0_20:5");
+            Assert.AreEqual(722.4886, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.PA, lipid.LipidClass);
+
+            lipid = parser.Parse("PA 18:0/20:5");
+            Assert.AreEqual(722.4886, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.PA, lipid.LipidClass);
+        }
+    }
+
+
 }

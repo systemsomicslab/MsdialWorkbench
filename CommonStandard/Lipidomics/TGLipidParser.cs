@@ -5,20 +5,18 @@ using System.Text.RegularExpressions;
 
 namespace CompMs.Common.Lipidomics
 {
-    public class LPILipidParser : ILipidParser {
-        public string Target { get; } = "LPI";
+    public class TGLipidParser : ILipidParser {
+        public string Target { get; } = "TG";
 
-        private static readonly TotalChainParser chainsParser = new TotalChainParser(1);
-        public static readonly string Pattern = $"LPI\\s*(?<sn>{chainsParser.Pattern})";
+        private static readonly TotalChainParser chainsParser = new TotalChainParser(3);
+        public static readonly string Pattern = $"TG\\s*(?<sn>{chainsParser.Pattern})";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         private static readonly double Skelton = new[]
         {
-            MassDiffDictionary.CarbonMass * 9,
-            MassDiffDictionary.HydrogenMass * 18,
-            MassDiffDictionary.OxygenMass * 11,
-            //MassDiffDictionary.NitrogenMass,
-            MassDiffDictionary.PhosphorusMass,
+            MassDiffDictionary.CarbonMass * 3,
+            MassDiffDictionary.HydrogenMass * 5,
+            MassDiffDictionary.OxygenMass * 3,
         }.Sum();
 
         public ILipid Parse(string lipidStr) {
@@ -26,7 +24,7 @@ namespace CompMs.Common.Lipidomics
             if (match.Success) {
                 var group = match.Groups;
                 var chains = chainsParser.Parse(group["sn"].Value);
-                return new Lipid(LbmClass.LPI, Skelton + chains.Mass, chains);
+                return new Lipid(LbmClass.TG, Skelton + chains.Mass, chains);
             }
             return null;
         }

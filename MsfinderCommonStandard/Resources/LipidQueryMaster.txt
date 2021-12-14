@@ -31,6 +31,8 @@ EtherMGDG	[M+NH4]+	Positive	TRUE
 EtherDGDG	[M+NH4]+	Positive	FALSE
 LDGTS	[M+H]+	Positive	TRUE
 DGTS	[M+H]+	Positive	TRUE
+LDGTS	[M+Na]+	Positive	FALSE
+DGTS	[M+Na]+	Positive	FALSE
 LDGCC	[M+H]+	Positive	TRUE
 DGCC	[M+H]+	Positive	TRUE
 SQDG	[M+NH4]+	Positive	TRUE
