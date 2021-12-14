@@ -39,11 +39,6 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var peaklist = GetPeaks(spectra, chromXCenter, peakWidth, fileID, smoothingMethod, smoothingLevel);
 
             var target = peaks.First(peak => peak?.FileID == fileID);
-
-            if (peaklist == null || peaklist.Count == 0) {
-                SetDefaultValueToAlignmentChromPeakFeature(target);
-                return;
-            }
             GapFillCore(peaklist, chromXCenter, AxTol, target);
         }
 
@@ -54,6 +49,11 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             List<ChromatogramPeak> peaklist, ChromXs center, double axTol,
             AlignmentChromPeakFeature alignmentChromPeakFeature
             ) {
+
+            if (peaklist == null || peaklist.Count == 0) {
+                SetDefaultValueToAlignmentChromPeakFeature(alignmentChromPeakFeature);
+                return;
+            }
             var result = alignmentChromPeakFeature;
             result.PeakID = -2;
 

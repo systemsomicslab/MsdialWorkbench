@@ -72,6 +72,21 @@ namespace CompMs.Common.Extension {
             return xs.Select(x => (x, y: func(x))).Aggregate((acc, p) => comp(acc.y, p.y) > 0 ? p : acc).x;
         }
 
+        public static IEnumerable<List<T>> Chunk<T>(this IEnumerable<T> xs, int size)
+        {
+            var results = new List<T>(size);
+            foreach (var x in xs) {
+                results.Add(x);
+                if (results.Count == size) {
+                    yield return results;
+                    results = new List<T>(size);
+                }
+            }
+            if (results.Count >= 1) {
+                yield return results;
+            }
+        }
+
         public static IEnumerable<List<T>> Sequence<T>(this IEnumerable<IEnumerable<T>> xss) {
             var enumerators = xss.Select(xs => xs.GetEnumerator()).ToList();
             var remain = true;

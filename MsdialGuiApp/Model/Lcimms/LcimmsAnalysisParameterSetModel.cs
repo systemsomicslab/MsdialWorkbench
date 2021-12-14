@@ -22,12 +22,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
             if (parameter is null) {
                 throw new ArgumentNullException(nameof(parameter));
             }
+            Parameter = parameter;
 
-            IdentifySettingModel = new IdentifySettingModel(parameter, new LcimmsAnnotatorSettingFactory(), dataBaseStorage);
+            IdentifySettingModel = new IdentifySettingModel(Parameter, new LcimmsAnnotatorSettingFactory(), dataBaseStorage);
             if (files.Count <= 1) {
                 Parameter.ProcessOption &= ~ProcessOption.Alignment;
             }
-            Parameter = parameter;
 
             if (Parameter.TargetOmics == TargetOmics.Lipidomics) {
                 var mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -38,10 +38,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }
             }
 
-            if (parameter.FileID2CcsCoefficients is null) {
-                parameter.FileID2CcsCoefficients = new Dictionary<int, CoefficientsForCcsCalculation>();
+            if (Parameter.FileID2CcsCoefficients is null) {
+                Parameter.FileID2CcsCoefficients = new Dictionary<int, CoefficientsForCcsCalculation>();
             }
-            FileID2CcsCoefficients = parameter.FileID2CcsCoefficients;
+            FileID2CcsCoefficients = Parameter.FileID2CcsCoefficients;
             foreach (var file in files) {
                 if (!FileID2CcsCoefficients.ContainsKey(file.AnalysisFileId)) {
                     var calinfo = DataAccess.ReadIonMobilityCalibrationInfo(file.AnalysisFilePath) ?? new RawCalibrationInfo();

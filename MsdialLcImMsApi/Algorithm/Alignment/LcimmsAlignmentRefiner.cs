@@ -26,7 +26,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
                 alignments[i].MasterAlignmentID = masterID++;
                 var driftSpots = alignments[i].AlignmentDriftSpotFeatures;
                 for (int j = 0; j < driftSpots.Count; j++) {
-                    ids.Add(alignments[i].MasterAlignmentID);
+                    ids.Add(driftSpots[j].MasterAlignmentID);
                     driftSpots[j].MasterAlignmentID = masterID++;
                     driftSpots[j].AlignmentID = j;
                     driftSpots[j].ParentAlignmentID = i;

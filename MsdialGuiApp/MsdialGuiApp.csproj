@@ -409,6 +409,9 @@
     <Compile Include="View\Lcimms\IdentificationView.xaml.cs">
       <DependentUpon>IdentificationView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Lcimms\MainRibbon.xaml.cs">
+      <DependentUpon>MainRibbon.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Lcimms\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
@@ -767,6 +770,10 @@
     <Page Include="View\Lcimms\IdentificationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcimms\MainRibbon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Lcimms\MainView.xaml">
       <SubType>Designer</SubType>

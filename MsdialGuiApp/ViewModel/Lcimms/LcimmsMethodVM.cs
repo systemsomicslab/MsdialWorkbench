@@ -26,7 +26,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
             : this(
-                  new LcimmsMethodModel(storage, new StandardDataProviderFactory()),
+                  new LcimmsMethodModel(storage),
                   compoundSearchService,
                   peakSpotTableService) {
             

@@ -3,14 +3,12 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
@@ -33,17 +31,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
             IDataProvider spectrumProvider,
             IDataProvider accSpectrumProvider,
             DataBaseMapper mapper,
-            ParameterBase parameter,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator)
+            ParameterBase parameter)
             : base(analysisFile) {
 
             this.spectrumProvider = spectrumProvider;
             this.accSpectrumProvider = accSpectrumProvider;
             DataBaseMapper = mapper;
             this.parameter = parameter;
-            MspAnnotator = mspAnnotator;
-            TextDBAnnotator = textDBAnnotator;
 
             FileName = analysisFile.AnalysisFileName;
 
@@ -174,8 +168,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly IDataProvider accSpectrumProvider;
 
         public DataBaseMapper DataBaseMapper { get; }
-        public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> MspAnnotator { get; }
-        public IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> TextDBAnnotator { get; }
 
         public double Ms1Tolerance => parameter.CentroidMs1Tolerance;
 
