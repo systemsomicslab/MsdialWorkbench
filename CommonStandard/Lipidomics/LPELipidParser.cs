@@ -9,7 +9,7 @@ namespace CompMs.Common.Lipidomics
     {
         public string Target { get; } = "LPE";
 
-        private static readonly TotalChainParser chainsParser = new TotalChainParser(1);
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(1);
         public static readonly string Pattern = $"LPE\\s*(?<sn>{chainsParser.Pattern})";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 

@@ -49,7 +49,7 @@ namespace CompMs.Common.Lipidomics
 
         private static int GetAnnotationLevel(ITotalChain chains) {
             switch (chains) {
-                case TotalChains _:
+                case TotalChain _:
                     return 1;
                 case MolecularSpeciesLevelChains _:
                     return 2;

@@ -8,7 +8,7 @@ namespace CompMs.Common.Lipidomics
     public class BMPLipidParser : ILipidParser {
         public string Target { get; } = "BMP";
 
-        private static readonly TotalChainParser chainsParser = new TotalChainParser(2);
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(2);
         public static readonly string Pattern = $"BMP\\s*(?<sn>{chainsParser.Pattern})";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 

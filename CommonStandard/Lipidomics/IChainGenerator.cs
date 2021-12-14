@@ -8,7 +8,7 @@ namespace CompMs.Common.Lipidomics
 {
     public interface IChainGenerator
     {
-        IEnumerable<ITotalChain> Separate(TotalChains chain);
+        IEnumerable<ITotalChain> Separate(TotalChain chain);
 
         IEnumerable<ITotalChain> Permutate(MolecularSpeciesLevelChains chains);
 
@@ -17,6 +17,8 @@ namespace CompMs.Common.Lipidomics
         IEnumerable<IChain> Generate(AcylChain chain);
 
         IEnumerable<IChain> Generate(AlkylChain chain);
+
+        IEnumerable<IChain> Generate(SphingoChain chain);
     }
 
     public class AcylChainGenerator : IChainGenerator
@@ -33,18 +35,83 @@ namespace CompMs.Common.Lipidomics
         public int End { get; } // if end is 3 and number of carbon is 18, last double bond is 15-16 at latest.
         public int Skip { get; } // if skip is 3 and 6-7 is double bond, next one is 9-10 at the earliest.
 
-        public IEnumerable<ITotalChain> Separate(TotalChains chain) {
-            var acyl = chain.ChainCount - chain.AlkylChainCount;
-            var carbon = chain.CarbonCount;
-            var alkyl = chain.AlkylChainCount;
-            var db = chain.DoubleBondCount;
-            var ox = chain.OxidizedCount;
-            return Enumerable.Range(MinLength * acyl, carbon - MinLength * (alkyl + acyl) + 1)
-                .SelectMany(c => Enumerable.Range(0, db + 1)
-                    .SelectMany(d => Enumerable.Range(0, ox + 1)
-                        .SelectMany(o => RecurseGenerate(c, d, o, acyl, CreateAcylChain)
-                            .SelectMany(x => RecurseGenerate(carbon - c, db - d, ox - o, alkyl, CreateAlkylChain),
-                                (x, y) => new MolecularSpeciesLevelChains(x.Concat<IChain>(y).ToArray())))));
+        public IEnumerable<ITotalChain> Separate(TotalChain chain) {
+            return InternalSeparate(chain).SelectMany(ListingCandidates);
+        }
+
+        class ChainCandidate
+        {
+            public ChainCandidate(int chainCount, int carbonCount, int doubleBondCount, int oxidizedCount, int minimumOxidizedCount) {
+                ChainCount = chainCount;
+                CarbonCount = carbonCount;
+                DoubleBondCount = doubleBondCount;
+                OxidizedCount = oxidizedCount;
+            }
+
+            public int ChainCount { get; }
+
+            public int CarbonCount { get; }
+
+            public int OxidizedCount { get; }
+
+            public int MinimumOxidizedCount { get; }
+
+            public int DoubleBondCount { get; }
+        }
+
+        class ChainSet
+        {
+            public ChainSet(ChainCandidate acylCandidate, ChainCandidate alkylCandidate, ChainCandidate sphingoCandidate) {
+                AcylCandidate = acylCandidate;
+                AlkylCandidate = alkylCandidate;
+                SphingoCandidate = sphingoCandidate;
+            }
+
+            public ChainCandidate AcylCandidate { get; }
+            public ChainCandidate AlkylCandidate { get; }
+            public ChainCandidate SphingoCandidate { get; }
+        }
+
+        // TODO: refactoring
+        private IEnumerable<ITotalChain> ListingCandidates(ChainSet candidates) {
+            if (candidates.SphingoCandidate.ChainCount > 0) {
+                return from sphingo in RecurseGenerate(candidates.SphingoCandidate, CreateSphingoChain)
+                       from acyl in RecurseGenerate(candidates.AcylCandidate, CreateAcylChain)
+                       from alkyl in RecurseGenerate(candidates.AlkylCandidate, CreateAlkylChain)
+                       select new PositionLevelChains(sphingo.Concat<IChain>(acyl).Concat(alkyl).ToArray());
+            }
+            return from acyl in RecurseGenerate(candidates.AcylCandidate, CreateAcylChain)
+                   from alkyl in RecurseGenerate(candidates.AlkylCandidate, CreateAlkylChain)
+                   select new MolecularSpeciesLevelChains(alkyl.Concat<IChain>(acyl).ToArray());
+        }
+
+        private IEnumerable<ChainSet> InternalSeparate(TotalChain chains) {
+            var (minAcylCarbon, minAlkylCarbon, minSphingoCarbon) = (MinLength * chains.AcylChainCount, MinLength * chains.AlkylChainCount, MinLength * chains.SphingoChainCount);
+            var carbonRemain = chains.CarbonCount - minAcylCarbon - minAlkylCarbon - minSphingoCarbon;
+            var (maxAcylCarbon, maxAlkylCarbon, maxSphingoCarbon) = ((carbonRemain + minAcylCarbon) * Math.Sign(chains.AcylChainCount), (carbonRemain + minAlkylCarbon) * Math.Sign(chains.AlkylChainCount), (carbonRemain + minSphingoCarbon) * Math.Sign(chains.SphingoChainCount));
+            var (minAcylDb, minAlkylDb, minSphingoDb) = (0, 0, 0);
+            var dbRemain = chains.DoubleBondCount - minAcylDb - minAlkylDb - minSphingoDb;
+            var (maxAcylDb, maxAlkylDb, maxSphingoDb) = ((dbRemain + minAcylDb) * Math.Sign(chains.AcylChainCount), (dbRemain + minAlkylDb) * Math.Sign(chains.AlkylChainCount), (dbRemain + minSphingoDb) * Math.Sign(chains.SphingoChainCount));
+            var (minAcylOx, minAlkylOx, minSphingoOx) = (0, 0, chains.SphingoChainCount * 2);
+            var oxRemain = chains.OxidizedCount - minAcylOx - minAlkylOx - minSphingoOx;
+            var (maxAcylOx, maxAlkylOx, maxSphingoOx) = ((dbRemain + minAcylOx) * Math.Sign(chains.AcylChainCount), (dbRemain + minAlkylOx) * Math.Sign(chains.AlkylChainCount), (dbRemain + minSphingoOx) * Math.Sign(chains.SphingoChainCount));
+
+            return from cs in Distribute(chains.CarbonCount, minAcylCarbon, maxAcylCarbon, minAlkylCarbon, maxAlkylCarbon, minSphingoCarbon, maxSphingoCarbon)
+                   from dbs in Distribute(chains.DoubleBondCount, minAcylDb, maxAcylDb, minAlkylDb, maxAlkylDb, minSphingoDb, maxSphingoDb)
+                   from oxs in Distribute(chains.OxidizedCount, minAcylOx, maxAcylOx, minAlkylOx, maxAlkylOx, minSphingoOx, maxSphingoOx)
+                   select new ChainSet(
+                       new ChainCandidate(chains.AcylChainCount, cs[0], dbs[0], oxs[0], 0),
+                       new ChainCandidate(chains.AlkylChainCount, cs[1], dbs[1], oxs[1], 0),
+                       new ChainCandidate(chains.SphingoChainCount, cs[2], dbs[2], oxs[2], 2));
+        }
+
+        private IEnumerable<int[]> Distribute(int count, int acylMin, int acylMax, int alkylMin, int alkylMax, int sphingoMin, int sphingoMax) {
+            return from i in Enumerable.Range(acylMin, acylMax - acylMin + 1)
+                   where count - i <= alkylMax + sphingoMax
+                   from j in Enumerable.Range(alkylMin, alkylMax - alkylMin + 1)
+                   let k = count - i - j
+                   where sphingoMin <= k && k <= sphingoMax
+                   select new[] { i, j, k };
         }
 
         public IEnumerable<ITotalChain> Permutate(MolecularSpeciesLevelChains chains) {
@@ -74,9 +141,9 @@ namespace CompMs.Common.Lipidomics
             return (prevCarbon, prevDb, prevOx).CompareTo((curCarbon, curDb, curOx)) <= 0;
         }
 
-        private IEnumerable<T[]> RecurseGenerate<T>(int carbon, int db, int ox, int chain, Func<int, int, int, T> create) {
-            if (chain == 0) {
-                if (carbon == 0 && db == 0 && ox == 0) {
+        private IEnumerable<T[]> RecurseGenerate<T>(ChainCandidate candidate, Func<int, int, int, T> create) {
+            if (candidate.ChainCount == 0) {
+                if (candidate.CarbonCount == 0 && candidate.DoubleBondCount == 0 && candidate.OxidizedCount == 0) {
                     return new[] { new T[0] };
                 }
                 else {
@@ -84,11 +151,11 @@ namespace CompMs.Common.Lipidomics
                 }
             }
 
-            var set = new T[chain];
+            var set = new T[candidate.ChainCount];
             IEnumerable<T[]> rec(int carbon_, int db_, int ox_, int minCarbon_, int minDb_, int minOx_, int chain_) {
                 if (chain_ == 1) {
                     if (DoubleChainIsValid(carbon_, db_) && IsLexicographicOrder(minCarbon_, minDb_, minOx_, carbon_, db_, ox_)) {
-                        set[chain - 1] = create(carbon_, db_, ox_);
+                        set[candidate.ChainCount - 1] = create(carbon_, db_, ox_);
                         yield return set.ToArray();
                     }
                 }
@@ -101,11 +168,11 @@ namespace CompMs.Common.Lipidomics
                             if (!IsLexicographicOrder(minCarbon_, minDb_, c, d)) {
                                 continue;
                             }
-                            for (var o = 0; o <= ox_; o++) {
+                            for (var o = candidate.MinimumOxidizedCount; o <= ox_; o++) {
                                 if (!IsLexicographicOrder(minCarbon_, minDb_, minOx_, c, d, o)) {
                                     continue;
                                 }
-                                set[chain - chain_] = create(c, d, o);
+                                set[candidate.ChainCount - chain_] = create(c, d, o);
                                 foreach (var res in rec(carbon_ - c, db_ - d, ox_ - o, c, d, o, chain_ - 1)) {
                                     yield return res;
                                 }
@@ -115,7 +182,15 @@ namespace CompMs.Common.Lipidomics
                 }
             }
 
-            return rec(carbon, db, ox, MinLength, -1, -1, chain);
+            return rec(candidate.CarbonCount, candidate.DoubleBondCount, candidate.OxidizedCount, MinLength, -1, -1, candidate.ChainCount);
+        }
+
+        private Dictionary<(int, int, int), SphingoChain> sphingoCache = new Dictionary<(int, int, int), SphingoChain>();
+        private SphingoChain CreateSphingoChain(int carbon, int db, int ox) {
+            if (sphingoCache.TryGetValue((carbon, db, ox), out var chain)) {
+                return chain;
+            }
+            return sphingoCache[(carbon, db, ox)] = new SphingoChain(carbon, new DoubleBond(db), new Oxidized(ox, 1, 3));
         }
 
         private Dictionary<(int, int, int), AcylChain> acylCache = new Dictionary<(int, int, int), AcylChain>();
@@ -135,15 +210,15 @@ namespace CompMs.Common.Lipidomics
         }
 
         public IEnumerable<IChain> Generate(AcylChain chain) {
-            return Products(chain.CarbonCount, chain.DoubleBond, chain.Oxidized, (c, b, o) => new AcylChain(c, b, o));
+            return EnumerateBonds(chain.CarbonCount, chain.DoubleBond).SelectMany(_ => EnumerateOxidized(chain.CarbonCount, chain.Oxidized, Begin), (b, o) => new AcylChain(chain.CarbonCount, b, o));
         }
 
         public IEnumerable<IChain> Generate(AlkylChain chain) {
-            return Products(chain.CarbonCount, chain.DoubleBond, chain.Oxidized, (c, b, o) => new AlkylChain(c, b, o));
+            return EnumerateBonds(chain.CarbonCount, chain.DoubleBond).SelectMany(_ => EnumerateOxidized(chain.CarbonCount, chain.Oxidized, Begin), (b, o) => new AlkylChain(chain.CarbonCount, b, o));
         }
 
-        private IEnumerable<IChain> Products(int carbon, IDoubleBond doubleBond, IOxidized oxidized, Func<int, IDoubleBond, IOxidized, IChain> create) {
-            return EnumerateBonds(carbon, doubleBond).SelectMany(_ => EnumerateOxidized(carbon, oxidized), (b, o) => create(carbon, b, o));
+        public IEnumerable<IChain> Generate(SphingoChain chain) {
+            return EnumerateBonds(chain.CarbonCount, chain.DoubleBond).SelectMany(_ => EnumerateOxidized(chain.CarbonCount, chain.Oxidized, 4), (b, o) => new SphingoChain(chain.CarbonCount, b, o));
         }
 
         private IEnumerable<IDoubleBond> EnumerateBonds(int carbon, IDoubleBond doubleBond) {
@@ -181,7 +256,7 @@ namespace CompMs.Common.Lipidomics
             return rec(Begin, new List<IDoubleBondInfo>(doubleBond.UnDecidedCount));
         }
 
-        private IEnumerable<IOxidized> EnumerateOxidized(int carbon, IOxidized oxidized) {
+        private IEnumerable<IOxidized> EnumerateOxidized(int carbon, IOxidized oxidized, int begin) {
             if (oxidized.UnDecidedCount == 0) {
                 return IEnumerableExtension.Return(oxidized);
             }
@@ -196,7 +271,7 @@ namespace CompMs.Common.Lipidomics
                             continue;
                         }
                         infos.Add(j);
-                        foreach (var res in rec(j + Skip, infos)) {
+                        foreach (var res in rec(j + 1, infos)) {
                             yield return res;
                         }
                         infos.RemoveAt(infos.Count - 1);
@@ -204,7 +279,7 @@ namespace CompMs.Common.Lipidomics
                 }
             }
 
-            return rec(Begin, new List<int>(oxidized.UnDecidedCount));
+            return rec(begin, new List<int>(oxidized.UnDecidedCount));
         }
     }
 }

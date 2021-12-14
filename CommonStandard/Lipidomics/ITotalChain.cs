@@ -16,26 +16,58 @@ namespace CompMs.Common.Lipidomics
         IEnumerable<ITotalChain> GetCandidateSets(IChainGenerator generator);
     }
 
-    public class TotalChains : ITotalChain {
-        public TotalChains(int carbonCount, int doubleBondCount, int oxidizedCount, int chainCount, int alkylChainCount = 0) {
+    public static class TotalChainExtension
+    {
+        public static ITotalChain GetChains(this LipidMolecule lipid) {
+            switch (lipid.AnnotationLevel) {
+                case 1:
+                    // return new TotalChains(lipid.TotalCarbonCount, lipid.TotalDoubleBondCount, lipid.TotalOxidizedCount, 0, alkylChainCount: 0);
+                case 2:
+                case 3:
+                    // return new MolecularSpeciesLevelChains(new AcylChain);
+                default:
+                    break;
+            }
+            return default;
+        }
+    }
+
+    public class TotalChain : ITotalChain {
+        public TotalChain(int carbonCount, int doubleBondCount, int oxidizedCount, int acylChainCount, int alkylChainCount, int sphingoChainCount) {
             CarbonCount = carbonCount;
             DoubleBondCount = doubleBondCount;
             OxidizedCount = oxidizedCount;
-            ChainCount = chainCount;
+            AcylChainCount = acylChainCount;
             AlkylChainCount = alkylChainCount;
+            SphingoChainCount = sphingoChainCount;
         }
 
         public int CarbonCount { get; }
         public int DoubleBondCount { get; }
         public int OxidizedCount { get; }
-        public int ChainCount { get; }
+        public int ChainCount => AcylChainCount + AlkylChainCount + SphingoChainCount;
+        public int AcylChainCount { get; }
         public int AlkylChainCount { get; }
+        public int SphingoChainCount { get; }
 
-        public double Mass => CalculateSubLevelMass(CarbonCount, DoubleBondCount, OxidizedCount, ChainCount, AlkylChainCount);
+        public double Mass => CalculateSubLevelMass(CarbonCount, DoubleBondCount, OxidizedCount, ChainCount, AcylChainCount, AlkylChainCount, SphingoChainCount);
 
-        private static double CalculateSubLevelMass(int carbon, int doubleBond, int oxidize, int chain, int alkyl) {
-            return carbon * MassDiffDictionary.CarbonMass + (2 * (carbon - chain + alkyl - doubleBond) + chain) * MassDiffDictionary.HydrogenMass + (chain - alkyl + oxidize) * MassDiffDictionary.OxygenMass;
+        private static double CalculateSubLevelMass(int carbon, int doubleBond, int oxidize, int chain, int acyl, int alkyl, int sphingo) {
+            var carbonGain = carbon * MassDiffDictionary.CarbonMass;
+            var hydrogenGain = (2 * carbon - 2 * doubleBond + chain) * MassDiffDictionary.HydrogenMass;
+            var oxygenGain = oxidize * MassDiffDictionary.OxygenMass;
+            var acylGain = acyl * AcylGain;
+            var alkylGain = alkyl * AlkylGain;
+            var sphingoGain = sphingo * SphingoGain;
+            var result = carbonGain + hydrogenGain + oxygenGain + acylGain + alkylGain + sphingoGain;
+            return result;
         }
+
+        private static readonly double AcylGain = MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass;
+
+        private static readonly double AlkylGain = 0d;
+
+        private static readonly double SphingoGain = MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass;
 
         IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(IChainGenerator generator) {
             return generator.Separate(this);

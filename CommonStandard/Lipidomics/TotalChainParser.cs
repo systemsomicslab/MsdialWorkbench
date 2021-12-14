@@ -13,11 +13,26 @@ namespace CompMs.Common.Lipidomics
 
         private static readonly AlkylChainParser AlkylParser = new AlkylChainParser();
         private static readonly AcylChainParser AcylParser = new AcylChainParser();
+        private static readonly SphingoChainParser SphingoParser = new SphingoChainParser();
 
-        public TotalChainParser(int chainCount) {
+        private readonly bool HasSphingosine;
+
+        public static TotalChainParser BuildParser(int chainCount) {
+            return new TotalChainParser(chainCount, false);
+        }
+
+        public static TotalChainParser BuildCeramideParser(int chainCount) {
+            return new TotalChainParser(chainCount, true);
+        }
+
+        private TotalChainParser(int chainCount, bool hasSphingosine = false) {
             ChainCount = chainCount;
-            var molecularSpeciesLevelPattern = $"(?<MolecularSpeciesLevel>({ChainsPattern}_?){{{ChainCount}}})";
-            var positionLevelPattern = $"(?<PositionLevel>({ChainsPattern}/?){{{ChainCount}}})";
+            var molecularSpeciesLevelPattern = hasSphingosine
+                ? $"(?<MolecularSpeciesLevel>(?<Chain>{SphingoChainParser.Pattern})_({ChainsPattern}_?){{{ChainCount-1}}})"
+                : $"(?<MolecularSpeciesLevel>({ChainsPattern}_?){{{ChainCount}}})";
+            var positionLevelPattern = hasSphingosine
+                ? $"(?<PositionLevel>(?<Chain>{SphingoChainParser.Pattern})/({ChainsPattern}/?){{{ChainCount-1}}})"
+                : $"(?<PositionLevel>({ChainsPattern}/?){{{ChainCount}}})";
             if (ChainCount == 1) {
                 var postionLevelExpression = new Regex(positionLevelPattern, RegexOptions.Compiled);
                 Pattern = positionLevelPattern;
@@ -29,6 +44,7 @@ namespace CompMs.Common.Lipidomics
                 Pattern = totalPattern;
                 Expression = totalExpression;
             }
+            HasSphingosine = hasSphingosine;
         }
 
         public int ChainCount { get; }
@@ -54,10 +70,22 @@ namespace CompMs.Common.Lipidomics
         }
 
         private PositionLevelChains ParsePositionLevelChains(GroupCollection groups) {
+            var matches = groups["Chain"].Captures.Cast<Capture>().ToArray();
+            if (HasSphingosine) {
+                if (SphingoParser.Parse(matches[0].Value) is IChain sphingo) {
+                    return new PositionLevelChains(
+                        matches.Skip(1)
+                            .Select(c => AlkylParser.Parse(c.Value) ?? AcylParser.Parse(c.Value))
+                            .Prepend(sphingo)
+                            .ToArray()
+                    );
+                }
+                return null;
+            }
             return new PositionLevelChains(
-                groups["Chain"].Captures.Cast<Capture>()
-                    .Select(c => AlkylParser.Parse(c.Value) ?? AcylParser.Parse(c.Value))
-                    .ToArray());
+                matches.Select(c => AlkylParser.Parse(c.Value) ?? AcylParser.Parse(c.Value)).ToArray()
+            );
+
         }
 
         private MolecularSpeciesLevelChains ParseMolecularSpeciesLevelChains(GroupCollection groups) {
@@ -67,26 +95,31 @@ namespace CompMs.Common.Lipidomics
                     .ToArray());
         }
 
-        private TotalChains ParseTotalChains(GroupCollection groups, int chainCount) {
+        private TotalChain ParseTotalChains(GroupCollection groups, int chainCount) {
             var carbon = int.Parse(groups["carbon"].Value);
             var db = int.Parse(groups["db"].Value);
             var ox = !groups["ox"].Success ? 0 : !groups["oxnum"].Success ? 1 : int.Parse(groups["oxnum"].Value);
             
             switch (groups["plasm"].Value) {
                 case "O-":
-                    return new TotalChains(carbon, db, ox, chainCount, 1);
+                    return new TotalChain(carbon, db, ox, chainCount - 1, 1, 0);
                 case "dO-":
-                    return new TotalChains(carbon, db, ox, chainCount, 2);
+                    return new TotalChain(carbon, db, ox, chainCount - 2, 2, 0);
                 case "eO-":
-                    return new TotalChains(carbon, db, ox, chainCount, 4);
+                    return new TotalChain(carbon, db, ox, chainCount - 4, 4, 0);
                 case "P-":
-                    return new TotalChains(carbon, db + 1, ox, chainCount, 1);
+                    return new TotalChain(carbon, db + 1, ox, chainCount - 1, 1, 0);
                 case "dP-":
-                    return new TotalChains(carbon, db + 2, ox, chainCount, 2);
+                    return new TotalChain(carbon, db + 2, ox, chainCount - 2, 2, 0);
                 case "eP-":
-                    return new TotalChains(carbon, db + 4, ox, chainCount, 4);
+                    return new TotalChain(carbon, db + 4, ox, chainCount - 4, 4, 0);
                 case "":
-                    return new TotalChains(carbon, db, ox, chainCount);
+                    if (HasSphingosine) {
+                        return new TotalChain(carbon, db, ox, chainCount - 1, 0, 1);
+                    }
+                    else {
+                        return new TotalChain(carbon, db, ox, chainCount, 0, 0);
+                    }
             }
             return null;
         }
