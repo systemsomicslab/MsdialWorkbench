@@ -44,7 +44,7 @@ namespace CompMs.Common.Lipidomics
 
         // temporary ToString method.
         public override string ToString() {
-            return $"{LipidClass} {Chains}";
+            return $"{LipidClassDictionary.Default.LbmItems[LipidClass].DisplayName} {Chains}";
         }
 
         private static int GetAnnotationLevel(ITotalChain chains) {
