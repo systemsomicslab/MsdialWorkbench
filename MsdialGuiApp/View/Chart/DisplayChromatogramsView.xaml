@@ -24,21 +24,37 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="200" />
+        </Grid.ColumnDefinitions>
         <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
                           VerticalAxis="{Binding VerticalAxis}"
                           HorizontalTitle="{Binding HorizontalTitle}"
                           GraphTitle="{Binding GraphTitle}"
+                          ItemsSource="{Binding DisplayChromatograms}"
                           Style="{StaticResource OverlapChart}"
                           Background="WhiteSmoke"
                           BorderBrush="Black">
-            <chart:LineChartControl x:Name="line"
-                                   ItemsSource="{Binding Chromatograms}"
-                                   HorizontalPropertyName="{Binding HorizontalProperty}"
-                                   VerticalPropertyName="{Binding VerticalProperty}">
-                <chart:LineChartControl.LinePen>
-                    <Pen Brush="Blue" PresentationOptions:Freeze="True"/>
-                </chart:LineChartControl.LinePen>
-            </chart:LineChartControl>
+            <chart:MultiChart.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
+                                               LinePen="{Binding LinePen}"
+                                               HorizontalPropertyName="{Binding DataContext.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                               VerticalPropertyName="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}">
+                            <chart:LineChartControl.ToolTip>
+                                <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Class: "/>
+                                        <TextBlock Text="{Binding Name, Mode=OneWay}"/>
+                                    </StackPanel>
+                                </ToolTip>
+                            </chart:LineChartControl.ToolTip>
+                        </chart:LineChartControl>
+                    </Grid>
+                </DataTemplate>
+            </chart:MultiChart.ItemTemplate>
             <chart:MultiChart.VerticalTitle>
                 <MultiBinding StringFormat="{}{0}({1})">
                     <MultiBinding.Bindings>
@@ -48,5 +64,12 @@
                 </MultiBinding>
             </chart:MultiChart.VerticalTitle>
         </chart:MultiChart>
+        <ItemsControl ItemsSource="{Binding DisplayChromatograms}" Grid.Column="1">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </Window>

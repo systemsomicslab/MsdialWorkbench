@@ -177,17 +177,17 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
             ValidateBase(result, property, reference, parameter);
         }
 
-        private static readonly double MsdialRtMatchThreshold = 0.5d;
-        private static readonly double MsdialCcsMatchThreshold = 10d;
+        //private static readonly double MsdialRtMatchThreshold = 0.5d;
+        //private static readonly double MsdialCcsMatchThreshold = 10d;
         private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
             var rtDiff = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value);
-            result.IsRtMatch = rtDiff <= MsdialRtMatchThreshold && rtDiff <= parameter.RtTolerance;
+            result.IsRtMatch = rtDiff <= parameter.RtTolerance;
 
             var ccsDiff = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection);
-            result.IsCcsMatch = ccsDiff <= MsdialCcsMatchThreshold && ccsDiff <= parameter.CcsTolerance;
+            result.IsCcsMatch = ccsDiff <= parameter.CcsTolerance;
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {

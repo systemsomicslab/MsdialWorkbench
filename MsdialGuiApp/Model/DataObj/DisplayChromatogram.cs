@@ -5,26 +5,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.DataObj {
     public class DisplayChromatogram : BindableBase {
 
         public DisplayChromatogram(List<ChromatogramPeak> peaks, string title = "na") {
             if (peaks is null) {
-                Chromatograms = new List<ChromatogramPeakWrapper>();
+                ChromatogramPeaks = new List<ChromatogramPeakWrapper>();
             }
             else {
-                Chromatograms = peaks.Select(n => new ChromatogramPeakWrapper(n)).ToList();
+                ChromatogramPeaks = peaks.Select(n => new ChromatogramPeakWrapper(n)).ToList();
             }
             Name = title;
         }
 
         public DisplayChromatogram(List<ChromatogramPeakWrapper> peaks, string title = "na") {
-            Chromatograms = peaks;
+            ChromatogramPeaks = peaks;
             Name = title;
         }
 
-        public List<ChromatogramPeakWrapper> Chromatograms { get; } = new List<ChromatogramPeakWrapper>();
+        public List<ChromatogramPeakWrapper> ChromatogramPeaks { get; } = new List<ChromatogramPeakWrapper>();
         public string Name { get; }
 
         public bool Visible {
@@ -33,8 +34,10 @@ namespace CompMs.App.Msdial.Model.DataObj {
         }
         private bool visible = true;
 
-        public double MaxIntensity { get => Chromatograms.Any() ? Chromatograms.Max(n => n.Intensity) : 0.0; }
-        public double MaxChromX { get => (double)(Chromatograms.Any() ? Chromatograms.Max(n => n.ChromXValue) : 1.0); }
-        public double MinChromX { get => (double)(Chromatograms.Any() ? Chromatograms.Min(n => n.ChromXValue) : 0.0); }
+        public Pen LinePen { get; set; } = new Pen(Brushes.Red, 1.0); 
+
+        public double MaxIntensity { get => ChromatogramPeaks.Any() ? ChromatogramPeaks.Max(n => n.Intensity) : 0.0; }
+        public double MaxChromX { get => (double)(ChromatogramPeaks.Any() ? ChromatogramPeaks.Max(n => n.ChromXValue) : 1.0); }
+        public double MinChromX { get => (double)(ChromatogramPeaks.Any() ? ChromatogramPeaks.Min(n => n.ChromXValue) : 0.0); }
     }
 }

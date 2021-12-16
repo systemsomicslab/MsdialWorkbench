@@ -152,13 +152,14 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             ValidateBase(result, property, reference, parameter);
         }
 
-        private static readonly double MsdialCcsMatchThreshold = 10d;
+        //private static readonly double MsdialCcsMatchThreshold = 10d;
         private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
             var diff = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection);
-            result.IsCcsMatch = diff <= Math.Min(MsdialCcsMatchThreshold, parameter.CcsTolerance);
+            //result.IsCcsMatch = diff <= Math.Min(MsdialCcsMatchThreshold, parameter.CcsTolerance);
+            result.IsCcsMatch = diff <= parameter.CcsTolerance;
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {

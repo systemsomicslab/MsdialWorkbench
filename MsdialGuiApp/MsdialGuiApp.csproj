@@ -316,9 +316,6 @@
     <Compile Include="View\Chart\BarChartView.xaml.cs">
       <DependentUpon>BarChartView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Chart\ChromatogramsView.xaml.cs">
-      <DependentUpon>ChromatogramsView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Chart\DisplayChromatogramsView.xaml.cs">
       <DependentUpon>DisplayChromatogramsView.xaml</DependentUpon>
     </Compile>
@@ -632,10 +629,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Chart\BarChartView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Chart\ChromatogramsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

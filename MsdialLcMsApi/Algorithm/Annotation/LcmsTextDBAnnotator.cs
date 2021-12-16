@@ -148,13 +148,13 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             ValidateCore(result, query.Property, reference, parameter);
         }
 
-        private static readonly double MsdialRtMatchThreshold = 0.5;
+       // private static readonly double MsdialRtMatchThreshold = 0.5;
         private static void ValidateCore(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
             var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
             var diff = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value);
-            result.IsRtMatch =  diff <= MsdialRtMatchThreshold && diff <= parameter.RtTolerance;
+            result.IsRtMatch = diff <= parameter.RtTolerance;
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {

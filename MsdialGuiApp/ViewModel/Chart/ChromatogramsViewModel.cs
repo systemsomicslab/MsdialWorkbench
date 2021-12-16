@@ -18,7 +18,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart {
            IAxisManager<double> horizontalAxis = null,
            IAxisManager<double> verticalAxis = null) {
 
-            Chromatograms = model.DisplayChromatograms;
+            DisplayChromatograms = model.DisplayChromatograms;
 
             if (horizontalAxis is null) {
                 horizontalAxis = new ContinuousAxisManager<double>(model.ChromRangeSource);
@@ -37,7 +37,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart {
             VerticalProperty = model.VerticalProperty;
         }
 
-        public List<DisplayChromatogram> Chromatograms { get; }
+        public List<DisplayChromatogram> DisplayChromatograms { get; }
 
         public IAxisManager<double> HorizontalAxis { get; }
 
