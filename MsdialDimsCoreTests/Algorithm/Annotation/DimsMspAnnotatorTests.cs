@@ -359,7 +359,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
         }
 
         private AnnotationQuery BuildQuery(ChromatogramPeakFeature target) {
-            return new AnnotationQuery(target, target, null, null, null);
+            return new AnnotationQuery(target, target, null, null, new MsRefSearchParameterBase());
         }
     }
 }
