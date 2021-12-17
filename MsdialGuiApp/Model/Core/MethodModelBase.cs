@@ -8,7 +8,7 @@ using System.Reactive.Disposables;
 namespace CompMs.App.Msdial.Model.Core
 {
 
-    internal abstract class MethodModelBase : BindableBase, IDisposable
+    public abstract class MethodModelBase : BindableBase, IDisposable
     {
         public MethodModelBase(
             IEnumerable<AnalysisFileBean> analysisFiles,

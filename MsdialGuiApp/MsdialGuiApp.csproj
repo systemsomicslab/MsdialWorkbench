@@ -161,7 +161,14 @@
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\Chart\RawPurifiedSpectrumsModel.cs" />
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
+    <Compile Include="Model\Core\DatasetModel.cs" />
+    <Compile Include="Model\Core\IDatasetModel.cs" />
+    <Compile Include="Model\Core\IProcessCommand.cs" />
+    <Compile Include="Model\Core\IProjectModel.cs" />
     <Compile Include="Model\Core\MainWindowModel.cs" />
+    <Compile Include="Model\Core\ProcessCommand.cs" />
+    <Compile Include="Model\Core\ProjectModel.cs" />
+    <Compile Include="Model\Setting\ProjectSettingModel.cs" />
     <Compile Include="Model\Dims\DimsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Dims\DimsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Dims\DimsDataCollectionSettingModel.cs" />
@@ -426,7 +433,7 @@
     <Compile Include="Lipidomics\LipidDbSetWindow.xaml.cs">
       <DependentUpon>LipidDbSetWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainWindowVM.cs" />
+    <Compile Include="ViewModel\Core\MainWindowVM.cs" />
     <Compile Include="ViewModel\Setting\AnalysisFilePropertySetViewModel.cs" />
     <Compile Include="View\Setting\AnalysisFilePropertySetWindow.xaml.cs">
       <DependentUpon>AnalysisFilePropertySetWindow.xaml</DependentUpon>
@@ -789,7 +796,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="View\Core\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -797,7 +804,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="View\Core\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -1067,7 +1074,6 @@
   <ItemGroup>
     <Folder Include="Property\" />
     <Folder Include="ViewModel\Search\" />
-    <Folder Include="View\Core\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
