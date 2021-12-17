@@ -1,10 +1,10 @@
 ﻿using CompMs.Common.Algorithm.ChromSmoothing;
 using CompMs.Common.Components;
+using CompMs.Common.Extension;
 using CompMs.Common.Mathematics.Basic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.Common.Algorithm.PeakPick {
 
@@ -33,73 +33,50 @@ namespace CompMs.Common.Algorithm.PeakPick {
         public float SignalToNoise { get; set; } = -1.0F;
     }
 
-    public sealed class PeakDetection {
-        private PeakDetection() { }
+    public static class PeakDetection {
         // below is a global peak detection method for gcms/lcms data preprocessing
         public static List<PeakDetectionResult> PeakDetectionVS1(List<ChromatogramPeak> peaklist, double minimumDatapointCriteria, double minimumAmplitudeCriteria) {
             var results = new List<PeakDetectionResult>();
             #region
-
             // global parameter
-            var averagePeakWidth = 20.0;
-            var amplitudeNoiseFoldCriteria = 4.0;
-            var slopeNoiseFoldCriteria = 2.0;
-            var peaktopNoiseFoldCriteria = 2.0;
-
-            var smoother = 1;
-            var baselineLevel = 30;
             var noiseEstimateBin = 50;
             var minNoiseWindowSize = 10;
             var minNoiseLevel = 50.0;
             var noiseFactor = 3.0;
 
             // 'chromatogram' properties
-            double maxChromIntensity, minChromIntensity, baselineMedian, noise;
-            List<ChromatogramPeak> ssPeaklist, baseline, baselineCorrectedPeaklist;
-            bool isHighBaseline;
-            findChromatogramGlobalProperties(peaklist, smoother, baselineLevel,
-                noiseEstimateBin, minNoiseWindowSize, minNoiseLevel, noiseFactor,
-                out maxChromIntensity, out minChromIntensity, out baselineMedian, out noise, out isHighBaseline,
-                out ssPeaklist, out baseline, out baselineCorrectedPeaklist);
+            var globalProperty = FindChromatogramGlobalProperties(peaklist, noiseEstimateBin, minNoiseWindowSize, minNoiseLevel, noiseFactor);
+            var baselineMedian = globalProperty.BaselineMedian;
+            var noise = globalProperty.Noise;
+            var isHighBaseline = globalProperty.IsHighBaseline;
+            var ssPeaklist = globalProperty.SmoothedPeakList;
 
             // differential factors
-            List<double> firstDiffPeaklist, secondDiffPeaklist;
-            double maxFirstDiff, maxSecondDiff, maxAmplitudeDiff;
-            generateDifferencialCoefficients(ssPeaklist, out firstDiffPeaklist, out secondDiffPeaklist, out maxAmplitudeDiff, out maxFirstDiff, out maxSecondDiff);
+            generateDifferencialCoefficients(ssPeaklist, out List<double> firstDiffPeaklist, out List<double> secondDiffPeaklist, out double maxAmplitudeDiff, out double maxFirstDiff, out double maxSecondDiff);
 
             // slope noises
-            double amplitudeNoise, slopeNoise, peaktopNoise;
-            calculateSlopeNoises(ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, maxAmplitudeDiff, maxFirstDiff, maxSecondDiff,
-                out amplitudeNoise, out slopeNoise, out peaktopNoise);
+            calculateSlopeNoises(ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, maxAmplitudeDiff, maxFirstDiff, maxSecondDiff, out double amplitudeNoise, out double slopeNoise, out double peaktopNoise);
 
-            var datapoints = new List<double[]>();
             var infinitLoopCheck = false;
             var infinitLoopID = 0;
-            var nextPeakCheck = false;
-            var nextPeakCheckReminder = 0;
-            var margin = 5;
-            if (minimumDatapointCriteria > margin) margin = (int)minimumDatapointCriteria;
+            var margin = Math.Max((int)minimumDatapointCriteria, 5);
 
-
+            var averagePeakWidth = 20.0;
+            var amplitudeNoiseFoldCriteria = 4.0;
+            var slopeNoiseFoldCriteria = 2.0;
             var peakCounter = 0;
             for (int i = margin; i < ssPeaklist.Count - margin; i++) {
-                if (i > nextPeakCheckReminder + 2) nextPeakCheck = false;
-                if (isPeakStarted(i, ssPeaklist, firstDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria, results, nextPeakCheck)) {
-                    datapoints = new List<double[]>();
-                    datapoints.Add(new double[] { peaklist[i].ID, peaklist[i].ChromXs.Value, peaklist[i].Mass, peaklist[i].Intensity,
-                        firstDiffPeaklist[i], secondDiffPeaklist[i] });
+                if (IsPeakStarted(i, firstDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria)) {
+                    var datapoints = new List<double[]>();
+                    datapoints.Add(new double[] { peaklist[i].ID, peaklist[i].ChromXs.Value, peaklist[i].Mass, peaklist[i].Intensity, firstDiffPeaklist[i], secondDiffPeaklist[i] });
                     searchRealLeftEdge(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist);
                     i = searchRightEdgeCandidate(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria, amplitudeNoise, peaktopNoise, minimumDatapointCriteria);
-                    var isBreak = false;
-                    i = searchRealRightEdge(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, ref infinitLoopCheck, ref infinitLoopID, out isBreak);
+                    i = searchRealRightEdge(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, ref infinitLoopCheck, ref infinitLoopID, out var isBreak);
                     if (isBreak) break;
                     if (datapoints.Count < minimumDatapointCriteria) continue;
-                    var peaktopID = 0;
-                    curateDatapoints(datapoints, averagePeakWidth, out peaktopID);
+                    curateDatapoints(datapoints, averagePeakWidth, out var peaktopID);
 
-                    var maxPeakHeight = 0.0;
-                    var minPeakHeight = 0.0;
-                    peakHeightFromBaseline(datapoints, peaktopID, out maxPeakHeight, out minPeakHeight);
+                    peakHeightFromBaseline(datapoints, peaktopID, out var maxPeakHeight, out var minPeakHeight);
                     if (maxPeakHeight < noise) continue;
                     if (minPeakHeight < minimumAmplitudeCriteria || minPeakHeight < amplitudeNoise * amplitudeNoiseFoldCriteria) continue;
                     if (isHighBaseline && Math.Min(datapoints[0][3], datapoints[datapoints.Count - 1][3]) < baselineMedian) continue;
@@ -117,21 +94,20 @@ namespace CompMs.Common.Algorithm.PeakPick {
                 }
             }
             #endregion
-            if (results.Count == 0) return null;
-            return finalizePeakDetectionResults(results);
+            if (results.Count != 0) {
+                FinalizePeakDetectionResults(results);
+            }
+            return results;
         }
         #region methods
 
-        private static List<PeakDetectionResult> finalizePeakDetectionResults(List<PeakDetectionResult> results) {
-
+        private static void FinalizePeakDetectionResults(List<PeakDetectionResult> results) {
             var sResults = results.OrderByDescending(n => n.IntensityAtPeakTop).ToList();
             float maxIntensity = sResults[0].IntensityAtPeakTop;
             for (int i = 0; i < sResults.Count; i++) {
                 sResults[i].AmplitudeScoreValue = sResults[i].IntensityAtPeakTop / maxIntensity;
                 sResults[i].AmplitudeOrderValue = i + 1;
             }
-            sResults = sResults.OrderBy(n => n.PeakID).ToList();
-            return new List<PeakDetectionResult>(sResults);
         }
 
         private static void peakHeightFromBaseline(List<double[]> datapoints, int peaktopID, out double maxPeakHeight, out double minPeakHeight) {
@@ -305,19 +281,10 @@ namespace CompMs.Common.Algorithm.PeakPick {
             }
         }
 
-        private static bool isPeakStarted(int index, List<ChromatogramPeak> ssPeaklist, List<double> firstDiffPeaklist,
-            double slopeNoise, double slopeNoiseFoldCriteria, List<PeakDetectionResult> peakDetectionResults, bool nextPeakCheck) {
-
-            if (firstDiffPeaklist[index] > slopeNoise * slopeNoiseFoldCriteria &&
-                firstDiffPeaklist[index + 1] > slopeNoise * slopeNoiseFoldCriteria ||
-                (nextPeakCheck &&
-                peakDetectionResults[peakDetectionResults.Count - 1].IntensityAtRightPeakEdge < ssPeaklist[index].Intensity &&
-                ssPeaklist[index].Intensity < ssPeaklist[index + 1].Intensity && ssPeaklist[index + 1].Intensity < ssPeaklist[index + 2].Intensity)) {
-                return true;
-            }
-            else {
-                return false;
-            }
+        private static bool IsPeakStarted(int index, List<double> firstDiffPeaklist, double slopeNoise, double slopeNoiseFoldCriteria)
+        {
+            return firstDiffPeaklist[index] > slopeNoise * slopeNoiseFoldCriteria &&
+                   firstDiffPeaklist[index + 1] > slopeNoise * slopeNoiseFoldCriteria;
         }
 
         private static void calculateSlopeNoises(List<ChromatogramPeak> ssPeaklist, List<double> firstDiffPeaklist, List<double> secondDiffPeaklist,
@@ -384,56 +351,61 @@ namespace CompMs.Common.Algorithm.PeakPick {
             }
         }
 
-        private static void findChromatogramGlobalProperties(List<ChromatogramPeak> peaklist, int smoother, int baselineLevel,
-            int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor,
-            out double maxChromIntensity, out double minChromIntensity, out double baselineMedian, out double noise, out bool isHighBaseline,
-            out List<ChromatogramPeak> ssPeaklist, out List<ChromatogramPeak> baseline, out List<ChromatogramPeak> baselineCorrectedPeaklist) {
-
+        private static ChromatogramGlobalProperty FindChromatogramGlobalProperties(List<ChromatogramPeak> peaklist, int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor)
+        {
             // checking chromatogram properties
-            maxChromIntensity = double.MinValue;
-            minChromIntensity = double.MaxValue;
-            ssPeaklist = Smoothing.LinearWeightedMovingAverage(Smoothing.LinearWeightedMovingAverage(peaklist, 1), 1);
-            baseline = Smoothing.SimpleMovingAverage(Smoothing.SimpleMovingAverage(peaklist, 10), 10);
-            baselineCorrectedPeaklist = new List<ChromatogramPeak>();
+            var baseIntensites = peaklist.Select(peak => peak.Intensity).ToList();
+            var baselineMedian = BasicMathematics.Median(baseIntensites);
+            var maxChromIntensity = peaklist.DefaultIfEmpty().Max(peak => peak?.Intensity) ?? double.MinValue;
+            var minChromIntensity = peaklist.DefaultIfEmpty().Min(peak => peak?.Intensity) ?? double.MaxValue;
+            var isHighBaseline = baselineMedian > (maxChromIntensity + minChromIntensity) * 0.5;
 
-            var amplitudeDiffs = new List<double>();
-            var counter = noiseEstimateBin;
-            var ampMax = double.MinValue;
-            var ampMin = double.MaxValue;
-            var baseIntensites = new List<double>();
-            for (int i = 0; i < peaklist.Count; i++) {
-                baseIntensites.Add(baseline[i].Intensity);
+            var ssPeaklist = Smoothing.LinearWeightedMovingAverage(Smoothing.LinearWeightedMovingAverage(peaklist, 1), 1);
+            var baseline = Smoothing.SimpleMovingAverage(Smoothing.SimpleMovingAverage(peaklist, 10), 10);
+            var baselineCorrectedPeaklist = Enumerable.Range(0, peaklist.Count)
+                .Select(i => new ChromatogramPeak {
+                    ID = peaklist[i].ID,
+                    ChromXs = peaklist[i].ChromXs,
+                    Mass = peaklist[i].Mass,
+                    Intensity = Math.Max(0, ssPeaklist[i].Intensity - baseline[i].Intensity) })
+                .ToList();
 
-                var intensity = ssPeaklist[i].Intensity - baseline[i].Intensity;
-                if (intensity < 0) intensity = 0;
-                baselineCorrectedPeaklist.Add(new ChromatogramPeak { 
-                    ID = peaklist[i].ID, ChromXs = peaklist[i].ChromXs, Mass = peaklist[i].Mass, Intensity = intensity });
-
-                if (peaklist[i].Intensity > maxChromIntensity) maxChromIntensity = peaklist[i].Intensity;
-                if (peaklist[i].Intensity < minChromIntensity) minChromIntensity = peaklist[i].Intensity;
-
-                if (counter < i) {
-                    if (ampMax > ampMin) {
-                        amplitudeDiffs.Add(ampMax - ampMin);
-                    }
-
-                    counter += noiseEstimateBin;
-                    ampMax = double.MinValue;
-                    ampMin = double.MaxValue;
-                }
-                else {
-                    if (ampMax < intensity) ampMax = intensity;
-                    if (ampMin > intensity) ampMin = intensity;
-                }
-            }
-            baselineMedian = BasicMathematics.Median(baseIntensites.ToArray());
-            isHighBaseline = baselineMedian > (maxChromIntensity + minChromIntensity) * 0.5 ? true : false;
-
+            var amplitudeDiffs = baselineCorrectedPeaklist
+                .Chunk(noiseEstimateBin)
+                .Where(bin => bin.Count >= 1)
+                .Select(bin => bin.Max(peak => peak.Intensity) - bin.Min(peak => peak.Intensity))
+                .Where(diff => diff > 0)
+                .ToList();
             if (amplitudeDiffs.Count >= minNoiseWindowSize) {
-                minNoiseLevel = BasicMathematics.Median(amplitudeDiffs.ToArray());
+                minNoiseLevel = BasicMathematics.Median(amplitudeDiffs);
+            }
+            var noise = minNoiseLevel * noiseFactor;
+
+            return new ChromatogramGlobalProperty(maxChromIntensity, minChromIntensity, baselineMedian, noise, isHighBaseline, ssPeaklist, baseline, baselineCorrectedPeaklist);
+        }
+
+        class ChromatogramGlobalProperty
+        {
+            public ChromatogramGlobalProperty(double maxIntensity, double minIntensity, double baselineMedian, double noise, bool isHighBaseline, List<ChromatogramPeak> smoothedPeakList, List<ChromatogramPeak> baseline, List<ChromatogramPeak> baselineCorrectedPeakList)
+            {
+                MaxIntensity = maxIntensity;
+                MinIntensity = minIntensity;
+                BaselineMedian = baselineMedian;
+                Noise = noise;
+                IsHighBaseline = isHighBaseline;
+                SmoothedPeakList = smoothedPeakList;
+                Baseline = baseline;
+                BaselineCorrectedPeakList = baselineCorrectedPeakList;
             }
 
-            noise = minNoiseLevel * noiseFactor;
+            public double MaxIntensity { get; }
+            public double MinIntensity { get; }
+            public double BaselineMedian { get; }
+            public double Noise { get; }
+            public bool IsHighBaseline { get; }
+            public List<ChromatogramPeak> SmoothedPeakList { get; }
+            public List<ChromatogramPeak> Baseline { get; }
+            public List<ChromatogramPeak> BaselineCorrectedPeakList { get; }
         }
 
         public static PeakDetectionResult GetPeakDetectionResult(List<double[]> datapoints, int peakTopId) {

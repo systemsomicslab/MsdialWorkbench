@@ -115,6 +115,11 @@
                               xmlns:imvw="clr-namespace:CompMs.App.Msdial.View.Imms">
                     <imvw:MainView />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type lcimvm:LcimmsMethodVM}"
+                              xmlns:lcimvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
+                              xmlns:lcimvw="clr-namespace:CompMs.App.Msdial.View.Lcimms">
+                    <lcimvw:MainView />
+                </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
             

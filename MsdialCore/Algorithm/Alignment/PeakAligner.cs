@@ -63,7 +63,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
             if (chromPeakInfoSerializer != null)
                 SerializeSpotInfo(
-                    refined,
+                    FlattenSpots(refined).ToList(),
                     ids.Select(id => id2idx[id]).ToArray(),
                     files,
                     alignmentFile,
@@ -106,7 +106,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             }
             foreach (var spot in spots)
                 PackingSpot(spot);
-            var id2idx = spots
+            var id2idx = FlattenSpots(spots)
                 .Select((spot, idx) => Tuple.Create(spot, idx))
                 .ToDictionary(pair => pair.Item1.MasterAlignmentID, pair => pair.Item2);
 
@@ -152,9 +152,9 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             maxInt = maxInt > 1 ? Math.Log(maxInt, 2) : 1;
             minInt = minInt > 1 ? Math.Log(minInt, 2) : 0;
 
-            for (int i = 0; i < alignmentSpots.Count; i++) {
-                var relativeValue = (float)((Math.Log(alignmentSpots[i].HeightMax, 2) - minInt) / (maxInt - minInt));
-                alignmentSpots[i].RelativeAmplitudeValue = Math.Min(1, Math.Max(0, relativeValue));
+            foreach (var spot in FlattenSpots(alignmentSpots)) {
+                var relativeValue = (float)((Math.Log(spot.HeightMax, 2) - minInt) / (maxInt - minInt));
+                spot.RelativeAmplitudeValue = Math.Min(1, Math.Max(0, relativeValue));
             }
 
             var spots = new ObservableCollection<AlignmentSpotProperty>(alignmentSpots);
@@ -191,6 +191,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             Debug.WriteLine("Serialize finish.");
 
             pss.ForEach(ps => ((IDisposable)ps).Dispose());
+        }
+
+        private IEnumerable<AlignmentSpotProperty> FlattenSpots(IEnumerable<AlignmentSpotProperty> spots) {
+            return spots.SelectMany(spot => FlattenSpots(spot.AlignmentDriftSpotFeatures.OrEmptyIfNull()).Prepend(spot));
         }
     }
 }

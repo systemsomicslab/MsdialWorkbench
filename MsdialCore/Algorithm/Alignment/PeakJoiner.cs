@@ -67,12 +67,12 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var referenceFile = analysisFiles.FirstOrDefault(file => file.AnalysisFileId == referenceId);
             if (referenceFile == null) return new List<IMSScanProperty>();
 
-            var master = accessor.GetMSScanProperties(referenceFile);
+            var master = new List<IMSScanProperty>();
+            master = MergeChromatogramPeaks(master, accessor.GetMSScanProperties(referenceFile));
             foreach (var analysisFile in analysisFiles) {
                 if (analysisFile.AnalysisFileId == referenceFile.AnalysisFileId)
                     continue;
-                var target = accessor.GetMSScanProperties(analysisFile);
-                master = MergeChromatogramPeaks(master, target);
+                master = MergeChromatogramPeaks(master, accessor.GetMSScanProperties(analysisFile));
             }
 
             return master;
