@@ -132,8 +132,7 @@ namespace CompMs.Common.Lipidomics
             return new[]
             {
                 new SpectrumPeak(lipidMass - chainMass + adduct.AdductIonAccurateMass, 100d, $"-{acylChain}"),
-                new SpectrumPeak(lipidMass - chainMass - H2O + MassDiffDictionary.HydrogenMass + adduct.AdductIonAccurateMass, 100d, $"-{acylChain}-H2O"),
-                new SpectrumPeak(lipidMass - chainMass + adduct.AdductIonAccurateMass, 100d, $"-{acylChain}-O"),
+                new SpectrumPeak(lipidMass - chainMass - H2O + MassDiffDictionary.HydrogenMass + adduct.AdductIonAccurateMass, 100d, $"-{acylChain}-O"),
             };
         }
 
