@@ -128,6 +128,8 @@
     <Compile Include="Base\Utility.cs" />
     <Compile Include="Base\DataPoint.cs" />
     <Compile Include="Chart\ScatterControl.cs" />
+    <Compile Include="UI\ExecutableBar.cs" />
+    <Compile Include="UI\LabeledBar.cs" />
     <Compile Include="UI\LabeledContent.cs" />
     <Compile Include="UI\ProgressBarMultiContainerVM.cs" />
     <Compile Include="UI\ProgressBarMultiContainerWindow.xaml.cs">

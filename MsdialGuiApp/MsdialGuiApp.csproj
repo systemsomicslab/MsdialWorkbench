@@ -524,6 +524,9 @@
       <DependentUpon>AnnotationProcessSettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Setting\AnnotatorDataTemplateSelector.cs" />
+    <Compile Include="View\Setting\DatasetSettingView.xaml.cs">
+      <DependentUpon>DatasetSettingView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Setting\EnzymeSettingWin.xaml.cs">
       <DependentUpon>EnzymeSettingWin.xaml</DependentUpon>
     </Compile>
@@ -532,6 +535,9 @@
     </Compile>
     <Compile Include="View\Setting\ModificationSettingWin.xaml.cs">
       <DependentUpon>ModificationSettingWin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Setting\ProjectSettingView.xaml.cs">
+      <DependentUpon>ProjectSettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ShortMessageView.xaml.cs">
       <DependentUpon>ShortMessageView.xaml</DependentUpon>
@@ -888,6 +894,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Setting\DatasetSettingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Setting\EnzymeSettingWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -897,6 +907,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\ModificationSettingWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\ProjectSettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
