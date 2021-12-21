@@ -406,7 +406,7 @@ namespace CompMs.App.MsdialConsole.Parser
                 case "corrdec minimum ms2 relative intensity":
                     if (float.TryParse(valueLower, out float corrdecminms2relativeint)) param.CorrDecParam.MinMS2RelativeIntensity = corrdecminms2relativeint; return true;
                 case "corrdec remove peaks larger than precursor":
-                    if (valueLower == "true" || valueLower == "false") param.CorrDecParam.RemoveAfterPrecursor = bool.Parse(valueLower); return true;
+                    if (valueLower == "true" || valueLower == "false") param.CorrDecParam.CorrDecRemoveAfterPrecursor = bool.Parse(valueLower); return true;
                 default: return false;
             }
         }

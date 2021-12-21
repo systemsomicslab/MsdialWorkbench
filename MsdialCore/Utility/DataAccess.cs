@@ -340,6 +340,71 @@ namespace CompMs.MsdialCore.Utility {
             }
         }
 
+        public static List<ChromatogramPeak> GetEicPeaklistByHighestBasePeakMz(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> features, double mzTol, IonMode ionmode,
+            ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, double chromBegin = double.MinValue, double chromEnd = double.MaxValue) {
+            if (spectrumList.IsEmptyOrNull()) return null;
+            if (features.IsEmptyOrNull()) return null;
+
+            var maxSpotID = 0;
+            var maxIntensity = double.MinValue;
+            for (int i = 0; i < features.Count; i++) {
+                if (features[i].PeakHeightTop > maxIntensity) {
+                    maxIntensity = features[i].PeakHeightTop;
+                    maxSpotID = i;
+                }
+            }
+            var hSpot = features[maxSpotID];
+            return GetMs1Peaklist(spectrumList, hSpot.PrecursorMz, mzTol, ionmode, type, unit, chromBegin, chromEnd);
+        }
+
+        public static List<ChromatogramPeak> GetTicPeaklist(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionmode,
+            ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, double chromBegin = double.MinValue, double chromEnd = double.MaxValue) {
+            if (spectrumList == null || spectrumList.Count == 0) return null;
+            var peaklist = new List<ChromatogramPeak>();
+            var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
+
+            foreach (var (spectrum, index) in spectrumList.WithIndex().Where(n => n.Item1.ScanPolarity == scanPolarity && n.Item1.MsLevel <= 1)) {
+                var chromX = type == ChromXType.Drift ? spectrum.DriftTime : spectrum.ScanStartTime;
+                if (chromX < chromBegin) continue;
+                if (chromX > chromEnd) break;
+                var massSpectra = spectrum.Spectrum;
+                RetrieveTotalIntensity(massSpectra, out double basepeakMz, out double basepeakIntensity, out double summedIntensity);
+                peaklist.Add(new ChromatogramPeak() { ID = index, ChromXs = new ChromXs(chromX, type, unit), Mass = basepeakMz, Intensity = summedIntensity });
+            }
+
+            return peaklist;
+        }
+
+        public static List<ChromatogramPeak> GetBpcPeaklist(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionmode,
+            ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, double chromBegin = double.MinValue, double chromEnd = double.MaxValue) {
+            if (spectrumList == null || spectrumList.Count == 0) return null;
+            var peaklist = new List<ChromatogramPeak>();
+            var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
+
+            foreach (var (spectrum, index) in spectrumList.WithIndex().Where(n => n.Item1.ScanPolarity == scanPolarity && n.Item1.MsLevel <= 1)) {
+                var chromX = type == ChromXType.Drift ? spectrum.DriftTime : spectrum.ScanStartTime;
+                if (chromX < chromBegin) continue;
+                if (chromX > chromEnd) break;
+                var massSpectra = spectrum.Spectrum;
+                RetrieveTotalIntensity(massSpectra, out double basepeakMz, out double basepeakIntensity, out double summedIntensity);
+                peaklist.Add(new ChromatogramPeak() { ID = index, ChromXs = new ChromXs(chromX, type, unit), Mass = basepeakMz, Intensity = basepeakIntensity });
+            }
+
+            return peaklist;
+        }
+
+        public static void RetrieveTotalIntensity(RawPeakElement[] peaks, out double basepeakMz, out double basepeakIntensity, out double summedIntensity) {
+            summedIntensity = 0; basepeakIntensity = 0; basepeakMz = 0;
+            for (int i = 0; i < peaks.Length; i++) {
+                var peak = peaks[i];
+                summedIntensity += peak.Intensity;
+                if (basepeakIntensity < peak.Intensity) {
+                    basepeakIntensity = peak.Intensity;
+                    basepeakMz = peak.Mz;
+                }
+            }
+        }
+
 
         /// <summary>
         /// from the list of m/z and intensity
@@ -560,6 +625,16 @@ namespace CompMs.MsdialCore.Utility {
             }
 
             return driftBinToChromPeak.Values.OrderBy(n => n.ChromXs.Value).ToList();
+        }
+
+        public static List<ChromatogramPeak> GetDriftChromatogramByRtRange(IReadOnlyList<RawSpectrum> spectrumList,
+           float rtBegin, float rtEnd, float mz, float mztol, float minDt, float maxDt) {
+            var minRt = Math.Min(rtBegin, rtEnd);
+            var maxRt = Math.Max(rtBegin, rtEnd);
+            var centerRt = (maxRt + minRt) * 0.5F;
+            var rtWidth = maxRt - minRt;
+
+            return GetDriftChromatogramByRtMz(spectrumList, centerRt, rtWidth, mz, mztol, minDt, maxDt);
         }
 
         public static List<ChromatogramPeak> GetDriftChromatogramByRtMz(IReadOnlyList<RawSpectrum> spectrumList,

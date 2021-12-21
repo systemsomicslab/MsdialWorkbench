@@ -59,9 +59,13 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         [RegularExpression("[0-9]+")]
         public ReactiveProperty<string> AnalysisBatch { get; }
 
-        [Required(ErrorMessage = "InjectionVolume is required.")]
+        [Required(ErrorMessage = "Dilution factor is required.")]
         [RegularExpression("[0-9]*\\.?[0-9]+")]
-        public ReactiveProperty<string> InjectionVolume { get; }
+        public ReactiveProperty<string> DilutionFactor { get; }
+
+        [Required(ErrorMessage = "Response variable is required.")]
+        [RegularExpression("[0-9]*\\.?[0-9]+")]
+        public ReactiveProperty<string> ResponseVariable { get; }
 
         public Subject<Unit> CommitTrigger { get; } = new Subject<Unit>();
 
@@ -136,12 +140,20 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
                 .Subscribe(x => File.AnalysisBatch = int.Parse(x))
                 .AddTo(Disposables);
 
-            InjectionVolume = new ReactiveProperty<string>(File.InjectionVolume.ToString())
-                .SetValidateAttribute(() => InjectionVolume)
+            DilutionFactor = new ReactiveProperty<string>(File.DilutionFactor.ToString())
+                .SetValidateAttribute(() => DilutionFactor)
                 .AddTo(Disposables);
             CommitAsObservable
-                .WithLatestFrom(InjectionVolume, (_, x) => x)
-                .Subscribe(x => File.InjectionVolume = double.Parse(x))
+                .WithLatestFrom(DilutionFactor, (_, x) => x)
+                .Subscribe(x => File.DilutionFactor = double.Parse(x))
+                .AddTo(Disposables);
+
+            ResponseVariable = new ReactiveProperty<string>(File.ResponseVariable.ToString())
+                .SetValidateAttribute(() => ResponseVariable)
+                .AddTo(Disposables);
+            CommitAsObservable
+                .WithLatestFrom(ResponseVariable, (_, x) => x)
+                .Subscribe(x => File.ResponseVariable = double.Parse(x))
                 .AddTo(Disposables);
 
             HasErrors = new[]
@@ -154,7 +166,8 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
                 AnalysisFileId.ObserveHasErrors,
                 AnalysisFileIncluded.ObserveHasErrors,
                 AnalysisBatch.ObserveHasErrors,
-                InjectionVolume.ObserveHasErrors,
+                DilutionFactor.ObserveHasErrors,
+                ResponseVariable.ObserveHasErrors
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim(true)
