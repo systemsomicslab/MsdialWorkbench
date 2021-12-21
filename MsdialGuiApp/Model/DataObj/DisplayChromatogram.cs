@@ -10,19 +10,33 @@ using System.Windows.Media;
 namespace CompMs.App.Msdial.Model.DataObj {
     public class DisplayChromatogram : BindableBase {
 
-        public DisplayChromatogram(List<ChromatogramPeak> peaks, string title = "na") {
+        public DisplayChromatogram(List<ChromatogramPeak> peaks, Pen linePen = null, string title = "na") {
             if (peaks is null) {
                 ChromatogramPeaks = new List<ChromatogramPeakWrapper>();
             }
             else {
                 ChromatogramPeaks = peaks.Select(n => new ChromatogramPeakWrapper(n)).ToList();
             }
+            if (linePen is null) {
+                LinePen = new Pen(Brushes.Black, 1.0);
+            }
+            else {
+                LinePen = linePen;
+            }
             Name = title;
+            LinePen.Freeze();
         }
 
-        public DisplayChromatogram(List<ChromatogramPeakWrapper> peaks, string title = "na") {
+        public DisplayChromatogram(List<ChromatogramPeakWrapper> peaks, Pen linePen = null, string title = "na") {
             ChromatogramPeaks = peaks;
             Name = title;
+            if (linePen is null) {
+                LinePen = new Pen(Brushes.Black, 1.0);
+            }
+            else {
+                LinePen = linePen;
+            }
+            LinePen.Freeze();
         }
 
         public List<ChromatogramPeakWrapper> ChromatogramPeaks { get; } = new List<ChromatogramPeakWrapper>();
@@ -34,7 +48,7 @@ namespace CompMs.App.Msdial.Model.DataObj {
         }
         private bool visible = true;
 
-        public Pen LinePen { get; set; } = new Pen(Brushes.Red, 1.0); 
+        public Pen LinePen { get; }
 
         public double MaxIntensity { get => ChromatogramPeaks.Any() ? ChromatogramPeaks.Max(n => n.Intensity) : 0.0; }
         public double MaxChromX { get => (double)(ChromatogramPeaks.Any() ? ChromatogramPeaks.Max(n => n.ChromXValue) : 1.0); }

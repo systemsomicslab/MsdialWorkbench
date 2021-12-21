@@ -178,6 +178,7 @@
     <Compile Include="Model\Loader\BpcLoader.cs" />
     <Compile Include="Model\Loader\TicLoader.cs" />
     <Compile Include="Model\Search\CompoundResultCollection.cs" />
+    <Compile Include="Model\Setting\DisplayEicSettingModel.cs" />
     <Compile Include="Model\Setting\IdentifySettingModel.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
     <Compile Include="Model\Chart\AlignmentEicModel.cs" />
@@ -264,6 +265,7 @@
     <Compile Include="ViewModel\Lcimms\LcimmsAnnotatorSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\MsdialLcimmsParameterViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsCompoundSearchViewModel.cs" />
+    <Compile Include="ViewModel\Setting\DisplayEicSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\IdentifySettingViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
@@ -294,6 +296,7 @@
     <Compile Include="ViewModel\Setting\IAnnotatorSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\MassAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\ModificationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\PeakFeatureSearchValueViewModel.cs" />
     <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
     <Compile Include="View\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
@@ -528,6 +531,9 @@
       <DependentUpon>AnnotationProcessSettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Setting\AnnotatorDataTemplateSelector.cs" />
+    <Compile Include="View\Setting\EICDisplaySettingView.xaml.cs">
+      <DependentUpon>EICDisplaySettingView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Setting\EnzymeSettingWin.xaml.cs">
       <DependentUpon>EnzymeSettingWin.xaml</DependentUpon>
     </Compile>
@@ -897,6 +903,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\AnnotationSettingStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\EICDisplaySettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

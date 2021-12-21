@@ -79,8 +79,8 @@ namespace CompMs.App.Msdial.Model.Loader
                 LoadEicFocusedCore(target, eic));
         }
 
-        internal List<ChromatogramPeakWrapper> LoadEicTrace(ChromatogramPeakFeatureModel target) {
-            var eic = LoadEicCore(target);
+        internal List<ChromatogramPeakWrapper> LoadEicTrace(double mass, double massTolerance) {
+            var eic = LoadEicCore(mass, massTolerance);
             return eic;
         }
 
@@ -103,6 +103,20 @@ namespace CompMs.App.Msdial.Model.Loader
                 DataAccess.GetMs1Peaklist(
                         provider.LoadMs1Spectrums(),
                         target.Mass, parameter.CentroidMs1Tolerance,
+                        parameter.IonMode,
+                        chromXType, chromXUnit,
+                        rangeBegin, rangeEnd),
+                    parameter.SmoothingMethod, parameter.SmoothingLevel)
+            .Where(peak => peak != null)
+            .Select(peak => new ChromatogramPeakWrapper(peak))
+            .ToList();
+        }
+
+        protected virtual List<ChromatogramPeakWrapper> LoadEicCore(double mass, double massTolerance) {
+            return DataAccess.GetSmoothedPeaklist(
+                DataAccess.GetMs1Peaklist(
+                        provider.LoadMs1Spectrums(),
+                        mass, parameter.CentroidMs1Tolerance,
                         parameter.IonMode,
                         chromXType, chromXUnit,
                         rangeBegin, rangeEnd),

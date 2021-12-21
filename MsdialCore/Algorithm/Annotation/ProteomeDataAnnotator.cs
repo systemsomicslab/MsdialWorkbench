@@ -95,8 +95,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                     scores.Add(refPepScore);
                     scores.Add(decoyScore);
 
-                    Console.WriteLine("Score\t{0}\tType\t{1}", refPepScore.AndromedaScore, "Forward");
-                    Console.WriteLine("Score\t{0}\tType\t{1}", decoyScore.AndromedaScore, "Decoy");
+                    //Console.WriteLine("Score\t{0}\tType\t{1}", refPepScore.AndromedaScore, "Forward");
+                    //Console.WriteLine("Score\t{0}\tType\t{1}", decoyScore.AndromedaScore, "Decoy");
                 }
             }
             return scores;

@@ -182,17 +182,18 @@
                               KeyTip="T"/>
                 <RibbonButton Label="Display extracted ion chromatogram" LargeImageSource="{StaticResource Extracted_ion_chromatogram_is}"
                               IsEnabled="True"
+                              Command="{Binding ShowEicCommand}"
                               KeyTip="E"/>
                 <RibbonButton Label="Display base peak chromatogram" LargeImageSource="{StaticResource Base_peak_chromatogram_is}"
                               IsEnabled="True"
+                              Command="{Binding ShowBpcCommand}"
                               KeyTip="B"/>
                 <RibbonButton Label="Display TIC, BPC, and most abundant ion's EIC" LargeImageSource="{StaticResource TIC_BPC_and_most_abundanct_EIC_is}"
-                              IsEnabled="false"
-                              Command="{Binding DataContext.FilePropertyResetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                              IsEnabled="True"
+                              Command="{Binding ShowTicBpcRepEICCommand}"
                               KeyTip="C"/>
                 <RibbonButton Label="Display retention time correction window"
                               IsEnabled="false"
-                              Command="{Binding DataContext.FilePropertyResetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                               KeyTip="R"/>
             </RibbonGroup>
         </RibbonTab>

@@ -224,5 +224,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public DelegateCommand<Window> ShowTicCommand => showTicCommand ?? (showTicCommand = new DelegateCommand<Window>(model.ShowTIC));
         private DelegateCommand<Window> showTicCommand;
+
+        public DelegateCommand<Window> ShowBpcCommand => showBpcCommand ?? (showBpcCommand = new DelegateCommand<Window>(model.ShowBPC));
+        private DelegateCommand<Window> showBpcCommand;
+
+        public DelegateCommand<Window> ShowTicBpcRepEICCommand => showTicBpcRepEIC ?? (showTicBpcRepEIC = new DelegateCommand<Window>(model.ShowTicBpcRepEIC));
+        private DelegateCommand<Window> showTicBpcRepEIC;
+
+        public DelegateCommand<Window> ShowEicCommand => showEicCommand ?? (showEicCommand = new DelegateCommand<Window>(model.ShowEIC));
+        private DelegateCommand<Window> showEicCommand;
     }
 }

@@ -27,5 +27,12 @@ namespace CompMs.App.Msdial.Common
                 Brushes.DarkGreen,      Brushes.Lime,           Brushes.MediumBlue
             }
         );
+
+        public static SolidColorBrush GetChartBrush(int i) {
+            while (i > SolidColorBrushList.Count - 1) {
+                i = i - SolidColorBrushList.Count;
+            }
+            return SolidColorBrushList[i];
+        }
     }
 }
