@@ -22,8 +22,6 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             Omics = omics;
         }
 
-        private static readonly double MsdialRtMatchThreshold = 0.5;
-
         public string Id { get; }
         public int Priority { get; }
         public TargetOmics Omics { get; }
@@ -108,7 +106,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
             var diff = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value);
-            result.IsRtMatch = diff <= MsdialRtMatchThreshold && diff <= parameter.RtTolerance;
+            result.IsRtMatch = diff <= parameter.RtTolerance;
         }
 
         private void ValidateOnLipidomics(

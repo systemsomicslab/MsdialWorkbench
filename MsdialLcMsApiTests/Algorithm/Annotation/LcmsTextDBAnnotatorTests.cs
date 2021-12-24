@@ -1,9 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
-using CompMs.MsdialCore.DataObj;
+using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -416,7 +417,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var reference = new MoleculeMsReference {
                 Name = "PC 18:0_20:4", CompoundClass = "PC",
                 PrecursorMz = 810.601, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min),
-                AdductType = new Common.DataObj.Property.AdductIon { AdductIonName = "[M+H]+" },
+                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
             };
             var parameter = new MsRefSearchParameterBase
             {
@@ -445,7 +446,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var reference = new MoleculeMsReference {
                 Name = "PC 18:0_20:4", CompoundClass = "PC",
                 PrecursorMz = 810.601, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min),
-                AdductType = new Common.DataObj.Property.AdductIon { AdductIonName = "[M+H]+" },
+                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
             };
             var parameter = new MsRefSearchParameterBase
             {
@@ -475,36 +476,6 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             Assert.IsTrue(result.IsPrecursorMzMatch);
             Assert.IsTrue(result.IsRtMatch);
         }
-
-        [TestMethod()]
-        public void ValidateRtMatchTest() {
-            var reference = new MoleculeMsReference {
-                Name = "PC 18:0_20:4", CompoundClass = "PC",
-                PrecursorMz = 810.601, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min),
-                AdductType = new Common.DataObj.Property.AdductIon { AdductIonName = "[M+H]+" },
-            };
-            var parameter = new MsRefSearchParameterBase
-            {
-                Ms1Tolerance = 0.01f,
-                RtTolerance = 2f,
-                IsUseTimeForAnnotationScoring = true,
-            };
-            var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
-
-            var target = new ChromatogramPeakFeature {
-                PrecursorMz = 810.604, ChromXs = new ChromXs(2.51, ChromXType.RT, ChromXUnit.Min),
-            };
-
-            var result = annotator.CalculateScore(BuildQuery(target, parameter), reference);
-            annotator.Validate(result, BuildQuery(target, parameter), reference);
-
-            Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
-            Console.WriteLine($"IsRtMatch: {result.IsRtMatch}");
-
-            Assert.IsTrue(result.IsPrecursorMzMatch);
-            Assert.IsFalse(result.IsRtMatch);
-        }
-
 
         [TestMethod()]
         public void SelectTopHitTest() {

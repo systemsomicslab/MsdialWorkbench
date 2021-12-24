@@ -1,12 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Parameter;
+using CompMs.Common.Parser;
+using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using CompMs.Common.Components;
-using CompMs.Common.Parameter;
-using CompMs.MsdialCore.DataObj;
 using System.Linq;
-using CompMs.Common.DataObj.Result;
-using CompMs.MsdialCore.Algorithm.Annotation;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
 {
@@ -371,7 +372,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
             var reference = new MoleculeMsReference {
                 Name = "PC 18:0_20:4", CompoundClass = "PC",
                 PrecursorMz = 810.601, CollisionCrossSection = 100,
-                AdductType = new Common.DataObj.Property.AdductIon { AdductIonName = "[M+H]+" },
+                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
                     new SpectrumPeak { Mass = 184.073, Intensity = 100 },
@@ -450,56 +451,11 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation.Tests
         }
 
         [TestMethod()]
-        public void CalculateScoreCcsMatchTest() {
-            var reference = new MoleculeMsReference {
-                Name = "PC 18:0_20:4", CompoundClass = "PC",
-                PrecursorMz = 810.601, CollisionCrossSection = 100,
-                AdductType = new Common.DataObj.Property.AdductIon { AdductIonName = "[M+H]+" },
-                Spectrum = new List<SpectrumPeak>
-                {
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100 },
-                    new SpectrumPeak { Mass = 506.361, Intensity = 5 },
-                    new SpectrumPeak { Mass = 524.372, Intensity = 5 },
-                    new SpectrumPeak { Mass = 526.330, Intensity = 5 },
-                    new SpectrumPeak { Mass = 544.340, Intensity = 5 },
-                    new SpectrumPeak { Mass = 810.601, Intensity = 30 },
-                }
-            };
-            var parameter = new MsRefSearchParameterBase
-            {
-                Ms1Tolerance = 0.01f,
-                Ms2Tolerance = 0.05f,
-                CcsTolerance = 12f,
-                IsUseCcsForAnnotationScoring = true,
-            };
-            var annotator = new ImmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
-
-            var target = new ChromatogramPeakFeature {
-                PrecursorMz = 810.604, CollisionCrossSection = 111,
-                Spectrum = new List<SpectrumPeak>
-                {
-                    new SpectrumPeak { Mass = 86.094, Intensity = 5, },
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100, },
-                    new SpectrumPeak { Mass = 524.367, Intensity = 1, },
-                    new SpectrumPeak { Mass = 810.604, Intensity = 25, },
-                }
-            };
-
-            var result = annotator.CalculateScore(BuildQuery(target, parameter), reference);
-
-            Console.WriteLine($"CcsSimilarity: {result.CcsSimilarity}");
-            Console.WriteLine($"IsCcsMatch: {result.IsCcsMatch}");
-
-            Assert.IsTrue(result.CcsSimilarity > 0);
-            Assert.IsFalse(result.IsCcsMatch);
-        }
-
-        [TestMethod()]
         public void CalculateScoreCcsNotUsedTest() {
             var reference = new MoleculeMsReference {
                 Name = "PC 18:0_20:4", CompoundClass = "PC",
                 PrecursorMz = 810.601, CollisionCrossSection = 100,
-                AdductType = new Common.DataObj.Property.AdductIon { AdductIonName = "[M+H]+" },
+                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
                     new SpectrumPeak { Mass = 184.073, Intensity = 100 },
