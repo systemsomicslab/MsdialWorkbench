@@ -415,7 +415,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                         counter++;
                         displayChroms.Add(chrom);
                     }
-                    var vm = new ChromatogramsViewModel(new ChromatogramsModel("EIC", displayChroms));
+                    var vm = new ChromatogramsViewModel(new ChromatogramsModel("EIC", displayChroms, "EIC", "Retention time [min]", "Absolute ion abundance"));
                     var view = new DisplayChromatogramsView() {
                         DataContext = vm,
                         Owner = owner,
@@ -444,7 +444,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new DisplayChromatogram(eic, new Pen(Brushes.Blue, 1.0), "EIC of m/z " + Math.Round(maxPeakMz, 5).ToString())
             };
 
-            var vm = new ChromatogramsViewModel(new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms));
+            var vm = new ChromatogramsViewModel(new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Retention time [min]", "Absolute ion abundance"));
             var view = new DisplayChromatogramsView() {
                 DataContext = vm,
                 Owner = owner,

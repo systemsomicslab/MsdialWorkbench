@@ -55,13 +55,13 @@ namespace CompMs.App.Msdial.Model.Dims
             get => timeBegin;
             set => SetProperty(ref timeBegin, value);
         }
-        private double timeBegin = 0.5;
+        private double timeBegin = 0.0;
 
         public double TimeEnd {
             get => timeEnd;
             set => SetProperty(ref timeEnd, value);
         }
-        private double timeEnd = 6;
+        private double timeEnd = 100;
 
         public double MassTolerance {
             get => massTolerance;

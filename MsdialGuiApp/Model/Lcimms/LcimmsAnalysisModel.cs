@@ -195,6 +195,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
         private double focusMz;
 
+        public EicLoader EicLoader { get; } // TODO
+
         void OnTargetChanged(ChromatogramPeakFeatureModel target) {
             if (target != null) {
                 FocusID = target.InnerModel.MasterPeakID;

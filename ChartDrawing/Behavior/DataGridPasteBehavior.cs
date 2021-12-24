@@ -26,11 +26,11 @@ namespace CompMs.Graphics.Behavior
 
             if ((bool)e.NewValue)
             {
-                datagrid.KeyDown += Datagrid_KeyDown;
+                datagrid.PreviewKeyDown += Datagrid_KeyDown;
             }
             else
             {
-                datagrid.KeyDown -= Datagrid_KeyDown;
+                datagrid.PreviewKeyDown -= Datagrid_KeyDown;
             }
         }
 
