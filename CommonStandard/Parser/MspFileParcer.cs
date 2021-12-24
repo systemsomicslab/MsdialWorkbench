@@ -2,25 +2,18 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.FormulaGenerator.Parser;
-using CompMs.Common.Lipidomics;
 using CompMs.Common.MessagePack;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace CompMs.Common.Parser {
-    public sealed class MspFileParser {
-        private MspFileParser() { }
+namespace CompMs.Common.Parser
+{
+    public static class MspFileParser {
         static IupacDatabase IupacDatabase = IupacResourceParser.GetIUPACDatabase();
 
         /// <summary>
