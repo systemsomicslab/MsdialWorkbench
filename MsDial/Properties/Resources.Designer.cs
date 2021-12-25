@@ -61,7 +61,7 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Jan. 5th, 2021.
+        ///   Looks up a localized string similar to Dec. 25th, 2021.
         /// </summary>
         internal static string DATE {
             get {
@@ -88,7 +88,7 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MS-DIAL ver. 4.74.
+        ///   Looks up a localized string similar to MS-DIAL ver. 4.80.
         /// </summary>
         internal static string VERSION {
             get {
