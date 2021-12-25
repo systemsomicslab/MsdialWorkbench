@@ -188,7 +188,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
                 ValidateBase(result, property, reference, parameter);
         }
 
-        private static readonly double MsdialCcsMatchThreshold = 10d;
+        //private static readonly double MsdialCcsMatchThreshold = 10d;
         private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
             result.IsSpectrumMatch = result.WeightedDotProduct >= parameter.WeightedDotProductCutOff
                 && result.SimpleDotProduct >= parameter.SimpleDotProductCutOff
@@ -200,7 +200,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
             var diff = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection);
-            result.IsCcsMatch = diff <= MsdialCcsMatchThreshold && diff <= parameter.CcsTolerance;
+            result.IsCcsMatch = diff <= parameter.CcsTolerance;
         }
 
         private static void ValidateOnLipidomics(

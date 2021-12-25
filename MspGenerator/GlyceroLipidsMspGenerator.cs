@@ -333,7 +333,7 @@ namespace CompMs.MspGenerator
                                 if (adductIon == "[M+H]+" && chain1Double > 0)
                                 {
                                     name = "PE P-" + chain1Carbon + ":" + (chain1Double - 1) + "_" + chain2String;
-                                    shortName = "PE O-" + totalChain + ":" + (totalBond - 1);
+                                    shortName = "PE P-" + totalChain + ":" + (totalBond - 1);
                                 }
 
                                 break;

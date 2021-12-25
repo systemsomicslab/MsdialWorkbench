@@ -92,23 +92,36 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             .Subscribe(_ => Ms1PeaksView?.Refresh())
             .AddTo(Disposables);
 
-            var hAxis = this.model.PlotModel
+            var rtHAxis = this.model.RtMzPlotModel
                 .ObserveProperty(m => m.HorizontalRange)
-                .ToReactiveAxisManager<double>(new ChartMargin(0.05))
+                .ToReactiveAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
-            var vAxis = this.model.PlotModel
+            var dtHAxis = this.model.DtMzPlotModel
+                .ObserveProperty(m => m.HorizontalRange)
+                .ToReactiveAxisManager<double>(new RelativeMargin(0.05))
+                .AddTo(Disposables);
+            var vAxis = this.model.RtMzPlotModel
                 .ObserveProperty(m => m.VerticalRange)
-                .ToReactiveAxisManager<double>(new ChartMargin(0.05))
+                .ToReactiveAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
 
-            PlotViewModel = new AnalysisPeakPlotViewModel(
-                this.model.PlotModel,
+            RtMzPlotViewModel = new AnalysisPeakPlotViewModel(
+                this.model.RtMzPlotModel,
                 brushSource: Observable.Return(this.model.Brush),
-                horizontalAxis: hAxis,
+                horizontalAxis: rtHAxis,
                 verticalAxis: vAxis).AddTo(Disposables);
-            EicViewModel = new EicViewModel(
-                this.model.EicModel,
-                horizontalAxis: hAxis).AddTo(Disposables);
+            RtEicViewModel = new EicViewModel(
+                this.model.RtEicModel,
+                horizontalAxis: rtHAxis).AddTo(Disposables);
+
+            DtMzPlotViewModel = new AnalysisPeakPlotViewModel(
+                this.model.DtMzPlotModel,
+                brushSource: Observable.Return(this.model.Brush),
+                horizontalAxis: dtHAxis,
+                verticalAxis: vAxis).AddTo(Disposables);
+            DtEicViewModel = new EicViewModel(
+                this.model.DtEicModel,
+                horizontalAxis: dtHAxis).AddTo(Disposables);
 
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
                 this.model.parameter.ProjectParam.SpectrumCommentToColorBytes
@@ -152,8 +165,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 
-        public AnalysisPeakPlotViewModel PlotViewModel { get; private set; }
-        public EicViewModel EicViewModel { get; private set; }
+        public AnalysisPeakPlotViewModel RtMzPlotViewModel { get; private set; }
+        public EicViewModel RtEicViewModel { get; private set; }
+        public AnalysisPeakPlotViewModel DtMzPlotViewModel { get; private set; }
+        public EicViewModel DtEicViewModel { get; private set; }
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; private set; }
         public SurveyScanViewModel SurveyScanViewModel { get; private set; }
 

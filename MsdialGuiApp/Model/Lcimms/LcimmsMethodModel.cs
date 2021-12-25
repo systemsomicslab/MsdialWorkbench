@@ -1,22 +1,38 @@
-﻿using CompMs.App.Msdial.Model.Core;
-using CompMs.App.Msdial.ViewModel;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.View.Chart;
+using CompMs.App.Msdial.View.Setting;
+using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialCore.Utility;
+using CompMs.MsdialLcImMsApi.Algorithm;
 using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcImMsApi.DataObj;
-using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Process;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
@@ -26,18 +42,15 @@ namespace CompMs.App.Msdial.Model.Lcimms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
-        public LcimmsMethodModel(MsdialLcImMsDataStorage storage, IDataProviderFactory<AnalysisFileBean> providerFactory)
+        public LcimmsMethodModel(MsdialLcImMsDataStorage storage)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
             }
 
-            if (providerFactory is null) {
-                throw new ArgumentNullException(nameof(providerFactory));
-            }
-
             Storage = storage;
-            this.providerFactory = providerFactory;
+            providerFactory = new StandardDataProviderFactory();
+            accProviderFactory = new LcimmsAccumulateDataProviderFactory();
         }
 
         public MsdialLcImMsDataStorage Storage {
@@ -58,20 +71,23 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
         private LcimmsAlignmentModel alignmentModel;
 
+        private IAnnotationProcess annotationProcess;
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
-        private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
+        private readonly IDataProviderFactory<RawMeasurement> providerFactory;
+        private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
 
         protected override void LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
-            var provider = providerFactory.Create(analysisFile);
+            var rawObj = DataAccess.LoadMeasurement(analysisFile, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000);
             AnalysisModel = new LcimmsAnalysisModel(
                 analysisFile,
-                provider,
-                null, Storage.MsdialLcImMsParameter,
-                null, null)
+                providerFactory.Create(rawObj),
+                accProviderFactory.Create(rawObj),
+                Storage.DataBaseMapper,
+                Storage.MsdialLcImMsParameter)
             .AddTo(Disposables);
         }
 
@@ -86,25 +102,50 @@ namespace CompMs.App.Msdial.Model.Lcimms
             .AddTo(Disposables);
         }
 
-        public void SetStorageContent(AnalysisParamSetVM<MsdialLcImMsParameter> paramSetVM) {
-            if (paramSetVM.TogetherWithAlignment) {
-                var alignmentResultFileName = paramSetVM.AlignmentResultFileName;
+        public void SetAnalysisParameter(LcimmsAnalysisParameterSetModel analysisParamSetModel) {
+            if (Storage.MsdialLcImMsParameter.ProcessOption.HasFlag(ProcessOption.Alignment)) {
+                var filename = analysisParamSetModel.AlignmentResultFileName;
                 AlignmentFiles.Add(
                     new AlignmentFileBean
                     {
                         FileID = AlignmentFiles.Count,
-                        FileName = alignmentResultFileName,
-                        FilePath = System.IO.Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
-                        EicFilePath = System.IO.Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, alignmentResultFileName + ".EIC.aef"),
-                        SpectraFilePath = System.IO.Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl)
-                    }
-                );
+                        FileName = filename,
+                        FilePath = Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.arf}"),
+                        EicFilePath = Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, $"{filename}.EIC.aef"),
+                        SpectraFilePath = Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.dcl}"),
+                    });
                 Storage.AlignmentFiles = AlignmentFiles.ToList();
             }
+
+            annotationProcess = BuildAnnotationProcess(Storage.DataBases, Storage.MsdialLcImMsParameter.PeakPickBaseParam);
+            Storage.DataBaseMapper = CreateDataBaseMapper(Storage.DataBases);
+        }
+
+        private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
+            var containers = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
+            foreach (var annotators in storage.MetabolomicsDataBases) {
+                containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
+            }
+            return new StandardAnnotationProcess<IAnnotationQuery>(new AnnotationQueryFactory(parameter), containers);
+        }
+
+        private DataBaseMapper CreateDataBaseMapper(DataBaseStorage storage) {
+            var mapper = new DataBaseMapper();
+            foreach (var db in storage.MetabolomicsDataBases) {
+                foreach (var pair in db.Pairs) {
+                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
+                }
+            }
+            foreach (var db in storage.ProteomicsDataBases) {
+                foreach (var pair in db.Pairs) {
+                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
+                }
+            }
+            return mapper;
         }
 
         public async Task RunAnnotationProcess(AnalysisFileBean analysisfile, Action<int> action) {
-            await Task.Run(() => FileProcess.Run(analysisfile, storage, isGuiProcess: true, reportAction: action));
+            await Task.Run(() => FileProcess.Run(analysisfile, providerFactory, accProviderFactory, annotationProcess, storage, isGuiProcess: true, reportAction: action));
         }
 
         public void RunAlignmentProcess() {
@@ -125,9 +166,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 pointerss.Add((version, pointers, isAnnotationInfo));
             }
 
-            var streams = new List<System.IO.FileStream>();
+            var streams = new List<FileStream>();
             try {
-                streams = files.Select(file => System.IO.File.OpenRead(file.DeconvolutionFilePath)).ToList();
+                streams = files.Select(file => File.OpenRead(file.DeconvolutionFilePath)).ToList();
                 foreach (var spot in spots) {
                     var repID = spot.RepresentativeFileID;
                     var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
@@ -144,6 +185,99 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public void SaveProject() {
             AlignmentModel?.SaveProject();
+        }
+
+        public void ShowTIC(Window owner) {
+            var container = Storage;
+            var analysisModel = AnalysisModel;
+            if (analysisModel is null) return;
+
+            var tic = analysisModel.EicLoader.LoadTic();
+            var vm = new ChromatogramsViewModel(new ChromatogramsModel("Total ion chromatogram", new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC")));
+            var view = new DisplayChromatogramsView() {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            view.Show();
+        }
+
+        public void ShowBPC(Window owner) {
+            var container = Storage;
+            var analysisModel = AnalysisModel;
+            if (analysisModel is null) return;
+
+            var bpc = analysisModel.EicLoader.LoadBpc();
+            var vm = new ChromatogramsViewModel(new ChromatogramsModel("Base peak chromatogram", new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC")));
+            var view = new DisplayChromatogramsView() {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            view.Show();
+        }
+
+        public void ShowEIC(Window owner) {
+            var container = Storage;
+            var analysisModel = AnalysisModel;
+            if (analysisModel is null) return;
+
+            var param = container.MsdialLcImMsParameter;
+            var model = new Setting.DisplayEicSettingModel(param);
+            var dialog = new EICDisplaySettingView() {
+                DataContext = new DisplayEicSettingViewModel(model),
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            if (dialog.ShowDialog() == true) {
+                param.AdvancedProcessOptionBaseParam.DiplayEicSettingValues = model.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
+                var displayEICs = param.AdvancedProcessOptionBaseParam.DiplayEicSettingValues;
+                if (!displayEICs.IsEmptyOrNull()) {
+                    var displayChroms = new List<DisplayChromatogram>();
+                    var counter = 0;
+                    foreach (var set in displayEICs.Where(n => n.Mass > 0 && n.MassTolerance > 0)) {
+                        var eic = analysisModel.EicLoader.LoadEicTrace(set.Mass, set.MassTolerance);
+                        var subtitle = "[" + Math.Round(set.Mass - set.MassTolerance, 4).ToString() + "-" + Math.Round(set.Mass + set.MassTolerance, 4).ToString() + "]";
+                        var chrom = new DisplayChromatogram(eic, new Pen(ChartBrushes.GetChartBrush(counter), 1.0), set.Title + "; " + subtitle);
+                        counter++;
+                        displayChroms.Add(chrom);
+                    }
+                    var vm = new ChromatogramsViewModel(new ChromatogramsModel("EIC", displayChroms, "EIC", "Retention time [min]", "Absolute ion abundance"));
+                    var view = new DisplayChromatogramsView() {
+                        DataContext = vm,
+                        Owner = owner,
+                        WindowStartupLocation = WindowStartupLocation.CenterOwner
+                    };
+                    view.Show();
+                }
+            }
+        }
+
+        public void ShowTicBpcRepEIC(Window owner) {
+            var container = Storage;
+            var analysisModel = AnalysisModel;
+            if (analysisModel is null) return;
+
+            var tic = analysisModel.EicLoader.LoadTic();
+            var bpc = analysisModel.EicLoader.LoadBpc();
+            var eic = analysisModel.EicLoader.LoadHighestEicTrace(analysisModel.Ms1Peaks.ToList());
+
+            var maxPeakMz = analysisModel.Ms1Peaks.Argmax(n => n.Intensity).Mass;
+
+
+            var displayChroms = new List<DisplayChromatogram>() {
+                new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"),
+                new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"),
+                new DisplayChromatogram(eic, new Pen(Brushes.Blue, 1.0), "EIC of m/z " + Math.Round(maxPeakMz, 5).ToString())
+            };
+
+            var vm = new ChromatogramsViewModel(new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Retention time [min]", "Absolute ion abundance"));
+            var view = new DisplayChromatogramsView() {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            view.Show();
         }
     }
 }

@@ -227,7 +227,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Process
             if (lSpectrum != null &&
                 lSpectrum.Count <= 1) spectrumPenalty = true;
 
-            var isMinRequired = matchedRatio > 0.4 && (dotProduct > 0.15 || revDotProduct > 0.5) ? true : false;
+            var isMinRequired = matchedRatio > 0.4 || dotProduct > 0.15 || revDotProduct > 0.5 ? true : false;
             if (targetOmics == TargetOmics.Lipidomics) {
                 if ((mspRecord.CompoundClass == "EtherTG" || mspRecord.CompoundClass == "EtherDG" || mspRecord.CompoundClass == "LPE") && dotProduct < 0.15) {
                     isMinRequired = false;

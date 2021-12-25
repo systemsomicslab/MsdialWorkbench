@@ -445,7 +445,28 @@ namespace CompMs.MsdialCore.Parameter {
         // corrdec
         [Key(16)]
         public CorrDecParam CorrDecParam { get; set; } = new CorrDecParam();
-
+        [IgnoreMember]
+        public int MinMS2Intensity { get => CorrDecParam.MinMS2Intensity; set => CorrDecParam.MinMS2Intensity = value; }
+        [IgnoreMember]
+        public float MS2Tolerance { get => CorrDecParam.MS2Tolerance; set => CorrDecParam.MS2Tolerance = value; }
+        [IgnoreMember]
+        public float MinCorr_MS1 { get => CorrDecParam.MinCorr_MS1; set => CorrDecParam.MinCorr_MS1 = value; }
+        [IgnoreMember]
+        public float MinCorr_MS2 { get => CorrDecParam.MinCorr_MS2; set => CorrDecParam.MinCorr_MS2 = value; }
+        [IgnoreMember]
+        public float CorrDiff_MS1 { get => CorrDecParam.CorrDiff_MS1; set => CorrDecParam.CorrDiff_MS1 = value; }
+        [IgnoreMember]
+        public float CorrDiff_MS2 { get => CorrDecParam.CorrDiff_MS2; set => CorrDecParam.CorrDiff_MS2 = value; }
+        [IgnoreMember]
+        public float MinDetectedPercentToVisualize { get => CorrDecParam.MinDetectedPercentToVisualize; set => CorrDecParam.MinDetectedPercentToVisualize = value; }
+        [IgnoreMember]
+        public bool CorrDecRemoveAfterPrecursor { get => CorrDecParam.CorrDecRemoveAfterPrecursor; set => CorrDecParam.CorrDecRemoveAfterPrecursor = value; }
+        [IgnoreMember]
+        public int MinNumberOfSample { get => CorrDecParam.MinNumberOfSample; set => CorrDecParam.MinNumberOfSample = value; }
+        [IgnoreMember]
+        public float MinMS2RelativeIntensity { get => CorrDecParam.MinMS2RelativeIntensity; set => CorrDecParam.MinMS2RelativeIntensity = value; }
+        [IgnoreMember]
+        public bool CanExcute { get => CorrDecParam.CanExcute; set => CorrDecParam.CanExcute = value; }
 
         public virtual List<string> ParametersAsText() {
             var pStrings = new List<string>();
@@ -653,7 +674,7 @@ namespace CompMs.MsdialCore.Parameter {
             pStrings.Add(String.Join(": ", new string[] { "CorrDec margin 2 (coeluted precursor)", CorrDecParam.CorrDiff_MS2.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "CorrDec minimum detected rate", CorrDecParam.MinDetectedPercentToVisualize.ToString() }));
             pStrings.Add(String.Join(": ", new string[] { "CorrDec minimum MS2 relative intensity", CorrDecParam.MinMS2RelativeIntensity.ToString() }));
-            pStrings.Add(String.Join(": ", new string[] { "CorrDec remove peaks larger than precursor", CorrDecParam.RemoveAfterPrecursor.ToString() }));
+            pStrings.Add(String.Join(": ", new string[] { "CorrDec remove peaks larger than precursor", CorrDecParam.CorrDecRemoveAfterPrecursor.ToString() }));
 
             return pStrings;
         }
@@ -946,6 +967,10 @@ namespace CompMs.MsdialCore.Parameter {
         public int NumThreads { get; set; } = 2;
     }
 
+    // MS-CleanR (post curator) parameters
+
+
+
     [MessagePackObject]
     public class PeakPickBaseParameter {
         [Key(0)]
@@ -1200,7 +1225,8 @@ namespace CompMs.MsdialCore.Parameter {
         public bool IsLabPrivateVersionTada { get; set; } = false;
         [Key(5)]
         public bool QcAtLeastFilter { get; set; } = false;
-
+        [Key(6)]
+        public List<PeakFeatureSearchValue> DiplayEicSettingValues { get; set; } = new List<PeakFeatureSearchValue>();
     }
 
     [MessagePackObject]
@@ -1228,7 +1254,7 @@ namespace CompMs.MsdialCore.Parameter {
         [Key(6)]
         public float MinDetectedPercentToVisualize { get; set; } = 0.5f;
         [Key(7)]
-        public bool RemoveAfterPrecursor { get; set; } = true;
+        public bool CorrDecRemoveAfterPrecursor { get; set; } = true;
         [Key(8)]
         public int MinNumberOfSample { get; set; } = 3;
         [Key(9)]

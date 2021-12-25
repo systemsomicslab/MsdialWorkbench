@@ -163,8 +163,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
                     MasterAlignmentID = masterId++,
                     AlignmentID = localId,
                     ParentAlignmentID = parentId,
-                    TimesCenter = scanProp.ChromXs, // tempolary, after alignment, set true center.
-                    MassCenter = scanProp.PrecursorMz, // tempolary, after alignment, set true center.
+                    TimesCenter = scanProp.ChromXs, // temporary, after alignment, set true center.
+                    MassCenter = scanProp.PrecursorMz, // temporary, after alignment, set true center.
                 };
                 spot.InternalStandardAlignmentID = spot.MasterAlignmentID;
 

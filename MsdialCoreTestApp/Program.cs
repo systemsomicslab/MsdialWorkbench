@@ -2,6 +2,7 @@
 using CompMs.App.MsdialConsole.Process;
 using CompMs.App.MsdialConsole.ProteomicsTest;
 using CompMs.Common.FormulaGenerator.Parser;
+using CompMs.Common.Lipidomics;
 using CompMs.Common.Proteomics.Parser;
 using CompMs.MsdialCore.Utility;
 using System;
@@ -89,7 +90,7 @@ namespace CompMs.App.MsdialConsole {
             //new ModificationsXmlRefParser().Read();
 
             //new TestProteomicsProcess().PDFTest();
-            new TestProteomicsProcess().ProcessTest();
+            //new TestProteomicsProcess().ProcessTest();
 
             //FormulaStringParcer.Convert2FormulaObjV2("C6H12O6");
             //FormulaStringParcer.Convert2FormulaObjV2("CH3COONa");
@@ -108,16 +109,17 @@ namespace CompMs.App.MsdialConsole {
             // foreach (var spec in allspectra[1359].Spectrum)
             //     Console.WriteLine($"Mass = {spec.Mz}, Intensity = {spec.Intensity}");
 
-            // var serializer = MsdialCore.Parser.ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
-            // var deserializer = MsdialCore.Parser.ChromatogramSerializerFactory.CreatePeakSerializer("CPSTMP");
-            // var spots = Enumerable.Range(0, 1000).Select(_ => new Common.Components.ChromXs()).ToArray();
-            // var pss = new System.Collections.Generic.List<System.Collections.Generic.IEnumerable<MsdialCore.DataObj.ChromatogramPeakInfo>> {
-            //     deserializer.DeserializeAllFromFile(@"D:\test_data\wine2\tmpC573.tmp"),
-            //     deserializer.DeserializeAllFromFile(@"D:\test_data\wine2\tmp6C46.tmp"),
-            // };
-            // var qss = CompMs.Common.Extension.IEnumerableExtension.Sequence(pss);
-            // serializer.SerializeNToFile(@"D:\test_data\wine2\ABCD.tmp", spots.Zip(qss, (spot, qs) => new MsdialCore.DataObj.ChromatogramSpotInfo(qs, spot)), spots.Length);
-            // Console.ReadKey();
+            var lipidGenerator = new LipidGenerator();
+            var spectrumGenerator = new PCSpectrumGenerator();
+            var adduct = Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+");
+            Common.Parser.MspFileParser.WriteAsMsp(
+                @"D:\PROJECT_EAD\output\PC_ALL.msp",
+                GeneratePCLipids()
+                    .SelectMany(lipid => lipid.Generate(lipidGenerator))
+                    .SelectMany(lipid => lipid.Generate(lipidGenerator))
+                    .Select(lipid => lipid.GenerateSpectrum(spectrumGenerator, adduct))
+                    .Cast<Common.Components.MoleculeMsReference>());
+
         }
 
         private static void DumpN(string file, int n) {
@@ -141,5 +143,23 @@ namespace CompMs.App.MsdialConsole {
                 Console.WriteLine($"Mz: {spec.Mz}\tIntensity: {spec.Intensity}");
             }
         }
+
+        private static IEnumerable<ILipid> GeneratePCLipids() {
+            var parser = new PCLipidParser();
+            for (int i = 0; i < AcylCandidates.Count; i++) {
+                (var carbon1, var bond1) = AcylCandidates[i];
+                for (int j = i; j < AcylCandidates.Count; j++) {
+                    (var carbon2, var bond2) = AcylCandidates[j];
+                    yield return parser.Parse($"PC {carbon1}:{bond1}_{carbon2}:{bond2}");
+                }
+            }
+        }
+
+        private static List<(int, int)> AcylCandidates = new List<(int, int)>{
+            (16, 0), (16, 1),
+            (18, 0), (18, 1), (18, 2),
+            (20, 3), (20, 4), (20, 5),
+            (22, 5), (22, 6),
+        };
     }
 }

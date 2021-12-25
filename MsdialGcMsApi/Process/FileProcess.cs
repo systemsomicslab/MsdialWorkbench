@@ -33,7 +33,7 @@ namespace CompMs.MsdialGcMsApi.Process {
 
                 // feature detections
                 Console.WriteLine("Peak picking started");
-                var chromPeakFeatures = new PeakSpotting(0, 30).Run(rawObj, param, reportAction);
+                var chromPeakFeatures = new PeakSpotting(0, 30).Run(rawObj, param, token, reportAction);
                 IsotopeEstimator.Process(chromPeakFeatures, param, iupacDB);
                 var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures, param);
                 file.ChromPeakFeaturesSummary = summary;

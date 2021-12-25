@@ -2020,6 +2020,55 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra10mass + "\t" + fra10int + "\t" + fra10comment);
 
             }
+            else if (adduct == "[M+Na]+")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 700;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra02mass = exactMass + MassDictionary.Proton;
+                var fra02int = 50;
+                var fra02comment = "[M+H]+";
+                fragmentList.Add(fra02mass + "\t" + fra02int + "\t" + fra02comment);
+
+                var fra03mass = fra01mass - (12 * 3 + MassDictionary.HydrogenMass * 9 + MassDictionary.NitrogenMass);
+                var fra03int = 100;
+                var fra03comment = "[M+Na]+ -C3H9N";
+                fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra07mass = fra01mass - (12 * 3 + MassDictionary.HydrogenMass * 6 + MassDictionary.OxygenMass * 2);
+                var fra07int = 200;
+                var fra07comment = "[M+Na]+ -C2H2O3";
+                fragmentList.Add(fra07mass + "\t" + fra07int + "\t" + fra07comment);
+
+                var fra04mass = fra03mass - (12 + MassDictionary.OxygenMass);
+                var fra04int = 999;
+                var fra04comment = "[M+Na]+ -C3H9N -CO";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+
+                var fra05mass = fra04mass - chain1Mass - MassDictionary.H2OMass;
+                var fra05int = 100;
+                var fra05comment = "[M+Na]+ -C3H9N -C2H4 -sn1";
+                fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
+
+                var fra06mass = fra04mass - chain2Mass - MassDictionary.H2OMass;
+                var fra06int = 100;
+                var fra06comment = "[M+Na]+ -C3H9N -C2H4 -sn2";
+                fragmentList.Add(fra06mass + "\t" + fra06int + "\t" + fra06comment);
+
+                var fra09mass = 12 * 10 + MassDictionary.HydrogenMass * 21 + MassDictionary.OxygenMass * 5 + MassDictionary.NitrogenMass + MassDictionary.Proton;
+                var fra09int = 50;
+                var fra09comment = "C10H21NO5H";
+                fragmentList.Add(fra09mass + "\t" + fra09int + "\t" + fra09comment);
+
+                var fra10mass = 12 * 7 + MassDictionary.HydrogenMass * 13 + MassDictionary.OxygenMass * 2 + MassDictionary.NitrogenMass + MassDictionary.Proton;
+                var fra10int = 10;
+                var fra10comment = "C7H14NO2";
+                fragmentList.Add(fra10mass + "\t" + fra10int + "\t" + fra10comment);
+
+            }
+
             else if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-")
             {
                 var fra01mass = 0.0;
@@ -3221,6 +3270,34 @@ namespace CompMs.MspGenerator
                 fragmentList.Add(fra10mass + "\t" + fra10int + "\t" + fra10comment);
 
             }
+            else if (adduct == "[M+Na]+")
+            {
+                var fra01mass = exactMass + adductDic.adductIonDic[adduct].AdductIonMass;
+                var fra01int = 300;
+                var fra01comment = adduct;
+                fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
+
+                var fra03mass = fra01mass - (12 * 3 + MassDictionary.HydrogenMass * 9 + MassDictionary.NitrogenMass);
+                //var fra03int = 200;
+                //var fra03comment = "[M+Na]+ -C3H9N";
+                //fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = fra03mass - (12 + MassDictionary.OxygenMass);
+                var fra04int = 999;
+                var fra04comment = "[M+Na]+ -C3H9N -CO";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
+
+                var fra05mass = fra03mass - (12 + MassDictionary.OxygenMass * 2);
+                var fra05int = 200;
+                var fra05comment = "[M+Na]+ -C3H9N -CO2";
+                fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
+
+                var fra09mass = 12 * 10 + MassDictionary.HydrogenMass * 21 + MassDictionary.OxygenMass * 5 + MassDictionary.NitrogenMass + MassDictionary.Proton;
+                var fra09int = 100;
+                var fra09comment = "C10H21NO5H";
+                fragmentList.Add(fra09mass + "\t" + fra09int + "\t" + fra09comment);
+            }
+
             else if (adduct == "[M+HCOO]-" || adduct == "[M+CH3COO]-")
             {
                 var fra01mass = 0.0;

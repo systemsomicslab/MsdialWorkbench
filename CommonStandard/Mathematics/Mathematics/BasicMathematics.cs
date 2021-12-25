@@ -119,13 +119,13 @@ namespace CompMs.Common.Mathematics.Basic {
             return (double)(sum / list.Count);
         }
 
-        public static double Median(double[] array)
+        public static double Median(IReadOnlyList<double> array)
         {
-            if (array == null || array.Length == 0) return 0;
+            if (array == null || array.Count == 0) return 0;
 
-            int midArrayNumber = (int)(array.Length / 2);
-            double[] sortArray = new double[array.Length];
-            for (int i = 0; i < array.Length; i++)
+            int midArrayNumber = array.Count / 2;
+            double[] sortArray = new double[array.Count];
+            for (int i = 0; i < array.Count; i++)
                 sortArray[i] = array[i];
             Array.Sort(sortArray);
             return sortArray[midArrayNumber];

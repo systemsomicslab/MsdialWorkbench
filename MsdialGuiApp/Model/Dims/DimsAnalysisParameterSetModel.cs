@@ -17,7 +17,7 @@ namespace CompMs.App.Msdial.Model.Dims
             : base(parameter, files) {
             Parameter = parameter;
 
-            DataCollectionSettingModel = new DimsDataCollectionSettingModel(parameter.ProcessBaseParam, parameter.PeakPickBaseParam);
+            DataCollectionSettingModel = new DimsDataCollectionSettingModel(parameter.ProcessBaseParam, parameter.PeakPickBaseParam, parameter.ProviderFactoryParameter);
             IdentifySettingModel = new IdentifySettingModel(parameter, new DimsAnnotatorSettingModelFactory());
 
             if (Parameter.TargetOmics == TargetOmics.Lipidomics) {

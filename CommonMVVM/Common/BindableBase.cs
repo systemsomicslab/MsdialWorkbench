@@ -7,8 +7,8 @@ namespace CompMs.CommonMVVM
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
-        protected void OnPropertyChanged(string propertyname) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
+        protected virtual void OnPropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
+        protected void OnPropertyChanged(string propertyname) => OnPropertyChanged(new PropertyChangedEventArgs(propertyname));
 
         protected virtual bool SetProperty<T>(ref T prop, T value, [CallerMemberName]string propertyname = "") {
             if (Equals(prop, value)) {

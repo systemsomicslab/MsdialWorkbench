@@ -53,9 +53,9 @@ namespace CompMs.MsdialDimsCore.DataObj
                 return Task.CompletedTask;
             }
 
-            protected override async Task LoadDataBasesAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage) {
+            protected override async Task LoadDataBasesAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage, string projectFolderPath) {
                 using (var stream = await streamManager.Get(path).ConfigureAwait(false)) {
-                    storage.DataBases = DataBaseStorage.Load(stream, new DimsLoadAnnotatorVisitor(storage.Parameter));
+                    storage.DataBases = DataBaseStorage.Load(stream, new DimsLoadAnnotatorVisitor(storage.Parameter), projectFolderPath);
                 }
             }
         }

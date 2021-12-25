@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.Common.Extension {
     public static class IEnumerableExtension {
@@ -14,6 +13,10 @@ namespace CompMs.Common.Extension {
 
         public static bool IsEmptyOrNull<T>(this IEnumerable<T> collection) {
             return collection == null || !collection.Any();
+        }
+
+        public static IEnumerable<T> Return<T>(T value) {
+            yield return value;
         }
 
         public static IEnumerable<System.Tuple<T1, T2>> Zip<T1, T2>(this IEnumerable<T1> xs, IEnumerable<T2> ys) {
@@ -67,6 +70,21 @@ namespace CompMs.Common.Extension {
 
         public static T Argmin<T, U>(this IEnumerable<T> xs, Func<T, U> func, Comparison<U> comp) {
             return xs.Select(x => (x, y: func(x))).Aggregate((acc, p) => comp(acc.y, p.y) > 0 ? p : acc).x;
+        }
+
+        public static IEnumerable<List<T>> Chunk<T>(this IEnumerable<T> xs, int size)
+        {
+            var results = new List<T>(size);
+            foreach (var x in xs) {
+                results.Add(x);
+                if (results.Count == size) {
+                    yield return results;
+                    results = new List<T>(size);
+                }
+            }
+            if (results.Count >= 1) {
+                yield return results;
+            }
         }
 
         public static IEnumerable<List<T>> Sequence<T>(this IEnumerable<IEnumerable<T>> xss) {

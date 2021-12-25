@@ -7,9 +7,30 @@ namespace CompMs.App.Msdial.Model.Dims
 {
     public sealed class DimsDataCollectionSettingModel : BindableBase
     {
-        public DimsDataCollectionSettingModel(ProcessBaseParameter processParameter, PeakPickBaseParameter peakPickParameter) {
+        public DimsDataCollectionSettingModel(ProcessBaseParameter processParameter, PeakPickBaseParameter peakPickParameter, IDimsDataProviderFactoryParameter factoryParameter) {
             ProcessParameter = processParameter;
             PeakPickParameter = peakPickParameter;
+
+            switch (factoryParameter) {
+                case DimsTicDataProviderFactoryParameter ticParameter:
+                    UseMs1WithHighestTic = true;
+                    TimeBegin = ticParameter.TimeBegin;
+                    TimeEnd = ticParameter.TimeEnd;
+                    break;
+                case DimsBpiDataProviderFactoryParameter bpiParameter:
+                    UseMs1WithHighestTic = false;
+                    UseMs1WithHighestBpi = true;
+                    TimeBegin = bpiParameter.TimeBegin;
+                    TimeEnd = bpiParameter.TimeEnd;
+                    break;
+                case DimsAverageDataProviderFactoryParameter averageParameter:
+                    UseMs1WithHighestTic = false;
+                    UseAverageMs1 = true;
+                    TimeBegin = averageParameter.TimeBegin;
+                    TimeEnd = averageParameter.TimeEnd;
+                    MassTolerance = averageParameter.MassTolerance;
+                    break;
+            }
         }
 
         public bool UseMs1WithHighestTic {
@@ -34,13 +55,13 @@ namespace CompMs.App.Msdial.Model.Dims
             get => timeBegin;
             set => SetProperty(ref timeBegin, value);
         }
-        private double timeBegin = 0.5;
+        private double timeBegin = 0.0;
 
         public double TimeEnd {
             get => timeEnd;
             set => SetProperty(ref timeEnd, value);
         }
-        private double timeEnd = 6;
+        private double timeEnd = 100;
 
         public double MassTolerance {
             get => massTolerance;

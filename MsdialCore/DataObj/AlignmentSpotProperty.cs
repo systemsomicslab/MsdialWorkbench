@@ -171,8 +171,9 @@ namespace CompMs.MsdialCore.DataObj {
             get => matchResults ?? (matchResults = new MsScanMatchResultContainer());
             set => matchResults = value;
         }
-        private MsScanMatchResultContainer matchResults;
 
+        [Key(57)]
+        private MsScanMatchResultContainer matchResults;
 
         [Key(28)]
         public List<int> CorrDecLibraryIDs { get; set; } // ID list having the metabolite candidates exceeding the threshold (for AIF project)
@@ -282,6 +283,10 @@ namespace CompMs.MsdialCore.DataObj {
             get => MassCenter;
             set => MassCenter = value;
         }
+
+        // Post curation result
+        [Key(58)]
+        public bool IsFilteredByPostCurator { get; set; } = false;
     }
 
     [MessagePackObject]

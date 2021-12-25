@@ -12,15 +12,15 @@
         <StackPanel>
             <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
                                AppendLabel="Da">
-                <TextBox Text="{Binding Ms1Tolerance.Value}"/>
+                <TextBox Text="{Binding Ms1Tolerance.Value, UpdateSourceTrigger=PropertyChanged}"/>
             </ui:LabeledContent>
             <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS2):"
                                AppendLabel="Da">
-                <TextBox Text="{Binding Ms2Tolerance.Value}"/>
+                <TextBox Text="{Binding Ms2Tolerance.Value, UpdateSourceTrigger=PropertyChanged}"/>
             </ui:LabeledContent>
             <ui:LabeledContent PrependLabel="Retention time tolerance:"
                                AppendLabel="min">
-                <TextBox Text="{Binding RtTolerance.Value}"/>
+                <TextBox Text="{Binding RtTolerance.Value, UpdateSourceTrigger=PropertyChanged}"/>
             </ui:LabeledContent>
         </StackPanel>
     </DataTemplate>
@@ -30,23 +30,11 @@
         <StackPanel>
             <ui:LabeledContent PrependLabel="Accurate mass tolerance (MS1):"
                                AppendLabel="Da">
-                <TextBox Text="{Binding Ms1Tolerance.Value}"/>
+                <TextBox Text="{Binding Ms1Tolerance.Value, UpdateSourceTrigger=PropertyChanged}"/>
             </ui:LabeledContent>
             <ui:LabeledContent PrependLabel="Retention time tolerance:"
                                AppendLabel="min">
-                <TextBox Text="{Binding RtTolerance.Value}"/>
-            </ui:LabeledContent>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
-                  x:Key="RetentionTimeSetting">
-        <StackPanel>
-            <ui:LabeledContent PrependLabel="Use retention time for scoring">
-                <CheckBox IsChecked="{Binding IsUseTimeForAnnotationScoring.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Use retention time for filtering">
-                <CheckBox IsChecked="{Binding IsUseTimeForAnnotationFiltering.Value}"/>
+                <TextBox Text="{Binding RtTolerance.Value, UpdateSourceTrigger=PropertyChanged}"/>
             </ui:LabeledContent>
         </StackPanel>
     </DataTemplate>

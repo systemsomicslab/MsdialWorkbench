@@ -61,7 +61,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             foreach (var score in scoresOnFile) {
                 if (score.IsDecoy) counter++;
                 var feature = (ChromatogramPeakFeature)featureObjs[score.PeakID];
-                if (counter > decoyCutOffNum) {
+                if (counter > 50 && counter > decoyCutOffNum && score.IsDecoy == false) {
                     feature.MatchResults.Representative.IsSpectrumMatch = false;
                 }
             }
@@ -95,8 +95,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                     scores.Add(refPepScore);
                     scores.Add(decoyScore);
 
-                    Console.WriteLine("Score\t{0}\tType\t{1}", refPepScore.AndromedaScore, "Forward");
-                    Console.WriteLine("Score\t{0}\tType\t{1}", decoyScore.AndromedaScore, "Decoy");
+                    //Console.WriteLine("Score\t{0}\tType\t{1}", refPepScore.AndromedaScore, "Forward");
+                    //Console.WriteLine("Score\t{0}\tType\t{1}", decoyScore.AndromedaScore, "Decoy");
                 }
             }
             return scores;

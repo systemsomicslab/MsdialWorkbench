@@ -62,6 +62,23 @@
       <type>Standard</type>
       <terminus_type>none</terminus_type>
    </modification>
+  <modification title="4HNE (CHK)" description="4HNE modification" create_date="2021-11-13T10:00:00.1976309+09:00" last_modified_date="2021-11-13T10:00:00.1976309+09:00" user="htsugawa" reporterCorrectionM2="0" reporterCorrectionM1="0" reporterCorrectionP1="0" reporterCorrectionP2="0" reporterCorrectionType="false" composition="C(9) H(17) O(2)">
+    <position>anywhere</position>
+    <modification_site site="C">
+      <neutralloss_collection />
+      <diagnostic_collection />
+    </modification_site>
+    <modification_site site="H">
+      <neutralloss_collection />
+      <diagnostic_collection />
+    </modification_site>
+    <modification_site site="K">
+      <neutralloss_collection />
+      <diagnostic_collection />
+    </modification_site>
+    <type>Standard</type>
+    <terminus_type>none</terminus_type>
+  </modification>
    <modification title="GlyGly (K)" description="Ubiquitination residue" create_date="2010-01-30T19:41:51.59375+09:00" last_modified_date="2010-01-30T19:59:58.203125+09:00" user="cox" reporterCorrectionM2="0" reporterCorrectionM1="0" reporterCorrectionP1="0" reporterCorrectionP2="0" reporterCorrectionType="false" composition="H(6) C(4) N(2) O(2)">
       <position>anywhere</position>
       <modification_site site="K">

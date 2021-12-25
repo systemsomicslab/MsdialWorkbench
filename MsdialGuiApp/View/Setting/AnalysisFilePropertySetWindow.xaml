@@ -155,19 +155,19 @@
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTemplateColumn SortMemberPath="AnalysisFileInjectionVolume.Value" Width="1*" 
-                                        Header="Inject. volume (&#181;L)" IsReadOnly="False" ClipboardContentBinding="{Binding Path=InjectionVolume.Value}">
+                <DataGridTemplateColumn SortMemberPath="AnalysisFileDilutionFactor.Value" Width="1*" 
+                                        Header="Dilution factor" IsReadOnly="False" ClipboardContentBinding="{Binding Path=DilutionFactor.Value}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Name="TextBox_InjectionVolume" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
-                                     Text="{Binding Path=InjectionVolume.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Name="TextBox_DilutionFactor" Style="{StaticResource ResourceKey=ToolTipErrorStyle}" VerticalContentAlignment="Center"
+                                     Text="{Binding Path=DilutionFactor.Value, UpdateSourceTrigger=PropertyChanged}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
 
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
-                            <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_InjectionVolume}">
-                                <TextBox Name="TextBox_InjectionVolume" Text="{Binding InjectionVolume.Value, UpdateSourceTrigger=PropertyChanged}" />
+                            <Grid  FocusManager.FocusedElement="{Binding ElementName=TextBox_DilutionFactor}">
+                                <TextBox Name="TextBox_DilutionFactor" Text="{Binding DilutionFactor.Value, UpdateSourceTrigger=PropertyChanged}" />
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>

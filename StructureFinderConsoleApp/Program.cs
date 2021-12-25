@@ -19,10 +19,12 @@ namespace StructureFinderConsoleApp
         [STAThread]
         static void Main(string[] args)
         {
+
+            Code4NPR2020.CalculatePrecursorMzVS2("", "");
             //Derivatization.Test();
             /// code for Natural Product Reports 2020
             //Code4NPR2020.GenerateStructureTableFromMSPs();
-            Code4NPR2020.ExtractClassyFireOntologies();
+            //Code4NPR2020.ExtractClassyFireOntologies();
             //Code4NPR2020.CheckInChIKeyExistence();
             //Code4NPR2020.CheckCoverageOfMspMsfinder();
             //Code4NPR2020.CalculateTop50MostCommonFunctionalGroups2020();

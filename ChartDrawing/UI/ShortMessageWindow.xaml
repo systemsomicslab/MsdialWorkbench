@@ -6,10 +6,10 @@
         xmlns:local="clr-namespace:CompMs.Graphics.UI.Message"
         mc:Ignorable="d"
         Name="MessageWindow"
-        Title="Message" Height="120" Width="300">
+        Title="Message" Height="100" Width="250">
     <Grid>
         <TextBox Name="Label_MessageTitle" Text="{Binding Text, ElementName=MessageWindow}" 
-               VerticalAlignment="Center" HorizontalAlignment="Center" 
+               VerticalAlignment="Center" HorizontalAlignment="Center" Width="200"
                Margin="0,0,0,0" IsReadOnly="True" BorderThickness="0" />
     </Grid>
 </Window>

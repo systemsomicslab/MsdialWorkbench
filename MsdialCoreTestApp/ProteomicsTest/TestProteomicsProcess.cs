@@ -35,10 +35,10 @@ namespace CompMs.App.MsdialConsole.ProteomicsTest {
 
         public void ProcessTest() {
             var fixedMods = new List<string>() { "Carbamidomethyl (C)" };
-            var variableMods = new List<string> { "Acetyl (Protein N-term)", "Oxidation (M)" };
+            var variableMods = new List<string> { "Acetyl (Protein N-term)", "Oxidation (M)", "4HNE (CHK)" };
 
             var enzymeList = new List<string>() { "Trypsin/P" };
-            var fasta_file = @"E:\6_Projects\PROJECT_ChemProteomics\20210217_Imami_Lox15\fasta_alox15.fasta";
+            var fasta_file = @"D:\chemproteomics_demo\keap1_mouse_human.fasta";
             var adduct = AdductIonParser.GetAdductIonBean("[M+H]+");
 
             var cleavageSites = ProteinDigestion.GetCleavageSites(this.Enzymes, enzymeList);

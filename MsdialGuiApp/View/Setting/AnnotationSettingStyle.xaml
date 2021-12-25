@@ -71,6 +71,30 @@
         </StackPanel>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type VM:MsRefSearchParameterBaseViewModel}"
+                  x:Key="RetentionTimeSetting">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Use retention time for scoring">
+                <CheckBox IsChecked="{Binding IsUseTimeForAnnotationScoring.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Use retention time for filtering">
+                <CheckBox IsChecked="{Binding IsUseTimeForAnnotationFiltering.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type VM:MsRefSearchParameterBaseViewModel}"
+                  x:Key="CcsSetting">
+        <StackPanel>
+            <ui:LabeledContent PrependLabel="Use collision cross section for scoring">
+                <CheckBox IsChecked="{Binding IsUseCcsForAnnotationScoring.Value}"/>
+            </ui:LabeledContent>
+            <ui:LabeledContent PrependLabel="Use collision cross section for filtering">
+                <CheckBox IsChecked="{Binding IsUseCcsForAnnotationFiltering.Value}"/>
+            </ui:LabeledContent>
+        </StackPanel>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type VM:ProteomicsParameterVM}"
                   x:Key="ProteomicsParameterSetting">
         <StackPanel>

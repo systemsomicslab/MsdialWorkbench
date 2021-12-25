@@ -32,9 +32,9 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(11)]
         public int AnalysisBatch { get; set; } = 1;
         [Key(12)]
-        public double ResponseVariable { get; set; } // for PLS
+        public double ResponseVariable { get; set; } = 0; // for PLS
         [Key(13)]
-        public double InjectionVolume { get; set; } = 1.0;
+        public double DilutionFactor { get; set; } = 1.0;
         [Key(14)]
         public string AnalysisFileSuperClass { get; set; } = string.Empty;
         [Key(15)]
@@ -60,7 +60,7 @@ namespace CompMs.MsdialCore.DataObj {
             RiDictionaryFilePath = other.RiDictionaryFilePath;
             AnalysisBatch = other.AnalysisBatch;
             ResponseVariable = other.ResponseVariable;
-            InjectionVolume = other.InjectionVolume;
+            DilutionFactor = other.DilutionFactor;
             AnalysisFileSuperClass = other.AnalysisFileSuperClass;
             RetentionTimeCorrectionBean = other.RetentionTimeCorrectionBean;
             ChromPeakFeaturesSummary = other.ChromPeakFeaturesSummary;

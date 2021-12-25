@@ -6,6 +6,7 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
@@ -22,6 +23,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
@@ -46,9 +48,13 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseMapper = mapper;
             Annotators = annotators;
             container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(AlignmentFile.FilePath);
-
-            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(
+            if (container == null) {
+                MessageBox.Show("No aligned spot information.");
+            }
+            Ms1Spots = container == null ? new ObservableCollection<AlignmentSpotPropertyModel>() : 
+                new ObservableCollection<AlignmentSpotPropertyModel>(
                 container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
+           
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             var loader = new MSDecLoader(AlignmentFile.SpectraFilePath);
             MsdecResult = Target.Where(t => t != null)

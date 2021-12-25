@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment
 {
@@ -24,8 +22,6 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var chromXCenter = GetCenterFirst(filtered);
             var peakWidth = GetAveragePeakWidthFirst(filtered);
             var peaklist = GetPeaksFirst(spectra, chromXCenter, peakWidth, fileID, smoothingMethod, smoothingLevel);
-            if (peaklist == null || peaklist.Count == 0) return;
-
             var target = peaks.FirstOrDefault(peak => peak.FileID == fileID);
             GapFillCore(peaklist, chromXCenter, AxTolFirst, target);
         }
@@ -36,8 +32,6 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var chromXCenter = GetCenterSecond(filtered, parent);
             var peakWidth = GetAveragePeakWidthSecond(filtered);
             var peaklist = GetPeaksSecond(spectra, chromXCenter, peakWidth, fileID, smoothingMethod, smoothingLevel);
-            if (peaklist == null || peaklist.Count == 0) return;
-
             var target = peaks.FirstOrDefault(peak => peak.FileID == fileID);
             GapFillCore(peaklist, chromXCenter, AxTolSecond, target);
         }

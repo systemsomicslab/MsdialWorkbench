@@ -3,6 +3,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using CompMs.RawDataHandler.Core;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -16,14 +17,18 @@ namespace CompMs.MsdialCore.Algorithm
         protected readonly List<RawSpectrum> spectrums;
 
         protected BaseDataProvider(IEnumerable<RawSpectrum> spectrums) {
-            this.spectrums = spectrums.ToList();
+            if (spectrums is null) {
+                throw new ArgumentNullException(nameof(spectrums));
+            }
+
+            this.spectrums = (spectrums as List<RawSpectrum>) ?? spectrums.ToList();
         }
 
-        protected BaseDataProvider(AnalysisFileBean file, bool isGuiProcess, int retry)
-            :this(LoadMeasurement(file, isGuiProcess, retry).SpectrumList) { }
+        protected BaseDataProvider(AnalysisFileBean file, bool isProfile, bool isGuiProcess, int retry)
+            :this(LoadMeasurement(file, isProfile, isGuiProcess, retry).SpectrumList) { }
 
-        protected static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isGuiProcess, int retry) {
-            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, isGuiProcess)) {
+        protected static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isProfile, bool isGuiProcess, int retry) {
+            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isProfile, isGuiProcess)) {
                 for (var i = 0; i < retry; i++) {
                     var rawObj = DataAccess.GetRawDataMeasurement(access);
                     if (rawObj != null) {
@@ -43,16 +48,14 @@ namespace CompMs.MsdialCore.Algorithm
             return LoadMsNSpectrums(1);
         }
 
-        private Dictionary<int, ReadOnlyCollection<RawSpectrum>> cache = new Dictionary<int, ReadOnlyCollection<RawSpectrum>>();
+        private ConcurrentDictionary<int, Lazy<ReadOnlyCollection<RawSpectrum>>> cache = new ConcurrentDictionary<int, Lazy<ReadOnlyCollection<RawSpectrum>>>();
         public virtual ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-            if (cache.TryGetValue(level, out var cacheSpectrum)) {
-                return cacheSpectrum;
-            }
-            return cache[level] = spectrums.Where(spectrum => spectrum.MsLevel == level).ToList().AsReadOnly();
+            return cache.GetOrAdd(level, i => new Lazy<ReadOnlyCollection<RawSpectrum>>(() => spectrums.Where(spectrum => spectrum.MsLevel == i).ToList().AsReadOnly())).Value;
         }
 
+        private ReadOnlyCollection<RawSpectrum> spectrumsCache;
         public virtual ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-            return spectrums.AsReadOnly();
+            return spectrumsCache ?? (spectrumsCache = spectrums.AsReadOnly());
         }
     }
 }

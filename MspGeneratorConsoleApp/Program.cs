@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Common.Lipidomics;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -102,19 +103,20 @@ namespace CompMs.MspGenerator
 
             ////// mtb-info上で最終的なmspを出力
             //// 指定のフォルダの中にある.mspファイルを結合します。
-            var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
+            //var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
             //var exportFileName = "Msp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedmsp";
 
-            ////Common.jointMspFiles(mspFolder, exportFileName);
-            //////////結合したファイルを下記フォルダに移動
-            workingDirectry = mspFolder + @"\LBM\";
-            ////System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
-            ////////
+            //Common.jointMspFiles(mspFolder, exportFileName);
+            ////////////結合したファイルを下記フォルダに移動
+            //workingDirectry = mspFolder + @"\LBM\";
+            //System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
+            //////////
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + exportFileName,
             //     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20210329.txt", workingDirectry);
 
-            //////MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + @"Msp20210426080355_2.jointedmsp",
-            //////     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20210329.txt", workingDirectry);
+            //////上書き用
+            ////MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + @"Msp20210426080355_2.jointedmsp",
+            ////     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20210329.txt", workingDirectry);
 
 
             ///mspファイル生成ツール
@@ -134,7 +136,7 @@ namespace CompMs.MspGenerator
             var faChain2 = new List<string>();
             var faChain3 = new List<string>();
 
-            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20210525_LCMS_QualityCheck\annotation_check\";
+            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20211209_add_DGTS_Na";
 
             //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";
@@ -694,6 +696,15 @@ namespace CompMs.MspGenerator
                 //20211008
                 // RtとCCSの予測用に側鎖の構成を追加
                 //MergeRTandCCSintoMsp.generateInchikeyAndSmilesAndChainsListFromMsp(@"Z:\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\LBM\Msp20210527163602.jointedmsp");
+
+
+                //temp 20211108
+                //LipidStructureGenerator.LipidInchikeySmiles(LbmClass.EtherPC, "PC P-16:1/18:2(9Z,12Z)");
+
+                //var parameter01 = new LipidChainInfo { CNum =18, DoubleNum =3, DoublePosition = new string[] { "12Z","6Z","9Z"}, EtherFlag = true, OxNum =0, SnPosition =0};
+                //var parameter02 = new LipidChainInfo { CNum =26, DoubleNum =0, DoublePosition = new string[] { }, EtherFlag = false, OxNum =0, SnPosition =0};
+                //var chainList = new List<LipidChainInfo>() { parameter01, parameter02 };
+                //LipidStructureGenerator.LipidInchikeySmiles(LbmClass.EtherPC, chainList);
 
             }
         }

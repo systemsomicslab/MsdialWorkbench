@@ -36,6 +36,7 @@ namespace CompMs.App.Msdial.ViewModel
                 .ToReactiveCommand()
                 .WithSubscribe(LoadAlignmentFile)
                 .AddTo(Disposables);
+            SelectedViewModel = new ReactivePropertySlim<object>().AddTo(Disposables);
         }
 
         public ReactivePropertySlim<AnalysisFileBeanViewModel> SelectedAnalysisFile { get; }
@@ -75,5 +76,6 @@ namespace CompMs.App.Msdial.ViewModel
         public abstract int InitializeNewProject(Window window);
         public abstract void LoadProject();
         public abstract void SaveProject();
+        public ReactivePropertySlim<object> SelectedViewModel { get; }
     }
 }
