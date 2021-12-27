@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
+using CompMs.Common.FormulaGenerator.Parser;
 using CompMs.Common.Mathematics.Basic;
 using CompMs.Common.Parser;
 using CompMs.StructureFinder.NcdkDescriptor;
