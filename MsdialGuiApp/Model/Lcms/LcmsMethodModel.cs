@@ -3,6 +3,7 @@ using CompMs.App.Msdial.LC;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.View;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Export;
@@ -451,6 +452,34 @@ namespace CompMs.App.Msdial.Model.Lcms
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             view.Show();
+        }
+
+        public void ShowShowFragmentSearchSettingView(Window owner, bool isAlignmentViewSelected) {
+            var container = Storage;
+            var analysisModel = AnalysisModel;
+            if (analysisModel is null) return;
+            var alignmentModel = AlignmentModel;
+            
+            var model = new FragmentQuerySettingModel(container.MsdialLcmsParameter, isAlignmentViewSelected);
+            var vm = new FragmentQuerySettingViewModel(model);
+            var dialog = new FragmentQuerySettingView() {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+
+            if (dialog.ShowDialog() == true) {
+                if (model.IsAlignSpotViewSelected.Value && alignmentModel is null) {
+                    MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                if (model.IsAlignSpotViewSelected.Value) {
+
+                }
+                else {
+                    analysisModel.MsmsFragmentSearcher();
+                }
+            }
         }
     }
 }

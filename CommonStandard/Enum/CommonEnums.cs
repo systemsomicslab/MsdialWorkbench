@@ -68,4 +68,7 @@ namespace CompMs.Common.Enum {
 
     public enum CoverRange { CommonRange, ExtendedRange, ExtremeRange }
     public enum PeakQuality { Ideal, Saturated, Leading, Tailing }
+
+    public enum SearchType { ProductIon, NeutralLoss }
+    public enum AndOr { AND, OR }
 }
