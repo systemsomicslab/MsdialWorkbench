@@ -152,6 +152,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     return -1;
             }
 
+            // Run second process
+            var param = Storage.MsdialLcmsParameter;
+            if (param.TargetOmics == TargetOmics.Proteomics) {
+                if (!model.ProcessSeccondAnnotaion4ShotgunProteomics(window, Storage))
+                    return -1;
+            } 
+
             // Run Alignment
             if (processOption.HasFlag(ProcessOption.Alignment)) {
                 if (!model.ProcessAlignment(window, Storage))
@@ -214,5 +221,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(model.ExportAlignment));
         private DelegateCommand<Window> exportAlignmentResultCommand;
+
+        public DelegateCommand<Window> ShowTicCommand => showTicCommand ?? (showTicCommand = new DelegateCommand<Window>(model.ShowTIC));
+        private DelegateCommand<Window> showTicCommand;
+
+        public DelegateCommand<Window> ShowBpcCommand => showBpcCommand ?? (showBpcCommand = new DelegateCommand<Window>(model.ShowBPC));
+        private DelegateCommand<Window> showBpcCommand;
+
+        public DelegateCommand<Window> ShowTicBpcRepEICCommand => showTicBpcRepEIC ?? (showTicBpcRepEIC = new DelegateCommand<Window>(model.ShowTicBpcRepEIC));
+        private DelegateCommand<Window> showTicBpcRepEIC;
+
+        public DelegateCommand<Window> ShowEicCommand => showEicCommand ?? (showEicCommand = new DelegateCommand<Window>(model.ShowEIC));
+        private DelegateCommand<Window> showEicCommand;
     }
 }

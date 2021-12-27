@@ -121,7 +121,6 @@
         </chart:DendrogramControl>
         <chart:HorizontalAxisControl x:Name="file_axis"
                                     HorizontalAxis="{StaticResource FileAxis}"
-                                    LabelTicks="{Binding LabelTicks, Source={StaticResource FileAxis}}"
                                     LabelSize="{Binding FileLabelSize}"
                                     DisplayPropertyName="{Binding DisplayFileProperty}"
                                     Grid.Column="3" Grid.Row="4" >
@@ -137,7 +136,6 @@
         </chart:HorizontalAxisControl>
         <chart:VerticalAxisControl x:Name="metabolite_axis"
                                   VerticalAxis="{StaticResource MetaboliteAxis}"
-                                  LabelTicks="{Binding LabelTicks, Source={StaticResource MetaboliteAxis}}"
                                   LabelSize="{Binding MetaboliteLabelSize}"
                                   Grid.Column="1" Grid.Row="2" >
             <chart:VerticalAxisControl.ToolTip>
@@ -152,7 +150,6 @@
         </chart:VerticalAxisControl>
         <chart:HorizontalColorAxisControl x:Name="file_coloraxis"
                                          HorizontalAxis="{StaticResource FileAxis}"
-                                         LabelTicks="{Binding LabelTicks, Source={StaticResource FileAxis}}"
                                          IdentityPropertyName="TypeBrush"
                                          Grid.Column="3" Grid.Row="1">
             <chart:HorizontalColorAxisControl.ToolTip>
@@ -167,7 +164,6 @@
         </chart:HorizontalColorAxisControl>
         <chart:VerticalColorAxisControl x:Name="metabolite_coloraxis"
                                        VerticalAxis="{StaticResource MetaboliteAxis}"
-                                       LabelTicks="{Binding LabelTicks, Source={StaticResource MetaboliteAxis}}"
                                        IdentityPropertyName="TypeBrush"
                                        Grid.Column="4" Grid.Row="2" >
             <chart:VerticalColorAxisControl.ToolTip>
@@ -187,8 +183,7 @@
                     Grid.Row="0" Grid.Column="5">
             <chart:VerticalAxisControl MinWidth="20"
                                       MaxWidth="30"
-                                      VerticalAxis="{StaticResource HeatmapValueAxis}"
-                                      LabelTicks="{Binding LabelTicks, Source={StaticResource HeatmapValueAxis}}" />
+                                      VerticalAxis="{StaticResource HeatmapValueAxis}"/>
             <Rectangle MinWidth="30"
                        MaxWidth="40">
                 <Rectangle.Fill>

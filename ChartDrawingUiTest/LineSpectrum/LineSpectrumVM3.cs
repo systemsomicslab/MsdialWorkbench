@@ -52,7 +52,7 @@ namespace ChartDrawingUiTest.LineSpectrum
 
             var brush3 = new DelegateBrushMapper<int>(v => Color.FromRgb((byte)(255 / 6 * v), 100, 50));
 
-            var brush4 = new ConstantBrushMapper(Brushes.Pink);
+            var brush4 = new ConstantBrushMapper<int>(Brushes.Pink);
 
             SpectrumBrushes = new List<IBrushMapper> { brush1, brush2, brush3, brush4, };
             SpectrumBrush = brush1;

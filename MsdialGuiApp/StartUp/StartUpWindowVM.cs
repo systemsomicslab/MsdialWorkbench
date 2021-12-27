@@ -190,8 +190,14 @@ namespace CompMs.App.Msdial.StartUp
         #region validation
         private bool TryContiueProcess()
         {
+            if (!IsSafePath(ProjectFilePath, false)) {
+                MessageBox.Show("Your project folder is not proper. Browse a folder containing MS raw files.",
+                                "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
             if (!Directory.Exists(Path.GetDirectoryName(ProjectFilePath))) {
-                MessageBox.Show("Your project folder is not existed. Browse a folder containing ABF, mzML, or netCDF files.",
+                MessageBox.Show("Your project folder is not existed. Browse a folder containing MS raw files.",
                                 "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
@@ -210,6 +216,30 @@ namespace CompMs.App.Msdial.StartUp
             if (!string.IsNullOrEmpty(Comment))
                 Comment = Comment.Replace("\r", "").Replace("\n", " ");
 
+            return true;
+        }
+
+        public bool IsSafePath(string path, bool isFileName) {
+            if (string.IsNullOrEmpty(path)) {
+                return false;
+            }
+
+            char[] invalidChars;
+            if (isFileName) {
+                invalidChars = System.IO.Path.GetInvalidFileNameChars();
+            }
+            else {
+                invalidChars = System.IO.Path.GetInvalidPathChars();
+            }
+            if (path.IndexOfAny(invalidChars) >= 0) {
+                return false;
+            }
+
+            if (System.Text.RegularExpressions.Regex.IsMatch(path
+                                           , @"(^|\\|/)(CON|PRN|AUX|NUL|CLOCK\$|COM[0-9]|LPT[0-9])(\.|\\|/|$)"
+                                           , System.Text.RegularExpressions.RegexOptions.IgnoreCase)) {
+                return false;
+            }
             return true;
         }
         #endregion

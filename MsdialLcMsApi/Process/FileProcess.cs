@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Extension;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -8,6 +9,7 @@ using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm;
 using CompMs.MsdialLcMsApi.Algorithm.Annotation;
+using CompMs.MsdialLcMsApi.DataObj;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
@@ -53,7 +55,7 @@ namespace CompMs.MsdialLcMsApi.Process {
 
                 // feature detections
                 Console.WriteLine("Peak picking started");
-                var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, param, reportAction);
+                var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, param, token, reportAction);
                 IsotopeEstimator.Process(chromPeakFeatures, param, iupacDB);
                 var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures, param);
                 file.ChromPeakFeaturesSummary = summary;
@@ -110,6 +112,7 @@ namespace CompMs.MsdialLcMsApi.Process {
                 // file save
                 var paifile = file.PeakAreaBeanInformationFilePath;
                 MsdialPeakSerializer.SaveChromatogramPeakFeatures(paifile, chromPeakFeatures);
+
 
                 var dclfile = file.DeconvolutionFilePath;
                 var dclfiles = new List<string>();

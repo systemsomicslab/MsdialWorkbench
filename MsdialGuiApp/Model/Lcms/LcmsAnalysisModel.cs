@@ -103,6 +103,23 @@ namespace CompMs.App.Msdial.Model.Lcms
                 OrderingProperty = nameof(SpectrumPeak.Intensity),
             };
 
+            // Raw vs Purified spectrum model
+            RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(
+                Target,
+                new MsRawSpectrumLoader(this.provider, Parameter),
+                new MsDecSpectrumLoader(decLoader, Ms1Peaks),
+                peak => peak.Mass,
+                peak => peak.Intensity) {
+                GraphTitle = "Raw vs. Purified spectrum",
+                HorizontalTitle = "m/z",
+                VerticalTitle = "Absolute abundance",
+                HorizontalProperty = nameof(SpectrumPeak.Mass),
+                VerticalProperty = nameof(SpectrumPeak.Intensity),
+                LabelProperty = nameof(SpectrumPeak.Mass),
+                OrderingProperty = nameof(SpectrumPeak.Intensity),
+            };
+
+
             // SurveyScan
             SurveyScanModel = new SurveyScanModel(
                 Target.SelectMany(t =>
@@ -162,6 +179,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public EicModel EicModel { get; }
 
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
+        public RawPurifiedSpectrumsModel RawPurifiedSpectrumsModel { get; }
 
         public SurveyScanModel SurveyScanModel { get; }
 
@@ -183,7 +201,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 return null;
             }
 
-            return new CompoundSearchModel<ChromatogramPeakFeature>(
+            return new LcmsCompoundSearchModel<ChromatogramPeakFeature>(
                 AnalysisFile,
                 Target.Value.InnerModel,
                 MsdecResult.Value,

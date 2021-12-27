@@ -123,6 +123,7 @@
     <Compile Include="exportMSP.cs" />
     <Compile Include="GlyceroLipidFragmentation.cs" />
     <Compile Include="GlyceroLipidsMspGenerator.cs" />
+    <Compile Include="LipidStructureGenerator.cs" />
     <Compile Include="MergeRTandCCSintoMsp.cs" />
     <Compile Include="OtherLipidFragmentation.cs" />
     <Compile Include="OtherLipidMspGenerator.cs" />

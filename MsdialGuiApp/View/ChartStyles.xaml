@@ -57,13 +57,11 @@
                         </Border>
 
                         <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
-                                                    LabelTicks="{Binding HorizontalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                     VerticalAxis="{x:Null}"
                                                     Margin="1,0,0,0"
                                                     Grid.Row="2" Grid.RowSpan="2" Grid.Column="2"/>
                         <chart:VerticalAxisControl x:Name="PART_VerticalAxis"
                                                   HorizontalAxis="{x:Null}"
-                                                  LabelTicks="{Binding VerticalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                   Margin="0,0,0,1"
                                                   Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
 
@@ -132,14 +130,12 @@
                         </Border>
 
                         <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
-                                                    LabelTicks="{Binding HorizontalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                     VerticalAxis="{x:Null}"
                                                     Margin="1,0,0,0"
                                                     LayoutTransform="{StaticResource RotateL}"
                                                     Grid.Row="1" Grid.Column="2"/>
                         <chart:VerticalAxisControl x:Name="PART_VerticalAxis"
                                                   HorizontalAxis="{x:Null}"
-                                                  LabelTicks="{Binding VerticalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                   Margin="0,0,0,1"
                                                   LayoutTransform="{StaticResource RotateL}"
                                                   Grid.Row="2" Grid.RowSpan="2" Grid.Column="1"/>
@@ -156,6 +152,73 @@
                                    Grid.Row="3" Grid.Column="1"/>
                     </Grid>
                 </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type chart:MultiChart}" x:Key="VerticalAlignedChart">
+        <Setter Property="Background" Value="WhiteSmoke"/>
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="1"/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="15"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                BorderThickness="1,0,0,1"
+                                Background="{Binding Background, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                core:ChartBaseControl.VerticalAxis="{Binding Path=(core:ChartBaseControl.VerticalAxis)}"
+                                core:ChartBaseControl.FlippedY="{Binding Path=(core:ChartBaseControl.FlippedY)}"
+                                behavior:ZoomByDragBehavior.IsEnabled="True"
+                                behavior:ZoomByWheelBehavior.IsEnabled="True"
+                                behavior:MoveByDragBehavior.IsEnabled="True"
+                                behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"
+                                Grid.Column="2" Grid.Row="0">
+                            <ContentControl Content="{Binding}"/>
+                        </Border>
+                        <chart:VerticalAxisControl VerticalAxis="{Binding Path=(core:ChartBaseControl.VerticalAxis)}"
+                                                  FlippedY="{Binding Path=(core:ChartBaseControl.FlippedY)}"
+                                                  HorizontalAxis="{x:Null}"
+                                                  Margin="0,0,0,1"
+                                                  Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"/>
+                        <chart:HorizontalAxisControl HorizontalAxis="{Binding Path=(core:ChartBaseControl.HorizontalAxis)}"
+                                                     FlippedX="{Binding Path=(core:ChartBaseControl.FlippedX)}"
+                                                     VerticalAxis="{x:Null}"
+                                                     Margin="1,0,0,0"
+                                                     Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"/>
+                        <TextBlock Name="HorizontalTitle"
+                                   Text="{Binding HorizontalTitle, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                   Style="{StaticResource AxisTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="2" Grid.Column="2"/>
+                        <TextBlock Name="VerticalTitle"
+                                   Text="{Binding VerticalTitle, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                   Style="{StaticResource AxisTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="0" Grid.Column="0">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                    </Grid>
+                </DataTemplate>
             </Setter.Value>
         </Setter>
     </Style>
@@ -186,7 +249,6 @@
                                      Columns="1"
                                      Grid.Row="1" Grid.Column="1"/>
                         <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
-                                                    LabelTicks="{Binding HorizontalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                     VerticalAxis="{x:Null}"
                                                     Margin="41.5,0,0,0"
                                                     Grid.Row="2" Grid.Column="1" />
@@ -231,7 +293,6 @@
                         </Border>
                         <chart:VerticalAxisControl VerticalAxis="{Binding Path=(core:ChartBaseControl.VerticalAxis)}"
                                                   FlippedY="{Binding Path=(core:ChartBaseControl.FlippedY)}"
-                                                  LabelTicks="{Binding VerticalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                   HorizontalAxis="{x:Null}"
                                                   Grid.Column="0"/>
                     </Grid>
@@ -278,13 +339,11 @@
                         </Border>
 
                         <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
-                                                    LabelTicks="{Binding HorizontalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                     VerticalAxis="{x:Null}"
                                                     Margin="1,0,0,0"
                                                     Grid.Row="2" Grid.RowSpan="2" Grid.Column="2"/>
                         <chart:VerticalAxisControl x:Name="PART_VerticalAxis"
                                                   HorizontalAxis="{x:Null}"
-                                                  LabelTicks="{Binding VerticalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                   Margin="0,0,0,1"
                                                   Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
 
@@ -374,14 +433,12 @@
                         </Border>
 
                         <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
-                                                    LabelTicks="{Binding HorizontalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                     VerticalAxis="{x:Null}"
                                                     Margin="1,0,0,0"
                                                     LayoutTransform="{StaticResource RotateL}"
                                                     Grid.Row="1" Grid.Column="2"/>
                         <chart:VerticalAxisControl x:Name="PART_VerticalAxis"
                                                   HorizontalAxis="{x:Null}"
-                                                  LabelTicks="{Binding VerticalAxis.LabelTicks, RelativeSource={RelativeSource Self}}"
                                                   Margin="0,0,0,1"
                                                   LayoutTransform="{StaticResource RotateL}"
                                                   Grid.Row="2" Grid.RowSpan="2" Grid.Column="1"/>

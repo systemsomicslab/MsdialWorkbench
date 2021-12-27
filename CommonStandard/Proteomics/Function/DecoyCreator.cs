@@ -43,29 +43,48 @@ namespace CompMs.Common.Proteomics.Function {
         public static Peptide Convert2DecoyPeptide(Peptide forwardPep, bool isSwapKL = true) {
             if (forwardPep == null) return null;
             var revPep = new Peptide() {
+                IsDecoy = true,
                 DatabaseOrigin = forwardPep.DatabaseOrigin,
                 DatabaseOriginID = forwardPep.DatabaseOriginID,
                 Position = new Common.DataObj.Range(forwardPep.Position.Start, forwardPep.Position.End),
                 ExactMass = forwardPep.ExactMass,
                 IsProteinCterminal = forwardPep.IsProteinCterminal,
-                IsProteinNterminal = forwardPep.IsProteinNterminal
+                IsProteinNterminal = forwardPep.IsProteinNterminal,
+                MissedCleavages = forwardPep.MissedCleavages
             };
             var sequence = forwardPep.SequenceObj;
             if (sequence.IsEmptyOrNull()) return revPep;
-            var revSeq = new AminoAcid[sequence.Count];
-            revSeq[0] = sequence[sequence.Count - 1];
-            for (int i = 1; i < sequence.Count; i++) {
-                var aaObj = sequence[sequence.Count - i - 1];
-                if ((aaObj.OneLetter == 'R' || aaObj.OneLetter == 'K') && isSwapKL) {
-                    revSeq[i] = revSeq[i - 1];
-                    revSeq[i - 1] = aaObj;
+
+            var revAAs = new List<AminoAcid>();
+            if (isSwapKL) {
+                for (int i = 1; i < sequence.Count; i++) {
+                    var aaObj = sequence[sequence.Count - i - 1];
+                    revAAs.Add(aaObj);
                 }
-                else {
-                    revSeq[i] = aaObj;
+                revAAs.Add(sequence[sequence.Count - 1]);
+            }
+            else {
+                for (int i = 0; i < sequence.Count; i++) {
+                    var aaObj = sequence[sequence.Count - i - 1];
+                    revAAs.Add(aaObj);
                 }
             }
-            revPep.SequenceObj = new List<AminoAcid>(revSeq);
+            revPep.SequenceObj = revAAs;
             return revPep;
+            //var revSeq = new AminoAcid[sequence.Count];
+            //revSeq[0] = sequence[sequence.Count - 1];
+            //for (int i = 1; i < sequence.Count; i++) {
+            //    var aaObj = sequence[sequence.Count - i - 1];
+            //    if ((aaObj.OneLetter == 'R' || aaObj.OneLetter == 'K') && isSwapKL) {
+            //        revSeq[i] = revSeq[i - 1];
+            //        revSeq[i - 1] = aaObj;
+            //    }
+            //    else {
+            //        revSeq[i] = aaObj;
+            //    }
+            //}
+            //revPep.SequenceObj = new List<AminoAcid>(revSeq);
+            //return revPep;
         }
     }
 }

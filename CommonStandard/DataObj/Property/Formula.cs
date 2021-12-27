@@ -6,9 +6,7 @@ using System.Linq;
 using System.Text;
 
 namespace CompMs.Common.DataObj.Property {
-    public sealed class AtomMass {
-        private AtomMass() { }
-
+    public static class AtomMass {
         public static double cMass = 12.0;
         public static double hMass = 1.007825032;
         public static double nMass = 14.003074;
@@ -22,15 +20,14 @@ namespace CompMs.Common.DataObj.Property {
         public static double siMass = 27.97692653;
     }
 
-    public class AtomTemp {
+    class AtomTemp {
         public string Element { get; set; }
         public int Order { get; set; }
         public int Count { get; set; }
 
     }
 
-    public sealed class FormulaCalculateUtility {
-        private FormulaCalculateUtility() { }
+    public static class FormulaCalculateUtility {
 
         public static double GetExactMass(Dictionary<string, int> element2count) {
             var mass = 0.0;

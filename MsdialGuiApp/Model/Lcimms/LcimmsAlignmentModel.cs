@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcimms
@@ -34,7 +35,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
             DataBaseMapper = mapper;
             ResultFile = alignmentFileBean.FilePath;
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(ResultFile);
-            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(
+            if (Container == null) {
+                MessageBox.Show("No aligned spot information.");
+            }
+
+            Ms1Spots = Container == null ? new ObservableCollection<AlignmentSpotPropertyModel>() : new ObservableCollection<AlignmentSpotPropertyModel>(
                 Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
 
             MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
@@ -119,6 +124,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 case TargetOmics.Lipidomics:
                     SelectedBrush = Brushes[0].Mapper;
                     break;
+                case TargetOmics.Proteomics:
                 case TargetOmics.Metabolomics:
                     SelectedBrush = Brushes[1].Mapper;
                     break;

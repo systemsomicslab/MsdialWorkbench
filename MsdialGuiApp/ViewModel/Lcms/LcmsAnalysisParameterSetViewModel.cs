@@ -1,9 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.View;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
-using CompMs.Common.Parser;
 using CompMs.Common.Query;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.Message;
@@ -11,10 +10,10 @@ using CompMs.MsdialCore.DataObj;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -24,7 +23,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     {
         public LcmsAnalysisParameterSetViewModel(LcmsAnalysisParameterSetModel model) {
             Model = model;
-            Param = MsdialProjectParameterFactory.Create(Model.Parameter);
+            Param = new ParameterBaseVM(Model.Parameter);
 
             AlignmentResultFileName = model.AlignmentResultFileName;
 
@@ -37,10 +36,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             SearchedAdductIons = new ObservableCollection<AdductIonVM>(Model.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
 
-            IdentitySettingViewModel = new LcmsIdentifySettingViewModel(Model.IdentitySettingModel).AddTo(Disposables);
+            IdentitySettingViewModel = new IdentifySettingViewModel(Model.IdentitySettingModel, new LcmsAnnotatorSettingViewModelFactory()).AddTo(Disposables);
 
             ContinueProcessCommand = new[]{
                 IdentitySettingViewModel.ObserveHasErrors,
+                Param.ObserveProperty(m => m.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange)
+                    .Select(v => v && AnalysisFiles.All(file => file.AnalysisFileType != AnalysisFileType.Blank)),
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand<Window>()
             .WithSubscribe(ContinueProcess)
@@ -49,7 +50,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public LcmsAnalysisParameterSetModel Model { get; }
 
-        public LcmsIdentifySettingViewModel IdentitySettingViewModel { get; }
+        public IdentifySettingViewModel IdentitySettingViewModel { get; }
 
         public ParameterBaseVM Param {
             get => paramVM;
@@ -101,8 +102,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private void ContinueProcess(Window window) {
             Mouse.OverrideCursor = Cursors.Wait;
 
-            var message = new ShortMessageWindow
-            {
+            var message = new ShortMessageWindow {
                 Owner = window,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 Text = Model.ParameterBase.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection
@@ -135,7 +135,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             if (Model.ParameterBase.TogetherWithAlignment && AnalysisFiles.Count > 1) {
 
-                if (Model.ParameterBase.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange && !AnalysisFiles.All(file => file.AnalysisFileType != AnalysisFileType.Blank)) {
+                if (Model.ParameterBase.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange && AnalysisFiles.All(file => file.AnalysisFileType != AnalysisFileType.Blank)) {
                     if (MessageBox.Show("If you use blank sample filter, please set at least one file's type as Blank in file property setting. " +
                         "Do you continue this analysis without the filter option?",
                         "Messsage", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.Cancel)

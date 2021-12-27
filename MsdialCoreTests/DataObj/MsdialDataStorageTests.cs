@@ -48,7 +48,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             }
 
             using (var manager = ZipStreamManager.OpenGet(memory)) {
-                var actual = await MsdialDataStorage.Serializer.LoadAsync(manager, "Test", "TestFolder");
+                var actual = await MsdialDataStorage.Serializer.LoadAsync(manager, "Test", null, "TestFolder");
 
                 Assert.AreEqual(storage.AnalysisFiles.Count, actual.AnalysisFiles.Count);
                 Assert.AreEqual(storage.AnalysisFiles[0].AnalysisFileId, actual.AnalysisFiles[0].AnalysisFileId);

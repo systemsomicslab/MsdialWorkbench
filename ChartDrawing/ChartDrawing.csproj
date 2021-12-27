@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="Adorner\ContentAdorner.cs" />
     <Compile Include="Adorner\ScatterFocusAdorner.cs" />
+    <Compile Include="AxisManager\Generic\ReactiveContinuousAxisManager.cs" />
     <Compile Include="Chart\AreaChartControl.cs" />
     <Compile Include="AxisManager\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\Generic\AutoContinuousAxisManager.cs" />

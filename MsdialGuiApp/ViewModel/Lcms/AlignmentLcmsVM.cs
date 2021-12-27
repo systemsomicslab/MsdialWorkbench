@@ -307,7 +307,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 if (csm is null) {
                     return;
                 }
-                using (var vm = new ViewModel.CompoundSearchVM(csm)) {
+                using (var vm = new LcmsCompoundSearchViewModel(csm)) {
                     compoundSearchService.ShowDialog(vm);
                 }
             }
@@ -370,6 +370,5 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public void SaveProject() {
             model.SaveProject();
         }
-
     }
 }

@@ -1,147 +1,73 @@
 ﻿using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
-using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
-using CompMs.MsdialDimsCore.Algorithm.Annotation;
-using CompMs.MsdialDimsCore.Common;
-using CompMs.MsdialDimsCore.DataObj;
-using CompMs.MsdialDimsCore.MsmsAll;
 using CompMs.MsdialDimsCore.Parameter;
-using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 
 namespace CompMs.MsdialDimsCore
 {
-
-    public enum ProcessType { MSMSALL }
-    public class ProcessError {
-        public string Messeage { get; set; } = string.Empty;
-        public bool IsErrorOccured { get; set; } = false;
-        public ProcessError() { }
-        public ProcessError(bool isError, string message) {
-            this.Messeage = message;
-            this.IsErrorOccured = isError;
-        }
-    }
     public class ProcessFile {
-        public void Run(string filepath, MsdialDimsParameter param, ProcessType type = ProcessType.MSMSALL) {
-            switch (type) {
-                case ProcessType.MSMSALL:
-                    var msmsAllProcess = new MsmsAllProcess(filepath, param);
-                    var error = msmsAllProcess.Run();
-                    break;
-            }
-        }
-
-        public static void Run(
-            AnalysisFileBean file,
-            IDataProviderFactory<AnalysisFileBean> providerFactory,
-            IMsdialDataStorage<MsdialDimsParameter> container,
-            bool isGuiProcess = false,
-            Action<int> reportAction = null, CancellationToken token = default) {
-            var mspAnnotator = new DimsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.Parameter.MspSearchParam, container.Parameter.TargetOmics, "MspDB", -1);
-            var textAnnotator = new MassAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.Parameter.TextDbSearchParam, container.Parameter.TargetOmics, SourceType.TextDB, "TextDB", -1);
-            var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery>(
-                new AnnotationQueryWithoutIsotopeFactory(),
-                new[] { new AnnotatorContainer(mspAnnotator, container.Parameter.MspSearchParam),
-                        new AnnotatorContainer(textAnnotator, container.Parameter.TextDbSearchParam), }); 
-            Run(file, providerFactory, container, annotationProcess, isGuiProcess, reportAction, token);
-        }
-
         public static void Run(
             AnalysisFileBean file,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
             IMsdialDataStorage<MsdialDimsParameter> container,
             IAnnotationProcess annotationProcess,
-            bool isGuiProcess = false,
             Action<int> reportAction = null,
-            CancellationToken token = default) {
+            CancellationToken token = default)
+        {
 
             var param = container.Parameter;
-            var textDB = container.TextDB.OrderBy(reference => reference.PrecursorMz).ToList();
-            // var iupacDB = container.IupacDatabase;
-            var filepath = file.AnalysisFilePath;
             var provider = providerFactory.Create(file);
 
-            using (var access = new RawDataAccess(filepath, 0, true, isGuiProcess)) {
+            // parse raw data
+            Console.WriteLine("Loading spectral information");
+            var spectrumList = provider.LoadMsSpectrums();
 
-                // parse raw data
-                Console.WriteLine("Loading spectral information");
-                //var rawObj = LoadRawMeasurement(access);
-                var spectrumList = provider.LoadMsSpectrums(); // rawObj.SpectrumList;
+            // faeture detections
+            Console.WriteLine("Peak picking started");
+            var ms1Spectrum = provider.LoadMs1Spectrums().Argmax(spec => spec.Spectrum.Length);
+            var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
+            var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
 
-                // faeture detections
-                Console.WriteLine("Peak picking started");
-                var ms1Spectrum = provider.LoadMs1Spectrums().Argmax(spec => spec.Spectrum.Length);
-                var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
-                var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
+            var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
+            if (peakPickResults.IsEmptyOrNull()) return;
+            var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, spectrumList, param.AcquisitionType);
 
-                //foreach (var peak in sChromPeaks) {
-                //    Console.WriteLine(peak.Mass + "\t" + peak.Intensity);
-                //}
+            if (peakFeatures.Count == 0) return;
+            // IsotopeEstimator.Process(peakFeatures, param, iupacDB); // in dims, skip the isotope estimation process.
+            SetIsotopes(peakFeatures);
+            SetSpectrumPeaks(peakFeatures, spectrumList);
 
+            // chrom deconvolutions
+            Console.WriteLine("Deconvolution started");
+            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, peakFeatures, param);
+            var initial_msdec = 30.0;
+            var max_msdec = 30.0;
+            var msdecProcess = new Algorithm.Ms2Dec(initial_msdec, max_msdec);
+            var targetCE = spectrumList.Select(spec => (double?)Math.Round(spec.CollisionEnergy, 2)).Distinct().Min() ?? -1;
+            var msdecResults = msdecProcess.GetMS2DecResults(spectrumList, peakFeatures, param, summary, targetCE, reportAction, token);
 
-                var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
-                if (peakPickResults.IsEmptyOrNull()) return;
-                var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, spectrumList, param.AcquisitionType);
+            Console.WriteLine("Annotation started");
+            annotationProcess.RunAnnotation(peakFeatures, msdecResults, provider, param.NumThreads, token, v => reportAction((int)v));
 
-                if (peakFeatures.Count == 0) return;
-                // IsotopeEstimator.Process(peakFeatures, param, iupacDB); // in dims, skip the isotope estimation process.
-                SetIsotopes(peakFeatures);
-                SetSpectrumPeaks(peakFeatures, spectrumList);
+            var characterEstimator = new Algorithm.PeakCharacterEstimator(90, 10);
+            characterEstimator.Process(spectrumList, peakFeatures, msdecResults, container.DataBaseMapper, param, reportAction);
 
-                // chrom deconvolutions
-                Console.WriteLine("Deconvolution started");
-                var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, peakFeatures, param);
-                var msdecResults = new List<MSDecResult>();
-                var initial_msdec = 30.0;
-                var max_msdec = 30.0;
-                var targetCE = spectrumList.Select(spec => (double?)Math.Round(spec.CollisionEnergy, 2)).Distinct().Min() ?? -1;
-                msdecResults = new Algorithm.Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
-                       spectrumList, peakFeatures, param, summary, targetCE, reportAction, token);
+            MsdialPeakSerializer.SaveChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath, peakFeatures);
+            MsdecResultsWriter.Write(file.DeconvolutionFilePath, msdecResults);
 
-                Console.WriteLine("Annotation started");
-                annotationProcess.RunAnnotation(peakFeatures, msdecResults, provider, param.NumThreads, token, v => reportAction((int)v));
-                /*
-                foreach ((var feature, var msdecResult) in peakFeatures.Zip(msdecResults)) {
-                    AnnotationProcess.Run(feature, msdecResult, mspAnnotator, textAnnotator, param.MspSearchParam, param.TextDbSearchParam, null);
-                }
-                */
-
-                new Algorithm.PeakCharacterEstimator(90, 10).Process(spectrumList, peakFeatures, null, container.DataBaseMapper, param, reportAction);
-
-                var paifile = file.PeakAreaBeanInformationFilePath;
-                MsdialPeakSerializer.SaveChromatogramPeakFeatures(paifile, peakFeatures);
-
-                var dclfile = file.DeconvolutionFilePath;
-                MsdecResultsWriter.Write(dclfile, msdecResults);
-
-                reportAction?.Invoke(100);
-            }
-        }
-
-        private static RawMeasurement LoadRawMeasurement(RawDataAccess access) {
-            foreach (var _ in Enumerable.Range(0, 5)) {
-                var rawObj = DataAccess.GetRawDataMeasurement(access);
-                if (rawObj != null)
-                    return rawObj;
-                Thread.Sleep(2000);
-            }
-
-            throw new FileLoadException($"Loading {access.Filepath} failed.");
+            reportAction?.Invoke(100);
         }
 
         private static List<ChromatogramPeakFeature> ConvertPeaksToPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, IReadOnlyList<RawSpectrum> allSpectra, AcquisitionType type) {

@@ -16,8 +16,21 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    class MsSpectrumViewModel : ViewModelBase
+    public class MsSpectrumViewModel : ViewModelBase
     {
+        static MsSpectrumViewModel() {
+            SpectrumBrushes = Enum.GetValues(typeof(SpectrumComment))
+                .Cast<SpectrumComment>()
+                .Where(comment => comment != SpectrumComment.none)
+                .Zip(ChartBrushes.SolidColorBrushList, (comment, brush) => (comment, brush))
+                .ToDictionary(
+                    kvp => kvp.comment,
+                    kvp => (Brush)kvp.brush
+                );
+        }
+        
+        private static readonly IReadOnlyDictionary<SpectrumComment, Brush> SpectrumBrushes;
+
         public MsSpectrumViewModel(
             MsSpectrumModel model,
             IAxisManager<double> horizontalAxis = null,
@@ -86,26 +99,14 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .AddTo(Disposables);
            
             if (upperSpectrumBrushSource is null) {
-                upperSpectrumBrushSource = LowerSpectrum.Select(
-                    items => new KeyBrushMapper<SpectrumComment>(
-                        items.Zip(ChartBrushes.SolidColorBrushList, (item, brush) => (item, brush))
-                            .ToDictionary(p => p.item.SpectrumComment, p => (Brush)p.brush),
-                        Brushes.Blue
-                    ));
+                upperSpectrumBrushSource = Observable.Return(new KeyBrushMapper<SpectrumComment>(SpectrumBrushes, Brushes.Blue));
             }
             UpperSpectrumBrushSource = upperSpectrumBrushSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             if (lowerSpectrumBrushSource is null) {
-                lowerSpectrumBrushSource = LowerSpectrum.Select(
-                    items => new KeyBrushMapper<SpectrumComment>(
-                        items.Zip(ChartBrushes.SolidColorBrushList, (item, brush) => (item, brush))
-                            .ToDictionary(p => p.item.SpectrumComment, p => (Brush)p.brush),
-                        Brushes.Red
-                    ));
+                lowerSpectrumBrushSource = Observable.Return(new KeyBrushMapper<SpectrumComment>(SpectrumBrushes, Brushes.Red));
             }
             LowerSpectrumBrushSource = lowerSpectrumBrushSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-
-            
         }
 
         private readonly MsSpectrumModel model;

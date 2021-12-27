@@ -78,11 +78,9 @@
                     Margin="0,5,5,0" 
                     Grid.Row="1" Grid.Column="2"/>
             <chart:HorizontalAxisControl HorizontalAxis="{StaticResource MassAxis}"
-                                        LabelTicks="{Binding LabelTicks, Source={StaticResource MassAxis}}"
                                         Margin="0,0,5,5"
                                         Grid.Row="2" Grid.Column="2" />
             <chart:VerticalAxisControl VerticalAxis="{StaticResource RawIntensityAxis}"
-                                      LabelTicks="{Binding LabelTicks, Source={StaticResource RawIntensityAxis}}"
                                       Margin="5,5,0,0"
                                       Grid.Row="1" Grid.Column="1" />
             <StackPanel Grid.Row="0" Grid.Column="2">
@@ -146,11 +144,9 @@
                     Margin="0,5,5,0" 
                     Grid.Row="1" Grid.Column="2"/>
             <chart:HorizontalAxisControl HorizontalAxis="{StaticResource MassAxis}"
-                                        LabelTicks="{Binding LabelTicks, Source={StaticResource MassAxis}}"
                                         Margin="0,0,5,5"
                                         Grid.Row="2" Grid.Column="2" />
             <chart:VerticalAxisControl VerticalAxis="{StaticResource PureIntensityAxis}"
-                                      LabelTicks="{Binding LabelTicks, Source={StaticResource PureIntensityAxis}}"
                                       Margin="5,5,0,0"
                                       Grid.Row="1" Grid.Column="1" />
             <StackPanel Grid.Row="0" Grid.Column="2">

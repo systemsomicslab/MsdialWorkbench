@@ -23,11 +23,24 @@ namespace CompMs.Graphics.UI.Message
             InitializeComponent();
         }
 
-        public static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), typeof(string), typeof(ShortMessageWindow));
+        public static readonly DependencyProperty TextProperty =
+            DependencyProperty.Register(
+                nameof(Text), 
+                typeof(string), 
+                typeof(ShortMessageWindow),
+                new PropertyMetadata("Loading files..", TextPropertyChanged));
+
+        private static void TextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            Console.WriteLine("Name from {0} to {1}", e.OldValue, e.NewValue);
+        }
 
         public string Text {
             get => (string)GetValue(TextProperty);
             set => SetValue(TextProperty, value);
+        }
+
+        public override string ToString() {
+            return Text;
         }
     }
 }

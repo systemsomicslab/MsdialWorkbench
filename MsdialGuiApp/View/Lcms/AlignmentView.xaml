@@ -111,11 +111,9 @@
             </Grid>
         </Border>
         <chart:HorizontalAxisControl HorizontalAxis="{StaticResource TimeAxis}"
-                                    LabelTicks="{Binding LabelTicks, Source={StaticResource TimeAxis}}"
                                     Margin="0,0,5,5"
                                     Grid.Row="2" Grid.Column="2" />
         <chart:VerticalAxisControl VerticalAxis="{StaticResource MzAxis}"
-                                  LabelTicks="{Binding LabelTicks, Source={StaticResource MzAxis}}"
                                   Margin="5,5,0,0"
                                   Grid.Row="1" Grid.Column="1" />
         <TextBlock Text="{Binding FileName, Mode=OneTime}" FontSize="14"

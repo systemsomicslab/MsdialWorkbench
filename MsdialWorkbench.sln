@@ -117,8 +117,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialCore", "MsdialCore\Ms
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialDimsCore", "MsdialDimsCore\MsdialDimsCore.csproj", "{1D3CE027-CDD7-446E-A190-AE99A129CEB3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialDimsCoreTestApp", "MsdialDimsCoreTestApp\MsdialDimsCoreTestApp.csproj", "{B28A486E-7061-44E0-9CA9-A41B49B5790E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialDimsCoreUiTestApp", "MsdialDimsCoreUiTestApp\MsdialDimsCoreUiTestApp.csproj", "{8BDFBF53-884D-447D-ABA8-9D408A7F982E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialGcMsApi", "MsdialGcMsApi\MsdialGcMsApi.csproj", "{204FE90A-B85C-4FDC-89C3-15D4808DA6F0}"
@@ -153,11 +151,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialImmsCoreTests", "Msdi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialGuiAppTests", "MsdialGuiAppTests\MsdialGuiAppTests.csproj", "{B8DA58FB-1A95-40CF-9F2D-FC980FC8A5C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialLcImMsApiTests", "MsdialLcImMsApiTests\MsdialLcImMsApiTests.csproj", "{4187672A-07AB-4D45-BFE4-845C5323D0D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialLcImMsApiTests", "MsdialLcImMsApiTests\MsdialLcImMsApiTests.csproj", "{4187672A-07AB-4D45-BFE4-845C5323D0D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialIntegrate", "MsdialIntegrate\MsdialIntegrate.csproj", "{9A103A62-9578-48A1-B967-D046925D3AC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialIntegrate", "MsdialIntegrate\MsdialIntegrate.csproj", "{9A103A62-9578-48A1-B967-D046925D3AC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsdialIntegrateTests", "MsdialIntegrateTests\MsdialIntegrateTests.csproj", "{4CC31723-8ECF-43DD-9399-BDEB31E75CBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialIntegrateTests", "MsdialIntegrateTests\MsdialIntegrateTests.csproj", "{4CC31723-8ECF-43DD-9399-BDEB31E75CBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpectrumViewer", "SpectrumViewer\SpectrumViewer.csproj", "{0780A32F-D596-447F-8E46-95E9491EE19F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -623,14 +623,6 @@ Global
 		{1D3CE027-CDD7-446E-A190-AE99A129CEB3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1D3CE027-CDD7-446E-A190-AE99A129CEB3}.Release|x64.ActiveCfg = Release|Any CPU
 		{1D3CE027-CDD7-446E-A190-AE99A129CEB3}.Release|x64.Build.0 = Release|Any CPU
-		{B28A486E-7061-44E0-9CA9-A41B49B5790E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B28A486E-7061-44E0-9CA9-A41B49B5790E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B28A486E-7061-44E0-9CA9-A41B49B5790E}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{B28A486E-7061-44E0-9CA9-A41B49B5790E}.Debug|x64.Build.0 = Debug|Any CPU
-		{B28A486E-7061-44E0-9CA9-A41B49B5790E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B28A486E-7061-44E0-9CA9-A41B49B5790E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B28A486E-7061-44E0-9CA9-A41B49B5790E}.Release|x64.ActiveCfg = Release|Any CPU
-		{B28A486E-7061-44E0-9CA9-A41B49B5790E}.Release|x64.Build.0 = Release|Any CPU
 		{8BDFBF53-884D-447D-ABA8-9D408A7F982E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8BDFBF53-884D-447D-ABA8-9D408A7F982E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8BDFBF53-884D-447D-ABA8-9D408A7F982E}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -791,6 +783,14 @@ Global
 		{4CC31723-8ECF-43DD-9399-BDEB31E75CBC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4CC31723-8ECF-43DD-9399-BDEB31E75CBC}.Release|x64.ActiveCfg = Release|Any CPU
 		{4CC31723-8ECF-43DD-9399-BDEB31E75CBC}.Release|x64.Build.0 = Release|Any CPU
+		{0780A32F-D596-447F-8E46-95E9491EE19F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0780A32F-D596-447F-8E46-95E9491EE19F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0780A32F-D596-447F-8E46-95E9491EE19F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0780A32F-D596-447F-8E46-95E9491EE19F}.Debug|x64.Build.0 = Debug|Any CPU
+		{0780A32F-D596-447F-8E46-95E9491EE19F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0780A32F-D596-447F-8E46-95E9491EE19F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0780A32F-D596-447F-8E46-95E9491EE19F}.Release|x64.ActiveCfg = Release|Any CPU
+		{0780A32F-D596-447F-8E46-95E9491EE19F}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

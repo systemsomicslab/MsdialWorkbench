@@ -22,21 +22,23 @@ namespace CompMs.MsdialCore.Utility {
         private LibraryHandler() { }
 
         public static List<MoleculeMsReference> ReadLipidMsLibrary(string filepath, ParameterBase param) {
+            return ReadLipidMsLibrary(filepath, param.LipidQueryContainer, param.IonMode);
+        }
 
-            var container = param.LipidQueryContainer;
-            var collosionType = container.CollisionType;
-            var solventType = container.SolventType;
+        public static List<MoleculeMsReference> ReadLipidMsLibrary(string filepath, LipidQueryBean lipidQueries, IonMode ionMode) {
 
-            var ionMode = param.IonMode;
+            var collosionType = lipidQueries.CollisionType;
+            var solventType = lipidQueries.SolventType;
+
             var queries = new List<LbmQuery>();
 
-            foreach (var lQuery in container.LbmQueries) {
+            foreach (var lQuery in lipidQueries.LbmQueries) {
                 if (lQuery.IsSelected == true && lQuery.IonMode == ionMode)
                     queries.Add(lQuery);
             }
 
             List<MoleculeMsReference> mspQueries = null;
-            var extension = System.IO.Path.GetExtension(filepath).ToLower();
+            var extension = Path.GetExtension(filepath).ToLower();
             if (extension == ".lbm")
                 mspQueries = MspFileParser.LbmFileReader(filepath, queries, ionMode, solventType, collosionType);
             else if (extension == ".lbm2")
@@ -56,10 +58,10 @@ namespace CompMs.MsdialCore.Utility {
             return mspQueries;
         }
 
-        public static ShotgunProteomicsDB GenerateShotgunProteomicsDB(string file, string id, ProteomicsParameter proteomicsParam, MsRefSearchParameterBase msrefSearchParam) {
-            var db = new ShotgunProteomicsDB(file, id, proteomicsParam, msrefSearchParam.MassRangeBegin, msrefSearchParam.MassRangeEnd);
-            return db;
-        }
+        //public static ShotgunProteomicsDB GenerateShotgunProteomicsDB(string file, string id, ProteomicsParameter proteomicsParam, MsRefSearchParameterBase msrefSearchParam) {
+        //    var db = new ShotgunProteomicsDB(file, id, proteomicsParam, msrefSearchParam.MassRangeBegin, msrefSearchParam.MassRangeEnd);
+        //    return db;
+        //}
 
 
         public static List<Peptide> GenerateTargetPeptideReference(List<FastaProperty> quereis,

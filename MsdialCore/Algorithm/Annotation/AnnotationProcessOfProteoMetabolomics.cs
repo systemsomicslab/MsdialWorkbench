@@ -174,10 +174,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                     });
                     annotationTasks.Add(v);
                 }
-
-
-
-
                 //var annotationTasks = chromPeakFeatures.Zip(msdecResults, Tuple.Create)
                 //    .Select(async (pair, i) => {
                 //        await sem.WaitAsync();
@@ -273,7 +269,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
         private void SetPepAnnotationResult(
             ChromatogramPeakFeature chromPeakFeature, T query,
             IAnnotatorContainer<T, PeptideMsReference, MsScanMatchResult> annotatorContainer) {
-
             var annotator = annotatorContainer.Annotator;
             var candidates = annotator.FindCandidates(query);
             if (candidates.Count == 2) {

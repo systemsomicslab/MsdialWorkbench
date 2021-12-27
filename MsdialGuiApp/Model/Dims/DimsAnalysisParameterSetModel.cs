@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialDimsCore.Parameter;
@@ -16,8 +17,8 @@ namespace CompMs.App.Msdial.Model.Dims
             : base(parameter, files) {
             Parameter = parameter;
 
-            DataCollectionSettingModel = new DimsDataCollectionSettingModel(parameter.ProcessBaseParam, parameter.PeakPickBaseParam);
-            IdentifySettingModel = new DimsIdentifySettingModel(parameter);
+            DataCollectionSettingModel = new DimsDataCollectionSettingModel(parameter.ProcessBaseParam, parameter.PeakPickBaseParam, parameter.ProviderFactoryParameter);
+            IdentifySettingModel = new IdentifySettingModel(parameter, new DimsAnnotatorSettingModelFactory());
 
             if (Parameter.TargetOmics == TargetOmics.Lipidomics) {
                 string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -38,6 +39,6 @@ namespace CompMs.App.Msdial.Model.Dims
         public MsdialDimsParameter Parameter { get; }
 
         public DimsDataCollectionSettingModel DataCollectionSettingModel { get; }
-        public DimsIdentifySettingModel IdentifySettingModel { get; private set; }
+        public IdentifySettingModel IdentifySettingModel { get; private set; }
     }
 }

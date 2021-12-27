@@ -7,6 +7,8 @@
              xmlns:enum="clr-namespace:CompMs.Common.Enum;assembly=Common"
              xmlns:validator="clr-namespace:CompMs.CommonMVVM.Validator;assembly=CommonMVVM"
              xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:LcimmsAnalysisParameterSetViewModel}}"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
     <d:DesingerProperties.DesignStyle>
@@ -54,7 +56,7 @@
 
                 <ui:LabeledContent PrependLabel="Retention time tolerance:"
                                    AppendLabel="min">
-                    <TextBox Text="{Binding RetentionTimeAlignmentTolerance, UpdateSourceTrigger=LostFocus}"
+                    <TextBox Text="{Binding Parameter.RetentionTimeAlignmentTolerance}"
                              ToolTip="At least for ODS column, 0.05-0.1 is better."
                              Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
                              Height="25"
@@ -62,7 +64,7 @@
                 </ui:LabeledContent>
 
                 <ui:LabeledContent PrependLabel="Drift time tolerance:">
-                    <TextBox Text="{Binding DriftTimeAlignmentTolerance, UpdateSourceTrigger=LostFocus}"
+                    <TextBox Text="{Binding Parameter.DriftTimeAlignmentTolerance.Value}"
                              Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
                              Height="25"
                              HorizontalContentAlignment="Right"/>
@@ -71,17 +73,10 @@
                 <ui:LabeledContent PrependLabel="MS1 tolerance:"
                                    AppendLabel="Da">
                     <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
+                             Text="{Binding Parameter.Ms1AlignmentTolerance}"
                              HorizontalAlignment="Stretch" HorizontalContentAlignment="Right"
                              ToolTip="At least for QTOF, 0.01-0.025 is better."
-                             Height="25">
-                        <TextBox.Text>
-                            <Binding Path="Param.Ms1AlignmentTolerance" ValidatesOnDataErrors="True" UpdateSourceTrigger="LostFocus" NotifyOnValidationError="True">
-                                <Binding.ValidationRules>
-                                    <validator:PositiveDoubleNumericValidation />
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </TextBox.Text>
-                    </TextBox>
+                             Height="25"/>
                 </ui:LabeledContent>
 
             </StackPanel>
@@ -102,78 +97,42 @@
                     <ui:LabeledContent PrependLabel="Retention time factor:"
                                        AppendLabel="(0-1)">
                         <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                                 Text="{Binding Parameter.RetentionTimeAlignmentFactor}"
                                  ToolTip="At least for ODS column, 0.5 is good."
-                                 Height="25" HorizontalContentAlignment="Right">
-                            <TextBox.Text>
-                                <Binding Path="Param.RetentionTimeAlignmentFactor" UpdateSourceTrigger="LostFocus">
-                                    <Binding.ValidationRules>
-                                        <validator:PositiveDoubleNumericValidation />
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
-                        </TextBox>
+                                 Height="25" HorizontalContentAlignment="Right"/>
                     </ui:LabeledContent>
 
                     <ui:LabeledContent PrependLabel="Drift time factor:"
                                        AppendLabel="(0-1)">
                         <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                                 Height="25" HorizontalContentAlignment="Right">
-                            <TextBox.Text>
-                                <Binding Path="Param.DriftTimeAlignmentFactor" UpdateSourceTrigger="LostFocus">
-                                    <Binding.ValidationRules>
-                                        <validator:PositiveDoubleNumericValidation />
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
-                        </TextBox>
+                                 Text="{Binding Parameter.DriftTimeAlignmentFactor.Value}"
+                                 Height="25" HorizontalContentAlignment="Right"/>
                     </ui:LabeledContent>
 
 
                     <ui:LabeledContent PrependLabel="MS1 factor:"
                                        AppendLabel="(0-1)">
                         <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                                 Text="{Binding Parameter.Ms1AlignmentFactor}"
                                  ToolTip="At least for QTOF column, 0.5-0.7 is good."
-                                 Height="25" HorizontalContentAlignment="Right">
-                            <TextBox.Text>
-                                <Binding Path="Param.Ms1AlignmentFactor" UpdateSourceTrigger="LostFocus">
-                                    <Binding.ValidationRules>
-                                        <validator:PositiveDoubleNumericValidation />
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
-                        </TextBox>
+                                 Height="25" HorizontalContentAlignment="Right"/>
                     </ui:LabeledContent>
 
                     <ui:LabeledContent PrependLabel="Peak count filter:"
                                        AppendLabel="%">
                         <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
+                                 Text="{Binding Parameter.PeakCountFilter}"
                                  ToolTip="Aligned peaks which are less than this parameter will be removed from the final result."
-                                 Height="25" HorizontalContentAlignment="Right">
-                            <TextBox.Text>
-                                <Binding Path="Param.PeakCountFilter" UpdateSourceTrigger="LostFocus">
-                                    <Binding.ValidationRules>
-                                        <validator:PositiveDoubleNumericValidation />
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
-                        </TextBox>
+                                 Height="25" HorizontalContentAlignment="Right"/>
                     </ui:LabeledContent>
 
                     <ui:LabeledContent PrependLabel="N% detected in at least one group:"
                                        AppendLabel="%">
                         <TextBox Name="TextBox_NpercentDetectedInOneGroup" 
+                                 Text="{Binding Parameter.NPercentDetectedInOneGroup}"
                                  Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
                                  ToolTip="Present in at least n% of samples in at least one sample group."
-                                 Height="25" HorizontalContentAlignment="Right">
-                            <TextBox.Text>
-                                    <Binding Path="Param.NPercentDetectedInOneGroup" 
-                                             UpdateSourceTrigger="LostFocus">
-                                        <Binding.ValidationRules>
-                                            <validator:PositiveDoubleNumericValidation />
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
-                        </TextBox>
+                                 Height="25" HorizontalContentAlignment="Right"/>
                     </ui:LabeledContent>
 
                     <ui:LabeledContent PrependLabel="Remove features based on blank information:">

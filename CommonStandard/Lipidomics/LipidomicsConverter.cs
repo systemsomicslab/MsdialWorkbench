@@ -10,8 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CompMs.Common.Lipidomics {
-    public sealed class LipidomicsConverter {
-        private LipidomicsConverter() { }
+    public static class LipidomicsConverter {
         
         //public static LipidMolecule ConvertMsdialLipidnameToLipidMoleculeObject(MoleculeMsReference query) {
         //    var molecule = new LipidMolecule();

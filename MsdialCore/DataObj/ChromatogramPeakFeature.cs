@@ -324,6 +324,11 @@ namespace CompMs.MsdialCore.DataObj {
             return true;
         }
 
+        public bool AllDriftFeaturesAreNotAnnotated(DataBaseMapper mapper) {
+            if (!IsMultiLayeredData()) return false;
+            return DriftChromFeatures.Count(n => n.IsReferenceMatched(mapper) == false) == 0;
+        }
+
         [Key(51)]
         public int MSDecResultIdUsed { get; set; } = -1;
         //public int MSDecResultIdUsedForAnnotation() {

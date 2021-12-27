@@ -77,18 +77,6 @@
         </StackPanel>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type vm:MsRefSearchParameterBaseViewModel}"
-                  x:Key="CcsSetting">
-        <StackPanel>
-            <ui:LabeledContent PrependLabel="Use collision cross section for scoring">
-                <CheckBox IsChecked="{Binding IsUseCcsForAnnotationScoring.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Use collision cross section for filtering">
-                <CheckBox IsChecked="{Binding IsUseCcsForAnnotationFiltering.Value}"/>
-            </ui:LabeledContent>
-        </StackPanel>
-    </DataTemplate>
-
     <DataTemplate DataType="{x:Type localVM:ImmsLbmAnnotationSettingViewModel}">
         <Grid>
             <Grid.RowDefinitions>

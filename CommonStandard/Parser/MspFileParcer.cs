@@ -429,13 +429,26 @@ namespace CompMs.Common.Parser {
             return mspPeaks;
         }
 
+        public static void WriteAsMsp(string filePath, IEnumerable<MoleculeMsReference> mspRecords) {
+            using (var stream = File.Open(filePath, FileMode.Create, FileAccess.Write)) {
+                WriteAsMsp(stream, mspRecords);
+            }
+        }
+
+        public static void WriteAsMsp(Stream stream, IEnumerable<MoleculeMsReference> mspRecords) {
+            using (var sw = new StreamWriter(stream, Encoding.ASCII, 512, leaveOpen: true)) {
+                foreach (var record in mspRecords) {
+                    writeMspFields(record, sw);
+                }
+            }
+        }
        
         public static void ConvertMspToSeparatedMSPs(string filepath, string folderpath) {
             var mspRecords = MspFileReader(filepath);
             WriteAsSeparatedMSPs(folderpath, mspRecords);
         }
 
-        public static void WriteAsSeparatedMSPs(string folderpath, List<MoleculeMsReference> mspRecords) {
+        public static void WriteAsSeparatedMSPs(string folderpath, IEnumerable<MoleculeMsReference> mspRecords) {
             var invalidChars = Path.GetInvalidFileNameChars();
             var counter = 0;
             foreach (var record in mspRecords) {

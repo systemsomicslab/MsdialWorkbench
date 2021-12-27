@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.View;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Enum;
 using CompMs.Common.Query;
 using CompMs.CommonMVVM;
@@ -11,6 +12,7 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -35,10 +37,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             DataCollectionSettingViewModel = new DimsDataCollectionSettingViewModel(Model.DataCollectionSettingModel).AddTo(Disposables);
 
-            IdentifySettingViewModel = new DimsIdentifySettingViewModel(Model.IdentifySettingModel).AddTo(Disposables);
+            IdentifySettingViewModel = new IdentifySettingViewModel(Model.IdentifySettingModel, new DimsAnnotatorSettingViewModelFactory()).AddTo(Disposables);
 
             ContinueProcessCommand = new[]{
                 IdentifySettingViewModel.ObserveHasErrors,
+                Parameter.ObserveProperty(m => m.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange)
+                    .Select(v => v && AnalysisFiles.All(file => file.AnalysisFileType != AnalysisFileType.Blank)),
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand<Window>()
             .WithSubscribe(ContinueProcess)
@@ -65,7 +69,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public ObservableCollection<AdductIonVM> SearchedAdductIons { get; }
 
         public DimsDataCollectionSettingViewModel DataCollectionSettingViewModel { get; }
-        public DimsIdentifySettingViewModel IdentifySettingViewModel { get; }
+        public IdentifySettingViewModel IdentifySettingViewModel { get; }
 
         public bool TogetherWithAlignment {
             get {
@@ -122,7 +126,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             if (Model.ParameterBase.TogetherWithAlignment && AnalysisFiles.Count > 1) {
 
-                if (Model.ParameterBase.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange && !AnalysisFiles.All(file => file.AnalysisFileType != AnalysisFileType.Blank)) {
+                if (Model.ParameterBase.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange && AnalysisFiles.All(file => file.AnalysisFileType != AnalysisFileType.Blank)) {
                     if (MessageBox.Show("If you use blank sample filter, please set at least one file's type as Blank in file property setting. " +
                         "Do you continue this analysis without the filter option?",
                         "Messsage", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.Cancel)

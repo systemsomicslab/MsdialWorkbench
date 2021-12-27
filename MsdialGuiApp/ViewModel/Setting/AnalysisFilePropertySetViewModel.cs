@@ -92,7 +92,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 ofd.Filter = "IBF file(*.ibf)|*.ibf";
             }
             else {
-                ofd.Filter = "ABF file(*.abf)|*.abf|mzML file(*.mzml)|*.mzml|netCDF file(*.cdf)|*.cdf|IBF file(*.ibf)|*.ibf|WIFF file(*.wiff)|*.wiff|WIFF2 file(*.wiff2)|*.wiff2|Raw file(*.raw)|*.raw";
+                ofd.Filter = "ABF file(*.abf)|*.abf|mzML file(*.mzml)|*.mzml|netCDF file(*.cdf)|*.cdf|IBF file(*.ibf)|*.ibf|WIFF file(*.wiff)|*.wiff|WIFF2 file(*.wiff2)|*.wiff2|Raw file(*.raw)|*.raw|LCD file(*.lcd)|*.lcd|QGD file(*.qgd)|*.qgd|All file(*.*)|*.*";
             }
 
             if (ofd.ShowDialog() == true) {
@@ -156,6 +156,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 case ".ibf":
                 case ".wiff":
                 case ".wiff2":
+                case ".qgd":
+                case ".lcd":
                     return true;
                 default:
                     return false;

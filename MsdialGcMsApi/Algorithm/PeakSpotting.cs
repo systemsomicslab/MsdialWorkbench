@@ -6,6 +6,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialGcMsApi.Parameter;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace CompMs.MsdialGcMsApi.Algorithm {
     public sealed class PeakSpotting {
@@ -14,9 +15,9 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
             this.CoreProcess = new PeakSpottingCore() { InitialProgress = initialProgress, ProgressMax = progressMax };
         }
 
-        public List<ChromatogramPeakFeature> Run(RawMeasurement rawObj, MsdialGcmsParameter param, Action<int> reportAction) {
+        public List<ChromatogramPeakFeature> Run(RawMeasurement rawObj, MsdialGcmsParameter param, CancellationToken token, Action<int> reportAction) {
             return CoreProcess.Execute3DFeatureDetection(null, param, param.RetentionTimeBegin, param.RetentionTimeEnd, ChromXType.RT,
-ChromXUnit.Min, reportAction);
+                    ChromXUnit.Min, param.NumThreads, token, reportAction);
         }
     }
 }

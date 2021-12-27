@@ -35,7 +35,12 @@ namespace CompMs.MspGenerator
         CSPHex, BRSPHex, CASPHex, SISPHex, STSPHex, Cer_HDS, HexCer_HDS,
         SSulfate, BAHex, BASulfate,
         Others, Unknown, SPLASH, EtherSMGDG, SMGDG, Vitamin_D,
-        LCAE, KLCAE, KDCAE
+        LCAE, KLCAE, KDCAE,
+        MMPE, DMPE, MIPC, EGSE, DEGSE, DSMSE,
+        OxTG, TG_EST,
+        GPNAE, DGMG, MGMG,
+        GD1a, GD1b, GD2, GD3, GM1, GT1b, GQ1b, NGcGM3,
+        ST
     }
 
     public class FattyAcidChain

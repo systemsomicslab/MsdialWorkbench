@@ -9,16 +9,15 @@ namespace CompMs.App.Msdial.ViewModel.Imms
     class ImmsCompoundSearchVM : CompoundSearchVM
     {
         public ImmsCompoundSearchVM(CompoundSearchModel model) : base(model) {
-            searchUnsubscriber?.Dispose();
-
-            ParameterHasErrors = ParameterVM.SelectMany(parameter =>
+            ParameterHasErrors = ParameterVM.Select(parameter =>
                 (new[]
                 {
                     parameter.Ms1Tolerance.ObserveHasErrors,
                     parameter.Ms2Tolerance.ObserveHasErrors,
                     parameter.CcsTolerance.ObserveHasErrors,
                 }).CombineLatestValuesAreAllFalse()
-            ).Inverse()
+                .Inverse())
+            .Switch()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
@@ -28,24 +27,20 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand().AddTo(Disposables);
 
-            searchUnsubscriber = ParameterHasErrors
-                .Where(hasErrors => !hasErrors)
-                .Select(_ => new[]
-                {
-                    SearchCommand.ToUnit(),
-                    ParameterVM.SelectMany(parameter => new[]
-                    {
-                        parameter.Ms1Tolerance.ToUnit(),
-                        parameter.Ms2Tolerance.ToUnit(),
-                        parameter.CcsTolerance.ToUnit(),
-                    }.Merge())
-                }.Merge())
-                .Switch()
-                .Select(_ => SearchAsync())
-                .Switch()
-                .Subscribe(cs => Compounds = cs)
-                .AddTo(Disposables);
-
+            Compounds = ParameterVM.Select(parameter => new[]
+            {
+                parameter.Ms1Tolerance.ToUnit(),
+                parameter.Ms2Tolerance.ToUnit(),
+                parameter.CcsTolerance.ToUnit(),
+                SearchCommand.ToUnit(),
+            }.Merge())
+            .Switch()
+            .Where(_ => !ParameterHasErrors.Value)
+            .Select(_ => Observable.FromAsync(SearchAsync))
+            .Switch()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
+            
             SearchCommand.Execute();
         }
     }

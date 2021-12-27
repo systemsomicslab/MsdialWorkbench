@@ -10,7 +10,7 @@ using System.Linq;
 namespace CompMs.Common.Proteomics.Function {
 
     public class PEPCalcContainer {
-        // peptide length, modification number, missed cleavage number
+        // [0]peptide length, [1]missed cleavage number, [2]modification number
         public Dictionary<Tuple<int, int, int>, MultivariateEmpiricalDistribution> ProbAllDict { get; } = new Dictionary<Tuple<int, int, int>, MultivariateEmpiricalDistribution>();
         public Dictionary<Tuple<int, int, int>, MultivariateEmpiricalDistribution> ProbFalseDict { get; } = new Dictionary<Tuple<int, int, int>, MultivariateEmpiricalDistribution>();
         public Dictionary<Tuple<int, int, int>, bool> ID2Availability { get; } = new Dictionary<Tuple<int, int, int>, bool>();
@@ -45,6 +45,18 @@ namespace CompMs.Common.Proteomics.Function {
             SetProbDict(pepArray, cleavageArray, modificationArray);
             SetAvailabilityToDictionary();
             SetID2ProbDistUsed(minPepLength, minMissedCleavages, minMods);
+        }
+
+        public double GetPosteriorErrorProbability(float score, int peptideLength, int modificationNum, int missedCleavageNum) {
+            var key = new Tuple<int, int, int>(peptideLength, missedCleavageNum, modificationNum);
+            var keyUsed = ID2ProbDictUsed[key];
+            var probAll = ProbAllDict[keyUsed];
+            var probFalse = ProbFalseDict[keyUsed];
+
+            var scoreDensity = new double[] { score };
+            var probSL = probAll.ProbabilityDensityFunction(scoreDensity);
+            var probSLF = probFalse.ProbabilityDensityFunction(scoreDensity);
+            return 0.5 * probSLF / probSL;
         }
 
         private void SetID2ProbDistUsed(int minPepLength, int minMissedCleavages, int minMods) {
@@ -115,6 +127,7 @@ namespace CompMs.Common.Proteomics.Function {
                     ID2Availability[key] = false;
                     if (key.Item1 == -1 && key.Item2 == -1 && key.Item3 == -1) {
                         IsContainerAvailability = false;
+                        ID2Availability[key] = true; // temp
                     }
                 }
             }

@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -17,9 +18,9 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             Parameter = parameter;
 
-            IdentitySettingModel = new LcmsIdentifySettingModel(parameter, dataBaseStorages);
+            IdentitySettingModel = new IdentifySettingModel(parameter, new LcmsAnnotatorSettingFactory(), dataBaseStorages);
             if (files.Count() <= 1) {
-                Parameter.TogetherWithAlignment = false;
+                Parameter.ProcessOption &= ~ProcessOption.Alignment;
             }
 
             if (Parameter.TargetOmics == TargetOmics.Lipidomics) {
@@ -33,13 +34,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
             else if (Parameter.TargetOmics == TargetOmics.Proteomics) {
                 Parameter.MaxChargeNumber = 6;
-                Parameter.MinimumAmplitude = 500000;
-                Parameter.AmplitudeCutoff = 1000;
+                Parameter.RemoveAfterPrecursor = false;
+                //Parameter.MinimumAmplitude = 500000;
+                //Parameter.AmplitudeCutoff = 1000;
 
-                Parameter.RetentionTimeBegin = 10;
-                Parameter.RetentionTimeEnd = 30;
-                Parameter.MassRangeBegin = 400;
-                Parameter.MassRangeEnd = 900;
+                //Parameter.RetentionTimeBegin = 10;
+                //Parameter.RetentionTimeEnd = 30;
+                //Parameter.MassRangeBegin = 400;
+                //Parameter.MassRangeEnd = 900;
 
                 Parameter.MspSearchParam.SimpleDotProductCutOff = 0.0F;
                 Parameter.MspSearchParam.WeightedDotProductCutOff = 0.0F;
@@ -52,6 +54,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public MsdialLcmsParameter Parameter { get; }
-        public LcmsIdentifySettingModel IdentitySettingModel { get; }
+        public IdentifySettingModel IdentitySettingModel { get; }
     }
 }
