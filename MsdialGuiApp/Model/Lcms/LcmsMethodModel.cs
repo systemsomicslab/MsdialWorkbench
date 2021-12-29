@@ -404,8 +404,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             if (dialog.ShowDialog() == true) {
-                param.AdvancedProcessOptionBaseParam.DiplayEicSettingValues = model.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
-                var displayEICs = param.AdvancedProcessOptionBaseParam.DiplayEicSettingValues;
+                param.DiplayEicSettingValues = model.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
+                var displayEICs = param.DiplayEicSettingValues;
                 if (!displayEICs.IsEmptyOrNull()) {
                     var displayChroms = new List<DisplayChromatogram>();
                     var counter = 0;
@@ -459,6 +459,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
             var alignmentModel = AlignmentModel;
+            var param = container.MsdialLcmsParameter;
             
             var model = new FragmentQuerySettingModel(container.MsdialLcmsParameter, isAlignmentViewSelected);
             var vm = new FragmentQuerySettingViewModel(model);
@@ -469,15 +470,17 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
 
             if (dialog.ShowDialog() == true) {
+                param.FragmentSearchSettingValues = model.FragmentQuerySettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();
+                param.AndOrAtFragmentSearch = model.SearchOption.Value;
                 if (model.IsAlignSpotViewSelected.Value && alignmentModel is null) {
                     MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
                 if (model.IsAlignSpotViewSelected.Value) {
-
+                    alignmentModel.FragmentSearcher();
                 }
                 else {
-                    analysisModel.MsmsFragmentSearcher();
+                    analysisModel.FragmentSearcher();
                 }
             }
         }

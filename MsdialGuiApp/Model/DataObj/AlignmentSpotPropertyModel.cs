@@ -101,6 +101,8 @@ namespace CompMs.App.Msdial.Model.DataObj
         public bool IsMsmsAssigned => innerModel.IsMsmsAssigned;
         public bool IsBaseIsotopeIon => innerModel.PeakCharacter.IsotopeWeightNumber == 0;
         public bool IsBlankFiltered => innerModel.FeatureFilterStatus.IsBlankFiltered;
+        public bool IsFragmentQueryExisted => innerModel.FeatureFilterStatus.IsFragmentExistFiltered;
+
 
         internal readonly AlignmentSpotProperty innerModel;
 

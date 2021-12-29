@@ -157,7 +157,8 @@
                    KeyTip="S">
             <RibbonGroup>
                 <RibbonButton Label="MS/MS fragment searcher" LargeImageSource="{StaticResource Fragment_search_is}"
-                              IsEnabled="False"
+                              IsEnabled="True"
+                              Command="{Binding ShowFragmentSearchSettingCommand}"
                               KeyTip="F">
                     <RibbonButton.ToolTip>The unique product ion or neutral loss can be examined.</RibbonButton.ToolTip>
                 </RibbonButton>

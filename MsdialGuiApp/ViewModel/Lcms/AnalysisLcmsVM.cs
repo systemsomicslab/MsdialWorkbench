@@ -237,6 +237,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     && AmplitudeFilter(peak)
                     && (!Ms2AcquiredChecked || peak.IsMsmsContained)
                     && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0)
+                    && (!UniqueIonsChecked || peak.IsFragmentQueryExisted)
                     && (!ManuallyModifiedChecked || peak.InnerModel.IsManuallyModifiedForAnnotation)
                     && MetaboliteFilter(peak, MetaboliteFilterKeywords.Value)
                     && CommentFilter(peak, CommentFilterKeywords.Value);

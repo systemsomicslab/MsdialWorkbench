@@ -209,9 +209,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Annotators);
         }
 
-        public void MsmsFragmentSearcher() {
+        public void FragmentSearcher() {
             var features = this.Ms1Peaks;
-            FragmentSearcher.Search(features.Select(n => n.InnerModel).ToList(), this.decLoader);
+            MsdialCore.Algorithm.FragmentSearcher.Search(features.Select(n => n.InnerModel).ToList(), this.decLoader, Parameter);
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CompMs.MsdialCore.DataObj {
-    public enum PeakFeatureSearchType { MS1, ProductIon, NeutralLoss }
+    public enum PeakFeatureSearchType { ProductIon, NeutralLoss  }
     [MessagePackObject]
     public class PeakFeatureSearchValue {
         [Key(0)]

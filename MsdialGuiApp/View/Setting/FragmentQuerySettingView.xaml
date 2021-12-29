@@ -9,6 +9,7 @@
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
         xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
         xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
+        xmlns:core="clr-namespace:CompMs.MsdialCore.DataObj;assembly=MsdialCore"
         xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
         xmlns:reactiveProperty="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
         d:DataContext="{d:DesignInstance Type={x:Type vm:FragmentQuerySettingViewModel}}"
@@ -45,7 +46,7 @@
 
         <ObjectDataProvider x:Key="SearchType" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="common:SearchType" />
+                <x:Type TypeName="core:PeakFeatureSearchType" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 
@@ -183,8 +184,8 @@
 
                 <DataGridComboBoxColumn Width="*" Header="Search type" 
                                         ItemsSource="{Binding Source={StaticResource SearchType}}" 
-                                        SelectedItemBinding="{Binding Path=SearchType}"
-                                        ClipboardContentBinding="{Binding Path=SearchType}" />
+                                        SelectedItemBinding="{Binding Path=PeakFeatureSearchType.Value}"
+                                        ClipboardContentBinding="{Binding Path=PeakFeatureSearchType.Value}" />
 
             </DataGrid.Columns>
         </DataGrid>

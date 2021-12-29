@@ -201,5 +201,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 null,
                 Annotators);
         }
+
+        internal void FragmentSearcher() {
+            throw new NotImplementedException();
+        }
     }
 }

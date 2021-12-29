@@ -77,5 +77,6 @@ namespace CompMs.App.Msdial.ViewModel
         public abstract void LoadProject();
         public abstract void SaveProject();
         public ReactivePropertySlim<ResultVM> SelectedViewModel { get; }
+        
     }
 }

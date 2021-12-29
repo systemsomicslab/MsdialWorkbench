@@ -97,6 +97,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public bool IsUnknown => innerModel.IsUnknown;
         public bool IsCcsMatch => ScanMatchResult?.IsCcsMatch ?? false;
         public bool IsMsmsContained => innerModel.IsMsmsContained;
+        public bool IsFragmentQueryExisted => innerModel.FeatureFilterStatus.IsFragmentExistFiltered;
         public double AmplitudeScore => innerModel.PeakShape.AmplitudeScoreValue;
         public double AmplitudeOrderValue => innerModel.PeakShape.AmplitudeOrderValue;
 

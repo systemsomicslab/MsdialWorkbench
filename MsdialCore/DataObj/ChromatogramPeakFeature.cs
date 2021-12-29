@@ -316,7 +316,7 @@ namespace CompMs.MsdialCore.DataObj {
 
         // others
         [Key(41)]
-        public FeatureFilterStatus FeatureFilterStatus { get; set; }
+        public FeatureFilterStatus FeatureFilterStatus { get; set; } = new FeatureFilterStatus();
         [Key(42)]
         public List<ChromatogramPeakFeature> DriftChromFeatures { get; set; } = null;
         public bool IsMultiLayeredData() {

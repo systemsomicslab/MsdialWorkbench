@@ -267,7 +267,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     && RtFilter(spot)
                     && (!Ms2AcquiredChecked || spot.IsMsmsAssigned)
                     && (!MolecularIonChecked || spot.IsBaseIsotopeIon)
-                    && (!BlankFilterChecked || spot.IsBlankFiltered)
+                    && (!BlankFilterChecked || !spot.IsBlankFiltered)
+                    && (!UniquesIonsChecked || spot.IsFragmentQueryExisted)
                     && (!ManuallyModifiedChecked || spot.innerModel.IsManuallyModifiedForAnnotation)
                     && MetaboliteFilter(spot, MetaboliteFilterKeywords.Value)
                     && CommentFilter(spot, CommentFilterKeywords.Value);

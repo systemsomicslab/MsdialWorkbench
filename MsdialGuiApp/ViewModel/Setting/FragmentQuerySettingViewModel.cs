@@ -74,7 +74,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         public ReadOnlyReactivePropertySlim<bool> HasErrors { get; }
 
-        public IObservable<Unit> CommitAsObservable => CommitTrigger.Where(_ => !HasErrors.Value).ToUnit();
+        public IObservable<Unit> CommitAsObservable => CommitTrigger.Where(_ => !ObserveHasErrors.Value).ToUnit();
 
         public ReactiveCommand ApplyCommand {
             get;

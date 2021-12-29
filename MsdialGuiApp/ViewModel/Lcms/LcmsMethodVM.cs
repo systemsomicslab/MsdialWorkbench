@@ -234,7 +234,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public DelegateCommand<Window> ShowEicCommand => showEicCommand ?? (showEicCommand = new DelegateCommand<Window>(model.ShowEIC));
         private DelegateCommand<Window> showEicCommand;
 
-        public DelegateCommand<Window> ShowFragmentSearchSettingCommand => fragmentSearchSettingCommand ?? 
+        public DelegateCommand<Window> ShowFragmentSearchSettingCommand => fragmentSearchSettingCommand ??
             (fragmentSearchSettingCommand = new DelegateCommand<Window>(fragmentSearchSettingMethod));
 
         private void fragmentSearchSettingMethod(Window obj) {
