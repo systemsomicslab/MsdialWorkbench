@@ -26,7 +26,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart {
             HorizontalAxis = horizontalAxis;
 
             if (verticalAxis is null) {
-                verticalAxis = new ContinuousAxisManager<double>(model.AbundanceRangeSource);
+                //verticalAxis = model.AbundanceRangeSource
+                //    .ToReactiveAxisManager<double>(new RelativeMargin(0, 0.1), new Range(0d, 0d), LabelType.Order)
+                //    .AddTo(Disposables);
+                verticalAxis = new ContinuousAxisManager<double>(model.AbundanceRangeSource) { LabelType = LabelType.Order };
             }
             VerticalAxis = verticalAxis;
 

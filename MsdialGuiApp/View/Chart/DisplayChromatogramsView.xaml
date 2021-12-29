@@ -26,7 +26,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="150" />
         </Grid.ColumnDefinitions>
         <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
                           VerticalAxis="{Binding VerticalAxis}"
@@ -70,7 +70,7 @@
             Grid.Column="1">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}" Margin="8,0" Foreground="{Binding LinePen}" />
+                    <TextBlock Text="{Binding Name}" Margin="8,0" Foreground="{Binding LineBrush}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
