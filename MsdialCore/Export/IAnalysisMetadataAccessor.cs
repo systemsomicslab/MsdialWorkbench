@@ -106,30 +106,30 @@ namespace CompMs.MsdialCore.Export
                 { "Matched peaks percentage", ValueOrNull(matchResult?.MatchedPeaksPercentage, "F2") },
                 { "Total score", ValueOrNull(matchResult?.TotalScore, "F2") },
                 { "S/N", string.Format("{0:0.00}", feature.PeakShape.SignalToNoise)},
-                { "MS1 isotopes", GetIsotopesListContent(feature, spectrumList) },
-                { "MSMS spectrum", GetSpectrumListContent(msdec, spectrumList) }
+                { "MS1 isotopes", DataObjConverter.GetIsotopesListContent(feature, spectrumList, parameter) },
+                { "MSMS spectrum", DataObjConverter.GetSpectrumListContent(msdec, spectrumList, parameter) }
             };
         }
 
-        protected string GetIsotopesListContent(ChromatogramPeakFeature feature, IReadOnlyList<RawSpectrum> spectrumList) {
-            var spectrum = spectrumList.FirstOrDefault(spec => spec.OriginalIndex == feature.MS1RawSpectrumIdTop);
-            if (spectrum is null) {
-                return "null";
-            }
-            var isotopes = DataAccess.GetIsotopicPeaks(spectrum.Spectrum, (float)feature.PrecursorMz, parameter.CentroidMs1Tolerance);
-            if (isotopes.IsEmptyOrNull()) {
-                return "null";
-            }
-            return string.Join(";", isotopes.Select(isotope => string.Format("{0:F5} {1:F0}", isotope.Mass, isotope.AbsoluteAbundance)));
-        }
+        //protected string GetIsotopesListContent(ChromatogramPeakFeature feature, IReadOnlyList<RawSpectrum> spectrumList) {
+        //    var spectrum = spectrumList.FirstOrDefault(spec => spec.OriginalIndex == feature.MS1RawSpectrumIdTop);
+        //    if (spectrum is null) {
+        //        return "null";
+        //    }
+        //    var isotopes = DataAccess.GetIsotopicPeaks(spectrum.Spectrum, (float)feature.PrecursorMz, parameter.CentroidMs1Tolerance);
+        //    if (isotopes.IsEmptyOrNull()) {
+        //        return "null";
+        //    }
+        //    return string.Join(";", isotopes.Select(isotope => string.Format("{0:F5} {1:F0}", isotope.Mass, isotope.AbsoluteAbundance)));
+        //}
 
-        protected string GetSpectrumListContent(MSDecResult msdec, IReadOnlyList<RawSpectrum> spectrumList) {
-            var spectrum = DataAccess.GetMassSpectrum(spectrumList, msdec, parameter.ExportSpectraType, msdec.RawSpectrumID, parameter);
-            if (spectrum.IsEmptyOrNull()) {
-                return "null";
-            }
-            return string.Join(";", spectrum.Select(peak => string.Format("{0:F5} {1:F0}", peak.Mass, peak.Intensity)));
-        }
+        //protected string GetSpectrumListContent(MSDecResult msdec, IReadOnlyList<RawSpectrum> spectrumList) {
+        //    var spectrum = DataAccess.GetMassSpectrum(spectrumList, msdec, parameter.ExportSpectraType, msdec.RawSpectrumID, parameter);
+        //    if (spectrum.IsEmptyOrNull()) {
+        //        return "null";
+        //    }
+        //    return string.Join(";", spectrum.Select(peak => string.Format("{0:F5} {1:F0}", peak.Mass, peak.Intensity)));
+        //}
 
         protected static string ValueOrNull(string value) => string.IsNullOrEmpty(value) ? "null" : value;
         protected static string ValueOrNull(double? value, string format) => value?.ToString(format) ?? "null";

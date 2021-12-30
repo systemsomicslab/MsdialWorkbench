@@ -349,7 +349,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new Export.SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
             };
 
-            using (var vm = new AnalysisResultExportViewModel(container.AnalysisFiles, spectraTypes, spectraFormats, providerFactory)) {
+            using (var vm = new AnalysisResultExportViewModel(
+                container.AnalysisFiles, 
+                spectraTypes, 
+                spectraFormats, 
+                providerFactory)) {
                 var dialog = new AnalysisResultExportWin
                 {
                     DataContext = vm,
@@ -488,6 +492,15 @@ namespace CompMs.App.Msdial.Model.Lcms
                 else {
                     analysisModel.FragmentSearcher();
                 }
+            }
+        }
+
+        public void GoToMsfinderMethod(bool isAlignmentView) {
+            if (isAlignmentView) {
+                AlignmentModel.GoToMsfinderMethod();
+            }
+            else {
+                AnalysisModel.GoToMsfinderMethod();
             }
         }
     }

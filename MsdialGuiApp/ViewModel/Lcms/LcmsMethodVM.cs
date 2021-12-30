@@ -247,5 +247,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         private DelegateCommand<Window> fragmentSearchSettingCommand;
+
+        public DelegateCommand GoToMsfinderCommand => goToMsfinderCommand ??
+            (goToMsfinderCommand = new DelegateCommand(goToMsfinderMethod));
+        private DelegateCommand goToMsfinderCommand;
+        private void goToMsfinderMethod() {
+            if (SelectedViewModel.Value is AlignmentFileViewModel) {
+                model.GoToMsfinderMethod(true);
+            }
+            else {
+                model.GoToMsfinderMethod(false);
+            }
+        }
     }
 }

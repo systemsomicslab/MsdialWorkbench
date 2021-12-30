@@ -11,10 +11,7 @@ using System.Text;
 namespace CompMs.MsdialCore.Algorithm {
     public sealed class FragmentSearcher {
         private FragmentSearcher() { }
-        public static void Search() {
-
-        }
-
+        
         public static void Search(List<ChromatogramPeakFeature> features, MSDecLoader decLoader, ParameterBase param) {
             if (features is null || features.Count == 0) {
                 throw new ArgumentNullException(nameof(features));
@@ -75,7 +72,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
         }
 
-        public static void SearchingFragmentQueries(List<AlignmentSpotProperty> features, MSDecLoader decLoader, ParameterBase param) {
+        public static void Search(List<AlignmentSpotProperty> features, MSDecLoader decLoader, ParameterBase param) {
 
             if (features is null || features.Count == 0) {
                 throw new ArgumentNullException(nameof(features));

@@ -37,6 +37,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
             FileName = analysisFile.AnalysisFileName;
             DataBaseMapper = mapper;
+            Provider = provider;
             Parameter = parameter;
             AnnotatorContainers = annotatorContainers;
             var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -114,6 +115,8 @@ namespace CompMs.App.Msdial.Model.Dims
         public double MassMin => Ms1Peaks.Min(peak => peak.Mass);
         public double MassMax => Ms1Peaks.Max(peak => peak.Mass);
 
+        public IDataProvider Provider { get; }
+
         public AnalysisPeakPlotModel PlotModel { get; }
 
         public EicModel EicModel { get; }
@@ -155,6 +158,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 filename,
                 Target.Value.InnerModel,
                 MsdecResult.Value,
+                Provider.LoadMs1Spectrums(),
+                DataBaseMapper,
                 Parameter);
         }
 

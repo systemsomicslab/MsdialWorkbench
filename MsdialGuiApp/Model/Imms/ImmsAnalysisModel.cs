@@ -11,6 +11,7 @@ using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialImmsCore.Parameter;
@@ -18,6 +19,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
@@ -36,7 +38,7 @@ namespace CompMs.App.Msdial.Model.Imms
             : base(analysisFile) {
 
             this.provider = provider;
-            DatBaseMapper = mapper;
+            DataBaseMapper = mapper;
             AnnotatorContainers = annotatorContainers;
             this.parameter = parameter as MsdialImmsParameter;
 
@@ -189,7 +191,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public double IntensityMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Intensity) ?? 0d;
         public double IntensityMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Intensity) ?? 0d;
 
-        public DataBaseMapper DatBaseMapper { get; }
+        public DataBaseMapper DataBaseMapper { get; }
         public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
 
         void OnTargetChanged(ChromatogramPeakFeatureModel target) {
@@ -230,5 +232,18 @@ namespace CompMs.App.Msdial.Model.Imms
                 null,
                 AnnotatorContainers);
         }
+
+        public void SaveSpectra(string filename) {
+            SpectraExport.SaveSpectraTable(
+                (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
+                filename,
+                Target.Value.InnerModel,
+                MsdecResult.Value,
+                this.provider.LoadMs1Spectrums(),
+                DataBaseMapper,
+                this.parameter);
+        }
+
+        public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
     }
 }

@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.ExternalApp;
+using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
@@ -13,6 +14,7 @@ using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -21,6 +23,7 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
@@ -56,9 +59,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
            
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
-            var loader = new MSDecLoader(AlignmentFile.SpectraFilePath);
+            this.decLoader = new MSDecLoader(AlignmentFile.SpectraFilePath);
             MsdecResult = Target.Where(t => t != null)
-                .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))
+                .Select(t => this.decLoader.LoadMSDecResult(t.MasterAlignmentID))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
@@ -82,7 +85,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Ms2 spectrum
             Ms2SpectrumModel = MsSpectrumModel.Create(
                 Target,
-                new MsDecSpectrumLoader(loader, Ms1Spots),
+                new MsDecSpectrumLoader(this.decLoader, Ms1Spots),
                 new MsRefSpectrumLoader(mapper),
                 peak => peak.Mass,
                 peak => peak.Intensity);
@@ -165,6 +168,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
         public IBarItemsLoader BarItemsLoader { get; }
 
+        protected readonly MSDecLoader decLoader;
         public double MassMin { get; }
         public double MassMax { get; }
         public double RtMin { get; }
@@ -202,8 +206,33 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Annotators);
         }
 
-        internal void FragmentSearcher() {
-            throw new NotImplementedException();
+        public void SaveSpectra(string filename) {
+            SpectraExport.SaveSpectraTable(
+                (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
+                filename,
+                Target.Value.innerModel,
+                MsdecResult.Value,
+                DataBaseMapper,
+                Parameter);
+        }
+
+        public bool CanSaveSpectra() => Target.Value.innerModel != null && MsdecResult.Value != null;
+
+
+        public void FragmentSearcher() {
+            var features = this.Ms1Spots;
+            MsdialCore.Algorithm.FragmentSearcher.Search(features.Select(n => n.innerModel).ToList(), this.decLoader, Parameter);
+
+        }
+
+        public void GoToMsfinderMethod() {
+            MsDialToExternalApps.SendToMsFinderProgram(
+                this.AlignmentFile,
+                Target.Value.innerModel,
+                MsdecResult.Value,
+                DataBaseMapper,
+                Parameter
+                );
         }
     }
 }

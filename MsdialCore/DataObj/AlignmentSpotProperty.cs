@@ -61,6 +61,22 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(16)]
         public string InChIKey { get; set; } = string.Empty;
 
+        public string GetFormula(DataBaseMapper mapper) {
+            return MatchResults.RepresentativeFormula(mapper);
+        }
+
+        public string GetOntology(DataBaseMapper mapper) {
+            return MatchResults.RepresentativeOntology(mapper);
+        }
+
+        public string GetSMILES(DataBaseMapper mapper) {
+            return MatchResults.RepresentativeSMILES(mapper);
+        }
+
+        public string GetInChIKey(DataBaseMapper mapper) {
+            return MatchResults.RepresentativeInChIKey(mapper);
+        }
+
         // ion physiochemical information
         [Key(17)]
         public double CollisionCrossSection { get; set; }
