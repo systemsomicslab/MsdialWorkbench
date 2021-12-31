@@ -20,18 +20,20 @@ namespace CompMs.MsdialCore.Export
         {
             if (spectraFormat == ExportSpectraFileFormat.msp)
             {
-                SaveSpectraTableAsNistFormat(exportFilePath, chromPeakFeature, scan.Spectrum, parameter);
+                using (var file = File.Open(exportFilePath, FileMode.Create)) {
+                    SaveSpectraTable(spectraFormat, file, chromPeakFeature, scan, parameter);
+                }
             }
         }
 
-        public static void SaveSpectraTableAsNistFormat(
-            string exportFilePath,
-            ChromatogramPeakFeature chromPeakFeature, IEnumerable<ISpectrumPeak> massSpectra,
+        public static void SaveSpectraTable(
+            ExportSpectraFileFormat spectraFormat, Stream exportStream,
+            ChromatogramPeakFeature chromPeakFeature, IMSScanProperty scan,
             ParameterBase parameter)
         {
-            using (var file = File.Open(exportFilePath, FileMode.Create))
+            if (spectraFormat == ExportSpectraFileFormat.msp)
             {
-                SaveSpectraTableAsNistFormat(file, chromPeakFeature, massSpectra, parameter);
+                SaveSpectraTableAsNistFormat(exportStream, chromPeakFeature, scan.Spectrum, parameter);
             }
         }
 
@@ -56,18 +58,20 @@ namespace CompMs.MsdialCore.Export
         {
             if (spectraFormat == ExportSpectraFileFormat.msp)
             {
-                SaveSpectraTableAsNistFormat(exportFilePath, spotProperty, scan.Spectrum, parameter);
+                using (var file = File.Open(exportFilePath, FileMode.Create)) {
+                    SaveSpectraTable(spectraFormat, file, spotProperty, scan, parameter);
+                }
             }
         }
 
-        public static void SaveSpectraTableAsNistFormat(
-            string exportFilePath,
-            AlignmentSpotProperty spotProperty, IEnumerable<ISpectrumPeak> massSpectra,
+        public static void SaveSpectraTable(
+            ExportSpectraFileFormat spectraFormat, Stream exportStream,
+            AlignmentSpotProperty spotProperty, IMSScanProperty scan,
             ParameterBase parameter)
         {
-            using (var file = File.Open(exportFilePath, FileMode.Create))
+            if (spectraFormat == ExportSpectraFileFormat.msp)
             {
-                SaveSpectraTableAsNistFormat(file, spotProperty, massSpectra, parameter);
+                SaveSpectraTableAsNistFormat(exportStream, spotProperty, scan.Spectrum, parameter);
             }
         }
 

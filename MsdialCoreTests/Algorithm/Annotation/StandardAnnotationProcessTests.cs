@@ -147,7 +147,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
         class MockFactory : IAnnotationQueryFactory<MockQuery>
         {
-            public MockQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature) {
+            public MockQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter) {
                 return new MockQuery();
             }
         }

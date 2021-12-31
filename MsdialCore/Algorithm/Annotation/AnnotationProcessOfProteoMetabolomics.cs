@@ -200,26 +200,28 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
              IReadOnlyList<RawSpectrum> msSpectrums) {
 
             if (!PepAnnotatorContainers.IsEmptyOrNull()) {
-                var pepQuery = QueryFactory.Create(
-                    chromPeakFeature, 
-                    msdecResult, 
-                    msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
-                    chromPeakFeature.PeakCharacter);
                 var pepAnnotatorContainers = PepAnnotatorContainers;
 
                 foreach (var annotatorContainer in pepAnnotatorContainers) {
+                    var pepQuery = QueryFactory.Create(
+                        chromPeakFeature,
+                        msdecResult,
+                        msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
+                        chromPeakFeature.PeakCharacter,
+                        annotatorContainer.Parameter);
                     SetPepAnnotationResult(chromPeakFeature, pepQuery, annotatorContainer);
                 }
             }
             if (!AnnotatorContainers.IsEmptyOrNull()) {
-                var query = QueryFactory.Create(
-                    chromPeakFeature, 
-                    msdecResult, 
-                    msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
-                    chromPeakFeature.PeakCharacter);
                 var annotatorContainers = AnnotatorContainers;
 
                 foreach (var annotatorContainer in annotatorContainers) {
+                    var query = QueryFactory.Create(
+                        chromPeakFeature,
+                        msdecResult,
+                        msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
+                        chromPeakFeature.PeakCharacter,
+                        annotatorContainer.Parameter);
                     SetAnnotationResult(chromPeakFeature, query, annotatorContainer);
                 }
             }
@@ -234,14 +236,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             CancellationToken token = default) {
 
             if (!PepAnnotatorContainers.IsEmptyOrNull()) {
-                var pepQuery = QueryFactory.Create(
-                    chromPeakFeature, 
-                    msdecResult, 
-                    msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
-                    chromPeakFeature.PeakCharacter);
                 var pepAnnotatorContainers = PepAnnotatorContainers;
 
                 foreach (var annotatorContainer in pepAnnotatorContainers) {
+                    var pepQuery = QueryFactory.Create(
+                        chromPeakFeature,
+                        msdecResult,
+                        msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
+                        chromPeakFeature.PeakCharacter,
+                        annotatorContainer.Parameter);
                     token.ThrowIfCancellationRequested();
                     await Task.Run(() => SetPepAnnotationResult(chromPeakFeature, pepQuery, annotatorContainer), token);
                 }
@@ -249,14 +252,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             }
 
             if (!AnnotatorContainers.IsEmptyOrNull()) {
-                var query = QueryFactory.Create(
-                    chromPeakFeature, 
-                    msdecResult, 
-                    msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
-                    chromPeakFeature.PeakCharacter);
                 var annotatorContainers = AnnotatorContainers;
 
                 foreach (var annotatorContainer in annotatorContainers) {
+                    var query = QueryFactory.Create(
+                        chromPeakFeature,
+                        msdecResult,
+                        msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
+                        chromPeakFeature.PeakCharacter,
+                        annotatorContainer.Parameter);
                     token.ThrowIfCancellationRequested();
                     await Task.Run(() => SetAnnotationResult(chromPeakFeature, query, annotatorContainer), token);
                 }

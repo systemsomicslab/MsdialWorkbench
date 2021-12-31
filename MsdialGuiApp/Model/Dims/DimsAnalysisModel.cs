@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Dims
@@ -149,15 +150,28 @@ namespace CompMs.App.Msdial.Model.Dims
             FocusByMz(mzAxis, focus.Mass);
         }
 
-        public void SaveSpectra(string filename) {
+        public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
+
+        public void SaveSpectra(Stream stream, ExportSpectraFileFormat format) {
             SpectraExport.SaveSpectraTable(
-                (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
-                filename,
+                format,
+                stream,
                 Target.Value.InnerModel,
                 MsdecResult.Value,
                 Parameter);
         }
 
-        public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
+        public void SaveSpectra(string filename) {
+            var format = (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.'));
+            using (var file = File.Open(filename, FileMode.Create)) {
+                SaveSpectra(file, format);
+            }
+        }
+
+        public void CopySpectrum() {
+            var memory = new MemoryStream();
+            SaveSpectra(memory, ExportSpectraFileFormat.msp);
+            Clipboard.SetText(System.Text.Encoding.UTF8.GetString(memory.ToArray()));
+        }
     }
 }
