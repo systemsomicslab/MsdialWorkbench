@@ -201,7 +201,7 @@
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                                 xmlns:pairplot="clr-namespace:CompMs.App.Msdial.View.PairwisePlot"
                                 SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged"
-                                SelectedItem="{Binding SelectedViewModel.Value}">
+                                SelectedValue="{Binding SelectedViewModel.Value}">
                         <!--SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged"-->
 
                         <TabItem Header="Peak spot viewer" 

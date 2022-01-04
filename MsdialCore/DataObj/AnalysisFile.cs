@@ -41,6 +41,8 @@ namespace CompMs.MsdialCore.DataObj {
         public RetentionTimeCorrectionBean RetentionTimeCorrectionBean { get; set; } = new RetentionTimeCorrectionBean();
         [Key(16)]
         public ChromatogramPeaksDataSummary ChromPeakFeaturesSummary { get; set; } = new ChromatogramPeaksDataSummary();
+        [Key(17)]
+        public string ProteinAssembledResultFilePath { get; set; } // *.prf
 
         public AnalysisFileBean() {
 
@@ -64,6 +66,7 @@ namespace CompMs.MsdialCore.DataObj {
             AnalysisFileSuperClass = other.AnalysisFileSuperClass;
             RetentionTimeCorrectionBean = other.RetentionTimeCorrectionBean;
             ChromPeakFeaturesSummary = other.ChromPeakFeaturesSummary;
+            ProteinAssembledResultFilePath = other.ProteinAssembledResultFilePath;
         }
 
         int IFileBean.FileID => AnalysisFileId;

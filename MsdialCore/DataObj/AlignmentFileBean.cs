@@ -16,5 +16,7 @@ namespace CompMs.MsdialCore.DataObj {
         public string SpectraFilePath { get; set; } = string.Empty;
         [Key(4)]
         public string EicFilePath { get; set; } = string.Empty;
+        [Key(5)]
+        public string ProteinAssembledResultFilePath { get; set; } = string.Empty;
     }
 }

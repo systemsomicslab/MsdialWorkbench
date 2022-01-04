@@ -303,6 +303,10 @@ namespace CompMs.MsdialCore.DataObj {
         // Post curation result
         [Key(58)]
         public bool IsFilteredByPostCurator { get; set; } = false;
+        public bool IsMultiLayeredData() {
+            if (AlignmentDriftSpotFeatures.IsEmptyOrNull()) return false;
+            return true;
+        }
     }
 
     [MessagePackObject]

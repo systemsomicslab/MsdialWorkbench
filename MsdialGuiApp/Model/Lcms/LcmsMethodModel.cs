@@ -145,7 +145,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                         FileName = filename,
                         FilePath = System.IO.Path.Combine(Storage.MsdialLcmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
                         EicFilePath = System.IO.Path.Combine(Storage.MsdialLcmsParameter.ProjectFolderPath, filename + ".EIC.aef"),
-                        SpectraFilePath = System.IO.Path.Combine(Storage.MsdialLcmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl)
+                        SpectraFilePath = System.IO.Path.Combine(Storage.MsdialLcmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl),
+                        ProteinAssembledResultFilePath = System.IO.Path.Combine(Storage.MsdialLcmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.prf),
                     }
                 );
                 Storage.AlignmentFiles = AlignmentFiles.ToList();
@@ -243,7 +244,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             proteomicsAnnotator.ExecuteSecondRoundAnnotationProcess(
                 storage.AnalysisFiles, 
                 storage.DataBaseMapper, 
-                storage.MsdialLcmsParameter.ProteomicsParam, 
+                storage.DataBases,
+                storage.MsdialLcmsParameter, 
                 v => vm.CurrentValue = v);
 
             pbw.Close();
@@ -270,6 +272,16 @@ namespace CompMs.App.Msdial.Model.Lcms
             aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
             var alignmentFile = storage.AlignmentFiles.Last();
             var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
+
+            if (!storage.DataBaseMapper.PeptideAnnotators.IsEmptyOrNull()) {
+                new ProteomeDataAnnotator().MappingToProteinDatabase(
+                    alignmentFile.ProteinAssembledResultFilePath, 
+                    result, 
+                    storage.DataBases.ProteomicsDataBases, 
+                    storage.DataBaseMapper, 
+                    storage.MsdialLcmsParameter);
+            }
+
             MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList());
 

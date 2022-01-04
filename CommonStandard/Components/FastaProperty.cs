@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CompMs.Common.Components {
     [MessagePackObject]
-    public class FastaProperty : IFastaProperty {
+    public class FastaProperty : IEquatable<FastaProperty>, IFastaProperty {
         [Key(0)]
         public int Index { get; set; }
         [Key(1)]
@@ -42,6 +42,30 @@ namespace CompMs.Common.Components {
 
         public FastaProperty Clone() {
             return (FastaProperty)MemberwiseClone();
+        }
+
+        public bool Equals(FastaProperty other) {
+
+            //Check whether the compared object is null.
+            if (Object.ReferenceEquals(other, null)) return false;
+
+            //Check whether the compared object references the same data.
+            if (Object.ReferenceEquals(this, other)) return true;
+
+            //Check whether the products' properties are equal.
+            return UniqueIdentifier.Equals(other.UniqueIdentifier);
+        }
+
+        // If Equals() returns true for a pair of objects
+        // then GetHashCode() must return the same value for these objects.
+
+        public override int GetHashCode() {
+
+            //Get hash code for the Code field.
+            int hashProductCode = UniqueIdentifier.GetHashCode();
+
+            //Calculate the hash code for the product.
+            return hashProductCode;
         }
     }
 }

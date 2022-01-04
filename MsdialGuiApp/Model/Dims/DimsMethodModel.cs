@@ -97,7 +97,8 @@ namespace CompMs.App.Msdial.Model.Dims
                         FileName = alignmentResultFileName,
                         FilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
                         EicFilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + ".EIC.aef"),
-                        SpectraFilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl)
+                        SpectraFilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl),
+                        ProteinAssembledResultFilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.prf)
                     }
                 );
                 Storage.AlignmentFiles = AlignmentFiles.ToList();

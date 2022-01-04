@@ -1,5 +1,7 @@
-﻿using CompMs.Common.DataObj.Result;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
+using CompMs.Common.Proteomics.DataObj;
 using MessagePack;
 using System;
 using System.Collections.Generic;
@@ -91,6 +93,36 @@ namespace CompMs.MsdialCore.DataObj
             || TextDbBasedMatchResults.Contains(Representative);
         [IgnoreMember]
         public bool IsManuallyModifiedRepresentative => (Representative.Source & SourceType.Manual) == SourceType.Manual;
+
+        public MoleculeMsReference RepresentativeMoleculeMsReference(DataBaseMapper mapper) {
+            var representative = Representative;
+            if (representative.Source == SourceType.FastaDB) {
+                return null;
+            }
+            else {
+                var annotator = mapper.FindMoleculeAnnotator(representative)?.Annotator;
+                if (annotator is null) {
+                    return null;
+                }
+                var db = annotator.Refer(representative);
+                return db;
+            }
+        }
+
+        public PeptideMsReference RepresentativePeptideMsReference(DataBaseMapper mapper) {
+            var representative = Representative;
+            if (representative.Source == SourceType.FastaDB) {
+                var annotator = mapper.FindPeptideAnnotator(representative)?.Annotator;
+                if (annotator is null) {
+                    return null;
+                }
+                var db = annotator.Refer(representative);
+                return db;
+            }
+            else {
+                return null;
+            }
+        }
 
         public string RepresentativeName(DataBaseMapper mapper) {
             var representative = Representative;

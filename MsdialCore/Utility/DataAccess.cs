@@ -1429,11 +1429,22 @@ namespace CompMs.MsdialCore.Utility {
             }
         }
 
-        public static List<object> GetChromPeakFeatureObjectsIntegratingRtAndDriftData(List<ChromatogramPeakFeature> features) {
-            var objects = new List<object>();
+        public static List<ChromatogramPeakFeature> GetChromPeakFeatureObjectsIntegratingRtAndDriftData(List<ChromatogramPeakFeature> features) {
+            var objects = new List<ChromatogramPeakFeature>();
             foreach (var spot in features) {
                 objects.Add(spot);
                 foreach (var dSpot in spot.DriftChromFeatures.OrEmptyIfNull()) {
+                    objects.Add(dSpot);
+                }
+            }
+            return objects;
+        }
+
+        public static List<AlignmentSpotProperty> GetAlignmentSpotPropertiesIntegratingRtAndDriftData(List<AlignmentSpotProperty> features) {
+            var objects = new List<AlignmentSpotProperty>();
+            foreach (var spot in features) {
+                objects.Add(spot);
+                foreach (var dSpot in spot.AlignmentDriftSpotFeatures.OrEmptyIfNull()) {
                     objects.Add(dSpot);
                 }
             }
