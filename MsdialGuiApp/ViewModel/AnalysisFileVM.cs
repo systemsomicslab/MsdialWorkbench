@@ -12,7 +12,7 @@ namespace CompMs.App.Msdial.ViewModel
 {
     abstract class AnalysisFileViewModel : ResultVM
     {
-        public AnalysisFileViewModel(AnalysisModelBase model) {
+        public AnalysisFileViewModel(AnalysisModelBase model) : base(model) {
             if (model is null) {
                 throw new System.ArgumentNullException(nameof(model));
             }

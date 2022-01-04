@@ -151,6 +151,9 @@
     <Compile Include="Dims\IsotopeTrackView.xaml.cs">
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="External Applications\MsDialIniField.cs" />
+    <Compile Include="External Applications\MsDialIniParcer.cs" />
+    <Compile Include="External Applications\MsDialToExternalApps.cs" />
     <Compile Include="Model\Chart\AlignmentPeakPlotModel.cs" />
     <Compile Include="Model\Chart\AnalysisPeakPlotModel.cs" />
     <Compile Include="Model\Chart\BarChartModel.cs" />
@@ -179,6 +182,7 @@
     <Compile Include="Model\Loader\TicLoader.cs" />
     <Compile Include="Model\Search\CompoundResultCollection.cs" />
     <Compile Include="Model\Setting\DisplayEicSettingModel.cs" />
+    <Compile Include="Model\Setting\FragmentQuerySettingModel.cs" />
     <Compile Include="Model\Setting\IdentifySettingModel.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
     <Compile Include="Model\Chart\AlignmentEicModel.cs" />
@@ -205,7 +209,6 @@
     <Compile Include="Model\Lcms\LcmsPeakSpotTableModel.cs" />
     <Compile Include="Model\Setting\TextDBAnnotationSettingModel.cs" />
     <Compile Include="Model\Loader\EicLoader.cs" />
-    <Compile Include="Model\Loader\MSDecLoader.cs" />
     <Compile Include="Model\Search\CompoundSearchModel.cs" />
     <Compile Include="Model\Setting\AnnotationProcessSettingModel.cs" />
     <Compile Include="Model\Setting\EnzymeSettingModel.cs" />
@@ -266,6 +269,7 @@
     <Compile Include="ViewModel\Lcimms\MsdialLcimmsParameterViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsCompoundSearchViewModel.cs" />
     <Compile Include="ViewModel\Setting\DisplayEicSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\FragmentQuerySettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\IdentifySettingViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
@@ -536,6 +540,9 @@
     </Compile>
     <Compile Include="View\Setting\EnzymeSettingWin.xaml.cs">
       <DependentUpon>EnzymeSettingWin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Setting\FragmentQuerySettingView.xaml.cs">
+      <DependentUpon>FragmentQuerySettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Setting\IdentifySettingView.xaml.cs">
       <DependentUpon>IdentifySettingView.xaml</DependentUpon>
@@ -914,6 +921,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Setting\FragmentQuerySettingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Setting\IdentifySettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -994,7 +1005,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />

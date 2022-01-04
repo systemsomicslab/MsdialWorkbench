@@ -203,6 +203,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 filename,
                 Target.Value.innerModel,
                 MsdecResult.Value,
+                DataBaseMapper,
                 Parameter);
         }
 

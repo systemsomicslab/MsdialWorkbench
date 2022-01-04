@@ -14,15 +14,11 @@ using System.Windows.Shapes;
 
 namespace CompMs.App.Msdial.View.Setting {
     /// <summary>
-    /// Interaction logic for ModificationSettingWin.xaml
+    /// Interaction logic for FragmentQuerySettingView.xaml
     /// </summary>
-    public partial class ModificationSettingWin : Window {
-        public ModificationSettingWin() {
+    public partial class FragmentQuerySettingView : Window {
+        public FragmentQuerySettingView() {
             InitializeComponent();
-        }
-
-        private void Button_Cancel_Click(object sender, RoutedEventArgs e) {
-            this.Close();
         }
     }
 }

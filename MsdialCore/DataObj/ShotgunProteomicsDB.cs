@@ -159,23 +159,7 @@ namespace CompMs.MsdialCore.DataObj {
             Console.WriteLine("Done");
         }
 
-        //public void Save(IStreamManager streamManager, string prefix) {
-        //    using (var fs = streamManager.Create(Path.Combine(prefix, FastaQueryBinaryFile)).Result) {
-        //        LargeListMessagePack.Serialize(fs, FastaQueries);
-        //    }
-
-        //    using (var fs = streamManager.Create(Path.Combine(prefix, DecoyQueryBinaryFile)).Result) {
-        //        LargeListMessagePack.Serialize(fs, DecoyQueries);
-        //    }
-
-        //    using (var fs = streamManager.Create(Path.Combine(prefix, PeptidesSerializeFile)).Result) {
-        //        LargeListMessagePack.Serialize(fs, PeptideMsRef);
-        //    }
-
-        //    using (var fs = streamManager.Create(Path.Combine(prefix, DecoyPeptidesSerializeFile)).Result) {
-        //        LargeListMessagePack.Serialize(fs, DecoyPeptideMsRef);
-        //    }
-        //}
+      
 
         public void Save() {
             using (var fs = File.Open(FastaQueryBinaryFile, FileMode.Create)) {
@@ -197,42 +181,6 @@ namespace CompMs.MsdialCore.DataObj {
 
         public void Save(Stream stream) {
 
-            //using (var archive = new ZipArchive(stream, ZipArchiveMode.Create, leaveOpen: true)) {
-            //    var dbEntry = archive.CreateEntry(FastaQueryBinaryFile);
-            //    using (var dbStream = dbEntry.Open()) {
-            //        LargeListMessagePack.Serialize(dbStream, FastaQueries);
-            //    }
-
-            //    dbEntry = archive.CreateEntry(DecoyQueryBinaryFile);
-            //    using (var dbStream = dbEntry.Open()) {
-            //        LargeListMessagePack.Serialize(dbStream, DecoyQueries);
-            //    }
-
-            //    dbEntry = archive.CreateEntry(PeptidesSerializeFile);
-            //    using (var dbStream = dbEntry.Open()) {
-            //        LargeListMessagePack.Serialize(dbStream, PeptideMsRef);
-            //    }
-
-            //    dbEntry = archive.CreateEntry(DecoyPeptidesSerializeFile);
-            //    using (var dbStream = dbEntry.Open()) {
-            //        LargeListMessagePack.Serialize(dbStream, DecoyPeptideMsRef);
-            //    }
-            //}
-            //using (var fs = File.Open(FastaQueryBinaryFile, FileMode.Create)) {
-            //    LargeListMessagePack.Serialize(fs, FastaQueries);
-            //}
-
-            //using (var fs = File.Open(DecoyQueryBinaryFile, FileMode.Create)) {
-            //    LargeListMessagePack.Serialize(fs, DecoyQueries);
-            //}
-
-            //using (var fs = File.Open(PeptidesSerializeFile, FileMode.Create)) {
-            //    LargeListMessagePack.Serialize(fs, PeptideMsRef);
-            //}
-
-            //using (var fs = File.Open(DecoyPeptidesSerializeFile, FileMode.Create)) {
-            //    LargeListMessagePack.Serialize(fs, DecoyPeptideMsRef);
-            //}
         }
 
         public void Load(string projectFolder) {
@@ -280,43 +228,10 @@ namespace CompMs.MsdialCore.DataObj {
                 query.Fs = DecoyMsStream;
             }
 
-            // test
-            //foreach (var obj in this.PeptideMsRef) {
-            //    Console.WriteLine(obj.Peptide.ExactMass + "\t" + obj.Peptide.ModifiedSequence);
-            //}
         }
 
         public void Load(Stream stream, string folderpath) {
             Load(folderpath);
-            //if (this.FastaQueries != null) return;
-
-            //using (var fs = File.Open(FastaQueryBinaryFile, FileMode.Open)) {
-            //    this.FastaQueries = LargeListMessagePack.Deserialize<FastaProperty>(fs);
-            //}
-
-            //using (var fs = File.Open(DecoyQueryBinaryFile, FileMode.Open)) {
-            //    this.DecoyQueries = LargeListMessagePack.Deserialize<FastaProperty>(fs);
-            //}
-
-            //using (var fs = File.Open(PeptidesSerializeFile, FileMode.Open)) {
-            //    this.PeptideMsRef = LargeListMessagePack.Deserialize<PeptideMsReference>(fs);
-            //}
-            //MsfPepFileParser.LoadPeptideInformation(PeptidesBinaryFile, PeptideMsRef, ModificationContainer.ID2Code, ModificationContainer.Code2AminoAcidObj);
-
-            //using (var fs = File.Open(DecoyPeptidesSerializeFile, FileMode.Open)) {
-            //    this.DecoyPeptideMsRef = LargeListMessagePack.Deserialize<PeptideMsReference>(fs);
-            //}
-            //MsfPepFileParser.LoadPeptideInformation(DecoyPeptidesBinaryFile, DecoyPeptideMsRef, ModificationContainer.ID2Code, ModificationContainer.Code2AminoAcidObj);
-            //PeptideMsStream = File.Open(PeptideMsFile, FileMode.Create, FileAccess.ReadWrite);
-            //DecoyMsStream = File.Open(DecoyMsFile, FileMode.Create, FileAccess.ReadWrite);
-
-            //foreach (var query in this.PeptideMsRef) {
-            //    query.Fs = PeptideMsStream;
-            //}
-
-            //foreach (var query in this.DecoyPeptideMsRef) {
-            //    query.Fs = DecoyMsStream;
-            //}
         }
 
         protected virtual void Dispose(bool disposing) {

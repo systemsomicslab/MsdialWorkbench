@@ -233,5 +233,31 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public DelegateCommand<Window> ShowEicCommand => showEicCommand ?? (showEicCommand = new DelegateCommand<Window>(model.ShowEIC));
         private DelegateCommand<Window> showEicCommand;
+
+        public DelegateCommand<Window> ShowFragmentSearchSettingCommand => fragmentSearchSettingCommand ??
+            (fragmentSearchSettingCommand = new DelegateCommand<Window>(fragmentSearchSettingMethod));
+
+        private void fragmentSearchSettingMethod(Window obj) {
+            if (SelectedViewModel.Value is AlignmentFileViewModel) {
+                model.ShowShowFragmentSearchSettingView(obj, true);
+            }
+            else {
+                model.ShowShowFragmentSearchSettingView(obj, false);
+            }
+        }
+
+        private DelegateCommand<Window> fragmentSearchSettingCommand;
+
+        public DelegateCommand GoToMsfinderCommand => goToMsfinderCommand ??
+            (goToMsfinderCommand = new DelegateCommand(goToMsfinderMethod));
+        private DelegateCommand goToMsfinderCommand;
+        private void goToMsfinderMethod() {
+            if (SelectedViewModel.Value is AlignmentFileViewModel) {
+                model.GoToMsfinderMethod(true);
+            }
+            else {
+                model.GoToMsfinderMethod(false);
+            }
+        }
     }
 }

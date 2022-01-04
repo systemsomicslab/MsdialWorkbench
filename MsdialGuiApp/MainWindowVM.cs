@@ -157,6 +157,7 @@ namespace CompMs.App.Msdial
             foreach (var file in storage.AnalysisFiles) {
                 file.DeconvolutionFilePath = Path.Combine(storage.Parameter.ProjectFolderPath, $"{file.AnalysisFileName}_{dt:yyyyMMddHHmm}.{MsdialDataStorageFormat.dcl}");
                 file.PeakAreaBeanInformationFilePath = Path.Combine(storage.Parameter.ProjectFolderPath, $"{file.AnalysisFileName}_{dt:_yyyyMMddHHmm}.{MsdialDataStorageFormat.pai}");
+                file.ProteinAssembledResultFilePath = Path.Combine(storage.Parameter.ProjectFolderPath, $"{file.AnalysisFileName}_{dt:_yyyyMMddHHmm}.{MsdialDataStorageFormat.prf}");
             }
             var method = CreateNewMethodVM(storage);
             if (method.InitializeNewProject(window) != 0) {
@@ -278,6 +279,7 @@ namespace CompMs.App.Msdial
                 file.AnalysisFilePath = ReplaceFolderPath(file.AnalysisFilePath, previousFolder, projectFolder);
                 file.DeconvolutionFilePath = ReplaceFolderPath(file.DeconvolutionFilePath, previousFolder, projectFolder);
                 file.PeakAreaBeanInformationFilePath = ReplaceFolderPath(file.PeakAreaBeanInformationFilePath, previousFolder, projectFolder);
+                file.ProteinAssembledResultFilePath = ReplaceFolderPath(file.ProteinAssembledResultFilePath, previousFolder, projectFolder);
                 file.RiDictionaryFilePath = ReplaceFolderPath(file.RiDictionaryFilePath, previousFolder, projectFolder);
 
                 file.DeconvolutionFilePathList = file.DeconvolutionFilePathList.Select(decfile => ReplaceFolderPath(decfile, previousFolder, projectFolder)).ToList();
@@ -287,6 +289,7 @@ namespace CompMs.App.Msdial
                 file.FilePath = ReplaceFolderPath(file.FilePath, previousFolder, projectFolder);
                 file.EicFilePath = ReplaceFolderPath(file.EicFilePath, previousFolder, projectFolder);
                 file.SpectraFilePath = ReplaceFolderPath(file.SpectraFilePath, previousFolder, projectFolder);
+                file.ProteinAssembledResultFilePath = ReplaceFolderPath(file.ProteinAssembledResultFilePath, previousFolder, projectFolder);
             }
 
             return storage;

@@ -100,7 +100,7 @@
                 <CheckBox Name="CheckBox_PlotMolcularIonOnly" 
                           Content="Molecular ion"
                           IsChecked="{Binding MolecularIonChecked}"
-                          IsEnabled="False"
+                          IsEnabled="true"
                           ToolTip="Display mono isotopic ion [M + 0]"/>
 
                 <CheckBox Name="CheckBox_PlotMsMsOnly" 
@@ -111,13 +111,13 @@
                 <CheckBox Name="CheckBox_IsBlankPassed" 
                           Content="Blank filter"
                           IsChecked="{Binding BlankFilterChecked}"
-                          IsEnabled="False"
+                          IsEnabled="true"
                           ToolTip="Display peaks passing blank filter"/>
 
                 <CheckBox Name="CheckBox_SearchedFragment" 
                           Content="Unique ions"
                           IsChecked="{Binding UniqueIonsChecked}"
-                          IsEnabled="False"
+                          IsEnabled="true"
                           ToolTip="Display precursor ions having searched fragments"/>
             </UniformGrid>
         </StackPanel>

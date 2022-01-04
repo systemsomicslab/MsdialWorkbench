@@ -135,7 +135,8 @@ namespace CompMs.App.Msdial.Model.Imms
                                 FileName = filename,
                                 FilePath = System.IO.Path.Combine(Storage.MsdialImmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
                                 EicFilePath = System.IO.Path.Combine(Storage.MsdialImmsParameter.ProjectFolderPath, filename + ".EIC.aef"),
-                                SpectraFilePath = System.IO.Path.Combine(Storage.MsdialImmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl)
+                                SpectraFilePath = System.IO.Path.Combine(Storage.MsdialImmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl),
+                                ProteinAssembledResultFilePath = System.IO.Path.Combine(Storage.MsdialImmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.prf),
                             }
                         );
                         Storage.AlignmentFiles = AlignmentFiles.ToList();
@@ -320,7 +321,9 @@ namespace CompMs.App.Msdial.Model.Imms
             if (analysisModel is null) return;
 
             var tic = analysisModel.EicLoader.LoadTic();
-            var vm = new ChromatogramsViewModel(new ChromatogramsModel("Total ion chromatogram", new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC")));
+            var vm = new ChromatogramsViewModel(
+                new ChromatogramsModel("Total ion chromatogram", 
+                new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"), "Total ion chromatogram", "Mobility", "Absolute ion abundance"));
             var view = new DisplayChromatogramsView() {
                 DataContext = vm,
                 Owner = owner,
@@ -335,7 +338,8 @@ namespace CompMs.App.Msdial.Model.Imms
             if (analysisModel is null) return;
 
             var bpc = analysisModel.EicLoader.LoadBpc();
-            var vm = new ChromatogramsViewModel(new ChromatogramsModel("Base peak chromatogram", new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC")));
+            var vm = new ChromatogramsViewModel(new ChromatogramsModel("Base peak chromatogram", new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"),
+                "Base peak chromatogram", "Mobility", "Absolute ion abundance"));
             var view = new DisplayChromatogramsView() {
                 DataContext = vm,
                 Owner = owner,

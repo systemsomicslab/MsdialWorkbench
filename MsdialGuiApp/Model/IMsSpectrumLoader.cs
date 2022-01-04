@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
@@ -7,6 +6,7 @@ using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
@@ -17,8 +17,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CompMs.App.Msdial.Model
-{
+namespace CompMs.App.Msdial.Model {
     public interface IMsSpectrumLoader<in T>
     {
         Task<List<SpectrumPeak>> LoadSpectrumAsync(T target, CancellationToken token);

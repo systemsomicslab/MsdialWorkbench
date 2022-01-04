@@ -3,9 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
         mc:Ignorable="d"
+        Name="ProteinModificationSetView"
         Title="Setting for peptide fixed/variable modifications" Height="700" Width="600">
     <Window.Resources>
         <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
@@ -141,9 +142,15 @@
                     HorizontalAlignment="Right"
                     Margin="4"
                     Grid.Row="3">
-            <Button Content="Set"
+            <Button Content="Apply"
                     Command="{Binding SetCommand}"
-                    Width="64"/>
+                    Width="64">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <i:CallMethodAction TargetObject="{Binding ElementName=ProteinModificationSetView}" MethodName="Close"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
             <Button Content="Cancel"
                     Click="Button_Cancel_Click"
                     Width="64"

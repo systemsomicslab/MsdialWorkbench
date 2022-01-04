@@ -43,7 +43,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         private void SetParam() {
             result = Task.Run(() => Model.Set());
-            SetCommand.RaiseCanExecuteChanged();
+            //SetCommand.RaiseCanExecuteChanged();
         }
         private Task result;
 

@@ -49,6 +49,7 @@ namespace CompMs.App.Msdial.Model.DataObj {
         private bool visible = true;
 
         public Pen LinePen { get; }
+        public SolidColorBrush LineBrush { get => (SolidColorBrush)LinePen.Brush; }
 
         public double MaxIntensity { get => ChromatogramPeaks.Any() ? ChromatogramPeaks.Max(n => n.Intensity) : 0.0; }
         public double MaxChromX { get => (double)(ChromatogramPeaks.Any() ? ChromatogramPeaks.Max(n => n.ChromXValue) : 1.0); }

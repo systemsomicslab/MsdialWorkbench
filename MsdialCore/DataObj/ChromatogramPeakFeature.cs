@@ -139,6 +139,22 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(29)]
         public string InChIKey { get; set; } = string.Empty;
 
+        public string GetFormula(DataBaseMapper mapper) {
+            return MatchResults.RepresentativeFormula(mapper);
+        }
+
+        public string GetOntology(DataBaseMapper mapper) {
+            return MatchResults.RepresentativeOntology(mapper);
+        }
+
+        public string GetSMILES(DataBaseMapper mapper) {
+            return MatchResults.RepresentativeSMILES(mapper);
+        }
+
+        public string GetInChIKey(DataBaseMapper mapper) {
+            return MatchResults.RepresentativeInChIKey(mapper);
+        }
+
         public bool IsValidInChIKey() {
             if (InChIKey == null || InChIKey == string.Empty || InChIKey.Length != 27) return false;
             return true;
@@ -316,7 +332,7 @@ namespace CompMs.MsdialCore.DataObj {
 
         // others
         [Key(41)]
-        public FeatureFilterStatus FeatureFilterStatus { get; set; }
+        public FeatureFilterStatus FeatureFilterStatus { get; set; } = new FeatureFilterStatus();
         [Key(42)]
         public List<ChromatogramPeakFeature> DriftChromFeatures { get; set; } = null;
         public bool IsMultiLayeredData() {
