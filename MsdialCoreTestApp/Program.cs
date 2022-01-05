@@ -109,16 +109,16 @@ namespace CompMs.App.MsdialConsole {
             // foreach (var spec in allspectra[1359].Spectrum)
             //     Console.WriteLine($"Mass = {spec.Mz}, Intensity = {spec.Intensity}");
 
-            var lipidGenerator = new LipidGenerator();
-            var spectrumGenerator = new PCSpectrumGenerator();
-            var adduct = Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+");
-            Common.Parser.MspFileParser.WriteAsMsp(
-                @"D:\PROJECT_EAD\output\PC_ALL.msp",
-                GeneratePCLipids()
-                    .SelectMany(lipid => lipid.Generate(lipidGenerator))
-                    .SelectMany(lipid => lipid.Generate(lipidGenerator))
-                    .Select(lipid => lipid.GenerateSpectrum(spectrumGenerator, adduct))
-                    .Cast<Common.Components.MoleculeMsReference>());
+            // var lipidGenerator = new LipidGenerator();
+            // var spectrumGenerator = new PCSpectrumGenerator();
+            // var adduct = Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+");
+            // Common.Parser.MspFileParser.WriteAsMsp(
+            //     @"D:\PROJECT_EAD\output\PC_ALL.msp",
+            //     GeneratePCLipids()
+            //         .SelectMany(lipid => lipid.Generate(lipidGenerator))
+            //         .SelectMany(lipid => lipid.Generate(lipidGenerator))
+            //         .Select(lipid => lipid.GenerateSpectrum(spectrumGenerator, adduct))
+            //         .Cast<Common.Components.MoleculeMsReference>());
 
         }
 

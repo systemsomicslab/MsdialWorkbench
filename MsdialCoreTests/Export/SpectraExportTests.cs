@@ -57,7 +57,7 @@ Num Peaks: 4
                 },
                 InChIKey = "ABCDEFG",
                 SMILES = "CCCCCC",
-                Formula = new Common.DataObj.Property.Formula("C6"),
+                Formula = Common.FormulaGenerator.Parser.FormulaStringParcer.Convert2FormulaObjV2("C6"),
             };
             var parameter = new ParameterBase
             {
@@ -132,7 +132,7 @@ Num Peaks: 4
                 },
                 InChIKey = "ABCDEFG",
                 SMILES = "CCCCCC",
-                Formula = new Common.DataObj.Property.Formula("C6"),
+                Formula = Common.FormulaGenerator.Parser.FormulaStringParcer.Convert2FormulaObjV2("C6"),
             };
             var parameter = new ParameterBase
             {

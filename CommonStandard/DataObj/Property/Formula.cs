@@ -1,11 +1,10 @@
 ﻿using CompMs.Common.FormulaGenerator.DataObj;
 using MessagePack;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace CompMs.Common.DataObj.Property {
+namespace CompMs.Common.DataObj.Property
+{
     public static class AtomMass {
         public static double cMass = 12.0;
         public static double hMass = 1.007825032;
@@ -38,22 +37,6 @@ namespace CompMs.Common.DataObj.Property {
                 }
             }
             return mass;
-        }
-
-        public static string GetFormulaString(Dictionary<string, int> element2count) {
-            var formulastring = string.Empty;
-            var elem2order = ElementDictionary.HillOrder;
-            var atoms = new List<AtomTemp>();
-            foreach (var pair in element2count) {
-                if (elem2order.ContainsKey(pair.Key)) {
-                    var atom = new AtomTemp() { Element = pair.Key, Count = pair.Value, Order = elem2order[pair.Key] };
-                    atoms.Add(atom);
-                }
-            }
-            foreach (var atom in atoms.OrderBy(n => n.Order)) {
-                formulastring += atom.Count > 1 ? atom.Element + atom.Count : atom.Count < 0 ? atom.Element + "(" + atom.Count + ")" : atom.Element; 
-            }
-            return formulastring;
         }
 
         public static double GetExactMass(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum) {
@@ -165,6 +148,22 @@ namespace CompMs.Common.DataObj.Property {
 
             return formula;
         }
+
+        public static string GetFormulaString(Dictionary<string, int> element2count) {
+            var formulastring = string.Empty;
+            var elem2order = ElementDictionary.HillOrder;
+            var atoms = new List<AtomTemp>();
+            foreach (var pair in element2count) {
+                if (elem2order.ContainsKey(pair.Key)) {
+                    var atom = new AtomTemp() { Element = pair.Key, Count = pair.Value, Order = elem2order[pair.Key] };
+                    atoms.Add(atom);
+                }
+            }
+            foreach (var atom in atoms.OrderBy(n => n.Order)) {
+                formulastring += atom.Count > 1 ? atom.Element + atom.Count : atom.Count < 0 ? atom.Element + "(" + atom.Count + ")" : atom.Element; 
+            }
+            return formulastring;
+        }
     }
 
     /// <summary>
@@ -174,17 +173,9 @@ namespace CompMs.Common.DataObj.Property {
     [MessagePackObject]
     public class Formula {
        
+        [SerializationConstructor]
         public Formula() {
             FormulaString = string.Empty;
-        }
-
-        public Formula(string formulaString, double mass) {
-            FormulaString = formulaString;
-            Mass = mass;
-        }
-
-        public Formula(string formulaString) {
-            FormulaString = formulaString;
         }
 
         public Formula(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum,
@@ -227,33 +218,11 @@ namespace CompMs.Common.DataObj.Property {
                 cLabelMass, hLabelMass, nLabelMass, oLabelMass, pLabelMass, sLabelMass, fLabelMass, clLabelMass, brLabelMass, iLabelMass, siLabelMass);
             FormulaString = FormulaCalculateUtility.GetFormulaString(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum, 0, 0);
         }
-
-        public Formula(int cnum, int hnum, int nnum, int onum, int pnum, int snum, int fnum, int clnum, int brnum, int inum, int sinum,
-            int c13num, int h2num, int n15num, int o18num, int s34num, int cl37num, int br81num, int senum) {
-            Cnum = cnum;
-            Hnum = hnum;
-            Nnum = nnum;
-            Onum = onum;
-            Pnum = pnum;
-            Snum = snum;
-            Fnum = fnum;
-            Clnum = clnum;
-            Brnum = brnum;
-            Inum = inum;
-            Sinum = sinum;
-            C13num = c13num;
-            H2num = h2num;
-            N15num = n15num;
-            O18num = o18num;
-            S34num = s34num;
-            Cl37num = cl37num;
-            Br81num = br81num;
-            Senum = senum;
-
-            Mass = FormulaCalculateUtility.GetExactMass(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum,
-                c13num, h2num, n15num, o18num, s34num, cl37num, br81num, senum);
-            FormulaString = FormulaCalculateUtility.GetFormulaString(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum,
-                c13num, h2num, n15num, o18num, s34num, cl37num, br81num, senum);
+        
+        public Formula(Dictionary<string, int> elem2count) {
+            Element2Count = elem2count;
+            Mass = FormulaCalculateUtility.GetExactMass(elem2count);
+            FormulaString = FormulaCalculateUtility.GetFormulaString(elem2count);
         }
 
         [Key(0)]
@@ -264,65 +233,166 @@ namespace CompMs.Common.DataObj.Property {
         public double M1IsotopicAbundance { get; set; }
         [Key(3)]
         public double M2IsotopicAbundance { get; set; }
+
+        private const string CElement = "C";
         [Key(4)]
-        public int Cnum { get; set; }
+        public int Cnum {
+            get => GetElementNum(CElement);
+            set => SetElementNum(CElement, value);
+        }
+
+        private const string NElement = "N";
         [Key(5)]
-        public int Nnum { get; set; }
+        public int Nnum {
+            get => GetElementNum(NElement);
+            set => SetElementNum(NElement, value);
+        }
+
+        private const string HElement = "H";
         [Key(6)]
-        public int Hnum { get; set; }
+        public int Hnum {
+            get => GetElementNum(HElement);
+            set => SetElementNum(HElement, value);
+        }
+
+        private const string OElement = "O";
         [Key(7)]
-        public int Onum { get; set; }
+        public int Onum {
+            get => GetElementNum(OElement);
+            set => SetElementNum(OElement, value);
+        }
+
+        private const string SElement = "S";
         [Key(8)]
-        public int Snum { get; set; }
+        public int Snum {
+            get => GetElementNum(SElement);
+            set => SetElementNum(SElement, value);
+        }
+
+        private const string PElement = "P";
         [Key(9)]
-        public int Pnum { get; set; }
+        public int Pnum {
+            get => GetElementNum(PElement);
+            set => SetElementNum(PElement, value);
+        }
+
+        private const string FElement = "F";
         [Key(10)]
-        public int Fnum { get; set; }
+        public int Fnum {
+            get => GetElementNum(FElement);
+            set => SetElementNum(FElement, value);
+        }
+
+        private const string ClElement = "Cl";
         [Key(11)]
-        public int Clnum { get; set; }
+        public int Clnum {
+            get => GetElementNum(ClElement);
+            set => SetElementNum(ClElement, value);
+        }
+
+        private const string BrElement = "Br";
         [Key(12)]
-        public int Brnum { get; set; }
+        public int Brnum {
+            get => GetElementNum(BrElement);
+            set => SetElementNum(BrElement, value);
+        }
+
+        private const string IElement = "I";
         [Key(13)]
-        public int Inum { get; set; }
+        public int Inum {
+            get => GetElementNum(IElement);
+            set => SetElementNum(IElement, value);
+        }
+
+        private const string SiElement = "Si";
         [Key(14)]
-        public int Sinum { get; set; }
+        public int Sinum {
+            get => GetElementNum(SiElement);
+            set => SetElementNum(SiElement, value);
+        }
+
         [Key(15)]
         public int TmsCount { get; set; }
         [Key(16)]
         public int MeoxCount { get; set; }
+
+        private const string C13Element = "[13C]";
         [Key(17)]
-        public int C13num { get; set; }
+        public int C13num {
+            get => GetElementNum(C13Element);
+            set => SetElementNum(C13Element, value);
+        }
+
+        private const string N15Element = "[15N]";
         [Key(18)]
-        public int N15num { get; set; }
+        public int N15num {
+            get => GetElementNum(N15Element);
+            set => SetElementNum(N15Element, value);
+        }
+
+        private const string H2Element = "[2H]";
         [Key(19)]
-        public int H2num { get; set; }
+        public int H2num {
+            get => GetElementNum(H2Element);
+            set => SetElementNum(H2Element, value);
+        }
+
+        private const string O18Element = "[18O]";
         [Key(20)]
-        public int O18num { get; set; }
+        public int O18num {
+            get => GetElementNum(O18Element);
+            set => SetElementNum(O18Element, value);
+        }
+
+        private const string S34Element = "[34S]";
         [Key(21)]
-        public int S34num { get; set; }
+        public int S34num {
+            get => GetElementNum(S34Element);
+            set => SetElementNum(S34Element, value);
+        }
+
+        private const string Cl37Element = "[37Cl]";
         [Key(22)]
-        public int Cl37num { get; set; }
+        public int Cl37num {
+            get => GetElementNum(Cl37Element);
+            set => SetElementNum(Cl37Element, value);
+        }
+
+        private const string Br81Element = "[81Br]";
         [Key(23)]
-        public int Br81num { get; set; }
+        public int Br81num {
+            get => GetElementNum(Br81Element);
+            set => SetElementNum(Br81Element, value);
+        }
+
         [Key(24)]
         public bool IsCorrectlyImported { get; set; }
+
+        private const string SeElement = "Se";
         [Key(25)]
-        public int Senum { get; set; }
+        public int Senum {
+            get => GetElementNum(SeElement);
+            set => SetElementNum(SeElement, value);
+        }
+
         [Key(26)]
         public Dictionary<string, int> Element2Count { get; set; } = new Dictionary<string, int>();
 
-        public Formula(Dictionary<string, int> elem2count) {
-            this.Element2Count = elem2count;
-            this.Mass = FormulaCalculateUtility.GetExactMass(elem2count);
-            this.FormulaString = FormulaCalculateUtility.GetFormulaString(elem2count);
+        private int GetElementNum(string element) {
+            return Element2Count.TryGetValue(element, out var v) ? v : 0;
         }
+
+        private void SetElementNum(string element, int value) {
+            if (value != 0) {
+                Element2Count[element] = value;
+            }
+            else if (Element2Count.ContainsKey(element) && value == 0) {
+                Element2Count.Remove(element);
+            }
+        }
+
         public override string ToString() {
             return FormulaString;
         }
-
-        public Formula Clone() {
-            return (Formula)MemberwiseClone();
-        }
-
     }
 }
