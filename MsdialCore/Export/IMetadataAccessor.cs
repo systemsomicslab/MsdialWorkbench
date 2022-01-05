@@ -86,7 +86,7 @@ namespace CompMs.MsdialCore.Export
                 { "Post curation result", GetPostCurationResult(spot) },
                 { "Fill %", spot.FillParcentage.ToString("F2") },
                 { "MS/MS assigned", spot.IsMsmsAssigned.ToString() },
-                { "Formula", ValueOrNull(reference?.Formula.FormulaString) },
+                { "Formula", ValueOrNull(reference?.Formula?.FormulaString) },
                 { "Ontology", !string.IsNullOrEmpty(reference?.CompoundClass)  ? reference.CompoundClass
                                                                                : ValueOrNull(reference?.Ontology) },
                 { "INCHIKEY", ValueOrNull(reference?.InChIKey) },
