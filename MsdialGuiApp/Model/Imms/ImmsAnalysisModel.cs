@@ -234,14 +234,16 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void SaveSpectra(string filename) {
-            SpectraExport.SaveSpectraTable(
-                (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
-                filename,
-                Target.Value.InnerModel,
-                MsdecResult.Value,
-                this.provider.LoadMs1Spectrums(),
-                DataBaseMapper,
-                this.parameter);
+            using (var file = File.Open(filename, FileMode.Create)) {
+                SpectraExport.SaveSpectraTable(
+                    (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
+                    file,
+                    Target.Value.InnerModel,
+                    MsdecResult.Value,
+                    provider.LoadMs1Spectrums(),
+                    DataBaseMapper,
+                    parameter);
+            }
         }
 
         public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;

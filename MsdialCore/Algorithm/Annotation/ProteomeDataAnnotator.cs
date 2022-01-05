@@ -233,7 +233,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                 var fastaIdentifier = result.FastaProperty.UniqueIdentifier;
                 foreach (var feature in annotatedFeatures) {
                     var matchedMsResult = feature.MatchResults.Representative;
-                    var matchedPeptideMs = feature.MatchResults.RepresentativePeptideMsReference(mapper);
+                    var matchedPeptideMs = feature.MatchResults.GetRepresentativeReference((IMatchResultRefer<PeptideMsReference, MsScanMatchResult>)mapper);
                     var identifier = matchedPeptideMs.Peptide.DatabaseOrigin;
                     if (fastaIdentifier == identifier) {
                         result.IsAnnotated = true;
@@ -259,7 +259,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                 var fastaIdentifier = result.FastaProperty.UniqueIdentifier;
                 foreach (var feature in annotatedFeatures) {
                     var matchedMsResult = feature.MatchResults.Representative;
-                    var matchedPeptideMs = feature.MatchResults.RepresentativePeptideMsReference(mapper);
+                    var matchedPeptideMs = feature.MatchResults.GetRepresentativeReference((IMatchResultRefer<PeptideMsReference, MsScanMatchResult>)mapper);
                     var identifier = matchedPeptideMs.Peptide.DatabaseOrigin;
                     if (fastaIdentifier == identifier) {
                         result.IsAnnotated = true;

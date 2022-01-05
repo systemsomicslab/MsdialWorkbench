@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Accord.Statistics.Testing;
+using CompMs.MsdialCore.Algorithm.Annotation;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
@@ -61,20 +62,20 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(16)]
         public string InChIKey { get; set; } = string.Empty;
 
-        public string GetFormula(DataBaseMapper mapper) {
-            return MatchResults.RepresentativeFormula(mapper);
+        public string GetFormula(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeFormula(refer);
         }
 
-        public string GetOntology(DataBaseMapper mapper) {
-            return MatchResults.RepresentativeOntology(mapper);
+        public string GetOntology(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeOntology(refer);
         }
 
-        public string GetSMILES(DataBaseMapper mapper) {
-            return MatchResults.RepresentativeSMILES(mapper);
+        public string GetSMILES(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeSMILES(refer);
         }
 
-        public string GetInChIKey(DataBaseMapper mapper) {
-            return MatchResults.RepresentativeInChIKey(mapper);
+        public string GetInChIKey(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeInChIKey(refer);
         }
 
         // ion physiochemical information

@@ -4,6 +4,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using MessagePack;
 using System;
 using System.Collections.Generic;
@@ -139,25 +140,24 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(29)]
         public string InChIKey { get; set; } = string.Empty;
 
-        public string GetFormula(DataBaseMapper mapper) {
-            return MatchResults.RepresentativeFormula(mapper);
+        public string GetFormula(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeFormula(refer);
         }
 
-        public string GetOntology(DataBaseMapper mapper) {
-            return MatchResults.RepresentativeOntology(mapper);
+        public string GetOntology(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeOntology(refer);
         }
 
-        public string GetSMILES(DataBaseMapper mapper) {
-            return MatchResults.RepresentativeSMILES(mapper);
+        public string GetSMILES(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeSMILES(refer);
         }
 
-        public string GetInChIKey(DataBaseMapper mapper) {
-            return MatchResults.RepresentativeInChIKey(mapper);
+        public string GetInChIKey(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeInChIKey(refer);
         }
 
         public bool IsValidInChIKey() {
-            if (InChIKey == null || InChIKey == string.Empty || InChIKey.Length != 27) return false;
-            return true;
+            return !string.IsNullOrWhiteSpace(InChIKey) && InChIKey.Length == 27;
         }
 
 

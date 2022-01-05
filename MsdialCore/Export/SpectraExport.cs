@@ -1,10 +1,11 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
-using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
@@ -20,7 +21,7 @@ namespace CompMs.MsdialCore.Export
     {
         public static void SaveSpectraTable(
             ExportSpectraFileFormat spectraFormat, 
-            string exportFilePath,
+            Stream exportStream,
             ChromatogramPeakFeature chromPeakFeature, 
             IMSScanProperty scan,
             IReadOnlyList<RawSpectrum> spectrumList,
@@ -28,28 +29,26 @@ namespace CompMs.MsdialCore.Export
             ParameterBase parameter) {
             switch (spectraFormat) {
                 case ExportSpectraFileFormat.msp:
-                    SaveSpectraTableAsNistFormat(exportFilePath, chromPeakFeature, scan.Spectrum, mapper, parameter);
+                    SaveSpectraTableAsNistFormat(exportStream, chromPeakFeature, scan.Spectrum, mapper, parameter);
                     break;
                 case ExportSpectraFileFormat.mgf:
-                    SaveSpectraTableAsMgfFormat(exportFilePath, chromPeakFeature, scan.Spectrum, mapper, parameter);
+                    SaveSpectraTableAsMgfFormat(exportStream, chromPeakFeature, scan.Spectrum, mapper, parameter);
                     break;
                 case ExportSpectraFileFormat.mat:
-                    SaveSpectraTableAsMatFormat(exportFilePath, chromPeakFeature, scan.Spectrum, spectrumList, mapper, parameter);
+                    SaveSpectraTableAsMatFormat(exportStream, chromPeakFeature, scan.Spectrum, spectrumList, mapper, parameter);
                     break;
                 case ExportSpectraFileFormat.ms:
-                    SaveSpectraTableAsSiriusMsFormat(exportFilePath, chromPeakFeature, scan.Spectrum, spectrumList, mapper, parameter);
+                    SaveSpectraTableAsSiriusMsFormat(exportStream, chromPeakFeature, scan.Spectrum, spectrumList, mapper, parameter);
                     break;
                 default:
-                    SaveSpectraTableAsNistFormat(exportFilePath, chromPeakFeature, scan.Spectrum, mapper, parameter);
+                    SaveSpectraTableAsNistFormat(exportStream, chromPeakFeature, scan.Spectrum, mapper, parameter);
                     break;
             }
-
         }
 
-        
         public static void SaveSpectraTable(
             ExportSpectraFileFormat spectraFormat, 
-            string exportFilePath,
+            Stream exportStream,
             AlignmentSpotProperty spotProperty, 
             IMSScanProperty scan,
             DataBaseMapper mapper,
@@ -57,24 +56,23 @@ namespace CompMs.MsdialCore.Export
             AlignmentSpotProperty isotopeTrackedLastSpot = null) {
             switch (spectraFormat) {
                 case ExportSpectraFileFormat.msp:
-                    SaveSpectraTableAsNistFormat(exportFilePath, spotProperty, scan.Spectrum, mapper, parameter);
+                    SaveSpectraTableAsNistFormat(exportStream, spotProperty, scan.Spectrum, mapper, parameter);
                     break;
                 case ExportSpectraFileFormat.mgf:
-                    SaveSpectraTableAsMgfFormat(exportFilePath, spotProperty, scan.Spectrum, mapper, parameter);
+                    SaveSpectraTableAsMgfFormat(exportStream, spotProperty, scan.Spectrum, mapper, parameter);
                     break;
                 case ExportSpectraFileFormat.mat:
-                    SaveSpectraTableAsMatFormat(exportFilePath, spotProperty, scan.Spectrum, mapper, parameter, isotopeTrackedLastSpot);
+                    SaveSpectraTableAsMatFormat(exportStream, spotProperty, scan.Spectrum, mapper, parameter, isotopeTrackedLastSpot);
                     break;
                 case ExportSpectraFileFormat.ms:
-                    SaveSpectraTableAsSiriusMsFormat(exportFilePath, spotProperty, scan.Spectrum, mapper, parameter);
+                    SaveSpectraTableAsSiriusMsFormat(exportStream, spotProperty, scan.Spectrum, mapper, parameter);
                     break;
                 default:
-                    SaveSpectraTableAsNistFormat(exportFilePath, spotProperty, scan.Spectrum, mapper, parameter);
+                    SaveSpectraTableAsNistFormat(exportStream, spotProperty, scan.Spectrum, mapper, parameter);
                     break;
             }
         }
-
-       
+        
         #region msp
         public static void SaveSpectraTableAsNistFormat(
             string exportFilePath,
@@ -89,11 +87,12 @@ namespace CompMs.MsdialCore.Export
 
         public static void SaveSpectraTableAsNistFormat(
             Stream stream,
-            ChromatogramPeakFeature chromPeakFeature, IEnumerable<ISpectrumPeak> massSpectra,
-            DataBaseMapper mapper,
+            ChromatogramPeakFeature chromPeakFeature,
+            IEnumerable<ISpectrumPeak> massSpectra,
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             ParameterBase parameter) {
             using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
-                WriteChromPeakFeatureInfoAsMSP(sw, chromPeakFeature, mapper);
+                WriteChromPeakFeatureInfoAsMSP(sw, chromPeakFeature, refer);
                 WriteParameterInfoAsNist(sw, parameter);
                 WriteSpectrumPeakInfo(sw, massSpectra);
                 sw.WriteLine();
@@ -102,18 +101,20 @@ namespace CompMs.MsdialCore.Export
 
         public static void SaveSpectraTableAsNistFormat(
             string exportFilePath,
-            AlignmentSpotProperty spotProperty, IEnumerable<ISpectrumPeak> massSpectra,
-            DataBaseMapper mapper,
+            AlignmentSpotProperty spotProperty,
+            IEnumerable<ISpectrumPeak> massSpectra,
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             ParameterBase parameter) {
             using (var file = File.Open(exportFilePath, FileMode.Create)) {
-                SaveSpectraTableAsNistFormat(file, spotProperty, massSpectra, mapper, parameter);
+                SaveSpectraTableAsNistFormat(file, spotProperty, massSpectra, refer, parameter);
             }
         }
 
         public static void SaveSpectraTableAsNistFormat(
             Stream stream,
-            AlignmentSpotProperty spotProperty, IEnumerable<ISpectrumPeak> massSpectra,
-            DataBaseMapper mapper,
+            AlignmentSpotProperty spotProperty,
+            IEnumerable<ISpectrumPeak> massSpectra,
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> mapper,
             ParameterBase parameter) {
             using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
                 WriteChromPeakFeatureInfoAsMSP(sw, spotProperty, mapper);
@@ -124,29 +125,29 @@ namespace CompMs.MsdialCore.Export
         }
 
         private static void WriteChromPeakFeatureInfoAsMSP(
-            StreamWriter sw, ChromatogramPeakFeature feature, DataBaseMapper mapper) {
+            StreamWriter sw,
+            ChromatogramPeakFeature feature,
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             sw.WriteLine("NAME: " + GetNameField(feature));
             sw.WriteLine("PRECURSORMZ: " + feature.PrecursorMz);
             sw.WriteLine("PRECURSORTYPE: " + feature.AdductType.AdductIonName);
             WriteChromXFieldAsMSP(sw, feature.ChromXsTop, feature.CollisionCrossSection);
-            sw.WriteLine("FORMULA: " + feature.GetFormula(mapper));
-            sw.WriteLine("ONTOLOGY: " + feature.GetOntology(mapper));
-            sw.WriteLine("INCHIKEY: " + feature.GetInChIKey(mapper));
-            sw.WriteLine("SMILES: " + feature.GetSMILES(mapper));
+            sw.WriteLine("FORMULA: " + feature.GetFormula(refer));
+            sw.WriteLine("ONTOLOGY: " + feature.GetOntology(refer));
+            sw.WriteLine("INCHIKEY: " + feature.GetInChIKey(refer));
+            sw.WriteLine("SMILES: " + feature.GetSMILES(refer));
             sw.WriteLine("COMMENT: " + GetCommentField(feature));
         }
 
-        
-
-        private static void WriteChromPeakFeatureInfoAsMSP(StreamWriter sw, AlignmentSpotProperty feature, DataBaseMapper mapper) {
+        private static void WriteChromPeakFeatureInfoAsMSP(StreamWriter sw, AlignmentSpotProperty feature, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             sw.WriteLine("NAME: " + GetNameField(feature));
             sw.WriteLine("PRECURSORMZ: " + feature.MassCenter);
             sw.WriteLine("PRECURSORTYPE: " + feature.AdductType.AdductIonName);
             WriteChromXFieldAsMSP(sw, feature.TimesCenter, feature.CollisionCrossSection);
-            sw.WriteLine("FORMULA: " + feature.GetFormula(mapper));
-            sw.WriteLine("ONTOLOGY: " + feature.GetOntology(mapper));
-            sw.WriteLine("INCHIKEY: " + feature.GetInChIKey(mapper));
-            sw.WriteLine("SMILES: " + feature.GetSMILES(mapper));
+            sw.WriteLine("FORMULA: " + feature.GetFormula(refer));
+            sw.WriteLine("ONTOLOGY: " + feature.GetOntology(refer));
+            sw.WriteLine("INCHIKEY: " + feature.GetInChIKey(refer));
+            sw.WriteLine("SMILES: " + feature.GetSMILES(refer));
             sw.WriteLine("COMMENT: " + GetCommentField(feature));
         }
 
@@ -163,33 +164,9 @@ namespace CompMs.MsdialCore.Export
                 sw.WriteLine("CCS: " + ccs);
             }
         }
-
         #endregion
 
         #region mgf
-        public static void SaveSpectraTableAsMgfFormat(
-            string exportFilePath, 
-            ChromatogramPeakFeature chromPeakFeature,
-            IEnumerable<ISpectrumPeak> spectrum, 
-            DataBaseMapper mapper, 
-            ParameterBase parameter) {
-            using (var file = File.Open(exportFilePath, FileMode.Create)) {
-                SaveSpectraTableAsMgfFormat(file, chromPeakFeature, spectrum, mapper, parameter);
-            }
-        }
-
-        public static void SaveSpectraTableAsMgfFormat(
-            string exportFilePath, 
-            AlignmentSpotProperty spotProperty,
-            IEnumerable<ISpectrumPeak> spectrum, 
-            DataBaseMapper mapper, 
-            ParameterBase parameter) {
-            using (var file = File.Open(exportFilePath, FileMode.Create)) {
-                SaveSpectraTableAsMgfFormat(file, spotProperty, spectrum, mapper, parameter);
-            }
-        }
-
-        
         public static void SaveSpectraTableAsMgfFormat(
             Stream stream,
             ChromatogramPeakFeature chromPeakFeature,
@@ -219,7 +196,6 @@ namespace CompMs.MsdialCore.Export
                 sw.WriteLine();
             }
         }
-
 
         public static void WriteChromPeakFeatureInfoAsMgf(
             StreamWriter sw, 
@@ -269,18 +245,6 @@ namespace CompMs.MsdialCore.Export
         #endregion
 
         #region mat
-        public static void SaveSpectraTableAsMatFormat(
-            string exportFilePath, 
-            ChromatogramPeakFeature feature,
-            IEnumerable<SpectrumPeak> spectrum,
-            IReadOnlyList<RawSpectrum> spectrumList,  
-            DataBaseMapper mapper, 
-            ParameterBase parameter) {
-            using (var file = File.Open(exportFilePath, FileMode.Create)) {
-                SaveSpectraTableAsMatFormat(file, feature, spectrum, spectrumList, mapper, parameter);
-            }
-        }
-
         private static void SaveSpectraTableAsMatFormat(
             Stream stream, 
             ChromatogramPeakFeature feature, 
@@ -303,18 +267,6 @@ namespace CompMs.MsdialCore.Export
                 sw.WriteLine("MSTYPE: MS2");
                 WriteSpectrumPeakInfo(sw, spectrum);
                 sw.WriteLine();
-            }
-        }
-
-        private static void SaveSpectraTableAsMatFormat(
-            string exportFilePath, 
-            AlignmentSpotProperty feature,
-            IEnumerable<SpectrumPeak> spectrum, 
-            DataBaseMapper mapper, 
-            ParameterBase parameter, 
-            AlignmentSpotProperty isotopeTrackedLastSpot) {
-            using (var file = File.Open(exportFilePath, FileMode.Create)) {
-                SaveSpectraTableAsMatFormat(file, feature, spectrum, mapper, parameter, isotopeTrackedLastSpot);
             }
         }
 
@@ -383,18 +335,6 @@ namespace CompMs.MsdialCore.Export
 
         #region sirius ms
         private static void SaveSpectraTableAsSiriusMsFormat(
-            string exportFilePath, 
-            ChromatogramPeakFeature feature,
-            IEnumerable<SpectrumPeak> spectrum,
-            IReadOnlyList<RawSpectrum> spectrumList,
-            DataBaseMapper mapper,
-            ParameterBase parameter) {
-            using (var file = File.Open(exportFilePath, FileMode.Create)) {
-                SaveSpectraTableAsSiriusMsFormat(file, feature, spectrum, spectrumList, mapper, parameter);
-            }
-        }
-
-        private static void SaveSpectraTableAsSiriusMsFormat(
             Stream stream, 
             ChromatogramPeakFeature feature,
             IEnumerable<SpectrumPeak> spectrum, 
@@ -418,17 +358,6 @@ namespace CompMs.MsdialCore.Export
                 sw.WriteLine(">ms2");
                 WriteSpectrumPeakInfo(sw, spectrum);
                 sw.WriteLine();
-            }
-        }
-
-        private static void SaveSpectraTableAsSiriusMsFormat(
-            string exportFilePath,
-            AlignmentSpotProperty feature,
-            IEnumerable<SpectrumPeak> spectrum,
-            DataBaseMapper mapper,
-            ParameterBase parameter) {
-            using (var file = File.Open(exportFilePath, FileMode.Create)) {
-                SaveSpectraTableAsSiriusMsFormat(file, feature, spectrum, mapper, parameter);
             }
         }
 
@@ -473,7 +402,6 @@ namespace CompMs.MsdialCore.Export
             sw.WriteLine(">ionization " + feature.AdductType.AdductIonName);
             sw.WriteLine(">formula " + feature.GetFormula(mapper));
         }
-
         #endregion
 
         private static string GetCommentField(ChromatogramPeakFeature feature) {
@@ -521,8 +449,6 @@ namespace CompMs.MsdialCore.Export
                 return feature.Name;
             }
         }
-
-        
 
         private static void WriteParameterInfoAsNist(StreamWriter sw, ParameterBase parameter)
         {

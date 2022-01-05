@@ -207,13 +207,15 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public void SaveSpectra(string filename) {
-            SpectraExport.SaveSpectraTable(
-                (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
-                filename,
-                Target.Value.innerModel,
-                MsdecResult.Value,
-                DataBaseMapper,
-                Parameter);
+            using (var file = File.Open(filename, FileMode.Create)) {
+                SpectraExport.SaveSpectraTable(
+                    (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
+                    file,
+                    Target.Value.innerModel,
+                    MsdecResult.Value,
+                    DataBaseMapper,
+                    Parameter);
+            }
         }
 
         public bool CanSaveSpectra() => Target.Value.innerModel != null && MsdecResult.Value != null;
