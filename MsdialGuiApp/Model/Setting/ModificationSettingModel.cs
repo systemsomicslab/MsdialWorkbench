@@ -114,7 +114,7 @@ namespace CompMs.App.Msdial.Model.Setting {
                 mod.IsVariable = false;
                 fmods.Add(mod);
             }
-            parameter.FixedModifications = vmods;
+            parameter.FixedModifications = fmods;
 
             parameter.MaxMissedCleavage = maxNumberOfModificationsPerPeptide;
         }

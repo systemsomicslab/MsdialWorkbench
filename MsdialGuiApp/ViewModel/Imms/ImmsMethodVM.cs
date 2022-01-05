@@ -183,5 +183,17 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(model.ExportAlignment));
         private DelegateCommand<Window> exportAlignmentResultCommand;
+
+        public DelegateCommand<Window> ShowTicCommand => showTicCommand ?? (showTicCommand = new DelegateCommand<Window>(model.ShowTIC));
+        private DelegateCommand<Window> showTicCommand;
+
+        public DelegateCommand<Window> ShowBpcCommand => showBpcCommand ?? (showBpcCommand = new DelegateCommand<Window>(model.ShowBPC));
+        private DelegateCommand<Window> showBpcCommand;
+
+        public DelegateCommand<Window> ShowTicBpcRepEICCommand => showTicBpcRepEIC ?? (showTicBpcRepEIC = new DelegateCommand<Window>(model.ShowTicBpcRepEIC));
+        private DelegateCommand<Window> showTicBpcRepEIC;
+
+        public DelegateCommand<Window> ShowEicCommand => showEicCommand ?? (showEicCommand = new DelegateCommand<Window>(model.ShowEIC));
+        private DelegateCommand<Window> showEicCommand;
     }
 }

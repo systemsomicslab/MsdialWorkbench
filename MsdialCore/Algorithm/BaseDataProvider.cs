@@ -17,14 +17,18 @@ namespace CompMs.MsdialCore.Algorithm
         protected readonly List<RawSpectrum> spectrums;
 
         protected BaseDataProvider(IEnumerable<RawSpectrum> spectrums) {
+            if (spectrums is null) {
+                throw new ArgumentNullException(nameof(spectrums));
+            }
+
             this.spectrums = (spectrums as List<RawSpectrum>) ?? spectrums.ToList();
         }
 
-        protected BaseDataProvider(AnalysisFileBean file, bool isGuiProcess, int retry)
-            :this(LoadMeasurement(file, isGuiProcess, retry).SpectrumList) { }
+        protected BaseDataProvider(AnalysisFileBean file, bool isProfile, bool isGuiProcess, int retry)
+            :this(LoadMeasurement(file, isProfile, isGuiProcess, retry).SpectrumList) { }
 
-        protected static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isGuiProcess, int retry) {
-            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, isGuiProcess)) {
+        protected static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isProfile, bool isGuiProcess, int retry) {
+            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isProfile, isGuiProcess)) {
                 for (var i = 0; i < retry; i++) {
                     var rawObj = DataAccess.GetRawDataMeasurement(access);
                     if (rawObj != null) {

@@ -11,7 +11,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
 
         }
 
-        public LcimmsAccumulateDataProvider(AnalysisFileBean file, bool isGuiProcess = false, int retry = 5) : base(LoadMeasurement(file, isGuiProcess, retry).AccumulatedSpectrumList) {
+        public LcimmsAccumulateDataProvider(AnalysisFileBean file, bool isGuiProcess = false, int retry = 5) : base(LoadMeasurement(file, false, isGuiProcess, retry).AccumulatedSpectrumList) {
             
         }
 

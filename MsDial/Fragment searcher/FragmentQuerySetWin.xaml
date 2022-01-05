@@ -110,8 +110,6 @@
             </Grid>
         </GroupBox>
 
-        
-
         <DataGrid x:Name="Datagrid_FragmentQueries" ItemsSource="{Binding Path=FragmentQueriesInView}"
                   Grid.Row="2" 
                   ScrollViewer.VerticalScrollBarVisibility="Auto"

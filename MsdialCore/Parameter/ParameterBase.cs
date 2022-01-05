@@ -440,6 +440,12 @@ namespace CompMs.MsdialCore.Parameter {
         public bool IsLabPrivateVersionTada { get => AdvancedProcessOptionBaseParam.IsLabPrivateVersionTada; set => AdvancedProcessOptionBaseParam.IsLabPrivateVersionTada = value; }
         [IgnoreMember]
         public bool QcAtLeastFilter { get => AdvancedProcessOptionBaseParam.QcAtLeastFilter; set => AdvancedProcessOptionBaseParam.QcAtLeastFilter = value; }
+        [IgnoreMember]
+        public List<PeakFeatureSearchValue> DiplayEicSettingValues { get => AdvancedProcessOptionBaseParam.DiplayEicSettingValues; set => AdvancedProcessOptionBaseParam.DiplayEicSettingValues = value; }
+        [IgnoreMember]
+        public List<PeakFeatureSearchValue> FragmentSearchSettingValues { get => AdvancedProcessOptionBaseParam.FragmentSearchSettingValues; set => AdvancedProcessOptionBaseParam.FragmentSearchSettingValues = value; }
+        [IgnoreMember]
+        public AndOr AndOrAtFragmentSearch { get => AdvancedProcessOptionBaseParam.AndOrAtFragmentSearch; set => AdvancedProcessOptionBaseParam.AndOrAtFragmentSearch = value; }
 
 
         // corrdec
@@ -1227,6 +1233,10 @@ namespace CompMs.MsdialCore.Parameter {
         public bool QcAtLeastFilter { get; set; } = false;
         [Key(6)]
         public List<PeakFeatureSearchValue> DiplayEicSettingValues { get; set; } = new List<PeakFeatureSearchValue>();
+        [Key(7)]
+        public List<PeakFeatureSearchValue> FragmentSearchSettingValues { get; set; } = new List<PeakFeatureSearchValue>();
+        [Key(8)]
+        public AndOr AndOrAtFragmentSearch { get; set; } = AndOr.AND;
     }
 
     [MessagePackObject]

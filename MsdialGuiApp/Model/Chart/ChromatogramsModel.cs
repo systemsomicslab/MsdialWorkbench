@@ -35,6 +35,7 @@ namespace CompMs.App.Msdial.Model.Chart {
 
             MaxIntensitySource = chromatograms.Any() ? chromatograms.Max(n => n.MaxIntensity) : 0;
             AbundanceRangeSource = chromatograms.Any() ? new Range(0, chromatograms.Max(n => n.MaxIntensity)) : new Range(0, 1);
+            //AbundanceRangeSource = chromatograms.Any() ? Observable.Return(new Range(0, chromatograms.Max(n => n.MaxIntensity))) : Observable.Return(new Range(0, 1));
             ChromRangeSource = chromatograms.Any() ? new Range(chromatograms.Min(n => n.MinChromX), chromatograms.Max(n => n.MaxChromX)) : new Range(0, 1);
         }
 
@@ -43,6 +44,15 @@ namespace CompMs.App.Msdial.Model.Chart {
             List<DisplayChromatogram> chromatograms
             )
            : this(name, chromatograms, string.Empty, string.Empty, string.Empty) {
+
+        }
+
+        public ChromatogramsModel(
+            string name,
+            DisplayChromatogram chromatogram,
+            string graphTitle, string horizontalTitle, string verticalTitle
+            )
+           : this(name, new List<DisplayChromatogram>() { chromatogram }, graphTitle, horizontalTitle, verticalTitle) {
 
         }
 
@@ -60,6 +70,7 @@ namespace CompMs.App.Msdial.Model.Chart {
 
         public double MaxIntensitySource { get; }
         public Range ChromRangeSource { get; }
+        //public IObservable<Range> AbundanceRangeSource { get; }
         public Range AbundanceRangeSource { get; }
         public string HorizontalTitle {
             get;

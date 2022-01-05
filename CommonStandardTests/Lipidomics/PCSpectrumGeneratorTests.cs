@@ -25,9 +25,9 @@ namespace CompMs.Common.Lipidomics.Tests
                 224.105, // Gly-C
                 226.083, // Gly-O
                 489.321, // Sn1 -CH2
-                502.329, // MspGenerator\GlyceroLipidFragmentation.cs SN1-H2O
+                //502.329, // MspGenerator\GlyceroLipidFragmentation.cs SN1-H2O //it is not the optimum value
                 503.337, // Sn1 -O
-                506.360, // MspGenerator\GlyceroLipidFragmentation.cs SN2-H2O
+                //506.360, // MspGenerator\GlyceroLipidFragmentation.cs SN2-H2O //it is not the optimum value
                 507.368, // Sn2 -O
                 520.340, // Sn1 -C=O MspGenerator\GlyceroLipidFragmentation.cs SN1 acyl loss
                 524.371, // Sn2 -C=O MspGenerator\GlyceroLipidFragmentation.cs SN2 acyl loss

@@ -50,7 +50,8 @@ namespace CompMs.Common.Proteomics.Function {
                 ExactMass = forwardPep.ExactMass,
                 IsProteinCterminal = forwardPep.IsProteinCterminal,
                 IsProteinNterminal = forwardPep.IsProteinNterminal,
-                MissedCleavages = forwardPep.MissedCleavages
+                MissedCleavages = forwardPep.MissedCleavages,
+                SamePeptideNumberInSearchedProteins = forwardPep.SamePeptideNumberInSearchedProteins
             };
             var sequence = forwardPep.SequenceObj;
             if (sequence.IsEmptyOrNull()) return revPep;

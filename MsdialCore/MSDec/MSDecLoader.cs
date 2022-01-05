@@ -1,13 +1,11 @@
-﻿using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parser;
+﻿using CompMs.MsdialCore.Parser;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
-namespace CompMs.App.Msdial.Model.Loader
-{
-    public class MSDecLoader : IDisposable
-    {
+namespace CompMs.MsdialCore.MSDec {
+    public class MSDecLoader : IDisposable {
         public MSDecLoader(Stream fs) {
             if (fs is null || !fs.CanSeek) {
                 throw new ArgumentException(nameof(fs));

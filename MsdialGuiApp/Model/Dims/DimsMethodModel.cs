@@ -1,6 +1,14 @@
-﻿using CompMs.App.Msdial.Model.Core;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.View.Chart;
+using CompMs.App.Msdial.View.Setting;
+using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
@@ -21,6 +29,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
@@ -87,7 +97,8 @@ namespace CompMs.App.Msdial.Model.Dims
                         FileName = alignmentResultFileName,
                         FilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
                         EicFilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + ".EIC.aef"),
-                        SpectraFilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl)
+                        SpectraFilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl),
+                        ProteinAssembledResultFilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.prf)
                     }
                 );
                 Storage.AlignmentFiles = AlignmentFiles.ToList();
@@ -184,5 +195,6 @@ namespace CompMs.App.Msdial.Model.Dims
                 Storage.MsdialDimsParameter,
                 Storage.DataBaseMapper.MoleculeAnnotators).AddTo(Disposables);
         }
+
     }
 }

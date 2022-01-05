@@ -988,7 +988,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
             foreach (var peak in peakAreaBeanList)
             {
                 var scanNum = peak.ScanNumberAtPeakTop;
-                if (scanNum - 1 < 0 || scanNum + 1 > peaklist.Count - 1) continue;
+                if (scanNum - 1 < 0 && scanNum + 1 > peaklist.Count - 1) continue;
                 //if (peaklist[scanNum - 1][3] <= 0 || peaklist[scanNum + 1][3] <= 0) continue;
 
                 newPeakAreas.Add(peak);

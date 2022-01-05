@@ -17,7 +17,7 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         public StandardDataProvider(AnalysisFileBean file, bool isGuiProcess, int retry)
-            : this(LoadMeasurement(file, isGuiProcess, retry)) {
+            : this(LoadMeasurement(file, false, isGuiProcess, retry)) {
 
         }
     }

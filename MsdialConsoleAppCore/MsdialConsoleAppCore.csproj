@@ -14,6 +14,11 @@
   <PropertyGroup>
 	<HighEntropyVA>false</HighEntropyVA>
   </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\MsDial\bin\Release\</OutputPath>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.WindowsDesktop.App" />
@@ -47,7 +52,7 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="copy &quot;$(SolutionDir)\Assemblies\timsdata.dll&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;copy &quot;$(SolutionDir)\Assemblies\SQLite.Interop.dll&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;copy &quot;$(SolutionDir)\Assemblies\System.Data.SQLite.dll&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;copy &quot;$(SolutionDir)\Assemblies\MassLynxRaw.dll&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;copy &quot;$(SolutionDir)\Assemblies\baf2sql_c.dll&quot; &quot;$(TargetDir)&quot;" />
+    <Exec Command="copy &quot;$(SolutionDir)\Assemblies\timsdata.dll&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;copy &quot;$(SolutionDir)\Assemblies\SQLite.Interop.dll&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;copy &quot;$(SolutionDir)\Assemblies\System.Data.SQLite.dll&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;copy &quot;$(SolutionDir)\Assemblies\MassLynxRaw.dll&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;copy &quot;$(SolutionDir)\Assemblies\baf2sql_c.dll&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;xcopy &quot;$(SolutionDir)\Assemblies\shimadzu&quot; &quot;$(TargetDir)&quot; /D/E/C/I/H/Y" />
   </Target>
 
 </Project>

@@ -44,7 +44,7 @@ namespace Rfx.Riken.OsakaUniv
             }
             else {
                 //ofd.Filter = "ABF file(*.abf)|*.abf|mzML file(*.mzml)|*.mzml|netCDF file(*.cdf)|*.cdf|IBF file(*.ibf)|*.ibf|WIFF file(*.wiff)|*.wiff|WIFF2 file(*.wiff2)|*.wiff2";
-                ofd.Filter = "ABF file(*.abf)|*.abf|mzML file(*.mzml)|*.mzml|netCDF file(*.cdf)|*.cdf|IBF file(*.ibf)|*.ibf|WIFF file(*.wiff)|*.wiff|WIFF2 file(*.wiff2)|*.wiff2|Raw file(*.raw)|*.raw";
+                ofd.Filter = "ABF file(*.abf)|*.abf|mzML file(*.mzml)|*.mzml|netCDF file(*.cdf)|*.cdf|IBF file(*.ibf)|*.ibf|WIFF file(*.wiff)|*.wiff|WIFF2 file(*.wiff2)|*.wiff2|Raw file(*.raw)|*.raw|LCD file(*.lcd)|*.lcd|QGD file(*.qgd)|*.qg";
             }
             ofd.Title = "Import analysis files";
             ofd.InitialDirectory = mainWindow.ProjectProperty.ProjectFolderPath;
@@ -330,7 +330,8 @@ namespace Rfx.Riken.OsakaUniv
             if (extension != ".abf" && extension != ".mzml" &&
                 extension != ".cdf" && extension != ".raw" &&
                 extension != ".d" && extension != ".iabf" && extension != ".ibf" &&
-                extension != ".wiff" && extension != ".wiff2")
+                extension != ".wiff" && extension != ".wiff2" &&
+                extension != ".lcd" && extension != ".qgd")
                 return false;
             else
                 return true;

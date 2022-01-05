@@ -12,33 +12,8 @@ namespace CompMs.Common.Proteomics.Function {
         private ProteinDigestion() { }
 
         public static List<Peptide> GetDigestedPeptideSequences(string proteinSequence, List<string> cleavagesites, Dictionary<char, AminoAcid> char2AA, string database = "", int databaseID = -1) {
-            var peptides = new List<Peptide>();
-            //var peptideSequence = string.Empty;
-            var twoletterAAs = string.Empty;
-            var start = 0;
-            var end = 0;
-
             var proteinSeqObj = PeptideCalc.Sequence2AminoAcids(proteinSequence, char2AA);
             return GetDigestedPeptideSequences(proteinSeqObj, cleavagesites, database, databaseID);
-            //for (int i = 0; i < proteinSequence.Length - 1; i++) {
-            //    //peptideSequence += proteinSequence[i];
-            //    twoletterAAs = proteinSequence[i].ToString() + proteinSequence[i + 1].ToString();
-
-            //    if (cleavagesites.Contains(twoletterAAs)) {
-            //        end = i;
-            //        //var peptide = new Peptide() { DatabaseOrigin = database, DatabaseOriginID = databaseID, Sequence = peptideSequence, Position = new Range(start, end) };
-            //        var peptide = new Peptide() { DatabaseOrigin = database, DatabaseOriginID = databaseID, SequenceObj = proteinSeqObj.GetRange(start, end - start + 1), Position = new Range(start, end) };
-            //        peptide.IsProteinNterminal = start == 0 ? true : false;
-            //        peptide.IsProteinCterminal = end == proteinSequence.Length - 1 ? true : false;
-            //        peptides.Add(peptide);
-
-            //        //peptideSequence = string.Empty;
-            //        start = i + 1;
-            //        end = i + 1;
-            //    }
-            //}
-
-            //return peptides;
         }
 
 
@@ -80,10 +55,7 @@ namespace CompMs.Common.Proteomics.Function {
                 for (int j = 0; j < currentTotalCount - i; j++) {
                     start = peptides[j].Position.Start;
                     end = peptides[j + i].Position.End;
-                    //peptideSequence = string.Empty;
-                    //for (int k = j; k <= j + i; k++) {
-                    //    peptideSequence += peptides[k].Sequence;
-                    //}
+
                     var peptide = new Peptide() { DatabaseOrigin = database, DatabaseOriginID = databaseID, SequenceObj = proteinSeqObj.GetRange(start, end - start + 1), Position = new Range(start, end) };
                     peptide.IsProteinNterminal = start == 0 ? true : false;
                     peptide.IsProteinCterminal = end == proteinSequence.Length - 1 ? true : false;

@@ -205,6 +205,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 stream,
                 Target.Value.innerModel,
                 MsdecResult.Value,
+                DataBaseMapper,
                 Parameter);
         }
 

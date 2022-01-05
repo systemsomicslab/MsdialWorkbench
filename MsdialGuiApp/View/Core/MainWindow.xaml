@@ -5,6 +5,7 @@
               xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
               xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
               xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Core"
+              xmlns:properties="clr-namespace:CompMs.App.Msdial.Properties"
               mc:Ignorable="d"
               d:DataContext="{d:DesignInstance Type={x:Type vm:MainWindowVM}}"
               Title="{Binding ProjectFile, StringFormat='MS-DIAL alpha version {0}'}" Height="800" Width="1280">
@@ -36,8 +37,8 @@
                         HorizontalAlignment="Center">
                 <StackPanel VerticalAlignment="Center">
                     <Image Source="/Resources/msdial_icon.png" Width="200"/>
-                    <TextBlock Text="MS-DIAL" FontSize="100" FontFamily="arial" FontStyle="Italic" VerticalAlignment="Center"/>
-                    <TextBlock Text="Alpha version" FontSize="70" FontFamily="arial" FontStyle="Italic" VerticalAlignment="Center"/>
+                    <TextBlock Text="MS-DIAL" FontSize="100" FontFamily="arial" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Static properties:Resources.VERSION}" FontSize="70" FontFamily="arial" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </StackPanel>
 
                 <StackPanel VerticalAlignment="Center"

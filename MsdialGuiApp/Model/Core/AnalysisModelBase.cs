@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
@@ -14,8 +13,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows;
 
-namespace CompMs.App.Msdial.Model.Core
-{
+namespace CompMs.App.Msdial.Model.Core {
     internal class AnalysisModelBase : BindableBase, IDisposable
     {
         public AnalysisModelBase(AnalysisFileBean analysisFile) {

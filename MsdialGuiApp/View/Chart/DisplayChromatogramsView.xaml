@@ -26,7 +26,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="150" />
         </Grid.ColumnDefinitions>
         <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
                           VerticalAxis="{Binding VerticalAxis}"
@@ -46,8 +46,8 @@
                             <chart:LineChartControl.ToolTip>
                                 <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Class: "/>
-                                        <TextBlock Text="{Binding Name, Mode=OneWay}"/>
+                                        <TextBlock Text="{Binding FocusedItem.ChromXValue, StringFormat=RT: {0}}"/>
+                                        <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0}}"/>
                                     </StackPanel>
                                 </ToolTip>
                             </chart:LineChartControl.ToolTip>
@@ -64,10 +64,13 @@
                 </MultiBinding>
             </chart:MultiChart.VerticalTitle>
         </chart:MultiChart>
-        <ItemsControl ItemsSource="{Binding DisplayChromatograms}" Grid.Column="1">
+        <ItemsControl 
+            ItemsSource="{Binding DisplayChromatograms}"
+            VerticalAlignment="Center"
+            Grid.Column="1">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}" />
+                    <TextBlock Text="{Binding Name}" Margin="8,0" Foreground="{Binding LineBrush}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

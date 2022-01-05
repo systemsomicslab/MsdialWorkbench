@@ -9,6 +9,7 @@ namespace CompMs.MsdialCore.Algorithm
         ReadOnlyCollection<RawSpectrum> LoadMsSpectrums();
         ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums();
         ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level);
+        
     }
 
     public interface IDataProviderFactory<in T>

@@ -399,12 +399,39 @@ namespace Rfx.Riken.OsakaUniv
             if (this.projectProperty.ProjectFilePath == null || this.projectProperty.ProjectFilePath == string.Empty) {
                 return false;
             }
+            else if (!IsSafePath(this.projectProperty.ProjectFilePath, false)) {
+                return false;
+            }
             else if (!System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(this.projectProperty.ProjectFilePath))) {
                 return false;
             }
             else {
                 return true;
             }
+        }
+
+        public static bool IsSafePath(string path, bool isFileName) {
+            if (string.IsNullOrEmpty(path)) {
+                return false;
+            }
+
+            char[] invalidChars;
+            if (isFileName) {
+                invalidChars = System.IO.Path.GetInvalidFileNameChars();
+            }
+            else {
+                invalidChars = System.IO.Path.GetInvalidPathChars();
+            }
+            if (path.IndexOfAny(invalidChars) >= 0) {
+                return false;
+            }
+
+            if (System.Text.RegularExpressions.Regex.IsMatch(path
+                                           , @"(^|\\|/)(CON|PRN|AUX|NUL|CLOCK\$|COM[0-9]|LPT[0-9])(\.|\\|/|$)"
+                                           , System.Text.RegularExpressions.RegexOptions.IgnoreCase)) {
+                return false;
+            }
+            return true;
         }
     }
 }

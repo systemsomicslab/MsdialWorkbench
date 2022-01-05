@@ -268,7 +268,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             var sfd = new SaveFileDialog
             {
                 Title = "Save spectra",
-                Filter = "NIST format(*.msp)|*.msp", // MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf;
+                Filter = "NIST format(*.msp)|*.msp|MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf|MSFINDER format(*.mat)|*.mat;|SIRIUS format(*.ms)|*.ms", 
                 RestoreDirectory = true,
                 AddExtension = true,
             };

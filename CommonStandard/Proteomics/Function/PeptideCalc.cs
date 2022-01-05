@@ -172,11 +172,23 @@ namespace CompMs.Common.Proteomics.Function {
                 var formula = CalculatePeptideFormula(result);
                 if (formula.Mass > maxPeptideMass) continue;
                 nPep.ExactMass = formula.Mass;
+                nPep.ResidueCodeIndexToModificationIndex = GetResidueCodeIndexToModificationIndexDictionary(nPep, container);
                 peptides.Add(nPep);
             }
 
 
             return peptides;
+        }
+
+        private static Dictionary<int, int> GetResidueCodeIndexToModificationIndexDictionary(Peptide peptide, ModificationContainer container) {
+            var dict = new Dictionary<int, int>();
+            for (int i = 0; i < peptide.SequenceObj.Count(); i++) {
+                var aa = peptide.SequenceObj[i];
+                if (aa.IsModified()) {
+                    dict[i] = container.Code2ID[aa.Code()];
+                }
+            }
+            return dict;
         }
 
         static void EnumerateModifications(Peptide pep, ModificationContainer container, int index, int numModifications, int maxModifications, 

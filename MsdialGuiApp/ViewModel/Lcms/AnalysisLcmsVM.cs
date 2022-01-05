@@ -8,12 +8,14 @@ using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.DataObj;
+using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
@@ -237,6 +239,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     && AmplitudeFilter(peak)
                     && (!Ms2AcquiredChecked || peak.IsMsmsContained)
                     && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0)
+                    && (!UniqueIonsChecked || peak.IsFragmentQueryExisted)
                     && (!ManuallyModifiedChecked || peak.InnerModel.IsManuallyModifiedForAnnotation)
                     && MetaboliteFilter(peak, MetaboliteFilterKeywords.Value)
                     && CommentFilter(peak, CommentFilterKeywords.Value);
@@ -333,6 +336,27 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private void ShowIonTable() {
             peakSpotTableService.Show(PeakTableViewModel);
+        }
+
+        public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
+        private DelegateCommand<Window> saveMs2SpectrumCommand;
+
+        private void SaveSpectra(Window owner) {
+            var sfd = new SaveFileDialog {
+                Title = "Save spectra",
+                Filter = "NIST format(*.msp)|*.msp", // MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf;
+                RestoreDirectory = true,
+                AddExtension = true,
+            };
+
+            if (sfd.ShowDialog(owner) == true) {
+                var filename = sfd.FileName;
+                this.model.SaveSpectra(filename);
+            }
+        }
+
+        private bool CanSaveSpectra(Window owner) {
+            return this.model.CanSaveSpectra();
         }
     }
 

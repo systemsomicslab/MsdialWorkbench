@@ -26,7 +26,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
 
         public DimsBpiDataProvider(AnalysisFileBean file, double timeBegin, double timeEnd, bool isGuiProcess = false, int retry = 5)
-            : this(LoadMeasurement(file, isGuiProcess, retry).SpectrumList, timeBegin, timeEnd) {
+            : this(LoadMeasurement(file, true, isGuiProcess, retry).SpectrumList, timeBegin, timeEnd) {
 
         }
 
@@ -58,12 +58,15 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
 
         public DimsTicDataProvider(AnalysisFileBean file, double timeBegin, double timeEnd, bool isGuiProcess = false, int retry = 5)
-            : this(LoadMeasurement(file, isGuiProcess, retry).SpectrumList, timeBegin, timeEnd) {
+            : this(LoadMeasurement(file, true, isGuiProcess, retry).SpectrumList, timeBegin, timeEnd) {
 
         }
 
         private static List<RawSpectrum> TotalIonCurrentSelect(RawSpectrum[] spectrums) {
-            var ms1Spectrum = spectrums.Where(spectrum => spectrum.MsLevel == 1).Argmax(spectrum => spectrum.TotalIonCurrent);
+            if (spectrums.IsEmptyOrNull()) return null;
+            var ms1Spectrum = spectrums.Length > 1 
+                ? spectrums.Where(spectrum => spectrum.MsLevel == 1).Argmax(spectrum => spectrum.TotalIonCurrent)
+                : spectrums[0];
             var msSpectrums = spectrums.Where(spectrum => spectrum.MsLevel != 1);
             var result = new[] { ms1Spectrum }.Concat(msSpectrums).ToList();
             for (int i = 0; i < result.Count; i++) {
@@ -91,7 +94,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
 
         public DimsAverageDataProvider(AnalysisFileBean file, double massTolerance, double timeBegin, double timeEnd, bool isGuiProcess = false, int retry = 5)
-            : this(LoadMeasurement(file, isGuiProcess, retry).SpectrumList, massTolerance, timeBegin, timeEnd) {
+            : this(LoadMeasurement(file, true, isGuiProcess, retry).SpectrumList, massTolerance, timeBegin, timeEnd) {
 
         }
 
