@@ -3,7 +3,6 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Lipidomics;
@@ -23,14 +22,16 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
     {
         private static readonly IComparer<IMSIonProperty> comparer = CompositeComparer.Build<IMSIonProperty>(MassComparer.Comparer, CollisionCrossSectionComparer.Comparer);
 
-        private readonly TargetOmics omics;
-
         public ImmsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey, int priority)
             : base(mspDB.Database, parameter, sourceKey, priority, SourceType.MspDB) {
             this.db.Sort(comparer);
             this.omics = omics;
             this.ReferObject = mspDB;
+            evaluator = MsScanMatchResultEvaluator.CreateEvaluatorWithSpectrum();
         }
+
+        private readonly TargetOmics omics;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public MsScanMatchResult Annotate(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;
@@ -233,43 +234,23 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            return results.Argmax(result => result.TotalScore);
+            return evaluator.SelectTopHit(results, parameter ?? Parameter);
         }
 
         public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            if (parameter is null) {
-                parameter = Parameter;
-            }
-            return results.Where(result => SatisfySuggestedConditions(result, parameter)).ToList();
+            return evaluator.FilterByThreshold(results, parameter ?? Parameter);
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            if (parameter is null) {
-                parameter = Parameter;
-            }
-            return results.Where(result => SatisfyRefMatchedConditions(result, parameter)).ToList();
-        }
-
-        private static bool SatisfyRefMatchedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            return result.IsPrecursorMzMatch
-                && result.IsSpectrumMatch
-                && (!parameter.IsUseCcsForAnnotationFiltering || result.IsCcsMatch);
-        }
-
-        private static bool SatisfySuggestedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            return result.IsPrecursorMzMatch
-                && (!parameter.IsUseCcsForAnnotationFiltering || result.IsCcsMatch);
+            return evaluator.SelectReferenceMatchResults(results, parameter ?? Parameter);
         }
 
         public bool IsReferenceMatched(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            return SatisfyRefMatchedConditions(result, parameter ?? Parameter);
+            return evaluator.IsReferenceMatched(result, parameter ?? Parameter);
         }
 
         public bool IsAnnotationSuggested(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            if (parameter is null) {
-                parameter = Parameter;
-            }
-            return SatisfySuggestedConditions(result, parameter) && !SatisfyRefMatchedConditions(result, parameter);
+            return evaluator.IsAnnotationSuggested(result, parameter ?? Parameter);
         }
     }
 }

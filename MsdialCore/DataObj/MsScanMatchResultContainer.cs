@@ -172,12 +172,14 @@ namespace CompMs.MsdialCore.DataObj
                 return true; // confidense or unsettled
             }
             if (representative.Source == SourceType.FastaDB) {
-                var annotator = mapper.FindPeptideAnnotator(representative)?.Annotator;
-                return annotator?.IsReferenceMatched(representative) ?? false;
+                var container = mapper.FindPeptideAnnotator(representative);
+                var annotator = container?.Annotator;
+                return annotator?.IsReferenceMatched(representative, container.Parameter) ?? false;
             }
             else {
-                var annotator = mapper.FindMoleculeAnnotator(representative)?.Annotator;
-                return annotator?.IsReferenceMatched(representative) ?? false;
+                var container = mapper.FindMoleculeAnnotator(representative);
+                var annotator = container?.Annotator;
+                return annotator?.IsReferenceMatched(representative, container.Parameter) ?? false;
             }
         }
 
@@ -187,12 +189,14 @@ namespace CompMs.MsdialCore.DataObj
                 return false; // confidense or unsettled
             }
             if (representative.Source == SourceType.FastaDB) {
-                var annotator = mapper.FindPeptideAnnotator(representative)?.Annotator;
-                return annotator?.IsAnnotationSuggested(representative) ?? false;
+                var container = mapper.FindPeptideAnnotator(representative);
+                var annotator = container?.Annotator;
+                return annotator?.IsAnnotationSuggested(representative, container.Parameter) ?? false;
             }
             else {
-                var annotator = mapper.FindMoleculeAnnotator(representative)?.Annotator;
-                return annotator?.IsAnnotationSuggested(representative) ?? false;
+                var container = mapper.FindMoleculeAnnotator(representative);
+                var annotator = container?.Annotator;
+                return annotator?.IsAnnotationSuggested(representative, container.Parameter) ?? false;
             }
         }
 

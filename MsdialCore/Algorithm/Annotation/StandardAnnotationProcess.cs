@@ -206,14 +206,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         private void SetRepresentativeProperty(ChromatogramPeakFeature chromPeakFeature) {
             var representative = chromPeakFeature.MatchResults.Representative;
-            var annotator = AnnotatorContainers.FirstOrDefault(annotatorContainer => representative.AnnotatorID == annotatorContainer.AnnotatorID)?.Annotator;
+            var container = AnnotatorContainers.FirstOrDefault(annotatorContainer => representative.AnnotatorID == annotatorContainer.AnnotatorID);
+            var annotator = container?.Annotator;
             if (annotator is null) {
                 return;
             }
-            else if (annotator.IsReferenceMatched(representative)) {
+            else if (annotator.IsReferenceMatched(representative, container.Parameter)) {
                 DataAccess.SetMoleculeMsProperty(chromPeakFeature, annotator.Refer(representative), representative);
             }
-            else if (annotator.IsAnnotationSuggested(representative)) {
+            else if (annotator.IsAnnotationSuggested(representative, container.Parameter)) {
                 DataAccess.SetMoleculeMsPropertyAsSuggested(chromPeakFeature, annotator.Refer(representative), representative);
             }
         }

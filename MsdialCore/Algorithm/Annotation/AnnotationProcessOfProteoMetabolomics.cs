@@ -305,26 +305,28 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             var decoyRepresentative = chromPeakFeature.MatchResults.DecoyRepresentative;
             
             if (representative.Source == SourceType.FastaDB) {
-                var annotator = PepAnnotatorContainers.FirstOrDefault(annotatorContainer => representative.AnnotatorID == annotatorContainer.AnnotatorID)?.Annotator;
+                var container = PepAnnotatorContainers.FirstOrDefault(annotatorContainer => representative.AnnotatorID == annotatorContainer.AnnotatorID);
+                var annotator = container?.Annotator;
                 if (annotator is null) {
                     return;
                 }
-                else if (annotator.IsReferenceMatched(representative)) {
+                else if (annotator.IsReferenceMatched(representative, container.Parameter)) {
                     DataAccess.SetPeptideMsProperty(chromPeakFeature, annotator.Refer(representative), representative);
                 }
-                else if (annotator.IsAnnotationSuggested(representative)) {
+                else if (annotator.IsAnnotationSuggested(representative, container.Parameter)) {
                     DataAccess.SetPeptideMsPropertyAsSuggested(chromPeakFeature, annotator.Refer(representative), representative);
                 }
             }
             else {
-                var annotator = AnnotatorContainers.FirstOrDefault(annotatorContainer => representative.AnnotatorID == annotatorContainer.AnnotatorID)?.Annotator;
+                var container = AnnotatorContainers.FirstOrDefault(annotatorContainer => representative.AnnotatorID == annotatorContainer.AnnotatorID);
+                var annotator = container?.Annotator;
                 if (annotator is null) {
                     return;
                 }
-                else if (annotator.IsReferenceMatched(representative)) {
+                else if (annotator.IsReferenceMatched(representative, container.Parameter)) {
                     DataAccess.SetMoleculeMsProperty(chromPeakFeature, annotator.Refer(representative), representative);
                 }
-                else if (annotator.IsAnnotationSuggested(representative)) {
+                else if (annotator.IsAnnotationSuggested(representative, container.Parameter)) {
                     DataAccess.SetMoleculeMsPropertyAsSuggested(chromPeakFeature, annotator.Refer(representative), representative);
                 }
             }

@@ -311,7 +311,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
         [TestMethod()]
         public void SelectTopHitTest() {
-            var annotator = new MassAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), new MsRefSearchParameterBase(), TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
+            var parameter = new MsRefSearchParameterBase();
+            var annotator = new MassAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, SourceType.MspDB, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
                 new MsScanMatchResult { TotalScore = 0.5f },
@@ -322,7 +323,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MsScanMatchResult { TotalScore = 0.4f },
             };
 
-            var result = annotator.SelectTopHit(results);
+            var result = annotator.SelectTopHit(results, parameter);
             Assert.AreEqual(results[2], result);
         }
 
@@ -338,7 +339,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true },
             };
 
-            var actuals = annotator.FilterByThreshold(results);
+            var actuals = annotator.FilterByThreshold(results, parameter);
             CollectionAssert.AreEquivalent(new[] { results[2], results[3], }, actuals);
         }
 
@@ -354,7 +355,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true },
             };
 
-            var actuals = annotator.SelectReferenceMatchResults(results);
+            var actuals = annotator.SelectReferenceMatchResults(results, parameter);
             CollectionAssert.AreEquivalent(new[] { results[3], }, actuals);
         }
 
@@ -370,7 +371,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true },
             };
 
-            var actuals = results.Select(result => annotator.IsReferenceMatched(result)).ToArray();
+            var actuals = results.Select(result => annotator.IsReferenceMatched(result, parameter)).ToArray();
             CollectionAssert.AreEqual(new[] { false, false, false, true, }, actuals);
         }
 
@@ -386,7 +387,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true },
             };
 
-            var actuals = results.Select(result => annotator.IsAnnotationSuggested(result)).ToArray();
+            var actuals = results.Select(result => annotator.IsAnnotationSuggested(result, parameter)).ToArray();
             CollectionAssert.AreEqual(new[] { false, false, true, false, }, actuals);
         }
 
