@@ -14,7 +14,7 @@ namespace CompMs.Common.Lipidomics
         int ChainCount { get; }
 
         IEnumerable<ILipid> Generate(ILipidGenerator generator);
-        IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct); 
+        IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct, IMoleculeProperty molecule = null); 
     }
 
     public class Lipid : ILipid
@@ -38,8 +38,8 @@ namespace CompMs.Common.Lipidomics
             return generator.Generate(this);
         }
 
-        public IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct) {
-            return generator.Generate(this, adduct);
+        public IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct, IMoleculeProperty molecule = null) {
+            return generator.Generate(this, adduct, molecule);
         }
 
         // temporary ToString method.
