@@ -127,7 +127,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
             foreach (var annotators in storage.MetabolomicsDataBases) {
                 containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
             }
-            return new StandardAnnotationProcess<IAnnotationQuery>(new AnnotationQueryFactory(parameter), containers);
+            return new StandardAnnotationProcess<IAnnotationQuery>(
+                containers.Select(container => (
+                    new AnnotationQueryFactory(container.Annotator, parameter) as IAnnotationQueryFactory<IAnnotationQuery>,
+                    container as IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
+                )).ToList());
         }
 
         private DataBaseMapper CreateDataBaseMapper(DataBaseStorage storage) {

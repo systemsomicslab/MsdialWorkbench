@@ -4,14 +4,14 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class AnnotationQuery : IAnnotationQuery, IAnnotationQueryZZZ<MsScanMatchResult>
-    {
+    public class PepAnnotationQuery : IPepAnnotationQuery, IAnnotationQueryZZZ<MsScanMatchResult> {
         public IMSIonProperty Property { get; }
         public IMSScanProperty Scan { get; }
         public IMSScanProperty NormalizedScan {
@@ -26,33 +26,37 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public IReadOnlyList<IsotopicPeak> Isotopes { get; }
         public IonFeatureCharacter IonFeature { get; }
-        public MsRefSearchParameterBase Parameter { get; }
+        public MsRefSearchParameterBase Parameter => MsRefSearchParameter;
+        public MsRefSearchParameterBase MsRefSearchParameter { get; }
+        public ProteomicsParameter ProteomicsParameter { get; }
 
-        private readonly IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator;
+        private readonly IMatchResultFinder<PepAnnotationQuery, MsScanMatchResult> annotator;
 
-        public AnnotationQuery(
+        public PepAnnotationQuery(
             IMSIonProperty property,
             IMSScanProperty scan,
             IReadOnlyList<IsotopicPeak> isotopes,
             IonFeatureCharacter ionFeature,
-            MsRefSearchParameterBase parameter,
-            IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator) {
+            MsRefSearchParameterBase msrefSearchParam,
+            ProteomicsParameter proteomicsParam,
+            IMatchResultFinder<PepAnnotationQuery, MsScanMatchResult> annotator) {
             if (property is null) {
                 throw new ArgumentNullException(nameof(property));
             }
-
             if (scan is null) {
                 throw new ArgumentNullException(nameof(scan));
             }
-            if (parameter is null) {
-                throw new ArgumentNullException(nameof(parameter));
+            if (msrefSearchParam is null) {
+                throw new ArgumentNullException(nameof(msrefSearchParam));
             }
+
             Property = property;
             Scan = scan;
             Isotopes = isotopes;
-            Parameter = parameter;
-            this.annotator = annotator ?? throw new ArgumentNullException(nameof(annotator));
             IonFeature = ionFeature;
+            MsRefSearchParameter = msrefSearchParam;
+            ProteomicsParameter = proteomicsParam;
+            this.annotator = annotator ?? throw new ArgumentNullException(nameof(annotator));
         }
 
         public IEnumerable<MsScanMatchResult> FindCandidates() {

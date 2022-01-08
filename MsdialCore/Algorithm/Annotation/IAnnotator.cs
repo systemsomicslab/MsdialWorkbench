@@ -2,9 +2,14 @@
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public interface IAnnotator<in TQuery, out TReference, TResult> : IMatchResultRefer<TReference, TResult>, IMatchResultEvaluator<TResult>
+    public interface IMatchResultFinder<in TQuery, TResult>
     {
         List<TResult> FindCandidates(TQuery query);
+    }
+
+    public interface IAnnotator<in TQuery, out TReference, TResult> : IMatchResultFinder<TQuery, TResult>, IMatchResultRefer<TReference, TResult>, IMatchResultEvaluator<TResult>
+    {
+
     }
 
     public interface ISerializableAnnotator<in TQuery, TReference, TResult>

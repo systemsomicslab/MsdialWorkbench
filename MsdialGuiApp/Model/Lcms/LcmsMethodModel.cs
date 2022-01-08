@@ -4,7 +4,6 @@ using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.View;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Setting;
@@ -38,7 +37,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
@@ -157,14 +155,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             return true;
         }
 
-        private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
-            var containers = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
-            foreach (var annotators in storage.MetabolomicsDataBases) {
-                containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
-            }
-            return new StandardAnnotationProcess<IAnnotationQuery>(new AnnotationQueryFactory(parameter), containers);
-        }
-
         private IAnnotationProcess BuildProteoMetabolomicsAnnotationProcess(DataBaseStorage storage, ParameterBase parameter) {
             var containers = new List<IAnnotatorContainer<IPepAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
             foreach (var annotators in storage.MetabolomicsDataBases) {
@@ -175,9 +165,14 @@ namespace CompMs.App.Msdial.Model.Lcms
                 pepContainers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
             }
             return new AnnotationProcessOfProteoMetabolomics<IPepAnnotationQuery>(
-                new PepAnnotationQueryFactory(parameter.PeakPickBaseParam, parameter.ProteomicsParam, parameter.MspSearchParam),
-                containers, 
-                pepContainers);
+                containers.Select(container => (
+                    (IAnnotationQueryFactory<IPepAnnotationQuery>)new PepAnnotationQueryFactory(container.Annotator, parameter.PeakPickBaseParam, parameter.ProteomicsParam),
+                    container
+                )).ToList(),
+                pepContainers.Select(container => (
+                    (IAnnotationQueryFactory<IPepAnnotationQuery>)new PepAnnotationQueryFactory(container.Annotator, parameter.PeakPickBaseParam, parameter.ProteomicsParam),
+                    container
+                )).ToList());
         }
 
         private DataBaseMapper CreateDataBaseMapper(DataBaseStorage storage) {

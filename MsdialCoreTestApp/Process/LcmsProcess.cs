@@ -1,30 +1,23 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
-using CompMs.Common.Parser;
-using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcMsApi.DataObj;
-using CompMs.MsdialLcMsApi.Parser;
 using CompMs.MsdialLcMsApi.Process;
-using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace CompMs.App.MsdialConsole.Process {
+namespace CompMs.App.MsdialConsole.Process
+{
     public class LcmsProcess
     {
         public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz)
@@ -50,8 +43,10 @@ namespace CompMs.App.MsdialConsole.Process {
             foreach ((var file, var idx) in files.WithIndex()) {
                 var provider = new StandardDataProvider(file, false, 5);
                 var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery>(
-                    new AnnotationQueryFactory(container.Parameter.PeakPickBaseParam),
-                    container.DataBaseMapper.MoleculeAnnotators);
+                    container.DataBaseMapper.MoleculeAnnotators.Select(annotator => (
+                        new AnnotationQueryFactory(annotator.Annotator, container.Parameter.PeakPickBaseParam) as IAnnotationQueryFactory<IAnnotationQuery>,
+                        annotator as IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
+                    )).ToList());
                 tasks[idx] = Task.Run(() => FileProcess.Run(file, provider, container, annotationProcess));
             }
             Task.WaitAll(tasks);

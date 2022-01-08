@@ -166,7 +166,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             public MsRefSearchParameterBase Parameter => null;
         }
 
-        class MockAnnotator : IAnnotator<MockQuery, MoleculeMsReference, MsScanMatchResult>
+        class MockAnnotator : IAnnotator<MockQuery, MoleculeMsReference, MsScanMatchResult>, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IMatchResultEvaluator<MsScanMatchResult>
         {
             public MockAnnotator(string key) {
                 Key = key;

@@ -39,7 +39,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
-            var result = annotator.Annotate(BuildQuery(target, parameter));
+            var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
 
             Assert.AreEqual(db[1].InChIKey, result.InChIKey);
         }
@@ -69,7 +69,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
-            var result = annotator.Annotate(BuildQuery(target, parameter));
+            var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
 
             Assert.AreEqual(db[1].InChIKey, result.InChIKey);
         }
@@ -99,7 +99,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
-            var result = annotator.Annotate(BuildQuery(target, parameter));
+            var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
 
             Assert.AreEqual(db[4].InChIKey, result.InChIKey);
         }
@@ -129,7 +129,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
-            var results = annotator.FindCandidates(BuildQuery(target, parameter));
+            var results = annotator.FindCandidates(BuildQuery(target, parameter, annotator));
             var expected = new[]
             {
                 db[0].InChIKey, db[1].InChIKey, db[2].InChIKey,
@@ -161,7 +161,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
-            var results = annotator.FindCandidates(BuildQuery(target, parameter));
+            var results = annotator.FindCandidates(BuildQuery(target, parameter, annotator));
             var expected = new[]
             {
                 db[0].InChIKey, db[1].InChIKey, db[2].InChIKey, db[4].InChIKey,
@@ -341,7 +341,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
-            var result = annotator.Annotate(BuildQuery(target, parameter));
+            var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
 
             var reference = annotator.Refer(result);
 
@@ -371,7 +371,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
-            var results = annotator.Search(BuildQuery(target, parameter));
+            var results = annotator.Search(BuildQuery(target, parameter, annotator));
 
             CollectionAssert.AreEquivalent(new[] { db[0], db[1], db[2], }, results);
         }
@@ -399,7 +399,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
-            var results = annotator.Search(BuildQuery(target, parameter));
+            var results = annotator.Search(BuildQuery(target, parameter, annotator));
 
             CollectionAssert.AreEquivalent(new[] { db[0], db[1], db[2], db[4], }, results);
         }
@@ -442,7 +442,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 new SpectrumPeak { Mass = 810.604, Intensity = 25, },
             };
 
-            var result = annotator.CalculateScore(BuildQuery(target, parameter), reference);
+            var result = annotator.CalculateScore(BuildQuery(target, parameter, annotator), reference);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"CcsSimilarity: {result.CcsSimilarity}");
@@ -531,7 +531,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 }
             };
 
-            var result = annotator.CalculateScore(BuildQuery(target, parameter), reference);
+            var result = annotator.CalculateScore(BuildQuery(target, parameter, annotator), reference);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"CcsSimilarity: {result.CcsSimilarity}");
@@ -888,8 +888,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             };
         }
 
-        private AnnotationQuery BuildQuery(ChromatogramPeakFeature target, MsRefSearchParameterBase parameter) {
-            return new AnnotationQuery(target, target, null, null, parameter);
+        private AnnotationQuery BuildQuery(ChromatogramPeakFeature target, MsRefSearchParameterBase parameter, LcimmsMspAnnotator annotator) {
+            return new AnnotationQuery(target, target, null, null, parameter, annotator);
         }
     }
 }
