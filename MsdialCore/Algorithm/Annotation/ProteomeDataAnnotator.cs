@@ -74,7 +74,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
 
             var proteinMsResults = MappingToProteinDatabase(features, databases, mapper, param.ProteomicsParam);
             var proteinGroups = ConvertToProteinGroups(proteinMsResults);
-            var container = new ProteinResultContainer(param, proteinGroups);
+            var container = new ProteinResultContainer(param, proteinGroups, GetDB2ModificationContainer(databases));
 
             DumpContainer(file, container);
 
@@ -118,13 +118,21 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases, 
             DataBaseMapper mapper, 
             ParameterBase param) {
-
+            
             var proteinMsResults = MappingToProteinDatabase(alignmentContainer.AlignmentSpotProperties.ToList(), databases, mapper, param.ProteomicsParam);
             var proteinGroups = ConvertToProteinGroups(proteinMsResults);
-            var container = new ProteinResultContainer(param, proteinGroups);
+            var container = new ProteinResultContainer(param, proteinGroups, GetDB2ModificationContainer(databases));
 
             DumpContainer(file, container);
             MsdialProteomicsSerializer.SaveProteinResultContainer(file, container);
+        }
+
+        public Dictionary<string, ModificationContainer> GetDB2ModificationContainer(List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases) {
+            var dict = new Dictionary<string, ModificationContainer>();
+            foreach (var database in databases) {
+                dict[database.DataBaseID] = database.DataBase.ModificationContainer;
+            }
+            return dict;
         }
 
         private List<ProteinGroup> ConvertToProteinGroups(List<ProteinMsResult> proteinMsResults) {
@@ -237,9 +245,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                     var identifier = matchedPeptideMs.Peptide.DatabaseOrigin;
                     if (fastaIdentifier == identifier) {
                         result.IsAnnotated = true;
-                        result.MatchedPeptideResults.Add(new PeptideMsResult(matchedPeptideMs.Peptide, feature));
+                        result.MatchedPeptideResults.Add(new PeptideMsResult(matchedPeptideMs.Peptide, feature, result.DatabaseID));
                     }
                 }
+                if (result.IsAnnotated)
+                    result.PropertyUpdates();
             }
             return results.Where(n => n.IsAnnotated).ToList();
         }
@@ -263,9 +273,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                     var identifier = matchedPeptideMs.Peptide.DatabaseOrigin;
                     if (fastaIdentifier == identifier) {
                         result.IsAnnotated = true;
-                        result.MatchedPeptideResults.Add(new PeptideMsResult(matchedPeptideMs.Peptide, feature));
+                        result.MatchedPeptideResults.Add(new PeptideMsResult(matchedPeptideMs.Peptide, feature, result.DatabaseID));
                     }
                 }
+                if (result.IsAnnotated)
+                    result.PropertyUpdates();
             }
             return results.Where(n => n.IsAnnotated).ToList();
         }
@@ -301,17 +313,27 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             var minimumAnnotatedCount = 200;
             var counter = 0;
             var featureObjs = DataAccess.GetChromPeakFeatureObjectsIntegratingRtAndDriftData(features);
+            var total = 0;
             foreach (var score in scoresOnFile) {
+                total++;
                 if (score.IsDecoy) counter++;
                 var feature = featureObjs[score.PeakID];
-                feature.MatchResults.Representative.PEPScore = score.PosteriorErrorProb;
+                if (score.IsDecoy) {
+                    feature.MatchResults.DecoyRepresentative.PEPScore = score.PosteriorErrorProb;
+                    Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tScore\t{5}", "TRUE", total, feature.MasterPeakID, feature.Mass, feature.ChromXs.Value, score.PosteriorErrorProb);
+                }
+                else {
+                    feature.MatchResults.Representative.PEPScore = score.PosteriorErrorProb;
+                    Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tScore\t{5}", "FALSE", total, feature.MasterPeakID, feature.Mass, feature.ChromXs.Value, score.PosteriorErrorProb);
+                }
+
                 if (annotatedNum < minimumAnnotatedCount) {
                     if (score.IsDecoy == false && score.PosteriorErrorProb > param.FalseDiscoveryRateForPeptide * 0.01) {
                         feature.MatchResults.Representative.IsSpectrumMatch = false;
                     }
                 }
                 else {
-                    if (counter > 50 && counter > decoyCutOffNum && score.IsDecoy == false) {
+                    if (counter > decoyCutOffNum && score.IsDecoy == false) {
                         feature.MatchResults.Representative.IsSpectrumMatch = false;
                     }
                 }

@@ -78,20 +78,6 @@ namespace CompMs.MsdialCore.DataObj {
             else {
                 return MSDecResultIdUsed;
             }
-            //if (IsMultiLayeredData()) {
-            //    //public int MSDecResultIdUsedForAnnotation() {
-            //    //    if (MSDecResultIdUsed == -1) {
-            //    //        return MasterPeakID;
-            //    //    }
-            //    //    else {
-            //    //        return MSDecResultIdUsed;
-            //    //    }
-            //    //}
-            //    return MasterPeakID;
-            //}
-            //else {
-            //    return PeakID;
-            //}
         }
 
         // link to raw data

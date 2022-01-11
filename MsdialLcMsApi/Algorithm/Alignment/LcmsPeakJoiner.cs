@@ -131,7 +131,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
                 dummy.ChromXs.RT.Value = target.ChromXs.RT.Value + _rttol;
                 dummy.PrecursorMz = target.PrecursorMz + _mztol;
                 for (var i = lo; i < n; i++) {
-                    if (Comparer.Compare(target, dummy) > 0)
+                    if (Comparer.Compare(masters[i], dummy) > 0)
                         break;
                     if (!IsSimilarTo(masters[i], target))
                         continue;

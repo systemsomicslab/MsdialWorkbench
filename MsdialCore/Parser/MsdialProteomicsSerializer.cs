@@ -25,13 +25,18 @@ namespace CompMs.MsdialCore.Parser {
                 throw new ArgumentNullException(nameof(obj.ProteinGroups));
             }
 
-            var modContainer = ModificationUtility.GetModificationContainer(obj.Parameter.ProteomicsParam.FixedModifications, obj.Parameter.ProteomicsParam.VariableModifications);
+            if (obj.DB2ModificationContainer is null) {
+                throw new ArgumentNullException(nameof(obj.DB2ModificationContainer));
+            }
+
+            var db2modContainer = obj.DB2ModificationContainer;
             foreach (var group in obj.ProteinGroups) {
                 foreach (var protein in group.ProteinMsResults) {
                     foreach (var pepMsObj in protein.MatchedPeptideResults) {
                         var peptide = pepMsObj.Peptide;
+                        var databaseID = pepMsObj.ShotgunProteomicsDatabaseID;
                         peptide.GenerateSequenceObj(protein.FastaProperty.Sequence, peptide.Position.Start, peptide.Position.End,
-                            peptide.ResidueCodeIndexToModificationIndex, modContainer.ID2Code, modContainer.Code2AminoAcidObj);
+                            peptide.ResidueCodeIndexToModificationIndex, db2modContainer[databaseID].ID2Code, db2modContainer[databaseID].Code2AminoAcidObj);
                     }
                 }
             }

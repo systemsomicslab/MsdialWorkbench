@@ -110,6 +110,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
         private void RunByMultiThread(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, IDataProvider provider, int numThreads, CancellationToken token, Action<double> reportAction) {
             var spectrums = provider.LoadMs1Spectrums();
             var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
+            var syncObj = new object();
+            var counter = 0;
+            var totalCount = chromPeakFeatures.Count(n => n.PeakCharacter.IsotopeWeightNumber == 0);
             Enumerable.Range(0, chromPeakFeatures.Count)
                 .AsParallel()
                 .WithCancellation(token)
@@ -120,8 +123,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                     //var msdecResult = msdecResults[i];
                     if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                         RunAnnotationCore(chromPeakFeature, msdecResult, spectrums);
+                        lock (syncObj) {
+                            counter++;
+                            reportAction?.Invoke((double)counter / (double)totalCount);
+                        }
                     }
-                    reportAction?.Invoke((double)(i + 1) / chromPeakFeatures.Count);
                 });
         }
 

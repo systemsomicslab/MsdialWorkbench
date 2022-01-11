@@ -344,15 +344,15 @@ namespace CompMs.Graphics.Chart
             remove => RemoveHandler(FocusChangedEvent, value);
         }
 
-        protected override void OnMouseMove(MouseEventArgs e) {
-            base.OnMouseMove(e);
-            var pt = e.GetPosition(this);
+        //protected override void OnMouseMove(MouseEventArgs e) {
+        //    base.OnMouseMove(e);
+        //    var pt = e.GetPosition(this);
 
-            VisualTreeHelper.HitTest(this,
-                new HitTestFilterCallback(VisualHitTestFilter),
-                new HitTestResultCallback(VisualFocusHitTest),
-                new PointHitTestParameters(pt));
-        }
+        //    VisualTreeHelper.HitTest(this,
+        //        new HitTestFilterCallback(VisualHitTestFilter),
+        //        new HitTestResultCallback(VisualFocusHitTest),
+        //        new PointHitTestParameters(pt));
+        //}
 
         HitTestResultBehavior VisualFocusHitTest(HitTestResult result) {
             var dv = (AnnotatedDrawingVisual)result.VisualHit;

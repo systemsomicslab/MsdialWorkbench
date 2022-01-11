@@ -58,11 +58,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             SourceType = sourceType;
             Key = key;
             Priority = priority;
+
+            PeptideMsRef = db.PeptideMsRef.ToList();
+            DecoyPeptideMsRef = db.DecoyPeptideMsRef.ToList();
         }
 
         protected readonly ShotgunProteomicsDB ShotgunProteomicsDB;
-        public List<PeptideMsReference> PeptideMsRef { get => ShotgunProteomicsDB.PeptideMsRef; }
-        public List<PeptideMsReference> DecoyPeptideMsRef { get => ShotgunProteomicsDB.DecoyPeptideMsRef; }
+        public List<PeptideMsReference> PeptideMsRef { get; }
+        public List<PeptideMsReference> DecoyPeptideMsRef { get; }
         //public List<PeptideMsReference> PeptideMsRef { get => 
         //        SourceType == SourceType.FastaDB ? ShotgunProteomicsDB.PeptideMsRef : ShotgunProteomicsDB.DecoyPeptideMsRef; }
 

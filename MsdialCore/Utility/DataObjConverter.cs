@@ -81,6 +81,7 @@ namespace CompMs.MsdialCore.Utility
             alignmentPeak.SMILES = peak.SMILES;
             alignmentPeak.InChIKey = peak.InChIKey;
             alignmentPeak.CollisionCrossSection = peak.CollisionCrossSection;
+            alignmentPeak.MSDecResultIdUsed = peak.MSDecResultIdUsed;
 
             alignmentPeak.MatchResults.ClearResults();
             alignmentPeak.MatchResults.ClearMspResults();
@@ -145,6 +146,7 @@ namespace CompMs.MsdialCore.Utility
             spot.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>(representative.MSRawID2MspBasedMatchResult);
             spot.TextDbBasedMatchResult = representative.TextDbBasedMatchResult;
             spot.MatchResults.MergeContainers(representative.MatchResults);
+            spot.MSDecResultIdUsed = representative.MSDecResultIdUsed;
 
             spot.HeightAverage = (float)alignedPeaks.Average(peak => peak.PeakHeightTop);
             spot.HeightMax = (float)alignedPeaks.Max(peak => peak.PeakHeightTop);

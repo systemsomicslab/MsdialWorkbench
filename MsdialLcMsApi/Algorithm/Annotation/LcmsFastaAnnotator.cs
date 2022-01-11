@@ -23,12 +23,15 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
 
         private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
         private readonly IMatchResultRefer<PeptideMsReference, MsScanMatchResult> ReferObject;
+        private readonly List<PeptideMsReference> OriginalOrderedDecoyPeptideMsRef;
 
         public LcmsFastaAnnotator(ShotgunProteomicsDB reference, MsRefSearchParameterBase msrefSearchParameter, ProteomicsParameter proteomicsParameter,
             string annotatorID, SourceType type, int priority) : base(reference, msrefSearchParameter, proteomicsParameter, annotatorID, priority, type) {
             PeptideMsRef.Sort(comparer);
             DecoyPeptideMsRef.Sort(comparer);
             ReferObject = reference;
+
+            OriginalOrderedDecoyPeptideMsRef = reference.DecoyPeptideMsRef;
         }
 
         public MsScanMatchResult Annotate(IPepAnnotationQuery query) {
@@ -43,18 +46,37 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             var parameter = query.MsRefSearchParameter ?? MsRefSearchParameter;
             var proteomicsParam = query.ProteomicsParameter ?? ProteomicsParameter;
             var pepResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, PeptideMsRef, parameter, proteomicsParam);
-            var decoyResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, DecoyPeptideMsRef, parameter, proteomicsParam);
+            if (pepResults.IsEmptyOrNull()) return new List<MsScanMatchResult>();
 
-            //if (Math.Abs(query.Property.PrecursorMz - 447.54460) < 0.01 && Math.Abs(query.Property.ChromXs.RT.Value - 21.866) < 0.1) {
-            //    Console.WriteLine();
-            //}
-            if (pepResults.IsEmptyOrNull() || decoyResults.IsEmptyOrNull()) return new List<MsScanMatchResult>();
+            var repForwardResult = pepResults[0];
+            var repReverseRef = OriginalOrderedDecoyPeptideMsRef[repForwardResult.LibraryID];
+
+            var decoyResult = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, repReverseRef, parameter, proteomicsParam);
+            if (decoyResult is null) return new List<MsScanMatchResult>();
             else {
-                pepResults[0].IsDecoy = false;
-                decoyResults[0].IsDecoy = true;
-                return new List<MsScanMatchResult>() { pepResults[0], decoyResults[0] };
+                decoyResult.LibraryIDWhenOrdered = repForwardResult.LibraryIDWhenOrdered;
+
+                repForwardResult.IsDecoy = false;
+                decoyResult.IsDecoy = true;
+                return new List<MsScanMatchResult>() { repForwardResult, decoyResult };
             }
         }
+
+        private MsScanMatchResult FindCandidatesCore(
+       IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, IonFeatureCharacter character,
+       PeptideMsReference pepMsRef,
+       MsRefSearchParameterBase msrefSearchParam, ProteomicsParameter proteomicsParam) {
+            var candidate = pepMsRef;
+            if (msrefSearchParam.IsUseTimeForAnnotationFiltering
+                && Math.Abs(property.ChromXs.RT.Value - candidate.ChromXs.RT.Value) > msrefSearchParam.RtTolerance) {
+                return null;
+            }
+            var result = CalculateScoreCore(property, scan, character, candidate, msrefSearchParam, proteomicsParam, this.SourceType, this.Key);
+            result.LibraryIDWhenOrdered = -1;
+            ValidateCore(result, property, scan, character, candidate, msrefSearchParam, proteomicsParam);
+            return result;
+        }
+
 
         private List<MsScanMatchResult> FindCandidatesCore(
        IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, IonFeatureCharacter character, 
@@ -92,7 +114,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             PeptideMsReference reference, 
             MsRefSearchParameterBase msSearchParam, ProteomicsParameter proteomicsParam, SourceType type, string annotatorID) {
 
-            var result = MsScanMatching.CompareMS2ScanProperties(scan, reference, msSearchParam, Common.Enum.TargetOmics.Proteomics, -1,
+            var result = MsScanMatching.CompareMS2ScanProperties(scan, character.Charge, reference, msSearchParam, Common.Enum.TargetOmics.Proteomics, -1,
                 null, null, proteomicsParam.AndromedaDelta, proteomicsParam.AndromedaMaxPeaks);
             var singlyChargedMz = MolecularFormulaUtility.ConvertSinglyChargedPrecursorMzAsProtonAdduct(property.PrecursorMz, character.Charge);
             var ms1Tol = CalculateMassTolerance(msSearchParam.Ms1Tolerance, property.PrecursorMz);

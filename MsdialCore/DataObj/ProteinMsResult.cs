@@ -28,145 +28,159 @@ namespace CompMs.MsdialCore.DataObj {
         public bool IsAnnotated { get; set; }
         [Key(4)]
         public List<PeptideMsResult> MatchedPeptideResults { get; set; } = new List<PeptideMsResult>();
-        [IgnoreMember]
-        public float PeptideCoverage { 
-            get {
-                var aaSeq = GetMatchedAminoAcidSequence();
-                return (float)aaSeq.Count(n => n.IsMatched) / (float)aaSeq.Count();
-            } 
+
+
+        internal void PropertyUpdates() {
+            if (IsAnnotated) {
+                MatchedAminoAcidSequence = GetMatchedAminoAcidSequence();
+                PeptideCoverage = GetPeptideCoverage();
+                SequenceWithMatchedInfo = GetSequenceWithMatchedInfo();
+                Score = GetScore();
+                MinimumValueOfSharedPeptidesInSearchedProteins = GetMinimumValueOfSharedPeptidesInSearchedProteins();
+                UniquePeptides = GetUniquePeptides();
+                PeakHeights = GetPeakHeights();
+                PeakAreaAboveZeros = GetPeakAreaAboveZeros();
+                PeakAreaAboveBaseLines = GetPeakAreaAboveBaseLines();
+                NormalizedPeakHeights = GetNormalizedPeakHeights();
+                NormalizedPeakAreaAboveZeros = GetNormalizedPeakAreaAboveZeros();
+                NormalizedPeakAreaAboveBaseLines = GetNormalizedPeakAreaAboveBaseLines();
+            }
         }
 
         [IgnoreMember]
-        public string SequenceWithMatchedInfo {
-            get {
-                var aaSeq = GetMatchedAminoAcidSequence();
-                var sequence = string.Empty;
-                for(int i = 0; i < aaSeq.Count; i++) {
-                    if (aaSeq[i].IsMatched) {
-                        sequence += aaSeq[i].AminoAcidCode.ToString() + "'";
-                    }
-                    else {
-                        sequence += aaSeq[i].AminoAcidCode.ToString();
-                    }
+        public float PeptideCoverage { get; set; }
+        public float GetPeptideCoverage() { 
+            var aaSeq = MatchedAminoAcidSequence;
+            return (float)aaSeq.Count(n => n.IsMatched) / (float)aaSeq.Count();
+        }
+
+        [IgnoreMember]
+        public string SequenceWithMatchedInfo { get; set; }
+        public string GetSequenceWithMatchedInfo() {
+            var aaSeq = MatchedAminoAcidSequence;
+            var sequence = string.Empty;
+            for(int i = 0; i < aaSeq.Count; i++) {
+                if (aaSeq[i].IsMatched) {
+                    sequence += aaSeq[i].AminoAcidCode.ToString() + "'";
                 }
-                return sequence;
+                else {
+                    sequence += aaSeq[i].AminoAcidCode.ToString();
+                }
             }
+            return sequence;
         }
 
         [IgnoreMember]
-        public float Score {
-            get {
-                return MatchedPeptideResults.Select(n => n.PEPScore).Aggregate((x, y) => x * y);
-            }
+        public float Score { get; set; }
+        public float GetScore() {
+            return MatchedPeptideResults.Select(n => n.PEPScore).Aggregate((x, y) => x * y);
         }
         [IgnoreMember]
-        public int MinimumValueOfSharedPeptidesInSearchedProteins { get => MatchedPeptideResults.Min(n => n.Peptide.SamePeptideNumberInSearchedProteins); }
+        public int MinimumValueOfSharedPeptidesInSearchedProteins { get; set; }
+        public int GetMinimumValueOfSharedPeptidesInSearchedProteins() { return MatchedPeptideResults.Min(n => n.Peptide.SamePeptideNumberInSearchedProteins); }
         [IgnoreMember]
-        public List<PeptideMsResult> UniquePeptides {
-            get {
-                var minPep = MinimumValueOfSharedPeptidesInSearchedProteins;
-                return MatchedPeptideResults.Where(n => n.Peptide.SamePeptideNumberInSearchedProteins == minPep).ToList();
-            } 
+        public List<PeptideMsResult> UniquePeptides { get; set; }
+        public List<PeptideMsResult> GetUniquePeptides() {
+            var minPep = MinimumValueOfSharedPeptidesInSearchedProteins;
+            return MatchedPeptideResults.Where(n => n.Peptide.SamePeptideNumberInSearchedProteins == minPep).ToList();
         }
+       
         [IgnoreMember]
-        public List<double> PeakHeights {
-            get {
-                var uniquePeps = UniquePeptides;
-                var values = new List<double>();
-                for (int i = 0; i < SampleCount; i++) { values.Add(0); }
+        public List<double> PeakHeights { get; set; }
+        public List<double> GetPeakHeights() {
+            var uniquePeps = UniquePeptides;
+            var values = new List<double>();
+            for (int i = 0; i < SampleCount; i++) { values.Add(0); }
                     
-                foreach (var pep in uniquePeps) {
-                    var heights = pep.Heights();
-                    for (int i = 0; i < heights.Count; i++) {
-                        values[i] += heights[i];
-                    }
+            foreach (var pep in uniquePeps) {
+                var heights = pep.Heights;
+                for (int i = 0; i < heights.Count; i++) {
+                    values[i] += heights[i];
                 }
-                return values;
-            } 
-        }
-        [IgnoreMember]
-        public List<double> PeakAreaAboveZeros {
-            get {
-                var uniquePeps = UniquePeptides;
-                var values = new List<double>();
-                for (int i = 0; i < SampleCount; i++) { values.Add(0); }
-
-                foreach (var pep in uniquePeps) {
-                    var areas = pep.AreasAboveZero();
-                    for (int i = 0; i < areas.Count; i++) {
-                        values[i] += areas[i];
-                    }
-                }
-                return values;
             }
+            return values;
         }
-        [IgnoreMember]
-        public List<double> PeakAreaAboveBaseLines {
-            get {
-                var uniquePeps = UniquePeptides;
-                var values = new List<double>();
-                for (int i = 0; i < SampleCount; i++) { values.Add(0); }
 
-                foreach (var pep in uniquePeps) {
-                    var areas = pep.AreasAboveBaseline();
-                    for (int i = 0; i < areas.Count; i++) {
-                        values[i] += areas[i];
-                    }
-                }
-                return values;
-            }
-        }
 
         [IgnoreMember]
-        public List<double> NormalizedPeakHeights {
-            get {
-                var uniquePeps = UniquePeptides;
-                var values = new List<double>();
-                for (int i = 0; i < SampleCount; i++) { values.Add(0); }
+        public List<double> PeakAreaAboveZeros { get; set; }
+        public List<double> GetPeakAreaAboveZeros() {
+            var uniquePeps = UniquePeptides;
+            var values = new List<double>();
+            for (int i = 0; i < SampleCount; i++) { values.Add(0); }
 
-                foreach (var pep in uniquePeps) {
-                    var heights = pep.NormalizedPeakHeights();
-                    for (int i = 0; i < heights.Count; i++) {
-                        values[i] += heights[i];
-                    }
+            foreach (var pep in uniquePeps) {
+                var areas = pep.AreasAboveZero;
+                for (int i = 0; i < areas.Count; i++) {
+                    values[i] += areas[i];
                 }
-                return values;
             }
+            return values;
         }
         [IgnoreMember]
-        public List<double> NormalizedPeakAreaAboveZeros {
-            get {
-                var uniquePeps = UniquePeptides;
-                var values = new List<double>();
-                for (int i = 0; i < SampleCount; i++) { values.Add(0); }
+        public List<double> PeakAreaAboveBaseLines { get; set; }
+        public List<double> GetPeakAreaAboveBaseLines() {
+            var uniquePeps = UniquePeptides;
+            var values = new List<double>();
+            for (int i = 0; i < SampleCount; i++) { values.Add(0); }
 
-                foreach (var pep in uniquePeps) {
-                    var areas = pep.NormalizedAreasAboveZero();
-                    for (int i = 0; i < areas.Count; i++) {
-                        values[i] += areas[i];
-                    }
+            foreach (var pep in uniquePeps) {
+                var areas = pep.AreasAboveBaseline;
+                for (int i = 0; i < areas.Count; i++) {
+                    values[i] += areas[i];
                 }
-                return values;
             }
+            return values;
+        }
+
+        [IgnoreMember]
+        public List<double> NormalizedPeakHeights { get; set; }
+        public List<double> GetNormalizedPeakHeights() {
+            var uniquePeps = UniquePeptides;
+            var values = new List<double>();
+            for (int i = 0; i < SampleCount; i++) { values.Add(0); }
+
+            foreach (var pep in uniquePeps) {
+                var heights = pep.NormalizedPeakHeights;
+                for (int i = 0; i < heights.Count; i++) {
+                    values[i] += heights[i];
+                }
+            }
+            return values;
         }
         [IgnoreMember]
-        public List<double> NormalizedPeakAreaAboveBaseLines {
-            get {
-                var uniquePeps = UniquePeptides;
-                var values = new List<double>();
-                for (int i = 0; i < SampleCount; i++) { values.Add(0); }
+        public List<double> NormalizedPeakAreaAboveZeros { get; set; }
+        public List<double> GetNormalizedPeakAreaAboveZeros() {
+            var uniquePeps = UniquePeptides;
+            var values = new List<double>();
+            for (int i = 0; i < SampleCount; i++) { values.Add(0); }
 
-                foreach (var pep in uniquePeps) {
-                    var areas = pep.NormalizedAreasAboveBaseline();
-                    for (int i = 0; i < areas.Count; i++) {
-                        values[i] += areas[i];
-                    }
+            foreach (var pep in uniquePeps) {
+                var areas = pep.NormalizedAreasAboveZero;
+                for (int i = 0; i < areas.Count; i++) {
+                    values[i] += areas[i];
                 }
-                return values;
             }
+            return values;
+        }
+        [IgnoreMember]
+        public List<double> NormalizedPeakAreaAboveBaseLines { get; set; }
+        public List<double> GetNormalizedPeakAreaAboveBaseLines() {
+            var uniquePeps = UniquePeptides;
+            var values = new List<double>();
+            for (int i = 0; i < SampleCount; i++) { values.Add(0); }
+
+            foreach (var pep in uniquePeps) {
+                var areas = pep.NormalizedAreasAboveBaseline;
+                for (int i = 0; i < areas.Count; i++) {
+                    values[i] += areas[i];
+                }
+            }
+            return values;
         }
 
-
+        [IgnoreMember]
+        public List<MatchedAminoacidResidue> MatchedAminoAcidSequence { get; set; }
         public List<MatchedAminoacidResidue> GetMatchedAminoAcidSequence() {
             var objs = new List<MatchedAminoacidResidue>();
             var sequence = FastaProperty.Sequence;
@@ -202,19 +216,39 @@ namespace CompMs.MsdialCore.DataObj {
                 }
             }
         }
+
+        
     }
 
     [MessagePackObject]
     public class PeptideMsResult {
         public PeptideMsResult() { }
-        public PeptideMsResult(Peptide peptide, ChromatogramPeakFeature feature) {
+        public PeptideMsResult(Peptide peptide, ChromatogramPeakFeature feature, string id) {
             Peptide = peptide;
             ChromatogramPeakFeature = feature;
+            ShotgunProteomicsDatabaseID = id;
+            
+            PEPScore = GetPEPScore();
+            Heights = GetHeights();
+            AreasAboveZero = GetAreasAboveZero();
+            AreasAboveBaseline = GetAreasAboveBaseline();
+            NormalizedPeakHeights = GetNormalizedPeakHeights();
+            NormalizedAreasAboveZero = GetNormalizedAreasAboveZero();
+            NormalizedAreasAboveBaseline = GetNormalizedAreasAboveBaseline();
         }
 
-        public PeptideMsResult(Peptide peptide, AlignmentSpotProperty feature) {
+        public PeptideMsResult(Peptide peptide, AlignmentSpotProperty feature, string id) {
             Peptide = peptide;
             AlignmentSpotProperty = feature;
+            ShotgunProteomicsDatabaseID = id;
+
+            PEPScore = GetPEPScore();
+            Heights = GetHeights();
+            AreasAboveZero = GetAreasAboveZero();
+            AreasAboveBaseline = GetAreasAboveBaseline();
+            NormalizedPeakHeights = GetNormalizedPeakHeights();
+            NormalizedAreasAboveZero = GetNormalizedAreasAboveZero();
+            NormalizedAreasAboveBaseline = GetNormalizedAreasAboveBaseline();
         }
 
         [Key(0)]
@@ -223,15 +257,22 @@ namespace CompMs.MsdialCore.DataObj {
         public ChromatogramPeakFeature ChromatogramPeakFeature { get; }
         [Key(2)]
         public AlignmentSpotProperty AlignmentSpotProperty { get; }
+        [Key(3)]
+        public string ShotgunProteomicsDatabaseID { get; }
+
         [IgnoreMember]
-        public float PEPScore { get => ChromatogramPeakFeature is null && AlignmentSpotProperty is null 
+        public float PEPScore { get; }
+        public float GetPEPScore() { 
+            return ChromatogramPeakFeature is null && AlignmentSpotProperty is null 
                 ? 0.0F 
                 : ChromatogramPeakFeature is null 
                     ? AlignmentSpotProperty.MatchResults.Representative.PEPScore 
                     : ChromatogramPeakFeature.MatchResults.Representative.PEPScore;
         }
 
-        public List<double> Heights() {
+        [IgnoreMember]
+        public List<double> Heights { get; }
+        public List<double> GetHeights() {
             if (ChromatogramPeakFeature is null && AlignmentSpotProperty is null) return null;
             if (ChromatogramPeakFeature is null) {
                 return AlignmentSpotProperty.AlignedPeakProperties.Select(n => n.PeakHeightTop).ToList();
@@ -241,7 +282,9 @@ namespace CompMs.MsdialCore.DataObj {
             }
         }
 
-        public List<double> AreasAboveZero() {
+        [IgnoreMember]
+        public List<double> AreasAboveZero { get; }
+        public List<double> GetAreasAboveZero() {
             if (ChromatogramPeakFeature is null && AlignmentSpotProperty is null) return null;
             if (ChromatogramPeakFeature is null) {
                 return AlignmentSpotProperty.AlignedPeakProperties.Select(n => n.PeakAreaAboveZero).ToList();
@@ -251,7 +294,9 @@ namespace CompMs.MsdialCore.DataObj {
             }
         }
 
-        public List<double> AreasAboveBaseline() {
+        [IgnoreMember]
+        public List<double> AreasAboveBaseline { get; }
+        public List<double> GetAreasAboveBaseline() {
             if (ChromatogramPeakFeature is null && AlignmentSpotProperty is null) return null;
             if (ChromatogramPeakFeature is null) {
                 return AlignmentSpotProperty.AlignedPeakProperties.Select(n => n.PeakAreaAboveBaseline).ToList();
@@ -261,7 +306,9 @@ namespace CompMs.MsdialCore.DataObj {
             }
         }
 
-        public List<double> NormalizedPeakHeights() {
+        [IgnoreMember]
+        public List<double> NormalizedPeakHeights { get; }
+        public List<double> GetNormalizedPeakHeights() {
             if (ChromatogramPeakFeature is null && AlignmentSpotProperty is null) return null;
             if (ChromatogramPeakFeature is null) {
                 return AlignmentSpotProperty.AlignedPeakProperties.Select(n => n.NormalizedPeakHeight).ToList();
@@ -271,7 +318,9 @@ namespace CompMs.MsdialCore.DataObj {
             }
         }
 
-        public List<double> NormalizedAreasAboveZero() {
+        [IgnoreMember]
+        public List<double> NormalizedAreasAboveZero { get; }
+        public List<double> GetNormalizedAreasAboveZero() {
             if (ChromatogramPeakFeature is null && AlignmentSpotProperty is null) return null;
             if (ChromatogramPeakFeature is null) {
                 return AlignmentSpotProperty.AlignedPeakProperties.Select(n => n.NormalizedPeakAreaAboveZero).ToList();
@@ -281,7 +330,9 @@ namespace CompMs.MsdialCore.DataObj {
             }
         }
 
-        public List<double> NormalizedAreasAboveBaseline() {
+        [IgnoreMember]
+        public List<double> NormalizedAreasAboveBaseline { get; }
+        public List<double> GetNormalizedAreasAboveBaseline() {
             if (ChromatogramPeakFeature is null && AlignmentSpotProperty is null) return null;
             if (ChromatogramPeakFeature is null) {
                 return AlignmentSpotProperty.AlignedPeakProperties.Select(n => n.NormalizedPeakAreaAboveBaseline).ToList();

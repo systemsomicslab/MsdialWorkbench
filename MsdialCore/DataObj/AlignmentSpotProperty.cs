@@ -307,6 +307,20 @@ namespace CompMs.MsdialCore.DataObj {
             if (AlignmentDriftSpotFeatures.IsEmptyOrNull()) return false;
             return true;
         }
+        [Key(59)]
+        public int MSDecResultIdUsed { get; set; } = -1;
+
+        public int GetMSDecResultID() {
+            if (MSDecResultIdUsed == -1) {
+                if (IsMultiLayeredData())
+                    return MasterAlignmentID;
+                else
+                    return AlignmentID;
+            }
+            else {
+                return MSDecResultIdUsed;
+            }
+        }
     }
 
     [MessagePackObject]

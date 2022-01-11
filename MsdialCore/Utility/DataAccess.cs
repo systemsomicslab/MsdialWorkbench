@@ -323,6 +323,39 @@ namespace CompMs.MsdialCore.Utility {
             return peaklist;
         }
 
+        public static Dictionary<int, ChromXs> GetID2ChromXs(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionmode,
+            ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
+            var dict = new Dictionary<int, ChromXs>();
+            if (spectrumList == null || spectrumList.Count == 0) return null;
+            var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
+            foreach (var (spectrum, index) in spectrumList.WithIndex().Where(n => n.Item1.ScanPolarity == scanPolarity && n.Item1.MsLevel <= 1)) {
+                var chromX = type == ChromXType.Drift ? spectrum.DriftTime : spectrum.ScanStartTime;
+                dict[index] = new ChromXs(chromX, type, unit);
+            }
+            return dict;
+        }
+
+        public static List<ChromatogramPeak> GetMs1Peaklist(IReadOnlyList<RawSpectrum> spectrumList, Dictionary<int, ChromXs> id2ChromXs,
+            double targetMass, double ms1Tolerance, IonMode ionmode,
+            ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, double chromBegin = double.MinValue, double chromEnd = double.MaxValue) {
+            if (spectrumList == null || spectrumList.Count == 0) return null;
+            var peaklist = new List<ChromatogramPeak>();
+            var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
+
+            foreach (var (spectrum, index) in spectrumList.WithIndex().Where(n => n.Item1.ScanPolarity == scanPolarity && n.Item1.MsLevel <= 1)) {
+                var chromX = type == ChromXType.Drift ? spectrum.DriftTime : spectrum.ScanStartTime;
+                if (chromX < chromBegin) continue;
+                if (chromX > chromEnd) break;
+                var massSpectra = spectrum.Spectrum;
+                //var startIndex = GetMs1StartIndex(targetMass, ms1Tolerance, massSpectra);
+                //bin intensities for focused MZ +- ms1Tolerance
+                RetrieveBinnedMzIntensity(massSpectra, targetMass, ms1Tolerance, out double basepeakMz, out double basepeakIntensity, out double summedIntensity);
+                peaklist.Add(new ChromatogramPeak() { ID = index, ChromXs = id2ChromXs[index], Mass = basepeakMz, Intensity = summedIntensity });
+            }
+
+            return peaklist;
+        }
+
         public static void RetrieveBinnedMzIntensity(RawPeakElement[] peaks, double targetMz, double mzTol, out double basepeakMz, out double basepeakIntensity, out double summedIntensity) {
             var startIndex = SearchCollection.LowerBound(peaks, new RawPeakElement() { Mz = targetMz - mzTol }, (a, b) => a.Mz.CompareTo(b.Mz));
             summedIntensity = 0; basepeakIntensity = 0; basepeakMz = 0;
