@@ -24,6 +24,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
         private readonly IMatchResultRefer<PeptideMsReference, MsScanMatchResult> ReferObject;
         private readonly List<PeptideMsReference> OriginalOrderedDecoyPeptideMsRef;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public LcmsFastaAnnotator(ShotgunProteomicsDB reference, MsRefSearchParameterBase msrefSearchParameter, ProteomicsParameter proteomicsParameter,
             string annotatorID, SourceType type, int priority) : base(reference, msrefSearchParameter, proteomicsParameter, annotatorID, priority, type) {
@@ -35,8 +36,6 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             evaluator = MsScanMatchResultEvaluator.CreateEvaluatorWithSpectrum();
         }
 
-        private readonly IMatchResultRefer<PeptideMsReference, MsScanMatchResult> ReferObject;
-        private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public MsScanMatchResult Annotate(IPepAnnotationQuery query) {
             var msrefParam = query.MsRefSearchParameter ?? MsRefSearchParameter;
@@ -52,15 +51,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             var pepResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, PeptideMsRef, parameter, proteomicsParam);
             if (pepResults.IsEmptyOrNull()) return new List<MsScanMatchResult>();
 
-<<<<<<< HEAD
             var repForwardResult = pepResults[0];
             var repReverseRef = OriginalOrderedDecoyPeptideMsRef[repForwardResult.LibraryID];
 
             var decoyResult = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, repReverseRef, parameter, proteomicsParam);
             if (decoyResult is null) return new List<MsScanMatchResult>();
-=======
-            if (pepResults.IsEmptyOrNull() || decoyResults.IsEmptyOrNull()) return new List<MsScanMatchResult>();
->>>>>>> origin/yuki.matsuzawa
             else {
                 decoyResult.LibraryIDWhenOrdered = repForwardResult.LibraryIDWhenOrdered;
 
