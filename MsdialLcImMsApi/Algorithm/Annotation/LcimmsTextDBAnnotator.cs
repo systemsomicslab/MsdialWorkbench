@@ -2,7 +2,6 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
@@ -24,9 +23,11 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
             : base(textDB.Database, parameter, sourceKey, priority, SourceType.TextDB) {
             this.db.Sort(comparer);
             this.ReferObject = textDB;
+            evaluator = MsScanMatchResultEvaluator.CreateEvaluator();
         }
 
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public MsScanMatchResult Annotate(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;
@@ -177,58 +178,30 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
             ValidateBase(result, property, reference, parameter);
         }
 
-        //private static readonly double MsdialRtMatchThreshold = 0.5d;
-        //private static readonly double MsdialCcsMatchThreshold = 10d;
         private static void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
-            var ms1Tol = CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
-            result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
-
-            var rtDiff = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value);
-            result.IsRtMatch = rtDiff <= parameter.RtTolerance;
-
-            var ccsDiff = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection);
-            result.IsCcsMatch = ccsDiff <= parameter.CcsTolerance;
+            result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= CalculateMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
+            result.IsRtMatch = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value) <= parameter.RtTolerance;
+            result.IsCcsMatch = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection) <= parameter.CcsTolerance;
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            return results.Argmax(result => result.TotalScore);
+            return evaluator.SelectTopHit(results, parameter ?? Parameter);
         }
 
         public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            if (parameter is null) {
-                parameter = Parameter;
-            }
-            return results.Where(result => SatisfySuggestedConditions(result, parameter)).ToList();
+            return evaluator.FilterByThreshold(results, parameter ?? Parameter);
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            if (parameter is null) {
-                parameter = Parameter;
-            }
-            return results.Where(result => SatisfyRefMatchedConditions(result, parameter)).ToList();
-        }
-
-        private bool SatisfyRefMatchedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            return result.IsPrecursorMzMatch
-                && (!parameter.IsUseTimeForAnnotationFiltering || result.IsRtMatch)
-                && (!parameter.IsUseCcsForAnnotationFiltering || result.IsCcsMatch);
-        }
-
-        private bool SatisfySuggestedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            return result.IsPrecursorMzMatch
-                && (!parameter.IsUseTimeForAnnotationFiltering || result.IsRtMatch)
-                && (!parameter.IsUseCcsForAnnotationFiltering || result.IsCcsMatch);
+            return evaluator.SelectReferenceMatchResults(results, parameter ?? Parameter);
         }
 
         public bool IsReferenceMatched(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            return SatisfyRefMatchedConditions(result, parameter ?? Parameter);
+            return evaluator.IsReferenceMatched(result, parameter ?? Parameter);
         }
 
         public bool IsAnnotationSuggested(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            if (parameter is null) {
-                parameter = Parameter;
-            }
-            return SatisfySuggestedConditions(result, parameter) && !SatisfyRefMatchedConditions(result, parameter);
+            return evaluator.IsAnnotationSuggested(result, parameter ?? Parameter);
         }
     }
 }

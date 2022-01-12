@@ -8,7 +8,7 @@ namespace CompMs.Common.Lipidomics
     public class PGLipidParser : ILipidParser {
         public string Target { get; } = "PG";
 
-        private static readonly TotalChainParser chainsParser = new TotalChainParser(2);
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(2);
         public static readonly string Pattern = $"PG\\s*(?<sn>{chainsParser.Pattern})";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 

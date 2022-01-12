@@ -1,11 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.App.Msdial.Model.Loader;
+﻿using CompMs.MsdialCore.MSDec;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Text;
 
 namespace CompMs.App.Msdial.Model.Loader.Tests
 {

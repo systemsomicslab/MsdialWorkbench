@@ -11,6 +11,7 @@ using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -19,6 +20,7 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
@@ -210,6 +212,20 @@ namespace CompMs.App.Msdial.Model.Imms
         public ParameterBase Parameter { get; }
         public DataBaseMapper DataBaseMapper { get; }
         public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
+        
+        public void SaveSpectra(string filename) {
+            using (var file = File.Open(filename, FileMode.Create)) {
+                SpectraExport.SaveSpectraTable(
+                    (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
+                    file,
+                    Target.Value.innerModel,
+                    MsdecResult.Value,
+                    DataBaseMapper,
+                    Parameter);
+            }
+        }
+
+        public bool CanSaveSpectra() => Target.Value.innerModel != null && MsdecResult.Value != null;
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(container, ResultFile);

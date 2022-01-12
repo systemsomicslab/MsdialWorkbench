@@ -1,74 +1,42 @@
-﻿using CompMs.Common.DataObj.Property;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public interface IPepAnnotationQuery : IAnnotationQuery {
-        MsRefSearchParameterBase MsRefSearchParameter { get; }
-        ProteomicsParameter ProteomicsParameter { get; }
-    }
-
-    public class PepAnnotationQuery : IPepAnnotationQuery {
+    public class AnnotationQuery : IAnnotationQuery, IAnnotationQueryZZZ<MsScanMatchResult>
+    {
         public IMSIonProperty Property { get; }
         public IMSScanProperty Scan { get; }
-        public IReadOnlyList<IsotopicPeak> Isotopes { get; }
-        public IonFeatureCharacter IonFeature { get; }
-        public MsRefSearchParameterBase Parameter => MsRefSearchParameter;
-        public MsRefSearchParameterBase MsRefSearchParameter { get; }
-        public ProteomicsParameter ProteomicsParameter { get; }
-
-        public PepAnnotationQuery(
-            IMSIonProperty property,
-            IMSScanProperty scan,
-            IReadOnlyList<IsotopicPeak> isotopes,
-            IonFeatureCharacter ionFeature,
-            MsRefSearchParameterBase msrefSearchParam, ProteomicsParameter proteomicsParam) {
-            if (property is null) {
-                throw new ArgumentNullException(nameof(property));
+        public IMSScanProperty NormalizedScan {
+            get {
+                if (normalizedScan is null) {
+                    normalizedScan = DataAccess.GetNormalizedMSScanProperty(Scan, Parameter);
+                }
+                return normalizedScan;
             }
-
-            if (scan is null) {
-                throw new ArgumentNullException(nameof(scan));
-            }
-            Property = property;
-            Scan = scan;
-            Isotopes = isotopes;
-            IonFeature = ionFeature;
-            MsRefSearchParameter = msrefSearchParam;
-            ProteomicsParameter = proteomicsParam;
         }
-    }
+        private MSScanProperty normalizedScan;
 
-
-
-    public interface IAnnotationQuery
-    {
-        IMSIonProperty Property { get; }
-        IMSScanProperty Scan { get; }
-        IReadOnlyList<IsotopicPeak> Isotopes { get; }
-        IonFeatureCharacter IonFeature { get; }
-        MsRefSearchParameterBase Parameter { get; }
-    }
-
-    public class AnnotationQuery : IAnnotationQuery
-    {
-        public IMSIonProperty Property { get; }
-        public IMSScanProperty Scan { get; }
         public IReadOnlyList<IsotopicPeak> Isotopes { get; }
         public IonFeatureCharacter IonFeature { get; }
         public MsRefSearchParameterBase Parameter { get; }
+
+        private readonly IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator;
 
         public AnnotationQuery(
             IMSIonProperty property,
             IMSScanProperty scan,
             IReadOnlyList<IsotopicPeak> isotopes,
             IonFeatureCharacter ionFeature,
-            MsRefSearchParameterBase parameter) {
+            MsRefSearchParameterBase parameter,
+            IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator) {
             if (property is null) {
                 throw new ArgumentNullException(nameof(property));
             }
@@ -76,11 +44,19 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (scan is null) {
                 throw new ArgumentNullException(nameof(scan));
             }
+            if (parameter is null) {
+                throw new ArgumentNullException(nameof(parameter));
+            }
             Property = property;
             Scan = scan;
             Isotopes = isotopes;
             Parameter = parameter;
+            this.annotator = annotator ?? throw new ArgumentNullException(nameof(annotator));
             IonFeature = ionFeature;
+        }
+
+        public IEnumerable<MsScanMatchResult> FindCandidates() {
+            return annotator.FindCandidates(this);
         }
     }
 }

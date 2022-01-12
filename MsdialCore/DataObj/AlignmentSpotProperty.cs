@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Accord.Statistics.Testing;
+using CompMs.MsdialCore.Algorithm.Annotation;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
@@ -60,6 +61,22 @@ namespace CompMs.MsdialCore.DataObj {
         public string SMILES { get; set; } = string.Empty;
         [Key(16)]
         public string InChIKey { get; set; } = string.Empty;
+
+        public string GetFormula(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeFormula(refer);
+        }
+
+        public string GetOntology(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeOntology(refer);
+        }
+
+        public string GetSMILES(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeSMILES(refer);
+        }
+
+        public string GetInChIKey(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeInChIKey(refer);
+        }
 
         // ion physiochemical information
         [Key(17)]
@@ -287,6 +304,24 @@ namespace CompMs.MsdialCore.DataObj {
         // Post curation result
         [Key(58)]
         public bool IsFilteredByPostCurator { get; set; } = false;
+        public bool IsMultiLayeredData() {
+            if (AlignmentDriftSpotFeatures.IsEmptyOrNull()) return false;
+            return true;
+        }
+        [Key(59)]
+        public int MSDecResultIdUsed { get; set; } = -1;
+
+        public int GetMSDecResultID() {
+            if (MSDecResultIdUsed == -1) {
+                if (IsMultiLayeredData())
+                    return MasterAlignmentID;
+                else
+                    return AlignmentID;
+            }
+            else {
+                return MSDecResultIdUsed;
+            }
+        }
     }
 
     [MessagePackObject]

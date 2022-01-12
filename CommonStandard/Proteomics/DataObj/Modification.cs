@@ -350,15 +350,18 @@ namespace CompMs.Common.Proteomics.DataObj {
 
         public static ModificationContainer GetModificationContainer(List<Modification> fixedModifications, List<Modification> variableModifications) {
             var modifications = new List<Modification>();
-
+            var fixedModStrings = new List<string>();
             foreach (var mod in fixedModifications.Where(n => n.IsSelected)) {
                 mod.IsVariable = false;
                 modifications.Add(mod);
             }
 
+            fixedModStrings = modifications.Select(n => n.Title).ToList();
             foreach (var mod in variableModifications.Where(n => n.IsSelected)) {
-                mod.IsVariable = true;
-                modifications.Add(mod);
+                if (!fixedModStrings.Contains(mod.Title)) {
+                    mod.IsVariable = true;
+                    modifications.Add(mod);
+                }
             }
 
             return new ModificationContainer(modifications);

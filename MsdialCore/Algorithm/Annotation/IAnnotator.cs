@@ -1,31 +1,25 @@
-﻿using CompMs.Common.Parameter;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public interface IAnnotator<in T, U, V>
-        : IMatchResultRefer<U, V>
+    public interface IMatchResultFinder<in TQuery, TResult>
     {
-        V Annotate(T query);
-        List<V> FindCandidates(T query);
-        V CalculateScore(T query, U reference);
-        List<U> Search(T query);
-
-        V SelectTopHit(IEnumerable<V> results, MsRefSearchParameterBase parameter = null);
-        List<V> FilterByThreshold(IEnumerable<V> results, MsRefSearchParameterBase parameter = null);
-        List<V> SelectReferenceMatchResults(IEnumerable<V> results, MsRefSearchParameterBase parameter = null);
-        bool IsReferenceMatched(V result, MsRefSearchParameterBase parameter = null);
-        bool IsAnnotationSuggested(V result, MsRefSearchParameterBase parameter = null);
+        List<TResult> FindCandidates(TQuery query);
     }
 
-    public interface ISerializableAnnotator<in T, U, V>
-        : IAnnotator<T, U, V>, IRestorableRefer<T, U, V>
+    public interface IAnnotator<in TQuery, out TReference, TResult> : IMatchResultFinder<TQuery, TResult>, IMatchResultRefer<TReference, TResult>, IMatchResultEvaluator<TResult>
     {
 
     }
 
-    public interface ISerializableAnnotator<in T, U, V, in W>
-        : IAnnotator<T, U, V>, IRestorableRefer<T, U, V, W>
+    public interface ISerializableAnnotator<in TQuery, TReference, TResult>
+        : IAnnotator<TQuery, TReference, TResult>, IRestorableRefer<TQuery, TReference, TResult>
+    {
+
+    }
+
+    public interface ISerializableAnnotator<in TQuery, TReference, TResult, in TDataBase>
+        : IAnnotator<TQuery, TReference, TResult>, IRestorableRefer<TQuery, TReference, TResult, TDataBase>
     {
 
     }

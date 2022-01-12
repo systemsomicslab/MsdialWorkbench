@@ -11,9 +11,6 @@ namespace CompMs.Common.Lipidomics
         int UnDecidedCount { get; }
 
         ReadOnlyCollection<IDoubleBondInfo> Bonds { get; }
-
-        string ToStringAsAcyl();
-        string ToStringAsAlkyl();
     }
 
     public class DoubleBond : IDoubleBond
@@ -45,24 +42,6 @@ namespace CompMs.Common.Lipidomics
             }
             else {
                 return Count.ToString();
-            }
-        }
-
-        public string ToStringAsAcyl() {
-            return ToString();
-        }
-
-        public string ToStringAsAlkyl() {
-            if (Bonds.Any(b => b.Position == 1)) {
-                if (DecidedCount == 1) {
-                    return $"{Count - 1}";
-                }
-                else {
-                    return $"{Count - 1}({string.Join(",", Bonds.Where(b => b.Position != 1))})";
-                }
-            }
-            else {
-                return ToString();
             }
         }
     }

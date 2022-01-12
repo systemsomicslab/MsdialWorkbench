@@ -11,14 +11,13 @@ using CompMs.MsdialDimsCore.Algorithm.Alignment;
 using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using CompMs.MsdialDimsCore.DataObj;
 using CompMs.MsdialDimsCore.Parameter;
-using CompMs.MsdialDimsCore.Parser;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CompMs.App.MsdialConsole.Process {
+namespace CompMs.App.MsdialConsole.Process
+{
     public class DimsProcess {
         public int Run(string inputFolder, string outputFolder, string methodFile, bool isProjectSaved, float targetMz) {
             var param = ConfigParser.ReadForDimsParameter(methodFile);
@@ -42,9 +41,13 @@ namespace CompMs.App.MsdialConsole.Process {
             var mspAnnotator = new DimsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.MsdialDimsParameter.MspSearchParam, container.MsdialDimsParameter.TargetOmics, "MspDB", -1);
             var textAnnotator = new DimsTextDBAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.MsdialDimsParameter.TextDbSearchParam, "TextDB", -1);
             var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery>(
-                new AnnotationQueryWithoutIsotopeFactory(),
-                new[] { new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(mspAnnotator, container.MsdialDimsParameter.MspSearchParam),
-                        new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(textAnnotator, container.MsdialDimsParameter.TextDbSearchParam), }); 
+                new List<(IAnnotationQueryFactory<IAnnotationQuery>, IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>)>
+                {
+                    (new AnnotationQueryWithoutIsotopeFactory(mspAnnotator),
+                     new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(mspAnnotator, container.MsdialDimsParameter.MspSearchParam)),
+                    (new AnnotationQueryWithoutIsotopeFactory(textAnnotator),
+                     new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(textAnnotator, container.MsdialDimsParameter.TextDbSearchParam))
+                });
             foreach (var file in files) {
                 ProcessFile.Run(file, providerFactory, container, annotationProcess);
             }
@@ -73,9 +76,13 @@ namespace CompMs.App.MsdialConsole.Process {
             var mspAnnotator = new DimsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.MsdialDimsParameter.MspSearchParam, container.MsdialDimsParameter.TargetOmics, "MspDB", -1);
             var textAnnotator = new DimsTextDBAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.MsdialDimsParameter.TextDbSearchParam, "TextDB", -1);
             var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery>(
-                new AnnotationQueryWithoutIsotopeFactory(),
-                new[] { new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(mspAnnotator, container.MsdialDimsParameter.MspSearchParam),
-                        new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(textAnnotator, container.MsdialDimsParameter.TextDbSearchParam), }); 
+                new List<(IAnnotationQueryFactory<IAnnotationQuery>, IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>)>
+                {
+                    (new AnnotationQueryWithoutIsotopeFactory(mspAnnotator),
+                     new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(mspAnnotator, container.MsdialDimsParameter.MspSearchParam)),
+                    (new AnnotationQueryWithoutIsotopeFactory(textAnnotator),
+                     new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(textAnnotator, container.MsdialDimsParameter.TextDbSearchParam))
+                });
             var tasks = files.Select(file => Task.Run(() => ProcessFile.Run(file, providerFactory, container, annotationProcess)));
             await Task.WhenAll(tasks);
 

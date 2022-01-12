@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.View.Setting {
         }
 
         private void Button_Cancel_Click(object sender, RoutedEventArgs e) {
-
+            this.Close();
         }
     }
 }

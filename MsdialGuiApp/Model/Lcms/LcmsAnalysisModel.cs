@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.ExternalApp;
+using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
@@ -12,12 +13,14 @@ using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Media;
@@ -168,7 +171,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
         }
-
         public DataBaseMapper DataBaseMapper { get; }
         public ParameterBase Parameter { get; }
         public IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> Annotators { get; }
@@ -207,6 +209,37 @@ namespace CompMs.App.Msdial.Model.Lcms
                 MsdecResult.Value,
                 null,
                 Annotators);
+        }
+
+        public void FragmentSearcher() {
+            var features = this.Ms1Peaks;
+            MsdialCore.Algorithm.FragmentSearcher.Search(features.Select(n => n.InnerModel).ToList(), this.decLoader, Parameter);
+        }
+
+        public void SaveSpectra(string filename) {
+            using (var file = File.Open(filename, FileMode.Create)) {
+                SpectraExport.SaveSpectraTable(
+                    (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
+                    file,
+                    Target.Value.InnerModel,
+                    MsdecResult.Value,
+                    provider.LoadMs1Spectrums(),
+                    DataBaseMapper,
+                    Parameter);
+            }
+        }
+
+        public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
+
+        public void GoToMsfinderMethod() {
+            MsDialToExternalApps.SendToMsFinderProgram(
+                this.AnalysisFile,
+                Target.Value.InnerModel,
+                MsdecResult.Value,
+                this.provider.LoadMs1Spectrums(),
+                DataBaseMapper,
+                Parameter
+                );
         }
     }
 }

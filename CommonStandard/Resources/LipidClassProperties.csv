@@ -1,0 +1,171 @@
+LbmClass,DisplayName,AcylChain,AlkylChain,SphingoChain,ExtraAcylChain,TotalChain
+Undefined,Undefined,,,,,
+Others,Others,,,,,
+Unknown,Unknown,,,,,
+SPLASH,SPLASH,,,,,
+FA,FA,1,,,,1
+FAHFA,FAHFA,1,,,1,1
+OxFA,FA,1,,,,1
+CAR,CAR,1,,,,1
+NAE,NAE,1,,,,1
+NAGly,NAGly,1,,,1,1
+NAGlySer,NAGlySer,1,,,1,1
+NAOrn,NAOrn,1,,,1,1
+PA,PA,2,,,,2
+PC,PC,2,,,,2
+PE,PE,2,,,,2
+PG,PG,2,,,,2
+PI,PI,2,,,,2
+PS,PS,2,,,,2
+BMP,BMP,2,,,,2
+HBMP,HBMP,3,,,,3
+EtherPC,PC,1,1,,,2
+EtherPE,PE,1,1,,,2
+EtherPI,PI,1,1,,,2
+EtherPS,PS,1,1,,,2
+EtherPG,PG,1,1,,,2
+OxPA,PA,2,,,,2
+OxPC,PC,2,,,,2
+OxPS,PS,2,,,,2
+OxPE,PE,2,,,,2
+OxPG,PG,2,,,,2
+OxPI,PI,2,,,,2
+EtherOxPC,PC,1,1,,,2
+EtherOxPE,PE,1,1,,,2
+LPC,LPC,1,,,,1
+LPE,LPE,1,,,,1
+LPA,LPA,1,,,,1
+LPS,LPS,1,,,,1
+LPI,LPI,1,,,,1
+LPG,LPG,1,,,,1
+PMeOH,PMeOH,2,,,,2
+PEtOH,PEtOH,2,,,,2
+PBtOH,PBtOH,2,,,,2
+EtherLPC,LPC,,1,,,1
+EtherLPE,LPE,,1,,,1
+EtherLPG,LPG,,1,,,1
+EtherLPS,LPS,,1,,,1
+EtherLPI,LPI,,1,,,1
+LNAPE,LPE-N,2,,,,2
+LNAPS,LPS-N,2,,,,2
+MLCL,MLCL,3,,,,3
+DLCL,DLCL,2,,,,2
+CL,CL,4,,,,4
+MG,MG,1,,,,1
+DG,DG,2,,,,2
+TG,TG,3,,,,3
+MGDG,MGDG,2,,,,2
+DGDG,DGDG,2,,,,2
+SQDG,SQDG,2,,,,2
+DGTS,DGTS,2,,,,2
+DGGA,DGGA,2,,,,2
+ADGGA,ADGGA,3,,,,3
+LDGTS,LDGTS,1,,,,1
+LDGCC,LDGCC,1,,,,1
+DGCC,DGCC,2,,,,2
+EtherMGDG,MGDG,1,1,,,2
+EtherDGDG,DGDG,1,1,,,2
+EtherTG,TG,2,1,,,3
+EtherDG,DG,1,1,,,2
+EtherSMGDG,SMGDG,1,1,,,2
+SMGDG,SMGDG,2,,,,2
+Sph,SPB,1,,,,1
+DHSph,SPB,1,,,,1
+PhytoSph,SPB,1,,,,1
+SM,SM,2,,,,2
+CerP,CerP,1,,1,,2
+Cer_ADS,Cer,1,,1,,2
+Cer_AS,Cer,1,,1,,2
+Cer_BDS,Cer,1,,1,,2
+Cer_BS,Cer,1,,1,,2
+Cer_OS,Cer,1,,1,,2
+Cer_EODS,Cer,1,,1,1,2
+Cer_EOS,Cer,1,,1,1,2
+Cer_NDS,Cer,1,,1,,2
+Cer_NS,Cer,1,,1,,2
+Cer_NP,Cer,1,,1,,2
+Cer_AP,Cer,1,,1,,2
+Cer_EBDS,Cer,1,,1,1,2
+Cer_HS,Cer,1,,1,,2
+Cer_HDS,Cer,1,,1,,2
+Cer_NDOS,Cer,1,,1,,2
+HexCer_NS,HexCer,1,,1,,2
+HexCer_NDS,HexCer,1,,1,,2
+HexCer_AP,HexCer,1,,1,,2
+HexCer_HS,HexCer,1,,1,,2
+HexCer_HDS,HexCer,1,,1,,2
+HexCer_EOS,HexCer,1,,1,1,2
+Hex2Cer,Hex2Cer,1,,1,,2
+Hex3Cer,Hex3Cer,1,,1,,2
+SHexCer,SHexCer,1,,1,,2
+GM3,GM3,1,,1,,2
+AHexCer,AHexCer,2,,1,,3
+ASM,SM,1,,1,1,2
+PE_Cer,PE-Cer,2,,,,2
+PI_Cer,PI-Cer,2,,,,2
+SL,SL,2,,,,2
+Ac2PIM1,Ac2PIM1,2,,,,2
+Ac2PIM2,Ac2PIM2,2,,,,2
+Ac3PIM2,Ac3PIM2,3,,,,2
+Ac4PIM2,Ac4PIM2,4,,,,2
+LipidA,LipidA,4,,,2,4
+Vitamin_E,,,,,,0
+Vitamin_D,,,,,,0
+CoQ,CoQ,,,,,0
+CE,CE,1,,,,1
+DCAE,SE 24:1;O4,1,,,,1
+GDCAE,BA 24:1;O4;G,1,,,,1
+GLCAE,BA 24:1;O3;G,1,,,,1
+TDCAE,BA 24:1;O4;T,1,,,,1
+TLCAE,BA 24:1;O3;T,1,,,,1
+BileAcid,,,,,,0
+VAE,VAE,1,,,,1
+BRSE,SE 28:2,1,,,,1
+CASE,SE 28:1,1,,,,1
+SISE,SE 29:1,1,,,,1
+STSE,SE 29:2,1,,,,1
+AHexBRS,ASG 28:2;O;Hex;FA,1,,,,1
+AHexCAS,ASG 28:1;O;Hex;FA,1,,,,1
+AHexCS,ASG 27:1;O;Hex;FA,1,,,,1
+AHexSIS,ASG 29:1;O;Hex;FA,1,,,,1
+AHexSTS,ASG 29:2;O;Hex;FA,1,,,,1
+SPE,,,,,,0
+SHex,,,,,,0
+SPEHex,,,,,,0
+SPGHex,,,,,,0
+CSLPHex,SG 27:1;O;Hex;LPA,1,,,,1
+BRSLPHex,SG 28:2;O;Hex;LPA,1,,,,1
+CASLPHex,SG 28:1;O;Hex;LPA,1,,,,1
+SISLPHex,SG 29:1;O;Hex;LPA,1,,,,1
+STSLPHex,SG 29:2;O;Hex;LPA,1,,,,1
+CSPHex,SG 27:1;O;Hex;PA,2,,,,2
+BRSPHex,SG 28:2;O;Hex;PA,2,,,,2
+CASPHex,SG 28:1;O;Hex;PA,2,,,,2
+SISPHex,SG 29:1;O;Hex;PA,2,,,,2
+STSPHex,SG 29:2;O;Hex;PA,2,,,,2
+SSulfate,,,,,,0
+BAHex,,,,,,0
+BASulfate,,,,,,0
+LCAE,SE 24:1;O3,1,,,,1
+KLCAE,SE 24:2;O4,1,,,,1
+KDCAE,SE 24:2;O5,1,,,,1
+MMPE,MMPE,2,,,,2
+DMPE,DMPE,2,,,,2
+MIPC,MIPC,2,,,,2
+EGSE,SE 28:3,1,,,,1
+DEGSE,SE 28:4,1,,,,1
+DSMSE,SE 27:2,1,,,,1
+OxTG,TG,3,,,,3
+TG_EST,TG,3,,,1,3
+GPNAE,GPNAE,1,,,,1
+DGMG,DGMG,2,,,,2
+MGMG,MGMG,2,,,,2
+GD1a,GD1a,2,,,,2
+GD1b,GD1b,2,,,,2
+GD2,GD2,2,,,,2
+GD3,GD3,2,,,,2
+GM1,GM1,2,,,,2
+GQ1b,GQ1b,2,,,,2
+GT1b,GT1b,2,,,,2
+NGcGM3,NGcGM3,2,,,,2
+ST,ST,,,,,0

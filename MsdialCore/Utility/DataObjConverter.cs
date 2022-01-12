@@ -4,12 +4,14 @@ using System.Diagnostics;
 using System.Linq;
 
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 
 namespace CompMs.MsdialCore.Utility
 {
@@ -79,6 +81,7 @@ namespace CompMs.MsdialCore.Utility
             alignmentPeak.SMILES = peak.SMILES;
             alignmentPeak.InChIKey = peak.InChIKey;
             alignmentPeak.CollisionCrossSection = peak.CollisionCrossSection;
+            alignmentPeak.MSDecResultIdUsed = peak.MSDecResultIdUsed;
 
             alignmentPeak.MatchResults.ClearResults();
             alignmentPeak.MatchResults.ClearMspResults();
@@ -143,6 +146,7 @@ namespace CompMs.MsdialCore.Utility
             spot.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>(representative.MSRawID2MspBasedMatchResult);
             spot.TextDbBasedMatchResult = representative.TextDbBasedMatchResult;
             spot.MatchResults.MergeContainers(representative.MatchResults);
+            spot.MSDecResultIdUsed = representative.MSDecResultIdUsed;
 
             spot.HeightAverage = (float)alignedPeaks.Average(peak => peak.PeakHeightTop);
             spot.HeightMax = (float)alignedPeaks.Max(peak => peak.PeakHeightTop);
@@ -189,5 +193,32 @@ namespace CompMs.MsdialCore.Utility
                 (peak.MatchResults.MatchResults.DefaultIfEmpty().Max(val => val.TotalScore), peak.PeakHeightTop)
             ).FileID;
         }
+
+        public static string GetIsotopesListContent(
+            ChromatogramPeakFeature feature, 
+            IReadOnlyList<RawSpectrum> spectrumList, 
+            ParameterBase param) {
+            var spectrum = spectrumList.FirstOrDefault(spec => spec.OriginalIndex == feature.MS1RawSpectrumIdTop);
+            if (spectrum is null) {
+                return "null";
+            }
+            var isotopes = DataAccess.GetIsotopicPeaks(spectrum.Spectrum, (float)feature.PrecursorMz, param.CentroidMs1Tolerance);
+            if (isotopes.IsEmptyOrNull()) {
+                return "null";
+            }
+            return string.Join(";", isotopes.Select(isotope => string.Format("{0:F5} {1:F0}", isotope.Mass, isotope.AbsoluteAbundance)));
+        }
+
+        public static string GetSpectrumListContent(
+            MSDecResult msdec, 
+            IReadOnlyList<RawSpectrum> spectrumList,
+            ParameterBase param) {
+            var spectrum = DataAccess.GetMassSpectrum(spectrumList, msdec, param.ExportSpectraType, msdec.RawSpectrumID, param);
+            if (spectrum.IsEmptyOrNull()) {
+                return "null";
+            }
+            return string.Join(";", spectrum.Select(peak => string.Format("{0:F5} {1:F0}", peak.Mass, peak.Intensity)));
+        }
+
     }
 }

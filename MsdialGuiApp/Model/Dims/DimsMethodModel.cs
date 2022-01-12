@@ -1,14 +1,6 @@
-﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.Model.Chart;
-using CompMs.App.Msdial.Model.Core;
-using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.View.Chart;
-using CompMs.App.Msdial.View.Setting;
-using CompMs.App.Msdial.ViewModel.Chart;
-using CompMs.App.Msdial.ViewModel.Setting;
+﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
@@ -16,21 +8,16 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
 using CompMs.MsdialDimsCore.DataObj;
-using CompMs.MsdialDimsCore.Parameter;
-using CompMs.MsdialDimsCore.Parser;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
@@ -97,7 +84,8 @@ namespace CompMs.App.Msdial.Model.Dims
                         FileName = alignmentResultFileName,
                         FilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
                         EicFilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + ".EIC.aef"),
-                        SpectraFilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl)
+                        SpectraFilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl),
+                        ProteinAssembledResultFilePath = Path.Combine(Storage.MsdialDimsParameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.prf)
                     }
                 );
                 Storage.AlignmentFiles = AlignmentFiles.ToList();
@@ -123,7 +111,11 @@ namespace CompMs.App.Msdial.Model.Dims
             foreach (var annotators in storage.MetabolomicsDataBases) {
                 containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
             }
-            return new StandardAnnotationProcess<IAnnotationQuery>(new AnnotationQueryWithoutIsotopeFactory(), containers);
+            return new StandardAnnotationProcess<IAnnotationQuery>(
+                containers.Select(container => (
+                    new AnnotationQueryWithoutIsotopeFactory(container.Annotator) as IAnnotationQueryFactory<IAnnotationQuery>,
+                    container.Annotator as IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
+                )).ToList());
         }
 
         public async Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {

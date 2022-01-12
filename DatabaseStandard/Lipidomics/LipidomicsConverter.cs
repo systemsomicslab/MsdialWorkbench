@@ -3860,6 +3860,18 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.GT1b: return "GT1b";
                 case LbmClass.GQ1b: return "GQ1b";
                 case LbmClass.NGcGM3: return "NGcGM3";
+                case LbmClass.SPEHex: return "SPEHex";
+                case LbmClass.SPGHex: return "SPGHex";
+                case LbmClass.CSLPHex: return "CSLPHex";
+                case LbmClass.BRSLPHex: return "BRSLPHex";
+                case LbmClass.CASLPHex: return "CASLPHex";
+                case LbmClass.SISLPHex: return "SISLPHex";
+                case LbmClass.STSLPHex: return "STSLPHex";
+                case LbmClass.CSPHex: return "CSPHex";
+                case LbmClass.CASPHex: return "CASPHex";
+                case LbmClass.SISPHex: return "SISPHex";
+                case LbmClass.STSPHex: return "STSPHex";
+                case LbmClass.SPE: return "SPE";
 
 
                 default: return "Undefined";

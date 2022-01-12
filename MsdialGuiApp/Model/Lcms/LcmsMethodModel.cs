@@ -3,7 +3,7 @@ using CompMs.App.Msdial.LC;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.View;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Setting;
@@ -37,7 +37,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
@@ -144,7 +143,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                         FileName = filename,
                         FilePath = System.IO.Path.Combine(Storage.MsdialLcmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
                         EicFilePath = System.IO.Path.Combine(Storage.MsdialLcmsParameter.ProjectFolderPath, filename + ".EIC.aef"),
-                        SpectraFilePath = System.IO.Path.Combine(Storage.MsdialLcmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl)
+                        SpectraFilePath = System.IO.Path.Combine(Storage.MsdialLcmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl),
+                        ProteinAssembledResultFilePath = System.IO.Path.Combine(Storage.MsdialLcmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.prf),
                     }
                 );
                 Storage.AlignmentFiles = AlignmentFiles.ToList();
@@ -153,14 +153,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             annotationProcess = BuildProteoMetabolomicsAnnotationProcess(Storage.DataBases, parameter);
             Storage.DataBaseMapper = CreateDataBaseMapper(Storage.DataBases);
             return true;
-        }
-
-        private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
-            var containers = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
-            foreach (var annotators in storage.MetabolomicsDataBases) {
-                containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
-            }
-            return new StandardAnnotationProcess<IAnnotationQuery>(new AnnotationQueryFactory(parameter), containers);
         }
 
         private IAnnotationProcess BuildProteoMetabolomicsAnnotationProcess(DataBaseStorage storage, ParameterBase parameter) {
@@ -173,9 +165,14 @@ namespace CompMs.App.Msdial.Model.Lcms
                 pepContainers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
             }
             return new AnnotationProcessOfProteoMetabolomics<IPepAnnotationQuery>(
-                new PepAnnotationQueryFactory(parameter.PeakPickBaseParam, parameter.ProteomicsParam, parameter.MspSearchParam),
-                containers, 
-                pepContainers);
+                containers.Select(container => (
+                    (IAnnotationQueryFactory<IPepAnnotationQuery>)new PepAnnotationQueryFactory(container.Annotator, parameter.PeakPickBaseParam, parameter.ProteomicsParam),
+                    container
+                )).ToList(),
+                pepContainers.Select(container => (
+                    (IAnnotationQueryFactory<IPepAnnotationQuery>)new PepAnnotationQueryFactory(container.Annotator, parameter.PeakPickBaseParam, parameter.ProteomicsParam),
+                    container
+                )).ToList());
         }
 
         private DataBaseMapper CreateDataBaseMapper(DataBaseStorage storage) {
@@ -242,7 +239,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             proteomicsAnnotator.ExecuteSecondRoundAnnotationProcess(
                 storage.AnalysisFiles, 
                 storage.DataBaseMapper, 
-                storage.MsdialLcmsParameter.ProteomicsParam, 
+                storage.DataBases,
+                storage.MsdialLcmsParameter, 
                 v => vm.CurrentValue = v);
 
             pbw.Close();
@@ -269,6 +267,16 @@ namespace CompMs.App.Msdial.Model.Lcms
             aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
             var alignmentFile = storage.AlignmentFiles.Last();
             var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
+
+            if (!storage.DataBaseMapper.PeptideAnnotators.IsEmptyOrNull()) {
+                new ProteomeDataAnnotator().MappingToProteinDatabase(
+                    alignmentFile.ProteinAssembledResultFilePath, 
+                    result, 
+                    storage.DataBases.ProteomicsDataBases, 
+                    storage.DataBaseMapper, 
+                    storage.MsdialLcmsParameter);
+            }
+
             MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList());
 
@@ -348,7 +356,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new Export.SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
             };
 
-            using (var vm = new AnalysisResultExportViewModel(container.AnalysisFiles, spectraTypes, spectraFormats, providerFactory)) {
+            using (var vm = new AnalysisResultExportViewModel(
+                container.AnalysisFiles, 
+                spectraTypes, 
+                spectraFormats, 
+                providerFactory)) {
                 var dialog = new AnalysisResultExportWin
                 {
                     DataContext = vm,
@@ -366,7 +378,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (analysisModel is null) return;
 
             var tic = analysisModel.EicLoader.LoadTic();
-            var vm = new ChromatogramsViewModel(new ChromatogramsModel("Total ion chromatogram", new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC")));
+            var vm = new ChromatogramsViewModel(
+                new ChromatogramsModel("Total ion chromatogram", 
+                new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"),
+                "Total ion chromatogram", "Retention time", "Absolute ion abundance"));
             var view = new DisplayChromatogramsView() {
                 DataContext = vm,
                 Owner = owner,
@@ -381,7 +396,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (analysisModel is null) return;
 
             var bpc = analysisModel.EicLoader.LoadBpc();
-            var vm = new ChromatogramsViewModel(new ChromatogramsModel("Base peak chromatogram", new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC")));
+            var vm = new ChromatogramsViewModel(
+                new ChromatogramsModel("Base peak chromatogram",
+                new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"),
+                "Base peak chromatogram", "Retention time", "Absolute ion abundance"));
             var view = new DisplayChromatogramsView() {
                 DataContext = vm,
                 Owner = owner,
@@ -403,8 +421,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             if (dialog.ShowDialog() == true) {
-                param.AdvancedProcessOptionBaseParam.DiplayEicSettingValues = model.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
-                var displayEICs = param.AdvancedProcessOptionBaseParam.DiplayEicSettingValues;
+                param.DiplayEicSettingValues = model.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
+                var displayEICs = param.DiplayEicSettingValues;
                 if (!displayEICs.IsEmptyOrNull()) {
                     var displayChroms = new List<DisplayChromatogram>();
                     var counter = 0;
@@ -451,6 +469,46 @@ namespace CompMs.App.Msdial.Model.Lcms
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             view.Show();
+        }
+
+        public void ShowShowFragmentSearchSettingView(Window owner, bool isAlignmentViewSelected) {
+            var container = Storage;
+            var analysisModel = AnalysisModel;
+            if (analysisModel is null) return;
+            var alignmentModel = AlignmentModel;
+            var param = container.MsdialLcmsParameter;
+            
+            var model = new FragmentQuerySettingModel(container.MsdialLcmsParameter, isAlignmentViewSelected);
+            var vm = new FragmentQuerySettingViewModel(model);
+            var dialog = new FragmentQuerySettingView() {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+
+            if (dialog.ShowDialog() == true) {
+                param.FragmentSearchSettingValues = model.FragmentQuerySettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();
+                param.AndOrAtFragmentSearch = model.SearchOption.Value;
+                if (model.IsAlignSpotViewSelected.Value && alignmentModel is null) {
+                    MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                if (model.IsAlignSpotViewSelected.Value) {
+                    alignmentModel.FragmentSearcher();
+                }
+                else {
+                    analysisModel.FragmentSearcher();
+                }
+            }
+        }
+
+        public void GoToMsfinderMethod(bool isAlignmentView) {
+            if (isAlignmentView) {
+                AlignmentModel.GoToMsfinderMethod();
+            }
+            else {
+                AnalysisModel.GoToMsfinderMethod();
+            }
         }
     }
 }

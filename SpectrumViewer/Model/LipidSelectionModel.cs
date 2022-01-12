@@ -61,7 +61,7 @@ namespace CompMs.App.SpectrumViewer.Model
                     return new MolecularSpeciesLevelChains(Chains.Select(c => c.Create()).ToArray());
                 case "SubMolecularLevel":
                 default:
-                    var parser = new TotalChainParser(ChainCount);
+                    var parser = TotalChainParser.BuildParser(ChainCount);
                     return parser.Parse(ChainsStr);
             }
         }

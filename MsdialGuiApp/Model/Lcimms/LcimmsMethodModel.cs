@@ -113,6 +113,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                         FilePath = Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.arf}"),
                         EicFilePath = Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, $"{filename}.EIC.aef"),
                         SpectraFilePath = Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.dcl}"),
+                        ProteinAssembledResultFilePath = Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.prf}"),
                     });
                 Storage.AlignmentFiles = AlignmentFiles.ToList();
             }
@@ -126,7 +127,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
             foreach (var annotators in storage.MetabolomicsDataBases) {
                 containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
             }
-            return new StandardAnnotationProcess<IAnnotationQuery>(new AnnotationQueryFactory(parameter), containers);
+            return new StandardAnnotationProcess<IAnnotationQuery>(
+                containers.Select(container => (
+                    new AnnotationQueryFactory(container.Annotator, parameter) as IAnnotationQueryFactory<IAnnotationQuery>,
+                    container as IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
+                )).ToList());
         }
 
         private DataBaseMapper CreateDataBaseMapper(DataBaseStorage storage) {
@@ -193,7 +198,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             if (analysisModel is null) return;
 
             var tic = analysisModel.EicLoader.LoadTic();
-            var vm = new ChromatogramsViewModel(new ChromatogramsModel("Total ion chromatogram", new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC")));
+            var vm = new ChromatogramsViewModel(new ChromatogramsModel("Total ion chromatogram", new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"),
+                "Total ion chromatogram", "Retention time", "Absolute ion abundance"));
             var view = new DisplayChromatogramsView() {
                 DataContext = vm,
                 Owner = owner,
@@ -208,7 +214,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
             if (analysisModel is null) return;
 
             var bpc = analysisModel.EicLoader.LoadBpc();
-            var vm = new ChromatogramsViewModel(new ChromatogramsModel("Base peak chromatogram", new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC")));
+            var vm = new ChromatogramsViewModel(new ChromatogramsModel("Base peak chromatogram", 
+                new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"),
+                "Base peak chromatogram", "Retention time", "Absolute ion abundance"));
             var view = new DisplayChromatogramsView() {
                 DataContext = vm,
                 Owner = owner,

@@ -12,11 +12,11 @@ namespace CompMs.App.Msdial.Model.Setting {
     public class DisplayEicSettingModel : BindableBase {
         public ObservableCollection<PeakFeatureSearchValue> DiplayEicSettingValues { get; }
         public DisplayEicSettingModel(ParameterBase param) {
-            if (param.AdvancedProcessOptionBaseParam.DiplayEicSettingValues is null) {
-                param.AdvancedProcessOptionBaseParam.DiplayEicSettingValues = new List<PeakFeatureSearchValue>();
+            if (param.DiplayEicSettingValues is null) {
+                param.DiplayEicSettingValues = new List<PeakFeatureSearchValue>();
             }
 
-            var values = param.AdvancedProcessOptionBaseParam.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
+            var values = param.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
             values.AddRange(Enumerable.Range(0, 100).Select(_ => new PeakFeatureSearchValue()));
             DiplayEicSettingValues = new ObservableCollection<PeakFeatureSearchValue>(values);
         }

@@ -1,29 +1,16 @@
 ﻿using CompMs.App.Msdial.StartUp;
-using CompMs.App.Msdial.View;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.View.Table;
 using CompMs.App.Msdial.ViewModel;
+using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.MsdialCore.DataObj;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Ribbon;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial
+namespace CompMs.App.Msdial.View.Core
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

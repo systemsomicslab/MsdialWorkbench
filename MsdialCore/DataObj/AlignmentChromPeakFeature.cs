@@ -185,6 +185,8 @@ namespace CompMs.MsdialCore.DataObj {
             get => matchResults ?? (matchResults = new MsScanMatchResultContainer());
             set => matchResults = value;
         }
+
+        [Key(48)]
         private MsScanMatchResultContainer matchResults;
 
 
@@ -222,6 +224,15 @@ namespace CompMs.MsdialCore.DataObj {
         double IIonProperty.CollisionCrossSection {
             get => CollisionCrossSection;
             set => CollisionCrossSection = value;
+        }
+
+        [Key(49)]
+        public int MSDecResultIdUsed { get; set; } = -1;
+        public int GetMSDecResultID() {
+            if (MSDecResultIdUsed == -1) {
+                return MasterPeakID;
+            }
+            return MSDecResultIdUsed;
         }
     }
 }

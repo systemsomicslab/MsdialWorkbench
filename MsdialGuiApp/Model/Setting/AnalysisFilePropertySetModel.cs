@@ -64,6 +64,7 @@ namespace CompMs.App.Msdial.Model.Setting
             foreach (var analysisFile in analysisFiles) {
                 analysisFile.DeconvolutionFilePath = Path.Combine(ProjectFolderPath, $"{analysisFile.AnalysisFileName}_{dt:yyyyMMddHHmm}.{MsdialDataStorageFormat.dcl}");
                 analysisFile.PeakAreaBeanInformationFilePath = Path.Combine(ProjectFolderPath, $"{analysisFile.AnalysisFileName}_{dt:yyyyMMddHHmm}.{MsdialDataStorageFormat.pai}");
+                analysisFile.ProteinAssembledResultFilePath = Path.Combine(ProjectFolderPath, $"{analysisFile.AnalysisFileName}_{dt:yyyyMMddHHmm}.{MsdialDataStorageFormat.prf}");
                 AnalysisFilePropertyCollection.Add(analysisFile);
             }
         }

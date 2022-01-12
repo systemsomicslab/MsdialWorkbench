@@ -268,7 +268,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             var sfd = new SaveFileDialog
             {
                 Title = "Save spectra",
-                Filter = "NIST format(*.msp)|*.msp", // MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf;
+                Filter = "NIST format(*.msp)|*.msp|MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf|MSFINDER format(*.mat)|*.mat;|SIRIUS format(*.ms)|*.ms", 
                 RestoreDirectory = true,
                 AddExtension = true,
             };
@@ -284,5 +284,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         {
             return Model.CanSaveSpectra();
         }
+
+        public DelegateCommand CopyMs2SpectrumCommand => copyMs2SpectrumCommand ?? (copyMs2SpectrumCommand = new DelegateCommand(Model.CopySpectrum, Model.CanSaveSpectra));
+        private DelegateCommand copyMs2SpectrumCommand;
     }
 }

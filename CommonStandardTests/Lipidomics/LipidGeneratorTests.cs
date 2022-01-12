@@ -11,7 +11,7 @@ namespace CompMs.Common.Lipidomics.Tests
     {
         [TestMethod()]
         public void SubLevelGenerateTest() {
-            ILipid lipid = new Lipid(LbmClass.PC, 785.5935, new TotalChains(36, 2, 0, 2));
+            ILipid lipid = new Lipid(LbmClass.PC, 785.5935, new TotalChain(36, 2, 0, 2, 0, 0));
             var generator = new LipidGenerator(new MockAcylChainGenerator());
 
             var lipids = lipid.Generate(generator).ToArray();
@@ -113,7 +113,7 @@ namespace CompMs.Common.Lipidomics.Tests
             yield return new AlkylChain(18, DoubleBond.CreateFromPosition(1, 12), new Oxidized(0));
         }
 
-        public IEnumerable<ITotalChain> Separate(TotalChains chain) {
+        public IEnumerable<ITotalChain> Separate(TotalChain chain) {
             yield return new MolecularSpeciesLevelChains(Enumerable.Range(10, chain.ChainCount).Select(v => new AcylChain(v, new DoubleBond(0), new Oxidized(0))).ToArray());
             yield return new MolecularSpeciesLevelChains(Enumerable.Range(20, chain.ChainCount).Select(v => new AcylChain(v, new DoubleBond(1), new Oxidized(0))).ToArray());
             yield return new MolecularSpeciesLevelChains(Enumerable.Range(30, chain.ChainCount).Select(v => new AcylChain(v, new DoubleBond(0), new Oxidized(1))).ToArray());
@@ -125,6 +125,10 @@ namespace CompMs.Common.Lipidomics.Tests
 
         public IEnumerable<ITotalChain> Product(PositionLevelChains chains) {
             return SearchCollection.CartesianProduct(chains.Chains.Select(c => c.GetCandidates(this).ToArray()).ToArray()).Select(chains => new PositionLevelChains(chains));
+        }
+
+        public IEnumerable<IChain> Generate(SphingoChain chain) {
+            throw new System.NotImplementedException();
         }
     }
 }

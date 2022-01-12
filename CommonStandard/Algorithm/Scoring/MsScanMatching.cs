@@ -82,14 +82,14 @@ namespace CompMs.Common.Algorithm.Scoring {
             return result;
         }
 
-        public static MsScanMatchResult CompareMS2ScanProperties(IMSScanProperty scanProp, PeptideMsReference refSpec, MsRefSearchParameterBase param,
+        public static MsScanMatchResult CompareMS2ScanProperties(IMSScanProperty scanProp, int chargestate, PeptideMsReference refSpec, MsRefSearchParameterBase param,
             TargetOmics targetOmics = TargetOmics.Metabolomics, double scanCCS = -1.0,
             IReadOnlyList<IsotopicPeak> scanIsotopes = null, IReadOnlyList<IsotopicPeak> refIsotopes = null,
             double andromedaDelta = 100, int andromedaMaxPeaks = 12) {
 
             MsScanMatchResult result = null;
             if (targetOmics == TargetOmics.Proteomics) {
-                result = CompareMS2ProteomicsScanProperties(scanProp, refSpec, param, (float)andromedaDelta, andromedaMaxPeaks);
+                result = CompareMS2ProteomicsScanProperties(scanProp, chargestate, refSpec, param, (float)andromedaDelta, andromedaMaxPeaks);
             }
 
             result.IsotopeSimilarity = (float)GetIsotopeRatioSimilarity(scanIsotopes, refIsotopes, scanProp.PrecursorMz, param.Ms1Tolerance);
@@ -156,11 +156,11 @@ namespace CompMs.Common.Algorithm.Scoring {
             return result;
         }
 
-        public static MsScanMatchResult CompareMS2ProteomicsScanProperties(IMSScanProperty scanProp, PeptideMsReference refSpec, 
+        public static MsScanMatchResult CompareMS2ProteomicsScanProperties(IMSScanProperty scanProp, int chargestate, PeptideMsReference refSpec, 
             MsRefSearchParameterBase param, float andromedaDelta, float andromedaMaxPeaks) {
 
             var result = CompareBasicMSScanProperties(scanProp, refSpec, param, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
-            var matchedPeaks = GetMachedSpectralPeaks(scanProp, refSpec, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
+            var matchedPeaks = GetMachedSpectralPeaks(scanProp, chargestate, refSpec, param.Ms2Tolerance, param.MassRangeBegin, param.MassRangeEnd);
 
             result.Name = refSpec.Peptide.ModifiedSequence;
             result.AndromedaScore = (float)GetAndromedaScore(matchedPeaks, andromedaDelta, andromedaMaxPeaks);
@@ -440,7 +440,7 @@ namespace CompMs.Common.Algorithm.Scoring {
         /// <param name="bin">
         /// Add the bin value to merge the abundance of m/z.
         /// </param>
-        public static List<SpectrumPeak> GetMachedSpectralPeaks(IMSScanProperty prop1, IMSScanProperty prop2, double bin,
+        public static List<SpectrumPeak> GetMachedSpectralPeaks(IMSScanProperty prop1, int chargeState, IMSScanProperty prop2, double bin,
            double massBegin, double massEnd) {
             if (!IsComparedAvailable(prop1, prop2)) return new List<SpectrumPeak>();
 
@@ -484,7 +484,33 @@ namespace CompMs.Common.Algorithm.Scoring {
                 if (focusedMz + bin > peaks2[peaks2.Count - 1].Mass) break;
                 focusedMz = peaks2[remaindIndexL].Mass;
             }
-            return searchedPeaks;
+
+            // at this moment...
+            var finalPeaks = new List<SpectrumPeak>();
+            foreach (var group in searchedPeaks.GroupBy(n => n.PeakID)) {
+                var isParentExist = false;
+                foreach (var peak in group) {
+                    if (peak.SpectrumComment == SpectrumComment.b && peak.IsMatched) {
+                        isParentExist = true;
+                    }
+                    if (peak.SpectrumComment == SpectrumComment.y && peak.IsMatched) {
+                        isParentExist = true;
+                    }
+                }
+                foreach (var peak in group) {
+                    if (chargeState <= 2 && (peak.SpectrumComment == SpectrumComment.b2 || peak.SpectrumComment == SpectrumComment.y2)) continue; // exclude
+                    if (!isParentExist && 
+                        (peak.SpectrumComment == SpectrumComment.b_h2o || 
+                         peak.SpectrumComment == SpectrumComment.b_nh3 ||
+                         peak.SpectrumComment == SpectrumComment.y_h2o ||
+                         peak.SpectrumComment == SpectrumComment.y_nh3)) {
+                        continue;
+                    }
+                    finalPeaks.Add(peak);
+                }
+            }
+
+            return finalPeaks;
         }
 
         /// <summary>

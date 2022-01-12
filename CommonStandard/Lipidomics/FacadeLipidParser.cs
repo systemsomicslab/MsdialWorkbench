@@ -32,5 +32,37 @@ namespace CompMs.Common.Lipidomics
                 map[parser.Target].Remove(parser);
             }
         }
+
+        public static ILipidParser Default {
+            get {
+                if (@default is null) {
+                    var parser = new FacadeLipidParser();
+                    new List<ILipidParser>{
+                        new BMPLipidParser(),
+                        new CLLipidParser(),
+                        new DGLipidParser(),
+                        new EtherPCLipidParser(),
+                        new EtherPELipidParser(),
+                        new HBMPLipidParser(),
+                        new LPCLipidParser(),
+                        new LPELipidParser(),
+                        new LPGLipidParser(),
+                        new LPILipidParser(),
+                        new LPSLipidParser(),
+                        new MGLipidParser(),
+                        new PALipidParser(),
+                        new PCLipidParser(),
+                        new PELipidParser(),
+                        new PGLipidParser(),
+                        new PILipidParser(),
+                        new PSLipidParser(),
+                        new TGLipidParser(),
+                    }.ForEach(parser.Add);
+                    @default = parser;
+                }
+                return @default;
+            }
+        }
+        private static ILipidParser @default;
     }
 }

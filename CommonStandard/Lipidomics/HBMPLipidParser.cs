@@ -8,7 +8,7 @@ namespace CompMs.Common.Lipidomics
     public class HBMPLipidParser : ILipidParser {
         public string Target { get; } = "HBMP";
 
-        private static readonly TotalChainParser chainsParser = new TotalChainParser(3);
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(3);
         public static readonly string Pattern = $"HBMP\\s*(?<sn>{chainsParser.Pattern})";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 

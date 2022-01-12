@@ -37,5 +37,26 @@ namespace CompMs.Common.Lipidomics
                 map[lipidClass].Remove(generator);
             }
         }
+
+        public static ILipidSpectrumGenerator Default {
+            get {
+                if (@default is null) {
+                    var generator = new FacadeLipidSpectrumGenerator();
+                    generator.Add(LbmClass.EtherPC, new EtherPCSpectrumGenerator());
+                    generator.Add(LbmClass.EtherPE, new EtherPESpectrumGenerator());
+                    generator.Add(LbmClass.LPC, new LPCSpectrumGenerator());
+                    generator.Add(LbmClass.LPE, new LPESpectrumGenerator());
+                    generator.Add(LbmClass.PA, new PASpectrumGenerator());
+                    generator.Add(LbmClass.PC, new PCSpectrumGenerator());
+                    generator.Add(LbmClass.PE, new PESpectrumGenerator());
+                    generator.Add(LbmClass.PG, new PGSpectrumGenerator());
+                    generator.Add(LbmClass.PI, new PISpectrumGenerator());
+                    generator.Add(LbmClass.PS, new PSSpectrumGenerator());
+                    @default = generator;
+                }
+                return @default;
+            }
+        }
+        private static ILipidSpectrumGenerator @default;
     }
 }

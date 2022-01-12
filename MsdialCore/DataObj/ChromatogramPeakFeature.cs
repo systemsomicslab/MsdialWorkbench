@@ -4,6 +4,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using MessagePack;
 using System;
 using System.Collections.Generic;
@@ -78,20 +79,6 @@ namespace CompMs.MsdialCore.DataObj {
             else {
                 return MSDecResultIdUsed;
             }
-            //if (IsMultiLayeredData()) {
-            //    //public int MSDecResultIdUsedForAnnotation() {
-            //    //    if (MSDecResultIdUsed == -1) {
-            //    //        return MasterPeakID;
-            //    //    }
-            //    //    else {
-            //    //        return MSDecResultIdUsed;
-            //    //    }
-            //    //}
-            //    return MasterPeakID;
-            //}
-            //else {
-            //    return PeakID;
-            //}
         }
 
         // link to raw data
@@ -139,9 +126,24 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(29)]
         public string InChIKey { get; set; } = string.Empty;
 
+        public string GetFormula(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeFormula(refer);
+        }
+
+        public string GetOntology(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeOntology(refer);
+        }
+
+        public string GetSMILES(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeSMILES(refer);
+        }
+
+        public string GetInChIKey(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeInChIKey(refer);
+        }
+
         public bool IsValidInChIKey() {
-            if (InChIKey == null || InChIKey == string.Empty || InChIKey.Length != 27) return false;
-            return true;
+            return !string.IsNullOrWhiteSpace(InChIKey) && InChIKey.Length == 27;
         }
 
 
@@ -316,7 +318,7 @@ namespace CompMs.MsdialCore.DataObj {
 
         // others
         [Key(41)]
-        public FeatureFilterStatus FeatureFilterStatus { get; set; }
+        public FeatureFilterStatus FeatureFilterStatus { get; set; } = new FeatureFilterStatus();
         [Key(42)]
         public List<ChromatogramPeakFeature> DriftChromFeatures { get; set; } = null;
         public bool IsMultiLayeredData() {

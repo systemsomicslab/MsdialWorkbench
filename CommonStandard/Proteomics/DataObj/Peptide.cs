@@ -37,7 +37,36 @@ namespace CompMs.Common.Proteomics.DataObj {
         public bool IsDecoy { get; set; } = false;
         [Key(7)]
         public int MissedCleavages { get; set; } = 0;
+        [Key(8)]
+        public int SamePeptideNumberInSearchedProteins { get; set; } = 0;
+        [Key(9)]
+        public Dictionary<int, int> ResidueCodeIndexToModificationIndex { get; set; } = new Dictionary<int, int>();
 
         public int CountModifiedAminoAcids() { return SequenceObj.Count(n => n.IsModified()); }
+
+        public void GenerateSequenceObj(string proteinSeq, int start, int end, Dictionary<int, int> ResidueCodeIndexToModificationIndex, Dictionary<int, string> ID2Code, Dictionary<string, AminoAcid> Code2AminoAcidObj) {
+            SequenceObj = GetSequenceObj(proteinSeq, start, end, ResidueCodeIndexToModificationIndex, ID2Code, Code2AminoAcidObj);
+        }
+
+        private List<AminoAcid> GetSequenceObj(string proteinSeq, int start, int end, 
+            Dictionary<int, int> ResidueCodeIndexToModificationIndex, Dictionary<int, string> iD2Code, Dictionary<string, AminoAcid> code2AminoAcidObj) {
+            var sequence = new List<AminoAcid>();
+            if (Math.Max(start, end) > proteinSeq.Length - 1) return null;
+            for (int i = start; i <= end; i++) {
+                var oneleter = proteinSeq[i];
+                if (ResidueCodeIndexToModificationIndex.ContainsKey(i)) {
+                    var residueID = ResidueCodeIndexToModificationIndex[i];
+                    var residueCode = iD2Code[residueID];
+                    var aa = code2AminoAcidObj[residueCode];
+                    sequence.Add(aa);
+                }
+                else {
+                    var residueCode = oneleter;
+                    var aa = code2AminoAcidObj[residueCode.ToString()];
+                    sequence.Add(aa);
+                }
+            }
+            return sequence;
+        }
     }
 }

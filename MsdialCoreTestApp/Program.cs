@@ -5,10 +5,13 @@ using CompMs.Common.FormulaGenerator.Parser;
 using CompMs.Common.Lipidomics;
 using CompMs.Common.Proteomics.Parser;
 using CompMs.MsdialCore.Utility;
+using CompMs.MsdialLcMsApi.Algorithm.PostCuration;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace CompMs.App.MsdialConsole {
     class Program {
@@ -109,17 +112,26 @@ namespace CompMs.App.MsdialConsole {
             // foreach (var spec in allspectra[1359].Spectrum)
             //     Console.WriteLine($"Mass = {spec.Mz}, Intensity = {spec.Intensity}");
 
-            var lipidGenerator = new LipidGenerator();
-            var spectrumGenerator = new PCSpectrumGenerator();
-            var adduct = Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+");
-            Common.Parser.MspFileParser.WriteAsMsp(
-                @"D:\PROJECT_EAD\output\PC_ALL.msp",
-                GeneratePCLipids()
-                    .SelectMany(lipid => lipid.Generate(lipidGenerator))
-                    .SelectMany(lipid => lipid.Generate(lipidGenerator))
-                    .Select(lipid => lipid.GenerateSpectrum(spectrumGenerator, adduct))
-                    .Cast<Common.Components.MoleculeMsReference>());
+            // var lipidGenerator = new LipidGenerator();
+            // var spectrumGenerator = new PCSpectrumGenerator();
+            // var adduct = Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+");
+            // Common.Parser.MspFileParser.WriteAsMsp(
+            //     @"D:\PROJECT_EAD\output\PC_ALL.msp",
+            //     GeneratePCLipids()
+            //         .SelectMany(lipid => lipid.Generate(lipidGenerator))
+            //         .SelectMany(lipid => lipid.Generate(lipidGenerator))
+            //         .Select(lipid => lipid.GenerateSpectrum(spectrumGenerator, adduct))
+            //         .Cast<Common.Components.MoleculeMsReference>());
 
+#if DEBUG
+            var projectPath = @"D:\msdial_test\Msdial\out\wine2\2022_01_05_13_17_26.mtd3";
+            var output = new MemoryStream();
+            // using var output = File.Open(@"D:\msdial_test\Msdial\out\wine2\output.tsv", FileMode.Create);
+            var tester = new Export.ExporterTest();
+            var curator = (PostCurator)null; // new PostCurator();
+            tester.Export(projectPath, output, curator);
+            Console.WriteLine(Encoding.UTF8.GetString(output.ToArray()));
+#endif
         }
 
         private static void DumpN(string file, int n) {

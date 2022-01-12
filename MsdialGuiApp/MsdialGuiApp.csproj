@@ -151,6 +151,9 @@
     <Compile Include="Dims\IsotopeTrackView.xaml.cs">
       <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="External Applications\MsDialIniField.cs" />
+    <Compile Include="External Applications\MsDialIniParcer.cs" />
+    <Compile Include="External Applications\MsDialToExternalApps.cs" />
     <Compile Include="Model\Chart\AlignmentPeakPlotModel.cs" />
     <Compile Include="Model\Chart\AnalysisPeakPlotModel.cs" />
     <Compile Include="Model\Chart\BarChartModel.cs" />
@@ -162,7 +165,14 @@
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\Chart\RawPurifiedSpectrumsModel.cs" />
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
+    <Compile Include="Model\Core\DatasetModel.cs" />
+    <Compile Include="Model\Core\IDatasetModel.cs" />
+    <Compile Include="Model\Core\IProcessCommand.cs" />
+    <Compile Include="Model\Core\IProjectModel.cs" />
     <Compile Include="Model\Core\MainWindowModel.cs" />
+    <Compile Include="Model\Core\ProcessCommand.cs" />
+    <Compile Include="Model\Core\ProjectModel.cs" />
+    <Compile Include="Model\Setting\ProjectSettingModel.cs" />
     <Compile Include="Model\DataObj\DisplayChromatogram.cs" />
     <Compile Include="Model\Dims\DimsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Dims\DimsAnnotatorSettingModel.cs" />
@@ -179,6 +189,7 @@
     <Compile Include="Model\Loader\TicLoader.cs" />
     <Compile Include="Model\Search\CompoundResultCollection.cs" />
     <Compile Include="Model\Setting\DisplayEicSettingModel.cs" />
+    <Compile Include="Model\Setting\FragmentQuerySettingModel.cs" />
     <Compile Include="Model\Setting\IdentifySettingModel.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
     <Compile Include="Model\Chart\AlignmentEicModel.cs" />
@@ -205,7 +216,6 @@
     <Compile Include="Model\Lcms\LcmsPeakSpotTableModel.cs" />
     <Compile Include="Model\Setting\TextDBAnnotationSettingModel.cs" />
     <Compile Include="Model\Loader\EicLoader.cs" />
-    <Compile Include="Model\Loader\MSDecLoader.cs" />
     <Compile Include="Model\Search\CompoundSearchModel.cs" />
     <Compile Include="Model\Setting\AnnotationProcessSettingModel.cs" />
     <Compile Include="Model\Setting\EnzymeSettingModel.cs" />
@@ -266,6 +276,7 @@
     <Compile Include="ViewModel\Lcimms\MsdialLcimmsParameterViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsCompoundSearchViewModel.cs" />
     <Compile Include="ViewModel\Setting\DisplayEicSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\FragmentQuerySettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\IdentifySettingViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
@@ -437,7 +448,7 @@
     <Compile Include="Lipidomics\LipidDbSetWindow.xaml.cs">
       <DependentUpon>LipidDbSetWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainWindowVM.cs" />
+    <Compile Include="ViewModel\Core\MainWindowVM.cs" />
     <Compile Include="ViewModel\Setting\AnalysisFilePropertySetViewModel.cs" />
     <Compile Include="View\Setting\AnalysisFilePropertyResettingWindow.xaml.cs">
       <DependentUpon>AnalysisFilePropertyResettingWindow.xaml</DependentUpon>
@@ -531,17 +542,26 @@
       <DependentUpon>AnnotationProcessSettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Setting\AnnotatorDataTemplateSelector.cs" />
+    <Compile Include="View\Setting\DatasetSettingView.xaml.cs">
+      <DependentUpon>DatasetSettingView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Setting\EICDisplaySettingView.xaml.cs">
       <DependentUpon>EICDisplaySettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Setting\EnzymeSettingWin.xaml.cs">
       <DependentUpon>EnzymeSettingWin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Setting\FragmentQuerySettingView.xaml.cs">
+      <DependentUpon>FragmentQuerySettingView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Setting\IdentifySettingView.xaml.cs">
       <DependentUpon>IdentifySettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Setting\ModificationSettingWin.xaml.cs">
       <DependentUpon>ModificationSettingWin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Setting\ProjectSettingView.xaml.cs">
+      <DependentUpon>ProjectSettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ShortMessageView.xaml.cs">
       <DependentUpon>ShortMessageView.xaml</DependentUpon>
@@ -810,7 +830,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="View\Core\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -818,7 +838,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="View\Core\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -906,6 +926,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Setting\DatasetSettingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Setting\EICDisplaySettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -914,11 +938,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Setting\FragmentQuerySettingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Setting\IdentifySettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\ModificationSettingWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\ProjectSettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -994,7 +1026,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />
@@ -1096,7 +1128,6 @@
   <ItemGroup>
     <Folder Include="Property\" />
     <Folder Include="ViewModel\Search\" />
-    <Folder Include="View\Core\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

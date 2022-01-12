@@ -581,6 +581,10 @@ namespace CompMs.MspGenerator
                 //    (workingFolder + @"\master\masterCCS_20201221_chk.tsv",
                 //     workingFolder + @"\masterCCS_NCDK_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
 
+                qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
+                    (@"E:\0_SourceCode\20211028_RT_prediction\sample\testDMPE_InChIKey-smiles.txt",
+                     @"E:\0_SourceCode\20211028_RT_prediction\sample\testDMPE_InChIKey-smiles-output.txt");
+
 
                 ////モデル作成
                 ////training file

@@ -8,6 +8,7 @@ using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
+using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -16,6 +17,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -267,7 +269,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     && RtFilter(spot)
                     && (!Ms2AcquiredChecked || spot.IsMsmsAssigned)
                     && (!MolecularIonChecked || spot.IsBaseIsotopeIon)
-                    && (!BlankFilterChecked || spot.IsBlankFiltered)
+                    && (!BlankFilterChecked || !spot.IsBlankFiltered)
+                    && (!UniquesIonsChecked || spot.IsFragmentQueryExisted)
                     && (!ManuallyModifiedChecked || spot.innerModel.IsManuallyModifiedForAnnotation)
                     && MetaboliteFilter(spot, MetaboliteFilterKeywords.Value)
                     && CommentFilter(spot, CommentFilterKeywords.Value);
@@ -367,6 +370,23 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             PlotViewModel?.VerticalAxis?.Focus(FocusMz - MzTol, FocusMz + MzTol);
         }
 
+        private void SaveSpectra(Window owner) {
+            var sfd = new SaveFileDialog {
+                Title = "Save spectra",
+                Filter = "NIST format(*.msp)|*.msp|MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf|MSFINDER format(*.mat)|*.mat;|SIRIUS format(*.ms)|*.ms",
+                RestoreDirectory = true,
+                AddExtension = true,
+            };
+
+            if (sfd.ShowDialog(owner) == true) {
+                var filename = sfd.FileName;
+                this.model.SaveSpectra(filename);
+            }
+        }
+
+        private bool CanSaveSpectra(Window owner) {
+            return this.model.CanSaveSpectra();
+        }
         public void SaveProject() {
             model.SaveProject();
         }
