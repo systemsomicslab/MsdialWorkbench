@@ -17,17 +17,9 @@ namespace CompMs.App.SpectrumViewer.Model
             Adduct = Adducts.First();
             Scans = new ObservableCollection<IMSScanProperty>();
 
-            var facadeParser = new FacadeLipidParser(); // TODO: build by static methods.
-            facadeParser.Add(new PCLipidParser());
-            facadeParser.Add(new EtherPELipidParser());
-            facadeParser.Add(new PGLipidParser());
-            lipidParser = facadeParser;
+            lipidParser = FacadeLipidParser.Default;
             lipidGenerator = new LipidGenerator();
-            var facadeGenerator = new FacadeLipidSpectrumGenerator(); // TODO: build by static methods.
-            facadeGenerator.Add(LbmClass.PC, new PCSpectrumGenerator());
-            facadeGenerator.Add(LbmClass.EtherPE, new EtherPESpectrumGenerator());
-            facadeGenerator.Add(LbmClass.PG, new PGSpectrumGenerator());
-            spectrumGenerator = facadeGenerator;
+            spectrumGenerator = FacadeLipidSpectrumGenerator.Default;
         }
 
         public string Name { get => Lipid.ToString(); }
