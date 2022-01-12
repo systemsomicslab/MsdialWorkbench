@@ -32,7 +32,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             ReferObject = reference;
 
             OriginalOrderedDecoyPeptideMsRef = reference.DecoyPeptideMsRef;
+            evaluator = MsScanMatchResultEvaluator.CreateEvaluatorWithSpectrum();
         }
+
+        private readonly IMatchResultRefer<PeptideMsReference, MsScanMatchResult> ReferObject;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public MsScanMatchResult Annotate(IPepAnnotationQuery query) {
             var msrefParam = query.MsRefSearchParameter ?? MsRefSearchParameter;
@@ -48,11 +52,15 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             var pepResults = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, PeptideMsRef, parameter, proteomicsParam);
             if (pepResults.IsEmptyOrNull()) return new List<MsScanMatchResult>();
 
+<<<<<<< HEAD
             var repForwardResult = pepResults[0];
             var repReverseRef = OriginalOrderedDecoyPeptideMsRef[repForwardResult.LibraryID];
 
             var decoyResult = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, repReverseRef, parameter, proteomicsParam);
             if (decoyResult is null) return new List<MsScanMatchResult>();
+=======
+            if (pepResults.IsEmptyOrNull() || decoyResults.IsEmptyOrNull()) return new List<MsScanMatchResult>();
+>>>>>>> origin/yuki.matsuzawa
             else {
                 decoyResult.LibraryIDWhenOrdered = repForwardResult.LibraryIDWhenOrdered;
 
@@ -79,12 +87,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
 
 
         private List<MsScanMatchResult> FindCandidatesCore(
-       IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, IonFeatureCharacter character, 
-       List<PeptideMsReference> pepMsRef, 
-       MsRefSearchParameterBase msrefSearchParam, ProteomicsParameter proteomicsParam) {
-            //if (Math.Abs(property.PrecursorMz - 447.54460) < 0.01 && Math.Abs(property.ChromXs.RT.Value - 21.866) < 0.1) {
-            //    Console.WriteLine();
-            //}
+            IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<IsotopicPeak> isotopes, IonFeatureCharacter character, 
+            List<PeptideMsReference> pepMsRef, 
+            MsRefSearchParameterBase msrefSearchParam, ProteomicsParameter proteomicsParam) {
             (var lo, var hi) = SearchBoundIndex(property, character, pepMsRef, msrefSearchParam.Ms1Tolerance);
             var results = new List<MsScanMatchResult>(hi - lo);
             for (var i = lo; i < hi; i++) {
@@ -118,7 +123,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
                 null, null, proteomicsParam.AndromedaDelta, proteomicsParam.AndromedaMaxPeaks);
             var singlyChargedMz = MolecularFormulaUtility.ConvertSinglyChargedPrecursorMzAsProtonAdduct(property.PrecursorMz, character.Charge);
             var ms1Tol = CalculateMassTolerance(msSearchParam.Ms1Tolerance, property.PrecursorMz);
-            var ms1Similarity = MsScanMatching.GetGaussianSimilarity(singlyChargedMz, reference.PrecursorMz, ms1Tol, out bool isMs1Match);
+            _ = MsScanMatching.GetGaussianSimilarity(singlyChargedMz, reference.PrecursorMz, ms1Tol, out bool isMs1Match);
 
             result.IsPrecursorMzMatch = isMs1Match;
             result.TotalScore = (float)MsScanMatching.GetTotalScore(result, msSearchParam);
@@ -189,36 +194,15 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
 
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            return results.Argmax(result => result.TotalScore);
+            return evaluator.SelectTopHit(results, parameter ?? MsRefSearchParameter);
         }
 
         public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            if (parameter is null) {
-                parameter = MsRefSearchParameter;
-            }
-            return results.Where(result => SatisfySuggestedConditions(result, parameter)).ToList();
-        }
-
-        private static bool Ms2Filtering(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            if (!result.IsPrecursorMzMatch && !result.IsSpectrumMatch) {
-                return false;
-            }
-            if (result.WeightedDotProduct < parameter.WeightedDotProductCutOff
-                || result.SimpleDotProduct < parameter.SimpleDotProductCutOff
-                || result.ReverseDotProduct < parameter.ReverseDotProductCutOff
-                || result.MatchedPeaksPercentage < parameter.MatchedPeaksPercentageCutOff
-                || result.MatchedPeaksCount < parameter.MinimumSpectrumMatch
-                || result.AndromedaScore < parameter.AndromedaScoreCutOff) {
-                return false;
-            }
-            return true;
+            return evaluator.FilterByThreshold(results, parameter ?? MsRefSearchParameter);
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            if (parameter is null) {
-                parameter = MsRefSearchParameter;
-            }
-            return results.Where(result => SatisfyRefMatchedConditions(result, parameter)).ToList();
+            return evaluator.SelectReferenceMatchResults(results, parameter ?? MsRefSearchParameter);
         }
 
         public override PeptideMsReference Refer(MsScanMatchResult result) {
@@ -226,25 +210,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         }
 
         public bool IsReferenceMatched(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            return SatisfyRefMatchedConditions(result, parameter ?? MsRefSearchParameter);
+            return evaluator.IsReferenceMatched(result, parameter ?? MsRefSearchParameter);
         }
 
         public bool IsAnnotationSuggested(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            if (parameter is null) {
-                parameter = MsRefSearchParameter;
-            }
-            return SatisfySuggestedConditions(result, parameter) && !SatisfyRefMatchedConditions(result, parameter);
-        }
-
-        private static bool SatisfyRefMatchedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            return result.IsPrecursorMzMatch
-                && result.IsSpectrumMatch
-                && (!parameter.IsUseTimeForAnnotationFiltering || result.IsRtMatch);
-        }
-
-        private static bool SatisfySuggestedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            return result.IsPrecursorMzMatch
-                && (!parameter.IsUseTimeForAnnotationFiltering || result.IsRtMatch);
+            return evaluator.IsAnnotationSuggested(result, parameter ?? MsRefSearchParameter);
         }
     }
 }

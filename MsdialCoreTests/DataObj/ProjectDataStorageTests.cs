@@ -16,7 +16,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
     {
         [TestMethod()]
         public async Task LoadTest() {
-            var projectParameter = new ParameterBase { ProjectFileName = "TestProject", };
+            var projectParameter = new ProjectParameter(DateTime.Parse("2021/12/16 23:14:30").ToUniversalTime(), DateTime.Parse("2021/12/16 23:15:20").ToUniversalTime(), "Folder", "TestProject");
             var proj = new ProjectDataStorage(projectParameter, new List<IMsdialDataStorage<ParameterBase>>());
             var storage1 = new MockStorage { Parameter = new ParameterBase { ProjectFileName = "Test1", } };
             var storage2 = new MockStorage { Parameter = new ParameterBase { ProjectFileName = "Test2", } };
@@ -34,7 +34,10 @@ namespace CompMs.MsdialCore.DataObj.Tests
             using (var streamManager = ZipStreamManager.OpenGet(stream)) {
                 var actual = await ProjectDataStorage.Load(streamManager, serializer);
 
-                Assert.AreEqual(proj.ProjectParameter.ProjectFileName, actual.ProjectParameter.ProjectFileName);
+                Assert.AreEqual(projectParameter.StartDate, actual.ProjectParameter.StartDate);
+                Assert.AreEqual(projectParameter.FinalSavedDate, actual.ProjectParameter.FinalSavedDate);
+                Assert.AreEqual(projectParameter.FolderPath, actual.ProjectParameter.FolderPath);
+                Assert.AreEqual(projectParameter.Title, actual.ProjectParameter.Title);
                 CollectionAssert.AreEqual(proj.ProjectPaths, actual.ProjectPaths);
                 Assert.AreEqual(proj.Storages.Count, actual.Storages.Count);
                 foreach ((var exp, var act) in proj.Storages.Zip(actual.Storages)) {

@@ -1,12 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.MsdialCore.Export;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace CompMs.MsdialCore.Export.Tests
 {
@@ -18,22 +19,20 @@ namespace CompMs.MsdialCore.Export.Tests
         {
             var expects =
 $@"NAME: XXX
-SCANNUMBER: 100
-RETENTIONTIME: 3
 PRECURSORMZ: 200
 PRECURSORTYPE: [M+H]+
-IONMODE: Positive
-INTENSITY: 10000
-ISOTOPE: M + 1
+RETENTIONTIME: 3
+FORMULA: C6
+ONTOLOGY: Molecule ontology
 INCHIKEY: ABCDEFG
 SMILES: CCCCCC
-FORMULA: C6
+COMMENT: Here is peak comment.|PEAKID=100|MS1SCAN=1000|MS2SCAN=2000|PEAKHEIGHT=10000|PEAKAREA=20000|ISOTOPE=M+1
 AUTHORS: A. BCD, E. FGD
 LICENSE: 2021, A. BCD
 COLLISIONENERGY: 1000
 INSTRUMENTTYPE: LC-MS/MS
 INSTRUMENT: YYYYY
-COMMENT: Here is comment.
+PARAMETERCOMMENT: Here is parameter comment.
 Num Peaks: 4
 100{"\t"}100
 118{"\t"}1000
@@ -45,19 +44,27 @@ Num Peaks: 4
             var chromPeakFeature = new ChromatogramPeakFeature
             {
                 Name = "XXX",
-                ChromScanIdTop = 100,
-                ChromXsTop = new Common.Components.ChromXs(3),
+                MasterPeakID = 100,
+                MS1RawSpectrumIdTop = 1000,
+                MS2RawSpectrumID = 2000,
+                ChromXsTop = new ChromXs(3),
                 PrecursorMz = 200,
                 AdductType = Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+"),
                 IonMode = Common.Enum.IonMode.Positive,
                 PeakHeightTop = 10_000,
+                PeakAreaAboveZero = 20_000,
                 PeakCharacter = new IonFeatureCharacter
                 {
                     IsotopeWeightNumber = 1,
                 },
+                Comment = "Here is peak comment.",
+            };
+            var reference = new MoleculeMsReference
+            {
+                Ontology = "Molecule ontology",
                 InChIKey = "ABCDEFG",
                 SMILES = "CCCCCC",
-                Formula = new Common.DataObj.Property.Formula("C6"),
+                Formula = Common.FormulaGenerator.Parser.FormulaStringParcer.Convert2FormulaObjV2("C6"),
             };
             var parameter = new ParameterBase
             {
@@ -66,21 +73,22 @@ Num Peaks: 4
                 CollisionEnergy = "1000",
                 InstrumentType = "LC-MS/MS",
                 Instrument = "YYYYY",
-                Comment = "Here is comment.",
+                Comment = "Here is parameter comment.",
             };
             var msdecResult = new MSDecResult
             {
-                Spectrum = new List<Common.Components.SpectrumPeak>
+                Spectrum = new List<SpectrumPeak>
                 {
-                    new Common.Components.SpectrumPeak { Mass = 100, Intensity = 100 },
-                    new Common.Components.SpectrumPeak { Mass = 118, Intensity = 1000 },
-                    new Common.Components.SpectrumPeak { Mass = 200, Intensity = 2000 },
-                    new Common.Components.SpectrumPeak { Mass = 300, Intensity = 500 },
+                    new SpectrumPeak { Mass = 100, Intensity = 100 },
+                    new SpectrumPeak { Mass = 118, Intensity = 1000 },
+                    new SpectrumPeak { Mass = 200, Intensity = 2000 },
+                    new SpectrumPeak { Mass = 300, Intensity = 500 },
                 }
             };
+            var refer = new MockRefer(reference);
 
             var stream = new MemoryStream();
-            SpectraExport.SaveSpectraTableAsNistFormat(stream, chromPeakFeature, msdecResult.Spectrum, parameter);
+            SpectraExport.SaveSpectraTableAsNistFormat(stream, chromPeakFeature, msdecResult.Spectrum, refer, parameter);
             var buffer = stream.GetBuffer();
             var actual = System.Text.Encoding.ASCII.GetString(buffer);
             Console.WriteLine($"Expect:\n{expects}");
@@ -92,23 +100,21 @@ Num Peaks: 4
         public void SaveSpectraTableAsNistFormatUnknownTest()
         {
             var expects =
-$@"NAME: Unknown
-SCANNUMBER: 100
-RETENTIONTIME: 3
+$@"NAME: Unknown|ID=0200|RT=3
 PRECURSORMZ: 200
 PRECURSORTYPE: [M+H]+
-IONMODE: Positive
-INTENSITY: 10000
-ISOTOPE: M + 1
+RETENTIONTIME: 3
+FORMULA: C6
+ONTOLOGY: Molecule ontology
 INCHIKEY: ABCDEFG
 SMILES: CCCCCC
-FORMULA: C6
+COMMENT: |PEAKID=0|MS1SCAN=0|MS2SCAN=-1|PEAKHEIGHT=10000|PEAKAREA=0|ISOTOPE=M+1
 AUTHORS: A. BCD, E. FGD
 LICENSE: 2021, A. BCD
 COLLISIONENERGY: 1000
 INSTRUMENTTYPE: LC-MS/MS
 INSTRUMENT: YYYYY
-COMMENT: Here is comment.
+PARAMETERCOMMENT: Here is parameter comment.
 Num Peaks: 4
 100{"\t"}100
 118{"\t"}1000
@@ -121,7 +127,7 @@ Num Peaks: 4
             {
                 Name = string.Empty,
                 ChromScanIdTop = 100,
-                ChromXsTop = new Common.Components.ChromXs(3),
+                ChromXsTop = new ChromXs(3),
                 PrecursorMz = 200,
                 AdductType = Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+"),
                 IonMode = Common.Enum.IonMode.Positive,
@@ -130,9 +136,13 @@ Num Peaks: 4
                 {
                     IsotopeWeightNumber = 1,
                 },
+            };
+            var reference = new MoleculeMsReference
+            {
+                Ontology = "Molecule ontology",
                 InChIKey = "ABCDEFG",
                 SMILES = "CCCCCC",
-                Formula = new Common.DataObj.Property.Formula("C6"),
+                Formula = Common.FormulaGenerator.Parser.FormulaStringParcer.Convert2FormulaObjV2("C6"),
             };
             var parameter = new ParameterBase
             {
@@ -141,26 +151,42 @@ Num Peaks: 4
                 CollisionEnergy = "1000",
                 InstrumentType = "LC-MS/MS",
                 Instrument = "YYYYY",
-                Comment = "Here is comment.",
+                Comment = "Here is parameter comment.",
             };
             var msdecResult = new MSDecResult
             {
-                Spectrum = new List<Common.Components.SpectrumPeak>
+                Spectrum = new List<SpectrumPeak>
                 {
-                    new Common.Components.SpectrumPeak { Mass = 100, Intensity = 100 },
-                    new Common.Components.SpectrumPeak { Mass = 118, Intensity = 1000 },
-                    new Common.Components.SpectrumPeak { Mass = 200, Intensity = 2000 },
-                    new Common.Components.SpectrumPeak { Mass = 300, Intensity = 500 },
+                    new SpectrumPeak { Mass = 100, Intensity = 100 },
+                    new SpectrumPeak { Mass = 118, Intensity = 1000 },
+                    new SpectrumPeak { Mass = 200, Intensity = 2000 },
+                    new SpectrumPeak { Mass = 300, Intensity = 500 },
                 }
             };
+            var refer = new MockRefer(reference);
 
             var stream = new MemoryStream();
-            SpectraExport.SaveSpectraTableAsNistFormat(stream, chromPeakFeature, msdecResult.Spectrum, parameter);
+            SpectraExport.SaveSpectraTableAsNistFormat(stream, chromPeakFeature, msdecResult.Spectrum, refer, parameter);
             var buffer = stream.GetBuffer();
             var actual = System.Text.Encoding.ASCII.GetString(buffer);
             Console.WriteLine($"Expect:\n{expects}");
             Console.WriteLine($"Actual:\n{actual}");
             Assert.AreEqual(expects, actual);
+        }
+    }
+
+    class MockRefer : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>
+    {
+        public MockRefer(MoleculeMsReference reference) {
+            Reference = reference;
+        }
+
+        public string Key => "";
+
+        public MoleculeMsReference Reference { get; }
+
+        public MoleculeMsReference Refer(MsScanMatchResult result) {
+            return Reference;
         }
     }
 }

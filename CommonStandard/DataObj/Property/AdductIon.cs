@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using CompMs.Common.Enum;
+using CompMs.Common.Parser;
 using MessagePack;
-using CompMs.Common.Enum;
 
-namespace CompMs.Common.DataObj.Property {
+namespace CompMs.Common.DataObj.Property
+{
     /// <summary>
     /// This is the storage of adduct ion information.
     /// </summary>
@@ -72,6 +70,35 @@ namespace CompMs.Common.DataObj.Property {
         public override string ToString() {
             return AdductIonName;
         }
+
+        public static AdductIon GetAdductIon(string adductName) {
+            AdductIon adduct = new AdductIon() { AdductIonName = adductName };
+
+            if (!AdductIonParser.IonTypeFormatChecker(adductName)) {
+                adduct.FormatCheck = false;
+                return adduct;
+            }
+
+            var chargeNum = AdductIonParser.GetChargeNumber(adductName);
+            if (chargeNum == -1) {
+                adduct.FormatCheck = false;
+                return adduct;
+            }
+
+            var adductIonXmer = AdductIonParser.GetAdductIonXmer(adductName);
+            var ionType = AdductIonParser.GetIonType(adductName);
+            var isRadical = AdductIonParser.GetRadicalInfo(adductName);
+
+            AdductIonParser.SetAccurateMassAndIsotopeRatio(adduct);
+
+            adduct.AdductIonXmer = adductIonXmer;
+            adduct.ChargeNumber = chargeNum;
+            adduct.FormatCheck = true;
+            adduct.IonMode = ionType;
+            adduct.IsRadical = isRadical;
+
+            return adduct;
+        }
     }
 
 
@@ -81,19 +108,24 @@ namespace CompMs.Common.DataObj.Property {
     /// </summary>
     [MessagePackObject]
     public class AdductDiff {
-        public AdductDiff(AdductIon posAdduct, AdductIon negAdduct) {
+        public AdductDiff(AdductIon posAdduct, AdductIon negAdduct) : this(posAdduct, negAdduct, posAdduct.AdductIonAccurateMass - negAdduct.AdductIonAccurateMass) {
+
+        }
+
+        [SerializationConstructor]
+        public AdductDiff(AdductIon posAdduct, AdductIon negAdduct, double diff) {
             PosAdduct = posAdduct;
             NegAdduct = negAdduct;
-            Diff = posAdduct.AdductIonAccurateMass - negAdduct.AdductIonAccurateMass;
+            Diff = diff;
         }
 
         #region // properties
         [Key(0)]
-        public AdductIon PosAdduct { get; set; }
+        public AdductIon PosAdduct { get; }
         [Key(1)]
-        public AdductIon NegAdduct { get; set; }
+        public AdductIon NegAdduct { get; }
         [Key(2)]
-        public double Diff { get; set; } // pos - neg
+        public double Diff { get; } // pos - neg
         #endregion
     }
 }

@@ -82,6 +82,7 @@
     <Compile Include="Model\Lcimms\LcimmsAnalysisParameterSetModelTests.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisParameterSetModelTests.cs" />
     <Compile Include="Model\Loader\MSDecLoaderTests.cs" />
+    <Compile Include="Model\Core\MainWindowModelTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\MsRefSearchParameterBaseViewModelTests.cs" />
     <Compile Include="ViewModel\Setting\IdentifySettingViewModelTests.cs" />

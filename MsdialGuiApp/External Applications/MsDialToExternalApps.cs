@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -37,16 +38,18 @@ namespace CompMs.App.Msdial.ExternalApp {
             var timeString = dt.Year.ToString() + "_" + dt.Month.ToString() + "_" + dt.Day.ToString() + "_" + dt.Hour.ToString() + dt.Minute.ToString();
             var id = feature.MasterPeakID;
             var fileString = file.AnalysisFileName;
-            var filePath = System.IO.Path.Combine(msdialTempDir, timeString + "_" + fileString + "_" + id + "." + ExportSpectraFileFormat.mat);
+            var filePath = Path.Combine(msdialTempDir, timeString + "_" + fileString + "_" + id + "." + ExportSpectraFileFormat.mat);
 
-            SpectraExport.SaveSpectraTable(
-                ExportSpectraFileFormat.mat,
-                filePath,
-                feature,
-                scan,
-                spectrumList,
-                mapper,
-                param);
+            using (var fileStream = File.Open(filePath, FileMode.Create)) {
+                SpectraExport.SaveSpectraTable(
+                    ExportSpectraFileFormat.mat,
+                    fileStream,
+                    feature,
+                    scan,
+                    spectrumList,
+                    mapper,
+                    param);
+            }
 
             var process = new Process();
             process.StartInfo.FileName = msdialIni.MsfinderFilePath;
@@ -70,15 +73,17 @@ namespace CompMs.App.Msdial.ExternalApp {
             var timeString = dt.Year.ToString() + "_" + dt.Month.ToString() + "_" + dt.Day.ToString() + "_" + dt.Hour.ToString() + dt.Minute.ToString();
             var id = feature;
             var fileString = file.FileName;
-            var filePath = System.IO.Path.Combine(msdialTempDir, timeString + "_" + fileString + "_" + id + "." + ExportSpectraFileFormat.mat);
+            var filePath = Path.Combine(msdialTempDir, timeString + "_" + fileString + "_" + id + "." + ExportSpectraFileFormat.mat);
 
-            SpectraExport.SaveSpectraTable(
-                ExportSpectraFileFormat.mat,
-                filePath,
-                feature,
-                scan,
-                mapper,
-                param);
+            using (var fileStream = File.Open(filePath, FileMode.Create)) {
+                SpectraExport.SaveSpectraTable(
+                    ExportSpectraFileFormat.mat,
+                    fileStream,
+                    feature,
+                    scan,
+                    mapper,
+                    param);
+            }
 
             var process = new Process();
             process.StartInfo.FileName = msdialIni.MsfinderFilePath;

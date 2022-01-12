@@ -46,20 +46,31 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public StandardAnnotationProcess(
             IAnnotationQueryFactory<T> queryFactory,
+            IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult> container) {
+            containerPairs = new List<(IAnnotationQueryFactory<T> Factory, IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult> Container)>
+            {
+                (queryFactory, container)
+            };
+        }
+
+        public StandardAnnotationProcess(
+            IAnnotationQueryFactory<T> queryFactory,
             IReadOnlyList<IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult>> containers) {
-            QueryFactory = queryFactory;
-            AnnotatorContainers = containers;
+            containerPairs = containers.Select(container => (queryFactory, container)).ToList();
         }
 
         public StandardAnnotationProcess(
             IAnnotationQueryFactory<T> queryFactory,
             params IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult>[] containers) {
-            QueryFactory = queryFactory;
-            AnnotatorContainers = containers;
+            containerPairs = containers.Select(container => (queryFactory, container)).ToList();
         }
 
-        public IAnnotationQueryFactory<T> QueryFactory { get; }
-        public IReadOnlyList<IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
+        public StandardAnnotationProcess(
+            List<(IAnnotationQueryFactory<T>, IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult>)> containerPairs) {
+            this.containerPairs = containerPairs;
+        }
+
+        private readonly List<(IAnnotationQueryFactory<T> Factory, IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult> Container)> containerPairs;
 
         private void RunBySingleThread(
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
@@ -150,15 +161,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             ChromatogramPeakFeature chromPeakFeature,
             MSDecResult msdecResult,
             IReadOnlyList<RawSpectrum> msSpectrums) {
-            var query = QueryFactory.Create(
-                chromPeakFeature, 
-                msdecResult, 
-                msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum, 
-                chromPeakFeature.PeakCharacter);
-            var annotatorContainers = AnnotatorContainers;
 
-            foreach (var annotatorContainer in annotatorContainers) {
-                SetAnnotationResult(chromPeakFeature, query, annotatorContainer);
+            foreach (var containerPair in containerPairs) {
+                var query = containerPair.Factory.Create(
+                    chromPeakFeature,
+                    msdecResult,
+                    msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
+                    chromPeakFeature.PeakCharacter,
+                    containerPair.Container.Parameter);
+                SetAnnotationResult(chromPeakFeature, query, containerPair.Container);
             }
             SetRepresentativeProperty(chromPeakFeature);
         }
@@ -168,16 +179,16 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             MSDecResult msdecResult,
             IReadOnlyList<RawSpectrum> msSpectrums,
             CancellationToken token = default) {
-            var query = QueryFactory.Create(
-                chromPeakFeature, 
-                msdecResult, 
-                msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum, 
-                chromPeakFeature.PeakCharacter);
-            var annotatorContainers = AnnotatorContainers;
 
-            foreach (var annotatorContainer in annotatorContainers) {
+            foreach (var containerPair in containerPairs) {
+                var query = containerPair.Factory.Create(
+                    chromPeakFeature,
+                    msdecResult,
+                    msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
+                    chromPeakFeature.PeakCharacter,
+                    containerPair.Container.Parameter);
                 token.ThrowIfCancellationRequested();
-                await Task.Run(() => SetAnnotationResult(chromPeakFeature, query, annotatorContainer), token);
+                await Task.Run(() => SetAnnotationResult(chromPeakFeature, query, containerPair.Container), token);
             }
             token.ThrowIfCancellationRequested();
             SetRepresentativeProperty(chromPeakFeature);
@@ -204,14 +215,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         private void SetRepresentativeProperty(ChromatogramPeakFeature chromPeakFeature) {
             var representative = chromPeakFeature.MatchResults.Representative;
-            var annotator = AnnotatorContainers.FirstOrDefault(annotatorContainer => representative.AnnotatorID == annotatorContainer.AnnotatorID)?.Annotator;
+            var container = containerPairs.FirstOrDefault(containerPair => representative.AnnotatorID == containerPair.Container.AnnotatorID).Container;
+            var annotator = container?.Annotator;
             if (annotator is null) {
                 return;
             }
-            else if (annotator.IsReferenceMatched(representative)) {
+            else if (annotator.IsReferenceMatched(representative, container.Parameter)) {
                 DataAccess.SetMoleculeMsProperty(chromPeakFeature, annotator.Refer(representative), representative);
             }
-            else if (annotator.IsAnnotationSuggested(representative)) {
+            else if (annotator.IsAnnotationSuggested(representative, container.Parameter)) {
                 DataAccess.SetMoleculeMsPropertyAsSuggested(chromPeakFeature, annotator.Refer(representative), representative);
             }
         }

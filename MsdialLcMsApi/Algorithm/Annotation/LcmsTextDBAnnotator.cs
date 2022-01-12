@@ -2,7 +2,6 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
@@ -24,7 +23,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             : base(textDB.Database, parameter, annotatorID, priority, SourceType.TextDB) {
             this.db.Sort(comparer);
             this.ReferObject = textDB;
+            Evaluator = MsScanMatchResultEvaluator.CreateEvaluator();
         }
+
+        private readonly IMatchResultEvaluator<MsScanMatchResult> Evaluator;
 
         public MsScanMatchResult Annotate(IAnnotationQuery query) {
             var parameter = query.Parameter ?? Parameter;
@@ -158,42 +160,23 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            return results.Argmax(result => result.TotalScore);
+            return Evaluator.SelectTopHit(results, parameter ?? Parameter);
         }
 
         public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            if (parameter is null) {
-                parameter = Parameter;
-            }
-            return results.Where(result => SatisfyRefMatchedConditions(result, parameter)).ToList();
+            return Evaluator.FilterByThreshold(results, parameter ?? Parameter);
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            if (parameter is null) {
-                parameter = Parameter;
-            }
-            return results.Where(result => SatisfySuggestedConditions(result, parameter)).ToList();
-        }
-
-        private static bool SatisfyRefMatchedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            return result.IsPrecursorMzMatch
-                && (!parameter.IsUseTimeForAnnotationFiltering || result.IsRtMatch);
-        }
-
-        private static bool SatisfySuggestedConditions(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            return result.IsPrecursorMzMatch
-                && (!parameter.IsUseTimeForAnnotationFiltering || result.IsRtMatch);
+            return Evaluator.SelectReferenceMatchResults(results, parameter ?? Parameter);
         }
 
         public bool IsReferenceMatched(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            return SatisfyRefMatchedConditions(result, parameter ?? Parameter);
+            return Evaluator.IsReferenceMatched(result, parameter ?? Parameter);
         }
 
         public bool IsAnnotationSuggested(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            if (parameter is null) {
-                parameter = Parameter;
-            }
-            return SatisfySuggestedConditions(result, parameter) && !SatisfyRefMatchedConditions(result, parameter);
+            return Evaluator.IsAnnotationSuggested(result, parameter ?? Parameter);
         }
     }
 }

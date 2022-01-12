@@ -33,7 +33,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var annotator = new DimsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
-            var result = annotator.Annotate(BuildQuery(target));
+            var result = annotator.Annotate(BuildQuery(target, annotator));
 
             Assert.AreEqual(db[1].InChIKey, result.InChIKey);
         }
@@ -57,7 +57,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var annotator = new DimsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
-            var result = annotator.Annotate(BuildQuery(target));
+            var result = annotator.Annotate(BuildQuery(target, annotator));
 
             Assert.AreEqual(db[1].InChIKey, result.InChIKey);
         }
@@ -81,7 +81,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var annotator = new DimsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100 };
-            var results = annotator.FindCandidates(BuildQuery(target));
+            var results = annotator.FindCandidates(BuildQuery(target, annotator));
             var expected = new[]
             {
                 db[0].Name, db[1].Name, db[2].Name,
@@ -127,7 +127,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var result = annotator.CalculateScore(BuildQuery(target), reference);
+            var result = annotator.CalculateScore(BuildQuery(target, annotator), reference);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");
@@ -247,7 +247,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var annotator = new DimsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.009 };
-            var result = annotator.Annotate(BuildQuery(target));
+            var result = annotator.Annotate(BuildQuery(target, annotator));
 
             var reference = annotator.Refer(result);
 
@@ -272,7 +272,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var annotator = new DimsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100.008 };
-            var results = annotator.Search(BuildQuery(target));
+            var results = annotator.Search(BuildQuery(target, annotator));
 
             CollectionAssert.AreEqual(db.GetRange(1, 2), results);
         }
@@ -358,8 +358,8 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             CollectionAssert.AreEqual(new[] { false, false, true, false, }, actuals);
         }
 
-        private AnnotationQuery BuildQuery(ChromatogramPeakFeature target) {
-            return new AnnotationQuery(target, target, null, null, null);
+        private AnnotationQuery BuildQuery(ChromatogramPeakFeature target, DimsMspAnnotator annotator) {
+            return new AnnotationQuery(target, target, null, null, new MsRefSearchParameterBase(), annotator);
         }
     }
 }

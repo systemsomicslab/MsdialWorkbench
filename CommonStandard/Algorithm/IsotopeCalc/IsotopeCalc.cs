@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.FormulaGenerator.Parser;
 using CompMs.Common.Mathematics.Basic;
 
 namespace CompMs.Common.Algorithm.IsotopeCalc {
     /// <summary>
     /// This class will be used to calculate the theoretical isotopic abundances from formula string.
     /// </summary>
-    public sealed class IsotopeCalculator {
-        private IsotopeCalculator() { }
-
+    public static  class IsotopeCalculator {
         /// <summary>
         /// This method calculate the theoretical isotopic abundances with the exact m/z from the molecular formula string such as C6H12O6.
         /// </summary>
@@ -23,7 +21,7 @@ namespace CompMs.Common.Algorithm.IsotopeCalc {
         /// <returns>This program returns the theoretical isotopic abundances with the exact m/z values.</returns>
         public static IsotopeProperty GetAccurateIsotopeProperty(string elementName, int massFilter, IupacDatabase iupacReferenceBean) {
             IsotopeProperty compoundPropertyBean = new IsotopeProperty();
-            compoundPropertyBean.Formula = new Formula(elementName);
+            compoundPropertyBean.Formula = FormulaStringParcer.Convert2FormulaObjV2(elementName);
             compoundPropertyBean.ElementProfile = GetBasicCompoundElementProfile(elementName);
 
             if (compoundPropertyBean.ElementProfile == null) return null;
@@ -47,7 +45,7 @@ namespace CompMs.Common.Algorithm.IsotopeCalc {
         /// <returns>This program returns the theoretical isotopic abundances with the nominal m/z values.</returns>
         public static IsotopeProperty GetNominalIsotopeProperty(string elementName, int massFilter, IupacDatabase iupacReferenceBean) {
             IsotopeProperty compoundPropertyBean = new IsotopeProperty();
-            compoundPropertyBean.Formula = new Formula(elementName);
+            compoundPropertyBean.Formula = FormulaStringParcer.Convert2FormulaObjV2(elementName);
             compoundPropertyBean.ElementProfile = GetBasicCompoundElementProfile(elementName);
 
             if (compoundPropertyBean.ElementProfile == null) return null;

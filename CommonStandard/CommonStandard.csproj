@@ -13,6 +13,7 @@
     <None Remove="Resources\AdductIonResource_Positive.txt" />
     <None Remove="Resources\IUPAC.txt" />
     <None Remove="Resources\LbmQueries.txt" />
+    <None Remove="Resources\LipidClassProperties.csv" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +25,7 @@
     <EmbeddedResource Include="Resources\AdductIonResource_Positive.txt" />
     <EmbeddedResource Include="Resources\IUPAC.txt" />
     <EmbeddedResource Include="Resources\LbmQueries.txt" />
+    <EmbeddedResource Include="Resources\LipidClassProperties.csv" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,16 +1,13 @@
 ﻿using CompMs.Common.DataObj.Property;
-using CompMs.Common.FormulaGenerator.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
-namespace CompMs.Common.FormulaGenerator.Parser {
-    public sealed class FormulaStringParcer
+namespace CompMs.Common.FormulaGenerator.Parser
+{
+    public static class FormulaStringParcer
     {
-        private FormulaStringParcer() { }
-
         public static Formula OrganicElementsReader(string formulaString)
         {
             if (formulaString == null) return null;
@@ -254,189 +251,6 @@ namespace CompMs.Common.FormulaGenerator.Parser {
             }
 
             return new Formula(dict);
-        }
-
-        public static Formula Convert2FormulaObj(string formulaString) {
-            MatchCollection mc;
-
-            var cnum = 0;
-            var hnum = 0;
-            var pnum = 0;
-            var snum = 0;
-            var onum = 0;
-            var nnum = 0;
-            var fnum = 0;
-            var clnum = 0;
-            var brnum = 0;
-            var inum = 0;
-            var sinum = 0;
-            var c13num = 0;
-            var h2num = 0;
-            var n15num = 0;
-            var o18num = 0;
-            var s34num = 0;
-            var cl37num = 0;
-            var br81num = 0;
-            var senum = 0;
-
-            #region // element parser
-            mc = Regex.Matches(formulaString, "C(?!a|d|e|l|o|r|s|u)([0-9]*)", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) cnum = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out cnum);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "H(?!e|f|g|o)([0-9]*)", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) hnum = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out hnum);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "N(?!a|b|d|e|i)([0-9]*)", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) nnum = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out nnum);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "O(?!s)([0-9]*)", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) onum = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out onum);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "S(?!b|c|e|i|m|n|r)([0-9]*)", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) snum = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out snum);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "P(?!d|t|b|r)([0-9]*)", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) pnum = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out pnum);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "Br([0-9]*)", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) brnum = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out brnum);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "Cl([0-9]*)", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) clnum = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out clnum);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "F(?!e)([0-9]*)", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) fnum = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out fnum);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "I(?!n|r)([0-9]*)", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) inum = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out inum);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "Si([0-9]*)", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) sinum = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out sinum);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "\\[13C([0-9]*)\\]", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) c13num = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out c13num);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "\\[2H([0-9]*)\\]", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) h2num = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out h2num);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "\\[15N([0-9]*)\\]", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) n15num = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out n15num);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "\\[18O([0-9]*)\\]", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) o18num = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out o18num);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "\\[34S([0-9]*)\\]", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) s34num = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out s34num);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "\\[37Cl([0-9]*)\\]", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) cl37num = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out cl37num);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "\\[81Br([0-9]*)\\]", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) br81num = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out br81num);
-                }
-            }
-
-            mc = Regex.Matches(formulaString, "Se([0-9]*)", RegexOptions.None);
-            if (mc.Count > 0) {
-                if (mc[0].Groups[1].Value == string.Empty) senum = 1;
-                else {
-                    int.TryParse(mc[0].Groups[1].Value, out senum);
-                }
-            }
-            #endregion
-            var formula = new Formula(cnum, hnum, nnum, onum, pnum, snum, fnum, clnum, brnum, inum, sinum,
-                c13num, h2num, n15num, o18num, s34num, cl37num, br81num, senum);
-            if (formula.FormulaString.Length == formulaString.Length) formula.IsCorrectlyImported = true;
-
-            return formula;
         }
 
         private static void setElementNumbers(string formulaString, out int cnum, out int hnum, out int nnum, out int onum, out int pnum, out int snum, out int fnum,

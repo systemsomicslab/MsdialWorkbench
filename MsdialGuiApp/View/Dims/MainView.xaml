@@ -342,6 +342,9 @@
                             <chart:ExpRefView>
                                 <chart:ExpRefView.ContextMenu>
                                     <ContextMenu>
+                                        <MenuItem Header="Copy spectra as.." Command="{Binding CopyMs2SpectrumCommand, Mode=OneTime}">
+                                            <MenuItem Header="Copy spectra as msp" Command="{Binding CopyMs2SpectrumCommand, Mode=OneTime}"/>
+                                        </MenuItem>
                                         <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
                                     </ContextMenu>
                                 </chart:ExpRefView.ContextMenu>
@@ -356,6 +359,9 @@
                             <chart:RepRefView>
                                 <chart:RepRefView.ContextMenu>
                                     <ContextMenu>
+                                        <MenuItem Header="Copy spectra as.." Command="{Binding CopyMs2SpectrumCommand, Mode=OneTime}">
+                                            <MenuItem Header="Copy spectra as msp" Command="{Binding CopyMs2SpectrumCommand, Mode=OneTime}"/>
+                                        </MenuItem>
                                         <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
                                     </ContextMenu>
                                 </chart:RepRefView.ContextMenu>

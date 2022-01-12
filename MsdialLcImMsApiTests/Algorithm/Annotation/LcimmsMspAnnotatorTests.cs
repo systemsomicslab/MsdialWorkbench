@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
+using CompMs.Common.Parser;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -38,7 +39,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
-            var result = annotator.Annotate(BuildQuery(target));
+            var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
 
             Assert.AreEqual(db[1].InChIKey, result.InChIKey);
         }
@@ -68,7 +69,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
-            var result = annotator.Annotate(BuildQuery(target));
+            var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
 
             Assert.AreEqual(db[1].InChIKey, result.InChIKey);
         }
@@ -98,7 +99,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
-            var result = annotator.Annotate(BuildQuery(target));
+            var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
 
             Assert.AreEqual(db[4].InChIKey, result.InChIKey);
         }
@@ -128,7 +129,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
-            var results = annotator.FindCandidates(BuildQuery(target));
+            var results = annotator.FindCandidates(BuildQuery(target, parameter, annotator));
             var expected = new[]
             {
                 db[0].InChIKey, db[1].InChIKey, db[2].InChIKey,
@@ -160,7 +161,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
-            var results = annotator.FindCandidates(BuildQuery(target));
+            var results = annotator.FindCandidates(BuildQuery(target, parameter, annotator));
             var expected = new[]
             {
                 db[0].InChIKey, db[1].InChIKey, db[2].InChIKey, db[4].InChIKey,
@@ -340,7 +341,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
-            var result = annotator.Annotate(BuildQuery(target));
+            var result = annotator.Annotate(BuildQuery(target, parameter, annotator));
 
             var reference = annotator.Refer(result);
 
@@ -370,7 +371,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
-            var results = annotator.Search(BuildQuery(target));
+            var results = annotator.Search(BuildQuery(target, parameter, annotator));
 
             CollectionAssert.AreEquivalent(new[] { db[0], db[1], db[2], }, results);
         }
@@ -398,7 +399,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
 
             var target = BuildPeak(100, 2, 100);
-            var results = annotator.Search(BuildQuery(target));
+            var results = annotator.Search(BuildQuery(target, parameter, annotator));
 
             CollectionAssert.AreEquivalent(new[] { db[0], db[1], db[2], db[4], }, results);
         }
@@ -441,7 +442,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 new SpectrumPeak { Mass = 810.604, Intensity = 25, },
             };
 
-            var result = annotator.CalculateScore(BuildQuery(target), reference);
+            var result = annotator.CalculateScore(BuildQuery(target, parameter, annotator), reference);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"CcsSimilarity: {result.CcsSimilarity}");
@@ -493,62 +494,11 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
         }
 
         [TestMethod()]
-        public void CalculateScoreCcsMatchTest() {
-            var reference = new MoleculeMsReference {
-                Name = "PC 18:0_20:4", CompoundClass = "PC",
-                PrecursorMz = 810.601,
-                ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min),
-                CollisionCrossSection = 100,
-                AdductType = Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+"),
-                Spectrum = new List<SpectrumPeak>
-                {
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100 },
-                    new SpectrumPeak { Mass = 506.361, Intensity = 5 },
-                    new SpectrumPeak { Mass = 524.372, Intensity = 5 },
-                    new SpectrumPeak { Mass = 526.330, Intensity = 5 },
-                    new SpectrumPeak { Mass = 544.340, Intensity = 5 },
-                    new SpectrumPeak { Mass = 810.601, Intensity = 30 },
-                }
-            };
-            var parameter = new MsRefSearchParameterBase
-            {
-                Ms1Tolerance = 0.01f,
-                Ms2Tolerance = 0.05f,
-                RtTolerance = 0.6f,
-                CcsTolerance = 12f,
-                IsUseTimeForAnnotationScoring = true,
-                IsUseCcsForAnnotationScoring = true,
-            };
-            var annotator = new LcimmsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, Common.Enum.TargetOmics.Lipidomics, "MspDB", -1);
-
-            var target = BuildPeak(810.604, 2.7, 111);
-            target.Spectrum = new List<SpectrumPeak>
-            {
-                new SpectrumPeak { Mass = 86.094, Intensity = 5, },
-                new SpectrumPeak { Mass = 184.073, Intensity = 100, },
-                new SpectrumPeak { Mass = 524.367, Intensity = 1, },
-                new SpectrumPeak { Mass = 810.604, Intensity = 25, },
-            };
-
-            var result = annotator.CalculateScore(BuildQuery(target), reference);
-
-            Console.WriteLine($"RtSimilarity: {result.RtSimilarity}");
-            Console.WriteLine($"IsRtMatch: {result.IsRtMatch}");
-            Console.WriteLine($"CcsSimilarity: {result.CcsSimilarity}");
-            Console.WriteLine($"IsCcsMatch: {result.IsCcsMatch}");
-
-            Assert.IsTrue(result.RtSimilarity > 0);
-            Assert.IsFalse(result.IsRtMatch);
-            Assert.IsTrue(result.CcsSimilarity > 0);
-            Assert.IsFalse(result.IsCcsMatch);
-        }
-
-        [TestMethod()]
         public void CalculateScoreCcsNotUsedTest() {
             var reference = new MoleculeMsReference {
                 Name = "PC 18:0_20:4", CompoundClass = "PC",
                 PrecursorMz = 810.601, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min), CollisionCrossSection = 100,
-                AdductType = new Common.DataObj.Property.AdductIon { AdductIonName = "[M+H]+" },
+                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
                     new SpectrumPeak { Mass = 184.073, Intensity = 100 },
@@ -581,7 +531,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 }
             };
 
-            var result = annotator.CalculateScore(BuildQuery(target), reference);
+            var result = annotator.CalculateScore(BuildQuery(target, parameter, annotator), reference);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
             Console.WriteLine($"CcsSimilarity: {result.CcsSimilarity}");
@@ -938,8 +888,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             };
         }
 
-        private AnnotationQuery BuildQuery(ChromatogramPeakFeature target) {
-            return new AnnotationQuery(target, target, null, null, null);
+        private AnnotationQuery BuildQuery(ChromatogramPeakFeature target, MsRefSearchParameterBase parameter, LcimmsMspAnnotator annotator) {
+            return new AnnotationQuery(target, target, null, null, parameter, annotator);
         }
     }
 }

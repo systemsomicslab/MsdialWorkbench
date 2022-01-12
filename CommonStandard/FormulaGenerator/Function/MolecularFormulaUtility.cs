@@ -56,6 +56,13 @@ namespace CompMs.Common.FormulaGenerator.Function {
             return ppm * exactMass / 1000000.0;
         }
 
+        public static double CalculateMassToleranceBasedOn500Da(double tolerance, double mass) {
+            if (mass <= 500)
+                return tolerance;
+            var ppm = Math.Abs(PpmCalculator(500.00, 500.00 + tolerance));
+            return ConvertPpmToMassAccuracy(mass, ppm);
+        }
+
         public static Formula ConvertTmsMeoxSubtractedFormula(Formula formula) {
             if (formula.TmsCount == 0 && formula.MeoxCount == 0) return formula;
             var tmsCount = formula.TmsCount;

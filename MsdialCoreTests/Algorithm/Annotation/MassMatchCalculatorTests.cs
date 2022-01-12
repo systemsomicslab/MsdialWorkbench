@@ -1,11 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.MsdialCore.Algorithm.Annotation;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using CompMs.MsdialCore.DataObj;
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.Parameter;
+using CompMs.Common.Parser;
+using CompMs.MsdialCore.DataObj;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 {
@@ -31,7 +29,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var reference = new MoleculeMsReference {
                 Name = "PC 18:0_20:4", CompoundClass = "PC",
                 PrecursorMz = 810.601, CollisionCrossSection = 100,
-                AdductType = new Common.DataObj.Property.AdductIon { AdductIonName = "[M+H]+" },
+                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
                     new SpectrumPeak { Mass = 184.073, Intensity = 100 },
@@ -69,7 +67,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             var reference = new MoleculeMsReference {
                 Name = "PC 18:0_20:4", CompoundClass = "PC",
                 PrecursorMz = 810.601, CollisionCrossSection = 100,
-                AdductType = new Common.DataObj.Property.AdductIon { AdductIonName = "[M+H]+" },
+                AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
                     new SpectrumPeak { Mass = 184.073, Intensity = 100 },

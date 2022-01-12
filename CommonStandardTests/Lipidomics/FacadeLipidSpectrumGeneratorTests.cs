@@ -68,7 +68,7 @@ namespace CompMs.Common.Lipidomics.Tests
             throw new System.NotImplementedException();
         }
 
-        public IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct) {
+        public IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct, IMoleculeProperty molecule = null) {
             return generator.Generate(new Lipid(LipidClass, 0, null), adduct);
         }
     }

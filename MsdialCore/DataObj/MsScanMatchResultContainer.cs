@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using MessagePack;
 using System;
 using System.Collections.Generic;
@@ -94,100 +95,75 @@ namespace CompMs.MsdialCore.DataObj
         [IgnoreMember]
         public bool IsManuallyModifiedRepresentative => (Representative.Source & SourceType.Manual) == SourceType.Manual;
 
-        public MoleculeMsReference RepresentativeMoleculeMsReference(DataBaseMapper mapper) {
-            var representative = Representative;
-            if (representative.Source == SourceType.FastaDB) {
-                return null;
-            }
-            else {
-                var annotator = mapper.FindMoleculeAnnotator(representative)?.Annotator;
-                if (annotator is null) {
-                    return null;
+        public TReference GetRepresentativeReference<TReference>(IMatchResultRefer<TReference, MsScanMatchResult> refer) {
+            return ReferCache<TReference>.Single.Get(refer, Representative);
+        }
+
+        private class ReferCache<TReference> {
+            static ReferCache() {
+                if (typeof(TReference) == typeof(PeptideMsReference)) {
+                    Single = new ReferCache<TReference>(r => r.Source == SourceType.FastaDB);
                 }
-                var db = annotator.Refer(representative);
-                return db;
-            }
-        }
-
-        public PeptideMsReference RepresentativePeptideMsReference(DataBaseMapper mapper) {
-            var representative = Representative;
-            if (representative.Source == SourceType.FastaDB) {
-                var annotator = mapper.FindPeptideAnnotator(representative)?.Annotator;
-                if (annotator is null) {
-                    return null;
+                else if (typeof(TReference) == typeof(PeptideMsReference)) {
+                    Single = new ReferCache<TReference>(r => r.Source != SourceType.FastaDB);
                 }
-                var db = annotator.Refer(representative);
-                return db;
+                else {
+                    Single = new ReferCache<TReference>(_ => false);
+                }
             }
-            else {
-                return null;
+
+            private ReferCache(Func<MsScanMatchResult, bool> pred) {
+                this.pred = pred;
+            }
+
+            private readonly Func<MsScanMatchResult, bool> pred;
+
+            public static readonly ReferCache<TReference> Single;
+
+            public TReference Get(IMatchResultRefer<TReference, MsScanMatchResult> refer, MsScanMatchResult result) {
+                return pred(result) ? refer.Refer(result) : default;
             }
         }
 
-        public string RepresentativeName(DataBaseMapper mapper) {
-            var representative = Representative;
-            var annotator = mapper.FindMoleculeAnnotator(representative)?.Annotator;
-            if (annotator is null) {
-                return "null";
-            }
-            var db = annotator.Refer(representative);
-            return db.Name;
+        public string RepresentativeName(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return refer.Refer(Representative) is MoleculeMsReference db ? db.Name : "null";
         }
 
-        public string RepresentativeSMILES(DataBaseMapper mapper) {
+        public string RepresentativeSMILES(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             var representative = Representative;
             if (representative.Source == SourceType.FastaDB) {
                 return "null";
             }
             else {
-                var annotator = mapper.FindMoleculeAnnotator(representative)?.Annotator;
-                if (annotator is null) {
-                    return "null";
-                }
-                var db = annotator.Refer(representative);
-                return db.SMILES.IsEmptyOrNull() ? "null" : db.SMILES;
+                var db = refer.Refer(representative);
+                return string.IsNullOrEmpty(db?.SMILES) ? "null" : db.SMILES;
             }
         }
 
-        public string RepresentativeOntology(DataBaseMapper mapper) {
-            var representative = Representative;
-            var annotator = mapper.FindMoleculeAnnotator(representative)?.Annotator;
-            if (annotator is null) {
-                return "null";
-            }
-            var db = annotator.Refer(representative);
-            if (!db.CompoundClass.IsEmptyOrNull()) {
+        public string RepresentativeOntology(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            var db = refer.Refer(Representative);
+            if (!string.IsNullOrEmpty(db?.CompoundClass)) {
                 return db.CompoundClass;
             }
             else {
-                return db.Ontology.IsEmptyOrNull() ? "null" : db.Ontology;
+                return string.IsNullOrEmpty(db?.Ontology) ? "null" : db.Ontology;
             }
         }
 
-        public string RepresentativeInChIKey(DataBaseMapper mapper) {
+        public string RepresentativeInChIKey(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             var representative = Representative;
             if (representative.Source == SourceType.FastaDB) {
                 return "null";
             }
             else {
-                var annotator = mapper.FindMoleculeAnnotator(representative)?.Annotator;
-                if (annotator is null) {
-                    return "null";
-                }
-                var db = annotator.Refer(representative);
-                return db.InChIKey.IsEmptyOrNull() ? "null" : db.InChIKey;
+                var db = refer.Refer(representative);
+                return string.IsNullOrEmpty(db?.InChIKey) ? "null" : db.InChIKey;
             }
         }
 
-        public string RepresentativeFormula(DataBaseMapper mapper) {
-            var representative = Representative;
-            var annotator = mapper.FindMoleculeAnnotator(representative)?.Annotator;
-            if (annotator is null) {
-                return "null";
-            }
-            var db = annotator.Refer(representative);
-            return db.Formula is null || db.Formula.FormulaString.IsEmptyOrNull()
-                ? "null" : db.Formula.FormulaString;
+        public string RepresentativeFormula(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            var db = refer.Refer(Representative);
+            return string.IsNullOrEmpty(db?.Formula?.FormulaString) ? "null" : db.Formula.FormulaString;
         }
 
         public bool IsReferenceMatched(DataBaseMapper mapper) {
@@ -196,18 +172,14 @@ namespace CompMs.MsdialCore.DataObj
                 return true; // confidense or unsettled
             }
             if (representative.Source == SourceType.FastaDB) {
-                var annotator = mapper.FindPeptideAnnotator(representative)?.Annotator;
-                if (annotator is null) {
-                    return false;
-                }
-                return annotator.IsReferenceMatched(representative);
+                var container = mapper.FindPeptideAnnotator(representative);
+                var annotator = container?.Annotator;
+                return annotator?.IsReferenceMatched(representative, container.Parameter) ?? false;
             }
             else {
-                var annotator = mapper.FindMoleculeAnnotator(representative)?.Annotator;
-                if (annotator is null) {
-                    return false;
-                }
-                return annotator.IsReferenceMatched(representative);
+                var container = mapper.FindMoleculeAnnotator(representative);
+                var annotator = container?.Annotator;
+                return annotator?.IsReferenceMatched(representative, container.Parameter) ?? false;
             }
         }
 
@@ -217,18 +189,14 @@ namespace CompMs.MsdialCore.DataObj
                 return false; // confidense or unsettled
             }
             if (representative.Source == SourceType.FastaDB) {
-                var annotator = mapper.FindPeptideAnnotator(representative)?.Annotator;
-                if (annotator is null) {
-                    return false;
-                }
-                return annotator.IsAnnotationSuggested(representative);
+                var container = mapper.FindPeptideAnnotator(representative);
+                var annotator = container?.Annotator;
+                return annotator?.IsAnnotationSuggested(representative, container.Parameter) ?? false;
             }
             else {
-                var annotator = mapper.FindMoleculeAnnotator(representative)?.Annotator;
-                if (annotator is null) {
-                    return false;
-                }
-                return annotator.IsAnnotationSuggested(representative);
+                var container = mapper.FindMoleculeAnnotator(representative);
+                var annotator = container?.Annotator;
+                return annotator?.IsAnnotationSuggested(representative, container.Parameter) ?? false;
             }
         }
 

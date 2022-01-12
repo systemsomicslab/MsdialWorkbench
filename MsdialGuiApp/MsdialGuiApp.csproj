@@ -165,7 +165,14 @@
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\Chart\RawPurifiedSpectrumsModel.cs" />
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
+    <Compile Include="Model\Core\DatasetModel.cs" />
+    <Compile Include="Model\Core\IDatasetModel.cs" />
+    <Compile Include="Model\Core\IProcessCommand.cs" />
+    <Compile Include="Model\Core\IProjectModel.cs" />
     <Compile Include="Model\Core\MainWindowModel.cs" />
+    <Compile Include="Model\Core\ProcessCommand.cs" />
+    <Compile Include="Model\Core\ProjectModel.cs" />
+    <Compile Include="Model\Setting\ProjectSettingModel.cs" />
     <Compile Include="Model\DataObj\DisplayChromatogram.cs" />
     <Compile Include="Model\Dims\DimsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Dims\DimsAnnotatorSettingModel.cs" />
@@ -441,7 +448,7 @@
     <Compile Include="Lipidomics\LipidDbSetWindow.xaml.cs">
       <DependentUpon>LipidDbSetWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainWindowVM.cs" />
+    <Compile Include="ViewModel\Core\MainWindowVM.cs" />
     <Compile Include="ViewModel\Setting\AnalysisFilePropertySetViewModel.cs" />
     <Compile Include="View\Setting\AnalysisFilePropertyResettingWindow.xaml.cs">
       <DependentUpon>AnalysisFilePropertyResettingWindow.xaml</DependentUpon>
@@ -535,6 +542,9 @@
       <DependentUpon>AnnotationProcessSettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Setting\AnnotatorDataTemplateSelector.cs" />
+    <Compile Include="View\Setting\DatasetSettingView.xaml.cs">
+      <DependentUpon>DatasetSettingView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Setting\EICDisplaySettingView.xaml.cs">
       <DependentUpon>EICDisplaySettingView.xaml</DependentUpon>
     </Compile>
@@ -549,6 +559,9 @@
     </Compile>
     <Compile Include="View\Setting\ModificationSettingWin.xaml.cs">
       <DependentUpon>ModificationSettingWin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Setting\ProjectSettingView.xaml.cs">
+      <DependentUpon>ProjectSettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ShortMessageView.xaml.cs">
       <DependentUpon>ShortMessageView.xaml</DependentUpon>
@@ -817,7 +830,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="View\Core\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -825,7 +838,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="View\Core\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -913,6 +926,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Setting\DatasetSettingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Setting\EICDisplaySettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -930,6 +947,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\ModificationSettingWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\ProjectSettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1107,7 +1128,6 @@
   <ItemGroup>
     <Folder Include="Property\" />
     <Folder Include="ViewModel\Search\" />
-    <Folder Include="View\Core\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

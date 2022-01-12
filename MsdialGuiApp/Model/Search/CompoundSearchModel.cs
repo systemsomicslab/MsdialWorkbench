@@ -180,9 +180,9 @@ namespace CompMs.App.Msdial.Model.Search
         protected IEnumerable<ICompoundResult> SearchCore() {
             var annotator = Annotator.Annotator;
             var candidates = annotator.FindCandidates(
-                new AnnotationQuery(Property, msdecResult, isotopes, 
-                new IonFeatureCharacter() { IsotopeWeightNumber = 0 }, 
-                Annotator.Parameter));
+                new AnnotationQuery(Property, msdecResult, isotopes,
+                new IonFeatureCharacter() { IsotopeWeightNumber = 0 },
+                Annotator.Parameter, annotator));
             foreach (var candidate in candidates) {
                 candidate.Source |= SourceType.Manual;
             }

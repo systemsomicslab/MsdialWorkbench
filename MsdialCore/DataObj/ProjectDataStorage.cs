@@ -13,7 +13,7 @@ namespace CompMs.MsdialCore.DataObj
     [MessagePackObject]
     public class ProjectDataStorage
     {
-        public ProjectDataStorage(ParameterBase projectParameter, List<IMsdialDataStorage<ParameterBase>> storages) {
+        public ProjectDataStorage(ProjectParameter projectParameter, List<IMsdialDataStorage<ParameterBase>> storages) {
             ProjectParameter = projectParameter;
             InnerStorages = storages;
             Storages = InnerStorages.AsReadOnly();
@@ -21,13 +21,20 @@ namespace CompMs.MsdialCore.DataObj
             ProjectPaths = InnerProjectPaths.AsReadOnly();
         }
 
-        public ProjectDataStorage(ParameterBase projectParameter) : this(projectParameter, new List<IMsdialDataStorage<ParameterBase>>()) {
+        public ProjectDataStorage(ProjectParameter projectParameter) : this(projectParameter, new List<IMsdialDataStorage<ParameterBase>>()) {
 
         }
         
         // MessagePack for C# use this constructor.
         [SerializationConstructor]
-        public ProjectDataStorage(ParameterBase projectParameter, ReadOnlyCollection<string> projectPaths) {
+        public ProjectDataStorage(ReadOnlyCollection<string> projectPaths) {
+            InnerStorages = new List<IMsdialDataStorage<ParameterBase>>();
+            Storages = InnerStorages.AsReadOnly();
+            InnerProjectPaths = projectPaths.ToList();
+            this.ProjectPaths = InnerProjectPaths.AsReadOnly();
+        }
+
+        public ProjectDataStorage(ProjectParameter projectParameter, ReadOnlyCollection<string> projectPaths) {
             this.ProjectParameter = projectParameter;
             InnerStorages = new List<IMsdialDataStorage<ParameterBase>>();
             Storages = InnerStorages.AsReadOnly();
@@ -35,8 +42,8 @@ namespace CompMs.MsdialCore.DataObj
             this.ProjectPaths = InnerProjectPaths.AsReadOnly();
         }
 
-        [Key(nameof(ProjectParameter))]
-        public ParameterBase ProjectParameter { get; }
+        [IgnoreMember]
+        public ProjectParameter ProjectParameter { get; private set; }
 
         [Key(nameof(ProjectPaths))]
         public ReadOnlyCollection<string> ProjectPaths { get; }
@@ -50,6 +57,7 @@ namespace CompMs.MsdialCore.DataObj
         [IgnoreMember]
         private List<IMsdialDataStorage<ParameterBase>> InnerStorages { get; }
 
+        private static readonly string ParameterKey = "Parameter";
         private static readonly string SerializationKey = "Project";
 
         public void AddStorage(IMsdialDataStorage<ParameterBase> storage) {
@@ -58,6 +66,9 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public async Task Save(IStreamManager streamManager, IMsdialSerializer serializer) {
+            using (var parameterStream = await streamManager.Create(ParameterKey).ConfigureAwait(false)) {
+                ProjectParameter.Save(parameterStream);
+            }
             using (var projectStream = await streamManager.Create(SerializationKey).ConfigureAwait(false)) {
                 MessagePackDefaultHandler.SaveToStream(this, projectStream);
             }
@@ -70,6 +81,9 @@ namespace CompMs.MsdialCore.DataObj
             ProjectDataStorage storage;
             using (var projectStream = await streamManager.Get(SerializationKey)) {
                 storage = MessagePackDefaultHandler.LoadFromStream<ProjectDataStorage>(projectStream);
+            }
+            using (var parameterStream = await streamManager.Get(ParameterKey)) {
+                storage.ProjectParameter = ProjectParameter.Load(parameterStream);
             }
 
             var tasks = storage.ProjectPaths.Select(projectPath => serializer.LoadAsync(streamManager, projectPath, null, string.Empty));

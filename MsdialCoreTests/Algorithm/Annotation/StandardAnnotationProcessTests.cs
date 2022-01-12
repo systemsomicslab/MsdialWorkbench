@@ -147,7 +147,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
         class MockFactory : IAnnotationQueryFactory<MockQuery>
         {
-            public MockQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature) {
+            public MockQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter) {
                 return new MockQuery();
             }
         }
@@ -166,7 +166,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             public MsRefSearchParameterBase Parameter => null;
         }
 
-        class MockAnnotator : IAnnotator<MockQuery, MoleculeMsReference, MsScanMatchResult>
+        class MockAnnotator : IAnnotator<MockQuery, MoleculeMsReference, MsScanMatchResult>, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IMatchResultEvaluator<MsScanMatchResult>
         {
             public MockAnnotator(string key) {
                 Key = key;

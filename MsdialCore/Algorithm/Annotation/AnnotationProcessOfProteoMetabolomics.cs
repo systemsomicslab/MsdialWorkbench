@@ -8,13 +8,12 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CompMs.MsdialCore.Algorithm.Annotation {
+namespace CompMs.MsdialCore.Algorithm.Annotation
+{
     public class AnnotationProcessOfProteoMetabolomics<T> : IAnnotationProcess {
         public void RunAnnotation(
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
@@ -46,18 +45,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             }
         }
 
-        //public IAnnotationQueryFactory<T> QueryFactory { get; }
-        public IAnnotationQueryFactory<T> QueryFactory { get; }
-        public IReadOnlyList<IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
-        public IReadOnlyList<IAnnotatorContainer<T, PeptideMsReference, MsScanMatchResult>> PepAnnotatorContainers { get; }
+        private readonly List<(IAnnotationQueryFactory<T> Factory, IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult> Container)> moleculeContainerPairs;
+        private readonly List<(IAnnotationQueryFactory<T> Factory, IAnnotatorContainer<T, PeptideMsReference, MsScanMatchResult> Container)> peptideContainerPairs;
 
         public AnnotationProcessOfProteoMetabolomics(
-            IAnnotationQueryFactory<T> queryFactory,
-            IReadOnlyList<IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult>> containers,
-            IReadOnlyList<IAnnotatorContainer<T, PeptideMsReference, MsScanMatchResult>> pepContainers) {
-            AnnotatorContainers = containers;
-            QueryFactory = queryFactory;
-            PepAnnotatorContainers = pepContainers;
+            List<(IAnnotationQueryFactory<T>, IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult> Container)> moleculeContainerPairs,
+            List<(IAnnotationQueryFactory<T>, IAnnotatorContainer<T, PeptideMsReference, MsScanMatchResult> Container)> peptideContainerPairs) {
+
+            this.moleculeContainerPairs = moleculeContainerPairs ?? throw new ArgumentNullException(nameof(moleculeContainerPairs));
+            this.peptideContainerPairs = peptideContainerPairs ?? throw new ArgumentNullException(nameof(peptideContainerPairs));
         }
 
         private Dictionary<int, List<int>> GetParentID2IsotopePeakIDs(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures) {
@@ -120,7 +116,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                 .ForAll(i => {
                     var chromPeakFeature = chromPeakFeatures[i];
                     var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults, parentID2IsotopePeakIDs);
-                    //var msdecResult = msdecResults[i];
                     if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                         RunAnnotationCore(chromPeakFeature, msdecResult, spectrums);
                         lock (syncObj) {
@@ -142,7 +137,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
                 var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults, parentID2IsotopePeakIDs);
-                //var msdecResult = msdecResults[i];
                 if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                     await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token);
                 }
@@ -167,7 +161,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
 
                         try {
                             var chromPeakFeature = chromPeakFeatures[i];
-                            //var msdecResult = msdecResults[i];
                             var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults, parentID2IsotopePeakIDs);
                             if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                                 await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token);
@@ -180,22 +173,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                     });
                     annotationTasks.Add(v);
                 }
-                //var annotationTasks = chromPeakFeatures.Zip(msdecResults, Tuple.Create)
-                //    .Select(async (pair, i) => {
-                //        await sem.WaitAsync();
-
-                //        try {
-                //            var chromPeakFeature = pair.Item1;
-                //            var msdecResult = pair.Item2;
-                //            if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
-                //                await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token);
-                //            }
-                //        }
-                //        finally {
-                //            sem.Release();
-                //            reportAction?.Invoke((double)(i + 1) / chromPeakFeatures.Count);
-                //        }
-                //    });
                 await Task.WhenAll(annotationTasks);
             }
         }
@@ -205,29 +182,23 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
              MSDecResult msdecResult,
              IReadOnlyList<RawSpectrum> msSpectrums) {
 
-            if (!PepAnnotatorContainers.IsEmptyOrNull()) {
-                var pepQuery = QueryFactory.Create(
-                    chromPeakFeature, 
-                    msdecResult, 
+            foreach (var containerPair in peptideContainerPairs) {
+                var pepQuery = containerPair.Factory.Create(
+                    chromPeakFeature,
+                    msdecResult,
                     msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
-                    chromPeakFeature.PeakCharacter);
-                var pepAnnotatorContainers = PepAnnotatorContainers;
-
-                foreach (var annotatorContainer in pepAnnotatorContainers) {
-                    SetPepAnnotationResult(chromPeakFeature, pepQuery, annotatorContainer);
-                }
+                    chromPeakFeature.PeakCharacter,
+                    containerPair.Container.Parameter);
+                SetPepAnnotationResult(chromPeakFeature, pepQuery, containerPair.Container);
             }
-            if (!AnnotatorContainers.IsEmptyOrNull()) {
-                var query = QueryFactory.Create(
-                    chromPeakFeature, 
-                    msdecResult, 
+            foreach (var containerPair in moleculeContainerPairs) {
+                var query = containerPair.Factory.Create(
+                    chromPeakFeature,
+                    msdecResult,
                     msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
-                    chromPeakFeature.PeakCharacter);
-                var annotatorContainers = AnnotatorContainers;
-
-                foreach (var annotatorContainer in annotatorContainers) {
-                    SetAnnotationResult(chromPeakFeature, query, annotatorContainer);
-                }
+                    chromPeakFeature.PeakCharacter,
+                    containerPair.Container.Parameter);
+                SetAnnotationResult(chromPeakFeature, query, containerPair.Container);
             }
             
             SetRepresentativeProperty(chromPeakFeature);
@@ -239,35 +210,29 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             IReadOnlyList<RawSpectrum> msSpectrums,
             CancellationToken token = default) {
 
-            if (!PepAnnotatorContainers.IsEmptyOrNull()) {
-                var pepQuery = QueryFactory.Create(
-                    chromPeakFeature, 
-                    msdecResult, 
+            foreach (var containerPair in peptideContainerPairs) {
+                var pepQuery = containerPair.Factory.Create(
+                    chromPeakFeature,
+                    msdecResult,
                     msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
-                    chromPeakFeature.PeakCharacter);
-                var pepAnnotatorContainers = PepAnnotatorContainers;
-
-                foreach (var annotatorContainer in pepAnnotatorContainers) {
-                    token.ThrowIfCancellationRequested();
-                    await Task.Run(() => SetPepAnnotationResult(chromPeakFeature, pepQuery, annotatorContainer), token);
-                }
+                    chromPeakFeature.PeakCharacter,
+                    containerPair.Container.Parameter);
                 token.ThrowIfCancellationRequested();
+                await Task.Run(() => SetPepAnnotationResult(chromPeakFeature, pepQuery, containerPair.Container), token);
             }
+            token.ThrowIfCancellationRequested();
 
-            if (!AnnotatorContainers.IsEmptyOrNull()) {
-                var query = QueryFactory.Create(
-                    chromPeakFeature, 
-                    msdecResult, 
+            foreach (var containerPair in moleculeContainerPairs) {
+                var query = containerPair.Factory.Create(
+                    chromPeakFeature,
+                    msdecResult,
                     msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
-                    chromPeakFeature.PeakCharacter);
-                var annotatorContainers = AnnotatorContainers;
-
-                foreach (var annotatorContainer in annotatorContainers) {
-                    token.ThrowIfCancellationRequested();
-                    await Task.Run(() => SetAnnotationResult(chromPeakFeature, query, annotatorContainer), token);
-                }
+                    chromPeakFeature.PeakCharacter,
+                    containerPair.Container.Parameter);
                 token.ThrowIfCancellationRequested();
+                await Task.Run(() => SetAnnotationResult(chromPeakFeature, query, containerPair.Container), token);
             }
+            token.ThrowIfCancellationRequested();
             
             SetRepresentativeProperty(chromPeakFeature);
         }
@@ -307,26 +272,28 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             var decoyRepresentative = chromPeakFeature.MatchResults.DecoyRepresentative;
             
             if (representative.Source == SourceType.FastaDB) {
-                var annotator = PepAnnotatorContainers.FirstOrDefault(annotatorContainer => representative.AnnotatorID == annotatorContainer.AnnotatorID)?.Annotator;
+                var container = peptideContainerPairs.FirstOrDefault(containerPair => representative.AnnotatorID == containerPair.Container.AnnotatorID).Container;
+                var annotator = container?.Annotator;
                 if (annotator is null) {
                     return;
                 }
-                else if (annotator.IsReferenceMatched(representative)) {
+                else if (annotator.IsReferenceMatched(representative, container.Parameter)) {
                     DataAccess.SetPeptideMsProperty(chromPeakFeature, annotator.Refer(representative), representative);
                 }
-                else if (annotator.IsAnnotationSuggested(representative)) {
+                else if (annotator.IsAnnotationSuggested(representative, container.Parameter)) {
                     DataAccess.SetPeptideMsPropertyAsSuggested(chromPeakFeature, annotator.Refer(representative), representative);
                 }
             }
             else {
-                var annotator = AnnotatorContainers.FirstOrDefault(annotatorContainer => representative.AnnotatorID == annotatorContainer.AnnotatorID)?.Annotator;
+                var container = moleculeContainerPairs.FirstOrDefault(pair => representative.AnnotatorID == pair.Container.AnnotatorID).Container;
+                var annotator = container?.Annotator;
                 if (annotator is null) {
                     return;
                 }
-                else if (annotator.IsReferenceMatched(representative)) {
+                else if (annotator.IsReferenceMatched(representative, container.Parameter)) {
                     DataAccess.SetMoleculeMsProperty(chromPeakFeature, annotator.Refer(representative), representative);
                 }
-                else if (annotator.IsAnnotationSuggested(representative)) {
+                else if (annotator.IsAnnotationSuggested(representative, container.Parameter)) {
                     DataAccess.SetMoleculeMsPropertyAsSuggested(chromPeakFeature, annotator.Refer(representative), representative);
                 }
             }

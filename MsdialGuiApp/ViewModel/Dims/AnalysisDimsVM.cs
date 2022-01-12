@@ -284,5 +284,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         {
             return Model.CanSaveSpectra();
         }
+
+        public DelegateCommand CopyMs2SpectrumCommand => copyMs2SpectrumCommand ?? (copyMs2SpectrumCommand = new DelegateCommand(Model.CopySpectrum, Model.CanSaveSpectra));
+        private DelegateCommand copyMs2SpectrumCommand;
     }
 }

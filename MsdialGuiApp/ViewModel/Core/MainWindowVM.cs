@@ -32,9 +32,10 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
-namespace CompMs.App.Msdial
+namespace CompMs.App.Msdial.ViewModel.Core
 {
-    class MainWindowVM : ViewModelBase {
+    class MainWindowVM : ViewModelBase
+    {
 
         public MainWindowVM(
             IWindowService<StartUpWindowVM> startUpService,
@@ -179,16 +180,16 @@ namespace CompMs.App.Msdial
 
         private MethodViewModel CreateNewMethodVM(IMsdialDataStorage<ParameterBase> storage) {
             if (storage is MsdialLcImMsDataStorage lcimmsStorage) {
-                return new ViewModel.Lcimms.LcimmsMethodVM(lcimmsStorage, compoundSearchService, peakSpotTableService);
+                return new Lcimms.LcimmsMethodVM(lcimmsStorage, compoundSearchService, peakSpotTableService);
             }
             if (storage is MsdialLcmsDataStorage lcmsStorage) {
-                return new ViewModel.Lcms.LcmsMethodVM(lcmsStorage, compoundSearchService, peakSpotTableService);
+                return new Lcms.LcmsMethodVM(lcmsStorage, compoundSearchService, peakSpotTableService);
             }
             if (storage is MsdialImmsDataStorage immsStorage) {
-                return new ViewModel.Imms.ImmsMethodVM(immsStorage, compoundSearchService, peakSpotTableService);
+                return new Imms.ImmsMethodVM(immsStorage, compoundSearchService, peakSpotTableService);
             }
             if (storage is MsdialDimsDataStorage dimsStorage) {
-                return new ViewModel.Dims.DimsMethodVM(dimsStorage, compoundSearchService, peakSpotTableService);
+                return new Dims.DimsMethodVM(dimsStorage, compoundSearchService, peakSpotTableService);
             }
             throw new NotImplementedException("This method is not implemented");
         }
@@ -237,7 +238,8 @@ namespace CompMs.App.Msdial
             if (ofd.ShowDialog() == true) {
                 Mouse.OverrideCursor = Cursors.Wait;
 
-                var message = new ShortMessageWindow() {
+                var message = new ShortMessageWindow()
+                {
                     Owner = owner,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                     Text = "Loading project...",
@@ -259,7 +261,7 @@ namespace CompMs.App.Msdial
 
         // TODO: Move this method. MainWindowVM shouldn't know each analysis and alignment files.
         private static IMsdialDataStorage<ParameterBase> LoadProjectFromPath(string projectfile) {
-            var projectFolder = System.IO.Path.GetDirectoryName(projectfile);
+            var projectFolder = Path.GetDirectoryName(projectfile);
 
             var serializer = new MsdialIntegrateSerializer();
             var streamManager = new DirectoryTreeStreamManager(Path.GetDirectoryName(projectfile));
@@ -299,9 +301,9 @@ namespace CompMs.App.Msdial
             if (string.IsNullOrEmpty(path))
                 return path;
             if (path.StartsWith(previous))
-                return System.IO.Path.Combine(current, path.Substring(previous.Length).TrimStart('\\', '/'));
-            if (!System.IO.Path.IsPathRooted(path))
-                return System.IO.Path.Combine(current, path);
+                return Path.Combine(current, path.Substring(previous.Length).TrimStart('\\', '/'));
+            if (!Path.IsPathRooted(path))
+                return Path.Combine(current, path);
             throw new ArgumentException("Invalid path or directory.");
         }
 
@@ -332,14 +334,15 @@ namespace CompMs.App.Msdial
             };
 
             if (sfd.ShowDialog() == true) {
-                if (System.IO.Path.GetDirectoryName(sfd.FileName) != storage.Parameter.ProjectFolderPath) {
+                if (Path.GetDirectoryName(sfd.FileName) != storage.Parameter.ProjectFolderPath) {
                     MessageBox.Show("Save folder should be the same folder as analysis files.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
                 Mouse.OverrideCursor = Cursors.Wait;
 
-                var message = new ShortMessageWindow() {
+                var message = new ShortMessageWindow()
+                {
                     Owner = owner,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                     Text = "Saving the project as...",
@@ -369,7 +372,8 @@ namespace CompMs.App.Msdial
             if (sfd.ShowDialog() == true) {
                 Mouse.OverrideCursor = Cursors.Wait;
 
-                var message = new ShortMessageWindow() {
+                var message = new ShortMessageWindow()
+                {
                     Owner = owner,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                     Text = "Saving the parameter...",

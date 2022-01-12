@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
-    class PostCurator {
+    public class PostCurator {
         public IReadOnlyList<AlignmentSpotProperty> MsCleanRCurator(
             IReadOnlyList<AlignmentSpotProperty> spots,
             IReadOnlyList<MSDecResult> msdecResults,
