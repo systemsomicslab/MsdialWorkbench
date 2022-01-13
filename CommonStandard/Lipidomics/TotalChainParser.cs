@@ -10,6 +10,7 @@ namespace CompMs.Common.Lipidomics
 
         private static readonly string TotalChainPattern = $"(?<TotalChain>(?<plasm>[de]?[OP]-)?{CarbonPattern}:{DoubleBondPattern}({OxidizedPattern})?)";
         private static readonly string ChainsPattern = $"(?<Chain>{AlkylChainParser.Pattern}|{AcylChainParser.Pattern})";
+        private static readonly string AcylChainsPattern = $"(?<Chain>{AcylChainParser.Pattern})";
 
         private static readonly AlkylChainParser AlkylParser = new AlkylChainParser();
         private static readonly AcylChainParser AcylParser = new AcylChainParser();
@@ -18,21 +19,29 @@ namespace CompMs.Common.Lipidomics
         private readonly bool HasSphingosine;
 
         public static TotalChainParser BuildParser(int chainCount) {
-            return new TotalChainParser(chainCount, false);
+            return new TotalChainParser(chainCount, false, false);
+        }
+
+        public static TotalChainParser BuildEtherParser(int chainCount) {
+            return new TotalChainParser(chainCount, false, true);
         }
 
         public static TotalChainParser BuildCeramideParser(int chainCount) {
-            return new TotalChainParser(chainCount, true);
+            return new TotalChainParser(chainCount, true, false);
         }
 
-        private TotalChainParser(int chainCount, bool hasSphingosine = false) {
+        private TotalChainParser(int chainCount, bool hasSphingosine, bool hasEther) {
             ChainCount = chainCount;
             var molecularSpeciesLevelPattern = hasSphingosine
                 ? $"(?<MolecularSpeciesLevel>(?<Chain>{SphingoChainParser.Pattern})_({ChainsPattern}_?){{{ChainCount-1}}})"
-                : $"(?<MolecularSpeciesLevel>({ChainsPattern}_?){{{ChainCount}}})";
+                : hasEther
+                ? $"(?<MolecularSpeciesLevel>({ChainsPattern}_?){{{ChainCount}}})"
+                : $"(?<MolecularSpeciesLevel>({AcylChainsPattern}_?){{{ChainCount}}})";
             var positionLevelPattern = hasSphingosine
                 ? $"(?<PositionLevel>(?<Chain>{SphingoChainParser.Pattern})/({ChainsPattern}/?){{{ChainCount-1}}})"
-                : $"(?<PositionLevel>({ChainsPattern}/?){{{ChainCount}}})";
+                : hasEther
+                ? $"(?<PositionLevel>({ChainsPattern}/?){{{ChainCount}}})"
+                : $"(?<PositionLevel>({AcylChainsPattern}/?){{{ChainCount}}})";
             if (ChainCount == 1) {
                 var postionLevelExpression = new Regex(positionLevelPattern, RegexOptions.Compiled);
                 Pattern = positionLevelPattern;
