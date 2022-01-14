@@ -234,7 +234,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             var featureObjs = DataAccess.GetChromPeakFeatureObjectsIntegratingRtAndDriftData(features);
             var isIonMobility = features.Count == featureObjs.Count ? false : true;
             if (isIonMobility) featureObjs = featureObjs.Where(n => n.IsMultiLayeredData() == false).ToList();
-            var annotatedFeatures = featureObjs.Where(n => n.IsReferenceMatched(mapper));
+            var annotatedFeatures = featureObjs.Where(n => n.IsReferenceMatched(mapper)).ToList();
             var results = InitializeProteinMsResults(databases);
 
             foreach (var result in results) {

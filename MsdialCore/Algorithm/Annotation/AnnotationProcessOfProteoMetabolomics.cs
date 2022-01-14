@@ -97,6 +97,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     if (!msdecResults[id].Spectrum.IsEmptyOrNull()) {
                         msdecResult = msdecResults[id];
                         chromPeakFeature.MSDecResultIdUsed = id;
+                        break;
                     }
                 }
             }

@@ -81,7 +81,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }.Merge()
             .Throttle(TimeSpan.FromMilliseconds(500))
             .ObserveOnDispatcher()
-            .Subscribe(_ => Ms1PeaksView?.Refresh())
+            .Subscribe(_ => { Console.WriteLine("call refresh"); Ms1PeaksView?.Refresh(); })
             .AddTo(Disposables);
 
             var hAxis = this.model.PlotModel
