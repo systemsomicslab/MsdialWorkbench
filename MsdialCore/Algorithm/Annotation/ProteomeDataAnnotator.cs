@@ -65,6 +65,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(paiFile);
             
             MappingToProteinDatabase(file.ProteinAssembledResultFilePath, features, databases, mapper, param);
+
+            MsdialPeakSerializer.SaveChromatogramPeakFeatures(paiFile, features);
         }
 
         private void MappingToProteinDatabase(string file, List<ChromatogramPeakFeature> features, 
@@ -110,6 +112,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             var features = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultfile);
 
             MappingToProteinDatabase(file.ProteinAssembledResultFilePath, features, databases, mapper, param);
+            MessagePackHandler.SaveToFile(features, resultfile);
         }
 
         public void MappingToProteinDatabase(
@@ -190,7 +193,28 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                     groups.RemoveAt(i);
                 }
             }
+
+
+            ReflectToPeakObjects(groups);
+
             return groups;
+        }
+
+        private void ReflectToPeakObjects(List<ProteinGroup> groups) {
+            foreach (var group in groups) {
+                foreach (var protein in group.ProteinMsResults) {
+                    foreach (var pepObj in protein.MatchedPeptideResults) {
+                        if (pepObj.ChromatogramPeakFeature != null) {
+                            pepObj.ChromatogramPeakFeature.Protein = protein.FastaProperty.UniqueIdentifier + "|" + pepObj.Peptide.Position.Start + "-" + pepObj.Peptide.Position.End;
+                            pepObj.ChromatogramPeakFeature.ProteinGroupID = group.GroupID;
+                        }
+                        else if (pepObj.AlignmentSpotProperty != null) {
+                            pepObj.AlignmentSpotProperty.Protein = protein.FastaProperty.UniqueIdentifier + "|" + pepObj.Peptide.Position.Start + "-" + pepObj.Peptide.Position.End;
+                            pepObj.AlignmentSpotProperty.ProteinGroupID = group.GroupID;
+                        }
+                    }
+                }
+            }
         }
 
         private bool isProteinValuesContainsKey(Dictionary<int, List<ProteinMsResult>> dict, int proteinID) {

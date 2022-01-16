@@ -26,6 +26,13 @@ namespace CompMs.App.Msdial.Model.DataObj
                 }
             }
         }
+        public string Protein {
+            get => innerModel.Protein;
+        }
+        public int ProteinGroupID {
+            get => innerModel.ProteinGroupID;
+        }
+
         public Formula Formula {
             get => ((IMoleculeProperty)innerModel).Formula;
             set {

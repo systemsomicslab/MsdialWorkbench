@@ -103,6 +103,10 @@ namespace CompMs.MsdialCore.DataObj {
         public string SMILES { get; set; } = string.Empty;
         [Key(28)]
         public string InChIKey { get; set; } = string.Empty;
+        [Key(50)]
+        public string Protein { get; set; } = string.Empty;
+        [Key(51)]
+        public int ProteinGroupID { get; set; } = -1;
 
         // ion physiochemical information
         [Key(29)]

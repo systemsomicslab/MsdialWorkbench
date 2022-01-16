@@ -17,18 +17,21 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public LcmsMethodVM(
             MsdialLcmsDataStorage storage,
             IWindowService<ViewModel.CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, 
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
             : this(
                   new LcmsMethodModel(storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true)),
                   compoundSearchService,
-                  peakSpotTableService) {
+                  peakSpotTableService, 
+                  proteomicsTableService) {
 
         }
 
         public LcmsMethodVM(
             LcmsMethodModel model,
             IWindowService<ViewModel.CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
             : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -42,9 +45,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
 
+            if (proteomicsTableService is null) {
+                throw new ArgumentNullException(nameof(proteomicsTableService));
+            }
+
             this.model = model;
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
+            this.proteomicsTableService = proteomicsTableService;
 
             Storage = model.Storage;
         }
@@ -52,6 +60,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private readonly LcmsMethodModel model;
         private readonly IWindowService<ViewModel.CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
 
         public AnalysisLcmsVM AnalysisVM {
             get => analysisVM;
@@ -191,8 +200,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             AnalysisVM = new AnalysisLcmsVM(
                 model.AnalysisModel,
                 compoundSearchService,
-                peakSpotTableService)
-            {
+                peakSpotTableService, 
+                proteomicsTableService) {
                 DisplayFilters = displayFilters
             }.AddTo(Disposables);
         }
@@ -210,8 +219,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             AlignmentVM = new AlignmentLcmsVM(
                 model.AlignmentModel,
                 compoundSearchService,
-                peakSpotTableService)
-            {
+                peakSpotTableService, 
+                proteomicsTableService) {
                 DisplayFilters = displayFilters
             }.AddTo(Disposables);
         }

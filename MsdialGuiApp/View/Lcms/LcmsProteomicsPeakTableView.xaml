@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="CompMs.App.Msdial.View.Lcms.LcmsAnalysisPeakTableView"
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Lcms.LcmsProteomicsPeakTableView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -10,7 +10,7 @@
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:converter="clr-namespace:CompMs.App.Msdial.ViewModel.Converter"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
-             d:DataContext="{d:DesignInstance Type=vm:LcmsAnalysisPeakTableViewModel}"
+             d:DataContext="{d:DesignInstance Type=vm:LcmsProteomicsPeakTableViewModel}"
              d:DesignHeight="450" d:DesignWidth="1200">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -34,6 +34,7 @@
         <Grid Margin="5" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="110"/>
+                <ColumnDefinition />
                 <ColumnDefinition />
                 <ColumnDefinition />
                 <ColumnDefinition Width="210"/>
@@ -63,13 +64,20 @@
 
             <StackPanel Margin="5,0,0,0"
                         Grid.Column="1">
-                <TextBlock Text="Metabolite name filter"/>
-                <TextBox Text="{Binding MetaboliteFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
+                <TextBlock Text="Protein name filter"/>
+                <TextBox Text="{Binding ProteinFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
+                         HorizontalAlignment="Stretch"/>
+            </StackPanel>
+            
+            <StackPanel Margin="5,0,0,0"
+                        Grid.Column="2">
+                <TextBlock Text="Peptide name filter"/>
+                <TextBox Text="{Binding PeptideFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"/>
             </StackPanel>
 
             <StackPanel Margin="5,0,0,0"
-                        Grid.Column="2">
+                        Grid.Column="3">
                 <TextBlock Text="Comment filter"/>
                 <TextBox Text="{Binding CommentFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"/>
@@ -82,7 +90,7 @@
                             UpperValue="{Binding MassUpper.Value, Mode=TwoWay}"
                             Style="{StaticResource EditableRangeSlider}"
                             Margin="8,0"
-                            Grid.Column="3"/>
+                            Grid.Column="4"/>
             <rs:RangeSlider Tag="Retention time"
                             Minimum="{Binding RtMin, Mode=OneWay}"
                             Maximum="{Binding RtMax, Mode=OneWay}"
@@ -90,7 +98,7 @@
                             UpperValue="{Binding RtUpper.Value, Mode=TwoWay}"
                             Style="{StaticResource EditableRangeSlider}"
                             Margin="8,0"
-                            Grid.Column="4"/>
+                            Grid.Column="5"/>
         </Grid>
 
         <DataGrid x:Name="PeakSpotView"
@@ -135,7 +143,15 @@
                                     Binding="{Binding Path=AdductIonName}"
                                     IsReadOnly="True"
                                     Width="1*" />
-                <DataGridTextColumn Header="Metabolite name"
+                <DataGridTextColumn Header="PG ID"
+                                    Binding="{Binding Path=ProteinGroupID}"
+                                    IsReadOnly="True" 
+                                    Width="50" />
+                <DataGridTextColumn Header="Protein name"
+                                    Binding="{Binding Path=Protein}"
+                                    IsReadOnly="True"
+                                    Width="2*" />
+                <DataGridTextColumn Header="Peptide name"
                                     Binding="{Binding Path=Name}"
                                     IsReadOnly="False"
                                     Width="2*" >
