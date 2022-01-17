@@ -76,6 +76,8 @@ namespace CompMs.MsdialCore.Utility
             alignmentPeak.Mass = peak.Mass;
             alignmentPeak.IonMode = peak.IonMode;
             alignmentPeak.Name = peak.Name;
+            alignmentPeak.Protein = peak.Protein;
+            alignmentPeak.ProteinGroupID = peak.ProteinGroupID;
             alignmentPeak.Formula = peak.Formula;
             alignmentPeak.Ontology = peak.Ontology;
             alignmentPeak.SMILES = peak.SMILES;
@@ -122,6 +124,8 @@ namespace CompMs.MsdialCore.Utility
 
             spot.IonMode = representative.IonMode;
             spot.Name = representative.Name;
+            spot.Protein = representative.Protein;
+            spot.ProteinGroupID = representative.ProteinGroupID;
             spot.Ontology = representative.Ontology;
             spot.SMILES = representative.SMILES;
             spot.InChIKey = representative.InChIKey;

@@ -25,7 +25,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public AnalysisLcmsVM(
             LcmsAnalysisModel model,
             IWindowService<ViewModel.CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, 
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
             : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -39,9 +40,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
 
+            if (proteomicsTableService is null) {
+                throw new ArgumentNullException(nameof(proteomicsTableService));
+            }
+
             this.model = model;
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
+            this.proteomicsTableService = proteomicsTableService;
 
             Target.Subscribe(OnTargetChanged).AddTo(Disposables);
 
@@ -75,13 +81,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 RtUpper.ToUnit(),
                 CommentFilterKeyword.ToUnit(),
                 MetaboliteFilterKeyword.ToUnit(),
+                ProteinFilterKeyword.ToUnit(),
                 DisplayFilters.ToUnit(),
                 AmplitudeLowerValue.ToUnit(),
                 AmplitudeUpperValue.ToUnit(),
             }.Merge()
             .Throttle(TimeSpan.FromMilliseconds(500))
             .ObserveOnDispatcher()
-            .Subscribe(_ => Ms1PeaksView?.Refresh())
+            .Subscribe(_ => { Console.WriteLine("call refresh"); Ms1PeaksView?.Refresh(); })
             .AddTo(Disposables);
 
             var hAxis = this.model.PlotModel
@@ -134,6 +141,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             SurveyScanViewModel = new SurveyScanViewModel(
                 this.model.SurveyScanModel,
                 horizontalAxis: vAxis).AddTo(Disposables);
+
             PeakTableViewModel = new LcmsAnalysisPeakTableViewModel(
                 this.model.PeakTableModel,
                 Observable.Return(this.model.EicLoader),
@@ -141,6 +149,18 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 MassUpper,
                 RtLower,
                 RtUpper,
+                MetaboliteFilterKeyword,
+                CommentFilterKeyword)
+            .AddTo(Disposables);
+
+            ProteomicsPeakTableViewModel = new LcmsProteomicsPeakTableViewModel(
+                this.model.PeakTableModel,
+                Observable.Return(this.model.EicLoader),
+                MassLower,
+                MassUpper,
+                RtLower,
+                RtUpper,
+                ProteinFilterKeyword,
                 MetaboliteFilterKeyword,
                 CommentFilterKeyword)
             .AddTo(Disposables);
@@ -156,6 +176,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private readonly LcmsAnalysisModel model;
         private readonly IWindowService<ViewModel.CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
 
         public AnalysisPeakPlotViewModel PlotViewModel { get; }
         public EicViewModel EicViewModel { get; }
@@ -163,6 +184,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public RawPurifiedSpectrumsViewModel RawPurifiedSpectrumsViewModel { get; }
         public SurveyScanViewModel SurveyScanViewModel { get; }
         public LcmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
+        public LcmsProteomicsPeakTableViewModel ProteomicsPeakTableViewModel { get; }
         public List<ChromatogramPeakFeature> Peaks { get; }
 
         /*
@@ -241,6 +263,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0)
                     && (!UniqueIonsChecked || peak.IsFragmentQueryExisted)
                     && (!ManuallyModifiedChecked || peak.InnerModel.IsManuallyModifiedForAnnotation)
+                    && ProteinFilter(peak, ProteinFilterKeywords.Value)
                     && MetaboliteFilter(peak, MetaboliteFilterKeywords.Value)
                     && CommentFilter(peak, CommentFilterKeywords.Value);
             }
@@ -335,7 +358,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand showIonTableCommand;
 
         private void ShowIonTable() {
-            peakSpotTableService.Show(PeakTableViewModel);
+            if (model.Parameter.TargetOmics == CompMs.Common.Enum.TargetOmics.Proteomics) {
+                proteomicsTableService.Show(ProteomicsPeakTableViewModel);
+            }
+            else {
+                peakSpotTableService.Show(PeakTableViewModel);
+            }
         }
 
         public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));

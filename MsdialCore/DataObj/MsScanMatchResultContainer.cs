@@ -129,6 +129,10 @@ namespace CompMs.MsdialCore.DataObj
             return refer.Refer(Representative) is MoleculeMsReference db ? db.Name : "null";
         }
 
+        public string RepresentativeName(IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer) {
+            return refer.Refer(Representative) is PeptideMsReference db ? db.Peptide.ModifiedSequence : "null";
+        }
+
         public string RepresentativeSMILES(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             var representative = Representative;
             if (representative.Source == SourceType.FastaDB) {
@@ -164,6 +168,16 @@ namespace CompMs.MsdialCore.DataObj
         public string RepresentativeFormula(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             var db = refer.Refer(Representative);
             return string.IsNullOrEmpty(db?.Formula?.FormulaString) ? "null" : db.Formula.FormulaString;
+        }
+
+        public string RepresentativeFormula(IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer) {
+            var db = refer.Refer(Representative);
+            return string.IsNullOrEmpty(db?.Peptide?.Formula?.FormulaString) ? "null" : db.Peptide.Formula.FormulaString;
+        }
+
+        public string RepresentativeProtein(IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer) {
+            var db = refer.Refer(Representative);
+            return refer.Refer(Representative) is PeptideMsReference ? db.Peptide.DatabaseOrigin + "; " + db.Peptide.Position.Start + "-" + db.Peptide.Position.End : "null";
         }
 
         public bool IsReferenceMatched(DataBaseMapper mapper) {

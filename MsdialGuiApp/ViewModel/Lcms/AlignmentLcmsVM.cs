@@ -28,7 +28,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public AlignmentLcmsVM(
             LcmsAlignmentModel model,
             IWindowService<ViewModel.CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, 
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
             : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -42,9 +43,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
 
+            if (proteomicsTableService is null) {
+                throw new ArgumentNullException(nameof(proteomicsTableService));
+            }
+
             this.model = model;
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
+            this.proteomicsTableService = proteomicsTableService;
 
             Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Target.Where(x => !(x is null)).Subscribe(t => {
@@ -72,7 +78,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .SetValidateNotifyError(v => v > RtUpper.Value ? "Too large" : null);
             RtUpper.SetValidateNotifyError(v => v < RtLower.Value ? "Too small" : null)
                 .SetValidateNotifyError(v => v > RtMax ? "Too large" : null);
-
+            ProteinFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
+            ProteinFilterKeywords = ProteinFilterKeyword.Select(w => w.Split())
+                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             MetaboliteFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
             MetaboliteFilterKeywords = MetaboliteFilterKeyword.Select(w => w.Split())
                 .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -90,6 +98,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 MassUpper.ToUnit(),
                 RtLower.ToUnit(),
                 RtUpper.ToUnit(),
+                ProteinFilterKeywords.ToUnit(),
                 MetaboliteFilterKeywords.ToUnit(),
                 CommentFilterKeywords.ToUnit(),
                 DisplayFilters.ToUnit(),
@@ -145,6 +154,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 MetaboliteFilterKeyword,
                 CommentFilterKeyword)
                 .AddTo(Disposables);
+            ProteomicsAlignmentTableViewModel = new LcmsProteomicsAlignmentTableViewModel(
+                this.model.AlignmentSpotTableModel,
+                Observable.Return(model.BarItemsLoader),
+                MassLower,
+                MassUpper,
+                RtLower,
+                RtUpper,
+                ProteinFilterKeyword,
+                MetaboliteFilterKeyword,
+                CommentFilterKeyword)
+                .AddTo(Disposables);
 
             SearchCompoundCommand = this.model.CanSearchCompound
                 .ToReactiveCommand()
@@ -155,6 +175,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private readonly LcmsAlignmentModel model;
         private readonly IWindowService<ViewModel.CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
 
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
         public ReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>> SelectedBrush { get; }
@@ -180,6 +201,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public BarChartViewModel BarChartViewModel { get; }
         public AlignmentEicViewModel AlignmentEicViewModel { get; }
         public LcmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
+        public LcmsProteomicsAlignmentTableViewModel ProteomicsAlignmentTableViewModel { get; }
 
         public double MassMin { get; }
         public double MassMax { get; }
@@ -190,7 +212,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public double RtMax { get; }
         public ReactiveProperty<double> RtLower { get; }
         public ReactiveProperty<double> RtUpper { get; }
-
+        public ReactivePropertySlim<string> ProteinFilterKeyword { get; }
+        public ReadOnlyReactivePropertySlim<string[]> ProteinFilterKeywords { get; }
         public ReactivePropertySlim<string> MetaboliteFilterKeyword { get; }
         public ReadOnlyReactivePropertySlim<string[]> MetaboliteFilterKeywords { get; }
         public ReactivePropertySlim<string> CommentFilterKeyword { get; }
@@ -272,6 +295,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     && (!BlankFilterChecked || !spot.IsBlankFiltered)
                     && (!UniquesIonsChecked || spot.IsFragmentQueryExisted)
                     && (!ManuallyModifiedChecked || spot.innerModel.IsManuallyModifiedForAnnotation)
+                    && ProteinFilter(spot, ProteinFilterKeywords.Value)
                     && MetaboliteFilter(spot, MetaboliteFilterKeywords.Value)
                     && CommentFilter(spot, CommentFilterKeywords.Value);
             }
@@ -293,6 +317,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         bool RtFilter(AlignmentSpotPropertyModel spot) {
             return RtLower.Value <= spot.TimesCenter
                 && spot.TimesCenter <= RtUpper.Value;
+        }
+
+        bool ProteinFilter(AlignmentSpotPropertyModel spot, IEnumerable<string> keywords) {
+            return keywords.All(keyword => spot.Protein.Contains(keyword));
         }
 
         bool MetaboliteFilter(AlignmentSpotPropertyModel spot, IEnumerable<string> keywords) {
@@ -320,7 +348,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand showIonTableCommand;
 
         private void ShowIonTable() {
-            peakSpotTableService.Show(AlignmentSpotTableViewModel);
+            if (model.Parameter.TargetOmics == CompMs.Common.Enum.TargetOmics.Proteomics) {
+                proteomicsTableService.Show(ProteomicsAlignmentTableViewModel);
+            }
+            else {
+                peakSpotTableService.Show(AlignmentSpotTableViewModel);
+            }
         }
 
         public int FocusID {

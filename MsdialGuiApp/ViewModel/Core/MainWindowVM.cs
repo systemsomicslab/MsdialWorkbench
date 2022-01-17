@@ -42,7 +42,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
             IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertySetService,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService) {
+            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService, 
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService) {
             if (startUpService is null) {
                 throw new ArgumentNullException(nameof(startUpService));
             }
@@ -63,6 +64,10 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 throw new ArgumentNullException(nameof(analysisFilePropertyResetService));
             }
 
+            if (proteomicsTableService is null) {
+                throw new ArgumentNullException(nameof(proteomicsTableService));
+            }
+
             Model = new MainWindowModel();
 
             this.startUpService = startUpService;
@@ -70,6 +75,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
             this.analysisFilePropertyResetService = analysisFilePropertyResetService;
+            this.proteomicsTableService = proteomicsTableService;
         }
 
         private readonly IWindowService<StartUpWindowVM> startUpService;
@@ -77,6 +83,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
         private readonly IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
 
         public MainWindowModel Model { get; }
 
@@ -183,7 +190,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 return new Lcimms.LcimmsMethodVM(lcimmsStorage, compoundSearchService, peakSpotTableService);
             }
             if (storage is MsdialLcmsDataStorage lcmsStorage) {
-                return new Lcms.LcmsMethodVM(lcmsStorage, compoundSearchService, peakSpotTableService);
+                return new Lcms.LcmsMethodVM(lcmsStorage, compoundSearchService, peakSpotTableService, proteomicsTableService);
             }
             if (storage is MsdialImmsDataStorage immsStorage) {
                 return new Imms.ImmsMethodVM(immsStorage, compoundSearchService, peakSpotTableService);
