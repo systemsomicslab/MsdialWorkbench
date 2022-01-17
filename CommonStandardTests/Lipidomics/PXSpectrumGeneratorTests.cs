@@ -2,7 +2,6 @@
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests
@@ -44,6 +43,58 @@ namespace CompMs.Common.Lipidomics.Tests
                 631.4207745    ,	//	Sn1 ,Sn2 10 calc
                 645.4364245    ,	//	Sn1 ,Sn2 11 calc
                 659.4520746    ,	//	Sn1 ,Sn2 12 calc
+                673.4677246    ,	//	Sn1 ,Sn2 13 calc
+                687.4833747    ,	//	Sn1 ,Sn2 14 calc
+                701.4990248    ,	//	Sn1 ,Sn2 15 calc
+                715.5146748    ,	//	Sn1 ,Sn2 16 calc
+                729.5303249    ,	//	Sn1 ,Sn2 17 calc
+                744.5538   ,	//	Precursor
+            };
+
+            scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
+            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            {
+                Assert.AreEqual(expect, actual, 0.01d);
+            }
+        }
+
+        [TestMethod()]
+        public void GenerateTest2() {
+            var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
+            var acyl2 = new AcylChain(18, DoubleBond.CreateFromPosition(12), new Oxidized(0));
+            var lipid = new Lipid(LbmClass.PE, 743.5465235, new PositionLevelChains(acyl1, acyl2));
+
+            var generator = new PESpectrumGenerator();
+            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+
+            var expects = new[]
+            {
+                142.0252765   ,	//	Header
+                182.058   ,	//	Gly-C
+                184.037    ,	//	Gly-O
+                308.2721   ,	//	"-Header -CH2(Sn1) calc
+                321.2797   ,	//	"-Header -acylChain -O
+                339.29147   ,	//	"-Header -acylChain
+                449.2900946   ,	//	"-CH2(Sn1)
+                463.3057447   ,	//	" -acylChain -O
+                480.3103   ,	//	" -acylChain
+                507.2955739    ,	//	Sn1 ,Sn2 1 calc
+                521.311224     ,	//	Sn1 ,Sn2 2 calc
+                535.3268741    ,	//	Sn1 ,Sn2 3 calc
+                549.3425241    ,	//	Sn1 ,Sn2 4 calc
+                563.3581742     ,	//	Sn1 ,Sn2 5 calc
+                577.3738243    ,	//	Sn1 ,Sn2 6 calc
+                591.3894743    ,	//	Sn1 ,Sn2 7 calc
+                603.5382    ,	//	-Header
+                605.4051244    ,	//	Sn1 ,Sn2 8 calc
+                618.4129494    ,	//	Sn1 9 calc
+                619.4213    ,	//	Sn2 9 calc
+                631.4207745    ,	//	Sn1 10 calc
+                633.4370    ,	//	Sn2 10 calc
+                645.4364245    ,	//	Sn1 11 calc
+                647.4526    ,	//	Sn2 11 calc
+                659.4520746    ,	//	Sn1 12 calc
+                660.4604   ,	    //	Sn2 12 calc
                 673.4677246    ,	//	Sn1 ,Sn2 13 calc
                 687.4833747    ,	//	Sn1 ,Sn2 14 calc
                 701.4990248    ,	//	Sn1 ,Sn2 15 calc
