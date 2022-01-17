@@ -184,7 +184,7 @@ namespace CompMs.Common.Lipidomics
                 new SpectrumPeak(lipidMass - chainMass , 50d, $"-{acylChain}"),
                 new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass, 50d, $"-{acylChain}-O"),
                 new SpectrumPeak(lipidMass - chainMass - C3H8NO6P , 50d, $"-Header -{acylChain}"),
-                new SpectrumPeak(lipidMass - chainMass  - C3H8NO6P - H2O, 50d, $"-Header -{acylChain}-O"),
+                new SpectrumPeak(lipidMass - chainMass  - C3H8NO6P - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass, 50d, $"-Header -{acylChain}-O"),
             };
         }
 
@@ -195,7 +195,7 @@ namespace CompMs.Common.Lipidomics
             return new[]
             {
                 new SpectrumPeak(lipidMass - chainMass  - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass - CH2 , 100d, "-CH2(Sn1)"),
-                new SpectrumPeak(lipidMass - chainMass - C3H8NO6P - H2O - CH2 , 100d, "-Header -CH2(Sn1)"),
+                new SpectrumPeak(lipidMass - chainMass - C3H8NO6P - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass - CH2 , 100d, "-Header -CH2(Sn1)"),
             };
         }
 

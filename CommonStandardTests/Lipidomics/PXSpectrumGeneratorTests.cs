@@ -78,8 +78,8 @@ namespace CompMs.Common.Lipidomics.Tests
                 186.01749   ,	//	Header
                 226.05066   ,	//	Gly-C
                 228.0253    ,	//	Gly-O
-                307.2637   ,	//	"-Header -CH2(Sn1) calc
-                321.27924   ,	//	"-Header -acylChain -O
+                308.2637   ,	//	"-Header -CH2(Sn1) calc
+                322.27924   ,	//	"-Header -acylChain -O
                 339.29147   ,	//	"-Header -acylChain
                 493.27316   ,	//	"-CH2(Sn1)
                 507.30017   ,	//	" -acylChain -O

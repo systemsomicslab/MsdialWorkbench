@@ -21,12 +21,14 @@ namespace CompMs.App.SpectrumViewer.Model
             facadeParser.Add(new PCLipidParser());
             facadeParser.Add(new EtherPELipidParser());
             facadeParser.Add(new PGLipidParser());
+            facadeParser.Add(new PSLipidParser());
             lipidParser = facadeParser;
             lipidGenerator = new LipidGenerator();
             var facadeGenerator = new FacadeLipidSpectrumGenerator(); // TODO: build by static methods.
             facadeGenerator.Add(LbmClass.PC, new PCSpectrumGenerator());
             facadeGenerator.Add(LbmClass.EtherPE, new EtherPESpectrumGenerator());
             facadeGenerator.Add(LbmClass.PG, new PGSpectrumGenerator());
+            facadeGenerator.Add(LbmClass.PS, new PSSpectrumGenerator());
             spectrumGenerator = facadeGenerator;
         }
 
