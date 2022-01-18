@@ -1,14 +1,17 @@
-﻿using CompMs.App.Msdial.Model.Lcms;
+﻿using CompMs.App.Msdial.Model;
+using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcMsApi.DataObj;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Reactive.Linq;
 using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
@@ -17,13 +20,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public LcmsMethodVM(
             MsdialLcmsDataStorage storage,
             IWindowService<ViewModel.CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, 
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService, 
+            IObservable<ParameterBase> parameter)
             : this(
-                  new LcmsMethodModel(storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true)),
+                  new LcmsMethodModel(storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true), parameter.Select(p => new HeightBarItemsLoader(p.FileID_ClassName))),
                   compoundSearchService,
                   peakSpotTableService, 
-                  proteomicsTableService) {
+                  proteomicsTableService,
+                  parameter) {
 
         }
 
@@ -31,7 +36,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             LcmsMethodModel model,
             IWindowService<ViewModel.CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
+            IObservable<ParameterBase> parameter)
             : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -49,10 +55,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(proteomicsTableService));
             }
 
+            if (parameter is null) {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
             this.model = model;
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
             this.proteomicsTableService = proteomicsTableService;
+            this.parameter = parameter;
 
             Storage = model.Storage;
         }
@@ -61,6 +72,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private readonly IWindowService<ViewModel.CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
         private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
+        private readonly IObservable<ParameterBase> parameter;
 
         public AnalysisLcmsVM AnalysisVM {
             get => analysisVM;
@@ -219,8 +231,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             AlignmentVM = new AlignmentLcmsVM(
                 model.AlignmentModel,
                 compoundSearchService,
-                peakSpotTableService, 
-                proteomicsTableService) {
+                peakSpotTableService,
+                proteomicsTableService, parameter) {
                 DisplayFilters = displayFilters
             }.AddTo(Disposables);
         }

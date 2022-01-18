@@ -8,6 +8,7 @@ using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
+using CompMs.MsdialCore.Parameter;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -28,8 +29,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public AlignmentLcmsVM(
             LcmsAlignmentModel model,
             IWindowService<ViewModel.CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, 
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService, 
+            IObservable<ParameterBase> parameter)
             : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -45,6 +47,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             if (proteomicsTableService is null) {
                 throw new ArgumentNullException(nameof(proteomicsTableService));
+            }
+
+            if (parameter is null) {
+                throw new ArgumentNullException(nameof(parameter));
             }
 
             this.model = model;
@@ -108,14 +114,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .Subscribe(_ => Ms1Spots?.Refresh())
             .AddTo(Disposables);
 
-            var classBrush = new KeyBrushMapper<BarItem, string>(
-                model.Parameter.ProjectParam.ClassnameToColorBytes
+            var classBrush = parameter.Select(p => new KeyBrushMapper<BarItem, string>(
+                p.ProjectParam.ClassnameToColorBytes
                 .ToDictionary(
                     kvp => kvp.Key,
                     kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
                 ),
                 item => item.Class,
-                Colors.Blue);
+                Colors.Blue));
 
             Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
 
@@ -142,7 +148,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             Ms2SpectrumViewModel = new MsSpectrumViewModel(this.model.Ms2SpectrumModel,
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
                 lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
-            BarChartViewModel = new BarChartViewModel(this.model.BarChartModel, brushSource: Observable.Return(classBrush)).AddTo(Disposables);
+            BarChartViewModel = new BarChartViewModel(this.model.BarChartModel, brushSource: classBrush).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(this.model.AlignmentEicModel).AddTo(Disposables);
             AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(
                 this.model.AlignmentSpotTableModel,

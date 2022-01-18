@@ -47,7 +47,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", CompMs.Common.Components.ChromXType.RT);
         }
 
-        public LcmsMethodModel(MsdialLcmsDataStorage storage, IDataProviderFactory<AnalysisFileBean> providerFactory)
+        public LcmsMethodModel(
+            MsdialLcmsDataStorage storage,
+            IDataProviderFactory<AnalysisFileBean> providerFactory, 
+            IObservable<IBarItemsLoader> barItemsLoader)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
@@ -58,6 +61,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
             Storage = storage;
             this.providerFactory = providerFactory;
+            this.barItemsLoader = barItemsLoader;
         }
 
         public MsdialLcmsDataStorage Storage {
@@ -80,7 +84,9 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
+        private readonly IObservable<IBarItemsLoader> barItemsLoader;
         private IAnnotationProcess annotationProcess;
+
 
         protected override void LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
@@ -106,7 +112,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 alignmentFile,
                 Storage.MsdialLcmsParameter,
                 Storage.DataBaseMapper,
-                Storage.DataBaseMapper.MoleculeAnnotators)
+                Storage.DataBaseMapper.MoleculeAnnotators,
+                barItemsLoader)
             .AddTo(Disposables);
         }
 
