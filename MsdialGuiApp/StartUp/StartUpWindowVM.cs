@@ -35,6 +35,12 @@ namespace CompMs.App.Msdial.StartUp
         }
         private SeparationType separationType = SeparationType.Chromatography;
 
+        public CollisionType CollisionType {
+            get => collisionType;
+            set => SetProperty(ref collisionType, value);
+        }
+        private CollisionType collisionType = CollisionType.HCD;
+
         public bool SeparationChromatography {
             get => GetSeparation(SeparationType.Chromatography);
             set {

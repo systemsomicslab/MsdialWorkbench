@@ -16,6 +16,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
+using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Graphics.UI.Message;
 using CompMs.Graphics.UI.ProgressBar;
@@ -34,6 +35,7 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -150,9 +152,25 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.AlignmentFiles = AlignmentFiles.ToList();
             }
 
-            annotationProcess = BuildProteoMetabolomicsAnnotationProcess(Storage.DataBases, parameter);
+            if (parameter.TargetOmics == TargetOmics.Proteomics) {
+                annotationProcess = BuildProteoMetabolomicsAnnotationProcess(Storage.DataBases, parameter);
+            }
+            else if(parameter.TargetOmics == TargetOmics.Lipidomics && parameter.CollistionType == CollisionType.EAD) {
+                annotationProcess = BuildEadLipidomicsAnnotationProcess(Storage.DataBases, parameter);
+            }
+            else {
+                annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
+            }
             Storage.DataBaseMapper = CreateDataBaseMapper(Storage.DataBases);
             return true;
+        }
+
+        private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
+            var containerPairs = new List<(IAnnotationQueryFactory<IAnnotationQuery>, IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>)>();
+            foreach (var annotators in storage.MetabolomicsDataBases) {
+                containerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter) as IAnnotationQueryFactory<IAnnotationQuery>, annotator.ConvertToAnnotatorContainer())));
+            }
+            return new StandardAnnotationProcess<IAnnotationQuery>(containerPairs);
         }
 
         private IAnnotationProcess BuildProteoMetabolomicsAnnotationProcess(DataBaseStorage storage, ParameterBase parameter) {
@@ -173,6 +191,14 @@ namespace CompMs.App.Msdial.Model.Lcms
                     (IAnnotationQueryFactory<IPepAnnotationQuery>)new PepAnnotationQueryFactory(container.Annotator, parameter.PeakPickBaseParam, parameter.ProteomicsParam),
                     container
                 )).ToList());
+        }
+
+        private IAnnotationProcess BuildEadLipidomicsAnnotationProcess(DataBaseStorage storage, ParameterBase parameter) {
+            var containerPairs = new List<(IAnnotationQueryFactory<IAnnotationQuery>, IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>)>();
+            foreach (var annotators in storage.MetabolomicsDataBases) {
+                containerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<IAnnotationQuery>, annotator.ConvertToAnnotatorContainer())));
+            }
+            return new EadLipidomicsAnnotationProcess<IAnnotationQuery>(containerPairs, null, null);
         }
 
         private DataBaseMapper CreateDataBaseMapper(DataBaseStorage storage) {

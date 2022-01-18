@@ -1,7 +1,7 @@
 ﻿namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public interface IReferenceScorer<in Query, in Reference, out Result>
+    public interface IReferenceScorer<in TQuery, in TReference, out TResult>
     {
-        Result Score(Query query, Reference reference);
+        TResult Score(TQuery query, TReference reference);
     }
 }

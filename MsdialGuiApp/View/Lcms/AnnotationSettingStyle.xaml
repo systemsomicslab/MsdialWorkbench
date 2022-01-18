@@ -39,7 +39,7 @@
         </StackPanel>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type localVM:LcmsMspAnnotatorSettingViewModel}">
+    <DataTemplate x:Key="LcmsAnnotatorTemplate">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -84,6 +84,10 @@
                                 Margin="8"/>
             </Expander>
         </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type localVM:LcmsMspAnnotatorSettingViewModel}">
+        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource LcmsAnnotatorTemplate}"/>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type localVM:LcmsTextDBAnnotatorSettingViewModel}">
@@ -162,6 +166,11 @@
             </Expander>
         </Grid>
     </DataTemplate>
+
+    <DataTemplate DataType="{x:Type localVM:LcmsEadLipidAnnotatorSettingViewModel}">
+        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource LcmsAnnotatorTemplate}"/>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type vm:CompoundSearchVM}"
                   x:Key="LcmsAnnotatorSetting">
         <ScrollViewer>
