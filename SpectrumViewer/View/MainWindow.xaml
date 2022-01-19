@@ -23,9 +23,10 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/View/ViewTemplates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
             <Pen x:Key="TickColor" Brush="White" Thickness="2" PresentationOptions:Freeze="True"/>
             <DataTemplate x:Key="ContentTabHeader"
-                          DataType="{x:Type vm:SpectrumViewModel}">
+                          DataType="{x:Type vm:SplitSpectrumsViewModel}">
                 <StackPanel Orientation="Horizontal">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Drop">
@@ -38,7 +39,7 @@
                 </StackPanel>
             </DataTemplate>
             <DataTemplate x:Key="ContentTabItem"
-                          DataType="{x:Type vm:SpectrumViewModel}">
+                          DataType="{x:Type vm:SplitSpectrumsViewModel}">
                 <ContentControl Content="{Binding}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Drop">

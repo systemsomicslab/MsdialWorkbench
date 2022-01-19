@@ -7,8 +7,8 @@
                     xmlns:model="clr-namespace:CompMs.App.SpectrumViewer.Model"
                     xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
-                    xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
                     xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+                    xmlns:ccore="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
                     xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing">
     <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
 
@@ -183,6 +183,191 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:SplitSpectrumsViewModel}">
+        <DataTemplate.Resources>
+            <AlternationConverter x:Key="PenConverter">
+                <Pen Brush="Black" Thickness="2" PresentationOptions:Freeze="True"/>
+                <Pen Brush="LightCoral" Thickness="2" PresentationOptions:Freeze="True"/>
+                <Pen Brush="LightSkyBlue" Thickness="2" PresentationOptions:Freeze="True"/>
+                <Pen Brush="LightGreen" Thickness="2" PresentationOptions:Freeze="True"/>
+                <Pen Brush="LightGray" Thickness="2" PresentationOptions:Freeze="True"/>
+                <Pen Brush="LightPink" Thickness="2" PresentationOptions:Freeze="True"/>
+                <Pen Brush="LightBlue" Thickness="2" PresentationOptions:Freeze="True"/>
+                <Pen Brush="LightYellow" Thickness="2" PresentationOptions:Freeze="True"/>
+            </AlternationConverter>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
+            <DataTemplate x:Key="LegendItem">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"
+                            Margin="0,4">
+                    <ToggleButton IsChecked="{Binding Visible}">
+                        <Image Width="24">
+                            <Image.Source>
+                                <DrawingImage>
+                                    <DrawingImage.Drawing>
+                                        <GeometryDrawing Geometry="M 0,0 H 8"
+                                                         Pen="{Binding Path=(ItemsControl.AlternationIndex),
+                                                                       RelativeSource={RelativeSource TemplatedParent},
+                                                                       Converter={StaticResource PenConverter}}"/>
+                                    </DrawingImage.Drawing>
+                                </DrawingImage>
+                            </Image.Source>
+                        </Image>
+                    </ToggleButton>
+                    <TextBlock Text="{Binding Name}" Margin="8,0" Foreground="Black"/>
+                </StackPanel>
+            </DataTemplate>
+        </DataTemplate.Resources>
+        <Grid Background="White">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="15"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <chart:VerticalAxisControl VerticalAxis="{Binding UpperSpectrumsViewModel.VerticalAxis}" Grid.Row="0" Grid.Column="1"/>
+            <ItemsControl ItemsSource="{Binding UpperSpectrumsViewModel.DisplayScans}"
+                          AlternationCount="8"
+                          ccore:ChartBaseControl.VerticalAxis="{Binding UpperSpectrumsViewModel.VerticalAxis}"
+                          ccore:ChartBaseControl.HorizontalAxis="{Binding HorizontalAxis}"
+                          Grid.Row="0"
+                          Grid.Column="2">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Drop">
+                        <rp:EventToReactiveCommand Command="{Binding UpperSpectrumsViewModel.DropCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid Background="WhiteSmoke"
+                              behavior:ZoomByDragBehavior.IsEnabled="True"
+                              behavior:ZoomByWheelBehavior.IsEnabled="True"
+                              behavior:MoveByDragBehavior.IsEnabled="True"
+                              behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Visibility="{Binding Visible, Converter={StaticResource BooleanToVisibility}}">
+                            <chart:LineSpectrumControl ItemsSource="{Binding Spectrum}"
+                                                       HorizontalPropertyName="Mass"
+                                                       VerticalPropertyName="Intensity"
+                                                       LinePen="{Binding Path=(ItemsControl.AlternationIndex),
+                                                                         RelativeSource={RelativeSource TemplatedParent},
+                                                                         Converter={StaticResource PenConverter}}">
+                                <chart:LineSpectrumControl.ToolTip>
+                                    <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding FocusedItem.Comment, StringFormat=Comment: {0}}"/>
+                                            <TextBlock Text="{Binding FocusedItem.Mass, StringFormat=m/z: {0}}"/>
+                                            <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0}}"/>
+                                        </StackPanel>
+                                    </ToolTip>
+                                </chart:LineSpectrumControl.ToolTip>
+                            </chart:LineSpectrumControl>
+                            <chart:Annotator ItemsSource="{Binding Spectrum}"
+                                             HorizontalPropertyName="Mass"
+                                             VerticalPropertyName="Intensity"
+                                             Overlap="Direct, Horizontal"
+                                             OrderingPropertyName="Intensity"
+                                             LabelPropertyName="Mass"
+                                             Format="N3"
+                                             TopN="10"
+                                             Brush="Pink"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <ItemsControl ItemsSource="{Binding UpperSpectrumsViewModel.DisplayScans}"
+                          VerticalAlignment="Center"
+                          AlternationCount="8"
+                          ItemTemplate="{StaticResource LegendItem}"
+                          Grid.Row="0"
+                          Grid.Column="3"/>
+
+            <chart:VerticalAxisControl VerticalAxis="{Binding LowerSpectrumsViewModel.VerticalAxis}" FlippedY="False" Grid.Row="1" Grid.Column="1"/>
+            <ItemsControl ItemsSource="{Binding LowerSpectrumsViewModel.DisplayScans}"
+                          ccore:ChartBaseControl.HorizontalAxis="{Binding HorizontalAxis}"
+                          ccore:ChartBaseControl.VerticalAxis="{Binding LowerSpectrumsViewModel.VerticalAxis}"
+                          Grid.Row="1"
+                          Grid.Column="2">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Drop">
+                        <rp:EventToReactiveCommand Command="{Binding LowerSpectrumsViewModel.DropCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid Background="WhiteSmoke"
+                              behavior:ZoomByDragBehavior.IsEnabled="True"
+                              behavior:ZoomByWheelBehavior.IsEnabled="True"
+                              behavior:MoveByDragBehavior.IsEnabled="True"
+                              behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Visibility="{Binding Visible, Converter={StaticResource BooleanToVisibility}}">
+                            <chart:LineSpectrumControl ItemsSource="{Binding Spectrum}"
+                                                       HorizontalPropertyName="Mass"
+                                                       VerticalPropertyName="Intensity"
+                                                       LinePen="{Binding Path=(ItemsControl.AlternationIndex),
+                                                                         RelativeSource={RelativeSource AncestorType=ContentControl},
+                                                                         Converter={StaticResource PenConverter}}"
+                                                       FlippedY="False">
+                                <chart:LineSpectrumControl.ToolTip>
+                                    <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding FocusedItem.Comment, StringFormat=Comment: {0}}"/>
+                                            <TextBlock Text="{Binding FocusedItem.Mass, StringFormat=m/z: {0}}"/>
+                                            <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0}}"/>
+                                        </StackPanel>
+                                    </ToolTip>
+                                </chart:LineSpectrumControl.ToolTip>
+                            </chart:LineSpectrumControl>
+                            <chart:Annotator ItemsSource="{Binding Spectrum}"
+                                             HorizontalPropertyName="Mass"
+                                             VerticalPropertyName="Intensity"
+                                             Overlap="Direct, Horizontal"
+                                             OrderingPropertyName="Intensity"
+                                             LabelPropertyName="Mass"
+                                             Format="N3"
+                                             TopN="10"
+                                             Brush="Black"
+                                             FlippedY="False"
+                                             ContentAlignment="BottomCenter"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <ItemsControl ItemsSource="{Binding LowerSpectrumsViewModel.DisplayScans}"
+                          VerticalAlignment="Center"
+                          AlternationCount="8"
+                          ItemTemplate="{StaticResource LegendItem}"
+                          Grid.Row="1"
+                          Grid.Column="3"/>
+
+            <TextBlock Text="Abundance" FontStyle="Italic" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
+                <TextBlock.LayoutTransform>
+                    <RotateTransform Angle="-90" CenterY="0.5" CenterX="0.5"/>
+                </TextBlock.LayoutTransform>
+            </TextBlock>
+            <TextBlock Text="m/z" FontStyle="Italic" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Grid.Row="3"/>
+
+            <chart:HorizontalAxisControl HorizontalAxis="{Binding HorizontalAxis}" Grid.Row="2" Grid.Column="2"/>
+
+            <GridSplitter HorizontalAlignment="Stretch" VerticalAlignment="Top" Grid.Row="1" Grid.Column="2" BorderBrush="Black" BorderThickness="1"/>
+            <GridSplitter HorizontalAlignment="Stretch" VerticalAlignment="Top" Grid.Row="2" Grid.Column="2" BorderBrush="Black" BorderThickness="1"/>
+            <GridSplitter HorizontalAlignment="Right" VerticalAlignment="Stretch" Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" BorderBrush="Black" BorderThickness="1"/>
         </Grid>
     </DataTemplate>
 

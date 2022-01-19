@@ -27,22 +27,22 @@ namespace CompMs.App.SpectrumViewer.ViewModel
             ScanCollections = model.ScanCollections.ToReadOnlyReactiveCollection(MapScanModelToViewModel).AddTo(Disposables);
             ScanCollection = ScanCollections.ObserveAddChanged().ToReactiveProperty().AddTo(Disposables);
 
-            SpectrumViewModels = model.SpectrumModels.ToReadOnlyReactiveCollection(sm => new SpectrumViewModel(sm)).AddTo(Disposables);
-            SpectrumViewModel = SpectrumViewModels.ObserveAddChanged().ToReactiveProperty().AddTo(Disposables);
-            var spectrumViewModels = CollectionViewSource.GetDefaultView(SpectrumViewModels) as IEditableCollectionView;
-            spectrumViewModels.NewItemPlaceholderPosition = NewItemPlaceholderPosition.AtEnd;
+            SplitSpectrumViewModels = model.SplitSpectrumModels.ToReadOnlyReactiveCollection(ssm => new SplitSpectrumsViewModel(ssm)).AddTo(Disposables);
+            SplitSpectrumViewModel = SplitSpectrumViewModels.ObserveAddChanged().ToReactiveProperty().AddTo(Disposables);
+            var splitSpectrumViewModels = CollectionViewSource.GetDefaultView(SplitSpectrumViewModels) as IEditableCollectionView;
+            splitSpectrumViewModels.NewItemPlaceholderPosition = NewItemPlaceholderPosition.AtEnd;
 
             GeneratorEditorViewModels = model.GeneratorEditorModels.ToReadOnlyReactiveCollection(gm => new SpectrumGeneratorEditorViewModel(gm)).AddTo(Disposables);
             GeneratorEditorViewModel = GeneratorEditorViewModels.ObserveAddChanged().ToReactiveProperty().AddTo(Disposables);
 
             ViewModels = new IObservable<ViewModelBase>[]
             {
-                SpectrumViewModels.ToObservable(),
-                SpectrumViewModels.ObserveAddChanged(),
+                SplitSpectrumViewModels.ToObservable(),
+                SplitSpectrumViewModels.ObserveAddChanged(),
                 GeneratorEditorViewModels.ToObservable(),
                 GeneratorEditorViewModels.ObserveAddChanged(),
             }.Merge().ToReactiveCollection().AddTo(Disposables);
-            SpectrumViewModels.ObserveRemoveChanged().Subscribe(ViewModels.RemoveOnScheduler);
+            SplitSpectrumViewModels.ObserveRemoveChanged().Subscribe(ViewModels.RemoveOnScheduler);
             GeneratorEditorViewModels.ObserveRemoveChanged().Subscribe(ViewModels.RemoveOnScheduler);
             ViewModel = ViewModels.ObserveAddChanged().ToReactiveProperty().AddTo(Disposables);
             var viewModels = CollectionViewSource.GetDefaultView(ViewModels) as IEditableCollectionView;
@@ -58,7 +58,7 @@ namespace CompMs.App.SpectrumViewer.ViewModel
                 .AddTo(Disposables);
             ScanCollections.ObserveElementObservableProperty(sc => sc.ScanSource)
                 .Select(prop => prop.Value)
-                .WithLatestFrom(SpectrumViewModel)
+                .WithLatestFrom(SplitSpectrumViewModel)
                 .Where(p => p.First != null && p.Second != null)
                 .Subscribe(p => p.Second.AddScan(p.First))
                 .AddTo(Disposables);
@@ -67,7 +67,7 @@ namespace CompMs.App.SpectrumViewer.ViewModel
                 .WithSubscribe(model.AddSpectrumModel)
                 .AddTo(Disposables);
 
-            SpectrumViewModels.ObserveElementObservableProperty(sv => sv.CloseCommand)
+            SplitSpectrumViewModels.ObserveElementObservableProperty(sv => sv.CloseCommand)
                 .Select(prop => prop.Instance.Model)
                 .Subscribe(model.RemoveSpectrumModel)
                 .AddTo(Disposables);
@@ -94,9 +94,9 @@ namespace CompMs.App.SpectrumViewer.ViewModel
 
         public ReactiveProperty<IScanCollectionViewModel> ScanCollection { get; }
 
-        public ReadOnlyReactiveCollection<SpectrumViewModel> SpectrumViewModels { get; }
+        public ReadOnlyReactiveCollection<SplitSpectrumsViewModel> SplitSpectrumViewModels { get; }
 
-        public ReactiveProperty<SpectrumViewModel> SpectrumViewModel { get; }
+        public ReactiveProperty<SplitSpectrumsViewModel> SplitSpectrumViewModel { get; }
 
         public ReadOnlyReactiveCollection<SpectrumGeneratorEditorViewModel> GeneratorEditorViewModels { get; }
 
