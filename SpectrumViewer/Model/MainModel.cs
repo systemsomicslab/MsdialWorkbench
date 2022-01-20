@@ -22,7 +22,11 @@ namespace CompMs.App.SpectrumViewer.Model
 
             spectrumModels = new ObservableCollection<SpectrumModel>();
             SpectrumModels = new ReadOnlyObservableCollection<SpectrumModel>(spectrumModels);
-            spectrumModels.Add(new SpectrumModel(spectrumModelSerialNumber++));
+            spectrumModels.Add(new SpectrumModel(spectrumModelSerialNumber));
+
+            splitSpectrumModels = new ObservableCollection<SplitSpectrumsModel>();
+            SplitSpectrumModels = new ReadOnlyObservableCollection<SplitSpectrumsModel>(splitSpectrumModels);
+            splitSpectrumModels.Add(new SplitSpectrumsModel(spectrumModelSerialNumber++));
 
             generatorEditorModels = new ObservableCollection<SpectrumGeneratorEditorModel>();
             GeneratorEditorModels = new ReadOnlyObservableCollection<SpectrumGeneratorEditorModel>(generatorEditorModels);
@@ -66,13 +70,20 @@ namespace CompMs.App.SpectrumViewer.Model
         private int spectrumModelSerialNumber = 1;
         public ReadOnlyObservableCollection<SpectrumModel> SpectrumModels { get; }
         private readonly ObservableCollection<SpectrumModel> spectrumModels;
+        public ReadOnlyObservableCollection<SplitSpectrumsModel> SplitSpectrumModels { get; }
+        private readonly ObservableCollection<SplitSpectrumsModel> splitSpectrumModels;
 
         public void AddSpectrumModel() {
-            spectrumModels.Add(new SpectrumModel(spectrumModelSerialNumber++));
+            spectrumModels.Add(new SpectrumModel(spectrumModelSerialNumber));
+            splitSpectrumModels.Add(new SplitSpectrumsModel(spectrumModelSerialNumber++));
         }
 
         public void RemoveSpectrumModel(SpectrumModel spectrumModel) {
             spectrumModels.Remove(spectrumModel);
+        }
+
+        public void RemoveSpectrumModel(SplitSpectrumsModel splitSpectrumModel) {
+            splitSpectrumModels.Remove(splitSpectrumModel);
         }
 
         public ReadOnlyObservableCollection<SpectrumGeneratorEditorModel> GeneratorEditorModels { get; }

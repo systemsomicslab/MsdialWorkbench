@@ -6,6 +6,7 @@
                     xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing">
     <converter:BooleanToEnumConverter x:Key="BooleanToEnum"/>
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
     <DataTemplate DataType="{x:Type VM:MsRefSearchParameterBaseViewModel}"
                   x:Key="MassToleranceSetting">
         <StackPanel>
@@ -146,7 +147,10 @@
 
     <DataTemplate DataType="{x:Type localVM:DataBaseSettingViewModel}">
         <StackPanel>
-            <Grid Margin="8,0">
+            <ui:LabeledContent PrependLabel="Database type">
+                <ComboBox ItemsSource="{Binding DBSources, Mode=OneTime}" SelectedItem="{Binding DBSource.Value}" IsEnabled="{Binding IsEditable.Value}"/>
+            </ui:LabeledContent>
+            <Grid Margin="8,0" Visibility="{Binding IsDataBasePathEnabled.Value, Converter={StaticResource BooleanToVisibility}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
@@ -164,39 +168,17 @@
                 <TextBox Text="{Binding DataBaseID.Value, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalContentAlignment="Left"/>
             </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Database type">
-                <ComboBox ItemsSource="{Binding DBSources, Mode=OneTime}" SelectedItem="{Binding DBSource.Value}" IsEnabled="{Binding IsEditable.Value}"/>
-            </ui:LabeledContent>
-            <ui:LabeledContent PrependLabel="Lipid database:">
-                <ui:LabeledContent.Style>
-                    <Style TargetType="ui:LabeledContent">
-                        <Setter Property="Visibility" Value="Visible"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsLipidDataBase.Value}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ui:LabeledContent.Style>
+            <ui:LabeledContent PrependLabel="Lipid database:" Visibility="{Binding IsLipidDataBase.Value, Converter={StaticResource BooleanToVisibility}}">
                 <Button Content="Set"
                         Command="{Binding LipidDBSetCommand, Mode=OneTime}"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Width="64"/>
             </ui:LabeledContent>
-            <GroupBox BorderThickness="0"
-                      Header="Shotgun proteomics parameter setting">
-                <StackPanel Margin="0">
-                    <StackPanel.Style>
-                        <Style TargetType="StackPanel">
-                            <Setter Property="Visibility" Value="Visible"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding DBSource.Value, Converter={StaticResource BooleanToEnum}, ConverterParameter=Fasta}" Value="False">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </StackPanel.Style>
+            <GroupBox Header="Shotgun proteomics parameter setting"
+                      BorderThickness="0"
+                      Visibility="{Binding IsProteomicsDataBase.Value, Converter={StaticResource BooleanToVisibility}}">
+                <StackPanel>
                     <ui:LabeledContent PrependLabel="Mass range begin:"
                                        AppendLabel="Da">
                         <TextBox Text="{Binding MassRangeBegin.Value, UpdateSourceTrigger=PropertyChanged}"

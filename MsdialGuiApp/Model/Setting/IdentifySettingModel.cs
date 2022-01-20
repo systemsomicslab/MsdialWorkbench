@@ -209,6 +209,7 @@ namespace CompMs.App.Msdial.Model.Setting
             var result = DataBaseStorage.CreateEmpty();
             SetAnnotatorContainer(result);
             SetProteomicsAnnotatorContainer(result);
+            SetEadLipidomicsAnnotatorContainer(result);
             return result;
         }
 
@@ -243,6 +244,23 @@ namespace CompMs.App.Msdial.Model.Setting
                     results.AddRange(annotators.Select(annotator => new ProteomicsAnnotatorParameterPair(annotator, annotatorModel.SearchParameter, db.ProteomicsParameter)));
                 }
                 storage.AddProteomicsDataBase(db, results);
+            }
+        }
+
+        private void SetEadLipidomicsAnnotatorContainer(DataBaseStorage storage) {
+            foreach (var group in AnnotatorModels.OfType<IEadLipidAnnotatorSettingModel>().GroupBy(m => m.DataBaseSettingModel)) {
+                var dbModel = group.Key;
+                EadLipidDatabase db = dbModel.CreateEadLipidDatabase();
+                if (db is null) {
+                    continue;
+                }
+                var results = new List<IAnnotatorParameterPair<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>>();
+                foreach (var annotatorModel in group) {
+                    var index = AnnotatorModels.IndexOf(annotatorModel);
+                    var annotators = annotatorModel.CreateAnnotator(db, AnnotatorModels.Count - index);
+                    results.AddRange(annotators.Select(annotator => new EadLipidAnnotatorParameterPair(annotator, annotatorModel.SearchParameter)));
+                }
+                storage.AddEadLipidomicsDataBase(db, results);
             }
         }
     }

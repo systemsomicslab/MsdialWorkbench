@@ -42,5 +42,9 @@ namespace CompMs.MsdialLcMsApi.Parser
         public ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Visit(ShotgunProteomicsRestorationKey key, ShotgunProteomicsDB database) {
             return new LcmsFastaAnnotator(database, key.MsRefSearchParameter, key.ProteomicsParameter, key.Key, key.SourceType, key.Priority);
         }
+
+        public ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Visit(EadLipidDatabaseRestorationKey key, EadLipidDatabase database) {
+            return new EadLipidAnnotator(database, key.Key, key.Priority, key.MsRefSearchParameter);
+        }
     }
 }

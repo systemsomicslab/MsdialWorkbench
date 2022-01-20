@@ -118,6 +118,9 @@ namespace CompMs.MsdialCore.DataObj.Tests
             result = new MsScanMatchResult { LibraryID = 2 };
             var actual5 = db.Refer(result);
             Assert.IsNull(actual5);
+
+            var actual6 = db.Generate(lipid, adduct, reference);
+            Assert.AreEqual(actual2.ScanID, actual6.ScanID);
         }
     }
 }

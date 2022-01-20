@@ -30,6 +30,13 @@ namespace CompMs.App.Msdial.Model.Setting
         List<ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> CreateAnnotator(ShotgunProteomicsDB db, int priority, TargetOmics omics);
     }
 
+    public interface IEadLipidAnnotatorSettingModel : IAnnotatorSettingModel
+    {
+        MsRefSearchParameterBase SearchParameter { get; }
+
+        List<ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>> CreateAnnotator(EadLipidDatabase db, int priority);
+    }
+
     public interface IAnnotatorSettingModelFactory
     {
         IAnnotatorSettingModel Create(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter);
