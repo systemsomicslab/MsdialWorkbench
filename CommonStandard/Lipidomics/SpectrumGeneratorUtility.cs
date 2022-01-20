@@ -7,9 +7,8 @@ using System.Linq;
 using System.Text;
 
 namespace CompMs.Common.Lipidomics {
-    public sealed class SpectrumGeneratorUtility {
-        private SpectrumGeneratorUtility() { }
-
+    public static class SpectrumGeneratorUtility {
+        
         private static readonly double CH2 = new[]
        {
             MassDiffDictionary.HydrogenMass * 2,
@@ -17,7 +16,7 @@ namespace CompMs.Common.Lipidomics {
         }.Sum();
 
         public static IEnumerable<SpectrumPeak> GetAcylDoubleBondSpectrum(
-            ILipid lipid, AcylChain acylChain, AdductIon adduct, double NLMass = 0.0) {
+            ILipid lipid, AcylChain acylChain, AdductIon adduct, double NLMass = 0.0, double abundance = 50.0) {
             var chainLoss = lipid.Mass - acylChain.Mass + adduct.AdductIonAccurateMass - NLMass;
             var diffs = new double[acylChain.CarbonCount];
             for (int i = 0; i < acylChain.CarbonCount; i++) {
@@ -36,9 +35,9 @@ namespace CompMs.Common.Lipidomics {
 
             var peaks = new List<SpectrumPeak>();
             for (int i = 0; i < acylChain.CarbonCount - 1; i++) {
-                peaks.Add(new SpectrumPeak(chainLoss + diffs[i], 50d, $"{acylChain} C{i + 1}"));
-                peaks.Add(new SpectrumPeak(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass, 25d, $"{acylChain} C{i + 1}-H"));
-                peaks.Add(new SpectrumPeak(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass, 25d, $"{acylChain} C{i + 1}+H"));
+                peaks.Add(new SpectrumPeak(chainLoss + diffs[i], abundance, $"{acylChain} C{i + 1}"));
+                peaks.Add(new SpectrumPeak(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass, abundance * 0.5, $"{acylChain} C{i + 1}-H"));
+                peaks.Add(new SpectrumPeak(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass, abundance * 0.5, $"{acylChain} C{i + 1}+H"));
             }
 
             return peaks.ToArray();
