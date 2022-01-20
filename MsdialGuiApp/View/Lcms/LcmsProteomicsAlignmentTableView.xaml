@@ -1,5 +1,5 @@
-﻿<UserControl x:Class="CompMs.App.Msdial.View.Lcms.LcmsAnalysisPeakTableView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Lcms.LcmsProteomicsAlignmentTableView"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
@@ -10,7 +10,7 @@
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:converter="clr-namespace:CompMs.App.Msdial.ViewModel.Converter"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
-             d:DataContext="{d:DesignInstance Type=vm:LcmsAnalysisPeakTableViewModel}"
+             d:DataContext="{d:DesignInstance Type=vm:LcmsProteomicsAlignmentTableViewModel}"
              d:DesignHeight="450" d:DesignWidth="1200">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -22,7 +22,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <converter:PeakToChromatogramConverter x:Key="peak2eic"/>
+            <converter:SpotToBarItemConverter x:Key="spot2baritems"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -34,6 +34,7 @@
         <Grid Margin="5" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="110"/>
+                <ColumnDefinition />
                 <ColumnDefinition />
                 <ColumnDefinition />
                 <ColumnDefinition Width="210"/>
@@ -63,14 +64,21 @@
 
             <StackPanel Margin="5,0,0,0"
                         Grid.Column="1">
-                <TextBlock Text="Metabolite name filter"/>
-                <TextBox Text="{Binding MetaboliteFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
+                <TextBlock Text="Protein name filter"/>
+                <TextBox Text="{Binding ProteinFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"/>
             </StackPanel>
 
             <StackPanel Margin="5,0,0,0"
                         Grid.Column="2">
-                <TextBlock Text="Comment filter"/>
+                <TextBlock Text="Peptide name filter"/>
+                <TextBox Text="{Binding PeptideFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
+                         HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <StackPanel Margin="5,0,0,0"
+                        Grid.Column="3">
+                <TextBlock Text="Comment Filter"/>
                 <TextBox Text="{Binding CommentFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"/>
             </StackPanel>
@@ -82,7 +90,7 @@
                             UpperValue="{Binding MassUpper.Value, Mode=TwoWay}"
                             Style="{StaticResource EditableRangeSlider}"
                             Margin="8,0"
-                            Grid.Column="3"/>
+                            Grid.Column="4"/>
             <rs:RangeSlider Tag="Retention time"
                             Minimum="{Binding RtMin, Mode=OneWay}"
                             Maximum="{Binding RtMax, Mode=OneWay}"
@@ -90,7 +98,7 @@
                             UpperValue="{Binding RtUpper.Value, Mode=TwoWay}"
                             Style="{StaticResource EditableRangeSlider}"
                             Margin="8,0"
-                            Grid.Column="4"/>
+                            Grid.Column="5"/>
         </Grid>
 
         <DataGrid x:Name="PeakSpotView"
@@ -120,22 +128,34 @@
 
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID"
-                                    Binding="{Binding Path=MasterPeakID}"
+                                    Binding="{Binding Path=AlignmentID}"
                                     IsReadOnly="True" 
                                     Width="50" />
                 <DataGridTextColumn Header="m/z"
-                                    Binding="{Binding Path=Mass, StringFormat=F4}"
+                                    Binding="{Binding Path=MassCenter, StringFormat=F4}"
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTextColumn Header="RT(min)"
-                                    Binding="{Binding Path=ChromXValue, StringFormat=F3}"
+                                    Binding="{Binding Path=TimesCenter, StringFormat=F4}"
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTextColumn Header="Type"
                                     Binding="{Binding Path=AdductIonName}"
                                     IsReadOnly="True"
                                     Width="1*" />
-                <DataGridTextColumn Header="Metabolite name"
+                <DataGridTextColumn Header="Fill %"
+                                    Binding="{Binding Path=FillPercentage, StringFormat=F2}"
+                                    IsReadOnly="True"
+                                    Width="50" />
+                <DataGridTextColumn Header="PG ID"
+                                    Binding="{Binding Path=ProteinGroupID}"
+                                    IsReadOnly="True" 
+                                    Width="50" />
+                <DataGridTextColumn Header="Protein name"
+                                    Binding="{Binding Path=Protein}"
+                                    IsReadOnly="True"
+                                    Width="2*" />
+                <DataGridTextColumn Header="Peptide name"
                                     Binding="{Binding Path=Name}"
                                     IsReadOnly="False"
                                     Width="2*" >
@@ -145,39 +165,36 @@
                         </Style>
                     </DataGridTextColumn.CellStyle>
                 </DataGridTextColumn>
+
                 <DataGridTextColumn Header="Comment"
                                     Binding="{Binding Path=Comment}"
                                     IsReadOnly="False"
                                     Width="2*" />
-                <DataGridTextColumn Header="Height"
-                                    Binding="{Binding Path=Intensity, StringFormat=F3}"
-                                    IsReadOnly="True"
-                                    Width="70" />
-                <DataGridTextColumn Header="Area"
-                                    Binding="{Binding Path=PeakArea, StringFormat=F3}"
-                                    IsReadOnly="True"
-                                    Width="70" />
-                <DataGridTextColumn Header="Gaussian"
-                                    Binding="{Binding Path=InnerModel.PeakShape.GaussianSimilarityValue, StringFormat=F3}"
-                                    IsReadOnly="True"
-                                    Width="70" />
                 <DataGridTextColumn Header="S/N"
-                                    Binding="{Binding Path=InnerModel.PeakShape.SignalToNoise, StringFormat=F1}"
+                                    Binding="{Binding Path=SignalToNoiseAve, StringFormat=F1}"
                                     IsReadOnly="True"
-                                    Width="70" />
-                <DataGridTemplateColumn Header="Chromatogram"
+                                    Width="1*" />
+                <DataGridTextColumn Header="ANOVA&#13;P-value"
+                                    Width="80"
+                                    Binding="{Binding Path=AnovaPvalue, StringFormat=0.00E00}"
+                                    IsReadOnly="True" />
+                <DataGridTextColumn Header="Fold change&#13; (Max/Min)"
+                                    Width="80"
+                                    Binding="{Binding Path=FoldChange, StringFormat=F2}"
+                                    IsReadOnly="True" />
+                <DataGridTemplateColumn Header="BarChart"
                                         Width="150">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <chart:SmallEicChart>
-                                <chart:SmallEicChart.DataContext>
-                                    <MultiBinding Converter="{StaticResource peak2eic}">
+                            <chart:SmallClassBarChart>
+                                <chart:SmallClassBarChart.DataContext>
+                                    <MultiBinding Converter="{StaticResource spot2baritems}">
                                         <Binding />
-                                        <Binding Path="DataContext.EicLoader.Value"
+                                        <Binding Path="DataContext.BarItemsLoader.Value"
                                                  RelativeSource="{RelativeSource AncestorType=DataGrid}"/>
                                     </MultiBinding>
-                                </chart:SmallEicChart.DataContext>
-                            </chart:SmallEicChart>
+                                </chart:SmallClassBarChart.DataContext>
+                            </chart:SmallClassBarChart>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

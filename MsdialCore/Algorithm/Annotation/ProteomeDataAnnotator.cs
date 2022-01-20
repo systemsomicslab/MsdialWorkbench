@@ -65,6 +65,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(paiFile);
             
             MappingToProteinDatabase(file.ProteinAssembledResultFilePath, features, databases, mapper, param);
+
+            MsdialPeakSerializer.SaveChromatogramPeakFeatures(paiFile, features);
         }
 
         private void MappingToProteinDatabase(string file, List<ChromatogramPeakFeature> features, 
@@ -110,6 +112,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             var features = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultfile);
 
             MappingToProteinDatabase(file.ProteinAssembledResultFilePath, features, databases, mapper, param);
+            MessagePackHandler.SaveToFile(features, resultfile);
         }
 
         public void MappingToProteinDatabase(
@@ -166,6 +169,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             }
 
             var peptideList = new List<string>();
+            var peptide2firstProteinID = new Dictionary<string, int>();
             for (int i = 0; i < groups.Count; i++) {
                 var group = groups[i];
                 for (int j = 0; j < group.ProteinMsResults.Count; j++) {
@@ -173,12 +177,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                     for (int k = 0; k < protein.MatchedPeptideResults.Count; k++) {
                         var peptide = protein.MatchedPeptideResults[k].Peptide;
                         var peptideString = peptide.ModifiedSequence;
-                        if (peptideList.Contains(peptideString)) {
+                        if (peptideList.Contains(peptideString) && peptide2firstProteinID[peptideString] < j) {
                             protein.MatchedPeptideResults.RemoveAt(k);
                             k--;
                         }
                         else {
                             peptideList.Add(peptideString);
+                            if (!peptide2firstProteinID.ContainsKey(peptideString)) {
+                                peptide2firstProteinID[peptideString] = j;
+                            }
                         }
                     }
                     if (protein.MatchedPeptideResults.IsEmptyOrNull()) {
@@ -190,7 +197,28 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                     groups.RemoveAt(i);
                 }
             }
+
+
+            ReflectToPeakObjects(groups);
+
             return groups;
+        }
+
+        private void ReflectToPeakObjects(List<ProteinGroup> groups) {
+            foreach (var group in groups) {
+                foreach (var protein in group.ProteinMsResults) {
+                    foreach (var pepObj in protein.MatchedPeptideResults) {
+                        if (pepObj.ChromatogramPeakFeature != null) {
+                            pepObj.ChromatogramPeakFeature.Protein = protein.FastaProperty.UniqueIdentifier + "|" + pepObj.Peptide.Position.Start + "-" + pepObj.Peptide.Position.End;
+                            pepObj.ChromatogramPeakFeature.ProteinGroupID = group.GroupID;
+                        }
+                        else if (pepObj.AlignmentSpotProperty != null) {
+                            pepObj.AlignmentSpotProperty.Protein = protein.FastaProperty.UniqueIdentifier + "|" + pepObj.Peptide.Position.Start + "-" + pepObj.Peptide.Position.End;
+                            pepObj.AlignmentSpotProperty.ProteinGroupID = group.GroupID;
+                        }
+                    }
+                }
+            }
         }
 
         private bool isProteinValuesContainsKey(Dictionary<int, List<ProteinMsResult>> dict, int proteinID) {
@@ -234,7 +262,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             var featureObjs = DataAccess.GetChromPeakFeatureObjectsIntegratingRtAndDriftData(features);
             var isIonMobility = features.Count == featureObjs.Count ? false : true;
             if (isIonMobility) featureObjs = featureObjs.Where(n => n.IsMultiLayeredData() == false).ToList();
-            var annotatedFeatures = featureObjs.Where(n => n.IsReferenceMatched(mapper));
+            var annotatedFeatures = featureObjs.Where(n => n.IsReferenceMatched(mapper)).ToList();
             var results = InitializeProteinMsResults(databases);
 
             foreach (var result in results) {

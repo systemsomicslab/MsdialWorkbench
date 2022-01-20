@@ -41,9 +41,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentFileBean alignmentFileBean,
             ParameterBase parameter,
             DataBaseMapper mapper,
-            IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators) {
+            IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators,
+            IObservable<IBarItemsLoader> barItemsLoader) {
             if (annotators is null) {
                 throw new ArgumentNullException(nameof(annotators));
+            }
+
+            if (barItemsLoader is null) {
+                throw new ArgumentNullException(nameof(barItemsLoader));
             }
 
             AlignmentFile = alignmentFileBean;
@@ -89,7 +94,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new MsRefSpectrumLoader(mapper),
                 peak => peak.Mass,
                 peak => peak.Intensity);
-            Ms2SpectrumModel.GraphTitle = "Representation vs. Reference";
+            Ms2SpectrumModel.GraphTitle = "Representative vs. Reference";
             Ms2SpectrumModel.HorizontalTitle = "m/z";
             Ms2SpectrumModel.VerticalTitle = "Abundance";
             Ms2SpectrumModel.HorizontalProperty = nameof(SpectrumPeak.Mass);
@@ -98,7 +103,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Ms2SpectrumModel.OrderingProperty = nameof(SpectrumPeak.Intensity);
 
             // Class intensity bar chart
-            BarChartModel = BarChartModel.Create(Target, BarItemsLoader);
+            BarChartModel = BarChartModel.Create(Target, barItemsLoader);
             BarChartModel.Elements.HorizontalTitle = "Class";
             BarChartModel.Elements.VerticalTitle = "Height";
             BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);

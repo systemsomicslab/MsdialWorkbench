@@ -57,6 +57,37 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public IReactiveProperty<double> RtUpper { get; }
     }
 
+    sealed class LcmsProteomicsPeakTableViewModel : LcmsPeakSpotTableViewModel {
+        public LcmsProteomicsPeakTableViewModel(
+            ILcmsPeakSpotTableModel model,
+            IObservable<EicLoader> eicLoader,
+            IReactiveProperty<double> massLower,
+            IReactiveProperty<double> massUpper,
+            IReactiveProperty<double> rtLower,
+            IReactiveProperty<double> rtUpper,
+            IReactiveProperty<string> proteinFilterKeyword,
+            IReactiveProperty<string> peptideFilterKeyword,
+            IReactiveProperty<string> commentFilterKeyword)
+            : base(
+                  model,
+                  massLower,
+                  massUpper,
+                  rtLower,
+                  rtUpper,
+                  peptideFilterKeyword,
+                  commentFilterKeyword) {
+            if (eicLoader is null) {
+                throw new ArgumentNullException(nameof(eicLoader));
+            }
+            ProteinFilterKeyword = proteinFilterKeyword;
+            EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+        }
+
+        public IReactiveProperty<string> PeptideFilterKeyword { get => this.MetaboliteFilterKeyword; }
+        public IReactiveProperty<string> ProteinFilterKeyword { get; }
+        public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
+    }
+
     sealed class LcmsAnalysisPeakTableViewModel : LcmsPeakSpotTableViewModel
     {
         public LcmsAnalysisPeakTableViewModel(
@@ -81,10 +112,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
-
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
     }
-
+   
     sealed class LcmsAlignmentSpotTableViewModel : LcmsPeakSpotTableViewModel
     {
         public LcmsAlignmentSpotTableViewModel(
@@ -110,6 +140,36 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             BarItemsLoader = barItemsLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
+        public ReadOnlyReactivePropertySlim<IBarItemsLoader> BarItemsLoader { get; }
+    }
+
+    sealed class LcmsProteomicsAlignmentTableViewModel : LcmsPeakSpotTableViewModel {
+        public LcmsProteomicsAlignmentTableViewModel(
+            ILcmsPeakSpotTableModel model,
+            IObservable<IBarItemsLoader> barItemsLoader,
+            IReactiveProperty<double> massLower,
+            IReactiveProperty<double> massUpper,
+            IReactiveProperty<double> rtLower,
+            IReactiveProperty<double> rtUpper,
+            IReactiveProperty<string> proteinFilterKeyword,
+            IReactiveProperty<string> peptideFilterKeyword,
+            IReactiveProperty<string> commentFilterKeyword)
+            : base(
+                  model,
+                  massLower,
+                  massUpper,
+                  rtLower,
+                  rtUpper,
+                  peptideFilterKeyword,
+                  commentFilterKeyword) {
+            if (barItemsLoader is null) {
+                throw new ArgumentNullException(nameof(barItemsLoader));
+            }
+            ProteinFilterKeyword = proteinFilterKeyword;
+            BarItemsLoader = barItemsLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+        }
+        public IReactiveProperty<string> PeptideFilterKeyword { get => this.MetaboliteFilterKeyword; }
+        public IReactiveProperty<string> ProteinFilterKeyword { get; }
         public ReadOnlyReactivePropertySlim<IBarItemsLoader> BarItemsLoader { get; }
     }
 }
