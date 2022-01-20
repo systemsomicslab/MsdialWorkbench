@@ -47,7 +47,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .AddTo(Disposables);
             DataBaseID.Where(_ => !DataBaseID.HasErrors).Subscribe(id => Model.DataBaseID = id).AddTo(Disposables);
 
-            DBSources = new List<DataBaseSource> { DataBaseSource.Msp, DataBaseSource.Lbm, DataBaseSource.Text, DataBaseSource.Fasta, }.AsReadOnly();
+            DBSources = new List<DataBaseSource> { DataBaseSource.Msp, DataBaseSource.Lbm, DataBaseSource.Text, DataBaseSource.Fasta, DataBaseSource.EadLipid, }.AsReadOnly();
             DBSource = DataBasePath
                 .Select(path => Path.GetExtension(path))
                 .Select(ext => {
@@ -68,7 +68,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReactiveProperty(DataBaseSource.None)
                 .SetValidateNotifyError(src => DBSources.Contains(src) ? null : "Unknown database")
                 .AddTo(Disposables);
-            DBSource.Where(_ => !DBSource.HasErrors).Subscribe(source => Model.DBSource = source).AddTo(Disposables);
+            DBSource.Where(src => src == DataBaseSource.EadLipid)
+                .Subscribe(_ => DataBaseID.Value = "LipidDatabase")
+                .AddTo(Disposables);
+            IsDataBasePathEnabled = DBSource.Select(src => src != DataBaseSource.EadLipid).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            DBSource.Where(_ => !DBSource.HasErrors)
+                .Subscribe(source => Model.DBSource = source)
+                .AddTo(Disposables);
 
             ProteomicsParameterVM = new ProteomicsParameterVM(model.ProteomicsParameter);
 
@@ -88,7 +94,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             var commonNoError = new[]
             {
-                DataBasePath.ObserveHasErrors,
+                DataBasePath.ObserveHasErrors.CombineLatest(IsDataBasePathEnabled, (a, b) => a && b),
                 DataBaseID.ObserveHasErrors,
                 DBSource.ObserveHasErrors,
             }.CombineLatestValuesAreAllFalse();
@@ -124,6 +130,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .WithSubscribe(LipidDBSet)
                 .AddTo(Disposables);
 
+            IsProteomicsDataBase = DBSource
+                .Select(src => src == DataBaseSource.Fasta)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+
             IsEditable = isEditableModel.Where(m => m == Model).Select(_ => true)
                 .Merge(notEditableModel.Where(m => m == Model).Select(_ => false))
                 .ToReadOnlyReactivePropertySlim()
@@ -134,6 +145,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         [PathExists(IsFile = true, ErrorMessage = "Database path is invalid.")]
         public ReactiveProperty<string> DataBasePath { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> IsDataBasePathEnabled { get; }
 
         [Required(ErrorMessage = "Database name is required.")]
         public ReactiveProperty<string> DataBaseID { get; }
@@ -188,6 +201,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 window.ShowDialog();
             }
         }
+
+        public ReadOnlyReactivePropertySlim<bool> IsProteomicsDataBase { get; }
 
         // IDataBaseSettingViewModel interface
         IReadOnlyReactiveProperty<string> IDataBaseSettingViewModel.DataBaseID => DataBaseID;

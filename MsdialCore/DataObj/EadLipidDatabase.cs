@@ -8,27 +8,28 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.IO;
 using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj
 {
-    public class EadLipidDatabase : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IDisposable
+    [MessagePack.MessagePackObject]
+    public sealed class EadLipidDatabase : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IReferenceDataBase, IDisposable
     {
+        public EadLipidDatabase(string id) : this(Path.GetTempFileName(), id) {
+
+        }
+
         public EadLipidDatabase(string dbPath, string id) {
             if (string.IsNullOrEmpty(dbPath)) {
                 throw new ArgumentNullException(nameof(dbPath));
             }
 
+            this.dbPath = dbPath;
             Id = id;
             lipidGenerator = FacadeLipidSpectrumGenerator.Default;
 
-            var connectionStringBuilder = new SQLiteConnectionStringBuilder
-            {
-                DataSource = dbPath,
-            };
-
-            connection = new SQLiteConnection(connectionStringBuilder.ToString());
-
+            connection = CreateConnection(dbPath);
             connection.Open();
             var command = connection.CreateCommand();
             command.CommandText = $"CREATE TABLE IF NOT EXISTS {ReferenceTableName} ({LipidReference.ReferenceColumnsDefine})";
@@ -41,22 +42,53 @@ namespace CompMs.MsdialCore.DataObj
         private readonly string ReferenceTableName = "LipidReferenceTable";
         private readonly string SpectrumTableName = "ReferenceSpectrumTable";
 
+        [MessagePack.Key(nameof(Id))]
         public string Id { get; }
 
-        private readonly ILipidSpectrumGenerator lipidGenerator;
+        private readonly string dbPath;
 
+        private readonly ILipidSpectrumGenerator lipidGenerator;
         private SQLiteConnection connection;
 
         private int scanId = 0;
 
+        private static SQLiteConnection CreateConnection(string dbPath) {
+            var connectionStringBuilder = new SQLiteConnectionStringBuilder
+            {
+                DataSource = dbPath,
+            };
+
+            return new SQLiteConnection(connectionStringBuilder.ToString());
+        }
+
         // TODO: Convert IMSScanProperty to MoleculeMsReference
         public MoleculeMsReference Generate(ILipid lipid, AdductIon adduct, MoleculeMsReference baseReference) {
-            var reference = (MoleculeMsReference)lipid.GenerateSpectrum(lipidGenerator, adduct, baseReference);
-            reference.ScanID = scanId++;
-            return reference;
+            if (connection is null) {
+                throw new ObjectDisposedException(nameof(connection));
+            }
+            var command = connection.CreateCommand();
+            command.CommandText = $"SELECT * FROM {ReferenceTableName} WHERE Name = '{lipid.Name}' AND AdductType = '{adduct.AdductIonName}'";
+            var reader = command.ExecuteReader();
+            if (reader.Read()) {
+                var reference = LipidReference.ParseLipidReference(reader);
+                reader.Close();
+
+                command.CommandText = $"SELECT * FROM {SpectrumTableName} WHERE ScanID = {reference.ScanID}";
+                reader = command.ExecuteReader();
+                reference.Spectrum.AddRange(LipidReference.ParseSpectrum(reader));
+                return reference.ConvertToReference();
+            }
+            else {
+                var reference = (MoleculeMsReference)lipid.GenerateSpectrum(lipidGenerator, adduct, baseReference);
+                reference.ScanID = scanId++;
+                return reference;
+            }
         }
 
         public void Register(IEnumerable<MoleculeMsReference> moleculeMsReferences) {
+            if (connection is null) {
+                throw new ObjectDisposedException(nameof(connection));
+            }
             var lipidReferences = moleculeMsReferences.Select(reference => new LipidReference(reference)).ToList();
             using (var transaction = connection.BeginTransaction()) {
                 var command = connection?.CreateCommand();
@@ -98,11 +130,16 @@ namespace CompMs.MsdialCore.DataObj
 
         private bool disposedValue;
 
-        protected virtual void Dispose(bool disposing) {
+        private void Dispose(bool disposing) {
             if (!disposedValue) {
                 if (disposing) {
-                    connection.Dispose();
-                    connection = null;
+
+                }
+
+                connection.Dispose();
+                connection = null;
+                if (File.Exists(dbPath)) {
+                    File.Delete(dbPath);
                 }
 
                 disposedValue = true;
@@ -113,6 +150,27 @@ namespace CompMs.MsdialCore.DataObj
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        ~EadLipidDatabase()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: false);
+        }
+
+        public void Save(Stream stream) {
+            using (var fs = File.Open(dbPath, FileMode.Open)) {
+                fs.CopyTo(stream);
+            }
+        }
+
+        public void Load(Stream stream, string folderpath) {
+            connection.Close();
+            using (var fs = File.Open(dbPath, FileMode.Create)) {
+                stream.CopyTo(fs);
+            }
+            connection = CreateConnection(dbPath);
         }
 
         class LipidReference
@@ -207,29 +265,6 @@ namespace CompMs.MsdialCore.DataObj
                 "DatabaseID INTEGER NOT NULL," +
                 "Charge INTEGER NOT NULL," +
                 "MsLevel INTEGER NOT NULL";
-
-            // public string ToReferenceValues() => string.Join(",",
-            //         ScanID,
-            //         PrecursorMz,
-            //         ChromXs.RT.Value,
-            //         ChromXs.RI.Value,
-            //         ChromXs.Drift.Value,
-            //         ChromXs.Mz.Value,
-            //         (int)IonMode,
-            //         Name,
-            //         Formula,
-            //         Ontology,
-            //         SMILES,
-            //         InChIKey,
-            //         AdductType,
-            //         CollisionCrossSection,
-            //         CompoundClass,
-            //         Comment,
-            //         CollisionEnergy,
-            //         DatabaseID,
-            //         Charge,
-            //         MsLevel
-            //     );
 
             public string ToReferenceValues() => $"({ScanID}," +
                 $"{PrecursorMz}," +

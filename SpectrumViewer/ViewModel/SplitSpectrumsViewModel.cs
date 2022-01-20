@@ -12,14 +12,13 @@ using System.Windows;
 
 namespace CompMs.App.SpectrumViewer.ViewModel
 {
-    public class SpectrumViewModel : ViewModelBase {
-        public SpectrumViewModel(SpectrumModel model) {
+    public class SplitSpectrumsViewModel : ViewModelBase
+    {
+        public SplitSpectrumsViewModel(SplitSpectrumsModel model) {
             Model = model;
 
             Name = Observable.Return(Model.Name).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-
             DisplayScans = Model.DisplayScans.ToReadOnlyReactiveCollection().AddTo(Disposables);
-            DisplayScan = new ReactivePropertySlim<DisplayScan>().AddTo(Disposables);
 
             var collectionChanged = new[]
             {
@@ -27,6 +26,7 @@ namespace CompMs.App.SpectrumViewer.ViewModel
                 DisplayScans.ObserveRemoveChanged().ToUnit(),
                 DisplayScans.ObserveResetChanged().ToUnit(),
             }.Merge();
+
             HorizontalAxis = collectionChanged
                 .Where(_ => DisplayScans.Any())
                 .Select(_ => DisplayScans
@@ -42,6 +42,9 @@ namespace CompMs.App.SpectrumViewer.ViewModel
                 .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0, 0), labelType: LabelType.Order)
                 .AddTo(Disposables);
 
+            UpperSpectrumsViewModel = new SpectrumViewModel(model.UpperSpectrumModel);
+            LowerSpectrumsViewModel = new SpectrumViewModel(model.LowerSpectrumModel);
+
             DropCommand = new ReactiveCommand<DragEventArgs>().AddTo(Disposables);
             DropCommand
                 .Where(e => !e.Handled && e.Data.GetDataPresent(typeof(DisplayScan)))
@@ -51,30 +54,21 @@ namespace CompMs.App.SpectrumViewer.ViewModel
                 .Where(scan => !DisplayScans.Contains(scan))
                 .Subscribe(AddScan)
                 .AddTo(Disposables);
-
             CloseCommand = new ReactiveCommand().AddTo(Disposables);
         }
 
-        public SpectrumModel Model { get; }
-
+        public SplitSpectrumsModel Model { get; }
         public ReadOnlyReactivePropertySlim<string> Name { get; }
-
         public ReadOnlyReactiveCollection<DisplayScan> DisplayScans { get; }
-
-        public ReadOnlyReactiveCollection<DisplayScan> UpperScans { get; }
-
-        public ReadOnlyReactiveCollection<DisplayScan> LowerScans { get; }
-
-        public ReactivePropertySlim<DisplayScan> DisplayScan { get; }
-
         public ReactiveContinuousAxisManager<double> HorizontalAxis { get; }
-
         public ReactiveContinuousAxisManager<double> VerticalAxis { get; }
 
-        public ReactiveCommand<DragEventArgs> DropCommand { get; }
+        public SpectrumViewModel UpperSpectrumsViewModel { get; }
+        public SpectrumViewModel LowerSpectrumsViewModel { get; }
 
+        public ReactiveCommand<DragEventArgs> DropCommand { get; }
         public ReactiveCommand CloseCommand { get; }
-        
+
         public void AddScan(IMSScanProperty scan) {
             Model.AddScan(scan);
         }

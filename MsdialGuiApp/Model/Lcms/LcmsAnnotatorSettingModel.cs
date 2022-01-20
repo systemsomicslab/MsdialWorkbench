@@ -104,6 +104,33 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
     }
 
+    public sealed class LcmsEadLipidAnnotatorSettingModel : BindableBase, IEadLipidAnnotatorSettingModel
+    {
+        public LcmsEadLipidAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter) {
+            DataBaseSettingModel = dataBaseSettingModel;
+            AnnotatorID = annotatorID;
+            SearchParameter = searchParameter ?? new MsRefSearchParameterBase();
+        }
+
+        public DataBaseSettingModel DataBaseSettingModel { get; }
+
+        public string AnnotatorID {
+            get => annotatorID;
+            set => SetProperty(ref annotatorID, value);
+        }
+        private string annotatorID = string.Empty;
+
+        public SourceType AnnotationSource { get; } = SourceType.GeneratedLipid;
+
+        public MsRefSearchParameterBase SearchParameter { get; } = new MsRefSearchParameterBase();
+
+        public List<ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>> CreateAnnotator(EadLipidDatabase db, int priority) {
+            return new List<ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>> {
+                new EadLipidAnnotator(db, AnnotatorID, priority, SearchParameter),
+            };
+        }
+    }
+
     public sealed class LcmsAnnotatorSettingFactory : IAnnotatorSettingModelFactory
     {
         public IAnnotatorSettingModel Create(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter = null) {
@@ -115,6 +142,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                     return new LcmsTextDBAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
                 case DataBaseSource.Fasta:
                     return new LcmsProteomicsAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
+                case DataBaseSource.EadLipid:
+                    return new LcmsEadLipidAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
                 default:
                     throw new NotSupportedException(nameof(dataBaseSettingModel.DBSource));
             }

@@ -37,6 +37,14 @@ namespace CompMs.App.Msdial.Model.Setting
             IsLoaded = true;
         }
 
+        public DataBaseSettingModel(ParameterBase parameter, EadLipidDatabase eadLipidDatabase) {
+            this.parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
+            this.eadLipidDatabase = eadLipidDatabase;
+            DataBaseID = eadLipidDatabase.Id;
+            DBSource = DataBaseSource.EadLipid;
+            IsLoaded = true;
+        }
+
         public string DataBasePath {
             get => dataBasePath;
             set => SetProperty(ref dataBasePath, value);
@@ -80,6 +88,8 @@ namespace CompMs.App.Msdial.Model.Setting
 
         private readonly ShotgunProteomicsDB proteomicsDB = null;
 
+        private readonly EadLipidDatabase eadLipidDatabase = null;
+
         public override string ToString() {
             return $"{DataBaseID}({DBSource})";
         }
@@ -92,6 +102,8 @@ namespace CompMs.App.Msdial.Model.Setting
                     return CreateMoleculeDataBase();
                 case DataBaseSource.Fasta:
                     return CreatePorteomicsDB();
+                case DataBaseSource.EadLipid:
+                    return CreateEadLipidDatabase();
                 default:
                     throw new NotSupportedException(DBSource.ToString());
             }
@@ -114,6 +126,15 @@ namespace CompMs.App.Msdial.Model.Setting
             switch (DBSource) {
                 case DataBaseSource.Fasta:
                     return proteomicsDB ?? new ShotgunProteomicsDB(DataBasePath, DataBaseID, ProteomicsParameter, this.parameter.ProjectFolderPath, MassRangeBegin, MassRangeEnd);
+                default:
+                    return null;
+            }
+        }
+
+        public EadLipidDatabase CreateEadLipidDatabase() {
+            switch (DBSource) {
+                case DataBaseSource.EadLipid:
+                    return eadLipidDatabase ?? new EadLipidDatabase(DataBaseID);
                 default:
                     return null;
             }
