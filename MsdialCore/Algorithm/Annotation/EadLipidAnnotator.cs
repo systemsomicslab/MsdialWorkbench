@@ -71,7 +71,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
 
             var lipids = lipid.Generate(lipidGenerator);
-            var references = lipids.Select(l => EadLipidDatabase.Generate(l, reference.AdductType, reference)).ToList();
+            var references = lipids.Select(l => EadLipidDatabase.Generate(l, reference.AdductType, reference)).Where(reference_ => reference_ != null).ToList();
             EadLipidDatabase.Register(references);
             return references;
         }

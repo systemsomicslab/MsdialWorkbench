@@ -198,7 +198,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             foreach (var annotators in storage.MetabolomicsDataBases) {
                 containerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<IAnnotationQuery>, annotator.ConvertToAnnotatorContainer())));
             }
-            return new EadLipidomicsAnnotationProcess<IAnnotationQuery>(containerPairs, null, null);
+            var lipidContainerPairs = new List<(IAnnotationQueryFactory<IAnnotationQuery>, IAnnotatorContainer<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult>)>();
+            foreach (var annotators in storage.EadLipidomicsDatabases) {
+                lipidContainerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(null, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<IAnnotationQuery>, annotator.ConvertToAnnotatorContainer())));
+            }
+            return new EadLipidomicsAnnotationProcess<IAnnotationQuery>(containerPairs, lipidContainerPairs);
         }
 
         private DataBaseMapper CreateDataBaseMapper(DataBaseStorage storage) {
@@ -211,6 +215,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             foreach (var db in storage.ProteomicsDataBases) {
                 foreach (var pair in db.Pairs) {
                     mapper.Add(pair.SerializableAnnotator, db.DataBase);
+                }
+            }
+            foreach (var db in storage.EadLipidomicsDatabases) {
+                foreach (var pair in db.Pairs) {
+                    mapper.Add(pair.SerializableAnnotator);
                 }
             }
 

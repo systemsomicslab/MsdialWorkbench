@@ -55,7 +55,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var actual2 = db.Generate(lipid, adduct, reference);
             Assert.AreEqual(1, actual2.ScanID);
 
-            db.Register(new[] { actual1, actual2 });
+            db.Register(new[] { actual1, actual2, null }); // ignore null
 
             var result = new MsScanMatchResult { LibraryID = 0, };
             var actual3 = db.Refer(result);

@@ -104,7 +104,7 @@ namespace CompMs.MsdialCore.DataObj
                 if (typeof(TReference) == typeof(PeptideMsReference)) {
                     Single = new ReferCache<TReference>(r => r.Source == SourceType.FastaDB);
                 }
-                else if (typeof(TReference) == typeof(PeptideMsReference)) {
+                else if (typeof(TReference) == typeof(MoleculeMsReference)) {
                     Single = new ReferCache<TReference>(r => r.Source != SourceType.FastaDB);
                 }
                 else {

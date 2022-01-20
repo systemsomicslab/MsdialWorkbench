@@ -142,6 +142,9 @@ namespace CompMs.Common.Lipidomics
 
         private SpectrumPeak[] GetAcylDoubleBondSpectrum(ILipid lipid, AcylChain acylChain, AdductIon adduct)
         {
+            if (acylChain.CarbonCount == 0) {
+                return new SpectrumPeak[0];
+            }
             var chainLoss = lipid.Mass - acylChain.Mass + adduct.AdductIonAccurateMass;
             var diffs = new double[acylChain.CarbonCount];
             for (int i = 0; i < acylChain.CarbonCount; i++)

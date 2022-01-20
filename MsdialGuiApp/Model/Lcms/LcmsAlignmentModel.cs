@@ -220,11 +220,9 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public bool CanSaveSpectra() => Target.Value.innerModel != null && MsdecResult.Value != null;
 
-
         public void FragmentSearcher() {
             var features = this.Ms1Spots;
             MsdialCore.Algorithm.FragmentSearcher.Search(features.Select(n => n.innerModel).ToList(), this.decLoader, Parameter);
-
         }
 
         public void GoToMsfinderMethod() {
@@ -233,8 +231,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Target.Value.innerModel,
                 MsdecResult.Value,
                 DataBaseMapper,
-                Parameter
-                );
+                Parameter);
         }
     }
 }
