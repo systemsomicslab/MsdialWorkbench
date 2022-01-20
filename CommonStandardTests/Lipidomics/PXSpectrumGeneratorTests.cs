@@ -330,7 +330,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.PA, 700.504306309, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new PASpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+NH4]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
 
             var expects = new[]
             {

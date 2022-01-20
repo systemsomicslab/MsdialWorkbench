@@ -21,10 +21,10 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.PhosphorusMass,
         }.Sum();
 
-        private static readonly double CH2O2 = new[]
+        private static readonly double CHO2 = new[]
         {
             MassDiffDictionary.CarbonMass * 1,
-            MassDiffDictionary.HydrogenMass * 2,
+            MassDiffDictionary.HydrogenMass * 1,
             MassDiffDictionary.OxygenMass *2,
         }.Sum();
 
@@ -114,7 +114,7 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>
             {
                 new SpectrumPeak(lipid.Mass + adduct.AdductIonAccurateMass, 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                new SpectrumPeak(lipid.Mass - CH2O2 + adduct.AdductIonAccurateMass, 200d, "Precursor -CH2O2"),
+                new SpectrumPeak(lipid.Mass - CHO2 + adduct.AdductIonAccurateMass, 200d, "Precursor -CHO2"),
                 new SpectrumPeak(lipid.Mass - C3H8NO6P + adduct.AdductIonAccurateMass, 500d, "Precursor -C3H8NO6P"),
                 new SpectrumPeak(C3H8NO6P + adduct.AdductIonAccurateMass, 100d, "Header"),
                 new SpectrumPeak(Gly_C + adduct.AdductIonAccurateMass, 100d, "Gly-C"),
@@ -176,7 +176,7 @@ namespace CompMs.Common.Lipidomics
             {
                 new SpectrumPeak(lipidMass - chainMass + adduct.AdductIonAccurateMass, 50d, $"-{acylChain}"),
                 //new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.OxygenMass, 50d, $"-{acylChain}-O"),
-                new SpectrumPeak(lipidMass - chainMass - C3H8NO6P + adduct.AdductIonAccurateMass, 50d, $"-Header -{acylChain}"),
+                //new SpectrumPeak(lipidMass - chainMass - C3H8NO6P + adduct.AdductIonAccurateMass, 50d, $"-Header -{acylChain}"),
                 //new SpectrumPeak(lipidMass - chainMass - C2H8NO4P - MassDiffDictionary.OxygenMass, 50d, $"-Header -{acylChain}-O"),
             };
         }
@@ -188,7 +188,7 @@ namespace CompMs.Common.Lipidomics
             return new[]
             {
                 new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.OxygenMass - CH2 + adduct.AdductIonAccurateMass, 100d, "-CH2(Sn1)"),
-                new SpectrumPeak(lipidMass - chainMass - C3H8NO6P - MassDiffDictionary.OxygenMass - CH2 +MassDiffDictionary.ProtonMass, 100d, "-Header -CH2(Sn1)"),
+                //new SpectrumPeak(lipidMass - chainMass - C3H8NO6P - MassDiffDictionary.OxygenMass - CH2 +MassDiffDictionary.ProtonMass, 100d, "-Header -CH2(Sn1)"),
             };
         }
 
