@@ -334,7 +334,7 @@ namespace CompMs.Common.Lipidomics.Tests
 
             var expects = new[]
             {
-                98.98036   ,	//	Header
+                97.98036   ,	//	Header
                 139.01358   ,	//	Gly-C
                 140.993    ,	//	Gly-O
                 307.2632696   ,	//	"-Header -CH2(Sn1) calc
