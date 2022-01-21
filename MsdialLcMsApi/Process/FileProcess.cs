@@ -1,5 +1,5 @@
-﻿using CompMs.Common.Extension;
-using CompMs.Common.Proteomics.DataObj;
+﻿using CompMs.Common.DataObj.Result;
+using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -8,8 +8,6 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm;
-using CompMs.MsdialLcMsApi.Algorithm.Annotation;
-using CompMs.MsdialLcMsApi.DataObj;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
@@ -17,33 +15,26 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace CompMs.MsdialLcMsApi.Process {
-    public sealed class FileProcess {
-        private FileProcess() { }
-
+namespace CompMs.MsdialLcMsApi.Process
+{
+    public static class FileProcess {
         public static void Run(
             AnalysisFileBean file,
             IDataProvider provider,
-            IMsdialDataStorage<MsdialLcmsParameter> container,
+            IMsdialDataStorage<MsdialLcmsParameter> storage,
             IAnnotationProcess annotationProcess,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
             bool isGuiProcess = false,
             Action<int> reportAction = null,
             CancellationToken token = default) {
-            var param = container.Parameter;
-            var mspDB = container.MspDB;
-            var textDB = container.TextDB;
-            var annotatorContainers = container.DataBaseMapper.MoleculeAnnotators;
-            var isotopeTextDB = container.IsotopeTextDB;
-            var iupacDB = container.IupacDatabase;
+            var param = storage.Parameter;
+            var mspDB = storage.MspDB;
+            var textDB = storage.TextDB;
+            var annotatorContainers = storage.DataBaseMapper.MoleculeAnnotators;
+            var isotopeTextDB = storage.IsotopeTextDB;
+            var iupacDB = storage.IupacDatabase;
             var filepath = file.AnalysisFilePath;
             var fileID = file.AnalysisFileId;
-
-
-
-
-
-
-
 
             using (var access = new RawDataAccess(filepath, 0, false, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
 
@@ -109,13 +100,12 @@ namespace CompMs.MsdialLcMsApi.Process {
                         param.NumThreads,
                         token,
                         v => reportAction?.Invoke((int)(initial_annotation_local + v * max_annotation_local)));
-                    // new Annotation(initial_annotation_local, max_annotation_local).MainProcess(spectrumList, chromPeakFeatures, msdecResults, annotatorContainers, mspDB, textDB, param, reportAction);
                 }
 
                 // characterizatin
                 new PeakCharacterEstimator(90, 10).Process(spectrumList, chromPeakFeatures,
                     targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
-                    container.DataBaseMapper, param, reportAction);
+                    evaluator, param, reportAction);
 
                 // file save
                 var paifile = file.PeakAreaBeanInformationFilePath;

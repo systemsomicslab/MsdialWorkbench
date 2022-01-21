@@ -1,4 +1,5 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.Algorithm;
@@ -31,14 +32,15 @@ namespace CompMs.App.MsdialConsole.Process
             return Execute(container, outputFolder, isProjectSaved);
         }
 
-        private int Execute(IMsdialDataStorage<MsdialImmsParameter> container, string outputFolder, bool isProjectSaved) {
-            var files = container.AnalysisFiles;
+        private int Execute(IMsdialDataStorage<MsdialImmsParameter> storage, string outputFolder, bool isProjectSaved) {
+            var files = storage.AnalysisFiles;
+            var evaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(storage.DataBaseMapper);
             foreach (var file in files) {
-                FileProcess.Run(file, container, false);
+                FileProcess.Run(file, storage, evaluator, false);
             }
 
-            var alignmentFile = container.AlignmentFiles.First();
-            var factory = new ImmsAlignmentProcessFactory(container.Parameter, container.IupacDatabase, container.DataBaseMapper);
+            var alignmentFile = storage.AlignmentFiles.First();
+            var factory = new ImmsAlignmentProcessFactory(storage, evaluator);
             var aligner = factory.CreatePeakAligner();
             aligner.ProviderFactory = new ImmsAverageDataProviderFactory(0.001, 0.002, 5, false); // TODO: I'll remove this later.
             var result = aligner.Alignment(files, alignmentFile, null);
@@ -51,8 +53,8 @@ namespace CompMs.App.MsdialConsole.Process
             }
 
             Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            var streamManager = new DirectoryTreeStreamManager(container.Parameter.ProjectFolderPath);
-            container.Save(streamManager, container.Parameter.ProjectFileName, string.Empty).Wait();
+            var streamManager = new DirectoryTreeStreamManager(storage.Parameter.ProjectFolderPath);
+            storage.Save(streamManager, storage.Parameter.ProjectFileName, string.Empty).Wait();
 
             return 0;
         }

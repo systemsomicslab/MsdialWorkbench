@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-
-using CompMs.Common.DataObj.Database;
+﻿using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcImMsApi.Parameter;
 
@@ -11,17 +9,17 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
 {
     public class LcimmsAlignmentProcessFactory : AlignmentProcessFactory
     {
-        private readonly DataBaseMapper mapper;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public MsdialLcImMsParameter LcimmsParameter { get; }
 
-        public LcimmsAlignmentProcessFactory(MsdialLcImMsParameter param, IupacDatabase iupac, DataBaseMapper mapper) : base(param, iupac){
-            LcimmsParameter = param;
-            this.mapper = mapper;
+        public LcimmsAlignmentProcessFactory(IMsdialDataStorage<MsdialLcImMsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(storage.Parameter, storage.IupacDatabase) {
+            LcimmsParameter = storage.Parameter;
+            this.evaluator = evaluator ?? throw new System.ArgumentNullException(nameof(evaluator));
         }
 
         public override IAlignmentRefiner CreateAlignmentRefiner() {
-            return new LcimmsAlignmentRefiner(LcimmsParameter, Iupac, mapper);
+            return new LcimmsAlignmentRefiner(LcimmsParameter, Iupac, evaluator);
         }
 
         public override DataAccessor CreateDataAccessor() {

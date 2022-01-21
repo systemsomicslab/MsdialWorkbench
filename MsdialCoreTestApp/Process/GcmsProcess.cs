@@ -1,31 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
-using System.Linq;
-using CompMs.Common.Utility;
+﻿using CompMs.App.MsdialConsole.Export;
 using CompMs.App.MsdialConsole.Parser;
-using CompMs.MsdialCore.DataObj;
-using CompMs.Common.Extension;
-using CompMs.MsdialCore.Parameter;
-using CompMs.Common.Enum;
 using CompMs.Common.Components;
-using CompMs.Common.Parser;
-using CompMs.MsdialGcMsApi.Parameter;
-using CompMs.MsdialCore.Utility;
-using CompMs.MsdialGcMsApi.Process;
-using CompMs.MsdialCore.Parser;
-using CompMs.App.MsdialConsole.Export;
-using CompMs.MsdialGcMsApi.Algorithm.Alignment;
 using CompMs.Common.DataObj.Database;
+using CompMs.Common.Enum;
+using CompMs.Common.Extension;
+using CompMs.Common.Utility;
+using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Utility;
+using CompMs.MsdialCore.Parser;
+using CompMs.MsdialGcMsApi.Algorithm.Alignment;
 using CompMs.MsdialGcMsApi.DataObj;
+using CompMs.MsdialGcMsApi.Process;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace CompMs.App.MsdialConsole.Process
 {
-	public class GcmsProcess
+    public class GcmsProcess
     {
         public void ConvertRtToKovatRi(string alkaneDictPath, string rtListPath, string outputFilePath)
         {
@@ -169,26 +165,26 @@ namespace CompMs.App.MsdialConsole.Process
             }
         }
 
-        private int Execute(MsdialGcmsDataStorage container, string outputFolder, bool isProjectSaved) {
-            var files = container.AnalysisFiles;
+        private int Execute(MsdialGcmsDataStorage storage, string outputFolder, bool isProjectSaved) {
+            var files = storage.AnalysisFiles;
             foreach (var file in files) {
-                FileProcess.Run(file, container);
+                FileProcess.Run(file, storage);
 
                 var chromPeakFeatures = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
                 var msdecResults = MsdecResultsReader.ReadMSDecResults(file.DeconvolutionFilePath, out int dcl_version, out List<long> seekPoints);
                 Console.WriteLine("DCL version: {0}", dcl_version);
 
-                ResultExporter.ExportChromPeakFeatures(file, outputFolder, container, null, chromPeakFeatures, msdecResults);
+                ResultExporter.ExportChromPeakFeatures(file, outputFolder, storage, null, chromPeakFeatures, msdecResults);
             }
 
-            var alignmentFile = container.AlignmentFiles.First();
-            var factory = new GcmsAlignmentProcessFactory(files, container.MspDB, container.MsdialGcmsParameter, container.IupacDatabase, container.DataBaseMapper);
+            var alignmentFile = storage.AlignmentFiles.First();
+            var factory = new GcmsAlignmentProcessFactory(files, storage, FacadeMatchResultEvaluator.FromDataBaseMapper(storage.DataBaseMapper));
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, null);
 
             Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            var streamManager = new DirectoryTreeStreamManager(container.MsdialGcmsParameter.ProjectFolderPath);
-            container.Save(streamManager, container.MsdialGcmsParameter.ProjectFileName, string.Empty).Wait();
+            var streamManager = new DirectoryTreeStreamManager(storage.MsdialGcmsParameter.ProjectFolderPath);
+            storage.Save(streamManager, storage.MsdialGcmsParameter.ProjectFileName, string.Empty).Wait();
             return 0;
         }
 

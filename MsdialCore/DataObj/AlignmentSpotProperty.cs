@@ -141,7 +141,7 @@ namespace CompMs.MsdialCore.DataObj {
             }
         }
 
-        public bool IsReferenceMatched(DataBaseMapper mapper) {
+        public bool IsReferenceMatched(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             if (MatchResults.IsManuallyModifiedRepresentative) {
                 return !MatchResults.IsUnknown;
             }
@@ -151,10 +151,10 @@ namespace CompMs.MsdialCore.DataObj {
             if (MspBasedMatchResult != null && MspBasedMatchResult.IsSpectrumMatch) {
                 return true;
             }
-            return MatchResults.IsReferenceMatched(mapper);
+            return MatchResults.IsReferenceMatched(evaluator);
         }
 
-        public bool IsAnnotationSuggested(DataBaseMapper mapper) {
+        public bool IsAnnotationSuggested(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             if (MatchResults.IsManuallyModifiedRepresentative) {
                 return false;
             }
@@ -167,7 +167,7 @@ namespace CompMs.MsdialCore.DataObj {
             else if (MspBasedMatchResult != null && MspBasedMatchResult.IsPrecursorMzMatch) {
                 return true;
             }
-            return MatchResults.IsAnnotationSuggested(mapper);
+            return MatchResults.IsAnnotationSuggested(evaluator);
         }
 
         [IgnoreMember]

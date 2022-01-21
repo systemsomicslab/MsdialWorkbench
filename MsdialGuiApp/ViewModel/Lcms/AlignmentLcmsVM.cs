@@ -8,6 +8,7 @@ using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -280,8 +281,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         bool AnnotationFilter(AlignmentSpotPropertyModel spot) {
             if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
-            return RefMatchedChecked && spot.IsRefMatched(model.DataBaseMapper)
-                || SuggestedChecked && spot.IsSuggested(model.DataBaseMapper)
+            return RefMatchedChecked && spot.IsRefMatched(model.MatchResultEvaluator)
+                || SuggestedChecked && spot.IsSuggested(model.MatchResultEvaluator)
                 || UnknownChecked && spot.IsUnknown;
         }
 

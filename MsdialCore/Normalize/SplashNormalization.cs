@@ -4,7 +4,6 @@ using CompMs.Common.Enum;
 using CompMs.Common.Lipidomics;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,7 +16,7 @@ namespace CompMs.MsdialCore.Normalize
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             IReadOnlyList<StandardCompound> splashLipids,
             IonAbundanceUnit unit,
-            DataBaseMapper mapper) {
+            IMatchResultEvaluator<MsScanMatchResult> evaluator) {
 
 
             // initialize
@@ -39,7 +38,7 @@ namespace CompMs.MsdialCore.Normalize
                 if (IsNormalized(spot)) {
                     continue;
                 }
-                var lipidclass = GetAnnotatedLipidClass(spot, refer, lipidClasses, mapper);
+                var lipidclass = GetAnnotatedLipidClass(spot, refer, lipidClasses, evaluator);
                 var stdCompound = stdCompoundsTable[lipidclass].FirstOrDefault();
                 if (stdCompound != null) {
                     NormalizeByInternalStandard(spot, globalSpots[stdCompound.PeakID], stdCompound, unit);
@@ -112,9 +111,8 @@ namespace CompMs.MsdialCore.Normalize
             }
         }
 
-        private static string GetAnnotatedLipidClass(AlignmentSpotProperty spot, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, HashSet<string> lipidClasses, DataBaseMapper mapper) {
-
-            if (string.IsNullOrEmpty(spot.Name) || spot.IsAnnotationSuggested(mapper)) {
+        private static string GetAnnotatedLipidClass(AlignmentSpotProperty spot, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, HashSet<string> lipidClasses, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+            if (string.IsNullOrEmpty(spot.Name) || spot.IsAnnotationSuggested(evaluator)) {
                 return "Unknown";
             }
 

@@ -166,26 +166,22 @@ namespace CompMs.MsdialCore.DataObj
             return string.IsNullOrEmpty(db?.Formula?.FormulaString) ? "null" : db.Formula.FormulaString;
         }
 
-        public bool IsReferenceMatched(DataBaseMapper mapper) {
+        public bool IsReferenceMatched(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             var representative = Representative;
             if (representative.IsManuallyModified && !representative.IsUnknown) {
                 return true; // confidense or unsettled
             }
-            var evaluator = representative.Source == SourceType.FastaDB
-                ? (IMatchResultEvaluator<MsScanMatchResult>)mapper.FindPeptideAnnotator(representative)?.Annotator
-                : (IMatchResultEvaluator<MsScanMatchResult>)mapper.FindMoleculeAnnotator(representative)?.Annotator;
             return evaluator?.IsReferenceMatched(representative) ?? false;
         }
 
-        public bool IsAnnotationSuggested(DataBaseMapper mapper) {
+        public bool IsAnnotationSuggested(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             var representative = Representative;
             if (representative.IsManuallyModified && !representative.IsUnknown) {
                 return false; // confidense or unsettled
             }
-            var evaluator = representative.Source == SourceType.FastaDB
-                ? (IMatchResultEvaluator<MsScanMatchResult>)mapper.FindPeptideAnnotator(representative)?.Annotator
-                : (IMatchResultEvaluator<MsScanMatchResult>)mapper.FindMoleculeAnnotator(representative)?.Annotator;
-            return evaluator?.IsAnnotationSuggested(representative) ?? false;
+            else {
+                return evaluator?.IsAnnotationSuggested(representative) ?? false;
+            }
         }
 
         [IgnoreMember]

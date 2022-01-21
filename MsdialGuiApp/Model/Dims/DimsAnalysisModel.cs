@@ -31,13 +31,15 @@ namespace CompMs.App.Msdial.Model.Dims
         public DimsAnalysisModel(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
             DataBaseMapper mapper,
-            ParameterBase parameter,
-            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers)
+            ParameterBase parameter)
             : base(analysisFile) {
 
             FileName = analysisFile.AnalysisFileName;
             DataBaseMapper = mapper;
+            MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             Provider = provider;
             Parameter = parameter;
             AnnotatorContainers = annotatorContainers;
@@ -104,6 +106,7 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         public DataBaseMapper DataBaseMapper { get; }
+        public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
         public ParameterBase Parameter { get; }
         public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
 

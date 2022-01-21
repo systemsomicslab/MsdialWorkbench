@@ -1,16 +1,15 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.MsdialGcMsApi.Algorithm.Alignment;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
+using CompMs.Common.Parser;
+using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialGcMsApi.Parameter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using CompMs.Common.Components;
-using CompMs.Common.DataObj.Property;
-using CompMs.Common.DataObj.Result;
-using CompMs.Common.Enum;
-using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialGcMsApi.Parameter;
-using CompMs.Common.Parser;
 
 namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
 {
@@ -44,8 +43,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 AlignmentIndexType = AlignmentIndexType.RT,
                 // RiCompoundType = RiCompoundType.Alkanes,
             };
-            var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new GcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
+            var iupac = new IupacDatabase();
+            var refiner = Create(param, iupac);
 
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_time: 0.025);
 
@@ -84,8 +83,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 AlignmentIndexType = AlignmentIndexType.RT,
                 // RiCompoundType = RiCompoundType.Alkanes,
             };
-            var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new GcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
+            var iupac = new IupacDatabase();
+            var refiner = Create(param, iupac);
 
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_time: 0.025);
 
@@ -139,8 +138,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 AlignmentIndexType = AlignmentIndexType.RI,
                 RiCompoundType = RiCompoundType.Alkanes,
             };
-            var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new GcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
+            var iupac = new IupacDatabase();
+            var refiner = Create(param, iupac);
 
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_index: 2.5);
             for (int i = 0; i < alignments.Count; i++) alignments[i].TimesCenter.MainType = ChromXType.RI;
@@ -195,8 +194,8 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
                 AlignmentIndexType = AlignmentIndexType.RI,
                 RiCompoundType = RiCompoundType.Fames,
             };
-            var iupac = new Common.DataObj.Database.IupacDatabase();
-            var refiner = new GcmsAlignmentRefiner(param, iupac, new DataBaseMapper());
+            var iupac = new IupacDatabase();
+            var refiner = Create(param, iupac);
 
             var alignments = BatchBuildAlignmentSpotProperty(4, d_mass: param.CentroidMs1Tolerance, d_index: 1000);
             for (int i = 0; i < alignments.Count; i++) alignments[i].TimesCenter.MainType = ChromXType.RI;
@@ -306,6 +305,10 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment.Tests
         #endregion
 
         #region builder
+        GcmsAlignmentRefiner Create(MsdialGcmsParameter parameter, IupacDatabase iupac) {
+            return new GcmsAlignmentRefiner(parameter, iupac, new FacadeMatchResultEvaluator());
+        }
+
         List<AlignmentSpotProperty> BatchBuildAlignmentSpotProperty(int n, double d_mass = 0, double d_time = 0, double d_index = 0) {
             return Enumerable.Range(0, n).Select(i => BuildAlignmentSpotProperty(id: i, d_mass: d_mass * i, d_time: d_time * i, d_index: d_index * i)).ToList();
         }

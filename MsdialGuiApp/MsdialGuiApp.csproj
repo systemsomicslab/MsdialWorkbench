@@ -172,6 +172,7 @@
     <Compile Include="Model\Core\MainWindowModel.cs" />
     <Compile Include="Model\Core\ProcessCommand.cs" />
     <Compile Include="Model\Core\ProjectModel.cs" />
+    <Compile Include="Model\Setting\DatasetSettingModel.cs" />
     <Compile Include="Model\Setting\ProjectSettingModel.cs" />
     <Compile Include="Model\DataObj\DisplayChromatogram.cs" />
     <Compile Include="Model\Dims\DimsAnalysisParameterSetModel.cs" />

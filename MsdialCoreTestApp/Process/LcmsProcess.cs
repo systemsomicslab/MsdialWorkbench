@@ -37,29 +37,30 @@ namespace CompMs.App.MsdialConsole.Process
             return Execute(container, outputFolder, isProjectSaved);
         }
 
-        private int Execute(IMsdialDataStorage<MsdialLcmsParameter> container, string outputFolder, bool isProjectSaved) {
-            var files = container.AnalysisFiles;
+        private int Execute(IMsdialDataStorage<MsdialLcmsParameter> storage, string outputFolder, bool isProjectSaved) {
+            var files = storage.AnalysisFiles;
             var tasks = new Task[files.Count];
+            var evaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(storage.DataBaseMapper);
             foreach ((var file, var idx) in files.WithIndex()) {
                 var provider = new StandardDataProvider(file, false, 5);
                 var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery>(
-                    container.DataBaseMapper.MoleculeAnnotators.Select(annotator => (
-                        new AnnotationQueryFactory(annotator.Annotator, container.Parameter.PeakPickBaseParam) as IAnnotationQueryFactory<IAnnotationQuery>,
+                    storage.DataBaseMapper.MoleculeAnnotators.Select(annotator => (
+                        new AnnotationQueryFactory(annotator.Annotator, storage.Parameter.PeakPickBaseParam) as IAnnotationQueryFactory<IAnnotationQuery>,
                         annotator as IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
                     )).ToList());
-                tasks[idx] = Task.Run(() => FileProcess.Run(file, provider, container, annotationProcess));
+                tasks[idx] = Task.Run(() => FileProcess.Run(file, provider, storage, annotationProcess, evaluator));
             }
             Task.WaitAll(tasks);
 
             var serializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1");
-            var alignmentFile = container.AlignmentFiles.First();
-            var factory = new LcmsAlignmentProcessFactory(container.Parameter, container.IupacDatabase, container.DataBaseMapper);
+            var alignmentFile = storage.AlignmentFiles.First();
+            var factory = new LcmsAlignmentProcessFactory(storage, evaluator);
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, serializer);
 
             Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            var streamManager = new DirectoryTreeStreamManager(container.Parameter.ProjectFolderPath);
-            container.Save(streamManager, container.Parameter.ProjectFileName, string.Empty).Wait();
+            var streamManager = new DirectoryTreeStreamManager(storage.Parameter.ProjectFolderPath);
+            storage.Save(streamManager, storage.Parameter.ProjectFileName, string.Empty).Wait();
             return 0;
         }
     }

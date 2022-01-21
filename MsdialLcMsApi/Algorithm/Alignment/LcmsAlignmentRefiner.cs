@@ -1,41 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Mathematics.Basic;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm.Alignment;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
 {
     public class LcmsAlignmentRefiner : AlignmentRefiner
     {
-        public LcmsAlignmentRefiner(MsdialLcmsParameter param, IupacDatabase iupac, DataBaseMapper mapper) : base(param, iupac, mapper) { }
+        public LcmsAlignmentRefiner(MsdialLcmsParameter param, IupacDatabase iupac, IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(param, iupac, evaluator) { }
 
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignments) {
             var cSpots = new List<AlignmentSpotProperty>();
             var donelist = new HashSet<int>();
 
-            foreach (var spot in alignments.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched(mapper)).OrderByDescending(n => n.MspBasedMatchResult.TotalScore)) {
+            foreach (var spot in alignments.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched(evaluator)).OrderByDescending(n => n.MspBasedMatchResult.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
 
-            foreach (var spot in alignments.Where(spot => spot.IsReferenceMatched(mapper)).OrderByDescending(spot => spot.MatchResults.Representative.TotalScore)) {
+            foreach (var spot in alignments.Where(spot => spot.IsReferenceMatched(evaluator)).OrderByDescending(spot => spot.MatchResults.Representative.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
 
-            foreach (var spot in alignments.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched(mapper)).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore)) {
+            foreach (var spot in alignments.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched(evaluator)).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
 
             foreach (var spot in alignments.OrderByDescending(n => n.HeightAverage)) {
-                if (spot.IsReferenceMatched(mapper)) continue;
+                if (spot.IsReferenceMatched(evaluator)) continue;
                 if (spot.PeakCharacter.IsotopeWeightNumber > 0) continue;
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
