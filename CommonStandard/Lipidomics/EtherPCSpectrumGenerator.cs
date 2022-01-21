@@ -82,14 +82,14 @@ namespace CompMs.Common.Lipidomics
                     {
                         spectrum.AddRange(GetEtherPCOSpectrum(lipid, plChains.Chains[0], plChains.Chains[1], adduct));
                     }
-                    spectrum.AddRange(GetAlkylDoubleBondSpectrum(lipid, alkyl, adduct));
+                    spectrum.AddRange(SpectrumGeneratorUtility.GetAlkylDoubleBondSpectrum(lipid, alkyl, adduct));
                 }
                 if (plChains.Chains[1] is AcylChain acyl) {
                     spectrum.AddRange(SpectrumGeneratorUtility.GetAcylDoubleBondSpectrum(lipid, acyl, adduct));
                 }
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
-                .Select(specs => new SpectrumPeak(specs.First().Mass, specs.First().Intensity, string.Join(", ", specs.Select(spec => spec.Comment))))
+                .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment))))
                 .OrderBy(peak => peak.Mass)
                 .ToList();
             return CreateReference(lipid, adduct, spectrum, molecule);

@@ -35,7 +35,7 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.OxygenMass * 2,
         }.Sum();
 
-        private static readonly double C3H9O6P = new[] {
+        private static readonly double C3H9O6P = new[] { // 172.013675 OCC(O)COP(O)(O)=O
             MassDiffDictionary.CarbonMass * 3,
             MassDiffDictionary.HydrogenMass * 9,
             MassDiffDictionary.OxygenMass * 6,
