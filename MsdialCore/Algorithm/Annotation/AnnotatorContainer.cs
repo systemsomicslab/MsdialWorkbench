@@ -43,9 +43,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     }
 
     [Union(0, typeof(DatabaseAnnotatorContainer))]
-    [Union(1, typeof(SerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>))]
-    [Union(2, typeof(SerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>))]
-    [Union(3, typeof(SerializableAnnotatorContainer<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult>))]
+    [Union(1, typeof(ShotgunProteomicsDBAnnotatorContainer))]
+    [Union(2, typeof(EadLipidDatabaseAnnotatorContainer))]
     public interface ISerializableAnnotatorContainer<in T, U, V> : IAnnotatorContainer<T, U, V>
     {
         void Save(Stream stream);
@@ -53,68 +52,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     }
 
     [MessagePackObject]
-    public sealed class SerializableAnnotatorContainer<TQuery, TReference, TResult> : ISerializableAnnotatorContainer<TQuery, TReference, TResult>
-    {
-        public SerializableAnnotatorContainer(
-            ISerializableAnnotator<TQuery, TReference, TResult> annotator,
-            MsRefSearchParameterBase parameter) {
-            if (annotator is null) {
-                throw new ArgumentNullException(nameof(annotator));
-            }
-
-            if (parameter is null) {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-            Annotator = annotator;
-            AnnotatorID = Annotator.Key;
-            Parameter = parameter;
-        }
-
-        public SerializableAnnotatorContainer(
-            IReferRestorationKey<TQuery, TReference, TResult> annotatorKey,
-            MsRefSearchParameterBase parameter) {
-            AnnotatorKey = annotatorKey;
-            Parameter = parameter;
-            AnnotatorID = AnnotatorKey.Key;
-        }
-
-        [IgnoreMember]
-        public ISerializableAnnotator<TQuery, TReference, TResult> Annotator { get; private set; }
-        [IgnoreMember]
-        public string AnnotatorID { get; }
-
-        [Key("AnnotatorKey")]
-        public IReferRestorationKey<TQuery, TReference, TResult> AnnotatorKey { get; set; }
-
-        [Key("Parameter")]
-        public MsRefSearchParameterBase Parameter { get; set; }
-
-        IAnnotator<TQuery, TReference, TResult> IAnnotatorContainer<TQuery, TReference, TResult>.Annotator => Annotator;
-
-        public void Save(Stream stream) {
-            AnnotatorKey = Annotator.Save();
-        }
-
-        public void Load(Stream stream, ILoadAnnotatorVisitor visitor) {
-            Annotator = AnnotatorKey.Accept(visitor);
-        }
-    }
-
-    [Union(0, typeof(DatabaseAnnotatorContainer))]
-    public interface IDatabaseAnnotatorContainer : ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
-    {
-        MoleculeDataBase Database { get; }
-        string DatabaseID { get; }
-    }
-
-    [Union(0, typeof(ShotgunProteomicsDBAnnotatorContainer))]
-    public interface IShotgunProteomicsDBAnnotatorContainer : ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> {
-        ShotgunProteomicsDB Database { get; }
-        string DatabaseID { get; }
-    }
-
-    [MessagePackObject]
-    public sealed class DatabaseAnnotatorContainer : IDatabaseAnnotatorContainer
+    public sealed class DatabaseAnnotatorContainer : ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
     {
         public DatabaseAnnotatorContainer(
             ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> annotator,
@@ -179,7 +117,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     }
 
     [MessagePackObject]
-    public sealed class ShotgunProteomicsDBAnnotatorContainer : IShotgunProteomicsDBAnnotatorContainer {
+    public sealed class ShotgunProteomicsDBAnnotatorContainer : ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> {
         public ShotgunProteomicsDBAnnotatorContainer(
             ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> annotator,
             ShotgunProteomicsDB database, ProteomicsParameter proteomicsParameter,

@@ -171,16 +171,10 @@ namespace CompMs.MsdialCore.DataObj
             if (representative.IsManuallyModified && !representative.IsUnknown) {
                 return true; // confidense or unsettled
             }
-            if (representative.Source == SourceType.FastaDB) {
-                var container = mapper.FindPeptideAnnotator(representative);
-                var annotator = container?.Annotator;
-                return annotator?.IsReferenceMatched(representative, container.Parameter) ?? false;
-            }
-            else {
-                var container = mapper.FindMoleculeAnnotator(representative);
-                var annotator = container?.Annotator;
-                return annotator?.IsReferenceMatched(representative, container.Parameter) ?? false;
-            }
+            var evaluator = representative.Source == SourceType.FastaDB
+                ? (IMatchResultEvaluator<MsScanMatchResult>)mapper.FindPeptideAnnotator(representative)?.Annotator
+                : (IMatchResultEvaluator<MsScanMatchResult>)mapper.FindMoleculeAnnotator(representative)?.Annotator;
+            return evaluator?.IsReferenceMatched(representative) ?? false;
         }
 
         public bool IsAnnotationSuggested(DataBaseMapper mapper) {
@@ -188,16 +182,10 @@ namespace CompMs.MsdialCore.DataObj
             if (representative.IsManuallyModified && !representative.IsUnknown) {
                 return false; // confidense or unsettled
             }
-            if (representative.Source == SourceType.FastaDB) {
-                var container = mapper.FindPeptideAnnotator(representative);
-                var annotator = container?.Annotator;
-                return annotator?.IsAnnotationSuggested(representative, container.Parameter) ?? false;
-            }
-            else {
-                var container = mapper.FindMoleculeAnnotator(representative);
-                var annotator = container?.Annotator;
-                return annotator?.IsAnnotationSuggested(representative, container.Parameter) ?? false;
-            }
+            var evaluator = representative.Source == SourceType.FastaDB
+                ? (IMatchResultEvaluator<MsScanMatchResult>)mapper.FindPeptideAnnotator(representative)?.Annotator
+                : (IMatchResultEvaluator<MsScanMatchResult>)mapper.FindMoleculeAnnotator(representative)?.Annotator;
+            return evaluator?.IsAnnotationSuggested(representative) ?? false;
         }
 
         [IgnoreMember]

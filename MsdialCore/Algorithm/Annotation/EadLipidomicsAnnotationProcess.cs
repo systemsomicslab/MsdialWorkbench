@@ -151,20 +151,20 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var annotator = annotatorContainer.Annotator;
 
             var candidates = annotator.FindCandidates(query);
-            var results = annotator.FilterByThreshold(candidates, annotatorContainer.Parameter);
+            var results = annotator.FilterByThreshold(candidates);
             if (results.Count > 0) {
-                var matches = annotator.SelectReferenceMatchResults(results, annotatorContainer.Parameter);
-                var best = annotator.SelectTopHit(matches.Count > 0 ? matches : results, annotatorContainer.Parameter);
+                var matches = annotator.SelectReferenceMatchResults(results);
+                var best = annotator.SelectTopHit(matches.Count > 0 ? matches : results);
                 chromPeakFeature.MatchResults.AddResult(best);
 
                 foreach (var eadLipidContainerPair in eadLipidContainerPairs) {
                     var container2 = eadLipidContainerPair.Container;
                     var query2 = eadLipidContainerPair.Factory.Create(query.Property, query.Scan, spectrums, query.IonFeature, container2.Parameter);
                     var candidates2 = eadLipidContainerPair.Container.Annotator.FindCandidates((query2, annotatorContainer.Annotator.Refer(best)));
-                    var results2 = container2.Annotator.FilterByThreshold(candidates2, container2.Parameter);
+                    var results2 = container2.Annotator.FilterByThreshold(candidates2);
                     if (results2.Count > 0) {
-                        var matches2 = container2.Annotator.SelectReferenceMatchResults(results2, container2.Parameter);
-                        var best2 = container2.Annotator.SelectTopHit(matches2.Count > 0 ? matches2 : results2, container2.Parameter);
+                        var matches2 = container2.Annotator.SelectReferenceMatchResults(results2);
+                        var best2 = container2.Annotator.SelectTopHit(matches2.Count > 0 ? matches2 : results2);
                         chromPeakFeature.MatchResults.AddResult(best2);
                     }
                 }
@@ -178,10 +178,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if(evaluator is null || refer is null || parameter is null) {
                 return;
             }
-            if (evaluator.IsReferenceMatched(representative, parameter)) {
+            if (evaluator.IsReferenceMatched(representative)) {
                 DataAccess.SetMoleculeMsProperty(chromPeakFeature, refer.Refer(representative), representative);
             }
-            else if (evaluator.IsAnnotationSuggested(representative, parameter)) {
+            else if (evaluator.IsAnnotationSuggested(representative)) {
                 DataAccess.SetMoleculeMsPropertyAsSuggested(chromPeakFeature, refer.Refer(representative), representative);
             }
         }

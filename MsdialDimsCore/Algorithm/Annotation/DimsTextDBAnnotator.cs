@@ -18,7 +18,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 
             referObject = textDB;
             searcher = new MassReferenceSearcher<MoleculeMsReference>(textDB.Database);
-            evaluator = MsScanMatchResultEvaluator.CreateEvaluator();
+            evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
         }
 
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> referObject;
@@ -26,8 +26,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public MsScanMatchResult Annotate(IAnnotationQuery query) {
-            var parameter = query.Parameter ?? Parameter;
-            return SelectTopHit(FindCandidatesCore(query.Property, query.Parameter ?? Parameter), parameter);
+            return SelectTopHit(FindCandidatesCore(query.Property, query.Parameter ?? Parameter));
         }
 
         public List<MsScanMatchResult> FindCandidates(IAnnotationQuery query) {
@@ -86,24 +85,24 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             return result;
         }
 
-        public bool IsAnnotationSuggested(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            return evaluator.IsAnnotationSuggested(result, parameter ?? Parameter);
+        public bool IsAnnotationSuggested(MsScanMatchResult result) {
+            return evaluator.IsAnnotationSuggested(result);
         }
 
-        public bool IsReferenceMatched(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            return evaluator.IsReferenceMatched(result, parameter ?? Parameter);
+        public bool IsReferenceMatched(MsScanMatchResult result) {
+            return evaluator.IsReferenceMatched(result);
         }
 
-        public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            return evaluator.FilterByThreshold(results, parameter ?? Parameter);
+        public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results) {
+            return evaluator.FilterByThreshold(results);
         }
 
-        public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            return evaluator.SelectReferenceMatchResults(results, parameter ?? Parameter);
+        public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results) {
+            return evaluator.SelectReferenceMatchResults(results);
         }
 
-        public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            return evaluator.SelectTopHit(results, parameter ?? Parameter);
+        public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {
+            return evaluator.SelectTopHit(results);
         }
 
         public override MoleculeMsReference Refer(MsScanMatchResult result) {

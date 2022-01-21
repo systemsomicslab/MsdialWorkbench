@@ -23,7 +23,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             : base(textDB.Database, parameter, annotatorID, priority, SourceType.TextDB) {
             this.db.Sort(comparer);
             this.ReferObject = textDB;
-            Evaluator = MsScanMatchResultEvaluator.CreateEvaluator();
+            Evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
         }
 
         private readonly IMatchResultEvaluator<MsScanMatchResult> Evaluator;
@@ -159,24 +159,24 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
             result.IsRtMatch = diff <= parameter.RtTolerance;
         }
 
-        public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            return Evaluator.SelectTopHit(results, parameter ?? Parameter);
+        public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {
+            return Evaluator.SelectTopHit(results);
         }
 
-        public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            return Evaluator.FilterByThreshold(results, parameter ?? Parameter);
+        public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results) {
+            return Evaluator.FilterByThreshold(results);
         }
 
-        public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
-            return Evaluator.SelectReferenceMatchResults(results, parameter ?? Parameter);
+        public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results) {
+            return Evaluator.SelectReferenceMatchResults(results);
         }
 
-        public bool IsReferenceMatched(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            return Evaluator.IsReferenceMatched(result, parameter ?? Parameter);
+        public bool IsReferenceMatched(MsScanMatchResult result) {
+            return Evaluator.IsReferenceMatched(result);
         }
 
-        public bool IsAnnotationSuggested(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
-            return Evaluator.IsAnnotationSuggested(result, parameter ?? Parameter);
+        public bool IsAnnotationSuggested(MsScanMatchResult result) {
+            return Evaluator.IsAnnotationSuggested(result);
         }
     }
 }
