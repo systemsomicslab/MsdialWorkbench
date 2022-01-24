@@ -63,14 +63,14 @@
 
             <StackPanel Margin="5,0,0,0"
                         Grid.Column="1">
-                <TextBlock Text="Metabolite Name Filter"/>
+                <TextBlock Text="Metabolite name filter"/>
                 <TextBox Text="{Binding MetaboliteFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"/>
             </StackPanel>
 
             <StackPanel Margin="5,0,0,0"
                         Grid.Column="2">
-                <TextBlock Text="Comment Filter"/>
+                <TextBlock Text="Comment filter"/>
                 <TextBox Text="{Binding CommentFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"/>
             </StackPanel>
@@ -127,7 +127,7 @@
                                     Binding="{Binding Path=MassCenter, StringFormat=F4}"
                                     IsReadOnly="True"
                                     Width="70" />
-                <DataGridTextColumn Header="Retention time"
+                <DataGridTextColumn Header="RT(min)"
                                     Binding="{Binding Path=TimesCenter, StringFormat=F4}"
                                     IsReadOnly="True"
                                     Width="70" />
@@ -162,7 +162,7 @@
                                     Width="80"
                                     Binding="{Binding Path=AnovaPvalue, StringFormat=0.00E00}"
                                     IsReadOnly="True" />
-                <DataGridTextColumn Header="Fold change&#13;(Max/Min)"
+                <DataGridTextColumn Header="Fold change&#13; (Max/Min)"
                                     Width="80"
                                     Binding="{Binding Path=FoldChange, StringFormat=F2}"
                                     IsReadOnly="True" />

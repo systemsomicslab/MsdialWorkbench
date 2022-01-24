@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Accord.Statistics.Testing;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.Common.Proteomics.DataObj;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
@@ -61,6 +62,10 @@ namespace CompMs.MsdialCore.DataObj {
         public string SMILES { get; set; } = string.Empty;
         [Key(16)]
         public string InChIKey { get; set; } = string.Empty;
+        [Key(60)]
+        public string Protein { get; set; } = string.Empty;
+        [Key(61)]
+        public int ProteinGroupID { get; set; } = -1;
 
         public string GetFormula(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             return MatchResults.RepresentativeFormula(refer);
@@ -76,6 +81,9 @@ namespace CompMs.MsdialCore.DataObj {
 
         public string GetInChIKey(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             return MatchResults.RepresentativeInChIKey(refer);
+        }
+        public string GetProtein(IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeProtein(refer);
         }
 
         // ion physiochemical information
@@ -307,6 +315,20 @@ namespace CompMs.MsdialCore.DataObj {
         public bool IsMultiLayeredData() {
             if (AlignmentDriftSpotFeatures.IsEmptyOrNull()) return false;
             return true;
+        }
+        [Key(59)]
+        public int MSDecResultIdUsed { get; set; } = -1;
+
+        public int GetMSDecResultID() {
+            if (MSDecResultIdUsed == -1) {
+                if (IsMultiLayeredData())
+                    return MasterAlignmentID;
+                else
+                    return AlignmentID;
+            }
+            else {
+                return MSDecResultIdUsed;
+            }
         }
     }
 

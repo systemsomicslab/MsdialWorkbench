@@ -2,12 +2,10 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
@@ -18,6 +16,7 @@ using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialLcmsApi.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -42,9 +41,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators,
             DataBaseMapper mapper,
-            ParameterBase parameter) {
+            MsdialLcmsParameter parameter,
+            IObservable<IBarItemsLoader> barItemsLoader) {
             if (annotators is null) {
                 throw new ArgumentNullException(nameof(annotators));
+            }
+
+            if (barItemsLoader is null) {
+                throw new ArgumentNullException(nameof(barItemsLoader));
             }
 
             AlignmentFile = alignmentFileBean;
@@ -91,7 +95,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new MsRefSpectrumLoader(mapper),
                 peak => peak.Mass,
                 peak => peak.Intensity);
-            Ms2SpectrumModel.GraphTitle = "Representation vs. Reference";
+            Ms2SpectrumModel.GraphTitle = "Representative vs. Reference";
             Ms2SpectrumModel.HorizontalTitle = "m/z";
             Ms2SpectrumModel.VerticalTitle = "Abundance";
             Ms2SpectrumModel.HorizontalProperty = nameof(SpectrumPeak.Mass);
@@ -100,7 +104,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Ms2SpectrumModel.OrderingProperty = nameof(SpectrumPeak.Intensity);
 
             // Class intensity bar chart
-            BarChartModel = BarChartModel.Create(Target, BarItemsLoader);
+            BarChartModel = BarChartModel.Create(Target, barItemsLoader);
             BarChartModel.Elements.HorizontalTitle = "Class";
             BarChartModel.Elements.VerticalTitle = "Height";
             BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);

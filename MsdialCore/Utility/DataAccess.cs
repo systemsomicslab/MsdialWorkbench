@@ -323,6 +323,39 @@ namespace CompMs.MsdialCore.Utility {
             return peaklist;
         }
 
+        public static Dictionary<int, ChromXs> GetID2ChromXs(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionmode,
+            ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
+            var dict = new Dictionary<int, ChromXs>();
+            if (spectrumList == null || spectrumList.Count == 0) return null;
+            var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
+            foreach (var (spectrum, index) in spectrumList.WithIndex().Where(n => n.Item1.ScanPolarity == scanPolarity && n.Item1.MsLevel <= 1)) {
+                var chromX = type == ChromXType.Drift ? spectrum.DriftTime : spectrum.ScanStartTime;
+                dict[index] = new ChromXs(chromX, type, unit);
+            }
+            return dict;
+        }
+
+        public static List<ChromatogramPeak> GetMs1Peaklist(IReadOnlyList<RawSpectrum> spectrumList, Dictionary<int, ChromXs> id2ChromXs,
+            double targetMass, double ms1Tolerance, IonMode ionmode,
+            ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, double chromBegin = double.MinValue, double chromEnd = double.MaxValue) {
+            if (spectrumList == null || spectrumList.Count == 0) return null;
+            var peaklist = new List<ChromatogramPeak>();
+            var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
+
+            foreach (var (spectrum, index) in spectrumList.WithIndex().Where(n => n.Item1.ScanPolarity == scanPolarity && n.Item1.MsLevel <= 1)) {
+                var chromX = type == ChromXType.Drift ? spectrum.DriftTime : spectrum.ScanStartTime;
+                if (chromX < chromBegin) continue;
+                if (chromX > chromEnd) break;
+                var massSpectra = spectrum.Spectrum;
+                //var startIndex = GetMs1StartIndex(targetMass, ms1Tolerance, massSpectra);
+                //bin intensities for focused MZ +- ms1Tolerance
+                RetrieveBinnedMzIntensity(massSpectra, targetMass, ms1Tolerance, out double basepeakMz, out double basepeakIntensity, out double summedIntensity);
+                peaklist.Add(new ChromatogramPeak() { ID = index, ChromXs = id2ChromXs[index], Mass = basepeakMz, Intensity = summedIntensity });
+            }
+
+            return peaklist;
+        }
+
         public static void RetrieveBinnedMzIntensity(RawPeakElement[] peaks, double targetMz, double mzTol, out double basepeakMz, out double basepeakIntensity, out double summedIntensity) {
             var startIndex = SearchCollection.LowerBound(peaks, new RawPeakElement() { Mz = targetMz - mzTol }, (a, b) => a.Mz.CompareTo(b.Mz));
             summedIntensity = 0; basepeakIntensity = 0; basepeakMz = 0;
@@ -711,6 +744,117 @@ namespace CompMs.MsdialCore.Utility {
             basepeakMz = maxMass;
             basepeakIntensity = maxIntensityMz;
             return sum;
+        }
+
+        public static List<SpectrumPeak> GetAverageSpectrum(List<RawSpectrum> spectrumList, double start, double end, double bin, int targetExperimentID = -1) {
+            var min = Math.Min(start, end);
+            var max = Math.Max(start, end);
+            var comparer = ChromXsComparer.RTComparer;
+            var lo = SearchCollection.LowerBound(spectrumList, new RawSpectrum() { ScanStartTime = min }, (a, b) => a.ScanStartTime.CompareTo(b.ScanStartTime));
+            var lu = SearchCollection.UpperBound(spectrumList, new RawSpectrum() { ScanStartTime = max }, (a, b) => a.ScanStartTime.CompareTo(b.ScanStartTime));
+            var points = new List<int>();
+            for (int i = lo; i <= lu; i++) {
+                var spec = spectrumList[i];
+                if (targetExperimentID == -1) {
+                    points.Add(i);
+                }
+                else if (targetExperimentID == spec.ExperimentID) {
+                    points.Add(i);
+                }
+            }
+            return GetAverageSpectrum(spectrumList, points, bin);
+        }
+
+
+        public static List<SpectrumPeak> GetAverageSpectrum(List<RawSpectrum> spectrumList, List<int> points, double bin) {
+            var peaks = new List<SpectrumPeak>();
+            var mass2peaks = new Dictionary<int, List<SpectrumPeak>>();
+            var factor = 1.0 / bin;
+
+            foreach (var point in points) {
+                if (point < 0 || point > spectrumList.Count - 1) continue;
+                var spec = spectrumList[point];
+                foreach (var peak in spec.Spectrum) {
+                    var mass = (int)(peak.Mz * factor);
+                    var intensity = peak.Intensity;
+                    var spectrumPeak = new SpectrumPeak() { Mass = peak.Mz, Intensity = intensity };
+                    if (mass2peaks.ContainsKey(mass)) {
+                        mass2peaks[mass].Add(spectrumPeak);
+                    }
+                    else {
+                        mass2peaks[mass] = new List<SpectrumPeak>() { spectrumPeak };
+                    }
+                }
+            }
+
+            foreach (var item in mass2peaks) {
+                var repMass = item.Value.Argmax(n => n.Intensity).Mass;
+                var aveIntensity = item.Value.Sum(n => n.Intensity) / (double)points.Count;
+                var peak = new SpectrumPeak() { Mass = repMass, Intensity = aveIntensity };
+                peaks.Add(peak);
+            }
+            return peaks;
+        }
+
+        public static List<SpectrumPeak> GetSubtractSpectrum(List<RawSpectrum> spectrumList, 
+            double mainStart, double mainEnd, 
+            double subtractStart, double subtractEnd,
+            double bin, int targetExperimentID = -1) {
+            var mainAveSpec = GetAverageSpectrum(spectrumList, mainStart, mainEnd, bin, targetExperimentID);
+            var subtractAveSpec = GetAverageSpectrum(spectrumList, subtractStart, subtractEnd, bin, targetExperimentID);
+
+            return GetSubtractSpectrum(mainAveSpec, subtractAveSpec, bin);
+        }
+
+        public static List<SpectrumPeak> GetSubtractSpectrum(List<SpectrumPeak> mainPeaks, List<SpectrumPeak> subtractPeaks, double bin) {
+            var peaks = new List<SpectrumPeak>();
+            var mass2peaks = new Dictionary<int, List<SpectrumPeak>>();
+            var factor = 1.0 / bin;
+
+            foreach (var peak in mainPeaks) {
+                var mass = (int)(peak.Mass * factor);
+                var intensity = peak.Intensity;
+                var spectrumPeak = new SpectrumPeak() { Mass = peak.Mass, Intensity = intensity };
+                if (mass2peaks.ContainsKey(mass)) {
+                    mass2peaks[mass].Add(spectrumPeak);
+                }
+                else {
+                    mass2peaks[mass] = new List<SpectrumPeak>() { spectrumPeak };
+                }
+            }
+
+            var mass2peak = new Dictionary<int, SpectrumPeak>();
+            foreach (var item in mass2peaks) {
+                var repMass = item.Value.Argmax(n => n.Intensity).Mass;
+                var intensity = item.Value.Sum(n => n.Intensity);
+                var peak = new SpectrumPeak() { Mass = repMass, Intensity = intensity };
+
+                var binnedMass = (int)(repMass * factor);
+                if (mass2peak.ContainsKey(binnedMass)) {
+                    mass2peak[binnedMass].Intensity += intensity;
+                }
+                else {
+                    mass2peak[binnedMass] = peak;
+                }
+            }
+
+            foreach (var peak in subtractPeaks) {
+                var mass = (int)(peak.Mass * factor);
+                var intensity = peak.Intensity;
+
+                if (!mass2peak.ContainsKey(mass)) continue;
+                else {
+                    mass2peak[mass].Intensity -= intensity;
+                }
+            }
+
+            foreach (var item in mass2peak) {
+                var peak = item.Value;
+                if (peak.Intensity > 0) {
+                    peaks.Add(peak);
+                }
+            }
+            return peaks;
         }
 
         public static List<List<ChromatogramPeak>> GetAccumulatedMs2PeakListList(List<RawSpectrum> spectrumList,

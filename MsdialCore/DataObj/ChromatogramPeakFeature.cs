@@ -4,6 +4,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using MessagePack;
 using System;
@@ -79,20 +80,6 @@ namespace CompMs.MsdialCore.DataObj {
             else {
                 return MSDecResultIdUsed;
             }
-            //if (IsMultiLayeredData()) {
-            //    //public int MSDecResultIdUsedForAnnotation() {
-            //    //    if (MSDecResultIdUsed == -1) {
-            //    //        return MasterPeakID;
-            //    //    }
-            //    //    else {
-            //    //        return MSDecResultIdUsed;
-            //    //    }
-            //    //}
-            //    return MasterPeakID;
-            //}
-            //else {
-            //    return PeakID;
-            //}
         }
 
         // link to raw data
@@ -139,9 +126,17 @@ namespace CompMs.MsdialCore.DataObj {
         public string SMILES { get; set; } = string.Empty;
         [Key(29)]
         public string InChIKey { get; set; } = string.Empty;
+        [Key(52)]
+        public string Protein { get; set; } = string.Empty;
+        [Key(53)]
+        public int ProteinGroupID { get; set; } = -1;
 
         public string GetFormula(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             return MatchResults.RepresentativeFormula(refer);
+        }
+
+        public string GetProtein(IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeProtein(refer);
         }
 
         public string GetOntology(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {

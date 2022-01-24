@@ -76,11 +76,14 @@ namespace CompMs.MsdialCore.Utility
             alignmentPeak.Mass = peak.Mass;
             alignmentPeak.IonMode = peak.IonMode;
             alignmentPeak.Name = peak.Name;
+            alignmentPeak.Protein = peak.Protein;
+            alignmentPeak.ProteinGroupID = peak.ProteinGroupID;
             alignmentPeak.Formula = peak.Formula;
             alignmentPeak.Ontology = peak.Ontology;
             alignmentPeak.SMILES = peak.SMILES;
             alignmentPeak.InChIKey = peak.InChIKey;
             alignmentPeak.CollisionCrossSection = peak.CollisionCrossSection;
+            alignmentPeak.MSDecResultIdUsed = peak.MSDecResultIdUsed;
 
             alignmentPeak.MatchResults.ClearResults();
             alignmentPeak.MatchResults.ClearMspResults();
@@ -121,6 +124,8 @@ namespace CompMs.MsdialCore.Utility
 
             spot.IonMode = representative.IonMode;
             spot.Name = representative.Name;
+            spot.Protein = representative.Protein;
+            spot.ProteinGroupID = representative.ProteinGroupID;
             spot.Ontology = representative.Ontology;
             spot.SMILES = representative.SMILES;
             spot.InChIKey = representative.InChIKey;
@@ -145,6 +150,7 @@ namespace CompMs.MsdialCore.Utility
             spot.MSRawID2MspBasedMatchResult = new Dictionary<int, MsScanMatchResult>(representative.MSRawID2MspBasedMatchResult);
             spot.TextDbBasedMatchResult = representative.TextDbBasedMatchResult;
             spot.MatchResults.MergeContainers(representative.MatchResults);
+            spot.MSDecResultIdUsed = representative.MSDecResultIdUsed;
 
             spot.HeightAverage = (float)alignedPeaks.Average(peak => peak.PeakHeightTop);
             spot.HeightMax = (float)alignedPeaks.Max(peak => peak.PeakHeightTop);

@@ -436,6 +436,12 @@
     <Compile Include="View\Lcms\LcmsCompoundSearchView.xaml.cs">
       <DependentUpon>LcmsCompoundSearchView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Lcms\LcmsProteomicsAlignmentTableView.xaml.cs">
+      <DependentUpon>LcmsProteomicsAlignmentTableView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\LcmsProteomicsPeakTableView.xaml.cs">
+      <DependentUpon>LcmsProteomicsPeakTableView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Normalize\NormalizationSetView.xaml.cs">
       <DependentUpon>NormalizationSetView.xaml</DependentUpon>
     </Compile>
@@ -569,6 +575,9 @@
     </Compile>
     <Compile Include="View\Table\AlignmentSpotTable.xaml.cs">
       <DependentUpon>AlignmentSpotTable.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Table\ProteomicsSpotTable.xaml.cs">
+      <DependentUpon>ProteomicsSpotTable.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\UserDefinedAdductSetWindow.xaml.cs">
       <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
@@ -815,6 +824,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Lcms\LcmsProteomicsAlignmentTableView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\LcmsProteomicsPeakTableView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Normalize\NormalizationSetView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -960,6 +977,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Table\AlignmentSpotTable.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Table\ProteomicsSpotTable.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

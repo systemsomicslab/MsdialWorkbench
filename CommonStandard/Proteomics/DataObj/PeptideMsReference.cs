@@ -33,8 +33,17 @@ namespace CompMs.Common.Proteomics.DataObj {
         [Key(2)]
         public int ScanID { get; set; }
         [IgnoreMember]
-        public List<SpectrumPeak> Spectrum { get => ReadSpectrum(Fs, SeekPoint2MS); set => new NotSupportedException(); }
-
+        public List<SpectrumPeak> Spectrum {
+            get {
+                if (cacheSpectrum is null) {
+                    cacheSpectrum = ReadSpectrum(Fs, SeekPoint2MS);
+                    return cacheSpectrum;
+                }
+                return cacheSpectrum; 
+            }
+            set => new NotSupportedException(); 
+        }
+        private List<SpectrumPeak> cacheSpectrum = null;
         private List<SpectrumPeak> ReadSpectrum(Stream fs, long seekPoint) {
             lock (fs) {
                 return MsfPepFileParser.ReadSpectrumPeaks(fs, seekPoint);

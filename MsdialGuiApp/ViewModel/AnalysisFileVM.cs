@@ -25,6 +25,10 @@ namespace CompMs.App.Msdial.ViewModel
             CommentFilterKeyword = new ReactivePropertySlim<string>(string.Empty);
             CommentFilterKeywords = CommentFilterKeyword.Select(w => w.Split())
                 .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            ProteinFilterKeyword = new ReactivePropertySlim<string>(string.Empty);
+            ProteinFilterKeywords = ProteinFilterKeyword.Select(w => w.Split())
+                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
             AmplitudeOrderMax = model.Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0d;
             AmplitudeOrderMin = model.Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0d;
             AmplitudeLowerValue = new ReactivePropertySlim<double>(0d).AddTo(Disposables);
@@ -49,6 +53,8 @@ namespace CompMs.App.Msdial.ViewModel
         public ReadOnlyReactivePropertySlim<string[]> MetaboliteFilterKeywords { get; }
         public ReactivePropertySlim<string> CommentFilterKeyword { get; }
         public ReadOnlyReactivePropertySlim<string[]> CommentFilterKeywords { get; }
+        public ReactivePropertySlim<string> ProteinFilterKeyword { get; }
+        public ReadOnlyReactivePropertySlim<string[]> ProteinFilterKeywords { get; }
 
         public double AmplitudeOrderMin { get; }
         public double AmplitudeOrderMax { get; }
@@ -76,6 +82,9 @@ namespace CompMs.App.Msdial.ViewModel
 
         protected bool ReadDisplayFilters(DisplayFilter flag) {
             return displayFilters.Read(flag);
+        }
+        protected bool ProteinFilter(ChromatogramPeakFeatureModel peak, IEnumerable<string> keywords) {
+            return keywords.All(keyword => peak.Protein?.Contains(keyword) ?? true);
         }
 
         protected bool MetaboliteFilter(ChromatogramPeakFeatureModel peak, IEnumerable<string> keywords) {

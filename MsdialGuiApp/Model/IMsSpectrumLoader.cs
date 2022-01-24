@@ -99,6 +99,17 @@ namespace CompMs.App.Msdial.Model {
 
         private List<SpectrumPeak> LoadSpectrumCore(object target) {
             var idx = ms1Peaks.IndexOf(target);
+            if (target.GetType() == typeof(ChromatogramPeakFeatureModel)) {
+                var peak = (ChromatogramPeakFeatureModel)ms1Peaks[idx];
+                idx = peak.MSDecResultIDUsedForAnnotation;
+            } 
+            else if (target.GetType() == typeof(AlignmentSpotPropertyModel)) {
+                var peak = (AlignmentSpotPropertyModel)ms1Peaks[idx];
+                //idx = peak.MSDecResultIDUsedForAnnotation;
+            }
+            else {
+               
+            }
             var msdecResult = loader.LoadMSDecResult(idx);
             Result = msdecResult;
             return msdecResult?.Spectrum ?? new List<SpectrumPeak>(0);
