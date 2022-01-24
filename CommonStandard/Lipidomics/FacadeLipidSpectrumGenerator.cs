@@ -46,6 +46,9 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.EtherPE, new EtherPESpectrumGenerator());
                     generator.Add(LbmClass.LPC, new LPCSpectrumGenerator());
                     generator.Add(LbmClass.LPE, new LPESpectrumGenerator());
+                    generator.Add(LbmClass.LPG, new LPGSpectrumGenerator());
+                    generator.Add(LbmClass.LPI, new LPISpectrumGenerator());
+                    generator.Add(LbmClass.LPS, new LPSSpectrumGenerator());
                     generator.Add(LbmClass.PA, new PASpectrumGenerator());
                     generator.Add(LbmClass.PC, new PCSpectrumGenerator());
                     generator.Add(LbmClass.PE, new PESpectrumGenerator());

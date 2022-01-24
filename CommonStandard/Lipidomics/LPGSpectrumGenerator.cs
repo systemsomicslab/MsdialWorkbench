@@ -81,7 +81,7 @@ namespace CompMs.Common.Lipidomics
                 spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>(), adduct));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
-                .Select(specs => new SpectrumPeak(specs.First().Mass, specs.First().Intensity, string.Join(", ", specs.Select(spec => spec.Comment))))
+                .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment))))
                 .OrderBy(peak => peak.Mass)
                 .ToList();
             return CreateReference(lipid, adduct, spectrum, molecule);
@@ -121,6 +121,7 @@ namespace CompMs.Common.Lipidomics
                     new []
                     {
                         new SpectrumPeak(lipid.Mass - H2O + adduct.AdductIonAccurateMass, 100d, "Precursor -H2O"),
+                        new SpectrumPeak(lipid.Mass - H2O*2 + adduct.AdductIonAccurateMass, 50d, "Precursor -2H2O"),
                         new SpectrumPeak(lipid.Mass - C3H9O6P + adduct.AdductIonAccurateMass, 500d, "Precursor -C3H9O6P"),
                         new SpectrumPeak(lipid.Mass - C3H6O2 - H2O + adduct.AdductIonAccurateMass, 100d, "Precursor -C3H6O2 -H2O"),
 

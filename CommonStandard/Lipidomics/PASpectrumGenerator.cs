@@ -101,7 +101,7 @@ namespace CompMs.Common.Lipidomics
             {
                 new SpectrumPeak(lipid.Mass + adduct.AdductIonAccurateMass, 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
                 new SpectrumPeak(lipid.Mass - H3PO4 + adductmass, 100d, "- Header"),
-                new SpectrumPeak(H3PO4 + adductmass, 300d, "Header"),
+                new SpectrumPeak(H3PO4 - MassDiffDictionary.HydrogenMass + adductmass, 300d, "Header"),
                 new SpectrumPeak(Gly_C + adductmass, 100d, "Gly-C"),
                 new SpectrumPeak(Gly_O + adductmass, 100d, "Gly-O"),
             };
@@ -129,8 +129,8 @@ namespace CompMs.Common.Lipidomics
             {
                 new SpectrumPeak(lipidMass - chainMass + adductmass, 50d, $"-{acylChain}"),
                 new SpectrumPeak(lipidMass - chainMass - H2O + adductmass, 100d, $"-{acylChain}-O"),
-                new SpectrumPeak(lipidMass - chainMass - H3PO4 + adductmass, 50d, $"- Header -{acylChain}"),
-                new SpectrumPeak(lipidMass - chainMass - H3PO4 - H2O + adductmass, 50d, $"- Header -{acylChain}-O"),
+                new SpectrumPeak(lipidMass - chainMass - H3PO4  + adductmass, 50d, $"- Header -{acylChain}"),
+                new SpectrumPeak(lipidMass - chainMass - H3PO4 - H2O  + adductmass, 50d, $"- Header -{acylChain}-O"),
             };
         }
 

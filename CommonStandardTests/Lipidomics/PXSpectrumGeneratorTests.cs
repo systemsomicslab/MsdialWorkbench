@@ -129,8 +129,8 @@ namespace CompMs.Common.Lipidomics.Tests
                 186.01749   ,	//	Header
                 226.05066   ,	//	Gly-C
                 228.0253    ,	//	Gly-O
-                307.2637   ,	//	"-Header -CH2(Sn1) calc
-                321.27924   ,	//	"-Header -acylChain -O
+                308.2637   ,	//	"-Header -CH2(Sn1) calc
+                322.27924   ,	//	"-Header -acylChain -O
                 339.29147   ,	//	"-Header -acylChain
                 493.27316   ,	//	"-CH2(Sn1)
                 507.30017   ,	//	" -acylChain -O
@@ -330,11 +330,11 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = new Lipid(LbmClass.PA, 700.504306309, new PositionLevelChains(acyl1, acyl2));
 
             var generator = new PASpectrumGenerator();
-            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+NH4]+"));
+            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
 
             var expects = new[]
             {
-                98.98036   ,	//	Header
+                97.98036   ,	//	Header
                 139.01358   ,	//	Gly-C
                 140.993    ,	//	Gly-O
                 307.2632696   ,	//	"-Header -CH2(Sn1) calc
