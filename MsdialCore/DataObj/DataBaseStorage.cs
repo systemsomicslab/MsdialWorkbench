@@ -57,6 +57,7 @@ namespace CompMs.MsdialCore.DataObj
         private static readonly string StoragePath = "Storage";
         private static readonly string MetabolomicsDataBasePath = "MetabolomicsDB";
         private static readonly string ProteomicsDataBasePath = "ProteomicsDB";
+        private static readonly string EadLipidomicsDataBasePath = "EadLipidomicsDB";
         public void Save(Stream stream) {
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Create, leaveOpen: true)) {
                 foreach (var item in MetabolomicsDataBases) {
@@ -68,6 +69,13 @@ namespace CompMs.MsdialCore.DataObj
 
                 foreach (var item in ProteomicsDataBases) {
                     var dbEntry = archive.CreateEntry(Path.Combine(ProteomicsDataBasePath, item.DataBaseID));
+                    using (var dbStream = dbEntry.Open()) {
+                        item.Save(dbStream);
+                    }
+                }
+
+                foreach (var item in EadLipidomicsDatabases) {
+                    var dbEntry = archive.CreateEntry(Path.Combine(EadLipidomicsDataBasePath, item.DataBaseID));
                     using (var dbStream = dbEntry.Open()) {
                         item.Save(dbStream);
                     }
@@ -102,6 +110,13 @@ namespace CompMs.MsdialCore.DataObj
                             item.Load(dbStream, visitor, projectFolderPath);
                         }
                     }
+
+                    foreach (var item in result.EadLipidomicsDatabases) {
+                        var dbEntry = archive.GetEntry(Path.Combine(EadLipidomicsDataBasePath, item.DataBaseID));
+                        using (var dbStream = dbEntry.Open()) {
+                            item.Load(dbStream, visitor, null);
+                        }
+                    }
                 }
             }
             catch (InvalidDataException) {
@@ -122,7 +137,7 @@ namespace CompMs.MsdialCore.DataObj
     }
 
     [MessagePackObject]
-    public class DataBaseItem<TQuery, TReference, TResult, TDataBase> where TDataBase: IReferenceDataBase
+    public class DataBaseItem<TQuery, TReference, TResult, TDataBase> where TDataBase: IReferenceDataBase, IMatchResultRefer<TReference, TResult>
     {
         public DataBaseItem(
             TDataBase dataBase,

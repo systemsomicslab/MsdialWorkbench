@@ -26,29 +26,31 @@ namespace CompMs.MsdialImmsCore.Process
     {
         public static void Run(
             AnalysisFileBean file,
-            IMsdialDataStorage<MsdialImmsParameter> container,
+            IMsdialDataStorage<MsdialImmsParameter> storage,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
             bool isGuiProcess = false,
-            Action<int> reportAction = null,
-            CancellationToken token = default) {
+            Action<int> reportAction = null, CancellationToken token = default) {
 
-            var mspAnnotator = new ImmsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.Parameter.MspSearchParam, container.Parameter.TargetOmics, "MspDB", -1);
-            var textDBAnnotator = new ImmsTextDBAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.Parameter.TextDbSearchParam, "TextDB", -1);
+            var mspAnnotator = new ImmsMspAnnotator(new MoleculeDataBase(storage.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), storage.Parameter.MspSearchParam, storage.Parameter.TargetOmics, "MspDB", -1);
+            var textDBAnnotator = new ImmsTextDBAnnotator(new MoleculeDataBase(storage.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), storage.Parameter.TextDbSearchParam, "TextDB", -1);
 
-            Run(file, container, mspAnnotator, textDBAnnotator, new ImmsAverageDataProviderFactory(0.001, 0.002, retry: 5, isGuiProcess: isGuiProcess), isGuiProcess, reportAction, token);
+            Run(file, storage, mspAnnotator, textDBAnnotator, new ImmsAverageDataProviderFactory(0.001, 0.002, retry: 5, isGuiProcess: isGuiProcess), evaluator, isGuiProcess, reportAction, token);
         }
 
         public static void Run(
             AnalysisFileBean file,
-            IMsdialDataStorage<MsdialImmsParameter> container,
+            IMsdialDataStorage<MsdialImmsParameter> storage,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
             bool isGuiProcess = false,
-            Action<int> reportAction = null, CancellationToken token = default) {
+            Action<int> reportAction = null,
+            CancellationToken token = default) {
 
-            var parameter = container.Parameter;
-            var iupacDB = container.IupacDatabase;
-            var annotatorContainers = container.DataBaseMapper.MoleculeAnnotators;
+            var parameter = storage.Parameter;
+            var iupacDB = storage.IupacDatabase;
+            var annotatorContainers = storage.DataBaseMapper.MoleculeAnnotators;
 
             var rawObj = LoadMeasurement(file, isGuiProcess);
             var provider = providerFactory.Create(file);
@@ -69,7 +71,7 @@ namespace CompMs.MsdialImmsCore.Process
             PeakAnnotation(targetCE2MSDecResults, provider, chromPeakFeatures, annotatorContainers, mspAnnotator, textDBAnnotator, parameter, reportAction, token);
 
             // characterizatin
-            PeakCharacterization(targetCE2MSDecResults, provider, chromPeakFeatures, parameter, reportAction, container.DataBaseMapper);
+            PeakCharacterization(targetCE2MSDecResults, provider, chromPeakFeatures, evaluator, parameter, reportAction);
 
             // file save
             SaveToFile(file, chromPeakFeatures, targetCE2MSDecResults);
@@ -167,13 +169,13 @@ namespace CompMs.MsdialImmsCore.Process
             Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
             IDataProvider provider,
             List<ChromatogramPeakFeature> chromPeakFeatures,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
             MsdialImmsParameter parameter,
-            Action<int> reportAction,
-            DataBaseMapper mapper) {
+            Action<int> reportAction) {
 
             new PeakCharacterEstimator(90, 10).Process(provider.LoadMsSpectrums(), chromPeakFeatures,
                 targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
-                mapper, parameter, reportAction);
+                evaluator, parameter, reportAction);
         }
 
         private static void SaveToFile(

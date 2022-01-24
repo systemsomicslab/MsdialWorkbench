@@ -88,6 +88,9 @@ namespace CompMs.Common.Lipidomics
         private IEnumerable<ChainSet> InternalSeparate(TotalChain chains) {
             var (minAcylCarbon, minAlkylCarbon, minSphingoCarbon) = (MinLength * chains.AcylChainCount, MinLength * chains.AlkylChainCount, MinLength * chains.SphingoChainCount);
             var carbonRemain = chains.CarbonCount - minAcylCarbon - minAlkylCarbon - minSphingoCarbon;
+            if (carbonRemain < 0) {
+                return Enumerable.Empty<ChainSet>();
+            }
             var (maxAcylCarbon, maxAlkylCarbon, maxSphingoCarbon) = ((carbonRemain + minAcylCarbon) * Math.Sign(chains.AcylChainCount), (carbonRemain + minAlkylCarbon) * Math.Sign(chains.AlkylChainCount), (carbonRemain + minSphingoCarbon) * Math.Sign(chains.SphingoChainCount));
             var (minAcylDb, minAlkylDb, minSphingoDb) = (0, 0, 0);
             var dbRemain = chains.DoubleBondCount - minAcylDb - minAlkylDb - minSphingoDb;

@@ -248,7 +248,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 return new LoadedDataBaseSettingViewModel(model);
             }
             else {
-                return new DataBaseSettingViewModel(model, notEditableModel, isEditableModel);
+                return new DataBaseSettingViewModel(model, notEditableModel, isEditableModel.StartWith(model));
             }
         }  
     }

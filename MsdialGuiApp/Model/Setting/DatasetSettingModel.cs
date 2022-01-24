@@ -4,11 +4,11 @@ using System;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class ProjectSettingModel : BindableBase
+    public class DatasetSettingModel : BindableBase
     {
-        private readonly Action<IProjectModel> continuous;
+        private readonly Action<IDatasetModel> continuous;
 
-        public ProjectSettingModel(Action<IProjectModel> continuous) {
+        public DatasetSettingModel(Action<IDatasetModel> continuous) {
             this.continuous = continuous;
         }
 
@@ -19,9 +19,9 @@ namespace CompMs.App.Msdial.Model.Setting
         private bool isComplete;
 
         public void Execute() {
-            var project = new ProjectModel();
+            var dataset = new DatasetModel();
 
-            continuous?.Invoke(project);
+            continuous?.Invoke(dataset);
         }
     }
 }

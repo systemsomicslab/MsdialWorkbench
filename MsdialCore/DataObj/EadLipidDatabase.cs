@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace CompMs.MsdialCore.DataObj
 {
@@ -28,9 +29,9 @@ namespace CompMs.MsdialCore.DataObj
             this.dbPath = dbPath;
             Id = id;
             lipidGenerator = FacadeLipidSpectrumGenerator.Default;
+            cache = new HashSet<int>();
 
             connection = CreateConnection(dbPath);
-            connection.Open();
             var command = connection.CreateCommand();
             command.CommandText = $"CREATE TABLE IF NOT EXISTS {ReferenceTableName} ({LipidReference.ReferenceColumnsDefine})";
             command.ExecuteNonQuery();
@@ -48,6 +49,7 @@ namespace CompMs.MsdialCore.DataObj
         private readonly string dbPath;
 
         private readonly ILipidSpectrumGenerator lipidGenerator;
+        private readonly HashSet<int> cache;
         private SQLiteConnection connection;
 
         private int scanId = 0;
@@ -58,38 +60,47 @@ namespace CompMs.MsdialCore.DataObj
                 DataSource = dbPath,
             };
 
-            return new SQLiteConnection(connectionStringBuilder.ToString());
+            var connection = new SQLiteConnection(connectionStringBuilder.ToString());
+            connection.Open();
+            return connection;
         }
 
-        // TODO: Convert IMSScanProperty to MoleculeMsReference
+        private static void CloseConnection(SQLiteConnection connection) {
+            connection.Dispose();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        }
+
         public MoleculeMsReference Generate(ILipid lipid, AdductIon adduct, MoleculeMsReference baseReference) {
             if (connection is null) {
                 throw new ObjectDisposedException(nameof(connection));
             }
-            var command = connection.CreateCommand();
-            command.CommandText = $"SELECT * FROM {ReferenceTableName} WHERE Name = '{lipid.Name}' AND AdductType = '{adduct.AdductIonName}'";
-            var reader = command.ExecuteReader();
-            if (reader.Read()) {
-                var reference = LipidReference.ParseLipidReference(reader);
-                reader.Close();
+            if (cache.Contains(lipid.Name.GetHashCode())) {
+                var command = connection.CreateCommand();
+                command.CommandText = $"SELECT * FROM {ReferenceTableName} WHERE Name = '{lipid.Name}' AND AdductType = '{adduct.AdductIonName}'";
+                var reader = command.ExecuteReader();
+                if (reader.Read()) {
+                    var reference = LipidReference.ParseLipidReference(reader);
+                    reader.Close();
 
-                command.CommandText = $"SELECT * FROM {SpectrumTableName} WHERE ScanID = {reference.ScanID}";
-                reader = command.ExecuteReader();
-                reference.Spectrum.AddRange(LipidReference.ParseSpectrum(reader));
-                return reference.ConvertToReference();
+                    command.CommandText = $"SELECT * FROM {SpectrumTableName} WHERE ScanID = {reference.ScanID}";
+                    reader = command.ExecuteReader();
+                    reference.Spectrum.AddRange(LipidReference.ParseSpectrum(reader));
+                    return reference.ConvertToReference();
+                }
             }
-            else {
-                var reference = (MoleculeMsReference)lipid.GenerateSpectrum(lipidGenerator, adduct, baseReference);
-                reference.ScanID = scanId++;
-                return reference;
+            var reference_ = lipid.GenerateSpectrum(lipidGenerator, adduct, baseReference) as MoleculeMsReference;
+            if (reference_ != null) {
+                reference_.ScanID = scanId++;
             }
+            return reference_;
         }
 
         public void Register(IEnumerable<MoleculeMsReference> moleculeMsReferences) {
             if (connection is null) {
                 throw new ObjectDisposedException(nameof(connection));
             }
-            var lipidReferences = moleculeMsReferences.Select(reference => new LipidReference(reference)).ToList();
+            var lipidReferences = moleculeMsReferences.Where(reference => reference != null).Select(reference => new LipidReference(reference)).ToList();
             using (var transaction = connection.BeginTransaction()) {
                 var command = connection?.CreateCommand();
                 command.Transaction = transaction;
@@ -107,11 +118,15 @@ namespace CompMs.MsdialCore.DataObj
 
                 transaction.Commit();
             }
+            cache.UnionWith(lipidReferences.Select(r => r.Name.GetHashCode()));
         }
 
         string IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Key => Id;
 
         public MoleculeMsReference Refer(MsScanMatchResult result) {
+            if (!string.IsNullOrEmpty(result.Name) && !cache.Contains(result.Name.GetHashCode())) {
+                return null;
+            }
             var command = connection?.CreateCommand();
             command.CommandText = $"SELECT * FROM {ReferenceTableName} WHERE ScanID = {result.LibraryID}";
             var reader = command.ExecuteReader();
@@ -136,10 +151,18 @@ namespace CompMs.MsdialCore.DataObj
 
                 }
 
-                connection.Dispose();
+                CloseConnection(connection);
                 connection = null;
-                if (File.Exists(dbPath)) {
-                    File.Delete(dbPath);
+                try {
+                    Retry(5, TimeSpan.FromMilliseconds(500), () =>
+                    {
+                        if (File.Exists(dbPath)) {
+                            File.Delete(dbPath);
+                        }
+                    });
+                }
+                catch (IOException) {
+
                 }
 
                 disposedValue = true;
@@ -160,17 +183,50 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public void Save(Stream stream) {
-            using (var fs = File.Open(dbPath, FileMode.Open)) {
-                fs.CopyTo(stream);
-            }
+            CloseConnection(connection);
+            Retry(5, TimeSpan.FromMilliseconds(500), () =>
+            {
+                using (var fs = File.Open(dbPath, FileMode.Open)) {
+                    fs.CopyTo(stream);
+                }
+            });
+            connection = CreateConnection(dbPath);
         }
 
         public void Load(Stream stream, string folderpath) {
-            connection.Close();
-            using (var fs = File.Open(dbPath, FileMode.Create)) {
-                stream.CopyTo(fs);
-            }
+            CloseConnection(connection);
+            Retry(5, TimeSpan.FromMilliseconds(500), () =>
+            {
+                using (var fs = File.Open(dbPath, FileMode.Create)) {
+                    stream.CopyTo(fs);
+                }
+            });
             connection = CreateConnection(dbPath);
+
+            var command = connection.CreateCommand();
+            command.CommandText = $"SELECT Name FROM {ReferenceTableName}";
+            var reader = command.ExecuteReader();
+            while (reader.Read()) {
+                cache.Add(reader.GetString(0).GetHashCode());
+            }
+            reader.Close();
+        }
+
+        private static void Retry(int retryCount, TimeSpan wait, Action action) {
+            var i = 0;
+            while (true) {
+                try {
+                    action();
+                }
+                catch (IOException) {
+                    if (i++ >= retryCount) {
+                        throw;
+                    }
+                    Thread.Sleep(wait);
+                    continue;
+                }
+                break;
+            }
         }
 
         class LipidReference
@@ -265,6 +321,8 @@ namespace CompMs.MsdialCore.DataObj
                 "DatabaseID INTEGER NOT NULL," +
                 "Charge INTEGER NOT NULL," +
                 "MsLevel INTEGER NOT NULL";
+
+            public static readonly int ReferenceNameColumn = 7;
 
             public string ToReferenceValues() => $"({ScanID}," +
                 $"{PrecursorMz}," +

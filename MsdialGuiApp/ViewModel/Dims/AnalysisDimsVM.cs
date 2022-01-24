@@ -4,7 +4,6 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Components;
-using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Core.Base;
@@ -212,8 +211,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         bool AnnotationFilter(ChromatogramPeakFeatureModel peak) {
             if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
-            return RefMatchedChecked && peak.IsRefMatched(Model.DataBaseMapper)
-                || SuggestedChecked && peak.IsSuggested(Model.DataBaseMapper)
+            return RefMatchedChecked && peak.IsRefMatched(Model.MatchResultEvaluator)
+                || SuggestedChecked && peak.IsSuggested(Model.MatchResultEvaluator)
                 || UnknownChecked && peak.IsUnknown;
         }
 

@@ -17,6 +17,9 @@ namespace CompMs.Common.Lipidomics {
 
         public static IEnumerable<SpectrumPeak> GetAcylDoubleBondSpectrum(
             ILipid lipid, AcylChain acylChain, AdductIon adduct, double NLMass = 0.0, double abundance = 50.0) {
+            if (acylChain.DoubleBond.UnDecidedCount != 0 || acylChain.CarbonCount == 0) {
+                return Enumerable.Empty<SpectrumPeak>();
+            }
             var chainLoss = lipid.Mass - acylChain.Mass + adduct.AdductIonAccurateMass - NLMass;
             var diffs = new double[acylChain.CarbonCount];
             for (int i = 0; i < acylChain.CarbonCount; i++) {
@@ -40,7 +43,7 @@ namespace CompMs.Common.Lipidomics {
                 peaks.Add(new SpectrumPeak(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass, abundance * 0.5, $"{acylChain} C{i + 1}+H"));
             }
 
-            return peaks.ToArray();
+            return peaks;
         }
 
         public static IEnumerable<SpectrumPeak> GetAlkylDoubleBondSpectrum(

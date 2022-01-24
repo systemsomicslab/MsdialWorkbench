@@ -80,6 +80,15 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         [TestMethod()]
+        public void SeparateShortChainTest() {
+            var generator = new AcylChainGenerator(minLength: 6, begin: 2, end: 1, skip: 3);
+            TotalChain totalChain = new TotalChain(10, 0, 0, 2, 0, 0);
+
+            var actual = generator.Separate(totalChain).ToArray();
+            Assert.AreEqual(0, actual.Length);
+        }
+
+        [TestMethod()]
         public void SeparateSphingoTest() {
             var generator = new AcylChainGenerator(minLength: 6, begin: 2, end: 1, skip: 3);
             ITotalChain totalChain = new TotalChain(34, 1, 2, 1, 0, 1);

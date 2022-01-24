@@ -8,14 +8,14 @@ namespace CompMs.Common.Lipidomics
     public class LPCLipidParser : ILipidParser {
         public string Target { get; } = "LPC";
 
-        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(1);
-        public static readonly string Pattern = $"LPC\\s*(?<sn>{chainsParser.Pattern})";
+        private static readonly TotalChainParser chainsParser = TotalChainParser.BuildSpeciesLevelParser(1, 2);
+        public static readonly string Pattern = $"^LPC\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 8,
-            MassDiffDictionary.HydrogenMass * 19,
+            MassDiffDictionary.HydrogenMass * 18,
             MassDiffDictionary.OxygenMass * 6,
             MassDiffDictionary.NitrogenMass,
             MassDiffDictionary.PhosphorusMass,

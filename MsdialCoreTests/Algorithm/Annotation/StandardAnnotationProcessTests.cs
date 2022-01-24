@@ -186,7 +186,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 throw new NotImplementedException();
             }
 
-            public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
+            public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results) {
                 return results.ToList();
             }
 
@@ -196,11 +196,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 return new List<MsScanMatchResult> { Dummy, };
             }
 
-            public bool IsAnnotationSuggested(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            public bool IsAnnotationSuggested(MsScanMatchResult result) {
                 return false;
             }
 
-            public bool IsReferenceMatched(MsScanMatchResult result, MsRefSearchParameterBase parameter = null) {
+            public bool IsReferenceMatched(MsScanMatchResult result) {
                 return true;
             }
 
@@ -212,11 +212,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 throw new NotImplementedException();
             }
 
-            public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
+            public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results) {
                 return results.ToList();
             }
 
-            public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter = null) {
+            public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {
                 return results.FirstOrDefault();
             }
         }

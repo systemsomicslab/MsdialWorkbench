@@ -54,6 +54,9 @@ namespace CompMs.Common.Lipidomics
         }
 
         static double CalculateAcylMass(int carbon, int doubleBond, int oxidize) {
+            if (carbon == 0 && doubleBond == 0 && oxidize == 0) {
+                return MassDiffDictionary.HydrogenMass;
+            }
             return carbon * MassDiffDictionary.CarbonMass + (2 * carbon - 2 * doubleBond - 1) * MassDiffDictionary.HydrogenMass + (1 + oxidize) * MassDiffDictionary.OxygenMass;
         }
     }

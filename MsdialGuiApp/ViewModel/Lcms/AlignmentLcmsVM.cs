@@ -8,6 +8,7 @@ using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Parameter;
 using Microsoft.Win32;
 using Reactive.Bindings;
@@ -310,8 +311,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         bool AnnotationFilter(AlignmentSpotPropertyModel spot) {
             if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
-            return RefMatchedChecked && spot.IsRefMatched(model.DataBaseMapper)
-                || SuggestedChecked && spot.IsSuggested(model.DataBaseMapper)
+            return RefMatchedChecked && spot.IsRefMatched(model.MatchResultEvaluator)
+                || SuggestedChecked && spot.IsSuggested(model.MatchResultEvaluator)
                 || UnknownChecked && spot.IsUnknown;
         }
 
@@ -326,7 +327,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         bool ProteinFilter(AlignmentSpotPropertyModel spot, IEnumerable<string> keywords) {
-            return keywords.All(keyword => spot.Protein.Contains(keyword));
+            return keywords.All(keyword => spot.Protein?.Contains(keyword) ?? true);
         }
 
         bool MetaboliteFilter(AlignmentSpotPropertyModel spot, IEnumerable<string> keywords) {

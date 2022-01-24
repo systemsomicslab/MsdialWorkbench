@@ -35,15 +35,13 @@ namespace CompMs.App.Msdial.Model.Dims
             List<AlignmentFileBean> alignmentFiles)
             : base(analysisFiles, alignmentFiles) {
             Storage = storage;
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(storage.DataBaseMapper);
         }
 
         private IAnnotationProcess annotationProcess;
+        private FacadeMatchResultEvaluator matchResultEvaluator;
 
-        public MsdialDimsDataStorage Storage {
-            get => storage;
-            set => SetProperty(ref storage, value);
-        }
-        private MsdialDimsDataStorage storage;
+        public MsdialDimsDataStorage Storage { get; }
 
         public DimsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -92,6 +90,7 @@ namespace CompMs.App.Msdial.Model.Dims
             }
 
             Storage.DataBaseMapper = BuildDataBaseMapper(Storage.DataBases);
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(Storage.DataBaseMapper);
             annotationProcess = BuildAnnotationProcess(Storage.DataBases);
             ProviderFactory = parameterSetModel.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
         }
@@ -119,17 +118,17 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         public async Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {
-            await Task.Run(() => ProcessFile.Run(analysisfile, ProviderFactory, storage, annotationProcess, reportAction: action));
+            await Task.Run(() => ProcessFile.Run(analysisfile, ProviderFactory, Storage, annotationProcess, matchResultEvaluator, reportAction: action));
         }
 
         public void RunAlignmentProcess() {
-            AlignmentProcessFactory aFactory = new DimsAlignmentProcessFactory(Storage.MsdialDimsParameter, Storage.IupacDatabase, Storage.DataBaseMapper);
+            AlignmentProcessFactory aFactory = new DimsAlignmentProcessFactory(Storage, matchResultEvaluator);
             var alignmentFile = Storage.AlignmentFiles.Last();
             var aligner = aFactory.CreatePeakAligner();
             aligner.ProviderFactory = ProviderFactory;
-            var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
+            var result = aligner.Alignment(Storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
             MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
+            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(Storage, result.AlignmentSpotProperties).ToList());
         }
 
         private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(MsdialDimsDataStorage storage, IReadOnlyList<AlignmentSpotProperty> spots) {
@@ -170,9 +169,10 @@ namespace CompMs.App.Msdial.Model.Dims
             AnalysisModel = new DimsAnalysisModel(
                 analysisFile,
                 ProviderFactory.Create(analysisFile),
+                matchResultEvaluator,
+                Storage.DataBaseMapper.MoleculeAnnotators,
                 Storage.DataBaseMapper,
-                Storage.MsdialDimsParameter,
-                Storage.DataBaseMapper.MoleculeAnnotators).AddTo(Disposables);;
+                Storage.MsdialDimsParameter).AddTo(Disposables);;
         }
 
         protected override void LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
@@ -182,9 +182,10 @@ namespace CompMs.App.Msdial.Model.Dims
             }
             AlignmentModel = new DimsAlignmentModel(
                 alignmentFile,
+                Storage.DataBaseMapper.MoleculeAnnotators,
+                matchResultEvaluator,
                 Storage.DataBaseMapper,
-                Storage.MsdialDimsParameter,
-                Storage.DataBaseMapper.MoleculeAnnotators).AddTo(Disposables);
+                Storage.MsdialDimsParameter).AddTo(Disposables);
         }
 
     }

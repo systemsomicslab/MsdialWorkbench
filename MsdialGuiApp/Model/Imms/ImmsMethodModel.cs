@@ -34,6 +34,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using CompMs.MsdialCore.Algorithm.Annotation;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
@@ -48,8 +49,10 @@ namespace CompMs.App.Msdial.Model.Imms
             MsdialImmsDataStorage storage)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             Storage = storage;
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(storage.DataBaseMapper);
         }
 
+        private FacadeMatchResultEvaluator matchResultEvaluator;
 
         public ImmsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -73,11 +76,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
         private ImmsAlignmentModel alignmentModel;
 
-        public MsdialImmsDataStorage Storage {
-            get => storage;
-            set => SetProperty(ref storage, value);
-        }
-        private MsdialImmsDataStorage storage;
+        public MsdialImmsDataStorage Storage { get; }
 
         public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; private set; }
 
@@ -124,6 +123,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 if (apsw_result != true) return false;
 
                 Storage.DataBaseMapper = analysisParameterSet.BuildAnnotator();
+                matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(Storage.DataBaseMapper);
                 ProviderFactory = analysisParameterSet.Parameter.ProviderFactoryParameter.Create(5, true);
 
                 if (parameter.TogetherWithAlignment) {
@@ -164,7 +164,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             pbmcw.Loaded += async (s, e) => {
                 foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                    await Task.Run(() => FileProcess.Run(analysisfile, storage, null, null, ProviderFactory, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
+                    await Task.Run(() => FileProcess.Run(analysisfile, storage, null, null, ProviderFactory, matchResultEvaluator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
                     vm.CurrentValue++;
                 }
                 pbmcw.Close();
@@ -189,7 +189,7 @@ namespace CompMs.App.Msdial.Model.Imms
             };
             pbw.Show();
 
-            var factory = new ImmsAlignmentProcessFactory(storage.MsdialImmsParameter, storage.IupacDatabase, storage.DataBaseMapper);
+            var factory = new ImmsAlignmentProcessFactory(storage, matchResultEvaluator);
             var aligner = factory.CreatePeakAligner();
             aligner.ProviderFactory = ProviderFactory; // TODO: I'll remove this later.
             var alignmentFile = storage.AlignmentFiles.Last();
@@ -238,9 +238,10 @@ namespace CompMs.App.Msdial.Model.Imms
             AnalysisModel = new ImmsAnalysisModel(
                 analysisFile,
                 provider,
+                matchResultEvaluator,
+                Storage.DataBaseMapper.MoleculeAnnotators,
                 Storage.DataBaseMapper,
-                Storage.MsdialImmsParameter,
-                Storage.DataBaseMapper.MoleculeAnnotators)
+                Storage.MsdialImmsParameter)
             .AddTo(Disposables);
         }
 
@@ -252,9 +253,10 @@ namespace CompMs.App.Msdial.Model.Imms
 
             AlignmentModel = new ImmsAlignmentModel(
                 alignmentFile,
-                Storage.MsdialImmsParameter,
+                Storage.DataBaseMapper.MoleculeAnnotators,
+                matchResultEvaluator,
                 Storage.DataBaseMapper,
-                Storage.DataBaseMapper.MoleculeAnnotators)
+                Storage.MsdialImmsParameter)
             .AddTo(Disposables);
         }
 

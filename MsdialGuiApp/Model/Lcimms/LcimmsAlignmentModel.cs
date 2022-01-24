@@ -3,11 +3,13 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
@@ -28,11 +30,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
     {
         public LcimmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
-            ParameterBase parameter,
-            DataBaseMapper mapper) {
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            DataBaseMapper mapper,
+            ParameterBase parameter) {
             Parameter = parameter;
             AlignmentFile = alignmentFileBean;
-            DataBaseMapper = mapper;
+            MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             ResultFile = alignmentFileBean.FilePath;
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(ResultFile);
             if (Container == null) {
@@ -138,7 +141,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         public ParameterBase Parameter { get; }
         public AlignmentFileBean AlignmentFile { get; }
-        public DataBaseMapper DataBaseMapper { get; }
+        public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
         public string ResultFile { get; }
         public AlignmentResultContainer Container { get; }
 

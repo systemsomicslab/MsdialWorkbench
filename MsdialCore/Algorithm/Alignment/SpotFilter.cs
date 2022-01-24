@@ -1,4 +1,6 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
@@ -82,7 +84,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         private readonly bool IsKeepRefMatchedMetaboliteFeatures;
         private readonly bool IsKeepSuggestedMetaboliteFeatures;
         private readonly bool IsKeepRemovableFeaturesAndAssignedTagForChecking;
-        private readonly DataBaseMapper mapper;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public BlankFilter(
             Dictionary<int, AnalysisFileType> FileID2AnalysisFileType_,
@@ -91,14 +93,14 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             bool IsKeepRefMatchedMetaboliteFeatures_,
             bool IsKeepSuggestedMetaboliteFeatures_,
             bool IsKeepRemovableFeaturesAndAssignedTagForChecking_,
-            DataBaseMapper mapper) {
+            IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             FileID2AnalysisFileType = FileID2AnalysisFileType_;
             FoldChangeForBlankFiltering = FoldChangeForBlankFiltering_;
             BlankFiltering = BlankFiltering_;
             IsKeepRefMatchedMetaboliteFeatures = IsKeepRefMatchedMetaboliteFeatures_;
             IsKeepSuggestedMetaboliteFeatures = IsKeepSuggestedMetaboliteFeatures_;
             IsKeepRemovableFeaturesAndAssignedTagForChecking = IsKeepRemovableFeaturesAndAssignedTagForChecking_;
-            this.mapper = mapper;
+            this.evaluator = evaluator;
         }
 
         public IEnumerable<AlignmentSpotProperty> Filter(IEnumerable<AlignmentSpotProperty> spots) {
@@ -131,10 +133,10 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             
                 if (sampleThresh < blankThresh) {
 
-                    if (IsKeepRefMatchedMetaboliteFeatures && spot.IsReferenceMatched(mapper)) {
+                    if (IsKeepRefMatchedMetaboliteFeatures && spot.IsReferenceMatched(evaluator)) {
 
                     }
-                    else if (IsKeepSuggestedMetaboliteFeatures && spot.IsAnnotationSuggested(mapper)) {
+                    else if (IsKeepSuggestedMetaboliteFeatures && spot.IsAnnotationSuggested(evaluator)) {
 
                     }
                     else if (IsKeepRemovableFeaturesAndAssignedTagForChecking) {
