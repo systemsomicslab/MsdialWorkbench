@@ -52,8 +52,7 @@ namespace CompMs.App.Msdial.Model.Imms
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(storage.DataBaseMapper);
         }
 
-        private readonly FacadeMatchResultEvaluator matchResultEvaluator;
-
+        private FacadeMatchResultEvaluator matchResultEvaluator;
 
         public ImmsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -124,6 +123,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 if (apsw_result != true) return false;
 
                 Storage.DataBaseMapper = analysisParameterSet.BuildAnnotator();
+                matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(Storage.DataBaseMapper);
                 ProviderFactory = analysisParameterSet.Parameter.ProviderFactoryParameter.Create(5, true);
 
                 if (parameter.TogetherWithAlignment) {

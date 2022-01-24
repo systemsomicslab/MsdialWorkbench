@@ -39,7 +39,7 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         private IAnnotationProcess annotationProcess;
-        private readonly FacadeMatchResultEvaluator matchResultEvaluator;
+        private FacadeMatchResultEvaluator matchResultEvaluator;
 
         public MsdialDimsDataStorage Storage { get; }
 
@@ -90,6 +90,7 @@ namespace CompMs.App.Msdial.Model.Dims
             }
 
             Storage.DataBaseMapper = BuildDataBaseMapper(Storage.DataBases);
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(Storage.DataBaseMapper);
             annotationProcess = BuildAnnotationProcess(Storage.DataBases);
             ProviderFactory = parameterSetModel.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
         }

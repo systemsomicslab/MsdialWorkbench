@@ -63,7 +63,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public MsdialLcmsDataStorage Storage { get; }
 
-        private readonly FacadeMatchResultEvaluator matchResultEvaluator;
+        private FacadeMatchResultEvaluator matchResultEvaluator;
 
         public LcmsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -161,6 +161,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
             }
             Storage.DataBaseMapper = CreateDataBaseMapper(Storage.DataBases);
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(Storage.DataBaseMapper);
             return true;
         }
 
