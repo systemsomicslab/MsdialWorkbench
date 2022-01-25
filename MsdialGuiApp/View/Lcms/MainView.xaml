@@ -10,6 +10,7 @@
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
+             xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              Name="MainControl"
              MouseRightButtonDown="MainControl_MouseRightButtonDown"
              ContextMenuOpening="MainControl_ContextMenuOpening"
@@ -227,6 +228,13 @@
                                         </StackPanel>
                                     </DataTemplate>
                                 </chart:PeakView.LabelTemplate>
+                                <chart:PeakView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Save image as png"
+                                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                  CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    </ContextMenu>
+                                </chart:PeakView.ContextMenu>
                             </chart:PeakView>
                         </TabItem>
 
@@ -252,6 +260,13 @@
                                         </StackPanel>
                                     </DataTemplate>
                                 </chart:AlignmentPeakPlotView.LabelTemplate>
+                                <chart:AlignmentPeakPlotView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Save image as png"
+                                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    </ContextMenu>
+                                </chart:AlignmentPeakPlotView.ContextMenu>
                             </chart:AlignmentPeakPlotView>
                         </TabItem>
 
@@ -264,20 +279,44 @@
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
                                  Name="TabItem_EicViewer" Background="{StaticResource MainThemeColor}">
-                            <chart:EicView DataContext="{Binding AnalysisVM.EicViewModel}"/>
+                            <chart:EicView DataContext="{Binding AnalysisVM.EicViewModel}">
+                                <chart:EicView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Save image as png"
+                                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    </ContextMenu>
+                                </chart:EicView.ContextMenu>
+                            </chart:EicView>
                         </TabItem>
 
                         <TabItem Header="Bar chart of aligned spot" 
                                  Name="TabItem_BarChartViewer" 
                                  Height="26"
                                  Background="{StaticResource MainThemeColor}">
-                            <chart:BarChartView DataContext="{Binding AlignmentVM.BarChartViewModel}"/>
+                            <chart:BarChartView DataContext="{Binding AlignmentVM.BarChartViewModel}">
+                                <chart:BarChartView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Save image as png"
+                                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    </ContextMenu>
+                                </chart:BarChartView.ContextMenu>
+                            </chart:BarChartView>
                         </TabItem>
 
                         <TabItem Name="TabItem_AlignedEic"
                                  Header="EIC of aligned spot"
                                  Background="{StaticResource MainThemeColor}">
-                            <chart:AlignmentEicView DataContext="{Binding AlignmentVM.AlignmentEicViewModel}"/>
+                            <chart:AlignmentEicView DataContext="{Binding AlignmentVM.AlignmentEicViewModel}">
+                                <chart:AlignmentEicView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Save image as png"
+                                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    </ContextMenu>
+                                </chart:AlignmentEicView.ContextMenu>
+                            </chart:AlignmentEicView>
                         </TabItem>
 
                     </TabControl>
@@ -360,6 +399,9 @@
                                     <ContextMenu>
                                         <MenuItem Header="Save spectra table as.."
                                                   Command="{Binding SaveMs2SpectrumCommand}"/>
+                                        <MenuItem Header="Save image as png"
+                                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                     </ContextMenu>
                                 </chart:ExpRefView.ContextMenu>
                             </chart:ExpRefView>
@@ -383,6 +425,9 @@
                                     <ContextMenu>
                                         <MenuItem Header="Save spectra table as.."
                                                   Command="{Binding SaveMs2SpectrumCommand}"/>
+                                        <MenuItem Header="Save image as png"
+                                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                     </ContextMenu>
                                 </chart:RawPurifiedView.ContextMenu>
                             </chart:RawPurifiedView>
