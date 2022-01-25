@@ -145,6 +145,9 @@ namespace CompMs.Common.Lipidomics
         }
 
         public override string ToString() {
+            if (Chains.Count(c => c.CarbonCount > 0) == 1) {
+                return Chains.First(c => c.CarbonCount > 0).ToString(); // for LPC...
+            }
             return string.Join("_", Chains.Select(c => c.ToString()));
         }
     }

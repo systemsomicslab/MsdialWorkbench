@@ -7,17 +7,16 @@ namespace CompMs.Common.Lipidomics.Tests
     public class LPCLipidParserTests
     {
         [TestMethod()]
-        public void ParseTest() {
+        [DataRow("LPC 18:1", 521.34814000, LbmClass.LPC, 2)]
+        [DataRow("LPC 18:1/0:0", 521.34814000, LbmClass.LPC, 3)]
+        public void ParseTest(string lipidName, double expectedMass, LbmClass lipidClass, int expectedLevel) {
             var parser = new LPCLipidParser();
 
-            var lipid = parser.Parse("LPC 18:1");
-            Assert.AreEqual(521.34814000, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.LPC, lipid.LipidClass);
-
-            lipid = parser.Parse("LPC 18:1/0:0");
-            Assert.AreEqual(521.34814000, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.LPC, lipid.LipidClass);
-
+            var lipid = parser.Parse(lipidName);
+            Assert.AreEqual(lipidName, lipid.Name);
+            Assert.AreEqual(expectedMass, lipid.Mass, 0.001);
+            Assert.AreEqual(lipidClass, lipid.LipidClass);
+            Assert.AreEqual(expectedLevel, lipid.AnnotationLevel);
         }
     }
 
