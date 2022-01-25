@@ -53,6 +53,7 @@ namespace CompMs.MsdialCore.DataObj
         private SQLiteConnection connection;
 
         private int scanId = 0;
+        private int spectrumId = 0;
 
         private static SQLiteConnection CreateConnection(string dbPath) {
             var connectionStringBuilder = new SQLiteConnectionStringBuilder
@@ -75,6 +76,9 @@ namespace CompMs.MsdialCore.DataObj
             if (connection is null) {
                 throw new ObjectDisposedException(nameof(connection));
             }
+            if (!lipidGenerator.CanGenerate(lipid, adduct)) {
+                return null;
+            }
             if (cache.Contains(lipid.Name.GetHashCode())) {
                 var command = connection.CreateCommand();
                 command.CommandText = $"SELECT * FROM {ReferenceTableName} WHERE Name = '{lipid.Name}' AND AdductType = '{adduct.AdductIonName}'";
@@ -83,7 +87,7 @@ namespace CompMs.MsdialCore.DataObj
                     var reference = LipidReference.ParseLipidReference(reader);
                     reader.Close();
 
-                    command.CommandText = $"SELECT * FROM {SpectrumTableName} WHERE ScanID = {reference.ScanID}";
+                    command.CommandText = $"SELECT * FROM {SpectrumTableName} WHERE SpectrumId BETWEEN {reference.SpectrumIdFrom} AND {reference.SpectrumIdTo}";
                     reader = command.ExecuteReader();
                     reference.Spectrum.AddRange(LipidReference.ParseSpectrum(reader));
                     return reference.ConvertToReference();
@@ -107,12 +111,15 @@ namespace CompMs.MsdialCore.DataObj
 
                 var commandText = "INSERT OR IGNORE INTO {0} VALUES {1}";
                 foreach (var reference in lipidReferences) {
-                    command.CommandText = string.Format(commandText, ReferenceTableName, reference.ToReferenceValues());
+                    var prev = spectrumId;
+                    spectrumId += reference.Spectrum.Count;
+                    reference.SetSpectrumId(prev, spectrumId - 1);
+                    command.CommandText = string.Format(commandText, SpectrumTableName, reference.ToSpectrumValues());
                     command.ExecuteNonQuery();
                 }
 
                 foreach (var reference in lipidReferences) {
-                    command.CommandText = string.Format(commandText, SpectrumTableName, reference.ToSpectrumValues(reference.ScanID));
+                    command.CommandText = string.Format(commandText, ReferenceTableName, reference.ToReferenceValues());
                     command.ExecuteNonQuery();
                 }
 
@@ -136,7 +143,7 @@ namespace CompMs.MsdialCore.DataObj
             var reference = LipidReference.ParseLipidReference(reader);
             reader.Close();
 
-            command.CommandText = $"SELECT * FROM {SpectrumTableName} WHERE ScanID = {result.LibraryID}";
+            command.CommandText = $"SELECT * FROM {SpectrumTableName} WHERE SpectrumId BETWEEN {reference.SpectrumIdFrom} AND {reference.SpectrumIdTo}";
             reader = command.ExecuteReader();
             reference.Spectrum.AddRange(LipidReference.ParseSpectrum(reader));
 
@@ -203,13 +210,19 @@ namespace CompMs.MsdialCore.DataObj
             });
             connection = CreateConnection(dbPath);
 
-            var command = connection.CreateCommand();
-            command.CommandText = $"SELECT Name FROM {ReferenceTableName}";
-            var reader = command.ExecuteReader();
-            while (reader.Read()) {
-                cache.Add(reader.GetString(0).GetHashCode());
+            using (var command = connection.CreateCommand()) {
+                command.CommandText = $"SELECT Name FROM {ReferenceTableName}";
+                using (var reader = command.ExecuteReader()) {
+                    while (reader.Read()) {
+                        cache.Add(reader.GetString(0).GetHashCode());
+                    }
+                    reader.Close();
+                }
+                command.CommandText = $"SELECT MAX(ScanID) From {ReferenceTableName}";
+                scanId = 1 + (int)command.ExecuteScalar();
+                command.CommandText = $"SELECT MAX(SpectrumID) From {SpectrumTableName}";
+                spectrumId = 1 + (int)command.ExecuteScalar();
             }
-            reader.Close();
         }
 
         private static void Retry(int retryCount, TimeSpan wait, Action action) {
@@ -250,6 +263,9 @@ namespace CompMs.MsdialCore.DataObj
             public int Charge { get; private set; }
             public int MsLevel { get; private set; }
 
+            public int SpectrumIdFrom { get; private set; }
+            public int SpectrumIdTo { get; private set; }
+
             public LipidReference(MoleculeMsReference reference) {
                 ScanID = reference.ScanID;
                 PrecursorMz = reference.PrecursorMz;
@@ -269,6 +285,8 @@ namespace CompMs.MsdialCore.DataObj
                 DatabaseID = reference.DatabaseID;
                 Charge = reference.Charge;
                 MsLevel = reference.MsLevel;
+                SpectrumIdFrom = -1;
+                SpectrumIdTo = -1;
             }
 
             private LipidReference() {
@@ -299,7 +317,7 @@ namespace CompMs.MsdialCore.DataObj
                 };
             }
 
-            public static readonly string ReferenceColumns = "ScanID, PrecursorMz, RT, RI, Drift, Mz, IonMode, Name, Formula, Ontology, SMILES, InChIKey, AdductType, CollisionCrossSection, CompoundClass, Comment, CollisionEnergy, DatabaseID, Charge, MsLevel";
+            public static readonly string ReferenceColumns = "ScanID, PrecursorMz, RT, RI, Drift, Mz, IonMode, Name, Formula, Ontology, SMILES, InChIKey, AdductType, CollisionCrossSection, CompoundClass, Comment, CollisionEnergy, DatabaseID, Charge, MsLevel, SpectrumIdFrom, SpectrumIdTo";
 
             public static readonly string ReferenceColumnsDefine = "ScanID INTEGER NOT NULL PRIMARY KEY," +
                 "PrecursorMz REAL NOT NULL," +
@@ -320,7 +338,9 @@ namespace CompMs.MsdialCore.DataObj
                 "CollisionEnergy REAL NOT NULL," +
                 "DatabaseID INTEGER NOT NULL," +
                 "Charge INTEGER NOT NULL," +
-                "MsLevel INTEGER NOT NULL";
+                "MsLevel INTEGER NOT NULL," +
+                "SpectrumIdFrom INTEGER NOT NULL," +
+                "SpectrumIdTo INTEGER NOT NULL";
 
             public static readonly int ReferenceNameColumn = 7;
 
@@ -343,7 +363,9 @@ namespace CompMs.MsdialCore.DataObj
                 $"{CollisionEnergy}," +
                 $"{DatabaseID}," +
                 $"{Charge}," +
-                $"{MsLevel})";
+                $"{MsLevel}," +
+                $"{SpectrumIdFrom}," +
+                $"{SpectrumIdTo})";
 
             public static LipidReference ParseLipidReference(SQLiteDataReader reader) {
                 var reference = new LipidReference
@@ -365,7 +387,9 @@ namespace CompMs.MsdialCore.DataObj
                     CollisionEnergy = (float)reader.GetDouble(16),
                     DatabaseID = reader.GetInt32(17),
                     Charge = reader.GetInt32(18),
-                    MsLevel = reader.GetInt32(19)
+                    MsLevel = reader.GetInt32(19),
+                    SpectrumIdFrom = reader.GetInt32(20),
+                    SpectrumIdTo = reader.GetInt32(21),
                 };
                 reference.ChromXs.RT.Value = reader.GetDouble(2);
                 reference.ChromXs.RI.Value = reader.GetDouble(3);
@@ -374,18 +398,26 @@ namespace CompMs.MsdialCore.DataObj
                 return reference;
             }
 
-            public static readonly string SpectrumColumns = "ScanID, Mass, Intensity, Comment";
+            public void SetSpectrumId(int from, int to) {
+                SpectrumIdFrom = from;
+                SpectrumIdTo = to;
+            }
 
-            public static readonly string SpectrumColumnDefine = "ScanID INTEGER NOT NULL," +
+            public static readonly string SpectrumColumns = "SpectrumID, ScanID, Mass, Intensity, Comment";
+
+            public static readonly string SpectrumColumnDefine = "SpectrumID INTEGER NOT NULL PRIMARY KEY," +
+                "ScanID INTEGER NOT NULL," +
                 "Mass REAL NOT NULL," +
                 "Intensity REAL NOT NULL," +
                 "Comment TEXT";
 
-            public string ToSpectrumValues(int scanId) => string.Join(",", Spectrum.Select(peak => $"({scanId},{peak.Mass},{peak.Intensity},'{peak.Comment}')"));
+            public string ToSpectrumValues() {
+                return string.Join(",", Spectrum.Select((peak, i) => $"({i + SpectrumIdFrom},{ScanID},{peak.Mass},{peak.Intensity},'{peak.Comment}')"));
+            }
 
             public static IEnumerable<SpectrumPeak> ParseSpectrum(SQLiteDataReader reader) {
                 while (reader.Read()) {
-                    yield return new SpectrumPeak(reader.GetDouble(1), reader.GetDouble(2), reader.GetString(3));
+                    yield return new SpectrumPeak(reader.GetDouble(2), reader.GetDouble(3), reader.GetString(4));
                 }
             }
         }
