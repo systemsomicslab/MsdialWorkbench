@@ -53,6 +53,16 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.OxygenMass,
         }.Sum();
 
+        public PISpectrumGenerator() {
+            spectrumGenerator = new SpectrumPeakGenerator();
+        }
+
+        public PISpectrumGenerator(ISpectrumPeakGenerator spectrumGenerator) {
+            this.spectrumGenerator = spectrumGenerator ?? throw new ArgumentNullException(nameof(spectrumGenerator));
+        }
+
+        private readonly ISpectrumPeakGenerator spectrumGenerator;
+
         public bool CanGenerate(ILipid lipid, AdductIon adduct)
         {
             if (lipid.LipidClass == LbmClass.PI)
@@ -138,7 +148,7 @@ namespace CompMs.Common.Lipidomics
 
         private IEnumerable<SpectrumPeak> GetAcylDoubleBondSpectrum(ILipid lipid, IEnumerable<AcylChain> acylChains, AdductIon adduct)
         {
-            return acylChains.SelectMany(acylChain => SpectrumGeneratorUtility.GetAcylDoubleBondSpectrum(lipid, acylChain, adduct));
+            return acylChains.SelectMany(acylChain => spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acylChain, adduct, 0d, 50d));
         }
 
         

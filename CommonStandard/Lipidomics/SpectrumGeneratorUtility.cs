@@ -4,7 +4,6 @@ using CompMs.Common.FormulaGenerator.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.Common.Lipidomics {
     public static class SpectrumGeneratorUtility {
@@ -15,6 +14,7 @@ namespace CompMs.Common.Lipidomics {
             MassDiffDictionary.CarbonMass,
         }.Sum();
 
+        [Obsolete]
         public static IEnumerable<SpectrumPeak> GetAcylDoubleBondSpectrum(
             ILipid lipid, AcylChain acylChain, AdductIon adduct, double NLMass = 0.0, double abundance = 50.0) {
             if (acylChain.DoubleBond.UnDecidedCount != 0 || acylChain.CarbonCount == 0) {
@@ -46,6 +46,7 @@ namespace CompMs.Common.Lipidomics {
             return peaks;
         }
 
+        [Obsolete]
         public static IEnumerable<SpectrumPeak> GetAlkylDoubleBondSpectrum(
             ILipid lipid, AlkylChain alkylChain, AdductIon adduct, double NLMass = 0.0, double abundance = 50.0)
         {
@@ -55,8 +56,6 @@ namespace CompMs.Common.Lipidomics {
             {
                 diffs[i] = CH2;
             }
-
-            diffs[0] += MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass * 2;
 
             foreach (var bond in alkylChain.DoubleBond.Bonds)
             {
@@ -76,9 +75,7 @@ namespace CompMs.Common.Lipidomics {
                 peaks.Add(new SpectrumPeak(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass, abundance * 0.5, $"{alkylChain} C{i + 1}+H"));
             }
 
-            return peaks.ToArray();
+            return peaks;
         }
-
-
     }
 }

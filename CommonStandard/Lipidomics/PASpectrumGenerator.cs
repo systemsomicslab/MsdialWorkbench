@@ -3,6 +3,7 @@ using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -41,6 +42,16 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.HydrogenMass * 2,
             MassDiffDictionary.CarbonMass,
         }.Sum();
+
+        public PASpectrumGenerator() {
+            spectrumGenerator = new SpectrumPeakGenerator();
+        }
+
+        public PASpectrumGenerator(ISpectrumPeakGenerator spectrumGenerator) {
+            this.spectrumGenerator = spectrumGenerator ?? throw new ArgumentNullException(nameof(spectrumGenerator));
+        }
+
+        private readonly ISpectrumPeakGenerator spectrumGenerator;
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct)
         {
@@ -149,7 +160,7 @@ namespace CompMs.Common.Lipidomics
 
         private IEnumerable<SpectrumPeak> GetAcylDoubleBondSpectrum(ILipid lipid, IEnumerable<AcylChain> acylChains, AdductIon adduct)
         {
-            return acylChains.SelectMany(acylChain => SpectrumGeneratorUtility.GetAcylDoubleBondSpectrum(lipid, acylChain, adduct));
+            return acylChains.SelectMany(acylChain => spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acylChain, adduct, 0, 50));
         }
 
         private static readonly IEqualityComparer<SpectrumPeak> comparer = new SpectrumEqualityComparer();
