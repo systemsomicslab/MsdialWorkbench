@@ -58,6 +58,16 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.CarbonMass,
         }.Sum();
 
+        public EtherPCSpectrumGenerator() {
+            spectrumGenerator = new SpectrumPeakGenerator();
+        }
+
+        public EtherPCSpectrumGenerator(ISpectrumPeakGenerator spectrumGenerator) {
+            this.spectrumGenerator = spectrumGenerator ?? throw new System.ArgumentNullException(nameof(spectrumGenerator));
+        }
+
+        private readonly ISpectrumPeakGenerator spectrumGenerator;
+
         public bool CanGenerate(ILipid lipid, AdductIon adduct) {
             if (lipid.LipidClass == LbmClass.EtherPC)
             {
@@ -82,10 +92,10 @@ namespace CompMs.Common.Lipidomics
                     {
                         spectrum.AddRange(GetEtherPCOSpectrum(lipid, plChains.Chains[0], plChains.Chains[1], adduct));
                     }
-                    spectrum.AddRange(SpectrumGeneratorUtility.GetAlkylDoubleBondSpectrum(lipid, alkyl, adduct));
+                    spectrum.AddRange(spectrumGenerator.GetAlkylDoubleBondSpectrum(lipid, alkyl, adduct, 0d, 50d));
                 }
                 if (plChains.Chains[1] is AcylChain acyl) {
-                    spectrum.AddRange(SpectrumGeneratorUtility.GetAcylDoubleBondSpectrum(lipid, acyl, adduct));
+                    spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, 0d, 50d));
                 }
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)

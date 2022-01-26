@@ -70,10 +70,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 return new List<MoleculeMsReference>(0);
             }
 
-            var lipids = lipid.Generate(lipidGenerator);
+            var lipids = GenerateLipid(lipid, lipidGenerator);
+
             var references = lipids.Select(l => EadLipidDatabase.Generate(l, reference.AdductType, reference)).Where(reference_ => reference_ != null).ToList();
             EadLipidDatabase.Register(references);
             return references;
+        }
+
+        private static IEnumerable<ILipid> GenerateLipid(ILipid lipid, ILipidGenerator lipidGenerator) {
+            return lipid.Generate(lipidGenerator).SelectMany(l => GenerateLipid(l, lipidGenerator)).Prepend(lipid);
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results) {

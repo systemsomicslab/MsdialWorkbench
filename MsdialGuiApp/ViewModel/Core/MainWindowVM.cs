@@ -1,12 +1,10 @@
-﻿using CompMs.App.Msdial.Model;
-using CompMs.App.Msdial.Model.Core;
+﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.StartUp;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
 using CompMs.Common.Parser;
 using CompMs.CommonMVVM;
