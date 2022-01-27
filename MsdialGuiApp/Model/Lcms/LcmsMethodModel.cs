@@ -16,7 +16,6 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
-using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Graphics.UI.Message;
 using CompMs.Graphics.UI.ProgressBar;
@@ -35,7 +34,6 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -62,15 +60,14 @@ namespace CompMs.App.Msdial.Model.Lcms
                 throw new ArgumentNullException(nameof(providerFactory));
             }
             Storage = storage;
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(Storage.DataBaseMapper);
             this.providerFactory = providerFactory;
             this.barItemsLoader = barItemsLoader;
         }
 
-        public MsdialLcmsDataStorage Storage {
-            get => storage;
-            set => SetProperty(ref storage, value);
-        }
-        private MsdialLcmsDataStorage storage;
+        public MsdialLcmsDataStorage Storage { get; }
+
+        private FacadeMatchResultEvaluator matchResultEvaluator;
 
         public LcmsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -100,6 +97,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 analysisFile,
                 provider,
                 Storage.DataBaseMapper,
+                matchResultEvaluator,
                 Storage.MsdialLcmsParameter,
                 Storage.DataBaseMapper.MoleculeAnnotators)
             .AddTo(Disposables);
@@ -112,9 +110,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
             AlignmentModel = new LcmsAlignmentModel(
                 alignmentFile,
-                Storage.MsdialLcmsParameter,
-                Storage.DataBaseMapper,
+                matchResultEvaluator,
                 Storage.DataBaseMapper.MoleculeAnnotators,
+                Storage.DataBaseMapper,
+                Storage.MsdialLcmsParameter,
                 barItemsLoader)
             .AddTo(Disposables);
         }
@@ -169,6 +168,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
             }
             Storage.DataBaseMapper = CreateDataBaseMapper(Storage.DataBases);
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(Storage.DataBaseMapper);
             return true;
         }
 
@@ -205,7 +205,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             foreach (var annotators in storage.MetabolomicsDataBases) {
                 containerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<IAnnotationQuery>, annotator.ConvertToAnnotatorContainer())));
             }
-            return new EadLipidomicsAnnotationProcess<IAnnotationQuery>(containerPairs, null, null);
+            var lipidContainerPairs = new List<(IAnnotationQueryFactory<IAnnotationQuery>, IAnnotatorContainer<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult>)>();
+            foreach (var annotators in storage.EadLipidomicsDatabases) {
+                lipidContainerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(null, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<IAnnotationQuery>, annotator.ConvertToAnnotatorContainer())));
+            }
+            return new EadLipidomicsAnnotationProcess<IAnnotationQuery>(containerPairs, lipidContainerPairs);
         }
 
         private DataBaseMapper CreateDataBaseMapper(DataBaseStorage storage) {
@@ -218,6 +222,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             foreach (var db in storage.ProteomicsDataBases) {
                 foreach (var pair in db.Pairs) {
                     mapper.Add(pair.SerializableAnnotator, db.DataBase);
+                }
+            }
+            foreach (var db in storage.EadLipidomicsDatabases) {
+                foreach (var pair in db.Pairs) {
+                    mapper.Add(pair.SerializableAnnotator);
                 }
             }
 
@@ -243,7 +252,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             pbmcw.Loaded += async (s, e) => {
                 foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
                     var provider = providerFactory.Create(analysisfile);
-                    await Task.Run(() => MsdialLcMsApi.Process.FileProcess.Run(analysisfile, provider, storage, annotationProcess, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
+                    await Task.Run(() => MsdialLcMsApi.Process.FileProcess.Run(analysisfile, provider, storage, annotationProcess, matchResultEvaluator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
                     vm.CurrentValue++;
                 }
 
@@ -270,10 +279,11 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var proteomicsAnnotator = new ProteomeDataAnnotator();
             proteomicsAnnotator.ExecuteSecondRoundAnnotationProcess(
-                storage.AnalysisFiles, 
-                storage.DataBaseMapper, 
+                storage.AnalysisFiles,
+                storage.DataBaseMapper,
+                matchResultEvaluator,
                 storage.DataBases,
-                storage.MsdialLcmsParameter, 
+                storage.MsdialLcmsParameter,
                 v => vm.CurrentValue = v);
 
             pbw.Close();
@@ -295,7 +305,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
             pbw.Show();
 
-            var factory = new LcmsAlignmentProcessFactory(storage.MsdialLcmsParameter, storage.IupacDatabase, storage.DataBaseMapper);
+            var factory = new LcmsAlignmentProcessFactory(storage, matchResultEvaluator);
             var aligner = factory.CreatePeakAligner();
             aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
             var alignmentFile = storage.AlignmentFiles.Last();
@@ -303,10 +313,11 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             if (!storage.DataBaseMapper.PeptideAnnotators.IsEmptyOrNull()) {
                 new ProteomeDataAnnotator().MappingToProteinDatabase(
-                    alignmentFile.ProteinAssembledResultFilePath, 
-                    result, 
-                    storage.DataBases.ProteomicsDataBases, 
-                    storage.DataBaseMapper, 
+                    alignmentFile.ProteinAssembledResultFilePath,
+                    result,
+                    storage.DataBases.ProteomicsDataBases,
+                    storage.DataBaseMapper,
+                    matchResultEvaluator,
                     storage.MsdialLcmsParameter);
             }
 

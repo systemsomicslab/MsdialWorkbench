@@ -55,6 +55,7 @@ namespace CompMs.Common.Lipidomics
                         new PILipidParser(),
                         new PSLipidParser(),
                         new TGLipidParser(),
+                        new DGLipidParser(),
                         new EtherPCLipidParser(),
                         new EtherPELipidParser(),
                     }.ForEach(parser.Add);

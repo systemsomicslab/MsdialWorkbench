@@ -7,7 +7,6 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcMsApi.DataObj;
 using Reactive.Bindings.Extensions;
 using System;

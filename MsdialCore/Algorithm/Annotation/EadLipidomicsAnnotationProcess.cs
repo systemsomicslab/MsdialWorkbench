@@ -45,19 +45,29 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private readonly List<(IAnnotationQueryFactory<T> Factory, IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult> Container)> moleculeContainerPairs;
+        private readonly List<(IAnnotationQueryFactory<T> Factory, IAnnotatorContainer<(T, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult> Container)> eadLipidContainerPairs;
         private readonly (IAnnotationQueryFactory<T> Factory, IAnnotatorContainer<(T, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult> Container) eadLipidContainerPair;
 
         public EadLipidomicsAnnotationProcess(
             List<(IAnnotationQueryFactory<T>, IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult>)> moleculeContainerPairs,
-            IAnnotationQueryFactory<T> eadQueryFactory, IAnnotatorContainer<(T, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult> eadLipidAnnotator) {
+            List<(IAnnotationQueryFactory<T>, IAnnotatorContainer<(T, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult>)> eadLipidContainerPairs) { 
             this.moleculeContainerPairs = moleculeContainerPairs ?? throw new ArgumentNullException(nameof(moleculeContainerPairs));
-            this.eadLipidContainerPair = (eadQueryFactory, eadLipidAnnotator);
+            this.eadLipidContainerPairs = eadLipidContainerPairs ?? throw new ArgumentNullException(nameof(eadLipidContainerPairs));
+            eadLipidContainerPair = eadLipidContainerPairs.FirstOrDefault();
+        }
+
+        public EadLipidomicsAnnotationProcess(
+            List<(IAnnotationQueryFactory<T>, IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult>)> moleculeContainerPairs,
+            IAnnotationQueryFactory<T> eadQueryFactory, IAnnotatorContainer<(T, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult> eadLipidAnnotator)
+            : this(moleculeContainerPairs, (eadQueryFactory, eadLipidAnnotator)) {
+
         }
 
         public EadLipidomicsAnnotationProcess(
             List<(IAnnotationQueryFactory<T>, IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult>)> moleculeContainerPairs,
             (IAnnotationQueryFactory<T>, IAnnotatorContainer<(T, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult>) eadLipidContainerPair) {
             this.moleculeContainerPairs = moleculeContainerPairs ?? throw new ArgumentNullException(nameof(moleculeContainerPairs));
+            eadLipidContainerPairs = new List<(IAnnotationQueryFactory<T> Factory, IAnnotatorContainer<(T, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult> Container)> { eadLipidContainerPair };
             this.eadLipidContainerPair = eadLipidContainerPair;
         }
 
@@ -106,7 +116,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
                     chromPeakFeature.PeakCharacter,
                     containerPair.Container.Parameter);
-                SetAnnotationResult(chromPeakFeature, query, containerPair.Container);
+                SetAnnotationResult(chromPeakFeature, query, msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum, containerPair.Container);
             }
             SetRepresentativeProperty(chromPeakFeature);
         }
@@ -125,7 +135,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
                     chromPeakFeature.PeakCharacter,
                     containerPair.Container.Parameter);
-                SetAnnotationResult(chromPeakFeature, query, containerPair.Container);
+                SetAnnotationResult(chromPeakFeature, query, msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum, containerPair.Container);
             }
             token.ThrowIfCancellationRequested();
             SetRepresentativeProperty(chromPeakFeature);
@@ -135,25 +145,28 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private void SetAnnotationResult(
             ChromatogramPeakFeature chromPeakFeature,
             T query,
+            RawPeakElement[] spectrums,
             IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult> annotatorContainer) {
 
             var annotator = annotatorContainer.Annotator;
 
             var candidates = annotator.FindCandidates(query);
-            var results = annotator.FilterByThreshold(candidates, annotatorContainer.Parameter);
+            var results = annotator.FilterByThreshold(candidates);
             if (results.Count > 0) {
-                var matches = annotator.SelectReferenceMatchResults(results, annotatorContainer.Parameter);
-                var best = annotator.SelectTopHit(matches.Count > 0 ? matches : results, annotatorContainer.Parameter);
+                var matches = annotator.SelectReferenceMatchResults(results);
+                var best = annotator.SelectTopHit(matches.Count > 0 ? matches : results);
                 chromPeakFeature.MatchResults.AddResult(best);
 
-                var container2 = eadLipidContainerPair.Container;
-                var query2 = eadLipidContainerPair.Factory.Create(query.Property, query.Scan, null, null, container2.Parameter);
-                var candidates2 = eadLipidContainerPair.Container.Annotator.FindCandidates((query2, annotatorContainer.Annotator.Refer(best)));
-                var results2 = container2.Annotator.FilterByThreshold(candidates2, container2.Parameter);
-                if (results2.Count > 0) {
-                    var matches2 = container2.Annotator.SelectReferenceMatchResults(results2, container2.Parameter);
-                    var best2 = container2.Annotator.SelectTopHit(matches2.Count > 0 ? matches2 : results2, container2.Parameter);
-                    chromPeakFeature.MatchResults.AddResult(best2);
+                foreach (var eadLipidContainerPair in eadLipidContainerPairs) {
+                    var container2 = eadLipidContainerPair.Container;
+                    var query2 = eadLipidContainerPair.Factory.Create(query.Property, query.Scan, spectrums, query.IonFeature, container2.Parameter);
+                    var candidates2 = eadLipidContainerPair.Container.Annotator.FindCandidates((query2, annotatorContainer.Annotator.Refer(best)));
+                    var results2 = container2.Annotator.FilterByThreshold(candidates2);
+                    if (results2.Count > 0) {
+                        var matches2 = container2.Annotator.SelectReferenceMatchResults(results2);
+                        var best2 = container2.Annotator.SelectTopHit(matches2.Count > 0 ? matches2 : results2);
+                        chromPeakFeature.MatchResults.AddResult(best2);
+                    }
                 }
             }
         }
@@ -165,10 +178,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if(evaluator is null || refer is null || parameter is null) {
                 return;
             }
-            if (evaluator.IsReferenceMatched(representative, parameter)) {
+            if (evaluator.IsReferenceMatched(representative)) {
                 DataAccess.SetMoleculeMsProperty(chromPeakFeature, refer.Refer(representative), representative);
             }
-            else if (evaluator.IsAnnotationSuggested(representative, parameter)) {
+            else if (evaluator.IsAnnotationSuggested(representative)) {
                 DataAccess.SetMoleculeMsPropertyAsSuggested(chromPeakFeature, refer.Refer(representative), representative);
             }
         }
@@ -178,8 +191,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (!(container is null)) {
                 return (container?.Annotator, container?.Annotator, container?.Parameter);
             }
-            else if (eadLipidContainerPair.Container.AnnotatorID == id){
-                return (eadLipidContainerPair.Container?.Annotator, eadLipidContainerPair.Container?.Annotator, eadLipidContainerPair.Container?.Parameter);
+            else if (eadLipidContainerPairs.FirstOrDefault(pair => pair.Container.AnnotatorID == id).Container is IAnnotatorContainer<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult> lipidContainer){
+                return (lipidContainer.Annotator, lipidContainer.Annotator, lipidContainer.Parameter);
             }
             else {
                 return default;

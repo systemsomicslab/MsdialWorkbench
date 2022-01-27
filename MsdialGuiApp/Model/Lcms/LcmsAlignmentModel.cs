@@ -2,12 +2,10 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
@@ -18,6 +16,7 @@ using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialLcmsApi.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -39,9 +38,10 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public LcmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
-            ParameterBase parameter,
-            DataBaseMapper mapper,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
             IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators,
+            DataBaseMapper mapper,
+            MsdialLcmsParameter parameter,
             IObservable<IBarItemsLoader> barItemsLoader) {
             if (annotators is null) {
                 throw new ArgumentNullException(nameof(annotators));
@@ -54,6 +54,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentFile = alignmentFileBean;
             Parameter = parameter;
             DataBaseMapper = mapper;
+            MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             Annotators = annotators;
             container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(AlignmentFile.FilePath);
             if (container == null) {
@@ -167,6 +168,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public AlignmentFileBean AlignmentFile { get; }
         public ParameterBase Parameter { get; }
         public DataBaseMapper DataBaseMapper { get; }
+        public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
         public IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> Annotators { get; }
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
@@ -225,11 +227,9 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public bool CanSaveSpectra() => Target.Value.innerModel != null && MsdecResult.Value != null;
 
-
         public void FragmentSearcher() {
             var features = this.Ms1Spots;
             MsdialCore.Algorithm.FragmentSearcher.Search(features.Select(n => n.innerModel).ToList(), this.decLoader, Parameter);
-
         }
 
         public void GoToMsfinderMethod() {
@@ -238,8 +238,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Target.Value.innerModel,
                 MsdecResult.Value,
                 DataBaseMapper,
-                Parameter
-                );
+                Parameter);
         }
     }
 }

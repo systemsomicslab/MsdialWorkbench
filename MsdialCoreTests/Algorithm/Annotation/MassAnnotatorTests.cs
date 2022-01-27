@@ -323,7 +323,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MsScanMatchResult { TotalScore = 0.4f },
             };
 
-            var result = annotator.SelectTopHit(results, parameter);
+            var result = annotator.SelectTopHit(results);
             Assert.AreEqual(results[2], result);
         }
 
@@ -339,7 +339,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true },
             };
 
-            var actuals = annotator.FilterByThreshold(results, parameter);
+            var actuals = annotator.FilterByThreshold(results);
             CollectionAssert.AreEquivalent(new[] { results[2], results[3], }, actuals);
         }
 
@@ -355,7 +355,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true },
             };
 
-            var actuals = annotator.SelectReferenceMatchResults(results, parameter);
+            var actuals = annotator.SelectReferenceMatchResults(results);
             CollectionAssert.AreEquivalent(new[] { results[3], }, actuals);
         }
 
@@ -371,7 +371,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true },
             };
 
-            var actuals = results.Select(result => annotator.IsReferenceMatched(result, parameter)).ToArray();
+            var actuals = results.Select(result => annotator.IsReferenceMatched(result)).ToArray();
             CollectionAssert.AreEqual(new[] { false, false, false, true, }, actuals);
         }
 
@@ -387,7 +387,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true },
             };
 
-            var actuals = results.Select(result => annotator.IsAnnotationSuggested(result, parameter)).ToArray();
+            var actuals = results.Select(result => annotator.IsAnnotationSuggested(result)).ToArray();
             CollectionAssert.AreEqual(new[] { false, false, true, false, }, actuals);
         }
 

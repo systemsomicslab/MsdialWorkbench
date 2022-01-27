@@ -8,22 +8,15 @@ using CompMs.MsdialCore.Parameter;
 
 namespace CompMs.MsdialCore.Parser
 {
-    public interface IReferRestorationKey<in T, U, V>
-    {
-        ISerializableAnnotator<T, U, V> Accept(ILoadAnnotatorVisitor visitor);
-
-        string Key { get; }
-    }
-
     [MessagePack.Union(0, typeof(DataBaseRestorationKey))]
     [MessagePack.Union(1, typeof(MspDbRestorationKey))]
     [MessagePack.Union(2, typeof(TextDbRestorationKey))]
     [MessagePack.Union(3, typeof(StandardRestorationKey))]
     [MessagePack.Union(4, typeof(ShotgunProteomicsRestorationKey))]
     [MessagePack.Union(5, typeof(EadLipidDatabaseRestorationKey))]
-    public interface IReferRestorationKey<in T, U, V, in W>
+    public interface IReferRestorationKey<in TQuery, TReference, TResult, in TDatabase>
     {
-        ISerializableAnnotator<T, U, V, W> Accept(ILoadAnnotatorVisitor visitor, W database);
+        ISerializableAnnotator<TQuery, TReference, TResult, TDatabase> Accept(ILoadAnnotatorVisitor visitor, TDatabase database);
 
         string Key { get; }
 

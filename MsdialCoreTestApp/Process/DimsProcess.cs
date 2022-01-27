@@ -10,11 +10,9 @@ using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
 using CompMs.MsdialDimsCore.Algorithm.Annotation;
 using CompMs.MsdialDimsCore.DataObj;
-using CompMs.MsdialDimsCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace CompMs.App.MsdialConsole.Process
 {
@@ -36,24 +34,25 @@ namespace CompMs.App.MsdialConsole.Process
             return Execute(container, providerFactory, outputFolder, isProjectSaved);
         }
 
-        private int Execute(MsdialDimsDataStorage container, IDataProviderFactory<AnalysisFileBean> providerFactory, string outputFolder, bool isProjectSaved) {
-            var files = container.AnalysisFiles;
-            var mspAnnotator = new DimsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.MsdialDimsParameter.MspSearchParam, container.MsdialDimsParameter.TargetOmics, "MspDB", -1);
-            var textAnnotator = new DimsTextDBAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.MsdialDimsParameter.TextDbSearchParam, "TextDB", -1);
+        private int Execute(MsdialDimsDataStorage storage, IDataProviderFactory<AnalysisFileBean> providerFactory, string outputFolder, bool isProjectSaved) {
+            var files = storage.AnalysisFiles;
+            var mspAnnotator = new DimsMspAnnotator(new MoleculeDataBase(storage.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), storage.MsdialDimsParameter.MspSearchParam, storage.MsdialDimsParameter.TargetOmics, "MspDB", -1);
+            var textAnnotator = new DimsTextDBAnnotator(new MoleculeDataBase(storage.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), storage.MsdialDimsParameter.TextDbSearchParam, "TextDB", -1);
             var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery>(
                 new List<(IAnnotationQueryFactory<IAnnotationQuery>, IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>)>
                 {
                     (new AnnotationQueryWithoutIsotopeFactory(mspAnnotator),
-                     new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(mspAnnotator, container.MsdialDimsParameter.MspSearchParam)),
+                     new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(mspAnnotator, storage.MsdialDimsParameter.MspSearchParam)),
                     (new AnnotationQueryWithoutIsotopeFactory(textAnnotator),
-                     new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(textAnnotator, container.MsdialDimsParameter.TextDbSearchParam))
+                     new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(textAnnotator, storage.MsdialDimsParameter.TextDbSearchParam))
                 });
+            var evaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(storage.DataBaseMapper);
             foreach (var file in files) {
-                ProcessFile.Run(file, providerFactory, container, annotationProcess);
+                ProcessFile.Run(file, providerFactory, storage, annotationProcess, evaluator);
             }
 
-            var alignmentFile = container.AlignmentFiles.First();
-            var factory = new DimsAlignmentProcessFactory(container.MsdialDimsParameter as MsdialDimsParameter, container.IupacDatabase, container.DataBaseMapper);
+            var alignmentFile = storage.AlignmentFiles.First();
+            var factory = new DimsAlignmentProcessFactory(storage, evaluator);
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, null);
 
@@ -65,35 +64,9 @@ namespace CompMs.App.MsdialConsole.Process
             }
 
             Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            var streamManager = new DirectoryTreeStreamManager(container.MsdialDimsParameter.ProjectFolderPath);
-            container.Save(streamManager, container.MsdialDimsParameter.ProjectFileName, string.Empty).Wait();
+            var streamManager = new DirectoryTreeStreamManager(storage.MsdialDimsParameter.ProjectFolderPath);
+            storage.Save(streamManager, storage.MsdialDimsParameter.ProjectFileName, string.Empty).Wait();
 
-            return 0;
-        }
-
-        private async Task<int> ExecuteAsync(MsdialDimsDataStorage container, IDataProviderFactory<AnalysisFileBean> providerFactory, string outputFolder, bool isProjectSaved) {
-            var files = container.AnalysisFiles;
-            var mspAnnotator = new DimsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), container.MsdialDimsParameter.MspSearchParam, container.MsdialDimsParameter.TargetOmics, "MspDB", -1);
-            var textAnnotator = new DimsTextDBAnnotator(new MoleculeDataBase(container.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), container.MsdialDimsParameter.TextDbSearchParam, "TextDB", -1);
-            var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery>(
-                new List<(IAnnotationQueryFactory<IAnnotationQuery>, IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>)>
-                {
-                    (new AnnotationQueryWithoutIsotopeFactory(mspAnnotator),
-                     new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(mspAnnotator, container.MsdialDimsParameter.MspSearchParam)),
-                    (new AnnotationQueryWithoutIsotopeFactory(textAnnotator),
-                     new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(textAnnotator, container.MsdialDimsParameter.TextDbSearchParam))
-                });
-            var tasks = files.Select(file => Task.Run(() => ProcessFile.Run(file, providerFactory, container, annotationProcess)));
-            await Task.WhenAll(tasks);
-
-            var alignmentFile = container.AlignmentFiles.First();
-            var factory = new DimsAlignmentProcessFactory(container.MsdialDimsParameter as MsdialDimsParameter, container.IupacDatabase, container.DataBaseMapper);
-            var aligner = factory.CreatePeakAligner();
-            var result = aligner.Alignment(files, alignmentFile, null);
-
-            Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            var streamManager = new DirectoryTreeStreamManager(container.MsdialDimsParameter.ProjectFolderPath);
-            await container.Save(streamManager, container.MsdialDimsParameter.ProjectFileName, string.Empty);
             return 0;
         }
     }

@@ -7,6 +7,7 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.Win32;
 using Reactive.Bindings;
@@ -272,8 +273,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         bool AnnotationFilter(ChromatogramPeakFeatureModel peak) {
             if (!(RefMatchedChecked || SuggestedChecked || UnknownChecked || CcsChecked)) return true;
-            return RefMatchedChecked && peak.IsRefMatched(model.DataBaseMapper)
-                || SuggestedChecked && peak.IsSuggested(model.DataBaseMapper)
+            return RefMatchedChecked && peak.IsRefMatched(model.MatchResultEvaluator)
+                || SuggestedChecked && peak.IsSuggested(model.MatchResultEvaluator)
                 || UnknownChecked && peak.IsUnknown
                 || CcsChecked && peak.IsCcsMatch;
         }

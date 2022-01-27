@@ -1,35 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using CompMs.Common.Components;
-using CompMs.Common.DataObj.Database;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialGcMsApi.Parameter;
+using System.Collections.Generic;
 
 namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
 {
     public class GcmsAlignmentProcessFactory : AlignmentProcessFactory
     {
-        private readonly DataBaseMapper mapper;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public MsdialGcmsParameter GcmsParameter { get; }
         public List<AnalysisFileBean> Files { get; }
         public List<MoleculeMsReference> MspDB { get; }
 
-        public GcmsAlignmentProcessFactory(
-            List<AnalysisFileBean> files, List<MoleculeMsReference> mspDB,
-            MsdialGcmsParameter param, IupacDatabase iupac,
-            DataBaseMapper mapper) : base(param, iupac) {
-
-            GcmsParameter = param;
-            this.mapper = mapper;
+        public GcmsAlignmentProcessFactory(List<AnalysisFileBean> files, IMsdialDataStorage<MsdialGcmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(storage.Parameter, storage.IupacDatabase) {
             Files = files;
-            MspDB = mspDB;
+            GcmsParameter = storage.Parameter;
+            this.evaluator = evaluator ?? throw new System.ArgumentNullException(nameof(evaluator));
+            MspDB = storage.MspDB;
         }
 
         public override IAlignmentRefiner CreateAlignmentRefiner() {
-            return new GcmsAlignmentRefiner(GcmsParameter, Iupac, mapper);
+            return new GcmsAlignmentRefiner(GcmsParameter, Iupac, evaluator);
         }
 
         public override DataAccessor CreateDataAccessor() {

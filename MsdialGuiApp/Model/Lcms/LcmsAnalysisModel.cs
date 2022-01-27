@@ -34,8 +34,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             AnalysisFileBean analysisFile,
             IDataProvider provider,
             DataBaseMapper mapper,
-            ParameterBase parameter,
-            IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators)
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            ParameterBase parameter, IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators)
             : base(analysisFile) {
             if (analysisFile is null) {
                 throw new ArgumentNullException(nameof(analysisFile));
@@ -49,6 +49,10 @@ namespace CompMs.App.Msdial.Model.Lcms
                 throw new ArgumentNullException(nameof(mapper));
             }
 
+            if (evaluator is null) {
+                throw new ArgumentNullException(nameof(evaluator));
+            }
+
             if (parameter is null) {
                 throw new ArgumentNullException(nameof(parameter));
             }
@@ -59,6 +63,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             this.provider = provider;
             DataBaseMapper = mapper;
+            MatchResultEvaluator = evaluator;
             Parameter = parameter;
             Annotators = annotators;
 
@@ -172,6 +177,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             .AddTo(Disposables);
         }
         public DataBaseMapper DataBaseMapper { get; }
+        public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
         public ParameterBase Parameter { get; }
         public IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> Annotators { get; }
         public EicLoader EicLoader { get; }

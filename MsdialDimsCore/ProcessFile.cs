@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Utility;
@@ -17,17 +18,17 @@ using System.Threading;
 
 namespace CompMs.MsdialDimsCore
 {
-    public class ProcessFile {
+    public static class ProcessFile {
         public static void Run(
             AnalysisFileBean file,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
-            IMsdialDataStorage<MsdialDimsParameter> container,
+            IMsdialDataStorage<MsdialDimsParameter> storage,
             IAnnotationProcess annotationProcess,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
             Action<int> reportAction = null,
-            CancellationToken token = default)
-        {
+            CancellationToken token = default) {
 
-            var param = container.Parameter;
+            var param = storage.Parameter;
             var provider = providerFactory.Create(file);
 
             // parse raw data
@@ -62,7 +63,7 @@ namespace CompMs.MsdialDimsCore
             annotationProcess.RunAnnotation(peakFeatures, msdecResults, provider, param.NumThreads, token, v => reportAction((int)v));
 
             var characterEstimator = new Algorithm.PeakCharacterEstimator(90, 10);
-            characterEstimator.Process(spectrumList, peakFeatures, msdecResults, container.DataBaseMapper, param, reportAction);
+            characterEstimator.Process(spectrumList, peakFeatures, msdecResults, evaluator, param, reportAction);
 
             MsdialPeakSerializer.SaveChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath, peakFeatures);
             MsdecResultsWriter.Write(file.DeconvolutionFilePath, msdecResults);

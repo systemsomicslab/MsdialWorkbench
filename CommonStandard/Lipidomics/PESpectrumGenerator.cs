@@ -56,6 +56,15 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.OxygenMass,
         }.Sum();
 
+        public PESpectrumGenerator() {
+            spectrumGenerator = new SpectrumPeakGenerator();
+        }
+
+        public PESpectrumGenerator(ISpectrumPeakGenerator spectrumGenerator) {
+            this.spectrumGenerator = spectrumGenerator ?? throw new ArgumentNullException(nameof(spectrumGenerator));
+        }
+
+        private readonly ISpectrumPeakGenerator spectrumGenerator;
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct)
         {
@@ -77,12 +86,14 @@ namespace CompMs.Common.Lipidomics
             {
                 spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.Chains, adduct));
                 spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>(), adduct));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>(), adduct, nlMass: C2H8NO4P));
             }
             if (lipid.Chains is PositionLevelChains plChains)
             {
                 spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.Chains, adduct));
                 spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.Chains[0], adduct));
                 spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>(), adduct));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>(), adduct, nlMass: C2H8NO4P));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment))))
@@ -137,7 +148,7 @@ namespace CompMs.Common.Lipidomics
 
         private IEnumerable<SpectrumPeak> GetAcylDoubleBondSpectrum(ILipid lipid, IEnumerable<AcylChain> acylChains, AdductIon adduct, double nlMass = 0.0)
         {
-            return acylChains.SelectMany(acylChain => SpectrumGeneratorUtility.GetAcylDoubleBondSpectrum(lipid, acylChain, adduct, NLMass: nlMass));
+            return acylChains.SelectMany(acylChain => spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acylChain, adduct, nlMass, 50d));
         }
 
         private IEnumerable<SpectrumPeak> GetAcylLevelSpectrum(ILipid lipid, IEnumerable<IChain> acylChains, AdductIon adduct)

@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -38,9 +37,10 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public DimsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
+            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorCotnainers,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseMapper mapper,
-            ParameterBase param,
-            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorCotnainers) {
+            ParameterBase param) {
 
             alignmentFile = alignmentFileBean;
             fileName = alignmentFileBean.FileName;
@@ -49,6 +49,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
             this.Parameter = param;
             this.DataBaseMapper = mapper;
+            MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             AnnotatorContainers = annotatorCotnainers;
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
             if (Container == null) {
@@ -161,6 +162,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public ParameterBase Parameter { get; }
 
         public DataBaseMapper DataBaseMapper { get; }
+        public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
 
         private readonly string resultFile = string.Empty;
         private readonly string eicFile = string.Empty;

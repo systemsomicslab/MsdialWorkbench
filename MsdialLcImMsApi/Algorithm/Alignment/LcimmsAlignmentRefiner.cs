@@ -1,8 +1,9 @@
 ﻿using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Result;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,7 +11,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
 {
     public class LcimmsAlignmentRefiner : LcmsAlignmentRefiner
     {
-        public LcimmsAlignmentRefiner(MsdialLcImMsParameter param, IupacDatabase iupac, DataBaseMapper mapper) : base(param, iupac, mapper) { }
+        public LcimmsAlignmentRefiner(MsdialLcImMsParameter parameter, IupacDatabase iupac, IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(parameter, iupac, evaluator) { }
 
         protected override List<int> SetAlignmentID(List<AlignmentSpotProperty> alignments) {
             alignments.Sort((x, y) => x.MassCenter.CompareTo(y.MassCenter));

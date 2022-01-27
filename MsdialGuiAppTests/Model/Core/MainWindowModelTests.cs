@@ -6,14 +6,6 @@ namespace CompMs.App.Msdial.Model.Core.Tests
     public class MainWindowModelTests
     {
         [TestMethod()]
-        public void StartNewProjectTest() {
-            var model = new MainWindowModel();
-            model.StartNewProject();
-
-            Assert.IsNotNull(model.CurrentProject);
-        }
-
-        [TestMethod()]
         public void AddNewDatasetTest() {
 
         }
