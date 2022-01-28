@@ -749,11 +749,10 @@ namespace CompMs.MsdialCore.Utility {
         public static List<SpectrumPeak> GetAverageSpectrum(List<RawSpectrum> spectrumList, double start, double end, double bin, int targetExperimentID = -1) {
             var min = Math.Min(start, end);
             var max = Math.Max(start, end);
-            var comparer = ChromXsComparer.RTComparer;
             var lo = SearchCollection.LowerBound(spectrumList, new RawSpectrum() { ScanStartTime = min }, (a, b) => a.ScanStartTime.CompareTo(b.ScanStartTime));
-            var lu = SearchCollection.UpperBound(spectrumList, new RawSpectrum() { ScanStartTime = max }, (a, b) => a.ScanStartTime.CompareTo(b.ScanStartTime));
+            var hi = SearchCollection.UpperBound(spectrumList, new RawSpectrum() { ScanStartTime = max }, (a, b) => a.ScanStartTime.CompareTo(b.ScanStartTime));
             var points = new List<int>();
-            for (int i = lo; i <= lu; i++) {
+            for (int i = lo; i < hi; i++) {
                 var spec = spectrumList[i];
                 if (targetExperimentID == -1) {
                     points.Add(i);

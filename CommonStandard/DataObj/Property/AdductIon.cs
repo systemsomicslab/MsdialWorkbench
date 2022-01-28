@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Enum;
 using CompMs.Common.Parser;
 using MessagePack;
+using System;
 
 namespace CompMs.Common.DataObj.Property
 {
@@ -12,6 +13,7 @@ namespace CompMs.Common.DataObj.Property
     {
         public AdductIon() { }
 
+        [Obsolete("Use FormulaUtility ConvertPrecursorMzToExactMass method")]
         [Key(0)]
         public double AdductIonAccurateMass { get; set; }
         [Key(1)]
