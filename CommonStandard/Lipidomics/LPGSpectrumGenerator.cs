@@ -163,11 +163,19 @@ namespace CompMs.Common.Lipidomics
         {
             var lipidMass = lipid.Mass + adduct.AdductIonAccurateMass;
             var chainMass = acylChain.Mass - MassDiffDictionary.HydrogenMass;
-            return new[]
+            var spectrum = new List<SpectrumPeak>();
+            if (chainMass != 0.0)
             {
-                new SpectrumPeak(lipidMass - chainMass , 200d, $"-{acylChain}"),
-                new SpectrumPeak(lipidMass - chainMass -H2O , 100d, $"-{acylChain}-H2O"),
-            };
+                spectrum.AddRange
+                (
+                     new[]
+                     {
+                         new SpectrumPeak(lipidMass - chainMass , 100d, $"-{acylChain}"),
+                         //new SpectrumPeak(lipidMass - chainMass -H2O , 100d, $"-{acylChain}-O"),
+                     }
+                );
+            }
+            return spectrum.ToArray();
         }
 
         private SpectrumPeak[] GetAcylPositionSpectrum(ILipid lipid, IChain acylChain, AdductIon adduct)

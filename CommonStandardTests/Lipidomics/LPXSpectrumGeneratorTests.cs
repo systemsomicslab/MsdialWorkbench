@@ -9,7 +9,7 @@ namespace CompMs.Common.Lipidomics.Tests
     public class LPCSpectrumGeneratorTests
     {
         [TestMethod()]
-        public void GenerateTest()
+        public void GenerateTest_H()
         {
             //LPC 18:1(9)
             var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
@@ -89,13 +89,93 @@ namespace CompMs.Common.Lipidomics.Tests
                 Assert.AreEqual(expect, actual, 0.01d);
             }
         }
+        [TestMethod()]
+        public void GenerateTest_Na()
+        {
+            //LPC 18:1(9)
+            var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
+            var lipid = new Lipid(LbmClass.LPC, 521.348140016, new PositionLevelChains(acyl1));
+
+            var generator = new LPCSpectrumGenerator();
+            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+
+            var expects = new[]
+            {
+                206.0552666 ,//Header
+                246.0865668 ,//Gly-C
+                248.0658313 ,//Gly-O
+                262.0814639 ,//-Sn1-O
+                280.0920286 ,//-Sn1
+                306.0712931 ,//Sn1-1-H
+                307.0791182 ,//Sn1-1
+                308.0869432 ,//Sn1-1+H
+                320.0869432 ,//Sn1-2-H
+                321.0947682 ,//Sn1-2
+                322.1025933 ,//Sn1-2+H
+                334.1025933 ,//Sn1-3-H
+                335.1104183 ,//Sn1-3
+                336.1182433 ,//Sn1-3+H
+                348.1182433 ,//Sn1-4-H
+                349.1260684 ,//Sn1-4
+                350.1338934 ,//Sn1-4+H
+                362.1338934 ,//Sn1-5-H
+                363.1417184 ,//Sn1-5
+                364.1495435 ,//Sn1-5+H
+                376.1495435 ,//Sn1-6-H
+                377.1573685 ,//Sn1-6
+                378.1651935 ,//Sn1-6+H
+                390.1651935 ,//Sn1-7-H
+                391.1730186 ,//Sn1-7
+                392.1808436 ,//Sn1-7+H
+                404.1808436 ,//Sn1-8-H
+                405.1886686 ,//Sn1-8
+                406.1964937 ,//Sn1-8+H
+                417.1886686 ,//Sn1-Δ9-H
+                418.1964937 ,//Sn1-Δ9
+                419.2043187 ,//Sn1-Δ9+H
+                430.1964937 ,//Sn1-10-H
+                431.2043187 ,//Sn1-10
+                432.2121437 ,//Sn1-10+H
+                444.2121437 ,//Sn1-11-H
+                445.2199688 ,//Sn1-11
+                446.2277938 ,//Sn1-11+H
+                458.2277938 ,//Sn1-12-H
+                459.2356188 ,//Sn1-12
+                459.2487599 ,//Precursor -C5H11N
+                460.2434439 ,//Sn1-12+H
+                472.2434439 ,//Sn1-13-H
+                473.2512689 ,//Sn1-13
+                474.2590939 ,//Sn1-13+H
+                485.26441   ,//Precursor -C3H9N
+                486.2590939 ,//Sn1-14-H
+                487.2669189 ,//Sn1-14
+                488.274744  ,//Sn1-14+H
+                500.274744  ,//Sn1-15-H
+                501.282569  ,//Sn1-15
+                502.290394  ,//Sn1-15+H
+                514.290394  ,//Sn1-16-H
+                515.2982191 ,//Sn1-16
+                516.3060441 ,//Sn1-16+H
+                528.3060441 ,//Sn1-17-H
+                529.3138691 ,//Sn1-17
+                530.3216942 ,//Sn1-17+H
+                544.3373442 ,//Precursor
+            };
+
+            scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
+            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            {
+                Assert.AreEqual(expect, actual, 0.01d);
+            }
+        }
+
     }
-    
+
     [TestClass()]
     public class LPESpectrumGeneratorTests
     {
         [TestMethod()]
-        public void GenerateTest()
+        public void GenerateTest_H()
         {
             //LPE 18:1(9)
             var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
@@ -175,13 +255,93 @@ namespace CompMs.Common.Lipidomics.Tests
                 Assert.AreEqual(expect, actual, 0.01d);
             }
         }
+        [TestMethod()]
+        public void GenerateTest_Na()
+        {
+            //LPE 18:1(9)
+            var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
+            var lipid = new Lipid(LbmClass.LPE, 479.3011898, new PositionLevelChains(acyl1));
+
+            var generator = new LPESpectrumGenerator();
+            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+
+            var expects = new[]
+            {
+                164.0072207 ,//Header
+                204.0399442 ,//Gly-C
+                206.0189138 ,//-CH2(Sn1),Gly-O
+                206.0189138 ,//-CH2(Sn1),Gly-O
+                238.0451286 ,//-acylChain
+                264.0243931 ,//Sn1-1-H
+                265.0322182 ,//Sn1-1
+                266.0400432 ,//Sn1-1+H
+                278.0400432 ,//Sn1-2-H
+                279.0478682 ,//Sn1-2
+                280.0556933 ,//Sn1-2+H
+                292.0556933 ,//Sn1-3-H
+                293.0635183 ,//Sn1-3
+                294.0713433 ,//Sn1-3+H
+                306.0713433 ,//Sn1-4-H
+                307.0791684 ,//Sn1-4
+                308.0869934 ,//Sn1-4+H
+                320.0869934 ,//Sn1-5-H
+                321.0948184 ,//Sn1-5
+                322.1026435 ,//Sn1-5+H
+                334.1026435 ,//Sn1-6-H
+                335.1104685 ,//Sn1-6
+                336.1182935 ,//Sn1-6+H
+                339.2893719 ,//Precursor -C2H8NO4P
+                348.1182935 ,//Sn1-7-H
+                349.1261186 ,//Sn1-7
+                350.1339436 ,//Sn1-7+H
+                362.1339436 ,//Sn1-8-H
+                363.1417686 ,//Sn1-8
+                364.1495937 ,//Sn1-8+H
+                375.1417686 ,//Sn1-Δ9-H
+                376.1495937 ,//Sn1-Δ9
+                377.1574187 ,//Sn1-Δ9+H
+                388.1495937 ,//Sn1-10-H
+                389.1574187 ,//Sn1-10
+                390.1652437 ,//Sn1-10+H
+                402.1652437 ,//Sn1-11-H
+                403.1730688 ,//Sn1-11
+                404.1808938 ,//Sn1-11+H
+                416.1808938 ,//Sn1-12-H
+                417.1887188 ,//Sn1-12
+                418.1965439 ,//Sn1-12+H
+                430.1965439 ,//Sn1-13-H
+                431.2043689 ,//Sn1-13
+                432.2121939 ,//Sn1-13+H
+                444.2121939 ,//Sn1-14-H
+                445.2200189 ,//Sn1-14
+                446.227844  ,//Sn1-14+H
+                458.227844  ,//Sn1-15-H
+                459.235669  ,//Sn1-15
+                459.2487599 ,//Precursor -C2H5N
+                460.243494  ,//Sn1-15+H
+                472.243494  ,//Sn1-16-H
+                473.2513191 ,//Sn1-16
+                474.2591441 ,//Sn1-16+H
+                486.2591441 ,//Sn1-17-H
+                487.2669691 ,//Sn1-17
+                488.2747942 ,//Sn1-17+H
+                502.2904442 ,//Precursor
+            };
+
+            scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
+            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            {
+                Assert.AreEqual(expect, actual, 0.01d);
+            }
+        }
+
     }
 
     [TestClass()]
     public class LPGSpectrumGeneratorTests
     {
         [TestMethod()]
-        public void GenerateTest()
+        public void GenerateTest_H()
         {
             //LPG 18:1(9)
             var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
@@ -195,7 +355,7 @@ namespace CompMs.Common.Lipidomics.Tests
                     173.0209525 ,//Header
                     213.0522526 ,//Gly-C
                     215.0315172 ,//Gly-O
-                    229.0480197 ,//-Sn1-H2O
+                    //229.0480197 ,//-Sn1-H2O
                     247.0585844 ,//-Sn1
                     273.0378489 ,//Sn1-1-H
                     274.0456739 ,//Sn1-1
@@ -262,13 +422,92 @@ namespace CompMs.Common.Lipidomics.Tests
                 Assert.AreEqual(expect, actual, 0.01d);
             }
         }
+
+        [TestMethod()]
+        public void GenerateTest_Na()
+        {
+            //LPG 18:1(9)
+            var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
+            var lipid = new Lipid(LbmClass.LPG, 510.2957701, new PositionLevelChains(acyl1));
+
+            var generator = new LPGSpectrumGenerator();
+            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+
+            var expects = new[]
+            {
+                195.0028967 ,//Header
+                235.0341968 ,//Gly-C
+                237.0134614 ,//Gly-O
+                //251.0299639 ,//-Sn1-H2O
+                269.0405286 ,//-Sn1
+                295.0197931 ,//Sn1-1-H
+                296.0276182 ,//Sn1-1
+                297.0354432 ,//Sn1-1+H
+                309.0354432 ,//Sn1-2-H
+                310.0432682 ,//Sn1-2
+                311.0510933 ,//Sn1-2+H
+                323.0510933 ,//Sn1-3-H
+                324.0589183 ,//Sn1-3
+                325.0667433 ,//Sn1-3+H
+                337.0667433 ,//Sn1-4-H
+                338.0745684 ,//Sn1-4
+                339.0823934 ,//Sn1-4+H
+                351.0823934 ,//Sn1-5-H
+                352.0902184 ,//Sn1-5
+                353.0980435 ,//Sn1-5+H
+                365.0980435 ,//Sn1-6-H
+                366.1058685 ,//Sn1-6
+                367.1136935 ,//Sn1-6+H
+                379.1136935 ,//Sn1-7-H
+                380.1215186 ,//Sn1-7
+                381.1293436 ,//Sn1-7+H
+                393.1293436 ,//Sn1-8-H
+                394.1371686 ,//Sn1-8
+                395.1449937 ,//Sn1-8+H
+                406.1371686 ,//Sn1-Δ9-H
+                407.1449937 ,//Sn1-Δ9
+                408.1528187 ,//Sn1-Δ9+H
+                419.1449937 ,//Sn1-10-H
+                420.1528187 ,//Sn1-10
+                421.1606437 ,//Sn1-10+H
+                433.1606437 ,//Sn1-11-H
+                434.1684688 ,//Sn1-11
+                435.1762938 ,//Sn1-11+H
+                447.1762938 ,//Sn1-12-H
+                448.1841188 ,//Sn1-12
+                449.1919439 ,//Sn1-12+H
+                459.2490648 ,//Precursor -C3H6O2
+                461.1919439 ,//Sn1-13-H
+                462.1997689 ,//Sn1-13
+                463.2075939 ,//Sn1-13+H
+                475.2075939 ,//Sn1-14-H
+                476.2154189 ,//Sn1-14
+                477.223244  ,//Sn1-14+H
+                489.223244  ,//Sn1-15-H
+                490.231069  ,//Sn1-15
+                491.238894  ,//Sn1-15+H
+                503.238894  ,//Sn1-16-H
+                504.2467191 ,//Sn1-16
+                505.2545441 ,//Sn1-16+H
+                517.2545441 ,//Sn1-17-H
+                518.2623691 ,//Sn1-17
+                519.2701942 ,//Sn1-17+H
+                533.2858442 ,//precursor
+            };
+
+            scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
+            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            {
+                Assert.AreEqual(expect, actual, 0.01d);
+            }
+        }
     }
 
     [TestClass()]
     public class LPISpectrumGeneratorTests
     {
         [TestMethod()]
-        public void GenerateTest()
+        public void GenerateTest_H()
         {
             //LPI 18:1(9)
             var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
@@ -357,7 +596,7 @@ namespace CompMs.Common.Lipidomics.Tests
     public class LPSSpectrumGeneratorTests
     {
         [TestMethod()]
-        public void GenerateTest()
+        public void GenerateTest_H()
         {
             //LPS 18:1(9)
             var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
@@ -439,5 +678,84 @@ namespace CompMs.Common.Lipidomics.Tests
                 Assert.AreEqual(expect, actual, 0.01d);
             }
         }
+
+        [TestMethod()]
+        public void GenerateTest_Na()
+        {
+            //LPS 18:1(9)
+            var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
+            var lipid = new Lipid(LbmClass.LPS, 523.291019063, new PositionLevelChains(acyl1));
+
+            var generator = new LPSSpectrumGenerator();
+            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+
+            var expects = new[]
+            {
+                207.9994342 ,//Header
+                248.0326042 ,//Gly-C
+                250.0072442 ,//Gly-O
+                282.0349286 ,// -acylChain
+                308.0141931 ,//Sn1-1-H
+                309.0220182 ,//Sn1-1
+                310.0298432 ,//Sn1-1+H
+                322.0298432 ,//Sn1-2-H
+                323.0376682 ,//Sn1-2
+                324.0454933 ,//Sn1-2+H
+                336.0454933 ,//Sn1-3-H
+                337.0533183 ,//Sn1-3
+                338.0611433 ,//Sn1-3+H
+                350.0611433 ,//Sn1-4-H
+                351.0689684 ,//Sn1-4
+                352.0767934 ,//Sn1-4+H
+                364.0767934 ,//Sn1-5-H
+                365.0846184 ,//Sn1-5
+                366.0924435 ,//Sn1-5+H
+                378.0924435 ,//Sn1-6-H
+                379.1002685 ,//Sn1-6
+                380.1080935 ,//Sn1-6+H
+                392.1080935 ,//Sn1-7-H
+                393.1159186 ,//Sn1-7
+                394.1237436 ,//Sn1-7+H
+                406.1237436 ,//Sn1-8-H
+                407.1315686 ,//Sn1-8
+                408.1393937 ,//Sn1-8+H
+                419.1315686 ,//Sn1-Δ9-H
+                420.1393937 ,//Sn1-Δ9
+                421.1472187 ,//Sn1-Δ9+H
+                432.1393937 ,//Sn1-10-H
+                433.1472187 ,//Sn1-10
+                434.1550437 ,//Sn1-10+H
+                446.1550437 ,//Sn1-11-H
+                447.1628688 ,//Sn1-11
+                448.1706938 ,//Sn1-11+H
+                459.2487599 ,// Precursor-C3H5NO2
+                460.1706938 ,//Sn1-12-H
+                461.1785188 ,//Sn1-12
+                462.1863439 ,//Sn1-12+H
+                474.1863439 ,//Sn1-13-H
+                475.1941689 ,//Sn1-13
+                476.2019939 ,//Sn1-13+H
+                488.2019939 ,//Sn1-14-H
+                489.2098189 ,//Sn1-14
+                490.217644  ,//Sn1-14+H
+                502.217644  ,//Sn1-15-H
+                503.225469  ,//Sn1-15
+                504.233294  ,//Sn1-15+H
+                516.233294  ,//Sn1-16-H
+                517.2411191 ,//Sn1-16
+                518.2489441 ,//Sn1-16+H
+                530.2489441 ,//Sn1-17-H
+                531.2567691 ,//Sn1-17
+                532.2645942 ,//Sn1-17+H
+                546.2802442 ,//Precursor
+            };
+
+            scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
+            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            {
+                Assert.AreEqual(expect, actual, 0.01d);
+            }
+        }
+
     }
 }

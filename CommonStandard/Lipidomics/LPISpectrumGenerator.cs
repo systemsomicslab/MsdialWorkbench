@@ -74,7 +74,7 @@ namespace CompMs.Common.Lipidomics
         {
             if (lipid.LipidClass == LbmClass.LPI)
             {
-                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+Na]+")
+                if (adduct.AdductIonName == "[M+H]+")
                 {
                     return true;
                 }
@@ -145,12 +145,12 @@ namespace CompMs.Common.Lipidomics
                     }
                 );
             }
-            else if (adduct.AdductIonName == "[M+Na]+")
-            {
-                spectrum.Add(
-                    new SpectrumPeak(lipid.Mass - C6H10O5 + adduct.AdductIonAccurateMass, 500d, "Precursor -C6H10O5")
-                );
-            }
+            //else if (adduct.AdductIonName == "[M+Na]+")
+            //{
+            //    spectrum.Add(
+            //        new SpectrumPeak(lipid.Mass - C6H10O5 + adduct.AdductIonAccurateMass, 500d, "Precursor -C6H10O5")
+            //    );
+            //}
             return spectrum.ToArray();
         }
 
@@ -181,17 +181,17 @@ namespace CompMs.Common.Lipidomics
                      }
                 );
             }
-            else if (adduct.AdductIonName == "[M+Na]+")
-            {
-                spectrum.AddRange
-                (
-                     new[]
-                     {
-                         new SpectrumPeak(lipidMass - chainMass + adduct.AdductIonAccurateMass, 100d, $"-{acylChain}"),
-                         //new SpectrumPeak(lipidMass - chainMass - C6H10O5 + adduct.AdductIonAccurateMass, 100d, $"-C6H10O5 -{acylChain}"),
-                     }
-                );
-            }
+            //else if (adduct.AdductIonName == "[M+Na]+")
+            //{
+            //    spectrum.AddRange
+            //    (
+            //         new[]
+            //         {
+            //             new SpectrumPeak(lipidMass - chainMass + adduct.AdductIonAccurateMass, 100d, $"-{acylChain}"),
+            //             //new SpectrumPeak(lipidMass - chainMass - C6H10O5 + adduct.AdductIonAccurateMass, 100d, $"-C6H10O5 -{acylChain}"),
+            //         }
+            //    );
+            //}
             return spectrum.ToArray();
         }
 

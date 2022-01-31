@@ -137,24 +137,32 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>
             {
                 new SpectrumPeak(lipid.Mass + adduct.AdductIonAccurateMass, 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                new SpectrumPeak(lipid.Mass - H2O + adduct.AdductIonAccurateMass, 100d, "Precursor -H2O"),
-                new SpectrumPeak(lipid.Mass - CHO2 + adduct.AdductIonAccurateMass, 200d, "Precursor -CHO2"),
-                new SpectrumPeak(lipid.Mass - C3H8NO6P + adduct.AdductIonAccurateMass, 500d, "Precursor -C3H8NO6P"),
                 new SpectrumPeak(C3H8NO6P + adduct.AdductIonAccurateMass, 100d, "Header"),
-                new SpectrumPeak(C3H9O6P + adduct.AdductIonAccurateMass, 100d, "C3H9O6P"),
-                new SpectrumPeak(C3H9O6P -H2O + adduct.AdductIonAccurateMass, 100d, "C3H9O6P - H2O"),
                 new SpectrumPeak(Gly_C + adduct.AdductIonAccurateMass, 100d, "Gly-C"),
                 new SpectrumPeak(Gly_O + adduct.AdductIonAccurateMass, 100d, "Gly-O"),
             };
-            if (adduct.AdductIonName == "[M+Na]+")
+            if(adduct.AdductIonName == "[M+H]+")
+            {
+                spectrum.AddRange
+                (
+                    new[]
+                    {
+                            new SpectrumPeak(lipid.Mass - C3H8NO6P + adduct.AdductIonAccurateMass, 500d, "Precursor -C3H8NO6P"),
+                            new SpectrumPeak(lipid.Mass - CHO2 + adduct.AdductIonAccurateMass, 200d, "Precursor -CHO2"),
+                            new SpectrumPeak(lipid.Mass - H2O + adduct.AdductIonAccurateMass, 100d, "Precursor -H2O"),
+                            new SpectrumPeak(C3H9O6P + adduct.AdductIonAccurateMass, 100d, "C3H9O6P"),
+                            new SpectrumPeak(C3H9O6P -H2O + adduct.AdductIonAccurateMass, 100d, "C3H9O6P - H2O"),
+                    }
+                );
+            }
+            else if (adduct.AdductIonName == "[M+Na]+")
             {
                 spectrum.AddRange
                 (
                      new[]
                      {
-                        new SpectrumPeak(lipid.Mass - C3H8NO6P + MassDiffDictionary.ProtonMass, 250d, "Precursor -C3H8NO6P -Na"),
+                        //new SpectrumPeak(lipid.Mass - C3H8NO6P + MassDiffDictionary.ProtonMass, 250d, "Precursor -C3H8NO6P -Na"),
                         new SpectrumPeak(lipid.Mass - C3H5NO2 + adduct.AdductIonAccurateMass, 200d, "Precursor -C3H5NO2"),
-                        new SpectrumPeak(C3H8NO6P + adduct.AdductIonAccurateMass, 100d, "Header"),
                      }
                 );
             }

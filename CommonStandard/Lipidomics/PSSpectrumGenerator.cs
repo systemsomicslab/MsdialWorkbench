@@ -143,7 +143,7 @@ namespace CompMs.Common.Lipidomics
                 (
                      new[]
                      {
-                        new SpectrumPeak(lipid.Mass - C3H8NO6P + MassDiffDictionary.ProtonMass, 250d, "Precursor -C3H8NO6P -Na"),
+                        //new SpectrumPeak(lipid.Mass - C3H8NO6P + MassDiffDictionary.ProtonMass, 250d, "Precursor -C3H8NO6P -Na"),
                         new SpectrumPeak(lipid.Mass - C3H5NO2 + adduct.AdductIonAccurateMass, 200d, "Precursor -C3H5NO2"),
                      }
                 );
