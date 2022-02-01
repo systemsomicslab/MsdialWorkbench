@@ -13,7 +13,8 @@ namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
     public class ProteinMsResult {
         public ProteinMsResult() { }
-        public ProteinMsResult(string databaseID, int index, FastaProperty fasta) {
+        [SerializationConstructor]
+        public ProteinMsResult(int index, string databaseID, FastaProperty fasta) {
             DatabaseID = databaseID;
             FastaProperty = fasta;
             Index = index;
@@ -252,13 +253,13 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         [Key(0)]
-        public Peptide Peptide { get; }
+        public Peptide Peptide { get; set; }
         [Key(1)]
-        public ChromatogramPeakFeature ChromatogramPeakFeature { get; }
+        public ChromatogramPeakFeature ChromatogramPeakFeature { get; set; }
         [Key(2)]
-        public AlignmentSpotProperty AlignmentSpotProperty { get; }
+        public AlignmentSpotProperty AlignmentSpotProperty { get; set; }
         [Key(3)]
-        public string ShotgunProteomicsDatabaseID { get; }
+        public string ShotgunProteomicsDatabaseID { get; set; }
 
         [IgnoreMember]
         public float PEPScore { get; }

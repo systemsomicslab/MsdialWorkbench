@@ -85,7 +85,8 @@ namespace CompMs.MsdialCore.Parser
     }
 
     [MessagePack.MessagePackObject]
-    public abstract class FastaDbRestorationKey : IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> {
+    public abstract class FastaDbRestorationKey : 
+        IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> {
         public FastaDbRestorationKey(string key, int priority) {
             Key = key;
             Priority = priority;
@@ -102,8 +103,13 @@ namespace CompMs.MsdialCore.Parser
 
     [MessagePack.MessagePackObject]
     public class ShotgunProteomicsRestorationKey : FastaDbRestorationKey {
-        public ShotgunProteomicsRestorationKey(string key, int priority, MsRefSearchParameterBase msrefSearchParameter, ProteomicsParameter proteomicsParameter, SourceType sourceType) : base(key, priority) {
-            MsRefSearchParameter = msrefSearchParameter;
+        public ShotgunProteomicsRestorationKey(
+            string key, 
+            int priority,
+            MsRefSearchParameterBase msRefSearchParameter,
+            ProteomicsParameter proteomicsParameter, 
+            SourceType sourceType) : base(key, priority) {
+            MsRefSearchParameter = msRefSearchParameter;
             ProteomicsParameter = proteomicsParameter;
             SourceType = sourceType;
         }

@@ -7,6 +7,7 @@ namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
     public class ProteinGroup {
         public ProteinGroup() { }
+        [SerializationConstructor]
         public ProteinGroup(int id, List<ProteinMsResult> results) {
             GroupID = id;
             ProteinMsResults = results;

@@ -246,7 +246,8 @@ namespace CompMs.MsdialCore.DataObj
     }
 
     [MessagePackObject]
-    public class ProteomicsAnnotatorParameterPair : IAnnotatorParameterPair<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>
+    public class ProteomicsAnnotatorParameterPair : 
+        IAnnotatorParameterPair<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>
     {
         public ProteomicsAnnotatorParameterPair(
             ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> serializableAnnotator,
@@ -294,7 +295,8 @@ namespace CompMs.MsdialCore.DataObj
     }
 
     [MessagePackObject]
-    public class EadLipidAnnotatorParameterPair : IAnnotatorParameterPair<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>
+    public class EadLipidAnnotatorParameterPair : 
+        IAnnotatorParameterPair<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>
     {
         public EadLipidAnnotatorParameterPair(
             ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> serializableAnnotator,

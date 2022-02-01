@@ -306,7 +306,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 var databaseID = item.DataBaseID;
                 var fastaQueries = item.DataBase.FastaQueries;
                 foreach (var query in fastaQueries) {
-                    proteins.Add(new ProteinMsResult(databaseID, counter, query));
+                    proteins.Add(new ProteinMsResult(counter, databaseID, query));
                     counter++;
                 }
             }

@@ -20,7 +20,6 @@ using System.Linq;
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
     public class ShotgunProteomicsDB : IDisposable, IReferenceDataBase, IMatchResultRefer<PeptideMsReference, MsScanMatchResult> {
-        [Key(0)]
         private bool disposedValue;
 
         [Key(1)]
