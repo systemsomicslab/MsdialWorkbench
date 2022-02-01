@@ -115,7 +115,7 @@ namespace CompMs.Graphics.Adorner
         }
 
         public Range HorizontalRange {
-            get => new Range(InitialX, CurrentX);
+            get => new Range(Math.Min(InitialX, CurrentX), Math.Max(InitialX, CurrentX));
             set {
                 InitialX = value.Minimum;
                 CurrentX = value.Maximum;

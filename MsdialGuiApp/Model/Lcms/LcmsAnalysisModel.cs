@@ -94,6 +94,17 @@ namespace CompMs.App.Msdial.Model.Lcms
                     : $"EIC chromatogram of {t.Mass:N4} tolerance [Da]: {Parameter.CentroidMs1Tolerance:F} Max intensity: {i:F0}")
                 .Subscribe(title => EicModel.GraphTitle = title);
 
+            ExperimentSpectrumModel = Target.Where(t => t != null)
+                .Select(t => 
+                    EicModel.EicSource
+                    .Select(source => new DisplayChromatogram(source))
+                    .Select(chromatogram => new ChromatogramsModel("Experiment chromatogram", chromatogram))
+                    .Select(chromatogram => new RangeSelectableChromatogramModel(chromatogram))
+                    .Select(model => new ExperimentSpectrumModel(model, provider, t.InnerModel, DataBaseMapper, Parameter))
+                ).Switch()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+
             // Ms2 spectrum
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
@@ -185,7 +196,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public AnalysisPeakPlotModel PlotModel { get; }
 
         public EicModel EicModel { get; }
-
+        public ReadOnlyReactivePropertySlim<ExperimentSpectrumModel> ExperimentSpectrumModel { get; }
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public RawPurifiedSpectrumsModel RawPurifiedSpectrumsModel { get; }
 

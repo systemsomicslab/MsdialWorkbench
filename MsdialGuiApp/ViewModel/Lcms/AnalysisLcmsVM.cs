@@ -172,6 +172,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .AddTo(Disposables);
 
             Ms1PeaksView.Filter += PeakFilter;
+
+            ExperimentSpectrumViewModel = model.ExperimentSpectrumModel
+                .Where(model_ => model_ != null)
+                .Select(model_ => new ExperimentSpectrumViewModel(model_))
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
         }
 
         private readonly LcmsAnalysisModel model;
@@ -368,6 +374,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
+
+        public ReadOnlyReactivePropertySlim<ExperimentSpectrumViewModel> ExperimentSpectrumViewModel { get; }
+
         private DelegateCommand<Window> saveMs2SpectrumCommand;
 
         private void SaveSpectra(Window owner) {

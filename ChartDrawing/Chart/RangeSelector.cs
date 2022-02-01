@@ -4,7 +4,6 @@ using CompMs.Graphics.Behavior;
 using CompMs.Graphics.Core.Base;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
@@ -52,43 +51,47 @@ namespace CompMs.Graphics.Chart
         public static readonly DependencyProperty DisplayRangesProperty =
             DependencyProperty.Register(
                 nameof(DisplayRanges),
-                typeof(ObservableCollection<RangeSelection>),
+                typeof(IReadOnlyList<RangeSelection>),
                 typeof(RangeSelector),
                 new FrameworkPropertyMetadata(
-                    new ObservableCollection<RangeSelection>(),
+                    new List<RangeSelection>(),
                     OnDisplayRangesChanged));
 
-        public ObservableCollection<RangeSelection> DisplayRanges {
-            get => (ObservableCollection<RangeSelection>)GetValue(DisplayRangesProperty);
+        public IReadOnlyList<RangeSelection> DisplayRanges {
+            get => (IReadOnlyList<RangeSelection>)GetValue(DisplayRangesProperty);
             set => SetValue(DisplayRangesProperty, value);
         }
 
         private static void OnDisplayRangesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is RangeSelector rs) {
-                rs.OnDisplayRangesChanged((ObservableCollection<RangeSelection>)e.OldValue, (ObservableCollection<RangeSelection>)e.NewValue);
+                rs.OnDisplayRangesChanged((IReadOnlyList<RangeSelection>)e.OldValue, (IReadOnlyList<RangeSelection>)e.NewValue);
             }
         }
 
-        private void OnDisplayRangesChanged(ObservableCollection<RangeSelection> oldValues, ObservableCollection<RangeSelection> newValues) {
-            if (oldValues is null) {
-                oldValues = new ObservableCollection<RangeSelection>();
+        private void OnDisplayRangesChanged(IReadOnlyList<RangeSelection> oldValues, IReadOnlyList<RangeSelection> newValues) {
+            if (oldValues is INotifyCollectionChanged notifyChangedOld) {
+                notifyChangedOld.CollectionChanged -= OnDisplayRangesCollectionChanged;
             }
-            else {
-                oldValues.CollectionChanged -= OnDisplayRangesCollectionChanged;
+            if (newValues is INotifyCollectionChanged notifyChangedNew) {
+                notifyChangedNew.CollectionChanged += OnDisplayRangesCollectionChanged;
+            }
+
+            if (oldValues is null) {
+                oldValues = new List<RangeSelection>();
             }
             if (newValues is null) {
-                newValues = new ObservableCollection<RangeSelection>();
+                newValues = new List<RangeSelection>();
             }
-            else {
-                newValues.CollectionChanged += OnDisplayRangesCollectionChanged;
-            }
+
             var adorners = Adorners.ToArray();
-            foreach (var adorner in oldValues.Except(newValues).SelectMany(v => adorners.Where(a => a.RangeSelection == v))) {
+            var delValues = oldValues.Except(newValues);
+            foreach (var adorner in delValues.SelectMany(v => adorners.Where(a => a.RangeSelection == v))) {
                 adorner.Detach();
                 Adorners.Remove(adorner);
             }
 
-            foreach (var addValue in newValues.Except(oldValues)) {
+            var addValues = newValues.Except(oldValues);
+            foreach (var addValue in addValues) {
                 var adorner = new RangeSelectAdorner(this, addValue);
                 adorner.Attach();
                 Adorners.Add(adorner);
