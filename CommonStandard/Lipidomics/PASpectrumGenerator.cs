@@ -91,7 +91,7 @@ namespace CompMs.Common.Lipidomics
         {
             return new MoleculeMsReference
             {
-                PrecursorMz = lipid.Mass + adduct.AdductIonAccurateMass,
+                PrecursorMz = adduct.ConvertToMz(lipid.Mass),
                 IonMode = adduct.IonMode,
                 Spectrum = spectrum,
                 Name = lipid.Name,
@@ -110,7 +110,7 @@ namespace CompMs.Common.Lipidomics
             var adductmass = adduct.AdductIonName == "[M+NH4]+" ? MassDiffDictionary.ProtonMass : adduct.AdductIonAccurateMass;
             var spectrum = new List<SpectrumPeak>
             {
-                new SpectrumPeak(lipid.Mass + adduct.AdductIonAccurateMass, 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
                 new SpectrumPeak(lipid.Mass - H3PO4 + adductmass, 100d, "- Header"),
                 new SpectrumPeak(H3PO4 - MassDiffDictionary.HydrogenMass + adductmass, 300d, "Header"),
                 new SpectrumPeak(Gly_C + adductmass, 100d, "Gly-C"),

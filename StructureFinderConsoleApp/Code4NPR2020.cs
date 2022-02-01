@@ -38,8 +38,7 @@ namespace StructureFinderConsoleApp {
                     var mass = formulaObj.Mass;
 
                     var adductproton = AdductIonParser.GetAdductIonBean("[M+H]+");
-                    var protonMass = adductproton.AdductIonAccurateMass;
-                    var mass_proton = mass + protonMass;
+                    var mass_proton = adductproton.ConvertToMz(mass);
 
                     sw.WriteLine(formulaObj.FormulaString + "\t" + mass + "\t" + mass_proton);
 
