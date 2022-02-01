@@ -42,9 +42,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         public MsRefSearchParameterBase Parameter { get; set; }
     }
 
-    [Union(0, typeof(DatabaseAnnotatorContainer))]
-    [Union(1, typeof(ShotgunProteomicsDBAnnotatorContainer))]
-    [Union(2, typeof(EadLipidDatabaseAnnotatorContainer))]
     public interface ISerializableAnnotatorContainer<in T, U, V> : IAnnotatorContainer<T, U, V>
     {
         void Save(Stream stream);
