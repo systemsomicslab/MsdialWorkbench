@@ -987,6 +987,10 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                 case LbmClass.STSPHex:
                     return LipidMsmsCharacterization.JudgeIfSteroidWithPa(molecule.LipidName, molecule.LipidClass,
                         spectrum, ms2tol, refMz, totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+                //20220201
+                case LbmClass.SPE:
+                    return LipidMsmsCharacterization.JudgeIfSpeSpecies(molecule.LipidName, molecule.LipidClass,
+                        spectrum, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
 
 
                 default:

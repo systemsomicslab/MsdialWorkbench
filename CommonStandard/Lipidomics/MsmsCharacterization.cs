@@ -13351,6 +13351,54 @@ AdductIon adduct)
             return null;
         }
 
+        // add 20220201
+        public static LipidMolecule JudgeIfSpeSpecies(string lipidname, LbmClass lipidclass, IMSScanProperty msScanProp, double ms2Tolerance,
+       double theoreticalMz, int totalCarbon, int totalDoubleBond, AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Positive)
+            { // positive ion mode 
+                if (adduct.AdductIonName == "[M+H]+")
+                {
+                    // C2H9NO4P+
+                    var diagnosticMz = 142.02637;
+                    var diagnosticCutoff = 10.0;
+
+                    //// precursor - C2H8NO4P
+                    //var diagnosticMz2 = theoreticalMz - 142.02637 + Proton;
+                    //var diagnosticCutoff2 = 0.1;
+
+                    var isDiagnosticFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, diagnosticCutoff);
+                    //var isDiagnosticFound2 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, diagnosticCutoff2);
+                    if (isDiagnosticFound)
+                    {
+                        var candidates = new List<LipidMolecule>();
+                        return returnAnnotationNoChainResult(lipidname, lipidclass, "", theoreticalMz, adduct,
+                           totalCarbon, totalDoubleBond, 0, candidates, 0);
+                    }
+                }
+                return null;
+            }
+            else
+            {
+                if (adduct.AdductIonName == "[M-H]-")
+                {
+                    // C2H7NO4P-
+                    var diagnosticMz = 140.011818;
+                    var diagnosticCutoff = 10.0;
+                    var isDiagnosticFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, diagnosticCutoff);
+                    if (isDiagnosticFound)
+                    {
+                        var candidates = new List<LipidMolecule>();
+                        return returnAnnotationNoChainResult(lipidname, lipidclass, "", theoreticalMz, adduct,
+                           totalCarbon, totalDoubleBond, 0, candidates, 0);
+                    }
+                }
+            }
+            return null;
+        }
+
 
         // 
         private static LipidMolecule returnAnnotationResult(string lipidHeader, LbmClass lbmClass,
