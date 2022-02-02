@@ -4,11 +4,11 @@ using System.Linq;
 namespace CompMs.Common.Lipidomics.Tests
 {
     [TestClass()]
-    public class AcylChainGeneratorTests
+    public class ChainGeneratorTests
     {
         [TestMethod()]
         public void SeparateTest() {
-            var generator = new AcylChainGenerator(minLength: 6, begin: 2, end: 1, skip: 3);
+            var generator = new ChainGenerator(minLength: 6, begin: 2, end: 1, skip: 3);
             ITotalChain totalChain = new TotalChain(34, 2, 0, 2, 0, 0);
 
             var tmp = totalChain.GetCandidateSets(generator).ToArray();
@@ -81,7 +81,7 @@ namespace CompMs.Common.Lipidomics.Tests
 
         [TestMethod()]
         public void SeparateShortChainTest() {
-            var generator = new AcylChainGenerator(minLength: 6, begin: 2, end: 1, skip: 3);
+            var generator = new ChainGenerator(minLength: 6, begin: 2, end: 1, skip: 3);
             TotalChain totalChain = new TotalChain(10, 0, 0, 2, 0, 0);
 
             var actual = generator.Separate(totalChain).ToArray();
@@ -90,7 +90,7 @@ namespace CompMs.Common.Lipidomics.Tests
 
         [TestMethod()]
         public void SeparateSphingoTest() {
-            var generator = new AcylChainGenerator(minLength: 6, begin: 2, end: 1, skip: 3);
+            var generator = new ChainGenerator(minLength: 6, begin: 2, end: 1, skip: 3);
             ITotalChain totalChain = new TotalChain(34, 1, 2, 1, 0, 1);
 
             var tmp = totalChain.GetCandidateSets(generator).ToArray();
@@ -135,7 +135,7 @@ namespace CompMs.Common.Lipidomics.Tests
 
         [TestMethod()]
         public void GenerateTest() {
-            var generator = new AcylChainGenerator(minLength: 6, begin: 3, end: 1, skip: 3);
+            var generator = new ChainGenerator(minLength: 6, begin: 3, end: 1, skip: 3);
             var acylChain = new AcylChain(18, new DoubleBond(2), new Oxidized(0));
 
             var actual = acylChain.GetCandidates(generator).ToArray();
@@ -161,7 +161,7 @@ namespace CompMs.Common.Lipidomics.Tests
 
         [TestMethod()]
         public void GenerateAlkylTest() {
-            var generator = new AcylChainGenerator(minLength: 6, begin: 3, end: 1, skip: 3);
+            var generator = new ChainGenerator(minLength: 6, begin: 3, end: 1, skip: 3);
             var alkylChain = new AlkylChain(18, new DoubleBond(2), new Oxidized(0));
 
             var actual = alkylChain.GetCandidates(generator).ToArray();
@@ -187,7 +187,7 @@ namespace CompMs.Common.Lipidomics.Tests
 
         [TestMethod()]
         public void GeneratePlasmalogenAlkylTest() {
-            var generator = new AcylChainGenerator(minLength: 6, begin: 3, end: 1, skip: 3);
+            var generator = new ChainGenerator(minLength: 6, begin: 3, end: 1, skip: 3);
             var alkylChain = new AlkylChain(18, new DoubleBond(3, DoubleBondInfo.Create(1)), new Oxidized(0));
 
             var actual = alkylChain.GetCandidates(generator).ToArray();
@@ -212,7 +212,7 @@ namespace CompMs.Common.Lipidomics.Tests
 
         [TestMethod()]
         public void GenerateSphingosineTest() {
-            var generator = new AcylChainGenerator(minLength: 6, begin: 3, end: 1, skip: 3);
+            var generator = new ChainGenerator(minLength: 6, begin: 3, end: 1, skip: 3);
             var alkylChain = new SphingoChain(18, new DoubleBond(1, DoubleBondInfo.Create(1)), new Oxidized(3, 1, 3));
 
             var actual = alkylChain.GetCandidates(generator).ToArray();
@@ -241,7 +241,7 @@ namespace CompMs.Common.Lipidomics.Tests
 
         [TestMethod()]
         public void GeneratePositionSpecifiedAcylChainTest() {
-            var generator = new AcylChainGenerator(minLength: 6, begin: 3, end: 1, skip: 3);
+            var generator = new ChainGenerator(minLength: 6, begin: 3, end: 1, skip: 3);
             var alkylChain = new AcylChain(18, DoubleBond.CreateFromPosition(1, 9, 12), new Oxidized(2, 4, 5));
 
             var actual = alkylChain.GetCandidates(generator).OfType<AcylChain>().ToArray();
@@ -252,7 +252,7 @@ namespace CompMs.Common.Lipidomics.Tests
 
         [TestMethod()]
         public void GeneratePositionSpecifiedAlkylChainTest() {
-            var generator = new AcylChainGenerator(minLength: 6, begin: 3, end: 1, skip: 3);
+            var generator = new ChainGenerator(minLength: 6, begin: 3, end: 1, skip: 3);
             var alkylChain = new AlkylChain(18, DoubleBond.CreateFromPosition(1, 9, 12), new Oxidized(2, 4, 5));
 
             var actual = alkylChain.GetCandidates(generator).OfType<AlkylChain>().ToArray();

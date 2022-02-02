@@ -9,7 +9,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    class EicModel : ValidatableBase
+    public class EicModel : ValidatableBase
     {
         public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, EicLoader loader, string graphTitle, string horizontalTitle, string verticalTitle) {
             Loader = loader;

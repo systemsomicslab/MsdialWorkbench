@@ -190,13 +190,13 @@
         <DataTemplate.Resources>
             <AlternationConverter x:Key="PenConverter">
                 <Pen Brush="Black" Thickness="2" PresentationOptions:Freeze="True"/>
-                <Pen Brush="LightCoral" Thickness="2" PresentationOptions:Freeze="True"/>
-                <Pen Brush="LightSkyBlue" Thickness="2" PresentationOptions:Freeze="True"/>
-                <Pen Brush="LightGreen" Thickness="2" PresentationOptions:Freeze="True"/>
-                <Pen Brush="LightGray" Thickness="2" PresentationOptions:Freeze="True"/>
-                <Pen Brush="LightPink" Thickness="2" PresentationOptions:Freeze="True"/>
-                <Pen Brush="LightBlue" Thickness="2" PresentationOptions:Freeze="True"/>
-                <Pen Brush="LightYellow" Thickness="2" PresentationOptions:Freeze="True"/>
+                <Pen Brush="Red" Thickness="2" PresentationOptions:Freeze="True"/>
+                <Pen Brush="Blue" Thickness="2" PresentationOptions:Freeze="True"/>
+                <Pen Brush="Green" Thickness="2" PresentationOptions:Freeze="True"/>
+                <Pen Brush="Gray" Thickness="2" PresentationOptions:Freeze="True"/>
+                <Pen Brush="Magenta" Thickness="2" PresentationOptions:Freeze="True"/>
+                <Pen Brush="Cyan" Thickness="2" PresentationOptions:Freeze="True"/>
+                <Pen Brush="Yellow" Thickness="2" PresentationOptions:Freeze="True"/>
             </AlternationConverter>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
             <DataTemplate x:Key="LegendItem">
@@ -282,7 +282,7 @@
                                              LabelPropertyName="Mass"
                                              Format="N3"
                                              TopN="10"
-                                             Brush="Pink"/>
+                                             Brush="Black"/>
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -296,6 +296,7 @@
 
             <chart:VerticalAxisControl VerticalAxis="{Binding LowerSpectrumsViewModel.VerticalAxis}" FlippedY="False" Grid.Row="1" Grid.Column="1"/>
             <ItemsControl ItemsSource="{Binding LowerSpectrumsViewModel.DisplayScans}"
+                          AlternationCount="8"
                           ccore:ChartBaseControl.HorizontalAxis="{Binding HorizontalAxis}"
                           ccore:ChartBaseControl.VerticalAxis="{Binding LowerSpectrumsViewModel.VerticalAxis}"
                           Grid.Row="1"
@@ -321,7 +322,7 @@
                                                        HorizontalPropertyName="Mass"
                                                        VerticalPropertyName="Intensity"
                                                        LinePen="{Binding Path=(ItemsControl.AlternationIndex),
-                                                                         RelativeSource={RelativeSource AncestorType=ContentControl},
+                                                                         RelativeSource={RelativeSource TemplatedParent},
                                                                          Converter={StaticResource PenConverter}}"
                                                        FlippedY="False">
                                 <chart:LineSpectrumControl.ToolTip>

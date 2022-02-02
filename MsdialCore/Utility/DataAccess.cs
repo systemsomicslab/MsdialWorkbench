@@ -746,14 +746,13 @@ namespace CompMs.MsdialCore.Utility {
             return sum;
         }
 
-        public static List<SpectrumPeak> GetAverageSpectrum(List<RawSpectrum> spectrumList, double start, double end, double bin, int targetExperimentID = -1) {
+        public static List<SpectrumPeak> GetAverageSpectrum(IReadOnlyList<RawSpectrum> spectrumList, double start, double end, double bin, int targetExperimentID = -1) {
             var min = Math.Min(start, end);
             var max = Math.Max(start, end);
-            var comparer = ChromXsComparer.RTComparer;
             var lo = SearchCollection.LowerBound(spectrumList, new RawSpectrum() { ScanStartTime = min }, (a, b) => a.ScanStartTime.CompareTo(b.ScanStartTime));
-            var lu = SearchCollection.UpperBound(spectrumList, new RawSpectrum() { ScanStartTime = max }, (a, b) => a.ScanStartTime.CompareTo(b.ScanStartTime));
+            var hi = SearchCollection.UpperBound(spectrumList, new RawSpectrum() { ScanStartTime = max }, (a, b) => a.ScanStartTime.CompareTo(b.ScanStartTime));
             var points = new List<int>();
-            for (int i = lo; i <= lu; i++) {
+            for (int i = lo; i < hi; i++) {
                 var spec = spectrumList[i];
                 if (targetExperimentID == -1) {
                     points.Add(i);
@@ -766,7 +765,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
 
-        public static List<SpectrumPeak> GetAverageSpectrum(List<RawSpectrum> spectrumList, List<int> points, double bin) {
+        public static List<SpectrumPeak> GetAverageSpectrum(IReadOnlyList<RawSpectrum> spectrumList, List<int> points, double bin) {
             var peaks = new List<SpectrumPeak>();
             var mass2peaks = new Dictionary<int, List<SpectrumPeak>>();
             var factor = 1.0 / bin;
@@ -796,7 +795,7 @@ namespace CompMs.MsdialCore.Utility {
             return peaks;
         }
 
-        public static List<SpectrumPeak> GetSubtractSpectrum(List<RawSpectrum> spectrumList, 
+        public static List<SpectrumPeak> GetSubtractSpectrum(IReadOnlyList<RawSpectrum> spectrumList, 
             double mainStart, double mainEnd, 
             double subtractStart, double subtractEnd,
             double bin, int targetExperimentID = -1) {
@@ -806,7 +805,7 @@ namespace CompMs.MsdialCore.Utility {
             return GetSubtractSpectrum(mainAveSpec, subtractAveSpec, bin);
         }
 
-        public static List<SpectrumPeak> GetSubtractSpectrum(List<SpectrumPeak> mainPeaks, List<SpectrumPeak> subtractPeaks, double bin) {
+        public static List<SpectrumPeak> GetSubtractSpectrum(IReadOnlyList<SpectrumPeak> mainPeaks, IReadOnlyList<SpectrumPeak> subtractPeaks, double bin) {
             var peaks = new List<SpectrumPeak>();
             var mass2peaks = new Dictionary<int, List<SpectrumPeak>>();
             var factor = 1.0 / bin;

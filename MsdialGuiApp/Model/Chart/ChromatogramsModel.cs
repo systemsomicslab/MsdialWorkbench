@@ -1,18 +1,15 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using CompMs.Common.Extension;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reactive.Linq;
 
-namespace CompMs.App.Msdial.Model.Chart {
-    class ChromatogramsModel : ValidatableBase {
+namespace CompMs.App.Msdial.Model.Chart
+{
+    public class ChromatogramsModel : ValidatableBase {
         public ChromatogramsModel(
             string name,
             List<DisplayChromatogram> chromatograms,

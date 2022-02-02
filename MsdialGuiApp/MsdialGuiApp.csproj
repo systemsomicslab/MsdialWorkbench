@@ -160,8 +160,10 @@
     <Compile Include="Model\Chart\BrushMapData.cs" />
     <Compile Include="Model\Chart\ChromatogramsModel.cs" />
     <Compile Include="Model\Chart\EicModel.cs" />
+    <Compile Include="Model\Chart\ExperimentSpectrumModel.cs" />
     <Compile Include="Model\Chart\GraphElements.cs" />
     <Compile Include="Model\Chart\MsSpectrumModel.cs" />
+    <Compile Include="Model\Chart\RangeSelectableChromatogramModel.cs" />
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\Chart\RawPurifiedSpectrumsModel.cs" />
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
@@ -233,6 +235,8 @@
     <Compile Include="ViewModel\Chart\AnalysisPeakPlotViewModel.cs" />
     <Compile Include="ViewModel\Chart\BarChartViewModel.cs" />
     <Compile Include="ViewModel\Chart\ChromatogramsViewModel.cs" />
+    <Compile Include="ViewModel\Chart\ExperimentSpectrumViewModel.cs" />
+    <Compile Include="ViewModel\Chart\RangeSelectableChromatogramViewModel.cs" />
     <Compile Include="ViewModel\Chart\RawPurifiedSpectrumsViewModel.cs" />
     <Compile Include="ViewModel\Chart\ReactiveCategoryAxisManager.cs" />
     <Compile Include="ViewModel\Chart\EicViewModel.cs" />
@@ -346,6 +350,9 @@
     <Compile Include="View\Chart\PeakView.xaml.cs">
       <DependentUpon>PeakView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Chart\RangeSelectableChromatogramView.xaml.cs">
+      <DependentUpon>RangeSelectableChromatogramView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Chart\RawPurifiedView.xaml.cs">
       <DependentUpon>RawPurifiedView.xaml</DependentUpon>
     </Compile>
@@ -384,6 +391,9 @@
     </Compile>
     <Compile Include="View\Dims\DimsDataCollectionView.xaml.cs">
       <DependentUpon>DimsDataCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\ExperimentSpectrum.xaml.cs">
+      <DependentUpon>ExperimentSpectrum.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Export\AnalysisResultExportWin.xaml.cs">
       <DependentUpon>AnalysisResultExportWin.xaml</DependentUpon>
@@ -688,6 +698,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Chart\RangeSelectableChromatogramView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Chart\RawPurifiedView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -741,6 +755,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dims\DimsDataCollectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\ExperimentSpectrum.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

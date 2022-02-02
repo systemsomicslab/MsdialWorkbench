@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model;
 using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
@@ -8,7 +9,9 @@ using CompMs.CommonMVVM.WindowService;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialLcMsApi.DataObj;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Reactive.Linq;
 using System.Windows;
@@ -65,6 +68,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             this.parameter = parameter;
 
             Storage = model.Storage;
+
+            ShowExperimentSpectrumCommand = new ReactiveCommand().AddTo(Disposables);
+
+            this.ObserveProperty(m => m.AnalysisVM)
+                .Where(vm => vm != null)
+                .Select(vm => ShowExperimentSpectrumCommand.WithLatestFrom(vm.ExperimentSpectrumViewModel, (a, b) => b))
+                .Switch()
+                .Subscribe(vm => MessageBroker.Default.Publish(vm))
+                .AddTo(Disposables);
         }
 
         private readonly LcmsMethodModel model;
@@ -253,6 +265,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public DelegateCommand<Window> ShowEicCommand => showEicCommand ?? (showEicCommand = new DelegateCommand<Window>(model.ShowEIC));
         private DelegateCommand<Window> showEicCommand;
+
+        public ReactiveCommand ShowExperimentSpectrumCommand { get; }
 
         public DelegateCommand<Window> ShowFragmentSearchSettingCommand => fragmentSearchSettingCommand ??
             (fragmentSearchSettingCommand = new DelegateCommand<Window>(fragmentSearchSettingMethod));

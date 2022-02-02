@@ -194,6 +194,10 @@
                               IsEnabled="True"
                               Command="{Binding ShowTicBpcRepEICCommand}"
                               KeyTip="C"/>
+                <RibbonButton Label="Show experiment spectrum"
+                              IsEnabled="True"
+                              Command="{Binding ShowExperimentSpectrumCommand, Mode=OneTime}"
+                              KeyTip="C"/>
                 <RibbonButton Label="Display retention time correction window"
                               IsEnabled="false"
                               KeyTip="R"/>

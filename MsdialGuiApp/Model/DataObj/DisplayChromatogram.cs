@@ -1,13 +1,11 @@
 ﻿using CompMs.Common.Components;
 using CompMs.CommonMVVM;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace CompMs.App.Msdial.Model.DataObj {
+namespace CompMs.App.Msdial.Model.DataObj
+{
     public class DisplayChromatogram : BindableBase {
 
         public DisplayChromatogram(List<ChromatogramPeak> peaks, Pen linePen = null, string title = "na") {

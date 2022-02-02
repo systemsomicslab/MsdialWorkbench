@@ -16,6 +16,7 @@ using ChartDrawingUiTest.DataGrid;
 using ChartDrawingUiTest.Controls;
 using ChartDrawingUiTest.UI;
 using ChartDrawingUiTest.Chart;
+using ChartDrawingUiTest.Behavior;
 
 namespace ChartDrawingUiTest
 {
@@ -52,6 +53,8 @@ namespace ChartDrawingUiTest
                 typeof(SimpleChart1),
                 typeof(MultiChart1),
                 typeof(ErrorBar1),
+                typeof(AreaSelectBehaviorTest),
+                typeof(RangeSelector),
             };
             pageType = pages.ToDictionary(type => type.Name);
             names = pageType.Keys.ToList();
