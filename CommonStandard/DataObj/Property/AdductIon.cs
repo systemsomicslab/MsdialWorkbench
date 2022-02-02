@@ -1,6 +1,8 @@
 ﻿using CompMs.Common.Enum;
+using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Parser;
 using MessagePack;
+using System;
 
 namespace CompMs.Common.DataObj.Property
 {
@@ -14,6 +16,15 @@ namespace CompMs.Common.DataObj.Property
 
         [Key(0)]
         public double AdductIonAccurateMass { get; set; }
+
+        public double ConvertToMz(double exactMass) {
+            return MolecularFormulaUtility.ConvertExactMassToPrecursorMz(this, exactMass);
+        }
+
+        public double ConvertToExactMass(double mz) {
+            return MolecularFormulaUtility.ConvertPrecursorMzToExactMass(this, mz);
+        }
+
         [Key(1)]
         public int AdductIonXmer { get; set; }
         [Key(2)]

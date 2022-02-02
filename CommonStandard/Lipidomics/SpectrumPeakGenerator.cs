@@ -18,7 +18,7 @@ namespace CompMs.Common.Lipidomics
             if (chain.DoubleBond.UnDecidedCount != 0 || chain.CarbonCount == 0) {
                 return Enumerable.Empty<SpectrumPeak>();
             }
-            var chainLoss = lipid.Mass - chain.Mass + adduct.AdductIonAccurateMass - nlMass;
+            var chainLoss = lipid.Mass - chain.Mass - nlMass;
             var diffs = new double[chain.CarbonCount];
             for (int i = 0; i < chain.CarbonCount; i++) {
                 diffs[i] = CH2;
@@ -34,9 +34,9 @@ namespace CompMs.Common.Lipidomics
 
             var peaks = new List<SpectrumPeak>();
             for (int i = 0; i < chain.CarbonCount - 1; i++) {
-                peaks.Add(new SpectrumPeak(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass, abundance * 0.5, $"{chain} C{i + 1}-H"));
-                peaks.Add(new SpectrumPeak(chainLoss + diffs[i], abundance, $"{chain} C{i + 1}"));
-                peaks.Add(new SpectrumPeak(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass, abundance * 0.5, $"{chain} C{i + 1}+H"));
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{chain} C{i + 1}-H"));
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), abundance, $"{chain} C{i + 1}"));
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{chain} C{i + 1}+H"));
             }
 
             return peaks;

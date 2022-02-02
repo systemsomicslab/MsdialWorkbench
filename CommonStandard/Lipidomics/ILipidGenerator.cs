@@ -14,7 +14,7 @@ namespace CompMs.Common.Lipidomics
             AcylChainGenerator = acylChainGenerator;
         }
 
-        public LipidGenerator() : this(new AcylChainGenerator(minLength: 6, begin: 3, end: 3, skip: 3)) {
+        public LipidGenerator() : this(new ChainGenerator(minLength: 6, begin: 3, end: 3, skip: 3)) {
 
         }
 

@@ -101,7 +101,7 @@ namespace CompMs.Common.Lipidomics
         {
             return new MoleculeMsReference
             {
-                PrecursorMz = lipid.Mass + adduct.AdductIonAccurateMass,
+                PrecursorMz = adduct.ConvertToMz(lipid.Mass),
                 IonMode = adduct.IonMode,
                 Spectrum = spectrum,
                 Name = lipid.Name,
@@ -120,8 +120,8 @@ namespace CompMs.Common.Lipidomics
             var adductmass = adduct.AdductIonName == "[M+NH4]+" ? MassDiffDictionary.ProtonMass : adduct.AdductIonAccurateMass;
             var spectrum = new List<SpectrumPeak>
             {
-                new SpectrumPeak(lipid.Mass + adduct.AdductIonAccurateMass, 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                new SpectrumPeak(C6H13O9P + adductmass, 150d, "Header"),
+                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                new SpectrumPeak(C6H13O9P + adductmass, 100d, "Header"),
                 new SpectrumPeak(Gly_C + adductmass, 100d, "Gly-C"),
                 new SpectrumPeak(Gly_O + adductmass, 100d, "Gly-O"),
                 new SpectrumPeak(lipid.Mass - C6H10O5 + adduct.AdductIonAccurateMass, 100d, "Precursor -C6H10O5")
@@ -143,7 +143,7 @@ namespace CompMs.Common.Lipidomics
             else if (adduct.AdductIonName == "[M+Na]+")
             {
                 spectrum.Add(
-                    new SpectrumPeak(lipid.Mass - C6H10O5 + adduct.AdductIonAccurateMass, 500d, "Precursor -C6H10O5")
+                    new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C6H10O5), 500d, "Precursor -C6H10O5")
                 );
             }
             return spectrum.ToArray();

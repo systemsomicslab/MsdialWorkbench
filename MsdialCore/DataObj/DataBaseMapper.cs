@@ -60,11 +60,11 @@ namespace CompMs.MsdialCore.DataObj
             return FindPeptideMsReferByAnnotatorID(result?.AnnotatorID)?.Refer(result);
         }
 
-        [Key(0)]
+        [IgnoreMember]
         [Obsolete("DataBaseMapper will no longer hold Annotator in the future.")]
         // Should not use setter.
         public List<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> MoleculeAnnotators { get; set; }
-        [Key(1)]
+        [IgnoreMember]
         [Obsolete("DataBaseMapper will no longer hold Annotator in the future.")]
         public List<ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>> PeptideAnnotators { get; set; }
 

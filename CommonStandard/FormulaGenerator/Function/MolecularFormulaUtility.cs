@@ -8,10 +8,8 @@ using System.Linq;
 using System.Text;
 
 namespace CompMs.Common.FormulaGenerator.Function {
-    public sealed class MolecularFormulaUtility
+    public static class MolecularFormulaUtility
     {
-        private MolecularFormulaUtility() { }
-
         public static double ConvertSinglyChargedPrecursorMzAsProtonAdduct(double precursorMz, double chargeNum) {
             var hydrogen = 1.00782504;
             return precursorMz * chargeNum - (chargeNum - 1) * hydrogen;
@@ -19,16 +17,15 @@ namespace CompMs.Common.FormulaGenerator.Function {
 
         public static double ConvertPrecursorMzToExactMass(AdductIon adductIon, double precursorMz)
         {
-            double monoIsotopicMass = (precursorMz * (double)adductIon.ChargeNumber - adductIon.AdductIonAccurateMass) / (double)adductIon.AdductIonXmer;
-            if (adductIon.IonMode == IonMode.Positive) monoIsotopicMass += 0.0005485799 * adductIon.ChargeNumber; else monoIsotopicMass -= 0.0005485799 * adductIon.ChargeNumber;
-            return monoIsotopicMass;
-        }
+            double monoIsotopicMass = (precursorMz * adductIon.ChargeNumber - adductIon.AdductIonAccurateMass) / adductIon.AdductIonXmer;
+            if (adductIon.IonMode == IonMode.Positive) {
+                monoIsotopicMass += 0.0005485799 * adductIon.ChargeNumber;
+            }
+            else {
+                monoIsotopicMass -= 0.0005485799 * adductIon.ChargeNumber;
+            }
 
-        public static double ConvertExactMassToPrecursorMz(AdductIon adductIon, double exactMass)
-        {
-            double precursorMz = (exactMass * adductIon.AdductIonXmer + adductIon.AdductIonAccurateMass) / adductIon.ChargeNumber;
-            if (adductIon.IonMode == IonMode.Positive) precursorMz -= 0.0005485799 * adductIon.ChargeNumber; else precursorMz += 0.0005485799 * adductIon.ChargeNumber;
-            return precursorMz;
+            return monoIsotopicMass;
         }
 
         public static double ConvertPrecursorMzToExactMass(double precursorMz, double adductMass, int chargeNum, int xMer, IonMode ionMode)
@@ -38,10 +35,16 @@ namespace CompMs.Common.FormulaGenerator.Function {
             return monoIsotopicMass;
         }
 
-        public static double ConvertExactMassToPrecursorMz(double exactMass, double adductMass, int chargeNum, int xMer, IonMode ionMode)
+        public static double ConvertExactMassToPrecursorMz(AdductIon adductIon, double exactMass)
         {
-            double precursorMz = (exactMass * xMer + adductMass) / chargeNum;
-            if (ionMode == IonMode.Positive) precursorMz -= 0.0005485799 * chargeNum; else precursorMz += 0.0005485799 * chargeNum;
+            double precursorMz = (exactMass * adductIon.AdductIonXmer + adductIon.AdductIonAccurateMass) / adductIon.ChargeNumber;
+            if (adductIon.IonMode == IonMode.Positive) {
+                precursorMz -= 0.0005485799 * adductIon.ChargeNumber;
+            }
+            else {
+                precursorMz += 0.0005485799 * adductIon.ChargeNumber;
+            }
+
             return precursorMz;
         }
 
