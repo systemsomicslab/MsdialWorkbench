@@ -127,6 +127,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
                                         group.GroupID.ToString(), protein.FastaProperty.UniqueIdentifier, protein.FastaProperty.ProteinName, protein.FastaProperty.Description,
                                         protein.PeptideCoverage.ToString(), protein.Score.ToString(), protein.MatchedPeptideResults.Count().ToString(), protein.UniquePeptides.Count().ToString()
                                     };
+
                                     foreach (var height in protein.PeakHeights) values.Add(height.ToString());
                                     sw.WriteLine(String.Join("\t", values));
                                 }

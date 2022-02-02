@@ -167,17 +167,10 @@ namespace CompMs.Common.Lipidomics
             var chainMass = acylChain.Mass - MassDiffDictionary.HydrogenMass;
             return new[]
             {
-<<<<<<< HEAD
-                new SpectrumPeak(lipidMass - chainMass , 100d, $"-{acylChain}"),
-                new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass, 100d, $"-{acylChain}-O"),
-                new SpectrumPeak(lipidMass - chainMass - C3H8NO6P , 100d, $"-Header -{acylChain}"),
-                new SpectrumPeak(lipidMass - chainMass  - C3H8NO6P - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass, 100d, $"-Header -{acylChain}-O"),
-=======
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass), 50d, $"-{acylChain}"),
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass), 50d, $"-{acylChain}-O"),
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - C3H8NO6P), 50d, $"-Header -{acylChain}"),
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass  - C3H8NO6P - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass), 50d, $"-Header -{acylChain}-O"),
->>>>>>> origin/yuki.matsuzawa
             };
         }
 
