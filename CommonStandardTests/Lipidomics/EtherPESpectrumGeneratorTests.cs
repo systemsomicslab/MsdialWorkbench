@@ -214,7 +214,7 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         [TestMethod()]
-        public void GenerateEtherPEPTest2()//PE O-18:1(1)_18:1(9)
+        public void GenerateEtherPEPTest2_H()//PE O-18:1(1)_18:1(9)
         {
             var alkyl = new AlkylChain(18, DoubleBond.CreateFromPosition(1), new Oxidized(0));
             var acyl = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
@@ -316,7 +316,108 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         [TestMethod()]
-        public void GenerateEtherPEOTest2()//PE O-16:0_18:1(9)
+        public void GenerateEtherPEPTest2_Na()//PE O-18:1(1)_18:1(9)
+        {
+            var alkyl = new AlkylChain(18, DoubleBond.CreateFromPosition(1), new Oxidized(0));
+            var acyl = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
+            var lipid = new Lipid(LbmClass.EtherPE, 729.5672409, new PositionLevelChains(alkyl, acyl));
+
+            var generator = new EtherPESpectrumGenerator();
+            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+
+            var expects = new[]
+            {
+                164.0089442 ,//Header
+                204.0399442 ,//Gly-C
+                206.0189442 ,//Gly-O
+                330.2540034 ,//- Header -CH2(Sn1)
+                469.2927389 ,//Sn2 FA loss
+                471.2720034 ,//-CH2
+                485.2876535 ,//Sn1 Ether loss
+                487.3033036 ,//Sn2 Acyl loss
+                502.2903931 ,//Sn1 chain loss
+                513.2903931 ,//Sn1-Δ1-H
+                514.2903931 ,//Sn2-1-H
+                515.2982182 ,//Sn1-Δ1,//Sn2-1
+                516.3060432 ,//Sn1-Δ1+H,//Sn2-1+H
+                526.2903931 ,//Sn1-2-H
+                527.2982182 ,//Sn1-2
+                528.3060432 ,//Sn1-2,//Sn2-2-H
+                529.3138682 ,//Sn1-2+H,//Sn2-2
+                530.3216933 ,//Sn2-2+H
+                540.3060432 ,//Sn1-3-H
+                541.3138682 ,//Sn1-3
+                542.3216933 ,//Sn1-3+H,//Sn2-3-H
+                543.3295183 ,//Sn2-3
+                544.3373433 ,//Sn2-3+H
+                554.3216933 ,//Sn1-4-H
+                555.3295183 ,//Sn1-4
+                556.3373433 ,//Sn1-4+H,//Sn2-4-H
+                557.3451684 ,//Sn2-4
+                558.3529934 ,//Sn2-4+H
+                568.3373433 ,//Sn1-5-H
+                569.3451684 ,//Sn1-5
+                570.3529934 ,//Sn1-5+H,//Sn2-5-H
+                571.3608184 ,//Sn2-5
+                572.3686435 ,//Sn2-5+H
+                582.3529934 ,//Sn1-6-H
+                583.3608184 ,//Sn1-6
+                584.3686435 ,//Sn1-6+H,//Sn2-6-H
+                585.3764685 ,//Sn2-6
+                586.3842935 ,//Sn2-6+H
+                596.3686435 ,//Sn1-7-H
+                597.3764685 ,//Sn1-7
+                598.3842935 ,//Sn1-7+H,//Sn2-7-H
+                599.3921186 ,//Sn2-7
+                600.3999436 ,//Sn2-7+H
+                610.3842935 ,//Sn1-8-H
+                611.3921186 ,//Sn1-8
+                612.3999436 ,//Sn1-8+H,//Sn2-8-H
+                613.4077686 ,//Sn2-8
+                614.4155937 ,//Sn2-8+H
+                624.3999436 ,//Sn1-9-H
+                625.4077686 ,//Sn1-9,//Sn2-Δ9-H
+                626.4155937 ,//Sn2-Δ9,//Sn1-9+H
+                627.4234187 ,//Sn2-Δ9+H
+                638.4155937 ,//Sn1-10-H,Sn2-10-H
+                639.4234187 ,//Sn1-10,Sn2-10
+                640.4312437 ,//Sn1-10+H,Sn2-10+H
+                652.4312437 ,//Sn1-11-H,Sn2-11-H
+                653.4390688 ,//Sn1-11,Sn2-11
+                654.4468938 ,//Sn1-11+H,Sn2-11+H
+                666.4468938 ,//Sn1-12-H,Sn2-12-H
+                667.4547188 ,//Sn1-12,Sn2-12
+                668.4625439 ,//Sn1-12+H,Sn2-12+H
+                680.4625439 ,//Sn1-13-H,Sn2-13-H
+                681.4703689 ,//Sn1-13,Sn2-13
+                682.4781939 ,//Sn1-13+H,Sn2-13+H
+                //692.5120713 ,//Precursor -C2H6NO
+                694.4781939 ,//Sn1-14-H,Sn2-14-H
+                695.4860189 ,//Sn1-14,Sn2-14
+                696.493844  ,//Sn1-14+H,Sn2-14+H
+                708.493844  ,//Sn1-15-H,Sn2-15-H
+                709.501669  ,//Sn1-15,Sn2-15
+                709.514811  ,//Precursor -C2H5N
+                710.509494  ,//Sn1-15+H,Sn2-15+H
+                722.509494  ,//Sn1-16-H,Sn2-16-H
+                723.5173191 ,//Sn1-16,Sn2-16
+                724.5251441 ,//Sn1-16+H,Sn2-16+H
+                736.5251441 ,//Sn1-17-H,Sn2-17-H
+                737.5329691 ,//Sn1-17,Sn2-17
+                738.5407942 ,//Sn1-17+H,Sn2-17+H
+                752.5564642 ,//Precursor
+            };
+
+            scan.Spectrum.ForEach(spec => Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
+            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            {
+                Assert.AreEqual(expect, actual, 0.01d);
+            }
+        }
+
+
+        [TestMethod()]
+        public void GenerateEtherPEOTest2_H()//PE O-16:0_18:1(9)
         {
             var alkyl = new AlkylChain(16, DoubleBond.CreateFromPosition(), new Oxidized(0));
             var acyl = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
@@ -405,6 +506,105 @@ namespace CompMs.Common.Lipidomics.Tests
                 689.5354249 ,//Sn1-15,//Sn2-17
                 690.5432499 ,//Sn1-15+H,//Sn2-17+H
                 704.5589    , // precursor
+            };
+
+            scan.Spectrum.ForEach(spec => Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
+            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            {
+                Assert.AreEqual(expect, actual, 0.01d);
+            }
+        }
+        [TestMethod()]
+        public void GenerateEtherPEOTest2_Na()//PE O-16:0_18:1(9)
+        {
+            var alkyl = new AlkylChain(16, DoubleBond.CreateFromPosition(), new Oxidized(0));
+            var acyl = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
+            var lipid = new Lipid(LbmClass.EtherPE, 703.5515909, new PositionLevelChains(alkyl, acyl));
+
+            var generator = new EtherPESpectrumGenerator();
+            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+
+            var expects = new[]
+            {
+                164.0089442 ,//Header
+                204.0399442 ,//Gly-C
+                206.0189442 ,//Gly-O
+                302.2591389 ,// -Header and FA loss
+                321.2775286 ,// -Header and Acyl loss
+                330.2540535 ,// -Header and -CH2
+                343.2618785 ,// -Header and Ether loss
+                361.2724432 ,// -Header and Sn1 Chain loss
+                443.2771389 ,//FA loss
+                462.2955286 ,//Acyl loss
+                471.2720535 ,//-CH2
+                485.2877036 ,//Ether loss
+                488.2747931 ,//Sn2-1-H
+                489.2826182 ,//Sn2-1
+                490.2904432 ,//Sn2-1+H
+                502.2904432 ,//Sn1 Chain loss ,//Sn2-2-H
+                503.2982682 ,//Sn2-2
+                504.3060933 ,//Sn2-2+H
+                514.2904432 ,//Sn1-1-H
+                515.2982682 ,//Sn1-1
+                516.3060933 ,//Sn1-1+H,//Sn2-3-H
+                517.3139183 ,//Sn2-3
+                518.3217433 ,//Sn2-3+H
+                528.3060933 ,//Sn1-2-H
+                529.3139183 ,//Sn1-2
+                530.3217433 ,//Sn1-2+H,//Sn2-4-H
+                531.3295684 ,//Sn2-4
+                532.3373934 ,//Sn2-4+H
+                542.3217433 ,//Sn1-3-H
+                543.3295684 ,//Sn1-3
+                544.3373934 ,//Sn1-3+H,//Sn2-5-H
+                545.3452184 ,//Sn2-5
+                546.3530435 ,//Sn2-5+H
+                556.3373934 ,//Sn1-4-H
+                557.3452184 ,//Sn1-4
+                558.3530435 ,//Sn1-4+H,//Sn2-6-H
+                559.3608685 ,//Sn2-6
+                560.3686935 ,//Sn2-6+H
+                570.3530435 ,//Sn1-5-H
+                571.3608685 ,//Sn1-5
+                572.3686935 ,//Sn1-5+H,//Sn2-7-H
+                573.3765186 ,//Sn2-7
+                574.3843436 ,//Sn2-7+H
+                584.3686935 ,//Sn1-6-H
+                585.3765186 ,//Sn1-6
+                586.3843436 ,//Sn1-6+H,//Sn2-8-H
+                587.3921686 ,//Sn2-8
+                588.3999937 ,//Sn2-8+H
+                598.3843436 ,//Sn1-7-H
+                599.3921686 ,//Sn1-7,//Sn2-Δ9-H
+                600.3999937 ,//Sn2-Δ9,//Sn1-7+H
+                601.4078187 ,//Sn2-Δ9+H
+                612.3999937 ,//Sn1-8-H,//Sn2-10-H
+                613.4078187 ,//Sn1-8,//Sn2-10
+                614.4156437 ,//Sn1-8+H,//Sn2-10+H
+                626.4156437 ,//Sn1-9-H,//Sn2-11-H
+                627.4234688 ,//Sn1-9,//Sn2-11
+                628.4312938 ,//Sn1-9+H,//Sn2-11+H
+                640.4312938 ,//Sn1-10-H,//Sn2-12-H
+                641.4391188 ,//Sn1-10,//Sn2-12
+                642.4469439 ,//Sn1-10+H,//Sn2-12+H
+                654.4469439 ,//Sn1-11-H,//Sn2-13-H
+                655.4547689 ,//Sn1-11,//Sn2-13
+                656.4625939 ,//Sn1-11+H,//Sn2-13+H
+                666.49587   ,//Precursor -C2H6NO
+                668.4625939 ,//Sn1-12-H,//Sn2-14-H
+                669.4704189 ,//Sn1-12,//Sn2-14
+                670.478244  ,//Sn1-12+H,//Sn2-14+H
+                682.478244  ,//Sn1-13-H,//Sn2-15-H
+                683.486069  ,//Sn1-13,//Sn2-15
+                683.49916   ,//Precursor -C2H5N
+                684.493894  ,//Sn1-13+H,//Sn2-15+H
+                696.493894  ,//Sn1-14-H,//Sn2-16-H
+                697.5017191 ,//Sn1-14,//Sn2-16
+                698.5095441 ,//Sn1-14+H,//Sn2-16+H
+                710.5095441 ,//Sn1-15-H,//Sn2-17-H
+                711.5173691 ,//Sn1-15,//Sn2-17
+                712.5251942 ,//Sn1-15+H,//Sn2-17+H
+                726.5408442 , // precursor
             };
 
             scan.Spectrum.ForEach(spec => Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));

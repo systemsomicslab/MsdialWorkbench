@@ -31,6 +31,12 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.OxygenMass,
         }.Sum();
 
+        private static readonly double C5H11N = new[] {
+            MassDiffDictionary.CarbonMass * 5,
+            MassDiffDictionary.HydrogenMass * 11,
+            MassDiffDictionary.NitrogenMass,
+        }.Sum();
+
         private static readonly double Gly_C = new[] {
             MassDiffDictionary.CarbonMass * 8,
             MassDiffDictionary.HydrogenMass * 18,
@@ -149,7 +155,7 @@ namespace CompMs.Common.Lipidomics
                      new[]
                      {
                          new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C3H9N), 800d, "Precursor -C3H9N"),
-                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C3H9N - MassDiffDictionary.OxygenMass), 200d, "Precursor -C3H9NO"),
+                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C5H11N), 200d, "Precursor -C5H11N"),
                      }
                 );
             }
@@ -170,7 +176,7 @@ namespace CompMs.Common.Lipidomics
                      new[]
                      {
                          new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass), 100d, $"-{acylChain}"),
-                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - H2O + MassDiffDictionary.HydrogenMass), 100d, $"-{acylChain}-O"),
+                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - chainMass - H2O), 100d, $"-{acylChain}-O"),
                      }
                 );
             }

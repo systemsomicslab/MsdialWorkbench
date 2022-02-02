@@ -149,7 +149,6 @@ namespace CompMs.Common.Lipidomics
                     {
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C3H8NO6P), 500d, "Precursor -C3H8NO6P"),
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - CHO2), 200d, "Precursor -CHO2"),
-                                    new SpectrumPeak(lipid.Mass - H2O + adduct.AdductIonAccurateMass, 100d, "Precursor -H2O"),
                         new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - H2O), 100d, "Precursor -H2O"),
                         new SpectrumPeak(adduct.ConvertToMz(C3H9O6P), 100d, "C3H9O6P"),
                         new SpectrumPeak(adduct.ConvertToMz(C3H9O6P- H2O), 100d, "C3H9O6P - H2O"),
@@ -200,7 +199,7 @@ namespace CompMs.Common.Lipidomics
             var chainMass = acylChain.Mass - MassDiffDictionary.HydrogenMass;
             return new[]
             {
-                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - MassDiffDictionary.OxygenMass - CH2), 100d, "-CH2(Sn1)"),
+                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - H2O - CH2), 100d, "-CH2(Sn1)"),
             };
         }
 
