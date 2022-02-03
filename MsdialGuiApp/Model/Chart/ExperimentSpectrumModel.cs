@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.App.Msdial.Model.MsResult;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
@@ -7,7 +8,6 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -26,7 +26,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
             RangeSelectableChromatogramModel = model;
             this.provider = provider;
-            Spectrums = new ObservableCollection<SpectrumCollection>();
+            Spectrums = new ObservableCollection<SummarizedSpectrumModel>();
             Peak = peak;
             Refer = refer;
             Parameter = parameter;
@@ -34,11 +34,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public RangeSelectableChromatogramModel RangeSelectableChromatogramModel { get; }
 
-        public ObservableCollection<SpectrumCollection> Spectrums {
-            get => spectrums;
-            set => SetProperty(ref spectrums, value);
-        }
-        private ObservableCollection<SpectrumCollection> spectrums;
+        public ObservableCollection<SummarizedSpectrumModel> Spectrums { get; }
 
         public ChromatogramPeakFeature Peak { get; }
 
@@ -58,7 +54,11 @@ namespace CompMs.App.Msdial.Model.Chart
             (var mainStart, var mainEnd) = rangeModel.ConvertToRt(rangeModel.SelectedRanges[1]);
             (var subStart, var subEnd) = rangeModel.ConvertToRt(rangeModel.SelectedRanges[0]);
 
-            Spectrums = new ObservableCollection<SpectrumCollection>(experiments.Select(exp => new SpectrumCollection(DataAccess.GetSubtractSpectrum(spectrum, mainStart, mainEnd, subStart, subEnd, 1e-2, exp), exp)));
+            Spectrums.Clear();
+
+            foreach (var exp in experiments) {
+                Spectrums.Add(new SummarizedSpectrumModel(DataAccess.GetSubtractSpectrum(spectrum, mainStart, mainEnd, subStart, subEnd, 1e-2, exp), exp));
+            }
         }
 
         public void SaveSpectrumAsNist(string mspFileName) {
@@ -71,26 +71,5 @@ namespace CompMs.App.Msdial.Model.Chart
             }
             Peak.Comment = comment;
         }
-
-        public bool CanSaveSpectrumAsNist(string mspFileName) {
-            return Spectrums != null;
-        }
-
-    }
-
-    public class SpectrumCollection : BindableBase
-    {
-        public SpectrumCollection(List<SpectrumPeak> spectrums, int experimentId) {
-            Spectrums = spectrums;
-            ExperimentId = experimentId;
-        }
-
-        public List<SpectrumPeak> Spectrums {
-            get => spectrums;
-            set => SetProperty(ref spectrums, value);
-        }
-        private List<SpectrumPeak> spectrums;
-
-        public int ExperimentId { get; }
     }
 }

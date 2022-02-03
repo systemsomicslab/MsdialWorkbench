@@ -106,6 +106,11 @@ namespace CompMs.Graphics.Chart
                     Adorners.Remove(adorner);
                 }
             }
+            if (e.Action == NotifyCollectionChangedAction.Reset) {
+                var adorners = Adorners;
+                adorners.ForEach(adorner => adorner.Detach());
+                adorners.Clear();
+            }
             if (e.NewItems != null) {
                 foreach (var item in e.NewItems.OfType<RangeSelection>()) {
                     var adorner = new RangeSelectAdorner(this, item);
