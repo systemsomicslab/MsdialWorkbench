@@ -29,7 +29,7 @@ namespace CompMs.Common.Enum {
         nmol_per_microL_plasma, pmol_per_microL_plasma, fmol_per_microL_plasma,
         nmol_per_mg_tissue, pmol_per_mg_tissue, fmol_per_mg_tissue,
         nmol_per_10E6_cells, pmol_per_10E6_cells, fmol_per_10E6_cells,
-        NormalizedByInternalStandardPeakHeight, NormalizedByQcPeakHeight, NormalizedByTIC, NormalizedByMTIC
+        NormalizedByInternalStandardPeakHeight, NormalizedByQcPeakHeight, NormalizedByMaxPeakOnTIC, NormalizedByMaxPeakOnNamedPeaks
     }
     public enum PeakLinkFeatureEnum {
         SameFeature, Isotope, Adduct, ChromSimilar, FoundInUpperMsMs, CorrelSimilar

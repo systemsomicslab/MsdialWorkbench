@@ -92,7 +92,7 @@ namespace CompMs.App.Msdial.Model.Normalize
             }
             parameter.StandardCompounds = compounds;
             var unit = OutputUnit.Unit;
-            SplashNormalization.Normalize(spots, refer, compounds, unit, evaluator);
+            Normalization.SplashNormalize(spots, refer, compounds, unit, evaluator);
             container.IsNormalized = true;
         }
 

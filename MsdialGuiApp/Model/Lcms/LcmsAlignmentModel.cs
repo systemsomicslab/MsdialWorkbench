@@ -56,13 +56,13 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             Annotators = annotators;
-            container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(AlignmentFile.FilePath);
-            if (container == null) {
+            Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(AlignmentFile.FilePath);
+            if (Container == null) {
                 MessageBox.Show("No aligned spot information.");
             }
-            Ms1Spots = container == null ? new ObservableCollection<AlignmentSpotPropertyModel>() : 
+            Ms1Spots = Container == null ? new ObservableCollection<AlignmentSpotPropertyModel>() : 
                 new ObservableCollection<AlignmentSpotPropertyModel>(
-                container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
+                Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
            
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             this.decLoader = new MSDecLoader(AlignmentFile.SpectraFilePath);
@@ -163,7 +163,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
-        private readonly AlignmentResultContainer container;
+        public readonly AlignmentResultContainer Container;
 
         public AlignmentFileBean AlignmentFile { get; }
         public ParameterBase Parameter { get; }
@@ -195,7 +195,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private IBrushMapper<AlignmentSpotPropertyModel> selectedBrush;
 
         public void SaveProject() {
-            MessagePackHandler.SaveToFile(container, AlignmentFile.FilePath);
+            MessagePackHandler.SaveToFile(Container, AlignmentFile.FilePath);
         }
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
