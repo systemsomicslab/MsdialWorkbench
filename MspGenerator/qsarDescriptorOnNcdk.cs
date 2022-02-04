@@ -88,7 +88,7 @@ namespace CompMs.MspGenerator
 
                 var descriptorsAll = new Dictionary<long, Dictionary<string, double>>();
                 ParallelOptions parallelOptions = new ParallelOptions();
-                parallelOptions.MaxDegreeOfParallelism = 4;
+                parallelOptions.MaxDegreeOfParallelism = 20;
                 Parallel.For(0, queries.Count, parallelOptions, i =>
                 {
                     var id = long.Parse(queries[i][0]);
@@ -473,11 +473,23 @@ namespace CompMs.MspGenerator
 
                     foreach (var item in atomCountDic)
                     {
-                        descriptors.Add(item.Key, double.Parse(item.Value));
+                        var d = 0.0;
+                        if (double.TryParse(item.Value, out d)) {
+                            descriptors.Add(item.Key, d);
+                        }
+                        else {
+                            descriptors.Add(item.Key, double.MinValue);
+                        }
                     }
                     foreach (var item in MolDescriptorResuitDic)
                     {
-                        descriptors.Add(item.Key, double.Parse(item.Value));
+                        var d = 0.0;
+                        if (double.TryParse(item.Value, out d)) {
+                            descriptors.Add(item.Key, d);
+                        }
+                        else {
+                            descriptors.Add(item.Key, double.MinValue);
+                        }
                     }
 
                     var result = new DescriptorResultTemp() { ID = id, InChIKey = inchikey, SMILES = smiles, Descriptor = descriptors };
@@ -485,13 +497,23 @@ namespace CompMs.MspGenerator
 
                     lock (syncObj)
                     {
-                        results.Add(result);
-
-                            sw.Write(queries[i][3]);
+                        //results.Add(result);
+                        sw.Write(queries[i][3]);
                         foreach (var item in allDescriptorHeader)
                         {
                             sw.Write("\t");
-                            sw.Write(result.Descriptor[item]);
+                            if (result.Descriptor.ContainsKey(item)) {
+                                var value = result.Descriptor[item];
+                                if (value == double.MinValue) {
+                                    sw.Write("NA");
+                                }
+                                else {
+                                    sw.Write(result.Descriptor[item]);
+                                }
+                            }
+                            else {
+                                sw.Write("NA");
+                            }
                         }
                         sw.WriteLine("");
                         counter++;
