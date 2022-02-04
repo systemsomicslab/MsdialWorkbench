@@ -201,8 +201,7 @@
                     <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="1" Grid.Column="1" 
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                                 xmlns:pairplot="clr-namespace:CompMs.App.Msdial.View.PairwisePlot"
-                                SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged"
-                                SelectedValue="{Binding SelectedViewModel.Value}">
+                                SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged">
                         <!--SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged"-->
 
                         <TabItem Header="Peak spot viewer" 
@@ -350,7 +349,7 @@
                                   Grid.ColumnSpan="2" 
                                   VerticalAlignment="Bottom" 
                                   HorizontalAlignment="Stretch" 
-                                  Grid.Row="1" />
+                                  Grid.Row="0" />
 
                 </Grid>
 

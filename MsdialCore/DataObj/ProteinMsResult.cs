@@ -13,7 +13,8 @@ namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
     public class ProteinMsResult {
         public ProteinMsResult() { }
-        public ProteinMsResult(string databaseID, int index, FastaProperty fasta) {
+        [SerializationConstructor]
+        public ProteinMsResult(int index, string databaseID, FastaProperty fasta) {
             DatabaseID = databaseID;
             FastaProperty = fasta;
             Index = index;
@@ -28,7 +29,6 @@ namespace CompMs.MsdialCore.DataObj {
         public bool IsAnnotated { get; set; }
         [Key(4)]
         public List<PeptideMsResult> MatchedPeptideResults { get; set; } = new List<PeptideMsResult>();
-
 
         internal void PropertyUpdates() {
             if (IsAnnotated) {
@@ -227,14 +227,8 @@ namespace CompMs.MsdialCore.DataObj {
             Peptide = peptide;
             ChromatogramPeakFeature = feature;
             ShotgunProteomicsDatabaseID = id;
-            
-            PEPScore = GetPEPScore();
-            Heights = GetHeights();
-            AreasAboveZero = GetAreasAboveZero();
-            AreasAboveBaseline = GetAreasAboveBaseline();
-            NormalizedPeakHeights = GetNormalizedPeakHeights();
-            NormalizedAreasAboveZero = GetNormalizedAreasAboveZero();
-            NormalizedAreasAboveBaseline = GetNormalizedAreasAboveBaseline();
+
+            PropertyUpdates();
         }
 
         public PeptideMsResult(Peptide peptide, AlignmentSpotProperty feature, string id) {
@@ -242,6 +236,10 @@ namespace CompMs.MsdialCore.DataObj {
             AlignmentSpotProperty = feature;
             ShotgunProteomicsDatabaseID = id;
 
+            PropertyUpdates();
+        }
+
+        internal void PropertyUpdates() {
             PEPScore = GetPEPScore();
             Heights = GetHeights();
             AreasAboveZero = GetAreasAboveZero();
@@ -252,16 +250,16 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         [Key(0)]
-        public Peptide Peptide { get; }
+        public Peptide Peptide { get; set; }
         [Key(1)]
-        public ChromatogramPeakFeature ChromatogramPeakFeature { get; }
+        public ChromatogramPeakFeature ChromatogramPeakFeature { get; set; }
         [Key(2)]
-        public AlignmentSpotProperty AlignmentSpotProperty { get; }
+        public AlignmentSpotProperty AlignmentSpotProperty { get; set; }
         [Key(3)]
-        public string ShotgunProteomicsDatabaseID { get; }
+        public string ShotgunProteomicsDatabaseID { get; set; }
 
         [IgnoreMember]
-        public float PEPScore { get; }
+        public float PEPScore { get; set; }
         public float GetPEPScore() { 
             return ChromatogramPeakFeature is null && AlignmentSpotProperty is null 
                 ? 0.0F 
@@ -271,7 +269,7 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         [IgnoreMember]
-        public List<double> Heights { get; }
+        public List<double> Heights { get; set; }
         public List<double> GetHeights() {
             if (ChromatogramPeakFeature is null && AlignmentSpotProperty is null) return null;
             if (ChromatogramPeakFeature is null) {
@@ -283,7 +281,7 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         [IgnoreMember]
-        public List<double> AreasAboveZero { get; }
+        public List<double> AreasAboveZero { get; set; }
         public List<double> GetAreasAboveZero() {
             if (ChromatogramPeakFeature is null && AlignmentSpotProperty is null) return null;
             if (ChromatogramPeakFeature is null) {
@@ -295,7 +293,7 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         [IgnoreMember]
-        public List<double> AreasAboveBaseline { get; }
+        public List<double> AreasAboveBaseline { get; set; }
         public List<double> GetAreasAboveBaseline() {
             if (ChromatogramPeakFeature is null && AlignmentSpotProperty is null) return null;
             if (ChromatogramPeakFeature is null) {
@@ -307,7 +305,7 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         [IgnoreMember]
-        public List<double> NormalizedPeakHeights { get; }
+        public List<double> NormalizedPeakHeights { get; set; }
         public List<double> GetNormalizedPeakHeights() {
             if (ChromatogramPeakFeature is null && AlignmentSpotProperty is null) return null;
             if (ChromatogramPeakFeature is null) {
@@ -319,7 +317,7 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         [IgnoreMember]
-        public List<double> NormalizedAreasAboveZero { get; }
+        public List<double> NormalizedAreasAboveZero { get; set; }
         public List<double> GetNormalizedAreasAboveZero() {
             if (ChromatogramPeakFeature is null && AlignmentSpotProperty is null) return null;
             if (ChromatogramPeakFeature is null) {
@@ -331,7 +329,7 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         [IgnoreMember]
-        public List<double> NormalizedAreasAboveBaseline { get; }
+        public List<double> NormalizedAreasAboveBaseline { get; set; }
         public List<double> GetNormalizedAreasAboveBaseline() {
             if (ChromatogramPeakFeature is null && AlignmentSpotProperty is null) return null;
             if (ChromatogramPeakFeature is null) {

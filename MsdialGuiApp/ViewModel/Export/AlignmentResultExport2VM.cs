@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Data;
 
@@ -107,11 +108,34 @@ namespace CompMs.App.Msdial.ViewModel.Export
             var msdecResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
 
             var exporter = Format.Exporter;
-
+            
             foreach (var exportType in ExportTypes.Where(type => type.IsSelected)) {
                 var outfile = Path.Combine(ExportDirectory, $"{exportType.FilePrefix}_{alignmentFile.FileID}_{dt:yyyy_MM_dd_HH_mm_ss}.txt");
                 using (var outstream = File.Open(outfile, FileMode.Create, FileAccess.Write)) {
-                    exporter.Export(
+                    if (exportType.FilePrefix == "Protein") {
+                        var container = MsdialProteomicsSerializer.LoadProteinResultContainer(alignmentFile.ProteinAssembledResultFilePath);
+                        var header = new List<string>() {
+                            "Protein group ID", "Protein ID", "Protein name", "Protein description", "Coverage", "Score", "Peptide count", "Unique peptide count"
+                        };
+                        foreach (var file in files) header.Add(file.AnalysisFileName);
+                        using (var sw = new StreamWriter(outstream, Encoding.ASCII)) {
+                            sw.WriteLine(String.Join("\t", header));
+                            foreach (var group in container.ProteinGroups) {
+                                foreach (var protein in group.ProteinMsResults) {
+
+                                    var values = new List<string>() {
+                                        group.GroupID.ToString(), protein.FastaProperty.UniqueIdentifier, protein.FastaProperty.ProteinName, protein.FastaProperty.Description,
+                                        protein.PeptideCoverage.ToString(), protein.Score.ToString(), protein.MatchedPeptideResults.Count().ToString(), protein.UniquePeptides.Count().ToString()
+                                    };
+
+                                    foreach (var height in protein.PeakHeights) values.Add(height.ToString());
+                                    sw.WriteLine(String.Join("\t", values));
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        exporter.Export(
                         outstream,
                         resultContainer.AlignmentSpotProperties,
                         msdecResults,
@@ -119,6 +143,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
                         exportType.MetadataAccessor,
                         exportType.QuantValueAccessor,
                         exportType.Stats);
+                    }
                 }
             }
         }
