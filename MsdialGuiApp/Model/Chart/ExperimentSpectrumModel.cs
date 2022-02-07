@@ -57,7 +57,7 @@ namespace CompMs.App.Msdial.Model.Chart
             Spectrums.Clear();
 
             foreach (var exp in experiments) {
-                Spectrums.Add(new SummarizedSpectrumModel(DataAccess.GetSubtractSpectrum(spectrum, mainStart, mainEnd, subStart, subEnd, 1e-2, exp), exp));
+                Spectrums.Add(new SummarizedSpectrumModel(DataAccess.GetSubtractSpectrum(spectrum, mainStart, mainEnd, subStart, subEnd, 1e-3, exp), exp));
             }
         }
 
