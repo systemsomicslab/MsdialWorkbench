@@ -60,7 +60,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 throw new ArgumentNullException(nameof(providerFactory));
             }
             Storage = storage;
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(Storage.DataBaseMapper);
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             this.providerFactory = providerFactory;
             this.barItemsLoader = barItemsLoader;
         }
@@ -168,7 +168,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
             }
             Storage.DataBaseMapper = CreateDataBaseMapper(Storage.DataBases);
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(Storage.DataBaseMapper);
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             return true;
         }
 

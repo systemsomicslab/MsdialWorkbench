@@ -51,7 +51,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Storage = storage;
             providerFactory = new StandardDataProviderFactory();
             accProviderFactory = new LcimmsAccumulateDataProviderFactory();
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(storage.DataBaseMapper);
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
         }
 
         private FacadeMatchResultEvaluator matchResultEvaluator;
@@ -122,7 +122,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             annotationProcess = BuildAnnotationProcess(Storage.DataBases, Storage.MsdialLcImMsParameter.PeakPickBaseParam);
             Storage.DataBaseMapper = CreateDataBaseMapper(Storage.DataBases);
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(Storage.DataBaseMapper);
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
         }
 
         private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {

@@ -59,5 +59,25 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
             return evaluator;
         }
+
+        public static FacadeMatchResultEvaluator FromDataBases(DataBaseStorage storage) {
+            var evaluator = new FacadeMatchResultEvaluator();
+            foreach (var db in storage.MetabolomicsDataBases) {
+                foreach (var pair in db.Pairs) {
+                    evaluator.Add(pair.AnnotatorID, pair.SerializableAnnotator);
+                }
+            }
+            foreach (var db in storage.ProteomicsDataBases) {
+                foreach (var pair in db.Pairs) {
+                    evaluator.Add(pair.AnnotatorID, pair.SerializableAnnotator);
+                }
+            }
+            foreach (var db in storage.EadLipidomicsDatabases) {
+                foreach (var pair in db.Pairs) {
+                    evaluator.Add(pair.AnnotatorID, pair.SerializableAnnotator);
+                }
+            }
+            return evaluator;
+        }
     }
 }
