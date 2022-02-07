@@ -434,6 +434,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 }
                 if (excludeChecker) continue;
                 var chromPeakFeature = DataAccess.GetChromatogramPeakFeature(result, type, unit, mass);
+                chromPeakFeature.IonMode = param.IonMode;
                 chromPeakFeatures.Add(chromPeakFeature);
             }
             return chromPeakFeatures;
