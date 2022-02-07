@@ -61,6 +61,44 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
             return smoothedPeaklist;
         }
 
+        public static List<SpectrumPeak> LinearWeightedMovingAverage(IReadOnlyList<ISpectrumPeak> peaklist, int smoothingLevel) {
+            var n = peaklist.Count;
+            var intensities = new double[n + smoothingLevel * 2 + 2];
+            int normalizationValue = (smoothingLevel + 1) * (smoothingLevel + 1);
+
+            for (int i = 0; i < n; i++) {
+                intensities[i] += peaklist[i].Intensity;
+                intensities[i + smoothingLevel + 1] -= peaklist[i].Intensity * 2;
+                intensities[i + smoothingLevel * 2 + 2] += peaklist[i].Intensity;
+            }
+
+            for (int i = 1; i < intensities.Length; i++) {
+                intensities[i] += intensities[i - 1];
+            }
+
+            for (int i = 1; i < intensities.Length; i++) {
+                intensities[i] += intensities[i - 1];
+            }
+
+            for (int i = 0; i < Math.Min(smoothingLevel, n); i++) {
+                intensities[i + smoothingLevel] += peaklist[i].Intensity * ((smoothingLevel - i + 1) * (smoothingLevel - i) / 2);
+            }
+
+            for (int i = 0; i < Math.Min(smoothingLevel, n); i++) {
+                intensities[n - 1 - i + smoothingLevel] += peaklist[n - 1 - i].Intensity * ((smoothingLevel - i + 1) * (smoothingLevel - i) / 2);
+            }
+
+            var smoothedPeaklist = new List<SpectrumPeak>(n);
+            for (int i = 0; i < n; i++) {
+                smoothedPeaklist.Add(new SpectrumPeak {
+                    Mass = peaklist[i].Mass,
+                    Intensity = intensities[i + smoothingLevel] / normalizationValue
+                });
+            }
+
+            return smoothedPeaklist;
+        }
+
         // imos method
         public static List<ChromatogramPeak> SimpleMovingAverage(IReadOnlyList<IChromatogramPeak> peaklist, int smoothingLevel)
         {
