@@ -13,7 +13,7 @@ namespace CompMs.App.SpectrumViewer.Model
     public class LipidReferenceCollection : BindableBase, IScanCollection
     {
         public LipidReferenceCollection() {
-            Adducts = new List<AdductIon> { AdductIonParser.GetAdductIonBean("[M+NH4]+") }.AsReadOnly();
+            Adducts = new List<AdductIon> { AdductIonParser.GetAdductIonBean("[M+H]+") }.AsReadOnly();
             Adduct = Adducts.First();
             Scans = new ObservableCollection<IMSScanProperty>();
 
