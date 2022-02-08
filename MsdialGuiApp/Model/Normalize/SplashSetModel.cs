@@ -29,7 +29,18 @@ namespace CompMs.App.Msdial.Model.Normalize
             TargetMetabolites = targetMetabolites.AsReadOnly();
 
             SplashProducts = new ObservableCollection<SplashProduct>(GetSplashResource());
-            SplashProduct = SplashProducts.FirstOrDefault();
+            if (parameter.AdvancedProcessOptionBaseParam.StandardCompounds != null) {
+                var product = new SplashProduct
+                {
+                    Label = "Previous compounds",
+                    Lipids = new ObservableCollection<StandardCompound>(parameter.AdvancedProcessOptionBaseParam.StandardCompounds),
+                };
+                SplashProducts.Add(product);
+                SplashProduct = product;
+            }
+            else {
+                SplashProduct = SplashProducts.FirstOrDefault();
+            }
 
             OutputUnits = new ObservableCollection<IonAbundance>() {
                 new IonAbundance(IonAbundanceUnit.nmol_per_microL_plasma, "nmol/μL plasma"),
