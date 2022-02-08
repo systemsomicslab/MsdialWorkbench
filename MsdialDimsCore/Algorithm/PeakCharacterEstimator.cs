@@ -356,13 +356,12 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 foreach (var centralAdduct in SearchedAdducts) {
 
                     var rCentralAdduct = AdductIonParser.ConvertDifferentChargedAdduct(centralAdduct, peak.PeakCharacter.Charge);
-                    var centralExactMass = MolecularFormulaUtility.ConvertPrecursorMzToExactMass(peak.Mass, rCentralAdduct.AdductIonAccurateMass,
-                        rCentralAdduct.ChargeNumber, rCentralAdduct.AdductIonXmer, param.IonMode);
+                    var centralExactMass = rCentralAdduct.ConvertToExactMass(peak.Mass);
 
                     var searchedPrecursors = new List<SearchedPrecursor>();
                     foreach (var searchedAdduct in SearchedAdducts) {
                         if (rCentralAdduct.AdductIonName == searchedAdduct.AdductIonName) continue;
-                        var searchedPrecursorMz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(searchedAdduct, centralExactMass);
+                        var searchedPrecursorMz = searchedAdduct.ConvertToMz(centralExactMass);
                         searchedPrecursors.Add(new SearchedPrecursor() { PrecursorMz = searchedPrecursorMz, AdductIon = searchedAdduct });
                     }
 
@@ -401,15 +400,13 @@ namespace CompMs.MsdialDimsCore.Algorithm
         private void assignLinksBasedOnDeterminedAdduct(List<ChromatogramPeakFeature> chromPeakFeatures, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.IsAdductTypeFormatted)) {
                 var centralAdduct = peak.AdductType;
-                var centralExactMass = MolecularFormulaUtility.ConvertPrecursorMzToExactMass(peak.Mass,
-                    centralAdduct.AdductIonAccurateMass,
-                    centralAdduct.ChargeNumber, centralAdduct.AdductIonXmer, param.IonMode);
+                var centralExactMass = centralAdduct.ConvertToExactMass(peak.Mass);
                 var ppm = MolecularFormulaUtility.PpmCalculator(200.0, 200.0 + param.CentroidMs1Tolerance); //based on m/z 200
 
                 var searchedPrecursors = new List<SearchedPrecursor>();
                 foreach (var searchedAdduct in SearchedAdducts) {
                     if (centralAdduct.AdductIonName == searchedAdduct.AdductIonName) continue;
-                    var searchedPrecursorMz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(searchedAdduct, centralExactMass);
+                    var searchedPrecursorMz = searchedAdduct.ConvertToMz(centralExactMass);
                     searchedPrecursors.Add(new SearchedPrecursor() { PrecursorMz = searchedPrecursorMz, AdductIon = searchedAdduct });
                 }
 
@@ -444,15 +441,13 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 if (peak.AdductType == null) continue;
                 var inchikey = peak.InChIKey;
                 var centralAdduct = peak.AdductType;
-                var centralExactMass = MolecularFormulaUtility.ConvertPrecursorMzToExactMass(peak.Mass,
-                    centralAdduct.AdductIonAccurateMass,
-                    centralAdduct.ChargeNumber, centralAdduct.AdductIonXmer, param.IonMode);
+                var centralExactMass = centralAdduct.ConvertToExactMass(peak.Mass);
                 var ppm = MolecularFormulaUtility.PpmCalculator(200.0, 200.0 + param.CentroidMs1Tolerance); //based on m/z 200
 
                 var searchedPrecursors = new List<SearchedPrecursor>();
                 foreach (var searchedAdduct in SearchedAdducts) {
                     if (centralAdduct.AdductIonName == searchedAdduct.AdductIonName) continue;
-                    var searchedPrecursorMz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(searchedAdduct, centralExactMass);
+                    var searchedPrecursorMz = searchedAdduct.ConvertToMz(centralExactMass);
                     searchedPrecursors.Add(new SearchedPrecursor() { PrecursorMz = searchedPrecursorMz, AdductIon = searchedAdduct });
                 }
 

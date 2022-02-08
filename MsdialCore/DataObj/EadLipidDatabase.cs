@@ -218,10 +218,10 @@ namespace CompMs.MsdialCore.DataObj
                     }
                     reader.Close();
                 }
-                command.CommandText = $"SELECT MAX(ScanID) From {ReferenceTableName}";
-                scanId = 1 + (int)command.ExecuteScalar();
-                command.CommandText = $"SELECT MAX(SpectrumID) From {SpectrumTableName}";
-                spectrumId = 1 + (int)command.ExecuteScalar();
+                command.CommandText = $"SELECT MAX(ScanID) FROM {ReferenceTableName}";
+                scanId = 1 + int.Parse(command.ExecuteScalar().ToString());
+                command.CommandText = $"SELECT MAX(SpectrumID) FROM {SpectrumTableName}";
+                spectrumId = 1 + int.Parse(command.ExecuteScalar().ToString());
             }
         }
 

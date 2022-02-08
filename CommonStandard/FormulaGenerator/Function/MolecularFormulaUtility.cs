@@ -1,11 +1,9 @@
-﻿using CompMs.Common.DataObj;
-using CompMs.Common.DataObj.Property;
+﻿using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.Common.FormulaGenerator.Function {
     public static class MolecularFormulaUtility
@@ -17,35 +15,12 @@ namespace CompMs.Common.FormulaGenerator.Function {
 
         public static double ConvertPrecursorMzToExactMass(AdductIon adductIon, double precursorMz)
         {
-            double monoIsotopicMass = (precursorMz * adductIon.ChargeNumber - adductIon.AdductIonAccurateMass) / adductIon.AdductIonXmer;
-            if (adductIon.IonMode == IonMode.Positive) {
-                monoIsotopicMass += 0.0005485799 * adductIon.ChargeNumber;
-            }
-            else {
-                monoIsotopicMass -= 0.0005485799 * adductIon.ChargeNumber;
-            }
-
-            return monoIsotopicMass;
-        }
-
-        public static double ConvertPrecursorMzToExactMass(double precursorMz, double adductMass, int chargeNum, int xMer, IonMode ionMode)
-        {
-            double monoIsotopicMass = (precursorMz * (double)chargeNum - adductMass) / (double)xMer;
-            if (ionMode == IonMode.Positive) monoIsotopicMass += 0.0005485799 * chargeNum; else monoIsotopicMass -= 0.0005485799 * chargeNum;
-            return monoIsotopicMass;
+            return adductIon.ConvertToMz(precursorMz);
         }
 
         public static double ConvertExactMassToPrecursorMz(AdductIon adductIon, double exactMass)
         {
-            double precursorMz = (exactMass * adductIon.AdductIonXmer + adductIon.AdductIonAccurateMass) / adductIon.ChargeNumber;
-            if (adductIon.IonMode == IonMode.Positive) {
-                precursorMz -= 0.0005485799 * adductIon.ChargeNumber;
-            }
-            else {
-                precursorMz += 0.0005485799 * adductIon.ChargeNumber;
-            }
-
-            return precursorMz;
+            return adductIon.ConvertToMz(exactMass);
         }
 
         public static double PpmCalculator(double exactMass, double actualMass)

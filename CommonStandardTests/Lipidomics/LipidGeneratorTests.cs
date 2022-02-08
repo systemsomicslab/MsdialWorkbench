@@ -97,7 +97,7 @@ namespace CompMs.Common.Lipidomics.Tests
         }
     }
 
-    class MockAcylChainGenerator : IChainGenerator
+    class MockAcylChainGenerator : ITotalChainVariationGenerator, IChainGenerator
     {
         private int c = 0;
         public IEnumerable<IChain> Generate(AcylChain chain) {
@@ -129,6 +129,14 @@ namespace CompMs.Common.Lipidomics.Tests
 
         public IEnumerable<IChain> Generate(SphingoChain chain) {
             throw new System.NotImplementedException();
+        }
+
+        public bool CarbonIsValid(int carbon) {
+            return true;
+        }
+
+        public bool DoubleBondIsValid(int carbon, int doubleBond) {
+            return true;
         }
     }
 }

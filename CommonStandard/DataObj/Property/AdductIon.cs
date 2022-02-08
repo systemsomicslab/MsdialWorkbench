@@ -18,11 +18,25 @@ namespace CompMs.Common.DataObj.Property
         public double AdductIonAccurateMass { get; set; }
 
         public double ConvertToMz(double exactMass) {
-            return MolecularFormulaUtility.ConvertExactMassToPrecursorMz(this, exactMass);
+            double precursorMz = (exactMass * AdductIonXmer + AdductIonAccurateMass) / ChargeNumber;
+            if (IonMode == IonMode.Positive) {
+                precursorMz -= 0.0005485799 * ChargeNumber;
+            }
+            else {
+                precursorMz += 0.0005485799 * ChargeNumber;
+            }
+            return precursorMz;
         }
 
         public double ConvertToExactMass(double mz) {
-            return MolecularFormulaUtility.ConvertPrecursorMzToExactMass(this, mz);
+            double monoIsotopicMass = (mz * ChargeNumber - AdductIonAccurateMass) / AdductIonXmer;
+            if (IonMode == IonMode.Positive) {
+                monoIsotopicMass += 0.0005485799 * ChargeNumber;
+            }
+            else {
+                monoIsotopicMass -= 0.0005485799 * ChargeNumber;
+            }
+            return monoIsotopicMass;
         }
 
         [Key(1)]

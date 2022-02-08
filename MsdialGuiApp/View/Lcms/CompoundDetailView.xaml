@@ -136,6 +136,21 @@
                             </TextBox.Style>
                         </TextBox>
                     </ui:LabeledContent>
+
+                    <ui:LabeledContent PrependLabel="AnnotatorID:">
+                        <TextBox Name="TextBox_PeakInformation_AnnotatorID">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
+                                    <Setter Property="Text" Value="{Binding AnnotatorID, Mode=OneWay}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding AnnotatorID, TargetNullValue=''}" Value="" >
+                                            <Setter Property="Text" Value="NA"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </ui:LabeledContent>
                 </StackPanel>
             </DataTemplate>
 
@@ -230,6 +245,21 @@
                                     <Setter Property="Text" Value="{Binding InChIKey, Mode=OneWay}"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding InChIKey, TargetNullValue=''}" Value="" >
+                                            <Setter Property="Text" Value="NA"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </ui:LabeledContent>
+
+                    <ui:LabeledContent PrependLabel="AnnotatorID:">
+                        <TextBox Name="TextBox_PeakInformation_AnnotatorID">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
+                                    <Setter Property="Text" Value="{Binding AnnotatorID, Mode=OneWay}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding AnnotatorID, TargetNullValue=''}" Value="" >
                                             <Setter Property="Text" Value="NA"/>
                                         </DataTrigger>
                                     </Style.Triggers>

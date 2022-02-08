@@ -25,8 +25,9 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal">
-            <Button Content="-" Width="30" Command="{Binding SetSubtractRangeCommand}"/>
-            <Button Content="+" Width="30" Margin="8,0" Command="{Binding SetMainRangeCommand}"/>
+            <Button Content="-" Width="30" Command="{Binding SetSubtractRangeCommand, Mode=OneTime}"/>
+            <Button Content="+" Width="30" Margin="8,0,0,0" Command="{Binding SetMainRangeCommand, Mode=OneTime}"/>
+            <Button Content="Remove" Width="60" Margin="8,0" Command="{Binding RemoveRangesCommand, Mode=OneTime}"/>
         </StackPanel>
 
         <Grid Grid.Row="1">

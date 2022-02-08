@@ -15,8 +15,8 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(0, chains.OxidizedCount);
             Assert.AreEqual(2, chains.ChainCount);
             Assert.AreEqual(530.5062805078201, chains.Mass, 1e-5);
-            var generator = new MockGenerator();
-            var candidates = ((ITotalChain)chains).GetCandidateSets(generator);
+            var mockGenerator = new FakeGenerator();
+            var candidates = ((ITotalChain)chains).GetCandidateSets(mockGenerator);
             CollectionAssert.AreEqual(new ITotalChain[0], candidates.ToArray());
 
             chains = new TotalChain(36, 2, 0, 1, 1, 0);
@@ -41,21 +41,9 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(537.5120937402901, chains.Mass, 1e-5);
         }
 
-        class MockGenerator : IChainGenerator
+        class FakeGenerator : ITotalChainVariationGenerator
         {
             public bool Called { get; private set; } = false;
-
-            public IEnumerable<IChain> Generate(AcylChain chain) {
-                throw new System.NotImplementedException();
-            }
-
-            public IEnumerable<IChain> Generate(AlkylChain chain) {
-                throw new System.NotImplementedException();
-            }
-
-            public IEnumerable<IChain> Generate(SphingoChain chain) {
-                throw new System.NotImplementedException();
-            }
 
             public IEnumerable<ITotalChain> Permutate(MolecularSpeciesLevelChains chains) {
                 throw new System.NotImplementedException();

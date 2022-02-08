@@ -15,12 +15,16 @@ namespace CompMs.Common.Lipidomics
 
     public class DoubleBond : IDoubleBond
     {
-        public DoubleBond(int count, params IDoubleBondInfo[] bonds) {
+        public DoubleBond(int count, IList<IDoubleBondInfo> bonds) {
             Count = count;
             Bonds = new ReadOnlyCollection<IDoubleBondInfo>(bonds);
         }
 
-        public DoubleBond(params IDoubleBondInfo[] bonds) : this(bonds.Length, bonds) {
+        public DoubleBond(int count, params IDoubleBondInfo[] bonds) : this(count, (IList<IDoubleBondInfo>)bonds) {
+
+        }
+
+        public DoubleBond(params IDoubleBondInfo[] bonds) : this(bonds.Length, (IList<IDoubleBondInfo>)bonds) {
 
         }
 

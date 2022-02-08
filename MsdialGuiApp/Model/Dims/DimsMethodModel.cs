@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Dims
             List<AlignmentFileBean> alignmentFiles)
             : base(analysisFiles, alignmentFiles) {
             Storage = storage;
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(storage.DataBaseMapper);
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
         }
 
         private IAnnotationProcess annotationProcess;
@@ -90,7 +90,7 @@ namespace CompMs.App.Msdial.Model.Dims
             }
 
             Storage.DataBaseMapper = BuildDataBaseMapper(Storage.DataBases);
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(Storage.DataBaseMapper);
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             annotationProcess = BuildAnnotationProcess(Storage.DataBases);
             ProviderFactory = parameterSetModel.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
         }

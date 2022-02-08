@@ -20,11 +20,7 @@ namespace CompMs.App.Msdial.Model.Chart
         }
         private Range selectedRange;
 
-        public ObservableCollection<RangeSelection> SelectedRanges {
-            get => selectedRanges;
-            set => SetProperty(ref selectedRanges, value);
-        }
-        private ObservableCollection<RangeSelection> selectedRanges;
+        public ObservableCollection<RangeSelection> SelectedRanges { get; }
 
         public bool CanSetMainRange() {
             return SelectedRanges.Count == 1;
@@ -33,6 +29,7 @@ namespace CompMs.App.Msdial.Model.Chart
         public void SetMainRange() {
             if (SelectedRange != null) {
                 SelectedRanges.Add(new RangeSelection(SelectedRange) { Color = Colors.Blue, IsSelected = true, });
+                SelectedRange = null;
             }
         }
 
@@ -43,7 +40,12 @@ namespace CompMs.App.Msdial.Model.Chart
         public void SetSubtractRange() {
             if (SelectedRange != null) {
                 SelectedRanges.Add(new RangeSelection(SelectedRange) { Color = Colors.Red, IsSelected = true, });
+                SelectedRange = null;
             }
+        }
+
+        public void RemoveRanges() {
+            SelectedRanges.Clear();
         }
 
         public (double, double) ConvertToRt(RangeSelection range) {
