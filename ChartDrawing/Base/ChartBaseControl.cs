@@ -38,7 +38,7 @@ namespace CompMs.Graphics.Core.Base
             }
         }
 
-        void OnHorizontalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
+        protected virtual void OnHorizontalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             if (oldValue != null) {
                 oldValue.RangeChanged -= OnHorizontalRangeChanged;
                 oldValue.InitialRangeChanged -= OnHorizontalInitialRangeChanged;
@@ -93,7 +93,7 @@ namespace CompMs.Graphics.Core.Base
             }
         }
 
-        void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
+        protected virtual void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             if (oldValue != null) {
                 oldValue.RangeChanged -= OnVerticalRangeChanged;
                 oldValue.InitialRangeChanged -= OnVerticalInitialRangeChanged;
