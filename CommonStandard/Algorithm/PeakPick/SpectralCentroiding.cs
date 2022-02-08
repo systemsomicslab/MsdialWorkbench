@@ -195,11 +195,12 @@ namespace CompMs.Common.Algorithm.PeakPick {
         }
 
         public static List<SpectrumPeak> CentroidByLocalMaximumMethod(List<SpectrumPeak> peaks,
-            double datapointMargin = 0.0, double absThreshold = 0.0, double relativeThreshold = 0.0) {
+            int smootherlevel = 3,
+            double datapointMargin = 2.0, double absThreshold = 0.0, double relativeThreshold = 0.0) {
 
             if (peaks.IsEmptyOrNull()) return new List<SpectrumPeak>();
             var centroidedSpectra = new List<SpectrumPeak>();
-            peaks = Smoothing.LinearWeightedMovingAverage(peaks, 1);
+            peaks = Smoothing.LinearWeightedMovingAverage(peaks, smootherlevel);
 
             var localMaxima = new List<int>();
             var peakMax = double.MinValue;
