@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
@@ -210,15 +211,28 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var matches = annotator.SelectReferenceMatchResults(results);
             if (matches.Count > 0) {
                 var best = annotator.SelectTopHit(matches);
+                best.IsReferenceMatched = true;
                 chromPeakFeature.MatchResults.AddResult(best);
             }
             else if (results.Count > 0) {
                 var best = annotator.SelectTopHit(results);
+                best.IsAnnotationSuggested = true;
                 chromPeakFeature.MatchResults.AddResult(best);
             }
         }
 
         private void SetRepresentativeProperty(ChromatogramPeakFeature chromPeakFeature) {
+            //var refmatches = chromPeakFeature.MatchResults.MatchResults.Select(r => (containerPairs.FirstOrDefault(p => p.Container.AnnotatorID == r.AnnotatorID).Container?.Annotator.IsReferenceMatched(r) ?? false, r))
+            //    .Where(p => p.Item1).Select(p => p.Item2).ToArray();
+            //MsScanMatchResult representative = null;
+            //if (refmatches.Length >= 1){
+            //    representative = refmatches.Argmax(r => Tuple.Create(r?.Priority ?? -1, r?.TotalScore ?? 0));
+            //}
+            //else {
+            //    representative = chromPeakFeature.MatchResults.Representative;
+            //}
+            //var representative = refmatches.Argmax(r => Tuple.Create(r?.Priority ?? -1, r?.TotalScore ?? 0));
+
             var representative = chromPeakFeature.MatchResults.Representative;
             var container = containerPairs.FirstOrDefault(containerPair => representative.AnnotatorID == containerPair.Container.AnnotatorID).Container;
             var annotator = container?.Annotator;

@@ -45,7 +45,7 @@ namespace CompMs.MsdialCore.DataObj
                         }
                         else {
                             //cacheRepresentative = results.Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore));
-                            cacheRepresentative = results.Argmax(result => Tuple.Create(result.Priority, result.TotalScore));
+                            cacheRepresentative = results.Argmax(result => Tuple.Create(result.IsReferenceMatched, result.IsAnnotationSuggested, result.Priority, result.TotalScore));
                             return cacheRepresentative;
                         }
                     }
@@ -72,7 +72,8 @@ namespace CompMs.MsdialCore.DataObj
                         }
                         else {
                             //cacheDecoyRepresentative = decoyResults.Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore));
-                            cacheDecoyRepresentative = decoyResults.Argmax(result => Tuple.Create(result.Priority, result.TotalScore));
+                            cacheDecoyRepresentative = decoyResults.Argmax(result => Tuple.Create(result.IsReferenceMatched, result.IsAnnotationSuggested, result.Priority, result.TotalScore));
+                            //cacheDecoyRepresentative = decoyResults.Argmax(result => Tuple.Create(result.Priority, result.TotalScore));
                             return cacheDecoyRepresentative;
                         }
                     }

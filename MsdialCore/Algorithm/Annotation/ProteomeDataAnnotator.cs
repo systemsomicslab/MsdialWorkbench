@@ -336,21 +336,23 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 var feature = featureObjs[score.PeakID];
                 if (score.IsDecoy) {
                     feature.MatchResults.DecoyRepresentative.PEPScore = score.PosteriorErrorProb;
-                    Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tScore\t{5}", "TRUE", total, feature.MasterPeakID, feature.Mass, feature.ChromXs.Value, score.PosteriorErrorProb);
+                    //Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tScore\t{5}", "TRUE", total, feature.MasterPeakID, feature.Mass, feature.ChromXs.Value, score.PosteriorErrorProb);
                 }
                 else {
                     feature.MatchResults.Representative.PEPScore = score.PosteriorErrorProb;
-                    Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tScore\t{5}", "FALSE", total, feature.MasterPeakID, feature.Mass, feature.ChromXs.Value, score.PosteriorErrorProb);
+                    //Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tScore\t{5}", "FALSE", total, feature.MasterPeakID, feature.Mass, feature.ChromXs.Value, score.PosteriorErrorProb);
                 }
 
                 if (annotatedNum < minimumAnnotatedCount) {
                     if (score.IsDecoy == false && score.PosteriorErrorProb > param.FalseDiscoveryRateForPeptide * 0.01) {
-                        feature.MatchResults.Representative.IsSpectrumMatch = false;
+                        //feature.MatchResults.Representative.IsSpectrumMatch = false;
+                        feature.MatchResults.Representative.IsReferenceMatched = false;
                     }
                 }
                 else {
                     if (counter > decoyCutOffNum && score.IsDecoy == false) {
-                        feature.MatchResults.Representative.IsSpectrumMatch = false;
+                        feature.MatchResults.Representative.IsReferenceMatched = false;
+                        //feature.MatchResults.Representative.IsSpectrumMatch = false;
                     }
                 }
             }
