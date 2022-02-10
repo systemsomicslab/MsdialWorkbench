@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Normalize
 {
-    public sealed class Normalization
+    public static class Normalization
     {
         public static void None(
             IReadOnlyList<AlignmentSpotProperty> globalSpots) {

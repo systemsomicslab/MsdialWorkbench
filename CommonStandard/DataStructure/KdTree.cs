@@ -169,10 +169,13 @@ namespace CompMs.Common.DataStructure
         }
 
         private static List<IComparer<Node>> ComparersCache = new List<IComparer<Node>>();
+        private static object lockObject = new object();
         private static IComparer<Node> GetComparer(int depth) {
             if (depth >= ComparersCache.Count) {
-                for (int i = ComparersCache.Count; i <= depth; i++) {
-                    ComparersCache.Add(new NodeDepthComparer(i));
+                lock (lockObject) {
+                    for (int i = ComparersCache.Count; i <= depth; i++) {
+                        ComparersCache.Add(new NodeDepthComparer(i));
+                    }
                 }
             }
             return ComparersCache[depth];
