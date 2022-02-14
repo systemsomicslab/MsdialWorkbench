@@ -29,8 +29,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (result is null) {
                 throw new ArgumentNullException(nameof(result));
             }
-
-            return SatisfySuggestedConditions(result, searchParameter) && !SatisfyRefMatchedConditions(result, searchParameter);
+            return result.IsAnnotationSuggested;
+            //return SatisfySuggestedConditions(result, searchParameter) && !SatisfyRefMatchedConditions(result, searchParameter);
         }
 
         public bool IsReferenceMatched(MsScanMatchResult result) {
@@ -38,7 +38,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 throw new ArgumentNullException(nameof(result));
             }
 
-            return SatisfyRefMatchedConditions(result, searchParameter);
+            return result.IsReferenceMatched;
+            //return SatisfyRefMatchedConditions(result, searchParameter);
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results) {

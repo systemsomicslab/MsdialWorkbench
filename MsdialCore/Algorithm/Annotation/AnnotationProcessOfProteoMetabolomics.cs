@@ -244,6 +244,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var annotator = annotatorContainer.Annotator;
             var candidates = annotator.FindCandidates(query);
             if (candidates.Count == 2) {
+
+                candidates[0].IsReferenceMatched = true;
+                candidates[1].IsReferenceMatched = true;
                 chromPeakFeature.MatchResults.AddResult(candidates[0]); // peptide query
                 chromPeakFeature.MatchResults.AddResult(candidates[1]); // decoy query
             }
@@ -260,10 +263,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var matches = annotator.SelectReferenceMatchResults(results);
             if (matches.Count > 0) {
                 var best = annotator.SelectTopHit(matches);
+                best.IsReferenceMatched = true;
                 chromPeakFeature.MatchResults.AddResult(best);
             }
             else if (results.Count > 0) {
                 var best = annotator.SelectTopHit(results);
+                best.IsAnnotationSuggested = true;
                 chromPeakFeature.MatchResults.AddResult(best);
             }
         }

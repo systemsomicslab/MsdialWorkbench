@@ -99,6 +99,10 @@ namespace CompMs.Common.DataObj.Result {
         public bool IsDecoy { get; set; } = false;
         [Key(31)]
         public int Priority { get; set; } = -1;
+        [Key(33)]
+        public bool IsReferenceMatched { get; set; } = false;
+        [Key(34)]
+        public bool IsAnnotationSuggested { get; set; } = false;
 
         public MsScanMatchResult Clone() {
             return (MsScanMatchResult)MemberwiseClone();
