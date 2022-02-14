@@ -8,7 +8,8 @@ using MessagePack;
 namespace CompMs.Common.Components
 {
     public enum SpectrumComment {
-        none, experiment, reference, precursor, b, y, b2, y2, b_h2o, y_h2o, b_nh3, y_nh3, b_h3po4, y_h3po4, tyrosinep   
+        none, experiment, reference, precursor, b, y, b2, y2, b_h2o, y_h2o, b_nh3, y_nh3, b_h3po4, y_h3po4, tyrosinep,
+        metaboliteclass, acylchain, doublebond, snposition
     }
 
 

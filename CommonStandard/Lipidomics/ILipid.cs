@@ -12,6 +12,7 @@ namespace CompMs.Common.Lipidomics
         double Mass { get; } // TODO: Formula class maybe better.
         int AnnotationLevel { get; }
         int ChainCount { get; }
+        ITotalChain Chains { get; }
 
         IEnumerable<ILipid> Generate(ILipidGenerator generator);
         IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct, IMoleculeProperty molecule = null); 
