@@ -5,7 +5,6 @@ using CompMs.CommonMVVM.Common;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using System;
 using System.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Normalize
@@ -15,13 +14,13 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
         public NormalizationSetViewModel(
             AlignmentResultContainer container,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
-            ParameterBase parameter,
-            DataBaseMapper mapper) {
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            ParameterBase parameter) {
 
             this.container = container;
             this.refer = refer;
             this.parameter = parameter;
-            DataBaseMapper = mapper;
+            this.evaluator = evaluator;
             Parameter = new ParameterBaseVM(parameter);
             var notifier = new PropertyChangedNotifier(Parameter);
             Disposables.Add(notifier);
@@ -39,12 +38,13 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
 
         private readonly AlignmentResultContainer container;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
         private readonly ParameterBase parameter;
 
         public SplashSetViewModel SplashVM {
             get {
                 if (splashVM is null) {
-                    splashVM = new SplashSetViewModel(container, refer, parameter, DataBaseMapper);
+                    splashVM = new SplashSetViewModel(container, refer, evaluator, parameter);
                     Disposables.Add(splashVM);
                 }
                 return splashVM;
@@ -66,7 +66,5 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
                 }.Count(isnorm => isnorm) == 1;
             }
         }
-
-        public DataBaseMapper DataBaseMapper { get; }
     }
 }

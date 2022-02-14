@@ -1,7 +1,5 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
+﻿using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
-using CompMs.Common.MessagePack;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Proteomics.Function;
 using CompMs.MsdialCore.DataObj;
@@ -10,23 +8,23 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 
-namespace CompMs.MsdialCore.Algorithm.Annotation {
+namespace CompMs.MsdialCore.Algorithm.Annotation
+{
     public class ProteomeDataAnnotator {
 
         public void ExecuteSecondRoundAnnotationProcess(
-            IReadOnlyList<AnalysisFileBean> files, 
-            DataBaseMapper mapper,
+            IReadOnlyList<AnalysisFileBean> files,
+            IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage dataBases,
-            ParameterBase param, 
+            ParameterBase param,
             Action<int> reportAction) {
             if (dataBases is null || dataBases.ProteomicsDataBases is null) return;
 
             Console.WriteLine("Peptide score generation started");
-            var scores = IntegrateAnnotatedPeptides(files, mapper);
+            var scores = IntegrateAnnotatedPeptides(files, refer, evaluator);
 
             ReportProgress.Show(0, 100, 20, 100, reportAction);
             Console.WriteLine("PEPCalcContainer generation started");
@@ -46,35 +44,36 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
 
             var cutoff = param.FalseDiscoveryRateForPeptide * 0.01;
             foreach (var file in files) {
-                ResetPeptideAnnotationInformationByPEPScore(file, scores, mapper, param.ProteomicsParam);
+                ResetPeptideAnnotationInformationByPEPScore(file, scores, evaluator, param.ProteomicsParam);
             }
 
             ReportProgress.Show(0, 100, 80, 100, reportAction);
             foreach (var file in files) {
-                MappingToProteinDatabase(file, dataBases.ProteomicsDataBases, mapper, param);
+                MappingToProteinDatabase(file, dataBases.ProteomicsDataBases, evaluator, refer, param);
             }
         }
 
         public void MappingToProteinDatabase(
             AnalysisFileBean file,
             List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases,
-            DataBaseMapper mapper, 
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer, 
             ParameterBase param) {
-            var fileID = file.AnalysisFileId;
             var paiFile = file.PeakAreaBeanInformationFilePath;
             var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(paiFile);
             
-            MappingToProteinDatabase(file.ProteinAssembledResultFilePath, features, databases, mapper, param);
+            MappingToProteinDatabase(file.ProteinAssembledResultFilePath, features, databases, evaluator, refer, param);
 
             MsdialPeakSerializer.SaveChromatogramPeakFeatures(paiFile, features);
         }
 
-        private void MappingToProteinDatabase(string file, List<ChromatogramPeakFeature> features, 
+        private void MappingToProteinDatabase(string file, List<ChromatogramPeakFeature> features,
             List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases,
-            DataBaseMapper mapper, 
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer,
             ParameterBase param) {
 
-            var proteinMsResults = MappingToProteinDatabase(features, databases, mapper, param.ProteomicsParam);
+            var proteinMsResults = MappingToProteinDatabase(features, databases, refer, evaluator);
             var proteinGroups = ConvertToProteinGroups(proteinMsResults);
             var container = new ProteinResultContainer(param, proteinGroups, GetDB2ModificationContainer(databases));
 
@@ -104,25 +103,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
         }
 
         public void MappingToProteinDatabase(
-            AlignmentFileBean file,
+            string file,
+            AlignmentResultContainer alignmentContainer,
             List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases,
-            DataBaseMapper mapper,
+            IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
             ParameterBase param) {
-            var resultfile = file.FilePath;
-            var features = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultfile);
 
-            MappingToProteinDatabase(file.ProteinAssembledResultFilePath, features, databases, mapper, param);
-            MessagePackHandler.SaveToFile(features, resultfile);
-        }
-
-        public void MappingToProteinDatabase(
-            string file, 
-            AlignmentResultContainer alignmentContainer, 
-            List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases, 
-            DataBaseMapper mapper, 
-            ParameterBase param) {
-            
-            var proteinMsResults = MappingToProteinDatabase(alignmentContainer.AlignmentSpotProperties.ToList(), databases, mapper, param.ProteomicsParam);
+            var proteinMsResults = MappingToProteinDatabase(alignmentContainer.AlignmentSpotProperties.ToList(), databases, refer, evaluator);
             var proteinGroups = ConvertToProteinGroups(proteinMsResults);
             var container = new ProteinResultContainer(param, proteinGroups, GetDB2ModificationContainer(databases));
 
@@ -169,6 +157,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             }
 
             var peptideList = new List<string>();
+            var peptide2firstProteinID = new Dictionary<string, int>();
             for (int i = 0; i < groups.Count; i++) {
                 var group = groups[i];
                 for (int j = 0; j < group.ProteinMsResults.Count; j++) {
@@ -176,12 +165,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                     for (int k = 0; k < protein.MatchedPeptideResults.Count; k++) {
                         var peptide = protein.MatchedPeptideResults[k].Peptide;
                         var peptideString = peptide.ModifiedSequence;
-                        if (peptideList.Contains(peptideString)) {
+                        if (peptideList.Contains(peptideString) && peptide2firstProteinID[peptideString] < j) {
                             protein.MatchedPeptideResults.RemoveAt(k);
                             k--;
                         }
                         else {
                             peptideList.Add(peptideString);
+                            if (!peptide2firstProteinID.ContainsKey(peptideString)) {
+                                peptide2firstProteinID[peptideString] = j;
+                            }
                         }
                     }
                     if (protein.MatchedPeptideResults.IsEmptyOrNull()) {
@@ -253,19 +245,19 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
         public List<ProteinMsResult> MappingToProteinDatabase(
             List<ChromatogramPeakFeature> features,
             List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases,
-            DataBaseMapper mapper, 
-            ProteomicsParameter param) {
+            IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             var featureObjs = DataAccess.GetChromPeakFeatureObjectsIntegratingRtAndDriftData(features);
-            var isIonMobility = features.Count == featureObjs.Count ? false : true;
-            if (isIonMobility) featureObjs = featureObjs.Where(n => n.IsMultiLayeredData() == false).ToList();
-            var annotatedFeatures = featureObjs.Where(n => n.IsReferenceMatched(mapper)).ToList();
+            var isIonMobility = features.Count != featureObjs.Count;
+            if (isIonMobility) featureObjs = featureObjs.Where(n => !n.IsMultiLayeredData()).ToList();
+            var annotatedFeatures = featureObjs.Where(n => n.IsReferenceMatched(evaluator)).ToList();
             var results = InitializeProteinMsResults(databases);
 
             foreach (var result in results) {
                 var fastaIdentifier = result.FastaProperty.UniqueIdentifier;
                 foreach (var feature in annotatedFeatures) {
                     var matchedMsResult = feature.MatchResults.Representative;
-                    var matchedPeptideMs = feature.MatchResults.GetRepresentativeReference((IMatchResultRefer<PeptideMsReference, MsScanMatchResult>)mapper);
+                    var matchedPeptideMs = feature.MatchResults.GetRepresentativeReference(refer);
                     var identifier = matchedPeptideMs.Peptide.DatabaseOrigin;
                     if (fastaIdentifier == identifier) {
                         result.IsAnnotated = true;
@@ -281,19 +273,19 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
         public List<ProteinMsResult> MappingToProteinDatabase(
             List<AlignmentSpotProperty> features,
             List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> databases,
-            DataBaseMapper mapper,
-            ProteomicsParameter param) {
+            IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             var featureObjs = DataAccess.GetAlignmentSpotPropertiesIntegratingRtAndDriftData(features);
-            var isIonMobility = features.Count == featureObjs.Count ? false : true;
-            if (isIonMobility) featureObjs = featureObjs.Where(n => n.IsMultiLayeredData() == false).ToList();
-            var annotatedFeatures = featureObjs.Where(n => n.IsReferenceMatched(mapper));
+            var isIonMobility = features.Count != featureObjs.Count;
+            if (isIonMobility) featureObjs = featureObjs.Where(n => !n.IsMultiLayeredData()).ToList();
+            var annotatedFeatures = featureObjs.Where(n => n.IsReferenceMatched(evaluator)).ToList();
             var results = InitializeProteinMsResults(databases);
 
             foreach (var result in results) {
                 var fastaIdentifier = result.FastaProperty.UniqueIdentifier;
                 foreach (var feature in annotatedFeatures) {
                     var matchedMsResult = feature.MatchResults.Representative;
-                    var matchedPeptideMs = feature.MatchResults.GetRepresentativeReference((IMatchResultRefer<PeptideMsReference, MsScanMatchResult>)mapper);
+                    var matchedPeptideMs = feature.MatchResults.GetRepresentativeReference(refer);
                     var identifier = matchedPeptideMs.Peptide.DatabaseOrigin;
                     if (fastaIdentifier == identifier) {
                         result.IsAnnotated = true;
@@ -314,7 +306,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                 var databaseID = item.DataBaseID;
                 var fastaQueries = item.DataBase.FastaQueries;
                 foreach (var query in fastaQueries) {
-                    proteins.Add(new ProteinMsResult(databaseID, counter, query));
+                    proteins.Add(new ProteinMsResult(counter, databaseID, query));
                     counter++;
                 }
             }
@@ -322,9 +314,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
         }
 
         public void ResetPeptideAnnotationInformationByPEPScore(
-            AnalysisFileBean file, 
+            AnalysisFileBean file,
             List<PeptideScore> scores,
-            DataBaseMapper mapper,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
             ProteomicsParameter param) {
             var fileID = file.AnalysisFileId;
             var paiFile = file.PeakAreaBeanInformationFilePath;
@@ -344,28 +336,30 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
                 var feature = featureObjs[score.PeakID];
                 if (score.IsDecoy) {
                     feature.MatchResults.DecoyRepresentative.PEPScore = score.PosteriorErrorProb;
-                    Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tScore\t{5}", "TRUE", total, feature.MasterPeakID, feature.Mass, feature.ChromXs.Value, score.PosteriorErrorProb);
+                    //Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tScore\t{5}", "TRUE", total, feature.MasterPeakID, feature.Mass, feature.ChromXs.Value, score.PosteriorErrorProb);
                 }
                 else {
                     feature.MatchResults.Representative.PEPScore = score.PosteriorErrorProb;
-                    Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tScore\t{5}", "FALSE", total, feature.MasterPeakID, feature.Mass, feature.ChromXs.Value, score.PosteriorErrorProb);
+                    //Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tScore\t{5}", "FALSE", total, feature.MasterPeakID, feature.Mass, feature.ChromXs.Value, score.PosteriorErrorProb);
                 }
 
                 if (annotatedNum < minimumAnnotatedCount) {
                     if (score.IsDecoy == false && score.PosteriorErrorProb > param.FalseDiscoveryRateForPeptide * 0.01) {
-                        feature.MatchResults.Representative.IsSpectrumMatch = false;
+                        //feature.MatchResults.Representative.IsSpectrumMatch = false;
+                        feature.MatchResults.Representative.IsReferenceMatched = false;
                     }
                 }
                 else {
                     if (counter > decoyCutOffNum && score.IsDecoy == false) {
-                        feature.MatchResults.Representative.IsSpectrumMatch = false;
+                        feature.MatchResults.Representative.IsReferenceMatched = false;
+                        //feature.MatchResults.Representative.IsSpectrumMatch = false;
                     }
                 }
             }
 
             if (features.Count != featureObjs.Count) { // meaning lc-im-ms data (4D data)
                 foreach (var feature in features) {
-                    if (feature.AllDriftFeaturesAreNotAnnotated(mapper)) {
+                    if (feature.AllDriftFeaturesAreNotAnnotated(evaluator)) {
                         //feature.MatchResults.Representative.IsSpectrumMatch = false;
                     }
                 }
@@ -374,26 +368,23 @@ namespace CompMs.MsdialCore.Algorithm.Annotation {
             MsdialPeakSerializer.SaveChromatogramPeakFeatures(paiFile, features);
         }
 
-        public List<PeptideScore> IntegrateAnnotatedPeptides(IReadOnlyList<AnalysisFileBean> files, DataBaseMapper mapper) {
+        public List<PeptideScore> IntegrateAnnotatedPeptides(IReadOnlyList<AnalysisFileBean> files, IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             var scores = new List<PeptideScore>();
             foreach (var file in files) {
                 var paiFile = file.PeakAreaBeanInformationFilePath;
                 var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(paiFile);
                 var fileID = file.AnalysisFileId;
-                foreach (var feature in features.Where(n => n.IsReferenceMatched(mapper))) {
+                foreach (var feature in features.Where(n => n.IsReferenceMatched(evaluator))) {
                     var representative = feature.MatchResults.Representative;
                     var decoyRepresentive = feature.MatchResults.DecoyRepresentative;
 
-                    var refSpec = mapper.PeptideMsRefer(representative);
-                    var decoySpec = mapper.PeptideMsRefer(decoyRepresentive);
+                    var refSpec = refer.Refer(representative);
+                    var decoySpec = refer.Refer(decoyRepresentive);
 
                     var refPepScore = GetPeptideScore(fileID, feature.MasterPeakID, representative, refSpec);
                     var decoyScore = GetPeptideScore(fileID, feature.MasterPeakID, decoyRepresentive, decoySpec);
                     scores.Add(refPepScore);
                     scores.Add(decoyScore);
-
-                    //Console.WriteLine("Score\t{0}\tType\t{1}", refPepScore.AndromedaScore, "Forward");
-                    //Console.WriteLine("Score\t{0}\tType\t{1}", decoyScore.AndromedaScore, "Decoy");
                 }
             }
             return scores;

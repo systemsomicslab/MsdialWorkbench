@@ -44,7 +44,8 @@ namespace CompMs.MsdialCore.DataObj
                             return null;
                         }
                         else {
-                            cacheRepresentative = results.Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore));
+                            //cacheRepresentative = results.Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore));
+                            cacheRepresentative = results.Argmax(result => Tuple.Create(result.IsReferenceMatched, result.IsAnnotationSuggested, result.Priority, result.TotalScore));
                             return cacheRepresentative;
                         }
                     }
@@ -70,7 +71,9 @@ namespace CompMs.MsdialCore.DataObj
                             return null;
                         }
                         else {
-                            cacheDecoyRepresentative = decoyResults.Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore));
+                            //cacheDecoyRepresentative = decoyResults.Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore));
+                            cacheDecoyRepresentative = decoyResults.Argmax(result => Tuple.Create(result.IsReferenceMatched, result.IsAnnotationSuggested, result.Priority, result.TotalScore));
+                            //cacheDecoyRepresentative = decoyResults.Argmax(result => Tuple.Create(result.Priority, result.TotalScore));
                             return cacheDecoyRepresentative;
                         }
                     }
@@ -104,7 +107,7 @@ namespace CompMs.MsdialCore.DataObj
                 if (typeof(TReference) == typeof(PeptideMsReference)) {
                     Single = new ReferCache<TReference>(r => r.Source == SourceType.FastaDB);
                 }
-                else if (typeof(TReference) == typeof(PeptideMsReference)) {
+                else if (typeof(TReference) == typeof(MoleculeMsReference)) {
                     Single = new ReferCache<TReference>(r => r.Source != SourceType.FastaDB);
                 }
                 else {
@@ -176,41 +179,24 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public string RepresentativeProtein(IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer) {
-            var db = refer.Refer(Representative);
-            return refer.Refer(Representative) is PeptideMsReference ? db.Peptide.DatabaseOrigin + "; " + db.Peptide.Position.Start + "-" + db.Peptide.Position.End : "null";
+            return refer.Refer(Representative) is PeptideMsReference db ? db.Peptide.DatabaseOrigin + "; " + db.Peptide.Position.Start + "-" + db.Peptide.Position.End : "null";
         }
 
-        public bool IsReferenceMatched(DataBaseMapper mapper) {
+        public bool IsReferenceMatched(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             var representative = Representative;
             if (representative.IsManuallyModified && !representative.IsUnknown) {
                 return true; // confidense or unsettled
             }
-            if (representative.Source == SourceType.FastaDB) {
-                var container = mapper.FindPeptideAnnotator(representative);
-                var annotator = container?.Annotator;
-                return annotator?.IsReferenceMatched(representative, container.Parameter) ?? false;
-            }
-            else {
-                var container = mapper.FindMoleculeAnnotator(representative);
-                var annotator = container?.Annotator;
-                return annotator?.IsReferenceMatched(representative, container.Parameter) ?? false;
-            }
+            return evaluator?.IsReferenceMatched(representative) ?? false;
         }
 
-        public bool IsAnnotationSuggested(DataBaseMapper mapper) {
+        public bool IsAnnotationSuggested(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             var representative = Representative;
             if (representative.IsManuallyModified && !representative.IsUnknown) {
                 return false; // confidense or unsettled
             }
-            if (representative.Source == SourceType.FastaDB) {
-                var container = mapper.FindPeptideAnnotator(representative);
-                var annotator = container?.Annotator;
-                return annotator?.IsAnnotationSuggested(representative, container.Parameter) ?? false;
-            }
             else {
-                var container = mapper.FindMoleculeAnnotator(representative);
-                var annotator = container?.Annotator;
-                return annotator?.IsAnnotationSuggested(representative, container.Parameter) ?? false;
+                return evaluator?.IsAnnotationSuggested(representative) ?? false;
             }
         }
 

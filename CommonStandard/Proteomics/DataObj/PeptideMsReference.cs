@@ -26,7 +26,7 @@ namespace CompMs.Common.Proteomics.DataObj {
 
         public PeptideMsReference(Peptide peptide, Stream fs, long seekPoint, AdductIon adduct, int id) {
             Peptide = peptide; Fs = fs; SeekPoint2MS = seekPoint; AdductType = adduct;
-            PrecursorMz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, peptide.ExactMass);
+            PrecursorMz = adduct.ConvertToMz(peptide.ExactMass);
             ScanID = id;
         }
 

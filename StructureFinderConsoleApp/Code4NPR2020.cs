@@ -38,8 +38,7 @@ namespace StructureFinderConsoleApp {
                     var mass = formulaObj.Mass;
 
                     var adductproton = AdductIonParser.GetAdductIonBean("[M+H]+");
-                    var protonMass = adductproton.AdductIonAccurateMass;
-                    var mass_proton = mass + protonMass;
+                    var mass_proton = adductproton.ConvertToMz(mass);
 
                     sw.WriteLine(formulaObj.FormulaString + "\t" + mass + "\t" + mass_proton);
 
@@ -72,10 +71,10 @@ namespace StructureFinderConsoleApp {
                 var adductProtonLoss = AdductIonParser.GetAdductIonBean("[M-H]-");
                 for (int i = 0; i < smilescodes.Count; i++) {
                     var structure = MoleculeConverter.SmilesToStructure(smilescodes[i], out string error);
-                    var precursorMzProton = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adductproton, structure.ExactMass);
-                    var precursorMzNa = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adductNa, structure.ExactMass);
-                    var precursorMzK = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adductK, structure.ExactMass);
-                    var precursorMzProtonLoss = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adductProtonLoss, structure.ExactMass);
+                    var precursorMzProton = adductproton.ConvertToMz(structure.ExactMass);
+                    var precursorMzNa = adductNa.ConvertToMz(structure.ExactMass);
+                    var precursorMzK = adductK.ConvertToMz(structure.ExactMass);
+                    var precursorMzProtonLoss = adductProtonLoss.ConvertToMz(structure.ExactMass);
                     sw.WriteLine(precursorMzProton + "\t" + precursorMzNa + "\t" + precursorMzK + "\t" + precursorMzProtonLoss);
                 }
             }

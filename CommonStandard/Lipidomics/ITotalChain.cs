@@ -13,7 +13,7 @@ namespace CompMs.Common.Lipidomics
         int ChainCount { get; }
         double Mass { get; }
 
-        IEnumerable<ITotalChain> GetCandidateSets(IChainGenerator generator);
+        IEnumerable<ITotalChain> GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator);
     }
 
     public static class TotalChainExtension
@@ -96,8 +96,8 @@ namespace CompMs.Common.Lipidomics
 
         private static readonly double SphingoGain = MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass;
 
-        IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(IChainGenerator generator) {
-            return generator.Separate(this);
+        IEnumerable<ITotalChain> ITotalChain.GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
+            return totalChainGenerator.Separate(this);
         }
 
         public override string ToString() {
@@ -140,11 +140,14 @@ namespace CompMs.Common.Lipidomics
 
         }
 
-        public IEnumerable<ITotalChain> GetCandidateSets(IChainGenerator generator) {
-            return generator.Permutate(this);
+        public IEnumerable<ITotalChain> GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
+            return totalChainGenerator.Permutate(this);
         }
 
         public override string ToString() {
+            if (Chains.Count(c => c.CarbonCount > 0) == 1) {
+                return Chains.First(c => c.CarbonCount > 0).ToString(); // for LPC...
+            }
             return string.Join("_", Chains.Select(c => c.ToString()));
         }
     }
@@ -155,8 +158,8 @@ namespace CompMs.Common.Lipidomics
 
         }
 
-        public IEnumerable<ITotalChain> GetCandidateSets(IChainGenerator generator) {
-            return generator.Product(this);
+        public IEnumerable<ITotalChain> GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator) {
+            return totalChainGenerator.Product(this);
         }
 
         public override string ToString() {

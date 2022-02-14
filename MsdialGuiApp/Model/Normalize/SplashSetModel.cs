@@ -7,7 +7,6 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Normalize;
 using CompMs.MsdialCore.Parameter;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -19,18 +18,29 @@ namespace CompMs.App.Msdial.Model.Normalize
 {
     class SplashSetModel : BindableBase
     {
-        public SplashSetModel(AlignmentResultContainer container, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, DataBaseMapper mapper) {
+        public SplashSetModel(AlignmentResultContainer container, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             this.container = container;
-            this.spots = container.AlignmentSpotProperties;
+            spots = container.AlignmentSpotProperties;
             this.refer = refer;
             this.parameter = parameter;
-            this.mapper = mapper;
+            this.evaluator = evaluator;
             var targetMetabolites = LipidomicsConverter.GetLipidClasses();
             targetMetabolites.Add("Any others");
             TargetMetabolites = targetMetabolites.AsReadOnly();
 
             SplashProducts = new ObservableCollection<SplashProduct>(GetSplashResource());
-            SplashProduct = SplashProducts.FirstOrDefault();
+            if (parameter.AdvancedProcessOptionBaseParam.StandardCompounds != null) {
+                var product = new SplashProduct
+                {
+                    Label = "Previous compounds",
+                    Lipids = new ObservableCollection<StandardCompound>(parameter.AdvancedProcessOptionBaseParam.StandardCompounds),
+                };
+                SplashProducts.Add(product);
+                SplashProduct = product;
+            }
+            else {
+                SplashProduct = SplashProducts.FirstOrDefault();
+            }
 
             OutputUnits = new ObservableCollection<IonAbundance>() {
                 new IonAbundance(IonAbundanceUnit.nmol_per_microL_plasma, "nmol/μL plasma"),
@@ -49,7 +59,7 @@ namespace CompMs.App.Msdial.Model.Normalize
         private readonly IReadOnlyList<AlignmentSpotProperty> spots;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
         private readonly ParameterBase parameter;
-        private readonly DataBaseMapper mapper;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public ObservableCollection<StandardCompound> StandardCompounds => SplashProduct.Lipids;
 
@@ -93,7 +103,7 @@ namespace CompMs.App.Msdial.Model.Normalize
             }
             parameter.StandardCompounds = compounds;
             var unit = OutputUnit.Unit;
-            SplashNormalization.Normalize(spots, refer, compounds, unit, mapper);
+            Normalization.SplashNormalize(spots, refer, compounds, unit, evaluator);
             container.IsNormalized = true;
         }
 

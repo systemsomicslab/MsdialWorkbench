@@ -40,25 +40,6 @@ namespace CompMs.MsdialLcMsApi.DataObj
                     storage.DataBases = DataBaseStorage.Load(stream, new LcmsLoadAnnotatorVisitor(storage.Parameter), projectFolderPath);
                 }
             }
-
-            protected override Task LoadDataBaseMapperAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage) {
-                var mapper = new DataBaseMapper();
-                if (!(storage.DataBases is null)) {
-                    foreach (var db in storage.DataBases.MetabolomicsDataBases) {
-                        foreach (var pair in db.Pairs) {
-                            mapper.Add(pair.SerializableAnnotator, db.DataBase);
-                        }
-                    }
-                    foreach (var db in storage.DataBases.ProteomicsDataBases) {
-                        foreach (var pair in db.Pairs) {
-                            mapper.Add(pair.SerializableAnnotator, db.DataBase);
-                        }
-                    }
-                }
-                storage.DataBaseMapper = mapper;
-
-                return Task.CompletedTask;
-            }
         }
     }
 }

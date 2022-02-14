@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
-    class EicLoader {
+    public class EicLoader {
         public EicLoader(
             IDataProvider provider,
             ParameterBase parameter,

@@ -2,12 +2,10 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
@@ -18,6 +16,7 @@ using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialLcmsApi.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -39,24 +38,31 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public LcmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
-            ParameterBase parameter,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators,
             DataBaseMapper mapper,
-            IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators) {
+            MsdialLcmsParameter parameter,
+            IObservable<IBarItemsLoader> barItemsLoader) {
             if (annotators is null) {
                 throw new ArgumentNullException(nameof(annotators));
+            }
+
+            if (barItemsLoader is null) {
+                throw new ArgumentNullException(nameof(barItemsLoader));
             }
 
             AlignmentFile = alignmentFileBean;
             Parameter = parameter;
             DataBaseMapper = mapper;
+            MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             Annotators = annotators;
-            container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(AlignmentFile.FilePath);
-            if (container == null) {
+            Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(AlignmentFile.FilePath);
+            if (Container == null) {
                 MessageBox.Show("No aligned spot information.");
             }
-            Ms1Spots = container == null ? new ObservableCollection<AlignmentSpotPropertyModel>() : 
+            Ms1Spots = Container == null ? new ObservableCollection<AlignmentSpotPropertyModel>() : 
                 new ObservableCollection<AlignmentSpotPropertyModel>(
-                container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
+                Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
            
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             this.decLoader = new MSDecLoader(AlignmentFile.SpectraFilePath);
@@ -89,7 +95,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new MsRefSpectrumLoader(mapper),
                 peak => peak.Mass,
                 peak => peak.Intensity);
-            Ms2SpectrumModel.GraphTitle = "Representation vs. Reference";
+            Ms2SpectrumModel.GraphTitle = "Representative vs. Reference";
             Ms2SpectrumModel.HorizontalTitle = "m/z";
             Ms2SpectrumModel.VerticalTitle = "Abundance";
             Ms2SpectrumModel.HorizontalProperty = nameof(SpectrumPeak.Mass);
@@ -98,7 +104,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Ms2SpectrumModel.OrderingProperty = nameof(SpectrumPeak.Intensity);
 
             // Class intensity bar chart
-            BarChartModel = BarChartModel.Create(Target, BarItemsLoader);
+            BarChartModel = BarChartModel.Create(Target, barItemsLoader);
             BarChartModel.Elements.HorizontalTitle = "Class";
             BarChartModel.Elements.VerticalTitle = "Height";
             BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);
@@ -157,11 +163,12 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
-        private readonly AlignmentResultContainer container;
+        public readonly AlignmentResultContainer Container;
 
         public AlignmentFileBean AlignmentFile { get; }
         public ParameterBase Parameter { get; }
         public DataBaseMapper DataBaseMapper { get; }
+        public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
         public IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> Annotators { get; }
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
@@ -188,7 +195,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private IBrushMapper<AlignmentSpotPropertyModel> selectedBrush;
 
         public void SaveProject() {
-            MessagePackHandler.SaveToFile(container, AlignmentFile.FilePath);
+            MessagePackHandler.SaveToFile(Container, AlignmentFile.FilePath);
         }
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
@@ -220,11 +227,9 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public bool CanSaveSpectra() => Target.Value.innerModel != null && MsdecResult.Value != null;
 
-
         public void FragmentSearcher() {
             var features = this.Ms1Spots;
             MsdialCore.Algorithm.FragmentSearcher.Search(features.Select(n => n.innerModel).ToList(), this.decLoader, Parameter);
-
         }
 
         public void GoToMsfinderMethod() {
@@ -233,8 +238,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Target.Value.innerModel,
                 MsdecResult.Value,
                 DataBaseMapper,
-                Parameter
-                );
+                Parameter);
         }
     }
 }

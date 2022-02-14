@@ -22,7 +22,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var reference = new MoleculeMsReference
             {
                 ScanID = 5,
-                PrecursorMz = lipid.Mass + adduct.AdductIonAccurateMass,
+                PrecursorMz = adduct.ConvertToMz(lipid.Mass),
                 ChromXs = new ChromXs
                 {
                     RT = new RetentionTime(100),
@@ -49,13 +49,13 @@ namespace CompMs.MsdialCore.DataObj.Tests
             Assert.AreEqual(0, actual1.ScanID);
 
             adduct = AdductIon.GetAdductIon("[M+Na]+");
-            reference.PrecursorMz = lipid.Mass + adduct.AdductIonAccurateMass;
+            reference.PrecursorMz = adduct.ConvertToMz(lipid.Mass);
             reference.Name = "Lipid2";
             reference.AdductType = adduct;
             var actual2 = db.Generate(lipid, adduct, reference);
             Assert.AreEqual(1, actual2.ScanID);
 
-            db.Register(new[] { actual1, actual2 });
+            db.Register(new[] { actual1, actual2, null }); // ignore null
 
             var result = new MsScanMatchResult { LibraryID = 0, };
             var actual3 = db.Refer(result);
@@ -118,6 +118,9 @@ namespace CompMs.MsdialCore.DataObj.Tests
             result = new MsScanMatchResult { LibraryID = 2 };
             var actual5 = db.Refer(result);
             Assert.IsNull(actual5);
+
+            var actual6 = db.Generate(lipid, adduct, reference);
+            Assert.AreEqual(actual2.ScanID, actual6.ScanID);
         }
     }
 }

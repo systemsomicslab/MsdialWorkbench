@@ -51,13 +51,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Storage = storage;
             providerFactory = new StandardDataProviderFactory();
             accProviderFactory = new LcimmsAccumulateDataProviderFactory();
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
         }
 
-        public MsdialLcImMsDataStorage Storage {
-            get => storage;
-            set => SetProperty(ref storage, value);
-        }
-        private MsdialLcImMsDataStorage storage;
+        private FacadeMatchResultEvaluator matchResultEvaluator;
+
+        public MsdialLcImMsDataStorage Storage { get; }
 
         public LcimmsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -86,6 +85,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 analysisFile,
                 providerFactory.Create(rawObj),
                 accProviderFactory.Create(rawObj),
+                matchResultEvaluator,
                 Storage.DataBaseMapper,
                 Storage.MsdialLcImMsParameter)
             .AddTo(Disposables);
@@ -98,7 +98,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
             AlignmentModel = new LcimmsAlignmentModel(
                 alignmentFile,
-                Storage.MsdialLcImMsParameter, Storage.DataBaseMapper)
+                matchResultEvaluator,
+                Storage.DataBaseMapper,
+                Storage.MsdialLcImMsParameter)
             .AddTo(Disposables);
         }
 
@@ -120,6 +122,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             annotationProcess = BuildAnnotationProcess(Storage.DataBases, Storage.MsdialLcImMsParameter.PeakPickBaseParam);
             Storage.DataBaseMapper = CreateDataBaseMapper(Storage.DataBases);
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
         }
 
         private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
@@ -150,16 +153,16 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public async Task RunAnnotationProcess(AnalysisFileBean analysisfile, Action<int> action) {
-            await Task.Run(() => FileProcess.Run(analysisfile, providerFactory, accProviderFactory, annotationProcess, storage, isGuiProcess: true, reportAction: action));
+            await Task.Run(() => FileProcess.Run(analysisfile, providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true, reportAction: action));
         }
 
         public void RunAlignmentProcess() {
-            AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage.MsdialLcImMsParameter, Storage.IupacDatabase, Storage.DataBaseMapper);
+            AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage, matchResultEvaluator);
             var alignmentFile = Storage.AlignmentFiles.Last();
             var aligner = aFactory.CreatePeakAligner();
-            var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
+            var result = aligner.Alignment(Storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
             MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
+            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(Storage, result.AlignmentSpotProperties).ToList());
         }
 
         private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(MsdialLcImMsDataStorage storage, IReadOnlyList<AlignmentSpotProperty> spots) {

@@ -7,13 +7,14 @@ namespace CompMs.Common.DataObj.Result {
     {
         None = 0,
         Unknown = 1 << 0,
+        FastaDB = 1 << 1,
         MspDB = 1 << 2,
         TextDB = 1 << 4,
+        GeneratedLipid = 1 << 5,
         Manual = 1 << 6,
-        FastaDB = 1 << 1
     }
     public enum DataBaseSource {
-        None, Msp, Lbm, Text, Fasta
+        None, Msp, Lbm, Text, Fasta, EadLipid
     }
 
     [MessagePackObject]
@@ -98,6 +99,10 @@ namespace CompMs.Common.DataObj.Result {
         public bool IsDecoy { get; set; } = false;
         [Key(31)]
         public int Priority { get; set; } = -1;
+        [Key(33)]
+        public bool IsReferenceMatched { get; set; } = false;
+        [Key(34)]
+        public bool IsAnnotationSuggested { get; set; } = false;
 
         public MsScanMatchResult Clone() {
             return (MsScanMatchResult)MemberwiseClone();

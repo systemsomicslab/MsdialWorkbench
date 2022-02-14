@@ -146,7 +146,8 @@
                         <Border BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="1,0,0,1"
                                 Grid.Row="1" Grid.Column="2">
-                            <Border Background="{TemplateBinding Background}"
+                            <Border x:Name="PART_ChartArea"
+                                    Background="{TemplateBinding Background}"
                                     behavior:ZoomByDragBehavior.IsEnabled="True"
                                     behavior:ZoomByWheelBehavior.IsEnabled="True"
                                     behavior:MoveByDragBehavior.IsEnabled="True"

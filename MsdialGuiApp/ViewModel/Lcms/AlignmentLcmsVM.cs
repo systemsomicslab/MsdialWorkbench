@@ -1,6 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
@@ -8,6 +10,8 @@ using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
+using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.Parameter;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -28,8 +32,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public AlignmentLcmsVM(
             LcmsAlignmentModel model,
             IWindowService<ViewModel.CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, 
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService, 
+            IObservable<ParameterBase> parameter)
             : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -45,6 +50,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             if (proteomicsTableService is null) {
                 throw new ArgumentNullException(nameof(proteomicsTableService));
+            }
+
+            if (parameter is null) {
+                throw new ArgumentNullException(nameof(parameter));
             }
 
             this.model = model;
@@ -108,14 +117,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .Subscribe(_ => Ms1Spots?.Refresh())
             .AddTo(Disposables);
 
-            var classBrush = new KeyBrushMapper<BarItem, string>(
-                model.Parameter.ProjectParam.ClassnameToColorBytes
+            var classBrush = parameter.Select(p => new KeyBrushMapper<BarItem, string>(
+                p.ProjectParam.ClassnameToColorBytes
                 .ToDictionary(
                     kvp => kvp.Key,
                     kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
                 ),
                 item => item.Class,
-                Colors.Blue);
+                Colors.Blue));
 
             Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
 
@@ -142,7 +151,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             Ms2SpectrumViewModel = new MsSpectrumViewModel(this.model.Ms2SpectrumModel,
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
                 lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
-            BarChartViewModel = new BarChartViewModel(this.model.BarChartModel, brushSource: Observable.Return(classBrush)).AddTo(Disposables);
+            BarChartViewModel = new BarChartViewModel(this.model.BarChartModel, brushSource: classBrush).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(this.model.AlignmentEicModel).AddTo(Disposables);
             AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(
                 this.model.AlignmentSpotTableModel,
@@ -304,8 +313,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         bool AnnotationFilter(AlignmentSpotPropertyModel spot) {
             if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
-            return RefMatchedChecked && spot.IsRefMatched(model.DataBaseMapper)
-                || SuggestedChecked && spot.IsSuggested(model.DataBaseMapper)
+            return RefMatchedChecked && spot.IsRefMatched(model.MatchResultEvaluator)
+                || SuggestedChecked && spot.IsSuggested(model.MatchResultEvaluator)
                 || UnknownChecked && spot.IsUnknown;
         }
 
@@ -320,7 +329,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         bool ProteinFilter(AlignmentSpotPropertyModel spot, IEnumerable<string> keywords) {
-            return keywords.All(keyword => spot.Protein.Contains(keyword));
+            return keywords.All(keyword => spot.Protein?.Contains(keyword) ?? true);
         }
 
         bool MetaboliteFilter(AlignmentSpotPropertyModel spot, IEnumerable<string> keywords) {
@@ -422,6 +431,22 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
         public void SaveProject() {
             model.SaveProject();
+        }
+
+        public DelegateCommand<Window> NormalizeCommand => normalizeCommand ?? (normalizeCommand = new DelegateCommand<Window>(Normalize));
+
+        private DelegateCommand<Window> normalizeCommand;
+
+        private void Normalize(Window owner) {
+            var parameter = model.Parameter;
+            using (var vm = new NormalizationSetViewModel(model.Container, model.DataBaseMapper, model.MatchResultEvaluator, parameter)) {
+                var view = new NormalizationSetView {
+                    DataContext = vm,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                view.ShowDialog();
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
@@ -95,8 +96,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             int numThreads,
             CancellationToken token,
             Action<double> reportAction) {
-
+            var syncObj = new object();
+            var counter = 0;
             var spectrums = provider.LoadMsSpectrums();
+            var totalCount = chromPeakFeatures.Count(n => n.PeakCharacter.IsotopeWeightNumber == 0);
             Enumerable.Range(0, chromPeakFeatures.Count)
                 .AsParallel()
                 .WithCancellation(token)
@@ -106,8 +109,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     var msdecResult = msdecResults[i];
                     if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                         RunAnnotationCore(chromPeakFeature, msdecResult, spectrums);
+                        lock (syncObj) {
+                            counter++;
+                            reportAction?.Invoke((double)counter / (double)totalCount);
+                        }
                     }
-                    reportAction?.Invoke((double)(i + 1) / chromPeakFeatures.Count);
                 });
         }
 
@@ -201,29 +207,42 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var annotator = annotatorContainer.Annotator;
 
             var candidates = annotator.FindCandidates(query);
-            var results = annotator.FilterByThreshold(candidates, annotatorContainer.Parameter);
-            var matches = annotator.SelectReferenceMatchResults(results, annotatorContainer.Parameter);
+            var results = annotator.FilterByThreshold(candidates);
+            var matches = annotator.SelectReferenceMatchResults(results);
             if (matches.Count > 0) {
-                var best = annotator.SelectTopHit(matches, annotatorContainer.Parameter);
+                var best = annotator.SelectTopHit(matches);
+                best.IsReferenceMatched = true;
                 chromPeakFeature.MatchResults.AddResult(best);
             }
             else if (results.Count > 0) {
-                var best = annotator.SelectTopHit(results, annotatorContainer.Parameter);
+                var best = annotator.SelectTopHit(results);
+                best.IsAnnotationSuggested = true;
                 chromPeakFeature.MatchResults.AddResult(best);
             }
         }
 
         private void SetRepresentativeProperty(ChromatogramPeakFeature chromPeakFeature) {
+            //var refmatches = chromPeakFeature.MatchResults.MatchResults.Select(r => (containerPairs.FirstOrDefault(p => p.Container.AnnotatorID == r.AnnotatorID).Container?.Annotator.IsReferenceMatched(r) ?? false, r))
+            //    .Where(p => p.Item1).Select(p => p.Item2).ToArray();
+            //MsScanMatchResult representative = null;
+            //if (refmatches.Length >= 1){
+            //    representative = refmatches.Argmax(r => Tuple.Create(r?.Priority ?? -1, r?.TotalScore ?? 0));
+            //}
+            //else {
+            //    representative = chromPeakFeature.MatchResults.Representative;
+            //}
+            //var representative = refmatches.Argmax(r => Tuple.Create(r?.Priority ?? -1, r?.TotalScore ?? 0));
+
             var representative = chromPeakFeature.MatchResults.Representative;
             var container = containerPairs.FirstOrDefault(containerPair => representative.AnnotatorID == containerPair.Container.AnnotatorID).Container;
             var annotator = container?.Annotator;
             if (annotator is null) {
                 return;
             }
-            else if (annotator.IsReferenceMatched(representative, container.Parameter)) {
+            else if (annotator.IsReferenceMatched(representative)) {
                 DataAccess.SetMoleculeMsProperty(chromPeakFeature, annotator.Refer(representative), representative);
             }
-            else if (annotator.IsAnnotationSuggested(representative, container.Parameter)) {
+            else if (annotator.IsAnnotationSuggested(representative)) {
                 DataAccess.SetMoleculeMsPropertyAsSuggested(chromPeakFeature, annotator.Refer(representative), representative);
             }
         }

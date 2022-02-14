@@ -85,8 +85,7 @@
         <GroupBox Name="GroupBox_MethodType"
                   Header="MS method type"
                   IsEnabled="{Binding IsChecked, ElementName=RadioButton_ESI}"
-                  Padding="4"
-                  Grid.Row="3">
+                  Padding="4">
             <StackPanel>
                 <RadioButton Name="RadioButton_DataDependentMSMS" 
                              Content="Conventional LC/MS or data dependent MS/MS" 
@@ -161,6 +160,17 @@
                     </ToolTipService.ToolTip>
                 </RadioButton>
             </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="Collision type"
+                  Visibility="{Binding IsChecked, ElementName=RadioButton_DataDependentMSMS, Converter={StaticResource boolean2visibility}}"
+                  Grid.Row="4">
+            <UniformGrid Columns="2">
+                <RadioButton Content="CID, HCD"
+                             IsChecked="{Binding CollisionType, Converter={StaticResource BooleanToEnum}, ConverterParameter=HCD}"/>
+                <RadioButton Content="EAD"
+                             IsChecked="{Binding CollisionType, Converter={StaticResource BooleanToEnum}, ConverterParameter=EAD}"/>
+            </UniformGrid>
         </GroupBox>
 
         <Grid>

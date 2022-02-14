@@ -120,6 +120,47 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ProteomicsParameterVM ProteomicsParameterVM { get; }
     }
 
+    public class LcmsEadLipidAnnotatorSettingViewModel : ViewModelBase, IAnnotatorSettingViewModel
+    {
+        public LcmsEadLipidAnnotatorSettingViewModel(LcmsEadLipidAnnotatorSettingModel model) {
+            this.model = model;
+            AnnotatorID = this.model.ToReactivePropertyAsSynchronized(m => m.AnnotatorID)
+                .SetValidateAttribute(() => AnnotatorID)
+                .AddTo(Disposables);
+            ParameterViewModel = new MsRefSearchParameterBaseViewModel(this.model.SearchParameter).AddTo(Disposables);
+            ObserveHasErrors = new[]
+            {
+                AnnotatorID.ObserveHasErrors,
+                ParameterViewModel.Ms1Tolerance.ObserveHasErrors,
+                ParameterViewModel.Ms2Tolerance.ObserveHasErrors,
+                ParameterViewModel.RtTolerance.ObserveHasErrors,
+                ParameterViewModel.RelativeAmpCutoff.ObserveHasErrors,
+                ParameterViewModel.AbsoluteAmpCutoff.ObserveHasErrors,
+                ParameterViewModel.MassRangeBegin.ObserveHasErrors,
+                ParameterViewModel.MassRangeEnd.ObserveHasErrors,
+                ParameterViewModel.SimpleDotProductCutOff.ObserveHasErrors,
+                ParameterViewModel.WeightedDotProductCutOff.ObserveHasErrors,
+                ParameterViewModel.ReverseDotProductCutOff.ObserveHasErrors,
+                ParameterViewModel.MatchedPeaksPercentageCutOff.ObserveHasErrors,
+                ParameterViewModel.MinimumSpectrumMatch.ObserveHasErrors,
+                ParameterViewModel.TotalScoreCutoff.ObserveHasErrors,
+            }.CombineLatestValuesAreAllFalse()
+            .Inverse()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
+        }
+
+        private readonly LcmsEadLipidAnnotatorSettingModel model;
+        public IAnnotatorSettingModel Model => model;
+
+        [Required(ErrorMessage = "Annotator id is required.")]
+        public ReactiveProperty<string> AnnotatorID { get; }
+
+        public MsRefSearchParameterBaseViewModel ParameterViewModel { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
+    }
+
     public class LcmsAnnotatorSettingViewModelFactory : IAnnotatorSettingViewModelFactory
     {
         public IAnnotatorSettingViewModel Create(IAnnotatorSettingModel model) {
@@ -130,6 +171,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     return new LcmsTextDBAnnotatorSettingViewModel(textModel);
                 case LcmsProteomicsAnnotatorSettingModel proteomicsModel:
                     return new LcmsProteomicsAnnotatorSettingViewModel(proteomicsModel);
+                case LcmsEadLipidAnnotatorSettingModel eadLipidModel:
+                    return new LcmsEadLipidAnnotatorSettingViewModel(eadLipidModel);
                 default:
                     throw new NotSupportedException(model.GetType().Name);
             }

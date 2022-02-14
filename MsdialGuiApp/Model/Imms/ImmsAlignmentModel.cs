@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -32,14 +31,16 @@ namespace CompMs.App.Msdial.Model.Imms
     {
         public ImmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
-            ParameterBase parameter,
+            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseMapper mapper,
-            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers) {
+            ParameterBase parameter) {
 
             AlignmentFile = alignmentFileBean;
             ResultFile = alignmentFileBean.FilePath;
             Parameter = parameter;
             DataBaseMapper = mapper;
+            MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             AnnotatorContainers = annotatorContainers;
             container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(ResultFile);
             if (container == null) {
@@ -211,6 +212,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public ParameterBase Parameter { get; }
         public DataBaseMapper DataBaseMapper { get; }
+        public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
         public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
         
         public void SaveSpectra(string filename) {

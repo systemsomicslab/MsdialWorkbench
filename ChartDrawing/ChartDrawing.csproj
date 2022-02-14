@@ -60,12 +60,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Adorner\ContentAdorner.cs" />
+    <Compile Include="Adorner\RangeSelectAdorner.cs" />
     <Compile Include="Adorner\ScatterFocusAdorner.cs" />
+    <Compile Include="Adorner\ChartSelectionRubberAdorner.cs" />
     <Compile Include="AxisManager\Generic\ReactiveContinuousAxisManager.cs" />
+    <Compile Include="Base\RangeSelection.cs" />
+    <Compile Include="Behavior\AreaSelectBehavior.cs" />
     <Compile Include="Chart\AreaChartControl.cs" />
     <Compile Include="AxisManager\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\Generic\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\Generic\BaseAxisManager.cs" />
+    <Compile Include="Chart\RangeSelector.cs" />
     <Compile Include="Design\PenSelector.cs" />
     <Compile Include="Design\ConstantBrushMapper.cs" />
     <Compile Include="Design\DelegateBrushMapper.cs" />
@@ -124,6 +129,8 @@
     <Compile Include="Chart\HeatmapControl.cs" />
     <Compile Include="Chart\LineChartControl.cs" />
     <Compile Include="Chart\LineSpectrumControl.cs" />
+    <Compile Include="IO\SaveImageAsCommand.cs" />
+    <Compile Include="IO\FrameworkElementEncoder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Base\Utility.cs" />
     <Compile Include="Base\DataPoint.cs" />

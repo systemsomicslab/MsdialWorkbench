@@ -15,7 +15,11 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(2)]
         public Dictionary<string, ModificationContainer> DB2ModificationContainer { get; }
         public ProteinResultContainer() { }
-        public ProteinResultContainer(ParameterBase parameter, List<ProteinGroup> proteinGroups, Dictionary<string, ModificationContainer> db2ModificationContainer) {
+        [SerializationConstructor]
+        public ProteinResultContainer(
+            ParameterBase parameter, 
+            List<ProteinGroup> proteinGroups, 
+            Dictionary<string, ModificationContainer> db2ModificationContainer) {
             this.Parameter = parameter;
             this.ProteinGroups = proteinGroups;
             this.DB2ModificationContainer = db2ModificationContainer;

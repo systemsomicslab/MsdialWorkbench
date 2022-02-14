@@ -21,7 +21,7 @@ namespace CompMs.Common.FormulaGenerator {
         {
             var adductIon = AdductIonParser.GetAdductIonBean(rawData.PrecursorType);
 
-            double monoIsotopicMass = MolecularFormulaUtility.ConvertPrecursorMzToExactMass(adductIon, rawData.PrecursorMz);
+            double monoIsotopicMass = adductIon.ConvertToExactMass(rawData.PrecursorMz);
 
             double subtractedM1Intensity = rawData.NominalIsotopicPeakList[1].RelativeAbundance - adductIon.M1Intensity;
             double subtractedM2Intensity = rawData.NominalIsotopicPeakList[2].RelativeAbundance - adductIon.M2Intensity;
@@ -40,7 +40,7 @@ namespace CompMs.Common.FormulaGenerator {
         public static List<FormulaResult> GetMolecularFormulaList(RawData rawData, List<ExistFormulaQuery> existFormulaDB,
             AdductIon adductIon, double precursorMz, double m1Intensity, double m2Intensity, AnalysisParamOfMsfinder analysisParam)
         {
-            double monoIsotopicMass = MolecularFormulaUtility.ConvertPrecursorMzToExactMass(adductIon, precursorMz);
+            double monoIsotopicMass = adductIon.ConvertToExactMass(precursorMz);
 
             var formulaGenerator = new FormulaGenerator(analysisParam);
             var isotopeCheck = true; if (m1Intensity < 0 || m2Intensity < 0) isotopeCheck = false;
@@ -53,7 +53,7 @@ namespace CompMs.Common.FormulaGenerator {
         {
             var adductIon = AdductIonParser.GetAdductIonBean(rawData.PrecursorType);
 
-            double monoIsotopicMass = MolecularFormulaUtility.ConvertPrecursorMzToExactMass(adductIon, rawData.PrecursorMz);
+            double monoIsotopicMass = adductIon.ConvertToExactMass(rawData.PrecursorMz);
 
             double subtractedM1Intensity = rawData.NominalIsotopicPeakList[1].RelativeAbundance - adductIon.M1Intensity;
             double subtractedM2Intensity = rawData.NominalIsotopicPeakList[2].RelativeAbundance - adductIon.M2Intensity;

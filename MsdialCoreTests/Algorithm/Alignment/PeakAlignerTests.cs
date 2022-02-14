@@ -10,6 +10,8 @@ using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Parameter;
 using System.Linq;
+using CompMs.Common.DataObj.Result;
+using CompMs.MsdialCore.Algorithm.Annotation;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
 {
@@ -86,7 +88,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
             var iupac = new Common.DataObj.Database.IupacDatabase();
             var joiner = new MockJoiner();
             var filler = new MockFiller(parameter);
-            var refiner = new MockRefiner(iupac, new DataBaseMapper());
+            var refiner = new MockRefiner(iupac, new FacadeMatchResultEvaluator());
             return new PeakAligner(accessor, joiner, filler, refiner, parameter);
         }
     }
@@ -146,7 +148,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
 
     class MockRefiner : AlignmentRefiner
     {
-        public MockRefiner(Common.DataObj.Database.IupacDatabase iupac, DataBaseMapper mapper) : base(iupac, mapper) {
+        public MockRefiner(Common.DataObj.Database.IupacDatabase iupac, IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(new ParameterBase(), iupac, evaluator) {
         }
 
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignments) {

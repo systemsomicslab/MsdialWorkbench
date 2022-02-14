@@ -113,10 +113,10 @@ namespace CompMs.MsdialImmsCore.Algorithm
             if (annotator is null) {
                 return;
             }
-            else if (annotator.IsReferenceMatched(representative, container.Parameter)) {
+            else if (annotator.IsReferenceMatched(representative)) {
                 DataAccess.SetMoleculeMsProperty(chromPeakFeature, annotator.Refer(representative), representative);
             }
-            else if (annotator.IsAnnotationSuggested(representative, container.Parameter)) {
+            else if (annotator.IsAnnotationSuggested(representative)) {
                 DataAccess.SetMoleculeMsPropertyAsSuggested(chromPeakFeature, annotator.Refer(representative), representative);
             }
         }
@@ -130,9 +130,9 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             var candidates = mspAnnotator.FindCandidates(
                 new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, chromPeakFeature.PeakCharacter, mspSearchParameter, mspAnnotator));
-            var results = mspAnnotator.FilterByThreshold(candidates, mspSearchParameter);
+            var results = mspAnnotator.FilterByThreshold(candidates);
             chromPeakFeature.MSRawID2MspIDs[msdecResult.RawSpectrumID] = results.Select(result => result.LibraryIDWhenOrdered).ToList();
-            var matches = mspAnnotator.SelectReferenceMatchResults(results, mspSearchParameter);
+            var matches = mspAnnotator.SelectReferenceMatchResults(results);
             if (matches.Count > 0) {
                 var best = matches.Argmax(result => result.TotalScore);
                 chromPeakFeature.MSRawID2MspBasedMatchResult[msdecResult.RawSpectrumID] = best;
@@ -155,8 +155,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 return;
             var candidates = textDBAnnotator.FindCandidates(
                 new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, chromPeakFeature.PeakCharacter, textDBSearchParameter, textDBAnnotator));
-            var results = textDBAnnotator.FilterByThreshold(candidates, textDBSearchParameter);
-            var matches = textDBAnnotator.SelectReferenceMatchResults(results, textDBSearchParameter);
+            var results = textDBAnnotator.FilterByThreshold(candidates);
+            var matches = textDBAnnotator.SelectReferenceMatchResults(results);
             chromPeakFeature.TextDbIDs.AddRange(matches.Select(result => result.LibraryIDWhenOrdered));
             chromPeakFeature.MatchResults.AddTextDbResults(matches);
             if (matches.Count > 0) {
@@ -176,14 +176,14 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             var candidates = annotator.FindCandidates(
                 new AnnotationQuery(chromPeakFeature, msdecResult, isotopes, chromPeakFeature.PeakCharacter, annotatorContainer.Parameter, annotator));
-            var results = annotator.FilterByThreshold(candidates, annotatorContainer.Parameter);
-            var matches = annotator.SelectReferenceMatchResults(results, annotatorContainer.Parameter);
+            var results = annotator.FilterByThreshold(candidates);
+            var matches = annotator.SelectReferenceMatchResults(results);
             if (matches.Count > 0) {
-                var best = annotator.SelectTopHit(matches, annotatorContainer.Parameter);
+                var best = annotator.SelectTopHit(matches);
                 chromPeakFeature.MatchResults.AddResult(best);
             }
             else if (results.Count > 0) {
-                var best = annotator.SelectTopHit(results, annotatorContainer.Parameter);
+                var best = annotator.SelectTopHit(results);
                 chromPeakFeature.MatchResults.AddResult(best);
             }
         }

@@ -84,7 +84,7 @@ namespace CompMs.App.Msdial.ViewModel
             return displayFilters.Read(flag);
         }
         protected bool ProteinFilter(ChromatogramPeakFeatureModel peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => peak.Protein.Contains(keyword));
+            return keywords.All(keyword => peak.Protein?.Contains(keyword) ?? true);
         }
 
         protected bool MetaboliteFilter(ChromatogramPeakFeatureModel peak, IEnumerable<string> keywords) {

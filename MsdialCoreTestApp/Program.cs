@@ -1,4 +1,5 @@
-﻿using CompMs.App.MsdialConsole.Parser;
+﻿using CompMs.App.MsdialConsole.MspCuration;
+using CompMs.App.MsdialConsole.Parser;
 using CompMs.App.MsdialConsole.Process;
 using CompMs.App.MsdialConsole.ProteomicsTest;
 using CompMs.Common.FormulaGenerator.Parser;
@@ -124,14 +125,18 @@ namespace CompMs.App.MsdialConsole {
             //         .Cast<Common.Components.MoleculeMsReference>());
 
 #if DEBUG
-            var projectPath = @"D:\msdial_test\Msdial\out\wine2\2022_01_05_13_17_26.mtd3";
-            var output = new MemoryStream();
-            // using var output = File.Open(@"D:\msdial_test\Msdial\out\wine2\output.tsv", FileMode.Create);
-            var tester = new Export.ExporterTest();
-            var curator = (PostCurator)null; // new PostCurator();
-            tester.Export(projectPath, output, curator);
-            Console.WriteLine(Encoding.UTF8.GetString(output.ToArray()));
+            //var projectPath = @"D:\msdial_test\Msdial\out\wine2\2022_01_05_13_17_26.mtd3";
+            //var output = new MemoryStream();
+            //// using var output = File.Open(@"D:\msdial_test\Msdial\out\wine2\output.tsv", FileMode.Create);
+            //var tester = new Export.ExporterTest();
+            //var curator = (PostCurator)null; // new PostCurator();
+            //tester.Export(projectPath, output, curator);
+            //Console.WriteLine(Encoding.UTF8.GetString(output.ToArray()));
 #endif
+
+            MspCurator.WriteRtMzInChIKey(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Neg-VS15_PfppRT.msp");
+            //MspCurator.AddRT2MspQueries(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Neg-VS15.msp", @"E:\6_Projects\2_metabolome_protocol\PFPP_NEG.txt");
+            //MspCurator.AddRT2MspQueries(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Pos-VS15.msp", @"E:\6_Projects\2_metabolome_protocol\PFPP_POS.txt");
         }
 
         private static void DumpN(string file, int n) {

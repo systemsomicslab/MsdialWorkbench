@@ -12,14 +12,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
     }
 
-    public interface ISerializableAnnotator<in TQuery, TReference, TResult>
-        : IAnnotator<TQuery, TReference, TResult>, IRestorableRefer<TQuery, TReference, TResult>
-    {
-
-    }
-
-    public interface ISerializableAnnotator<in TQuery, TReference, TResult, in TDataBase>
-        : IAnnotator<TQuery, TReference, TResult>, IRestorableRefer<TQuery, TReference, TResult, TDataBase>
+    public interface ISerializableAnnotator<in TQuery, TReference, TResult, in TDatabase>
+        : IAnnotator<TQuery, TReference, TResult>, IRestorableRefer<TQuery, TReference, TResult, TDatabase>
     {
 
     }

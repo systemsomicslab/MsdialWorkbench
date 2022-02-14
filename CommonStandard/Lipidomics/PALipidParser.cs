@@ -9,13 +9,13 @@ namespace CompMs.Common.Lipidomics
         public string Target { get; } = "PA";
 
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(2);
-        public static readonly string Pattern = $"PA\\s*(?<sn>{chainsParser.Pattern})";
+        public static readonly string Pattern = $"^PA\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 3,
-            MassDiffDictionary.HydrogenMass * 6,
+            MassDiffDictionary.HydrogenMass * 7,
             MassDiffDictionary.OxygenMass * 6,
             MassDiffDictionary.PhosphorusMass,
         }.Sum();

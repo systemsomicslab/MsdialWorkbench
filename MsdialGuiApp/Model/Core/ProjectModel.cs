@@ -1,4 +1,4 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.CommonMVVM;
 using System.Collections.ObjectModel;
 
@@ -8,35 +8,25 @@ namespace CompMs.App.Msdial.Model.Core
     {
         public ObservableCollection<IDatasetModel> Datasets { get; }
 
+        public DatasetSettingModel DatasetSetting {
+            get {
+                if (datasetSetting is null || datasetSetting.IsComplete) {
+                    datasetSetting = new DatasetSettingModel(SetNewDataset);
+                }
+                return datasetSetting;
+            }
+        }
+        private DatasetSettingModel datasetSetting;
+
         public IDatasetModel CurrentDataset {
             get => currentDataset;
-            set => SetProperty(ref currentDataset, value);
+            private set => SetProperty(ref currentDataset, value);
         }
         private IDatasetModel currentDataset;
 
-        public bool Start() {
-
-            return true;
-        }
-
-        public void Close() {
-
-        }
-
-        public void Add() {
-            Datasets.Add(new DatasetModel());
-        }
-
-        public void Change(IDatasetModel dataset) {
-            if (Datasets.Contains(dataset)) {
-                CurrentDataset = dataset;
-            }
-        }
-
-        public void Reprocess(ProcessOption processOption) {
-            var query = CurrentDataset?.CreateProcessQuery(processOption);
-
-            query.Execute();
+        public void SetNewDataset(IDatasetModel dataset) {
+            Datasets.Add(dataset);
+            CurrentDataset = dataset;
         }
     }
 }

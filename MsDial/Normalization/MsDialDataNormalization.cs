@@ -249,6 +249,7 @@ namespace Rfx.Riken.OsakaUniv
             var isMobility = alignmentResultBean.AnalysisParamForLC != null && alignmentResultBean.AnalysisParamForLC.IsIonMobility;
             var alignedSpots = alignmentResultBean.AlignmentPropertyBeanCollection;
             var globalSpots = DataAccessLcUtility.GetAlignmentPropertyBeanAndAlignedDriftSpotBeanMergedList(alignedSpots);
+            
             for (int i = 0; i < globalSpots.Count; i++) {
                 var spot = globalSpots[i];
                 var properties = DataAccessLcUtility.GetAlignedPeakPropertyBeanCollection(spot);
@@ -315,7 +316,10 @@ namespace Rfx.Riken.OsakaUniv
 
         
 
-        public static void LowessNormalize(ObservableCollection<AnalysisFileBean> files, AlignmentResultBean alignmentResultBean, double lowessSpan) {
+        public static void LowessNormalize(
+            ObservableCollection<AnalysisFileBean> files,
+            AlignmentResultBean alignmentResultBean, 
+            double lowessSpan) {
 
             var batchDict = files.GroupBy(item => item.AnalysisFilePropertyBean.AnalysisBatch).ToDictionary(grp => grp.Key, grp => grp.ToList());
 

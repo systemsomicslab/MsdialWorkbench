@@ -94,7 +94,7 @@ namespace CompMs.Common.Lipidomics.Tests
         [TestMethod()]
         public void ParseTest()
         {
-            var parser = new PGLipidParser();
+            var parser = new PALipidParser();
 
             var lipid = parser.Parse("PA 38:5");
             Assert.AreEqual(722.4886, lipid.Mass, 0.01);

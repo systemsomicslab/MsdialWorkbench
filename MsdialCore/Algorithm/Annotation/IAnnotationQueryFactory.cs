@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
@@ -22,7 +23,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         public AnnotationQueryFactory(IMatchResultFinder<AnnotationQuery, MsScanMatchResult> annotator, PeakPickBaseParameter peakPickParameter) {
             this.peakPickParameter = peakPickParameter ?? throw new ArgumentNullException(nameof(peakPickParameter));
-            this.annotator = annotator ?? throw new ArgumentNullException(nameof(annotator));
+            this.annotator = annotator;
         }
 
         public AnnotationQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter) {

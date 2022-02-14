@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type do:AlignmentSpotPropertyModel}}"
              d:DesignHeight="235" d:DesignWidth="370">
@@ -132,6 +133,21 @@
                             </TextBox.Style>
                         </TextBox>
                     </StackPanel>
+
+                    <ui:LabeledContent PrependLabel="AnnotatorID:">
+                        <TextBox Name="TextBox_PeakInformation_AnnotatorID">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
+                                    <Setter Property="Text" Value="{Binding AnnotatorID, Mode=OneWay}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding AnnotatorID, TargetNullValue=''}" Value="" >
+                                            <Setter Property="Text" Value="NA"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </ui:LabeledContent>
                 </StackPanel>
 
             </DataTemplate>
@@ -234,6 +250,21 @@
                             </TextBox.Style>
                         </TextBox>
                     </StackPanel>
+
+                    <ui:LabeledContent PrependLabel="AnnotatorID:">
+                        <TextBox Name="TextBox_PeakInformation_AnnotatorID">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
+                                    <Setter Property="Text" Value="{Binding AnnotatorID, Mode=OneWay}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding AnnotatorID, TargetNullValue=''}" Value="" >
+                                            <Setter Property="Text" Value="NA"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </ui:LabeledContent>
 
                 </StackPanel>
             </DataTemplate>

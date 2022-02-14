@@ -669,9 +669,7 @@ namespace CompMs.Common.FormulaGenerator.Function {
             for (var i = 0; i < peaklist.Count; i++) {
                 var peak = peaklist[i];
                 if (annotations[i].PeakType != AnnotatedIon.AnnotationType.Product) continue;
-                var centralExactMass = MolecularFormulaUtility.ConvertPrecursorMzToExactMass(peak.Mass,
-                    mainAdduct.AdductIonAccurateMass,
-                    mainAdduct.ChargeNumber, mainAdduct.AdductIonXmer, mainAdduct.IonMode);
+                var centralExactMass = mainAdduct.ConvertToExactMass(peak.Mass);
                 var ppm = massTol;
                 if (massTolType != MassToleranceType.Ppm)
                     ppm = MolecularFormulaUtility.PpmCalculator(200, 200 + massTol);
@@ -681,7 +679,7 @@ namespace CompMs.Common.FormulaGenerator.Function {
                 var referenceAdductIons = new List<AnnotatedIon>();
                 foreach (var targetAdduct in referenceAdductTypeList) {
                     if (mainAdduct.AdductIonName == targetAdduct.AdductIonName) continue;
-                    var targetMz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(targetAdduct, centralExactMass);
+                    var targetMz = targetAdduct.ConvertToMz(centralExactMass);
                     referenceAdductIons.Add(new AnnotatedIon() { AccurateMass = targetMz, AdductIon = targetAdduct });
                 }
 

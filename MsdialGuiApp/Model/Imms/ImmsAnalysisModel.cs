@@ -32,13 +32,15 @@ namespace CompMs.App.Msdial.Model.Imms
         public ImmsAnalysisModel(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
             DataBaseMapper mapper,
-            ParameterBase parameter,
-            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers)
+            ParameterBase parameter)
             : base(analysisFile) {
 
             this.provider = provider;
             DataBaseMapper = mapper;
+            MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             AnnotatorContainers = annotatorContainers;
             this.parameter = parameter as MsdialImmsParameter;
 
@@ -192,6 +194,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public double IntensityMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Intensity) ?? 0d;
 
         public DataBaseMapper DataBaseMapper { get; }
+        public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
         public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
 
         void OnTargetChanged(ChromatogramPeakFeatureModel target) {

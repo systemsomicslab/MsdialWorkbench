@@ -7,6 +7,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
@@ -40,7 +41,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (property is null) {
                 throw new ArgumentNullException(nameof(property));
             }
-
             if (scan is null) {
                 throw new ArgumentNullException(nameof(scan));
             }
@@ -51,12 +51,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Scan = scan;
             Isotopes = isotopes;
             Parameter = parameter;
-            this.annotator = annotator ?? throw new ArgumentNullException(nameof(annotator));
+            this.annotator = annotator;
             IonFeature = ionFeature;
         }
 
         public IEnumerable<MsScanMatchResult> FindCandidates() {
-            return annotator.FindCandidates(this);
+            if (annotator != null) {
+                return annotator.FindCandidates(this);
+            }
+            return Enumerable.Empty<MsScanMatchResult>();
         }
     }
 }
