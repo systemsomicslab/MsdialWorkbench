@@ -1,5 +1,4 @@
-﻿using CompMs.Common.Parameter;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {

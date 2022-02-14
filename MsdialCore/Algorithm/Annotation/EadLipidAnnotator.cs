@@ -20,7 +20,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             EadLipidDatabase = db ?? throw new System.ArgumentNullException(nameof(db));
             scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EAD);
             Parameter = parameter ?? throw new System.ArgumentNullException(nameof(parameter));
-            evaluator = MsScanMatchResultEvaluator.CreateEvaluatorWithSpectrum(Parameter);
+            evaluator = MsScanMatchResultEvaluator.CreateEvaluator(Parameter);
         }
 
         public string Key { get; }
@@ -37,7 +37,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public MsScanMatchResult CalculateScore((IAnnotationQuery, MoleculeMsReference) query, MoleculeMsReference reference) {
-            return scorer.Score(query.Item1, reference);
+            var result = scorer.Score(query.Item1, reference);
+            var parameter = query.Item1.Parameter;
+            result.IsReferenceMatched = result.IsPrecursorMzMatch && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && result.IsSpectrumMatch;
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch) && !result.IsReferenceMatched;
+            return result;
         }
 
         public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results) {

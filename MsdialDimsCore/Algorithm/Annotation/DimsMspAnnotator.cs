@@ -23,7 +23,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             this.omics = omics;
             ReferObject = mspDB;
             searcher = new MassReferenceSearcher<MoleculeMsReference>(mspDB.Database);
-            evaluator = MsScanMatchResultEvaluator.CreateEvaluatorWithSpectrum(parameter);
+            evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
         }
 
         private readonly MassReferenceSearcher<MoleculeMsReference> searcher;
@@ -76,16 +76,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
                 var ms2Result = LipidMs2Calculator.Calculate(new MSScanMatchQuery(normScan, parameter), reference);
                 results.Add(ms2Result);
                 if (!ms2Result.IsOtherLipidMatch) {
-                    var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(reference);
-                    if (molecule == null || molecule.SublevelLipidName == null || molecule.LipidName == null) {
-                        result.Name = reference.Name; // for others and splash etc in compoundclass
-                    }
-                    else if (molecule.SublevelLipidName == molecule.LipidName) {
-                        result.Name = molecule.LipidName;
-                    }
-                    else {
-                        result.Name = $"{molecule.SublevelLipidName}|{molecule.LipidName}";
-                    }
+                    result.Name = ms2Result.Name;
                 }
             }
             else {
@@ -95,6 +86,9 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 
             result.TotalScore = (float)results.SelectMany(res => res.Scores).Average();
             results.ForEach(res => res.Assign(result));
+
+            result.IsReferenceMatched = result.IsPrecursorMzMatch && result.IsSpectrumMatch;
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && !result.IsReferenceMatched;
             return result;
         }
 
