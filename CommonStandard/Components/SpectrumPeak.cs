@@ -7,9 +7,27 @@ using MessagePack;
 
 namespace CompMs.Common.Components
 {
+    [Flags]
     public enum SpectrumComment {
-        none, experiment, reference, precursor, b, y, b2, y2, b_h2o, y_h2o, b_nh3, y_nh3, b_h3po4, y_h3po4, tyrosinep,
-        metaboliteclass, acylchain, doublebond, snposition
+        none = 0, 
+        experiment = 1, 
+        reference = 2, 
+        precursor = 4, 
+        b = 8, 
+        y = 16, 
+        b2 = 32, 
+        y2 = 64, 
+        b_h2o = 128, 
+        y_h2o = 256,
+        b_nh3 = 512, 
+        y_nh3 = 1024, 
+        b_h3po4 = 2048, 
+        y_h3po4 = 4096, 
+        tyrosinep = 8192,
+        metaboliteclass = 16384, 
+        acylchain = 32768,
+        doublebond = 65536,
+        snposition = 131072
     }
 
 
@@ -42,12 +60,13 @@ namespace CompMs.Common.Components
         public SpectrumComment SpectrumComment { get; set; }
 
         public SpectrumPeak() { }
-        public SpectrumPeak(double mass, double intensity, string comment = null) {
+        public SpectrumPeak(double mass, double intensity, string comment = null, SpectrumComment spectrumcomment = SpectrumComment.none) {
             Mass = mass;
             Intensity = intensity;
             Comment = comment;
+            SpectrumComment = spectrumcomment;
         }
-
+        
         public SpectrumPeak Clone() {
             return (SpectrumPeak)MemberwiseClone();
         }

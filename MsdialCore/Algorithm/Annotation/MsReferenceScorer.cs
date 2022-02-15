@@ -161,9 +161,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 lipid = FacadeLipidParser.Default.Parse(reference.Name);
             }
             result.Name = lipid.Name;
-            result.IsLipidClassMatch = lipid.AnnotationLevel >= 1;
-            result.IsLipidChainsMatch = lipid is SeparatedChains sepLipid && sepLipid.Chains.All(chain => chain.DoubleBond.UnDecidedCount == 0 && chain.Oxidized.UnDecidedCount == 0);
-            result.IsLipidPositionMatch = lipid is PositionLevelChains;
+            result.IsLipidClassMatch = lipid.Description.HasFlag(LipidDescription.Class);
+            result.IsLipidChainsMatch = lipid.Description.HasFlag(LipidDescription.Chain);
+            result.IsLipidPositionMatch = lipid.Description.HasFlag(LipidDescription.SnPosition);
+            result.IsLipidDoubleBondPositionMatch = lipid.Description.HasFlag(LipidDescription.DoubleBondPosition);
             result.IsOtherLipidMatch = false;
             result.IsSpectrumMatch &= result.IsLipidChainsMatch | result.IsLipidClassMatch | result.IsLipidPositionMatch | result.IsOtherLipidMatch;
         }
