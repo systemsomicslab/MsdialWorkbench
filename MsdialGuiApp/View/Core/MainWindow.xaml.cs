@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.StartUp;
+using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.View.Table;
 using CompMs.App.Msdial.ViewModel;
@@ -8,7 +9,6 @@ using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM.WindowService;
 using Microsoft.Win32;
-using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Linq;
@@ -56,7 +56,7 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void OpenExperimentSpectrumView(ExperimentSpectrumViewModel viewmodel) {
-            var dialog = new ExperimentSpectrum() { Owner = this, DataContext = viewmodel, };
+            var dialog = new ExperimentSpectrumView() { Owner = this, DataContext = viewmodel, };
             dialog.Show();
         }
 

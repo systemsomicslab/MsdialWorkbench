@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -42,8 +41,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 MessageBox.Show("No aligned spot information.");
             }
 
-            Ms1Spots = Container == null ? new ObservableCollection<AlignmentSpotPropertyModel>() : new ObservableCollection<AlignmentSpotPropertyModel>(
-                Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
+            Ms1Spots = Container == null
+                ? new ObservableCollection<AlignmentSpotPropertyModel>()
+                : new ObservableCollection<AlignmentSpotPropertyModel>(
+                    Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
 
             MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
             MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;

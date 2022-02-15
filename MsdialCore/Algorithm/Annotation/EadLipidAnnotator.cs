@@ -14,7 +14,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     public class EadLipidAnnotator : ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IMatchResultEvaluator<MsScanMatchResult>
     {
         public EadLipidAnnotator(EadLipidDatabase db, string id, int priority, MsRefSearchParameterBase parameter) {
-            lipidGenerator = new LipidGenerator();
+            lipidGenerator = new LipidGenerator(new TotalChainVariationGenerator(chainGenerator: new Omega3nChainGenerator(), minLength: 6));
             Key = id ?? throw new System.ArgumentNullException(nameof(id));
             this.priority = priority;
             EadLipidDatabase = db ?? throw new System.ArgumentNullException(nameof(db));

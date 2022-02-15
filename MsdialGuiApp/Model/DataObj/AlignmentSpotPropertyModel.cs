@@ -72,6 +72,9 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
 
         public string AdductIonName => innerModel.AdductType.AdductIonName;
+
+        public string AnnotatorID => innerModel.MatchResults.Representative.AnnotatorID;
+
         public string Comment {
             get => innerModel.Comment;
             set

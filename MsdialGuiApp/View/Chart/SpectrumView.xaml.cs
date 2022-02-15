@@ -10,16 +10,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View
+namespace CompMs.App.Msdial.View.Chart
 {
     /// <summary>
-    /// Interaction logic for ExperimentSpectrum.xaml
+    /// Interaction logic for SpectrumView.xaml
     /// </summary>
-    public partial class ExperimentSpectrum : Window
+    public partial class SpectrumView : UserControl
     {
-        public ExperimentSpectrum() {
+        public SpectrumView() {
             InitializeComponent();
         }
     }

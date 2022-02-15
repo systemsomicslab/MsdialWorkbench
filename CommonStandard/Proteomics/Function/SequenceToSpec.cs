@@ -49,7 +49,7 @@ namespace CompMs.Common.Proteomics.Function {
         public static List<SpectrumPeak> GetSpectrumPeaksByHCD(Peptide peptide, AdductIon adduct, double minMz = 100, double maxMz = 1000000) {
 
             var sequence = peptide.SequenceObj;
-            var precursorMz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, peptide.ExactMass);
+            var precursorMz = adduct.ConvertToMz(peptide.ExactMass);
 
             var spectrum = new List<SpectrumPeak>() {
                 new SpectrumPeak() {
@@ -122,7 +122,7 @@ namespace CompMs.Common.Proteomics.Function {
         }
 
         public static MoleculeMsReference GetBasicMsRefProperty(Peptide peptide, AdductIon adduct) {
-            var precursorMz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, peptide.ExactMass);
+            var precursorMz = adduct.ConvertToMz(peptide.ExactMass);
             var msref = new MoleculeMsReference() {
                 PrecursorMz = precursorMz, IonMode = adduct.IonMode, Name = peptide.ModifiedSequence,
                 Formula = peptide.Formula, Ontology = "Peptide", DatabaseID = peptide.DatabaseOriginID, DatabaseUniqueIdentifier = peptide.DatabaseOrigin

@@ -131,7 +131,9 @@
                    KeyTip="D">
             <RibbonGroup>
                 <RibbonButton Label="Normalization" LargeImageSource="{StaticResource Data_normalization_is}"
-                              IsEnabled="False"
+                              IsEnabled="True"
+                              Command="{Binding AlignmentVM.NormalizeCommand}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                               KeyTip="N"/>
                 <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"
                               IsEnabled="False"
@@ -174,10 +176,10 @@
         <RibbonTab Header="View"
                    KeyTip="V">
             <RibbonGroup>
-                <RibbonButton Label="Display ion table" LargeImageSource="{StaticResource Ion_table_is}"
+                <!--<RibbonButton Label="Display ion table" LargeImageSource="{StaticResource Ion_table_is}"
                               IsEnabled="True"
                               Command="{Binding SelectedViewModel.ShowIonTableCommand}"
-                              KeyTip="I"/>
+                              KeyTip="I"/>-->
                 <RibbonButton Label="Display total ion chromatogram" LargeImageSource="{StaticResource Total_ion_chromatogram_is}"
                               IsEnabled="True"
                               Command="{Binding ShowTicCommand}"

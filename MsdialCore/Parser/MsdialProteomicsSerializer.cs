@@ -37,7 +37,9 @@ namespace CompMs.MsdialCore.Parser {
                         var databaseID = pepMsObj.ShotgunProteomicsDatabaseID;
                         peptide.GenerateSequenceObj(protein.FastaProperty.Sequence, peptide.Position.Start, peptide.Position.End,
                             peptide.ResidueCodeIndexToModificationIndex, db2modContainer[databaseID].ID2Code, db2modContainer[databaseID].Code2AminoAcidObj);
+                        pepMsObj.PropertyUpdates();
                     }
+                    protein.PropertyUpdates();
                 }
             }
 

@@ -1,6 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
@@ -429,6 +431,22 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
         public void SaveProject() {
             model.SaveProject();
+        }
+
+        public DelegateCommand<Window> NormalizeCommand => normalizeCommand ?? (normalizeCommand = new DelegateCommand<Window>(Normalize));
+
+        private DelegateCommand<Window> normalizeCommand;
+
+        private void Normalize(Window owner) {
+            var parameter = model.Parameter;
+            using (var vm = new NormalizationSetViewModel(model.Container, model.DataBaseMapper, model.MatchResultEvaluator, parameter)) {
+                var view = new NormalizationSetView {
+                    DataContext = vm,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                view.ShowDialog();
+            }
         }
     }
 }

@@ -250,7 +250,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var featureObjs = DataAccess.GetChromPeakFeatureObjectsIntegratingRtAndDriftData(features);
             var isIonMobility = features.Count != featureObjs.Count;
             if (isIonMobility) featureObjs = featureObjs.Where(n => !n.IsMultiLayeredData()).ToList();
-            var annotatedFeatures = featureObjs.Where(n => n.IsReferenceMatched(evaluator));
+            var annotatedFeatures = featureObjs.Where(n => n.IsReferenceMatched(evaluator)).ToList();
             var results = InitializeProteinMsResults(databases);
 
             foreach (var result in results) {
@@ -278,7 +278,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var featureObjs = DataAccess.GetAlignmentSpotPropertiesIntegratingRtAndDriftData(features);
             var isIonMobility = features.Count != featureObjs.Count;
             if (isIonMobility) featureObjs = featureObjs.Where(n => !n.IsMultiLayeredData()).ToList();
-            var annotatedFeatures = featureObjs.Where(n => n.IsReferenceMatched(evaluator));
+            var annotatedFeatures = featureObjs.Where(n => n.IsReferenceMatched(evaluator)).ToList();
             var results = InitializeProteinMsResults(databases);
 
             foreach (var result in results) {
@@ -306,7 +306,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 var databaseID = item.DataBaseID;
                 var fastaQueries = item.DataBase.FastaQueries;
                 foreach (var query in fastaQueries) {
-                    proteins.Add(new ProteinMsResult(databaseID, counter, query));
+                    proteins.Add(new ProteinMsResult(counter, databaseID, query));
                     counter++;
                 }
             }

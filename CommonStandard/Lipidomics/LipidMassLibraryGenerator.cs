@@ -1392,7 +1392,7 @@ namespace CompMs.Common.Lipidomics {
 
                             var totalFormula = new Formula(headerFormula.Cnum + totalChainCarbon, headerFormula.Hnum + totalChainHydrogen,
                                 headerFormula.Nnum + totalNitrogenCount, headerFormula.Onum + totalChainOxygen, headerFormula.Pnum, headerFormula.Snum, 0, 0, 0, 0, 0);
-                            var mz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, totalFormula.Mass);
+                            var mz = adduct.ConvertToMz(totalFormula.Mass);
                             var lipidname = classString + " " + hydroHeader + totalChainCarbon.ToString() + ":" + totalChainDoubleBond;
 
                             sw.WriteLine(lipidname + "\t" + mz + "\t" + adduct.AdductIonName);
@@ -1418,7 +1418,7 @@ namespace CompMs.Common.Lipidomics {
 
                             var totalFormula = new Formula(headerFormula.Cnum + totalChainCarbon, headerFormula.Hnum + totalChainHydrogen,
                                 headerFormula.Nnum, headerFormula.Onum + totalChainOxygen, headerFormula.Pnum, headerFormula.Snum, 0, 0, 0, 0, 0);
-                            var mz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, totalFormula.Mass);
+                            var mz = adduct.ConvertToMz(totalFormula.Mass);
                             var lipidname = classString + " " + totalChainCarbon + ":" + totalChainDoubleBond;
 
                             sw.WriteLine(lipidname + "\t" + mz + "\t" + adduct.AdductIonName);
@@ -1449,7 +1449,7 @@ namespace CompMs.Common.Lipidomics {
 
                             var totalFormula = new Formula(headerFormula.Cnum + totalChainCarbon, headerFormula.Hnum + totalChainHydrogen,
                                 headerFormula.Nnum, headerFormula.Onum + totalChainOxygen, headerFormula.Pnum, headerFormula.Snum, 0, 0, 0, 0, 0);
-                            var mz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, totalFormula.Mass);
+                            var mz = adduct.ConvertToMz(totalFormula.Mass);
                             var lipidname = classString + " " + totalChainCarbon + ":" + totalChainDoubleBond + "e";
 
                             sw.WriteLine(lipidname + "\t" + mz + "\t" + adduct.AdductIonName);
@@ -1480,7 +1480,7 @@ namespace CompMs.Common.Lipidomics {
 
                             var totalFormula = new Formula(headerFormula.Cnum + totalChainCarbon, headerFormula.Hnum + totalChainHydrogen,
                                 headerFormula.Nnum + totalNitrogenCount, headerFormula.Onum + totalChainOxygen, headerFormula.Pnum, headerFormula.Snum, 0, 0, 0, 0, 0);
-                            var mz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, totalFormula.Mass);
+                            var mz = adduct.ConvertToMz(totalFormula.Mass);
                             var lipidname = classString + " " + hydroHeader + totalChainCarbon.ToString() + ":" + totalChainDoubleBond;
 
                             sw.WriteLine(lipidname + "\t" + mz + "\t" + adduct.AdductIonName);
@@ -1511,7 +1511,7 @@ namespace CompMs.Common.Lipidomics {
 
                             var totalFormula = new Formula(headerFormula.Cnum + totalChainCarbon, headerFormula.Hnum + totalChainHydrogen,
                                 headerFormula.Nnum + totalNitrogenCount, headerFormula.Onum + totalChainOxygen, headerFormula.Pnum, headerFormula.Snum, 0, 0, 0, 0, 0);
-                            var mz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, totalFormula.Mass);
+                            var mz = adduct.ConvertToMz(totalFormula.Mass);
                             var lipidname = classString + " " + totalChainCarbon.ToString() + ":" + totalChainDoubleBond;
 
                             sw.WriteLine(lipidname + "\t" + mz + "\t" + adduct.AdductIonName);
@@ -1551,7 +1551,7 @@ namespace CompMs.Common.Lipidomics {
 
                                 var totalFormula = new Formula(headerFormula.Cnum + totalChainCarbon, headerFormula.Hnum + totalChainHydrogen,
                                     headerFormula.Nnum + totalNitrogenCount, headerFormula.Onum + totalChainOxygen, headerFormula.Pnum, headerFormula.Snum, 0, 0, 0, 0, 0);
-                                var mz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, totalFormula.Mass);
+                                var mz = adduct.ConvertToMz(totalFormula.Mass);
                                 var lipidname = classString + " " + totalString;
 
                                 sw.WriteLine(lipidname + "\t" + mz + "\t" + adduct.AdductIonName);
@@ -1594,7 +1594,7 @@ namespace CompMs.Common.Lipidomics {
 
                                 var totalFormula = new Formula(headerFormula.Cnum + totalChainCarbon, headerFormula.Hnum + totalChainHydrogen,
                                     headerFormula.Nnum + totalNitrogenCount, headerFormula.Onum + totalChainOxygen, headerFormula.Pnum, headerFormula.Snum, 0, 0, 0, 0, 0);
-                                var mz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, totalFormula.Mass);
+                                var mz = adduct.ConvertToMz(totalFormula.Mass);
                                 var lipidname = classString + " " + totalString;
 
                                 sw.WriteLine(lipidname + "\t" + mz + "\t" + adduct.AdductIonName);
@@ -1621,7 +1621,7 @@ namespace CompMs.Common.Lipidomics {
 
                     var totalFormula = new Formula(totalCarbon, totalHydrogen, totalNitrogen, totalOxygen
                                , headerFormula.Pnum, headerFormula.Snum, 0, 0, 0, 0, 0);
-                            var mz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, totalFormula.Mass);
+                            var mz = adduct.ConvertToMz(totalFormula.Mass);
                             var lipidname = classString;
 
                             sw.WriteLine(lipidname + "\t" + mz + "\t" + adduct.AdductIonName);
@@ -1642,7 +1642,7 @@ namespace CompMs.Common.Lipidomics {
 
                     var totalFormula = new Formula(totalCarbon, totalHydrogen, totalNitrogen, totalOxygen
                                , headerFormula.Pnum, headerFormula.Snum, 0, 0, 0, 0, 0);
-                    var mz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, totalFormula.Mass);
+                    var mz = adduct.ConvertToMz(totalFormula.Mass);
                     var lipidname = classString;
 
                     sw.WriteLine(lipidname + " " + "\t" + mz + "\t" + adduct.AdductIonName);

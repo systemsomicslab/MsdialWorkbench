@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Model.Imms
             MsdialImmsDataStorage storage)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             Storage = storage;
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(storage.DataBaseMapper);
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
         }
 
         private FacadeMatchResultEvaluator matchResultEvaluator;
@@ -123,7 +123,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 if (apsw_result != true) return false;
 
                 Storage.DataBaseMapper = analysisParameterSet.BuildAnnotator();
-                matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(Storage.DataBaseMapper);
+                matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
                 ProviderFactory = analysisParameterSet.Parameter.ProviderFactoryParameter.Create(5, true);
 
                 if (parameter.TogetherWithAlignment) {

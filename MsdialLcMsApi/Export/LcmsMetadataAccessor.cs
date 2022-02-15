@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
@@ -9,11 +10,20 @@ using System.Collections.Generic;
 
 namespace CompMs.MsdialLcMsApi.Export
 {
+    public class LcmsProteomicsMetadataAccessor : ProteomicsBaseAccessor {
+        public LcmsProteomicsMetadataAccessor(IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer, ParameterBase parameter) : base(refer, parameter) {
+
+        }
+    }
+
+
     public class LcmsMetadataAccessor : BaseMetadataAccessor
     {
         public LcmsMetadataAccessor(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter) : base(refer, parameter) {
 
         }
+
+
 
         protected override string[] GetHeadersCore() {
             return new string[] {

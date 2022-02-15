@@ -52,16 +52,12 @@ namespace CompMs.Common.Lipidomics.Tests
                 throw new System.NotImplementedException();
             }
 
-            public IEnumerable<ITotalChain> Permutate(MolecularSpeciesLevelChains chains) {
-                throw new System.NotImplementedException();
+            public bool CarbonIsValid(int carbon) {
+                return true;
             }
 
-            public IEnumerable<ITotalChain> Product(PositionLevelChains chains) {
-                throw new System.NotImplementedException();
-            }
-
-            public IEnumerable<ITotalChain> Separate(TotalChain chain) {
-                throw new System.NotImplementedException();
+            public bool DoubleBondIsValid(int carbon, int doubleBond) {
+                return true;
             }
         }
     }
