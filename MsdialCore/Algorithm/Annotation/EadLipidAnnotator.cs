@@ -69,8 +69,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (lipid is null) {
                 return new List<MoleculeMsReference>(0);
             }
-
-            var lipids = GenerateLipid(lipid, lipidGenerator);
+            var flag = LipidDescription.Class | LipidDescription.Chain | LipidDescription.SnPosition | LipidDescription.DoubleBondPosition;
+            var lipids = GenerateLipid(lipid, lipidGenerator).Where(n => n.Description.HasFlag(flag)).ToList();
 
             var references = lipids.Select(l => EadLipidDatabase.Generate(l, reference.AdductType, reference)).Where(reference_ => reference_ != null).ToList();
             EadLipidDatabase.Register(references);
@@ -78,7 +78,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private static IEnumerable<ILipid> GenerateLipid(ILipid lipid, ILipidGenerator lipidGenerator) {
-            return lipid.Generate(lipidGenerator).SelectMany(l => GenerateLipid(l, lipidGenerator)).Prepend(lipid);
+            return lipid.Generate(lipidGenerator).
+                SelectMany(l => GenerateLipid(l, lipidGenerator)).
+                Prepend(lipid);
         }
 
         public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results) {

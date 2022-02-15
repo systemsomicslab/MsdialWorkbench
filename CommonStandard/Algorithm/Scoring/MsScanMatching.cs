@@ -381,6 +381,7 @@ namespace CompMs.Common.Algorithm.Scoring {
 
         public static double[] GetMatchedPeaksScores(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin,
             double massBegin, double massEnd) {
+            if (!IsComparedAvailable(peaks1, peaks2)) return new double[2] { -1, -1 };
 
             double sumM = 0, sumL = 0;
             double minMz = peaks2[0].Mass;

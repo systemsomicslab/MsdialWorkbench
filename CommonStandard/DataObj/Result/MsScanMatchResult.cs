@@ -81,6 +81,8 @@ namespace CompMs.Common.DataObj.Result {
         public bool IsLipidChainsMatch { get; set; }
         [Key(21)]
         public bool IsLipidPositionMatch { get; set; }
+        [Key(35)]
+        public bool IsLipidDoubleBondPositionMatch { get; set; }
         [Key(22)]
         public bool IsOtherLipidMatch { get; set; }
         [IgnoreMember]

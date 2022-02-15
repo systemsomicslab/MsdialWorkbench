@@ -19,7 +19,7 @@ namespace CompMs.Common.Lipidomics {
 
             if (adduct.AdductIonName == "[M+H]+") {
                 // check lipid class ion's existence
-                var classions = ref_spectrum.Where(n => n.SpectrumComment == SpectrumComment.metaboliteclass).ToList();
+                var classions = ref_spectrum.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.metaboliteclass)).ToList();
                 var classionsDetected = EadMsCharacterizationUtility.CountDetectedIons(exp_spectrum, classions, tolerance);
                 var isClassIonExisted = false;
                 if (classionsDetected >= 2) {
@@ -28,7 +28,7 @@ namespace CompMs.Common.Lipidomics {
                 if (isClassIonExisted == false) return (null, new double[2] { 0.0, 0.0 });
 
                 // check lipid chain ion's existence
-                var chainIons = ref_spectrum.Where(n => n.SpectrumComment == SpectrumComment.acylchain).ToList();
+                var chainIons = ref_spectrum.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.acylchain)).ToList();
                 var chainIonsDetected = EadMsCharacterizationUtility.CountDetectedIons(exp_spectrum, chainIons, tolerance);
                 var isChainIonExisted = false;
                 if (chainIonsDetected >= 2) {
@@ -36,7 +36,7 @@ namespace CompMs.Common.Lipidomics {
                 }
 
                 // check lipid position ion's existence
-                var positionIons = ref_spectrum.Where(n => n.SpectrumComment == SpectrumComment.snposition).ToList();
+                var positionIons = ref_spectrum.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.snposition)).ToList();
                 var positionIonsDetected = EadMsCharacterizationUtility.CountDetectedIons(exp_spectrum, positionIons, tolerance); ;
                 var isPositionIonExisted = false;
                 if (positionIonsDetected >= 1) {
@@ -44,7 +44,7 @@ namespace CompMs.Common.Lipidomics {
                 }
 
                 // check the dtected ion nudouble bond position
-                var doublebondIons = ref_spectrum.Where(n => n.SpectrumComment == SpectrumComment.doublebond).ToList();
+                var doublebondIons = ref_spectrum.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond)).ToList();
                 var matchedions = MsScanMatching.GetMatchedPeaksScores(exp_spectrum, doublebondIons, tolerance, mzBegin, mzEnd);
                 var matchedPercent = matchedions[0];
                 var matchedCount = matchedions[1];
@@ -54,7 +54,7 @@ namespace CompMs.Common.Lipidomics {
                 var chainionScore = isChainIonExisted ? 1.0 : 0.0;
                 var positionScore = isPositionIonExisted ? 1.0 : 0.0;
                 var doublebondScore = matchedPercent;
-                var score = classionScore + chainionScore + positionScore + doublebondScore;
+                var score = classionScore + chainionScore + positionScore * 5 + doublebondScore * 10.0;
                 var counter = classionsDetected + chainIonsDetected + positionIonsDetected + matchedCount;
 
                 var chains = molecule.Chains;
