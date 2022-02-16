@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using System;
 
@@ -37,6 +38,13 @@ namespace CompMs.App.Msdial.Model.DataObj
                 }
             }
         }
+        public string Protein {
+            get => innerModel.Protein;
+        }
+        public int ProteinGroupID {
+            get => innerModel.ProteinGroupID;
+        }
+
         public Formula Formula {
             get => ((IMoleculeProperty)innerModel).Formula;
             set {
@@ -73,6 +81,9 @@ namespace CompMs.App.Msdial.Model.DataObj
                 }
             }
         }
+
+        public string AnnotatorID => innerModel.MatchResults.Representative.AnnotatorID;
+
         public string Comment {
             get => innerModel.Comment;
             set {
@@ -86,12 +97,12 @@ namespace CompMs.App.Msdial.Model.DataObj
         public string Isotope => $"M + {innerModel.PeakCharacter.IsotopeWeightNumber}";
         public int IsotopeWeightNumber => innerModel.PeakCharacter.IsotopeWeightNumber;
 
-        public bool IsRefMatched(DataBaseMapper mapper) {
-            return innerModel.IsReferenceMatched(mapper);
+        public bool IsRefMatched(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+            return innerModel.IsReferenceMatched(evaluator);
         }
 
-        public bool IsSuggested(DataBaseMapper mapper) {
-            return innerModel.IsAnnotationSuggested(mapper);
+        public bool IsSuggested(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+            return innerModel.IsAnnotationSuggested(evaluator);
         }
 
         public bool IsUnknown => innerModel.IsUnknown;

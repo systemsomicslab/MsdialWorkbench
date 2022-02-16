@@ -746,6 +746,116 @@ namespace CompMs.MsdialCore.Utility {
             return sum;
         }
 
+        public static List<SpectrumPeak> GetAverageSpectrum(IReadOnlyList<RawSpectrum> spectrumList, double start, double end, double bin, int targetExperimentID = -1) {
+            var min = Math.Min(start, end);
+            var max = Math.Max(start, end);
+            var lo = SearchCollection.LowerBound(spectrumList, new RawSpectrum() { ScanStartTime = min }, (a, b) => a.ScanStartTime.CompareTo(b.ScanStartTime));
+            var hi = SearchCollection.UpperBound(spectrumList, new RawSpectrum() { ScanStartTime = max }, (a, b) => a.ScanStartTime.CompareTo(b.ScanStartTime));
+            var points = new List<int>();
+            for (int i = lo; i < hi; i++) {
+                var spec = spectrumList[i];
+                if (targetExperimentID == -1) {
+                    points.Add(i);
+                }
+                else if (targetExperimentID == spec.ExperimentID) {
+                    points.Add(i);
+                }
+            }
+            return GetAverageSpectrum(spectrumList, points, bin);
+        }
+
+
+        public static List<SpectrumPeak> GetAverageSpectrum(IReadOnlyList<RawSpectrum> spectrumList, List<int> points, double bin) {
+            var peaks = new List<SpectrumPeak>();
+            var mass2peaks = new Dictionary<int, List<SpectrumPeak>>();
+            var factor = 1.0 / bin;
+
+            foreach (var point in points) {
+                if (point < 0 || point > spectrumList.Count - 1) continue;
+                var spec = spectrumList[point];
+                foreach (var peak in spec.Spectrum) {
+                    var mass = (int)(peak.Mz * factor);
+                    var intensity = peak.Intensity;
+                    var spectrumPeak = new SpectrumPeak() { Mass = peak.Mz, Intensity = intensity };
+                    if (mass2peaks.ContainsKey(mass)) {
+                        mass2peaks[mass].Add(spectrumPeak);
+                    }
+                    else {
+                        mass2peaks[mass] = new List<SpectrumPeak>() { spectrumPeak };
+                    }
+                }
+            }
+
+            foreach (var item in mass2peaks) {
+                var repMass = item.Value.Argmax(n => n.Intensity).Mass;
+                var aveIntensity = item.Value.Sum(n => n.Intensity) / (double)points.Count;
+                var peak = new SpectrumPeak() { Mass = repMass, Intensity = aveIntensity };
+                peaks.Add(peak);
+            }
+            return peaks;
+        }
+
+        public static List<SpectrumPeak> GetSubtractSpectrum(IReadOnlyList<RawSpectrum> spectrumList, 
+            double mainStart, double mainEnd, 
+            double subtractStart, double subtractEnd,
+            double bin, int targetExperimentID = -1) {
+            var mainAveSpec = GetAverageSpectrum(spectrumList, mainStart, mainEnd, bin, targetExperimentID);
+            var subtractAveSpec = GetAverageSpectrum(spectrumList, subtractStart, subtractEnd, bin, targetExperimentID);
+
+            return GetSubtractSpectrum(mainAveSpec, subtractAveSpec, bin);
+        }
+
+        public static List<SpectrumPeak> GetSubtractSpectrum(IReadOnlyList<SpectrumPeak> mainPeaks, IReadOnlyList<SpectrumPeak> subtractPeaks, double bin) {
+            var peaks = new List<SpectrumPeak>();
+            var mass2peaks = new Dictionary<int, List<SpectrumPeak>>();
+            var factor = 1.0 / bin;
+
+            foreach (var peak in mainPeaks) {
+                var mass = (int)(peak.Mass * factor);
+                var intensity = peak.Intensity;
+                var spectrumPeak = new SpectrumPeak() { Mass = peak.Mass, Intensity = intensity };
+                if (mass2peaks.ContainsKey(mass)) {
+                    mass2peaks[mass].Add(spectrumPeak);
+                }
+                else {
+                    mass2peaks[mass] = new List<SpectrumPeak>() { spectrumPeak };
+                }
+            }
+
+            var mass2peak = new Dictionary<int, SpectrumPeak>();
+            foreach (var item in mass2peaks) {
+                var repMass = item.Value.Argmax(n => n.Intensity).Mass;
+                var intensity = item.Value.Sum(n => n.Intensity);
+                var peak = new SpectrumPeak() { Mass = repMass, Intensity = intensity };
+
+                var binnedMass = (int)(repMass * factor);
+                if (mass2peak.ContainsKey(binnedMass)) {
+                    mass2peak[binnedMass].Intensity += intensity;
+                }
+                else {
+                    mass2peak[binnedMass] = peak;
+                }
+            }
+
+            foreach (var peak in subtractPeaks) {
+                var mass = (int)(peak.Mass * factor);
+                var intensity = peak.Intensity;
+
+                if (!mass2peak.ContainsKey(mass)) continue;
+                else {
+                    mass2peak[mass].Intensity -= intensity;
+                }
+            }
+
+            foreach (var item in mass2peak) {
+                var peak = item.Value;
+                if (peak.Intensity > 0) {
+                    peaks.Add(peak);
+                }
+            }
+            return peaks;
+        }
+
         public static List<List<ChromatogramPeak>> GetAccumulatedMs2PeakListList(List<RawSpectrum> spectrumList,
              ChromatogramPeakFeature rtChromPeakFeature, List<SpectrumPeak> curatedSpectrum, double minDriftTime, double maxDriftTime, IonMode ionMode) {
             var ms2peaklistlist = new List<List<ChromatogramPeak>>();
@@ -916,7 +1026,8 @@ namespace CompMs.MsdialCore.Utility {
             if (spectra.Count == 0) return new List<SpectrumPeak>();
             if (type == ExportspectraType.profile) return spectra;
 
-            var centroidedSpectra = SpectralCentroiding.Centroid(spectra, 0.0);
+           // var centroidedSpectra = SpectralCentroiding.Centroid(spectra, 0.0);
+            var centroidedSpectra = SpectralCentroiding.CentroidByLocalMaximumMethod(spectra);
             if (centroidedSpectra != null && centroidedSpectra.Count != 0)
                 return centroidedSpectra;
             else
@@ -947,7 +1058,8 @@ namespace CompMs.MsdialCore.Utility {
 
             if (spectra.Count == 0) return new List<SpectrumPeak>();
 
-            var centroidedSpectra = SpectralCentroiding.Centroid(spectra, amplitudeThresh);
+            //var centroidedSpectra = SpectralCentroiding.Centroid(spectra, amplitudeThresh);
+            var centroidedSpectra = SpectralCentroiding.CentroidByLocalMaximumMethod(spectra, absThreshold: amplitudeThresh);
 
             if (centroidedSpectra != null && centroidedSpectra.Count != 0)
                 return centroidedSpectra;
@@ -1002,7 +1114,8 @@ namespace CompMs.MsdialCore.Utility {
            ChromatogramPeakFeature driftSpot, ChromatogramPeakFeature peakSpot, ParameterBase param) {
             var massSpectrum = CalcAccumulatedMs2Spectra(spectrumList, peakSpot, driftSpot, param.CentroidMs1Tolerance);
             if (param.MS2DataType == MSDataType.Profile && massSpectrum.Count > 0) {
-                return SpectralCentroiding.Centroid(massSpectrum);
+                //return SpectralCentroiding.Centroid(massSpectrum);
+                return SpectralCentroiding.CentroidByLocalMaximumMethod(massSpectrum);
             }
             else {
                 return massSpectrum;

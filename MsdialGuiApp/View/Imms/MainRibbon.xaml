@@ -130,10 +130,10 @@
         <RibbonTab Header="View"
                    KeyTip="V">
             <RibbonGroup>
-                <RibbonButton Label="Display ion table" LargeImageSource="{StaticResource Ion_table_is}"
+                <!--<RibbonButton Label="Display ion table" LargeImageSource="{StaticResource Ion_table_is}"
                               IsEnabled="True"
                               Command="{Binding SelectedViewModel.ShowIonTableCommand}"
-                              KeyTip="I"/>
+                              KeyTip="I"/>-->
                 <RibbonButton Label="Display total ion chromatogram" LargeImageSource="{StaticResource Total_ion_chromatogram_is}"
                               IsEnabled="True"
                               Command="{Binding ShowTicCommand}"

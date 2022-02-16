@@ -3,16 +3,11 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
-using Reactive.Bindings;
-using Reactive.Bindings.Extensions;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CompMs.App.Msdial.ViewModel.Chart {
-    class ChromatogramsViewModel : ViewModelBase {
+namespace CompMs.App.Msdial.ViewModel.Chart
+{
+    public class ChromatogramsViewModel : ViewModelBase {
         public ChromatogramsViewModel(
            ChromatogramsModel model,
            IAxisManager<double> horizontalAxis = null,

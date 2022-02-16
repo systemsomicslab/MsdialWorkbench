@@ -44,7 +44,8 @@ namespace CompMs.App.SpectrumViewer.ViewModel
 
             DropCommand = new ReactiveCommand<DragEventArgs>().AddTo(Disposables);
             DropCommand
-                .Where(e => e.Data.GetDataPresent(typeof(DisplayScan)))
+                .Where(e => !e.Handled && e.Data.GetDataPresent(typeof(DisplayScan)))
+                .Do(e => e.Handled = true)
                 .Select(e => e.Data.GetData(typeof(DisplayScan)))
                 .OfType<DisplayScan>()
                 .Where(scan => !DisplayScans.Contains(scan))
@@ -59,6 +60,10 @@ namespace CompMs.App.SpectrumViewer.ViewModel
         public ReadOnlyReactivePropertySlim<string> Name { get; }
 
         public ReadOnlyReactiveCollection<DisplayScan> DisplayScans { get; }
+
+        public ReadOnlyReactiveCollection<DisplayScan> UpperScans { get; }
+
+        public ReadOnlyReactiveCollection<DisplayScan> LowerScans { get; }
 
         public ReactivePropertySlim<DisplayScan> DisplayScan { get; }
 

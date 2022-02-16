@@ -165,6 +165,7 @@ namespace CompMs.Common.DataObj {
         public double ScanWindowUpperLimit { get; set; }
 
         public double CollisionEnergy { get; set; } // for MSE, all ions
+        public int ExperimentID { get; set; } 
 
         public RawPrecursorIon Precursor { get; set; }
         public RawProductIon Product { get; set; }
@@ -217,7 +218,6 @@ namespace CompMs.Common.DataObj {
         public Units CollisionEnergyUnit { get; set; }
         public double TimeBegin { get; set; } = 0; // use for diapasef
         public double TimeEnd { get; set; } = 0; // use for diapasef
-        public string Description { get; set; }
 
         public RawPrecursorIon()
         {

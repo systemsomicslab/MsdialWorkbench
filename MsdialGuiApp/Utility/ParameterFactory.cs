@@ -13,8 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Utility
 {
@@ -39,6 +37,7 @@ namespace CompMs.App.Msdial.Utility
             parameter.ProjectFolderPath = Path.GetDirectoryName(vm.ProjectFilePath);
             parameter.Ionization = vm.Ionization;
             // parameter.SeparationType = vm.SeparationType;
+            parameter.CollistionType = vm.CollisionType;
             parameter.AcquisitionType = vm.AcquisitionType;
             parameter.MSDataType = vm.MS1DataType;
             parameter.MS2DataType = vm.MS2DataType;

@@ -21,50 +21,90 @@ namespace CompMs.Common.Lipidomics.Tests
 
             var expects = new[]
             {
-                292.300, // MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ SN1 ether +C2H8NO3P-H3PO4
+                142.027, // Header
+                182.058, // Gly-C
+                184.037, // Gly-O
+                292.299, // MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ SN1 ether +C2H8NO3P-H3PO4
                 359.258, // MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ NL of C2H8NO4P+SN1
                 390.277, // MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ Sn1ether+C2H8NO3P
-                447.311, // Sn2 -O
-                463.305, // Sn2 -C=O
-                469.258, // Sn1 -CH2
-                483.274, // Sn1 -O
-                491.300, // Sn2  1
-                499.269, // Sn1 -C
+                446.303, // Sn2 -O
+                464.314, // Sn2 -C=O
+                470.267, // Sn1 -CH2
+                483.275, // Sn1 -O
+                490.293, // Sn2  1 -H
+                491.301, // Sn2  1
+                492.309, // Sn2  1 +H
+                500.277, // Sn1 -C
+                504.309, // Sn2  2 -H
                 505.316, // Sn2  2
-                512.276, // Sn1  1
+                506.324, // Sn2  2 +H
+                512.277, // Sn1  1
+                518.324, // Sn2  3 -H
                 519.332, // Sn2  3
-                525.284, // Sn1  2
-                533.347, // Sn2  4
-                539.300, // Sn1  3
-                546.355, // Sn2  5
+                520.340, // Sn2  3 +H
+                525.285, // Sn1  2
+                532.340, // Sn2  4 -H
+                533.348, // Sn2  4
+                534.356, // Sn2  4 +H
+                539.301, // Sn1  3
+                545.348, // Sn2  5 -H
+                546.356, // Sn2  5
+                547.363, // Sn2  5 +H
                 553.316, // Sn1  4
+                558.356, // Sn2  6 -H
                 559.363, // Sn2  6
-                567.331, // Sn1  5
+                560.371, // Sn2  6 +H
+                567.332, // Sn1  5
+                572.371, // Sn2  7 -H
                 573.379, // Sn2  7
-                581.347, // Sn1  6
-                586.386, // Sn2  8
-                595.362, // Sn1  7
-                599.394, // Sn2  9
+                574.387, // Sn2  7 +H
+                581.348, // Sn1  6
+                585.379, // Sn2  8 -H
+                586.387, // Sn2  8
+                587.395, // Sn2  8 +H
+                595.363, // Sn1  7
+                598.387, // Sn2  9 -H
+                599.395, // Sn2  9
+                600.403, // Sn2  9 +H
                 607.508, // MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ PreCursor -C2H8NO4P
                 609.378, // Sn1  8
+                612.403, // Sn2 10 -H
                 613.410, // Sn2 10
-                623.394, // Sn1  9
+                614.418, // Sn2 10 +H
+                623.395, // Sn1  9
+                625.410, // Sn2 11 -H
                 626.418, // Sn2 12
-                637.409, // Sn1 10
-                639.425, // Sn2 12
-                651.425, // Sn1 11
-                653.441, // Sn2 13
-                664.433, // Sn1 12
-                666.448, // Sn2 14
-                677.441, // Sn1 13
-                679.456, // Sn2 15
+                627.426, // Sn2 11 +H
+                637.410, // Sn1 10
+                638.418, // Sn2 12 -H
+                639.426, // Sn2 12
+                640.434, // Sn2 12 +H
+                651.426, // Sn1 11
+                652.434, // Sn2 13 -H
+                653.442, // Sn2 13
+                654.449, // Sn2 13 +H
+                664.434, // Sn1 12
+                665.442, // Sn2 14 -H
+                666.449, // Sn2 14
+                667.457, // Sn2 14 +H
+                677.442, // Sn1 13
+                678.449, // Sn2 15 -H
+                679.457, // Sn2 15
+                680.465, // Sn2 15 +H
                 691.457, // Sn1 14
-                693.472, // Sn2 16
-                705.472, // Sn1 15
-                706.480, // Sn2 17
-                719.488, // Sn1 16 Sn2 18
+                692.465, // Sn2 16 -H
+                693.473, // Sn2 16
+                694.481, // Sn2 16 +H
+                705.473, // Sn1 15 Sn2 17 -H
+                706.481, // Sn2 17
+                707.489, // Sn2 17 +H
+                718.481, // Sn2 18 -H
+                719.489, // Sn1 16 Sn2 18
+                720.496, // Sn2 18 +H
+                732.496, // Sn2 19 -H
                 733.504, // Sn1 17 Sn2 19
-                748.527, // Sn1 18 Sn2 20 MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ adduct
+                734.512, // Sn2 19 +H
+                748.528, // Sn1 18 Sn2 20 MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ adduct
             };
 
             scan.Spectrum.ForEach(spec => Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
@@ -84,49 +124,87 @@ namespace CompMs.Common.Lipidomics.Tests
 
             var expects = new[]
             {
-                285.221, // MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ SN2 acyl
-                447.311, // Sn2 -O
-                463.305, // Sn2 -C=O
-                469.258, // Sn1 -CH2
-                483.274, // Sn1 -O
+                142.027, // Header
+                182.058, // Gly-C
+                184.037, // Gly-O
+                445.295, // Sn2 - O
+                464.314, // Sn2 -C=O
+                470.267, // Sn1 -CH2
+                483.275, // Sn1 -O
+                490.293, // Sn2  1 -H
                 491.300, // Sn2  1
-                499.269, // Sn1 -C
+                492.309, // Sn2  1 +H
+                498.262, // Sn1 -C
+                504.308, // Sn2  2 -H
                 505.316, // Sn2  2
+                506.324, // Sn2  2 +H
                 513.285, // Sn1  1
+                518.324, // Sn2  3 -H
                 519.332, // Sn2  3
+                520.340, // Sn2  3 +H
                 527.300, // Sn1  2
+                532.340, // Sn2  4 -H
                 533.347, // Sn2  4
+                534.356, // Sn2  4 +H
                 541.316, // Sn1  3
-                546.355, // Sn2  5
+                545.348, // Sn2  5 -H
+                546.356, // Sn2  5
+                547.363, // Sn2  5 +H
                 555.332, // Sn1  4
+                558.356, // Sn2  6 -H
                 559.363, // Sn2  6
+                560.371, // Sn2  6 +H
                 569.347, // Sn1  5
+                572.371, // Sn2  7 -H
                 573.379, // Sn2  7
+                574.386, // Sn2  7 +H
                 583.363, // Sn1  6
+                585.379, // Sn2  8 -H
                 586.386, // Sn2  8
+                587.395, // Sn2  8 +H
                 597.379, // Sn1  7
-                599.394, // Sn2  9
+                598.387, // Sn2  9 -H
+                599.395, // Sn2  9
+                600.403, // Sn2  9 +H
                 607.508, // MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ PreCursor -141
-                611.394, // Sn1  8
+                611.395, // Sn1  8
+                612.403, // Sn2 10 -H
                 613.410, // Sn2 10
-                624.402, // Sn1  9
+                614.418, // Sn2 10 +H
+                624.403, // Sn1  9
+                625.410, // Sn2 11 -H
                 626.418, // Sn2 12
-                637.409, // Sn1 10
-                639.425, // Sn2 12
-                651.425, // Sn1 11
-                653.441, // Sn2 13
-                664.433, // Sn1 12
-                666.448, // Sn2 14
-                677.441, // Sn1 13
-                679.456, // Sn2 15
+                627.426, // Sn2 11 +H
+                637.410, // Sn1 10
+                638.418, // Sn2 12 -H
+                639.426, // Sn2 12
+                640.434, // Sn2 12 +H
+                651.426, // Sn1 11
+                652.434, // Sn2 13 -H
+                653.442, // Sn2 13
+                654.449, // Sn2 13 +H
+                664.434, // Sn1 12
+                665.442, // Sn2 14 -H
+                666.449, // Sn2 14
+                667.457, // Sn2 14 +H
+                677.442, // Sn1 13
+                678.449, // Sn2 15 -H
+                679.457, // Sn2 15
+                680.465, // Sn2 15 +H
                 691.457, // Sn1 14
-                693.472, // Sn2 16
-                705.472, // Sn1 15
-                706.480, // Sn2 17
-                719.488, // Sn1 16 Sn2 18
+                692.465, // Sn2 16 -H
+                693.473, // Sn2 16
+                694.481, // Sn2 16 +H
+                705.473, // Sn1 15
+                706.481, // Sn2 17
+                707.489, // Sn2 17 +H
+                718.481, // Sn2 18 -H
+                719.489, // Sn1 16 Sn2 18
+                720.496, // Sn2 18 +H
+                732.496, // Sn2 19 -H
                 733.504, // Sn1 17 Sn2 19
-                748.527, // Sn1 18 Sn2 20 MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ adduct
-
+                734.512, // Sn2 19 +H
+                748.528, // Sn1 18 Sn2 20 MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ adduct
             };
 
             scan.Spectrum.ForEach(spec => Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));

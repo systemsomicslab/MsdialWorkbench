@@ -1,11 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.MsdialCore.Algorithm.Alignment;
+﻿using CompMs.Common.Enum;
+using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using CompMs.MsdialCore.DataObj;
 using System.Linq;
-using CompMs.Common.Enum;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
 {
@@ -243,7 +242,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
             var keepUnknown = false;
             ISpotFilter blankFilter = new BlankFilter(
                 fileId2analysisType, foldChange, blankFiltering,
-                keepRefMatched, keepSuggested, keepUnknown, new DataBaseMapper());
+                keepRefMatched, keepSuggested, keepUnknown, new FacadeMatchResultEvaluator());
 
             var spots = new List<AlignmentSpotProperty>
             {
@@ -333,7 +332,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
             var keepUnknown = false;
             ISpotFilter blankFilter = new BlankFilter(
                 fileId2analysisType, foldChange, blankFiltering,
-                keepRefMatched, keepSuggested, keepUnknown, new DataBaseMapper());
+                keepRefMatched, keepSuggested, keepUnknown, new FacadeMatchResultEvaluator());
 
             var spots = new List<AlignmentSpotProperty>
             {

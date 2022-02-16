@@ -7,7 +7,6 @@ using CompMs.CommonMVVM.Common;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -15,8 +14,8 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
 {
     class SplashSetViewModel : ViewModelBase
     {
-        public SplashSetViewModel(AlignmentResultContainer container, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, DataBaseMapper mapper) {
-            Model = new SplashSetModel(container, refer, parameter, mapper);
+        public SplashSetViewModel(AlignmentResultContainer container, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase parameter) {
+            Model = new SplashSetModel(container, refer, parameter, evaluator);
 
             TargetMetabolites = Model.TargetMetabolites;
 

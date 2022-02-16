@@ -55,6 +55,7 @@
             <RowDefinition Height="80"/>
             <RowDefinition Height="80"/>
             <RowDefinition Height="80"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="80"/>
             <RowDefinition Height="100"/>
             <RowDefinition Height="*"/>
@@ -244,7 +245,18 @@
             </Grid>
         </GroupBox>
 
-        <Grid Grid.Row="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <GroupBox Header="Collision type"
+                  Visibility="{Binding IsChecked, ElementName=RadioButton_DataDependentMSMS, Converter={StaticResource BTVConverter}}"
+                  Grid.Row="4">
+            <UniformGrid Columns="2">
+                <RadioButton Content="CID, HCD"
+                             IsChecked="{Binding CollisionType, Converter={StaticResource BTEConverter}, ConverterParameter=HCD}"/>
+                <RadioButton Content="EAD"
+                             IsChecked="{Binding CollisionType, Converter={StaticResource BTEConverter}, ConverterParameter=EAD}"/>
+            </UniformGrid>
+        </GroupBox>
+
+        <Grid Grid.Row="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
@@ -370,7 +382,7 @@
 
         </Grid>
 
-        <Grid Grid.Row="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid Grid.Row="6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -465,7 +477,7 @@
 
         </Grid>
 
-        <Grid Grid.Row="6">
+        <Grid Grid.Row="7">
 
 
 
@@ -605,7 +617,7 @@
                 Command="{Binding ContinueProcessCommand, UpdateSourceTrigger=PropertyChanged}" 
                 CommandParameter="{Binding ElementName=StartUpWindowView}"
                 Content="Next" 
-                Grid.Row="7" Width="60"  Height="25" 
-                VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5,5,5,5" />
+                Grid.Row="8" Width="64" Height="24" 
+                VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="8" />
     </Grid>
 </Window>

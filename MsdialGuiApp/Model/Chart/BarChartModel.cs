@@ -46,11 +46,23 @@ namespace CompMs.App.Msdial.Model.Chart
             IBarItemsLoader loader) {
 
             return new BarChartModel(
-                source.SelectMany(src =>
+                source.SelectMany(src => 
                     Observable.DeferAsync(async token => {
                         var result = await loader.LoadBarItemsAsync(src, token);
                         return Observable.Return(result);
                     })));
+        }
+
+        public static BarChartModel Create(
+            IObservable<AlignmentSpotPropertyModel> source,
+            IObservable<IBarItemsLoader> loader) {
+
+            return new BarChartModel(
+                source.SelectMany(src => loader.SelectMany(n => 
+                    Observable.DeferAsync(async token => {
+                        var result = await n.LoadBarItemsAsync(src, token);
+                        return Observable.Return(result);
+                    }))));
         }
     }
 }

@@ -11,10 +11,10 @@ using CompMs.Common.DataObj.Result;
 namespace CompMs.MsdialCore.Normalize.Tests
 {
     [TestClass()]
-    public class SplashNormalizationTests
+    public class NormalizationTests
     {
         [TestMethod()]
-        public void NormalizeTest() {
+        public void SplashNormalizeTest() {
             var spots = new AlignmentSpotProperty[9];
             for (int i = 0; i < 9; i++) {
                 spots[i] = new AlignmentSpotProperty
@@ -61,7 +61,7 @@ namespace CompMs.MsdialCore.Normalize.Tests
                 new StandardCompound { Concentration = 5, TargetClass = "PE", PeakID = 8 },
             };
 
-            SplashNormalization.Normalize(spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma, new DataBaseMapper());
+            Normalization.SplashNormalize(spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma, new FacadeMatchResultEvaluator());
 
             // PC
             for (int i = 0; i < 2; i++) {
@@ -141,7 +141,7 @@ namespace CompMs.MsdialCore.Normalize.Tests
         }
 
         [TestMethod()]
-        public void NormalizeTest2() {
+        public void SplashNormalizeTest2() {
             var spots = new AlignmentSpotProperty[8];
             for (int i = 0; i < 8; i++) {
                 spots[i] = new AlignmentSpotProperty
@@ -187,7 +187,7 @@ namespace CompMs.MsdialCore.Normalize.Tests
                 new StandardCompound { Concentration = 3, TargetClass = "Any others", PeakID = 7 },
             };
 
-            SplashNormalization.Normalize(spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma, new DataBaseMapper());
+            Normalization.SplashNormalize(spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma, new FacadeMatchResultEvaluator());
 
             // PC
             for (int i = 0; i < 2; i++) {

@@ -74,6 +74,10 @@
       <DependentUpon>Bar2.xaml</DependentUpon>
     </Compile>
     <Compile Include="Bar\BarVM1.cs" />
+    <Compile Include="Behavior\AreaSelectBehaviorTest.xaml.cs">
+      <DependentUpon>AreaSelectBehaviorTest.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Behavior\AreaSelectBehaviorTestViewModel.cs" />
     <Compile Include="Chart\AxisLabelTest.xaml.cs">
       <DependentUpon>AxisLabelTest.xaml</DependentUpon>
     </Compile>
@@ -94,6 +98,10 @@
       <DependentUpon>MultiChart1.xaml</DependentUpon>
     </Compile>
     <Compile Include="Chart\MultiChartVM1.cs" />
+    <Compile Include="Chart\RangeSelector.xaml.cs">
+      <DependentUpon>RangeSelector.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Chart\RangeSelectorViewModel.cs" />
     <Compile Include="Chart\SimpleChart1.xaml.cs">
       <DependentUpon>SimpleChart1.xaml</DependentUpon>
     </Compile>
@@ -163,6 +171,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Behavior\AreaSelectBehaviorTest.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Chart\AxisLabelTest.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -180,6 +192,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Chart\MultiChart1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Chart\RangeSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

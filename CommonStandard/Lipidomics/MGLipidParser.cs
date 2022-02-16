@@ -9,7 +9,7 @@ namespace CompMs.Common.Lipidomics
         public string Target { get; } = "MG";
 
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(1);
-        public static readonly string Pattern = $"MG\\s*(?<sn>{chainsParser.Pattern})";
+        public static readonly string Pattern = $"^MG\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         private static readonly double Skelton = new[]

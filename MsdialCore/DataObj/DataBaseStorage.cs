@@ -20,9 +20,11 @@ namespace CompMs.MsdialCore.DataObj
         [SerializationConstructor]
         public DataBaseStorage(
             List<DataBaseItem<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> metabolomicsDataBases,
-            List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> proteomicsDataBases) {
+            List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> proteomicsDataBases,
+            List<DataBaseItem<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>> eadLipidomicsDataBases) {
             MetabolomicsDataBases = metabolomicsDataBases ?? new List<DataBaseItem<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>();
             ProteomicsDataBases = proteomicsDataBases ?? new List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>();
+            EadLipidomicsDatabases = eadLipidomicsDataBases ?? new List<DataBaseItem<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>>();
         }
 
         [Key(nameof(MetabolomicsDataBases))]
@@ -30,6 +32,9 @@ namespace CompMs.MsdialCore.DataObj
 
         [Key(nameof(ProteomicsDataBases))]
         public List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> ProteomicsDataBases { get; }
+
+        [Key(nameof(EadLipidomicsDatabases))]
+        public List<DataBaseItem<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>> EadLipidomicsDatabases { get; }
 
         public void AddMoleculeDataBase(
             MoleculeDataBase db,
@@ -43,9 +48,16 @@ namespace CompMs.MsdialCore.DataObj
             ProteomicsDataBases.Add(new DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>(db, annotators));
         }
 
+        public void AddEadLipidomicsDataBase(
+            EadLipidDatabase db,
+            List<IAnnotatorParameterPair<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>> annotators) {
+            EadLipidomicsDatabases.Add(new DataBaseItem<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>(db, annotators));
+        }
+
         private static readonly string StoragePath = "Storage";
         private static readonly string MetabolomicsDataBasePath = "MetabolomicsDB";
         private static readonly string ProteomicsDataBasePath = "ProteomicsDB";
+        private static readonly string EadLipidomicsDataBasePath = "EadLipidomicsDB";
         public void Save(Stream stream) {
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Create, leaveOpen: true)) {
                 foreach (var item in MetabolomicsDataBases) {
@@ -62,16 +74,19 @@ namespace CompMs.MsdialCore.DataObj
                     }
                 }
 
+                foreach (var item in EadLipidomicsDatabases) {
+                    var dbEntry = archive.CreateEntry(Path.Combine(EadLipidomicsDataBasePath, item.DataBaseID));
+                    using (var dbStream = dbEntry.Open()) {
+                        item.Save(dbStream);
+                    }
+                }
+
                 var storageEntry = archive.CreateEntry(StoragePath);
                 using (var storageStream = storageEntry.Open()) {
                     MessagePackDefaultHandler.SaveToStream(this, storageStream);
                 }
             }
         }
-
-        //public void SaveProteomicsDB(IStreamManager streamManager, string prefix) {
-            
-        //}
 
         public static DataBaseStorage Load(Stream stream, ILoadAnnotatorVisitor visitor, string projectFolderPath) {
             DataBaseStorage result;
@@ -95,12 +110,20 @@ namespace CompMs.MsdialCore.DataObj
                             item.Load(dbStream, visitor, projectFolderPath);
                         }
                     }
+
+                    foreach (var item in result.EadLipidomicsDatabases) {
+                        var dbEntry = archive.GetEntry(Path.Combine(EadLipidomicsDataBasePath, item.DataBaseID));
+                        using (var dbStream = dbEntry.Open()) {
+                            item.Load(dbStream, visitor, null);
+                        }
+                    }
                 }
             }
             catch (InvalidDataException) {
                 result = new DataBaseStorage(
                     new List<DataBaseItem<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(),
-                    new List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>());
+                    new List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>(),
+                    new List<DataBaseItem<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>>());
             }
             return result;
         }
@@ -108,12 +131,13 @@ namespace CompMs.MsdialCore.DataObj
         public static DataBaseStorage CreateEmpty() {
             return new DataBaseStorage(
                 new List<DataBaseItem<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(),
-                new List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>());
+                new List<DataBaseItem<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>(),
+                new List<DataBaseItem<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>>());
         }
     }
 
     [MessagePackObject]
-    public class DataBaseItem<TQuery, TReference, TResult, TDataBase> where TDataBase: IReferenceDataBase
+    public class DataBaseItem<TQuery, TReference, TResult, TDataBase> where TDataBase: IReferenceDataBase, IMatchResultRefer<TReference, TResult>
     {
         public DataBaseItem(
             TDataBase dataBase,
@@ -167,6 +191,7 @@ namespace CompMs.MsdialCore.DataObj
 
     [Union(0, typeof(MetabolomicsAnnotatorParameterPair))]
     [Union(1, typeof(ProteomicsAnnotatorParameterPair))]
+    [Union(2, typeof(EadLipidAnnotatorParameterPair))]
     public interface IAnnotatorParameterPair<TQuery, TReference, TResult, TDataBase> where TDataBase : IReferenceDataBase
     {
         string AnnotatorID { get; }
@@ -221,7 +246,8 @@ namespace CompMs.MsdialCore.DataObj
     }
 
     [MessagePackObject]
-    public class ProteomicsAnnotatorParameterPair : IAnnotatorParameterPair<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>
+    public class ProteomicsAnnotatorParameterPair : 
+        IAnnotatorParameterPair<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>
     {
         public ProteomicsAnnotatorParameterPair(
             ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> serializableAnnotator,
@@ -265,6 +291,48 @@ namespace CompMs.MsdialCore.DataObj
 
         public IAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> ConvertToAnnotatorContainer() {
             return new AnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>(SerializableAnnotator, SearchParameter);
+        }
+    }
+
+    [MessagePackObject]
+    public class EadLipidAnnotatorParameterPair : 
+        IAnnotatorParameterPair<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>
+    {
+        public EadLipidAnnotatorParameterPair(
+            ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> serializableAnnotator,
+            MsRefSearchParameterBase searchParameter) {
+            SerializableAnnotator = serializableAnnotator ?? throw new System.ArgumentNullException(nameof(serializableAnnotator));
+            SearchParameter = searchParameter ?? throw new System.ArgumentNullException(nameof(searchParameter));
+        }
+        public EadLipidAnnotatorParameterPair(
+            IReferRestorationKey<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> serializableAnnotatorKey,
+            MsRefSearchParameterBase searchParameter) {
+            SerializableAnnotatorKey = serializableAnnotatorKey ?? throw new System.ArgumentNullException(nameof(serializableAnnotatorKey));
+            SearchParameter = searchParameter ?? throw new System.ArgumentNullException(nameof(searchParameter));
+        }
+
+        [IgnoreMember]
+        public ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> SerializableAnnotator { get; private set;  }
+
+        [Key(nameof(SerializableAnnotatorKey))]
+        public IReferRestorationKey<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> SerializableAnnotatorKey { get; private set; }
+
+        [Key(nameof(SearchParameter))]
+        public MsRefSearchParameterBase SearchParameter { get; }
+
+        [IgnoreMember]
+        public string AnnotatorID => SerializableAnnotator?.Key ?? SerializableAnnotatorKey.Key;
+
+        public void Save(Stream stream) {
+            SerializableAnnotatorKey = SerializableAnnotator.Save();
+        }
+
+        public void Load(Stream stream, ILoadAnnotatorVisitor visitor, EadLipidDatabase dataBase) {
+            SerializableAnnotator = SerializableAnnotatorKey.Accept(visitor, dataBase);
+        }
+
+        public IAnnotatorContainer<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult> ConvertToAnnotatorContainer() {
+            return new AnnotatorContainer<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult>(SerializableAnnotator, SearchParameter);
         }
     }
 }

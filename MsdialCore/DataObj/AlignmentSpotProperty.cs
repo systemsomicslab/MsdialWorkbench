@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Accord.Statistics.Testing;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.Common.Proteomics.DataObj;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
@@ -61,6 +62,10 @@ namespace CompMs.MsdialCore.DataObj {
         public string SMILES { get; set; } = string.Empty;
         [Key(16)]
         public string InChIKey { get; set; } = string.Empty;
+        [Key(60)]
+        public string Protein { get; set; } = string.Empty;
+        [Key(61)]
+        public int ProteinGroupID { get; set; } = -1;
 
         public string GetFormula(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             return MatchResults.RepresentativeFormula(refer);
@@ -76,6 +81,9 @@ namespace CompMs.MsdialCore.DataObj {
 
         public string GetInChIKey(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             return MatchResults.RepresentativeInChIKey(refer);
+        }
+        public string GetProtein(IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer) {
+            return MatchResults.RepresentativeProtein(refer);
         }
 
         // ion physiochemical information
@@ -141,7 +149,7 @@ namespace CompMs.MsdialCore.DataObj {
             }
         }
 
-        public bool IsReferenceMatched(DataBaseMapper mapper) {
+        public bool IsReferenceMatched(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             if (MatchResults.IsManuallyModifiedRepresentative) {
                 return !MatchResults.IsUnknown;
             }
@@ -151,10 +159,10 @@ namespace CompMs.MsdialCore.DataObj {
             if (MspBasedMatchResult != null && MspBasedMatchResult.IsSpectrumMatch) {
                 return true;
             }
-            return MatchResults.IsReferenceMatched(mapper);
+            return MatchResults.IsReferenceMatched(evaluator);
         }
 
-        public bool IsAnnotationSuggested(DataBaseMapper mapper) {
+        public bool IsAnnotationSuggested(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             if (MatchResults.IsManuallyModifiedRepresentative) {
                 return false;
             }
@@ -167,7 +175,7 @@ namespace CompMs.MsdialCore.DataObj {
             else if (MspBasedMatchResult != null && MspBasedMatchResult.IsPrecursorMzMatch) {
                 return true;
             }
-            return MatchResults.IsAnnotationSuggested(mapper);
+            return MatchResults.IsAnnotationSuggested(evaluator);
         }
 
         [IgnoreMember]

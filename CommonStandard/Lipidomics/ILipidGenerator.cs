@@ -10,22 +10,22 @@ namespace CompMs.Common.Lipidomics
 
     public class LipidGenerator : ILipidGenerator
     {
-        public LipidGenerator(IChainGenerator acylChainGenerator) {
-            AcylChainGenerator = acylChainGenerator;
+        public LipidGenerator(ITotalChainVariationGenerator totalChainGenerator) {
+            this.totalChainGenerator = totalChainGenerator;
         }
 
-        public LipidGenerator() : this(new AcylChainGenerator(minLength: 6, begin: 3, end: 3, skip: 3)) {
+        public LipidGenerator() : this(new TotalChainVariationGenerator(minLength: 6, begin: 3, end: 3, skip: 3)) {
 
         }
 
-        public IChainGenerator AcylChainGenerator { get; }
+        private readonly ITotalChainVariationGenerator totalChainGenerator;
 
         public bool CanGenerate(ILipid lipid) {
             return lipid.ChainCount >= 1;
         }
 
         public IEnumerable<ILipid> Generate(Lipid lipid) {
-            return lipid.Chains.GetCandidateSets(AcylChainGenerator)
+            return lipid.Chains.GetCandidateSets(totalChainGenerator)
                 .Select(chains => new Lipid(lipid.LipidClass, lipid.Mass, chains));
         }
     }

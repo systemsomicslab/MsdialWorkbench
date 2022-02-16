@@ -44,7 +44,7 @@ namespace CompMs.Common.Lipidomics
 
             return new MoleculeMsReference
             {
-                PrecursorMz = lipid.Mass + adduct.AdductIonAccurateMass,
+                PrecursorMz = adduct.ConvertToMz(lipid.Mass),
                 IonMode = adduct.IonMode,
                 Spectrum = spectrum,
                 Name = lipid.Name,
@@ -115,7 +115,7 @@ namespace CompMs.Common.Lipidomics
     public class PrecursorMz : IMzVariable
     {
         public IEnumerable<double> Evaluate(ILipid lipid, AdductIon adduct) {
-            yield return lipid.Mass + adduct.AdductIonAccurateMass;
+            yield return adduct.ConvertToMz(lipid.Mass);
         }
 
         public override string ToString() {

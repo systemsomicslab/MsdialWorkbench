@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Algorithm;
@@ -26,13 +27,14 @@ namespace CompMs.MsdialLcImMsApi.Process
             IDataProviderFactory<RawMeasurement> spectrumProviderFactory,
             IDataProviderFactory<RawMeasurement> accSpectrumProviderFactory,
             IAnnotationProcess annotationProcess,
-            IMsdialDataStorage<MsdialLcImMsParameter> container,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            IMsdialDataStorage<MsdialLcImMsParameter> storage,
             bool isGuiProcess = false,
             Action<int> reportAction = null,
             CancellationToken token = default) {
 
-            var parameter = container.Parameter;
-            var iupacDB = container.IupacDatabase;
+            var parameter = storage.Parameter;
+            var iupacDB = storage.IupacDatabase;
 
             var rawObj = LoadMeasurement(file, isGuiProcess);
             var spectrumProvider = spectrumProviderFactory.Create(rawObj);
@@ -55,7 +57,7 @@ namespace CompMs.MsdialLcImMsApi.Process
             PeakAnnotation(annotationProcess, accSpectrumProvider, chromPeakFeatures, targetCE2MSDecResults, parameter, reportAction, token);
 
             // characterizatin
-            PeakCharacterization(targetCE2MSDecResults, spectrumList, chromPeakFeatures, container.DataBaseMapper, parameter, reportAction);
+            PeakCharacterization(targetCE2MSDecResults, spectrumList, chromPeakFeatures, evaluator, parameter, reportAction);
 
             // file save
             SaveToFile(file, chromPeakFeatures, targetCE2MSDecResults);
@@ -149,13 +151,13 @@ namespace CompMs.MsdialLcImMsApi.Process
             Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
             List<RawSpectrum> spectrumList,
             List<ChromatogramPeakFeature> chromPeakFeatures,
-            DataBaseMapper mapper,
-            MsdialLcImMsParameter parameter, Action<int> reportAction
-            ) {
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            MsdialLcImMsParameter parameter,
+            Action<int> reportAction) {
 
             new PeakCharacterEstimator(90, 10).Process(spectrumList, chromPeakFeatures,
                 targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
-                mapper, parameter, reportAction);
+                evaluator, parameter, reportAction);
         }
 
         private static void SaveToFile(

@@ -22,12 +22,19 @@ namespace CompMs.App.SpectrumViewer.Model
         public ReadOnlyObservableCollection<DisplayScan> DisplayScans { get; }
         private ObservableCollection<DisplayScan> displayScans;
 
-        public void AddScan(IMSScanProperty scan) {
-            displayScans.Add(scan as DisplayScan ?? new DisplayScan(scan));
+        public bool Contains(DisplayScan scan) {
+            return displayScans.Contains(scan);
         }
 
-        public void RemoveScan(DisplayScan scan) {
-            displayScans.Remove(scan);
+        public void AddScan(IMSScanProperty scan) {
+            var scan_ = scan as DisplayScan ?? new DisplayScan(scan);
+            displayScans.Add(scan_);
+        }
+
+        public void RemoveScanIfContains(DisplayScan scan) {
+            if (displayScans.Contains(scan)) {
+                displayScans.Remove(scan);
+            }
         }
 
         public void RemoveScan(IMSScanProperty scan) {
@@ -35,7 +42,7 @@ namespace CompMs.App.SpectrumViewer.Model
                 dscan = displayScans.FirstOrDefault(ds => ds.Scan == scan);
             }
             if (dscan != null) {
-                RemoveScan(dscan);
+                RemoveScanIfContains(dscan);
             }
         }
     }

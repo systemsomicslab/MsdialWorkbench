@@ -22,7 +22,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             this.ProgressMax = ProgressMax;
         }
        
-        public List<MSDecResult> GetMS2DecResults(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
+        public List<MSDecResult> GetMS2DecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary, IupacDatabase iupac,
             Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
 
@@ -36,7 +36,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             return msdecResults;
         }
 
-        public MSDecResult GetMS2DecResult(List<RawSpectrum> spectrumList,
+        public MSDecResult GetMS2DecResult(IReadOnlyList<RawSpectrum> spectrumList,
             ChromatogramPeakFeature chromPeakFeature, MsdialLcmsParameter param, 
             ChromatogramPeaksDataSummary summary, IupacDatabase iupac, double targetCE = -1) { // targetCE is used in multiple CEs option
 

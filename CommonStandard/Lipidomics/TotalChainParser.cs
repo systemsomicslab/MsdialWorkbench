@@ -8,8 +8,8 @@ namespace CompMs.Common.Lipidomics
         private static readonly string DoubleBondPattern = @"(?<db>\d+)";
         private static readonly string OxidizedPattern = @";(?<ox>O(?<oxnum>\d+)?)";
 
-        private static readonly string TotalChainPattern = $"(?<TotalChain>(?<plasm>[de]?[OP]-)?{CarbonPattern}:{DoubleBondPattern}({OxidizedPattern})?)";
         private static readonly string ChainsPattern = $"(?<Chain>{AlkylChainParser.Pattern}|{AcylChainParser.Pattern})";
+        private static readonly string AcylChainsPattern = $"(?<Chain>{AcylChainParser.Pattern})";
 
         private static readonly AlkylChainParser AlkylParser = new AlkylChainParser();
         private static readonly AcylChainParser AcylParser = new AcylChainParser();
@@ -18,28 +18,45 @@ namespace CompMs.Common.Lipidomics
         private readonly bool HasSphingosine;
 
         public static TotalChainParser BuildParser(int chainCount) {
-            return new TotalChainParser(chainCount, false);
+            return new TotalChainParser(chainCount, chainCount, false, false, false);
+        }
+
+        public static TotalChainParser BuildSpeciesLevelParser(int chainCount, int capacity) {
+            return new TotalChainParser(chainCount, capacity, false, false, true);
+        }
+
+        public static TotalChainParser BuildEtherParser(int chainCount) {
+            return new TotalChainParser(chainCount, chainCount, false, true, false);
         }
 
         public static TotalChainParser BuildCeramideParser(int chainCount) {
-            return new TotalChainParser(chainCount, true);
+            return new TotalChainParser(chainCount, chainCount, true, false, false);
         }
 
-        private TotalChainParser(int chainCount, bool hasSphingosine = false) {
+        private TotalChainParser(int chainCount, int capacity, bool hasSphingosine, bool hasEther, bool atLeastSpeciesLevel) {
             ChainCount = chainCount;
+            Capacity = capacity;
+            var submolecularLevelPattern = hasEther
+                ? $"(?<TotalChain>(?<plasm>[de]?[OP]-)?{CarbonPattern}:{DoubleBondPattern}({OxidizedPattern})?)"
+                : $"(?<TotalChain>{CarbonPattern}:{DoubleBondPattern}({OxidizedPattern})?)";
             var molecularSpeciesLevelPattern = hasSphingosine
                 ? $"(?<MolecularSpeciesLevel>(?<Chain>{SphingoChainParser.Pattern})_({ChainsPattern}_?){{{ChainCount-1}}})"
-                : $"(?<MolecularSpeciesLevel>({ChainsPattern}_?){{{ChainCount}}})";
+                : hasEther
+                ? $"(?<MolecularSpeciesLevel>({ChainsPattern}_?){{{ChainCount}}})"
+                : $"(?<MolecularSpeciesLevel>({AcylChainsPattern}_?){{{ChainCount}}})";
             var positionLevelPattern = hasSphingosine
-                ? $"(?<PositionLevel>(?<Chain>{SphingoChainParser.Pattern})/({ChainsPattern}/?){{{ChainCount-1}}})"
-                : $"(?<PositionLevel>({ChainsPattern}/?){{{ChainCount}}})";
-            if (ChainCount == 1) {
+                ? $"(?<PositionLevel>(?<Chain>{SphingoChainParser.Pattern})/({ChainsPattern}/?){{{Capacity-1}}})"
+                : hasEther
+                ? $"(?<PositionLevel>({ChainsPattern}/?){{{Capacity}}})"
+                : $"(?<PositionLevel>({AcylChainsPattern}/?){{{Capacity}}})";
+            if (Capacity == 1) {
                 var postionLevelExpression = new Regex(positionLevelPattern, RegexOptions.Compiled);
                 Pattern = positionLevelPattern;
                 Expression = postionLevelExpression;
             }
             else {
-                var totalPattern = string.Join("|", new[] { positionLevelPattern, molecularSpeciesLevelPattern, TotalChainPattern });
+                var patterns = new[] { positionLevelPattern, molecularSpeciesLevelPattern, };
+                var totalPattern = string.Join("|", atLeastSpeciesLevel ? patterns : patterns.Append(submolecularLevelPattern));
                 var totalExpression = new Regex(totalPattern, RegexOptions.Compiled);
                 Pattern = totalPattern;
                 Expression = totalExpression;
@@ -48,6 +65,7 @@ namespace CompMs.Common.Lipidomics
         }
 
         public int ChainCount { get; }
+        public int Capacity { get; }
         public string Pattern { get; }
 
         private readonly Regex Expression;
@@ -57,12 +75,25 @@ namespace CompMs.Common.Lipidomics
             if (match.Success) {
                 var groups = match.Groups;
                 if (groups["PositionLevel"].Success) {
-                    return ParsePositionLevelChains(groups);
+                    var chains = ParsePositionLevelChains(groups);
+                    if (chains.ChainCount == Capacity) {
+                        return chains;
+                    }
                 }
-                if (groups["MolecularSpeciesLevel"].Success) {
-                    return ParseMolecularSpeciesLevelChains(groups);
+                else if (groups["MolecularSpeciesLevel"].Success) {
+                    var chains = ParseMolecularSpeciesLevelChains(groups);
+                    if (chains.ChainCount == Capacity) {
+                        return chains;
+                    }
+                    else if (chains.ChainCount < Capacity) {
+                        return new MolecularSpeciesLevelChains(
+                            chains.Chains
+                                .Concat(Enumerable.Range(0, Capacity - chains.ChainCount).Select(_ => new AcylChain(0, DoubleBond.CreateFromPosition(), Oxidized.CreateFromPosition())))
+                                .ToArray()
+                        );
+                    }
                 }
-                if (ChainCount > 1 && groups["TotalChain"].Success) {
+                else if (ChainCount > 1 && groups["TotalChain"].Success) {
                     return ParseTotalChains(groups, ChainCount);
                 }
             }

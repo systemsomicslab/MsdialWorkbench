@@ -7,7 +7,7 @@
         xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
         xmlns:local="clr-namespace:CompMs.App.SpectrumViewer.View"
         xmlns:vm="clr-namespace:CompMs.App.SpectrumViewer.ViewModel"
-        xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+        xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
         xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
         mc:Ignorable="d"
         Background="Black"
@@ -23,9 +23,10 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/View/ViewTemplates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
             <Pen x:Key="TickColor" Brush="White" Thickness="2" PresentationOptions:Freeze="True"/>
             <DataTemplate x:Key="ContentTabHeader"
-                          DataType="{x:Type vm:SpectrumViewModel}">
+                          DataType="{x:Type vm:SplitSpectrumsViewModel}">
                 <StackPanel Orientation="Horizontal">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Drop">
@@ -38,13 +39,20 @@
                 </StackPanel>
             </DataTemplate>
             <DataTemplate x:Key="ContentTabItem"
-                          DataType="{x:Type vm:SpectrumViewModel}">
+                          DataType="{x:Type vm:SplitSpectrumsViewModel}">
                 <ContentControl Content="{Binding}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Drop">
                             <rp:EventToReactiveCommand Command="{Binding DropCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
+                    <ContentControl.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Save spectrum image as png"
+                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                      CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        </ContextMenu>
+                    </ContentControl.ContextMenu>
                 </ContentControl>
             </DataTemplate>
             <DataTemplate x:Key="NewItemTabHeader">

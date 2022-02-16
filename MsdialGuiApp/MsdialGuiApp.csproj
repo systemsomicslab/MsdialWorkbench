@@ -160,10 +160,13 @@
     <Compile Include="Model\Chart\BrushMapData.cs" />
     <Compile Include="Model\Chart\ChromatogramsModel.cs" />
     <Compile Include="Model\Chart\EicModel.cs" />
+    <Compile Include="Model\Chart\ExperimentSpectrumModel.cs" />
     <Compile Include="Model\Chart\GraphElements.cs" />
     <Compile Include="Model\Chart\MsSpectrumModel.cs" />
+    <Compile Include="Model\Chart\RangeSelectableChromatogramModel.cs" />
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\Chart\RawPurifiedSpectrumsModel.cs" />
+    <Compile Include="Model\Chart\SpectrumModel.cs" />
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
     <Compile Include="Model\Core\DatasetModel.cs" />
     <Compile Include="Model\Core\IDatasetModel.cs" />
@@ -172,6 +175,8 @@
     <Compile Include="Model\Core\MainWindowModel.cs" />
     <Compile Include="Model\Core\ProcessCommand.cs" />
     <Compile Include="Model\Core\ProjectModel.cs" />
+    <Compile Include="Model\MsResult\SummarizedSpectrumModel.cs" />
+    <Compile Include="Model\Setting\DatasetSettingModel.cs" />
     <Compile Include="Model\Setting\ProjectSettingModel.cs" />
     <Compile Include="Model\DataObj\DisplayChromatogram.cs" />
     <Compile Include="Model\Dims\DimsAnalysisParameterSetModel.cs" />
@@ -232,6 +237,8 @@
     <Compile Include="ViewModel\Chart\AnalysisPeakPlotViewModel.cs" />
     <Compile Include="ViewModel\Chart\BarChartViewModel.cs" />
     <Compile Include="ViewModel\Chart\ChromatogramsViewModel.cs" />
+    <Compile Include="ViewModel\Chart\ExperimentSpectrumViewModel.cs" />
+    <Compile Include="ViewModel\Chart\RangeSelectableChromatogramViewModel.cs" />
     <Compile Include="ViewModel\Chart\RawPurifiedSpectrumsViewModel.cs" />
     <Compile Include="ViewModel\Chart\ReactiveCategoryAxisManager.cs" />
     <Compile Include="ViewModel\Chart\EicViewModel.cs" />
@@ -254,6 +261,7 @@
     <Compile Include="Model\Normalize\SplashSetModel.cs" />
     <Compile Include="ViewModel\AlignmentPeakPlotVM.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
+    <Compile Include="ViewModel\Chart\SpectrumViewModel.cs" />
     <Compile Include="ViewModel\Chart\SurveyScanViewModel.cs" />
     <Compile Include="Model\Search\CompoundResult.cs" />
     <Compile Include="ViewModel\Converter\PeakToChromatogramConverter.cs" />
@@ -275,6 +283,7 @@
     <Compile Include="ViewModel\Lcimms\LcimmsAnnotatorSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\MsdialLcimmsParameterViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsCompoundSearchViewModel.cs" />
+    <Compile Include="ViewModel\MsResult\SummarizedSpectrumViewModel.cs" />
     <Compile Include="ViewModel\Setting\DisplayEicSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\FragmentQuerySettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\IdentifySettingViewModel.cs" />
@@ -345,6 +354,9 @@
     <Compile Include="View\Chart\PeakView.xaml.cs">
       <DependentUpon>PeakView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Chart\RangeSelectableChromatogramView.xaml.cs">
+      <DependentUpon>RangeSelectableChromatogramView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Chart\RawPurifiedView.xaml.cs">
       <DependentUpon>RawPurifiedView.xaml</DependentUpon>
     </Compile>
@@ -356,6 +368,9 @@
     </Compile>
     <Compile Include="View\Chart\SmallEicChart.xaml.cs">
       <DependentUpon>SmallEicChart.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\SpectrumView.xaml.cs">
+      <DependentUpon>SpectrumView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\SurveyScanView.xaml.cs">
       <DependentUpon>SurveyScanView.xaml</DependentUpon>
@@ -383,6 +398,9 @@
     </Compile>
     <Compile Include="View\Dims\DimsDataCollectionView.xaml.cs">
       <DependentUpon>DimsDataCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\ExperimentSpectrumView.xaml.cs">
+      <DependentUpon>ExperimentSpectrumView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Export\AnalysisResultExportWin.xaml.cs">
       <DependentUpon>AnalysisResultExportWin.xaml</DependentUpon>
@@ -434,6 +452,15 @@
     </Compile>
     <Compile Include="View\Lcms\LcmsCompoundSearchView.xaml.cs">
       <DependentUpon>LcmsCompoundSearchView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\LcmsProteomicsAlignmentTableView.xaml.cs">
+      <DependentUpon>LcmsProteomicsAlignmentTableView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcms\LcmsProteomicsPeakTableView.xaml.cs">
+      <DependentUpon>LcmsProteomicsPeakTableView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\MsResult\SummarizedSpectrumView.xaml.cs">
+      <DependentUpon>SummarizedSpectrumView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Normalize\NormalizationSetView.xaml.cs">
       <DependentUpon>NormalizationSetView.xaml</DependentUpon>
@@ -569,6 +596,9 @@
     <Compile Include="View\Table\AlignmentSpotTable.xaml.cs">
       <DependentUpon>AlignmentSpotTable.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Table\ProteomicsSpotTable.xaml.cs">
+      <DependentUpon>ProteomicsSpotTable.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\UserDefinedAdductSetWindow.xaml.cs">
       <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
     </Compile>
@@ -678,6 +708,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Chart\RangeSelectableChromatogramView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Chart\RawPurifiedView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -691,6 +725,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Chart\SmallEicChart.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\SpectrumView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -731,6 +769,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dims\DimsDataCollectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\ExperimentSpectrumView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -811,6 +853,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Lcms\LcmsCompoundSearchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\LcmsProteomicsAlignmentTableView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcms\LcmsProteomicsPeakTableView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\MsResult\SummarizedSpectrumView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -959,6 +1013,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Table\AlignmentSpotTable.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Table\ProteomicsSpotTable.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

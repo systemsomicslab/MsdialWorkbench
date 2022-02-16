@@ -5,7 +5,6 @@ using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
 using CompMs.Common.Parser;
 using CompMs.CommonMVVM;
@@ -25,6 +24,8 @@ using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.DataObj;
 using Microsoft.Win32;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -42,7 +43,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
             IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertySetService,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService) {
+            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService, 
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService) {
             if (startUpService is null) {
                 throw new ArgumentNullException(nameof(startUpService));
             }
@@ -63,6 +65,10 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 throw new ArgumentNullException(nameof(analysisFilePropertyResetService));
             }
 
+            if (proteomicsTableService is null) {
+                throw new ArgumentNullException(nameof(proteomicsTableService));
+            }
+
             Model = new MainWindowModel();
 
             this.startUpService = startUpService;
@@ -70,6 +76,9 @@ namespace CompMs.App.Msdial.ViewModel.Core
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
             this.analysisFilePropertyResetService = analysisFilePropertyResetService;
+            this.proteomicsTableService = proteomicsTableService;
+
+            this.parameter = new ReactivePropertySlim<ParameterBase>().AddTo(Disposables);
         }
 
         private readonly IWindowService<StartUpWindowVM> startUpService;
@@ -77,6 +86,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
         private readonly IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
+        private readonly ReactivePropertySlim<ParameterBase> parameter;
 
         public MainWindowModel Model { get; }
 
@@ -123,6 +134,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
             storage.DataBaseMapper = new DataBaseMapper();
             storage.DataBases = DataBaseStorage.CreateEmpty();
 
+            this.parameter.Value = storage.Parameter;
 
             RunProcessAll(window, storage);
 
@@ -183,7 +195,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 return new Lcimms.LcimmsMethodVM(lcimmsStorage, compoundSearchService, peakSpotTableService);
             }
             if (storage is MsdialLcmsDataStorage lcmsStorage) {
-                return new Lcms.LcmsMethodVM(lcmsStorage, compoundSearchService, peakSpotTableService);
+                return new Lcms.LcmsMethodVM(lcmsStorage, compoundSearchService, peakSpotTableService, proteomicsTableService, parameter);
             }
             if (storage is MsdialImmsDataStorage immsStorage) {
                 return new Imms.ImmsMethodVM(immsStorage, compoundSearchService, peakSpotTableService);
@@ -250,7 +262,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 if (Storage == null) {
                     MessageBox.Show("Msdial cannot open the project: \n" + ofd.FileName, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-
+                this.parameter.Value = Storage.Parameter;
                 MethodVM = CreateNewMethodVM(Storage);
                 MethodVM.LoadProject();
 
@@ -398,6 +410,11 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 var afpsw_result = analysisFilePropertyResetService.ShowDialog(analysisFilePropertySetWindowVM);
                 if (afpsw_result != true) {
                     return;
+                }
+                else {
+                    ParameterFactory.SetParameterFromAnalysisFiles(Storage.Parameter, files);
+                    this.parameter.Value = Storage.Parameter;
+                    this.parameter.ForceNotify();
                 }
             }
         }

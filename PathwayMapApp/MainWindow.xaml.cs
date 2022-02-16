@@ -40,10 +40,18 @@ namespace Riken.Metabolomics.PathwayMapApp {
         }
 
         private PathwayMapUI readGpmlPathwayFile() {
-            var fileUri = new Uri("/TEST/LipidMapForAnimal.gpml", UriKind.Relative);
+            var fileUri = new Uri("/TEST/GlobalMapForAnimal.gpml", UriKind.Relative);
             var info = Application.GetResourceStream(fileUri);
             var wikipathwayReader = new WikipathwayFormatParser();
             wikipathwayReader.Read(info.Stream);
+
+            var nodes = wikipathwayReader.nodes;
+            foreach (var node in nodes) {
+                if (node.Key != string.Empty)
+                    Console.WriteLine(node.Label + "\t" + node.Key);
+            }
+
+
             var pathwayObj = new PathwayMapObj(wikipathwayReader.nodes, wikipathwayReader.edges);
             return new PathwayMapUI(pathwayObj);
         }

@@ -34,8 +34,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             AnalysisFileBean analysisFile,
             IDataProvider provider,
             DataBaseMapper mapper,
-            ParameterBase parameter,
-            IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators)
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            ParameterBase parameter, IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators)
             : base(analysisFile) {
             if (analysisFile is null) {
                 throw new ArgumentNullException(nameof(analysisFile));
@@ -49,6 +49,10 @@ namespace CompMs.App.Msdial.Model.Lcms
                 throw new ArgumentNullException(nameof(mapper));
             }
 
+            if (evaluator is null) {
+                throw new ArgumentNullException(nameof(evaluator));
+            }
+
             if (parameter is null) {
                 throw new ArgumentNullException(nameof(parameter));
             }
@@ -59,6 +63,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             this.provider = provider;
             DataBaseMapper = mapper;
+            MatchResultEvaluator = evaluator;
             Parameter = parameter;
             Annotators = annotators;
 
@@ -88,6 +93,17 @@ namespace CompMs.App.Msdial.Model.Lcms
                     ? string.Empty
                     : $"EIC chromatogram of {t.Mass:N4} tolerance [Da]: {Parameter.CentroidMs1Tolerance:F} Max intensity: {i:F0}")
                 .Subscribe(title => EicModel.GraphTitle = title);
+
+            ExperimentSpectrumModel = Target.Where(t => t != null)
+                .Select(t => 
+                    EicModel.EicSource
+                    .Select(source => new DisplayChromatogram(source))
+                    .Select(chromatogram => new ChromatogramsModel("Experiment chromatogram", chromatogram))
+                    .Select(chromatogram => new RangeSelectableChromatogramModel(chromatogram))
+                    .Select(model => new ExperimentSpectrumModel(model, provider, t.InnerModel, DataBaseMapper, Parameter))
+                ).Switch()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
 
             // Ms2 spectrum
             Ms2SpectrumModel = new RawDecSpectrumsModel(
@@ -172,6 +188,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             .AddTo(Disposables);
         }
         public DataBaseMapper DataBaseMapper { get; }
+        public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
         public ParameterBase Parameter { get; }
         public IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> Annotators { get; }
         public EicLoader EicLoader { get; }
@@ -179,7 +196,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public AnalysisPeakPlotModel PlotModel { get; }
 
         public EicModel EicModel { get; }
-
+        public ReadOnlyReactivePropertySlim<ExperimentSpectrumModel> ExperimentSpectrumModel { get; }
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public RawPurifiedSpectrumsModel RawPurifiedSpectrumsModel { get; }
 

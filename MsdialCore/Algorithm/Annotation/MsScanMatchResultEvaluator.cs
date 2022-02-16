@@ -10,66 +10,49 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     public class MsScanMatchResultEvaluator : IMatchResultEvaluator<MsScanMatchResult>
     {
         private readonly bool canUseSpectrumMatch;
+        private readonly MsRefSearchParameterBase searchParameter;
 
-        private MsScanMatchResultEvaluator(bool canUseSpectrumMatch) {
+        private MsScanMatchResultEvaluator(bool canUseSpectrumMatch, MsRefSearchParameterBase searchParameter) {
             this.canUseSpectrumMatch = canUseSpectrumMatch;
+            this.searchParameter = searchParameter ?? throw new ArgumentNullException(nameof(searchParameter));
         }
 
-        public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter) {
+        public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results) {
             if (results is null) {
                 throw new ArgumentNullException(nameof(results));
             }
 
-            if (parameter is null) {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-
-            return results.Where(result => SatisfySuggestedConditions(result, parameter)).ToList();
+            return results.Where(result => SatisfySuggestedConditions(result, searchParameter)).ToList();
         }
 
-        public bool IsAnnotationSuggested(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
+        public bool IsAnnotationSuggested(MsScanMatchResult result) {
+            if (result is null) {
+                throw new ArgumentNullException(nameof(result));
+            }
+            return result.IsAnnotationSuggested;
+            //return SatisfySuggestedConditions(result, searchParameter) && !SatisfyRefMatchedConditions(result, searchParameter);
+        }
+
+        public bool IsReferenceMatched(MsScanMatchResult result) {
             if (result is null) {
                 throw new ArgumentNullException(nameof(result));
             }
 
-            if (parameter is null) {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-
-            return SatisfySuggestedConditions(result, parameter) && !SatisfyRefMatchedConditions(result, parameter);
+            return result.IsReferenceMatched;
+            //return SatisfyRefMatchedConditions(result, searchParameter);
         }
 
-        public bool IsReferenceMatched(MsScanMatchResult result, MsRefSearchParameterBase parameter) {
-            if (result is null) {
-                throw new ArgumentNullException(nameof(result));
-            }
-
-            if (parameter is null) {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-
-            return SatisfyRefMatchedConditions(result, parameter);
-        }
-
-        public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter) {
+        public List<MsScanMatchResult> SelectReferenceMatchResults(IEnumerable<MsScanMatchResult> results) {
             if (results is null) {
                 throw new ArgumentNullException(nameof(results));
             }
 
-            if (parameter is null) {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-
-            return results.Where(result => SatisfyRefMatchedConditions(result, parameter)).ToList();
+            return results.Where(result => SatisfyRefMatchedConditions(result, searchParameter)).ToList();
         }
 
-        public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results, MsRefSearchParameterBase parameter) {
+        public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {
             if (results is null) {
                 throw new ArgumentNullException(nameof(results));
-            }
-
-            if (parameter is null) {
-                throw new ArgumentNullException(nameof(parameter));
             }
 
             return results.DefaultIfEmpty().Argmax(result => result?.TotalScore ?? double.MinValue);
@@ -88,12 +71,20 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 && (!parameter.IsUseCcsForAnnotationFiltering || result.IsCcsMatch);
         }
 
-        public static MsScanMatchResultEvaluator CreateEvaluatorWithSpectrum() {
-            return new MsScanMatchResultEvaluator(true);
+        public static MsScanMatchResultEvaluator CreateEvaluatorWithSpectrum(MsRefSearchParameterBase searchParameter) {
+            if (searchParameter is null) {
+                throw new ArgumentNullException(nameof(searchParameter));
+            }
+
+            return new MsScanMatchResultEvaluator(true, searchParameter);
         }
 
-        public static MsScanMatchResultEvaluator CreateEvaluator() {
-            return new MsScanMatchResultEvaluator(false);
+        public static MsScanMatchResultEvaluator CreateEvaluator(MsRefSearchParameterBase searchParameter) {
+            if (searchParameter is null) {
+                throw new ArgumentNullException(nameof(searchParameter));
+            }
+
+            return new MsScanMatchResultEvaluator(false, searchParameter);
         }
     }
 }

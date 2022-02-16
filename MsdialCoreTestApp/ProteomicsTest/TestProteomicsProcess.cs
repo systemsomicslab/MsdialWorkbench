@@ -68,7 +68,7 @@ namespace CompMs.App.MsdialConsole.ProteomicsTest {
                         lock (syncObj) {
                             foreach (var peptide in mPeptides.OrderByDescending(n => n.ExactMass)) {
                                 var mass = peptide.ExactMass;
-                                var precursorMz = MolecularFormulaUtility.ConvertExactMassToPrecursorMz(adduct, mass);
+                                var precursorMz = adduct.ConvertToMz(mass);
                                 Console.WriteLine(mass + "\t" + peptide.ModifiedSequence);
                                 //var refSpec = SequenceToSpec.Convert2SpecObj(peptide, adduct, Common.Enum.CollisionType.HCD);
                                 //refSpecs.Add(refSpec);

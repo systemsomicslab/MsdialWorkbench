@@ -1,0 +1,90 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Chart.RangeSelectableChromatogramView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             mc:Ignorable="d" 
+             d:Background="White"
+             d:DataContext="{d:DesignData Type={x:Type vm:RangeSelectableChromatogramViewModel}}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <Button Content="-" Width="30" Command="{Binding SetSubtractRangeCommand, Mode=OneTime}"/>
+            <Button Content="+" Width="30" Margin="8,0,0,0" Command="{Binding SetMainRangeCommand, Mode=OneTime}"/>
+            <Button Content="Remove" Width="60" Margin="8,0" Command="{Binding RemoveRangesCommand, Mode=OneTime}"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="150" />
+            </Grid.ColumnDefinitions>
+            <chart:MultiChart HorizontalAxis="{Binding ChromatogramsViewModel.HorizontalAxis}"
+                              VerticalAxis="{Binding ChromatogramsViewModel.VerticalAxis}"
+                              HorizontalTitle="{Binding ChromatogramsViewModel.HorizontalTitle}"
+                              GraphTitle="{Binding ChromatogramsViewModel.GraphTitle}"
+                              ItemsSource="{Binding ChromatogramsViewModel.DisplayChromatograms}"
+                              Style="{StaticResource OverlapChartDisableMove}"
+                              Background="WhiteSmoke"
+                              BorderBrush="Black">
+                <chart:MultiChart.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <chart:RangeSelector Background="WhiteSmoke"
+                                                 SelectedRange="{Binding DataContext.SelectedRange.Value, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                                 DisplayRanges="{Binding DataContext.SelectedRanges, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                                 behavior:MoveByDragBehavior.IsEnabled="False"/>
+                            <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
+                                                   LinePen="{Binding LinePen}"
+                                                   HorizontalPropertyName="{Binding DataContext.ChromatogramsViewModel.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                                   VerticalPropertyName="{Binding DataContext.ChromatogramsViewModel.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}">
+                                <chart:LineChartControl.ToolTip>
+                                    <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding FocusedItem.ChromXValue, StringFormat=RT: {0}}"/>
+                                            <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0}}"/>
+                                        </StackPanel>
+                                    </ToolTip>
+                                </chart:LineChartControl.ToolTip>
+                            </chart:LineChartControl>
+                        </Grid>
+                    </DataTemplate>
+                </chart:MultiChart.ItemTemplate>
+                <chart:MultiChart.VerticalTitle>
+                    <MultiBinding StringFormat="{}{0}({1})">
+                        <MultiBinding.Bindings>
+                            <Binding Path="ChromatogramsViewModel.VerticalTitle"/>
+                            <Binding Path="ChromatogramsViewModel.VerticalAxis.UnitLabel"/>
+                        </MultiBinding.Bindings>
+                    </MultiBinding>
+                </chart:MultiChart.VerticalTitle>
+            </chart:MultiChart>
+            <ItemsControl 
+                ItemsSource="{Binding ChromatogramsViewModel.DisplayChromatograms}"
+                VerticalAlignment="Center"
+                Grid.Column="1">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}" Margin="8,0" Foreground="{Binding LineBrush}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+    </Grid>
+</UserControl>

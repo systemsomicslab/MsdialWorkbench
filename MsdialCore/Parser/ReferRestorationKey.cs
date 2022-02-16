@@ -8,21 +8,15 @@ using CompMs.MsdialCore.Parameter;
 
 namespace CompMs.MsdialCore.Parser
 {
-    public interface IReferRestorationKey<in T, U, V>
-    {
-        ISerializableAnnotator<T, U, V> Accept(ILoadAnnotatorVisitor visitor);
-
-        string Key { get; }
-    }
-
     [MessagePack.Union(0, typeof(DataBaseRestorationKey))]
     [MessagePack.Union(1, typeof(MspDbRestorationKey))]
     [MessagePack.Union(2, typeof(TextDbRestorationKey))]
     [MessagePack.Union(3, typeof(StandardRestorationKey))]
     [MessagePack.Union(4, typeof(ShotgunProteomicsRestorationKey))]
-    public interface IReferRestorationKey<in T, U, V, in W>
+    [MessagePack.Union(5, typeof(EadLipidDatabaseRestorationKey))]
+    public interface IReferRestorationKey<in TQuery, TReference, TResult, in TDatabase>
     {
-        ISerializableAnnotator<T, U, V, W> Accept(ILoadAnnotatorVisitor visitor, W database);
+        ISerializableAnnotator<TQuery, TReference, TResult, TDatabase> Accept(ILoadAnnotatorVisitor visitor, TDatabase database);
 
         string Key { get; }
 
@@ -91,7 +85,8 @@ namespace CompMs.MsdialCore.Parser
     }
 
     [MessagePack.MessagePackObject]
-    public abstract class FastaDbRestorationKey : IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> {
+    public abstract class FastaDbRestorationKey : 
+        IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> {
         public FastaDbRestorationKey(string key, int priority) {
             Key = key;
             Priority = priority;
@@ -108,8 +103,13 @@ namespace CompMs.MsdialCore.Parser
 
     [MessagePack.MessagePackObject]
     public class ShotgunProteomicsRestorationKey : FastaDbRestorationKey {
-        public ShotgunProteomicsRestorationKey(string key, int priority, MsRefSearchParameterBase msrefSearchParameter, ProteomicsParameter proteomicsParameter, SourceType sourceType) : base(key, priority) {
-            MsRefSearchParameter = msrefSearchParameter;
+        public ShotgunProteomicsRestorationKey(
+            string key, 
+            int priority,
+            MsRefSearchParameterBase msRefSearchParameter,
+            ProteomicsParameter proteomicsParameter, 
+            SourceType sourceType) : base(key, priority) {
+            MsRefSearchParameter = msRefSearchParameter;
             ProteomicsParameter = proteomicsParameter;
             SourceType = sourceType;
         }
@@ -128,4 +128,30 @@ namespace CompMs.MsdialCore.Parser
         }
     }
 
+    [MessagePack.MessagePackObject]
+    public class EadLipidDatabaseRestorationKey : IReferRestorationKey<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>
+    {
+        public EadLipidDatabaseRestorationKey(string key, int priority, MsRefSearchParameterBase msRefSearchParameter, SourceType sourceType) {
+            Key = key;
+            Priority = priority;
+            MsRefSearchParameter = msRefSearchParameter;
+            SourceType = sourceType;
+        }
+
+        [MessagePack.Key(nameof(Key))]
+        public string Key { get; }
+
+        [MessagePack.Key(nameof(Priority))]
+        public int Priority { get; }
+
+        [MessagePack.Key(nameof(MsRefSearchParameter))]
+        public MsRefSearchParameterBase MsRefSearchParameter { get; set; }
+
+        [MessagePack.Key(nameof(SourceType))]
+        public SourceType SourceType { get; set; }
+
+        public ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Accept(ILoadAnnotatorVisitor visitor, EadLipidDatabase database) {
+            return visitor.Visit(this, database);
+        }
+    }
 }
