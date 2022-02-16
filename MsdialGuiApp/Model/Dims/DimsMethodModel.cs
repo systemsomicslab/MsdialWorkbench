@@ -1,6 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
@@ -115,6 +117,26 @@ namespace CompMs.App.Msdial.Model.Dims
                     new AnnotationQueryWithoutIsotopeFactory(container.Annotator) as IAnnotationQueryFactory<IAnnotationQuery>,
                     container.Annotator as IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
                 )).ToList());
+        }
+
+        public override void Run(ProcessOption option) {
+            Storage.DataBaseMapper = BuildDataBaseMapper(Storage.DataBases);
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
+            annotationProcess = BuildAnnotationProcess(Storage.DataBases);
+            ProviderFactory = Storage.MsdialDimsParameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
+
+            var processOption = option;
+            // Run Identification
+            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
+                foreach ((var analysisfile, var idx) in Storage.AnalysisFiles.WithIndex()) {
+                    RunAnnotationProcessAsync(analysisfile, null).Wait(); // TODO: change to async method
+                }
+            }
+
+            // Run Alignment
+            if (processOption.HasFlag(ProcessOption.Alignment)) {
+                RunAlignmentProcess();
+            }
         }
 
         public async Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {

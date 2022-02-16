@@ -146,6 +146,25 @@ namespace CompMs.App.Msdial.Model.Imms
             }
         }
 
+        public override void Run(ProcessOption option) {
+            Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
+            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
+            ProviderFactory = Storage.MsdialImmsParameter.ProviderFactoryParameter.Create(5, true);
+
+            var processOption = option;
+            // Run Identification
+            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
+                if (!ProcessAnnotaion(null, Storage))
+                    return;
+            }
+
+            // Run Alignment
+            if (processOption.HasFlag(ProcessOption.Alignment)) {
+                if (!ProcessAlignment(null, Storage))
+                    return;
+            }
+        }
+
         private bool ProcessAnnotaion(Window owner, MsdialImmsDataStorage storage) {
             var vm = new ProgressBarMultiContainerVM
             {

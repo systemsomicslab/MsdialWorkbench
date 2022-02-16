@@ -9,6 +9,7 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         public ProjectSettingModel(Action<IProjectModel> continuous) {
             ProjectParameterSettingModel = new ProjectParameterSettingModel(continuous);
+            option = ProcessOption.All;
             IsReadOnlyProjectParameter = false;
             IsReadOnlyDatasetParameter = false;
             IsReadOnlyPeakPickParameter = false;
@@ -18,6 +19,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public ProjectSettingModel(ProjectModel project) {
             ProjectModel = project;
+            option = ProcessOption.All;
             IsReadOnlyProjectParameter = true;
             IsReadOnlyDatasetParameter = false;
             IsReadOnlyPeakPickParameter = false;
@@ -28,12 +30,15 @@ namespace CompMs.App.Msdial.Model.Setting
         public ProjectSettingModel(ProjectModel project, DatasetModel dataset, ProcessOption option) {
             ProjectModel = project;
             DatasetModel = dataset;
+            this.option = option;
             IsReadOnlyProjectParameter = true;
             IsReadOnlyDatasetParameter = true;
             IsReadOnlyPeakPickParameter = !option.HasFlag(ProcessOption.PeakSpotting);
             IsReadOnlyAnnotationParameter = !option.HasFlag(ProcessOption.Identification);
             IsReadOnlyAlignmentParameter = !option.HasFlag(ProcessOption.Alignment);
         }
+
+        private readonly ProcessOption option;
 
         public ProjectModel ProjectModel { get; private set; }
 
@@ -94,7 +99,7 @@ namespace CompMs.App.Msdial.Model.Setting
             AlignmentParameterSettingModel.Commit();
             MobilitySettingModel.Commit();
             IsotopeTrackSettingModel.Commit();
-            DatasetModel.Run();
+            DatasetModel.Run(option);
             IsComplete = true;
         }
 
@@ -104,7 +109,7 @@ namespace CompMs.App.Msdial.Model.Setting
             AlignmentParameterSettingModel.Commit();
             MobilitySettingModel.Commit();
             IsotopeTrackSettingModel.Commit();
-            DatasetModel.Run();
+            DatasetModel.Run(option);
             IsComplete = true;
         }
 
@@ -113,7 +118,7 @@ namespace CompMs.App.Msdial.Model.Setting
             AlignmentParameterSettingModel.Commit();
             MobilitySettingModel.Commit();
             IsotopeTrackSettingModel.Commit();
-            DatasetModel.Run();
+            DatasetModel.Run(option);
             IsComplete = true;
         }
     }

@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
@@ -170,9 +171,9 @@ namespace CompMs.App.Msdial.Model.Core
             throw new NotImplementedException("This method is not implemented");
         }
 
-        public void Run() {
+        public void Run(ProcessOption option) {
             SetMethod();
-            // Method.Run
+            Method.Run(option);
         }
     }
 }

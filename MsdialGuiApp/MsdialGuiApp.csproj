@@ -170,10 +170,8 @@
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
     <Compile Include="Model\Core\DatasetModel.cs" />
     <Compile Include="Model\Core\IDatasetModel.cs" />
-    <Compile Include="Model\Core\IProcessCommand.cs" />
     <Compile Include="Model\Core\IProjectModel.cs" />
     <Compile Include="Model\Core\MainWindowModel.cs" />
-    <Compile Include="Model\Core\ProcessCommand.cs" />
     <Compile Include="Model\Core\ProjectModel.cs" />
     <Compile Include="Model\MsResult\SummarizedSpectrumModel.cs" />
     <Compile Include="Model\Setting\AdductIonSettingModel.cs" />
