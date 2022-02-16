@@ -50,11 +50,11 @@ namespace CompMs.Graphics.UI
 
         public static readonly DependencyProperty LabelProperty =
             DependencyProperty.Register(
-                nameof(Label), typeof(string), typeof(LabeledBar),
-                new FrameworkPropertyMetadata(string.Empty));
+                nameof(Label), typeof(object), typeof(LabeledBar),
+                new FrameworkPropertyMetadata(null));
 
-        public string Label {
-            get => (string)GetValue(LabelProperty);
+        public object Label {
+            get => GetValue(LabelProperty);
             set => SetValue(LabelProperty, value);
         }
     }

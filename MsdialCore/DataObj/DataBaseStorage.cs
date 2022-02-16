@@ -137,7 +137,7 @@ namespace CompMs.MsdialCore.DataObj
     }
 
     [MessagePackObject]
-    public class DataBaseItem<TQuery, TReference, TResult, TDataBase> where TDataBase: IReferenceDataBase, IMatchResultRefer<TReference, TResult>
+    public class DataBaseItem<TQuery, TReference, TResult, TDataBase> where TDataBase: IReferenceDataBase
     {
         public DataBaseItem(
             TDataBase dataBase,

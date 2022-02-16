@@ -9,9 +9,8 @@ namespace CompMs.MsdialCore.Parameter
     public class ProjectParameter
     {
         [SerializationConstructor]
-        public ProjectParameter(DateTime startDate, DateTime finalSavedDate, string folderPath, string title) {
+        public ProjectParameter(DateTime startDate, string folderPath, string title) {
             StartDate = startDate;
-            FinalSavedDate = finalSavedDate;
             FolderPath = folderPath;
             Title = title;
         }

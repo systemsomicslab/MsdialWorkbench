@@ -10,6 +10,8 @@
     -->
     <converter:DoubleToStringConverter x:Key="doubleToStringConverter" />
     <BooleanToVisibilityConverter x:Key="boolean2visibility"/>
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
+    <converter:BooleanToEnumConverter x:Key="EnumToBoolean"/>
 
     <ControlTemplate x:Key="InputErrorTemplate">
         <DockPanel>
@@ -202,6 +204,65 @@
                 <Setter Property="Visibility" Value="Collapsed"/>
             </DataTrigger> 
         </Style.Triggers>
+    </Style>
+
+    <Style x:Key="AlignedLabeledBar" TargetType="ui:LabeledBar">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ui:LabeledBar">
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="80"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Content="{TemplateBinding Label}"
+                               Width="{TemplateBinding LabelWidth}"
+                               VerticalAlignment="Center"
+                               VerticalContentAlignment="Center"
+                               HorizontalAlignment="Left"
+                               Margin="0,0,10,0"
+                               Grid.Column="0"/>
+                        <ContentPresenter VerticalAlignment="Center"
+                                          Grid.Column="1"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style x:Key="AlignedExecutableBar" TargetType="ui:ExecutableBar">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ui:ExecutableBar">
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="80"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Content="{TemplateBinding Label}"
+                               Width="{TemplateBinding LabelWidth}"
+                               VerticalAlignment="Center"
+                               VerticalContentAlignment="Center"
+                               HorizontalAlignment="Left"
+                               Margin="0,0,10,0"
+                               Grid.Column="0"/>
+                        <ContentPresenter VerticalAlignment="Center"
+                                          Grid.Column="1"/>
+                        <Button Content="{TemplateBinding ButtonContent}"
+                                Width="{TemplateBinding ButtonWidth}"
+                                Command="{TemplateBinding Command}"
+                                CommandParameter="{TemplateBinding CommandParameter}"
+                                VerticalAlignment="Stretch"
+                                Margin="4"
+                                Grid.Column="2"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
     
     <!--CompoundSearch properties template-->

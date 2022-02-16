@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace CompMs.App.Msdial.View.Setting
 {
     /// <summary>
-    /// Interaction logic for ProjectSettingView.xaml
+    /// Interaction logic for DeconvolutionSettingView.xaml
     /// </summary>
-    public partial class ProjectSettingView : UserControl
+    public partial class DeconvolutionSettingView : UserControl
     {
-        public ProjectSettingView() {
+        public DeconvolutionSettingView() {
             InitializeComponent();
         }
     }

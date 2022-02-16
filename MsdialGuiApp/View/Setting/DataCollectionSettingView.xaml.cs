@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace CompMs.App.Msdial.View.Setting
 {
     /// <summary>
-    /// Interaction logic for DatasetSettingView.xaml
+    /// Interaction logic for DataCollectionSettingView.xaml
     /// </summary>
-    public partial class DatasetSettingView : UserControl
+    public partial class DataCollectionSettingView : UserControl
     {
-        public DatasetSettingView() {
+        public DataCollectionSettingView() {
             InitializeComponent();
         }
     }
