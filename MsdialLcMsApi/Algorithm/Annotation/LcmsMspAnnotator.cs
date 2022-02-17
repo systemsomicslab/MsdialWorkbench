@@ -16,8 +16,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
         public LcmsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string annotatorID, int priority)
             : base(mspDB.Database, parameter, annotatorID, priority, SourceType.MspDB) {
             ReferObject = mspDB;
-            scorer = new MsReferenceScorer(annotatorID, priority, omics, SourceType.MspDB, CollisionType.HCD);
-            evaluator = MsScanMatchResultEvaluator.CreateEvaluatorWithSpectrum(parameter);
+            scorer = new MsReferenceScorer(annotatorID, priority, omics, SourceType.MspDB, CollisionType.HCD, true);
+            evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
         }
 
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
@@ -34,13 +34,16 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 
         private List<MsScanMatchResult> FindCandidatesCore(IAnnotationQuery query, MsRefSearchParameterBase parameter) {
             return SearchCore(query.Property, parameter)
-                .Select(candidate => scorer.Score(query, candidate))
+                .Select(candidate => CalculateScore(query, candidate))
                 .OrderByDescending(result => result.TotalScore)
                 .ToList();
         }
 
         public MsScanMatchResult CalculateScore(IAnnotationQuery query, MoleculeMsReference reference) {
-            return scorer.Score(query, reference);
+            var result = scorer.Score(query, reference);
+            result.IsReferenceMatched = result.IsPrecursorMzMatch && (!query.Parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && result.IsSpectrumMatch;
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && (!query.Parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && !result.IsReferenceMatched;
+            return result;
         }
 
         public override MoleculeMsReference Refer(MsScanMatchResult result) {

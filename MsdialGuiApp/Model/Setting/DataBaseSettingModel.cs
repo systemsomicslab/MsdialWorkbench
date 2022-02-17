@@ -21,27 +21,23 @@ namespace CompMs.App.Msdial.Model.Setting
             IsLoaded = false;
         }
 
-        public DataBaseSettingModel(ParameterBase parameter, MoleculeDataBase metabolomicsDB) {
+        public DataBaseSettingModel(ParameterBase parameter, IReferenceDataBase database) {
             this.parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
-            this.metabolomicsDB = metabolomicsDB;
-            DataBaseID = metabolomicsDB.Id;
-            DBSource = metabolomicsDB.DataBaseSource;
-            IsLoaded = true;
-        }
-
-        public DataBaseSettingModel(ParameterBase parameter, ShotgunProteomicsDB proteomicsDB) {
-            this.parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
-            this.proteomicsDB = proteomicsDB;
-            DataBaseID = proteomicsDB.Id;
-            DBSource = proteomicsDB.DataBaseSource;
-            IsLoaded = true;
-        }
-
-        public DataBaseSettingModel(ParameterBase parameter, EadLipidDatabase eadLipidDatabase) {
-            this.parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
-            this.eadLipidDatabase = eadLipidDatabase;
-            DataBaseID = eadLipidDatabase.Id;
-            DBSource = DataBaseSource.EadLipid;
+            switch (database) {
+                case MoleculeDataBase mdb:
+                    metabolomicsDB = mdb;
+                    DBSource = mdb.DataBaseSource;
+                    break;
+                case ShotgunProteomicsDB pdb:
+                    proteomicsDB = pdb;
+                    DBSource = pdb.DataBaseSource;
+                    break;
+                case EadLipidDatabase ldb:
+                    this.eadLipidDatabase = ldb;
+                    DBSource = DataBaseSource.EadLipid;
+                    break;
+            }
+            DataBaseID = database.Id;
             IsLoaded = true;
         }
 

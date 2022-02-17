@@ -82,6 +82,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 
             result.TotalScore = (float)massResult.Scores.Average();
             massResult.Assign(result);
+            result.IsReferenceMatched = result.IsPrecursorMzMatch;
             return result;
         }
 

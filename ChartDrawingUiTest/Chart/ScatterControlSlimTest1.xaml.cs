@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Setting
+namespace ChartDrawingUiTest.Chart
 {
     /// <summary>
-    /// Interaction logic for DatasetSettingView.xaml
+    /// Interaction logic for ScatterControlSlimTest1.xaml
     /// </summary>
-    public partial class DatasetSettingView : UserControl
+    public partial class ScatterControlSlimTest1 : Page
     {
-        public DatasetSettingView() {
+        public ScatterControlSlimTest1() {
             InitializeComponent();
         }
     }

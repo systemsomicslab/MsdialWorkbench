@@ -167,8 +167,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                         if (results2.Count > 0) {
                             var matches2 = container2.Annotator.SelectReferenceMatchResults(results2);
                             var best2 = container2.Annotator.SelectTopHit(matches2.Count > 0 ? matches2 : results2);
-
-                            best2.IsReferenceMatched = true;
                             chromPeakFeature.MatchResults.AddResult(best2);
                         }
                     }

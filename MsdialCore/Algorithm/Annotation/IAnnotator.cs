@@ -9,7 +9,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
     public interface IAnnotator<in TQuery, out TReference, TResult> : IMatchResultFinder<TQuery, TResult>, IMatchResultRefer<TReference, TResult>, IMatchResultEvaluator<TResult>
     {
-
+        int Priority { get; }
     }
 
     public interface ISerializableAnnotator<in TQuery, TReference, TResult, in TDatabase>

@@ -49,6 +49,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             DBSources = new List<DataBaseSource> { DataBaseSource.Msp, DataBaseSource.Lbm, DataBaseSource.Text, DataBaseSource.Fasta, DataBaseSource.EadLipid, }.AsReadOnly();
             DBSource = DataBasePath
+                .Where(path => !string.IsNullOrEmpty(path))
                 .Select(path => Path.GetExtension(path))
                 .Select(ext => {
                     if (Regex.IsMatch(ext, @"\.msp\d*")) {
@@ -65,7 +66,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                     }
                     return DataBaseSource.None;
                 })
-                .ToReactiveProperty(DataBaseSource.None)
+                .ToReactiveProperty(Model.DBSource)
                 .SetValidateNotifyError(src => DBSources.Contains(src) ? null : "Unknown database")
                 .AddTo(Disposables);
             DBSource.Where(src => src == DataBaseSource.EadLipid)

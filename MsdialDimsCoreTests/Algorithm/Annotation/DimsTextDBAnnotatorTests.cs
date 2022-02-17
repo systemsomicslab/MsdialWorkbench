@@ -163,14 +163,13 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult>
             {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, },
             };
 
             var actuals = results.Select(result => annotator.IsReferenceMatched(result)).ToList();
-            CollectionAssert.AreEqual(new[] { false, false, true, true, }, actuals);
+            CollectionAssert.AreEqual(new[] { false, false, true, }, actuals);
         }
 
         [TestMethod()]
@@ -179,14 +178,13 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult>
             {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, },
             };
 
             var actuals = annotator.FilterByThreshold(results);
-            CollectionAssert.AreEquivalent(new[] { results[2], results[3], }, actuals);
+            CollectionAssert.AreEquivalent(new[] { results[1], results[2], }, actuals);
 
             CollectionAssert.AreEquivalent(new MsScanMatchResult[] { }, annotator.FilterByThreshold(new MsScanMatchResult[] { }));
         }
@@ -197,14 +195,13 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var annotator = new DimsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult>
             {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, },
             };
 
             var actuals = annotator.SelectReferenceMatchResults(results);
-            CollectionAssert.AreEquivalent(new[] { results[2], results[3], }, actuals);
+            CollectionAssert.AreEquivalent(new[] { results[2], }, actuals);
 
             CollectionAssert.AreEquivalent(new MsScanMatchResult[] { }, annotator.SelectReferenceMatchResults(new MsScanMatchResult[] { }));
         }

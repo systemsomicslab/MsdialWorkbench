@@ -157,6 +157,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 
             var diff = Math.Abs(property.ChromXs.RT.Value - reference.ChromXs.RT.Value);
             result.IsRtMatch = diff <= parameter.RtTolerance;
+
+            result.IsReferenceMatched = result.IsPrecursorMzMatch && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch);
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {

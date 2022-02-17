@@ -64,6 +64,10 @@ namespace CompMs.Common.Lipidomics.Tests
 
         public int ChainCount => throw new System.NotImplementedException();
 
+        public LipidDescription Description => LipidDescription.None;
+
+        public ITotalChain Chains => throw new System.NotImplementedException();
+
         public IEnumerable<ILipid> Generate(ILipidGenerator generator) {
             throw new System.NotImplementedException();
         }

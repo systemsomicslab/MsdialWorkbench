@@ -503,14 +503,16 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult>
             {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsRtMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsRtMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsRtMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsRtMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, },
             };
 
             var actuals = annotator.FilterByThreshold(results);
-            var expected = new[] { results[3], };
+            var expected = new[] { results[2], results[3], results[4], results[5], };
             CollectionAssert.AreEquivalent(expected, actuals);
         }
 
@@ -523,14 +525,16 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult>
             {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsRtMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsRtMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsRtMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsRtMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, },
             };
 
             var actuals = annotator.FilterByThreshold(results);
-            var expected = new[] { results[2], results[3], };
+            var expected = new[] { results[2], results[3], results[4], results[5], };
             CollectionAssert.AreEquivalent(expected, actuals);
         }
 
@@ -543,14 +547,16 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult>
             {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsRtMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsRtMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsRtMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsRtMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, },
             };
 
-            var actuals = annotator.FilterByThreshold(results);
-            var expected = new[] { results[3], };
+            var actuals = annotator.SelectReferenceMatchResults(results);
+            var expected = new[] { results[4], results[5], };
             CollectionAssert.AreEquivalent(expected, actuals);
         }
 
@@ -563,14 +569,16 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult>
             {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsRtMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsRtMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsRtMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsRtMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, },
             };
 
-            var actuals = annotator.FilterByThreshold(results);
-            var expected = new[] { results[2], results[3], };
+            var actuals = annotator.SelectReferenceMatchResults(results);
+            var expected = new[] { results[4], results[5], };
             CollectionAssert.AreEquivalent(expected, actuals);
         }
 
@@ -583,21 +591,20 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult>
             {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsRtMatch = false, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsRtMatch = false, IsSpectrumMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsRtMatch = true, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsRtMatch = true, IsSpectrumMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsRtMatch = false, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsRtMatch = false, IsSpectrumMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsRtMatch = true, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsRtMatch = true, IsSpectrumMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, },
             };
 
             var actuals = results.Select(result => annotator.IsReferenceMatched(result)).ToList();
             CollectionAssert.AreEqual(
                 new[] {
-                    false, false, false, false,
-                    false, false, true, true, 
+                    false, false,
+                    false, false,
+                    true, true, 
                 },
                 actuals);
         }
@@ -611,21 +618,20 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
             var annotator = new LcmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult>
             {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsRtMatch = false, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsRtMatch = false, IsSpectrumMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsRtMatch = true, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsRtMatch = true, IsSpectrumMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsRtMatch = false, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsRtMatch = false, IsSpectrumMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsRtMatch = true, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsRtMatch = true, IsSpectrumMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, },
             };
 
             var actuals = results.Select(result => annotator.IsReferenceMatched(result)).ToList();
             CollectionAssert.AreEqual(
                 new[] {
-                    false, false, false, false,
-                    true, true, true, true, 
+                    false, false,
+                    false, false,
+                    true, true,
                 },
                 actuals);
         }

@@ -16,7 +16,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
     {
         [TestMethod()]
         public async Task LoadTest() {
-            var projectParameter = new ProjectParameter(DateTime.Parse("2021/12/16 23:14:30").ToUniversalTime(), DateTime.Parse("2021/12/16 23:15:20").ToUniversalTime(), "Folder", "TestProject");
+            var projectParameter = new ProjectParameter(DateTime.Parse("2021/12/16 23:14:30").ToUniversalTime(), "Folder", "TestProject");
             var proj = new ProjectDataStorage(projectParameter, new List<IMsdialDataStorage<ParameterBase>>());
             var storage1 = new MockStorage { Parameter = new ParameterBase { ProjectFileName = "Test1", } };
             var storage2 = new MockStorage { Parameter = new ParameterBase { ProjectFileName = "Test2", } };
