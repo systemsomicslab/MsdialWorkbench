@@ -15,12 +15,13 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 {
     public class MsReferenceScorer : IReferenceScorer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
     {
-        public MsReferenceScorer(string id, int priority, TargetOmics omics, SourceType source, CollisionType collisionType) {
+        public MsReferenceScorer(string id, int priority, TargetOmics omics, SourceType source, CollisionType collisionType, bool useMs2) {
             this.id = id;
             this.priority = priority;
             this.omics = omics;
             this.source = source;
             this.collisionType = collisionType;
+            this.useMs2 = useMs2;
         }
 
         private readonly string id;
@@ -28,6 +29,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private readonly TargetOmics omics;
         private readonly SourceType source;
         private readonly CollisionType collisionType;
+        private readonly bool useMs2;
 
         public MsScanMatchResult Score(IAnnotationQuery query, MoleculeMsReference reference) {
             return CalculateScore(query.Property, query.NormalizedScan, query.Isotopes, reference, reference.IsotopicPeaks, query.Parameter);
@@ -109,6 +111,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     ValidateOnLipidomics(result, scan, reference, parameter);
                 }
             }
+            result.IsReferenceMatched = result.IsPrecursorMzMatch
+                && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch)
+                && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch)
+                && (!useMs2 || result.IsSpectrumMatch);
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch
+                && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch)
+                && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch)
+                && !result.IsReferenceMatched;
         }
 
         private void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
@@ -145,7 +155,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             if (result.IsOtherLipidMatch)
                 return;
-            result.Name = name;
+            result.Name = string.IsNullOrEmpty(name) ? reference.Name : name;
         }
 
         private void ValidateOnEadLipidomics(
@@ -154,8 +164,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             MoleculeMsReference reference,
             MsRefSearchParameterBase parameter) {
 
-            var obj = MsScanMatching.GetEadBasedLipidMoleculeAnnotationResult(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
-            var lipid = obj.Item1;
+            (var lipid, _) = MsScanMatching.GetEadBasedLipidMoleculeAnnotationResult(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             if (lipid is null) {
                 lipid = FacadeLipidParser.Default.Parse(reference.Name);
             }

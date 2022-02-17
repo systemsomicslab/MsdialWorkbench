@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -24,12 +25,20 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             if (Parameter.TargetOmics == TargetOmics.Lipidomics) {
-                string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
-                if (lbmFiles.Length > 0) {
-                    IdentitySettingModel.AddDataBaseZZZ();
-                    var databaseModel = IdentitySettingModel.DataBaseModels.Last();
-                    databaseModel.DataBasePath = lbmFiles.First();
+                if (IdentitySettingModel.DataBaseModels.Count == 0) {
+                    if (Parameter.CollistionType == CollisionType.EAD
+                        && IdentitySettingModel.DataBaseModels.All(m => m.DBSource != DataBaseSource.EadLipid)) {
+                        var databaseModel = IdentitySettingModel.AddDataBaseZZZ();
+                        databaseModel.DBSource = DataBaseSource.EadLipid;
+                    }
+                    string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
+                    var lbmFile = lbmFiles.FirstOrDefault();
+                    if (!(lbmFile is null)
+                        && IdentitySettingModel.DataBaseModels.All(m => m.DBSource != DataBaseSource.Msp)) {
+                        var databaseModel = IdentitySettingModel.AddDataBaseZZZ();
+                        databaseModel.DataBasePath = lbmFile;
+                    }
                 }
             }
             else if (Parameter.TargetOmics == TargetOmics.Proteomics) {

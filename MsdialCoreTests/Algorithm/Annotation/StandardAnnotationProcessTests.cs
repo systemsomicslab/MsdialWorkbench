@@ -178,6 +178,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
             public string Key { get; }
 
+            public int Priority { get; } = 0;
+
             public MsScanMatchResult Annotate(MockQuery query) {
                 throw new NotImplementedException();
             }

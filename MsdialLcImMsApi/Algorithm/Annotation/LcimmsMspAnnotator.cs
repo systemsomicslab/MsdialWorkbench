@@ -257,7 +257,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
             if (result.IsOtherLipidMatch)
                 return;
 
-            result.Name = name;
+            result.Name = string.IsNullOrEmpty(name) ? reference.Name : name;
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {

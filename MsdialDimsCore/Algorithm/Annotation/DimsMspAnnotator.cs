@@ -3,7 +3,6 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
-using CompMs.Common.Lipidomics;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -76,7 +75,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
                 var ms2Result = LipidMs2Calculator.Calculate(new MSScanMatchQuery(normScan, parameter), reference);
                 results.Add(ms2Result);
                 if (!ms2Result.IsOtherLipidMatch) {
-                    result.Name = ms2Result.Name;
+                    result.Name = string.IsNullOrEmpty(ms2Result.Name) ? reference.Name : ms2Result.Name;
                 }
             }
             else {

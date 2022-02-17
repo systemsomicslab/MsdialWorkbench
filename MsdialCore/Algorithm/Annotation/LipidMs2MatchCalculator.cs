@@ -1,7 +1,6 @@
 ﻿using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using System;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
