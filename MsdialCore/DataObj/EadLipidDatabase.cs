@@ -131,9 +131,10 @@ namespace CompMs.MsdialCore.DataObj
         string IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Key => Id;
 
         public MoleculeMsReference Refer(MsScanMatchResult result) {
-            if (!string.IsNullOrEmpty(result.Name) && !cache.Contains(result.Name.GetHashCode())) {
-                return null;
-            }
+            //if (!string.IsNullOrEmpty(result.Name) && !cache.Contains(result.Name.GetHashCode())) {
+            //    return null;
+            //}
+            if (result.LibraryID < 0 || result.LibraryID >= scanId) return null;
             var command = connection?.CreateCommand();
             command.CommandText = $"SELECT * FROM {ReferenceTableName} WHERE ScanID = {result.LibraryID}";
             var reader = command.ExecuteReader();
