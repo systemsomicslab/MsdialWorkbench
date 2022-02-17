@@ -28,7 +28,8 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(0, acyl.DoubleBondCount);
             Assert.AreEqual(1, acyl.OxidizedCount);
 
-            acyl = parser.Parse("20:4;O4");
+            //acyl = parser.Parse("20:4;O4");
+            acyl = parser.Parse("20:4;4O");
             Assert.IsInstanceOfType(acyl, typeof(AcylChain));
             Assert.AreEqual(20, acyl.CarbonCount);
             Assert.AreEqual(4, acyl.DoubleBondCount);
@@ -55,6 +56,13 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(0, acyl.OxidizedCount);
             CollectionAssert.AreEqual(new[] { 9, 11 }, ((AcylChain)acyl).DoubleBond.Bonds.Select(b => b.Position).ToArray());
             CollectionAssert.AreEqual(new[] { DoubleBondState.Z, DoubleBondState.E }, ((AcylChain)acyl).DoubleBond.Bonds.Select(b => b.State).ToArray());
+
+            acyl = parser.Parse("20:4;(2OH)");
+            Assert.IsInstanceOfType(acyl, typeof(AcylChain));
+            Assert.AreEqual(20, acyl.CarbonCount);
+            Assert.AreEqual(4, acyl.DoubleBondCount);
+            Assert.AreEqual(1, acyl.OxidizedCount);
+            CollectionAssert.AreEqual(new[] { 2 }, ((AcylChain)acyl).Oxidized.Oxidises);
         }
     }
 }

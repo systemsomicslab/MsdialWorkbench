@@ -784,6 +784,11 @@ namespace Riken.Metabolomics.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfSteroidWithPa(molecule.LipidName, molecule.LipidClass,
                             spectrum, ms2tol, refMz, totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
+                    //20220201
+                    case LbmClass.SPE:
+                        result = LipidMsmsCharacterization.JudgeIfSpeSpecies(molecule.LipidName, molecule.LipidClass,
+                            spectrum, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
+                        break;
 
 
                 }
