@@ -53,7 +53,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
@@ -123,7 +123,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
@@ -194,7 +194,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             };
 
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
 
             Console.WriteLine($"AccurateSimilarity: {result.AcurateMassSimilarity}");
@@ -263,7 +263,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
             scorer.Validate(result, target, target, reference, parameter);
 
@@ -324,7 +324,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
             scorer.Validate(result, target, target, reference, parameter);
 
@@ -385,7 +385,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.CID, true);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
             scorer.Validate(result, target, target, reference, parameter);
 
@@ -417,12 +417,14 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100 },
-                    new SpectrumPeak { Mass = 506.361, Intensity = 5 },
-                    new SpectrumPeak { Mass = 524.372, Intensity = 5 },
-                    new SpectrumPeak { Mass = 526.330, Intensity = 5 },
-                    new SpectrumPeak { Mass = 544.340, Intensity = 5 },
-                    new SpectrumPeak { Mass = 810.601, Intensity = 30 },
+                    new SpectrumPeak { Mass = 184.073, Intensity = 100, SpectrumComment = SpectrumComment.metaboliteclass, },
+                    new SpectrumPeak { Mass = 224.105, Intensity = 100, SpectrumComment = SpectrumComment.metaboliteclass, },
+                    new SpectrumPeak { Mass = 226.083, Intensity = 100, SpectrumComment = SpectrumComment.metaboliteclass, },
+                    new SpectrumPeak { Mass = 506.361, Intensity = 5, SpectrumComment = SpectrumComment.acylchain, },
+                    new SpectrumPeak { Mass = 524.372, Intensity = 5, SpectrumComment = SpectrumComment.acylchain, },
+                    new SpectrumPeak { Mass = 526.330, Intensity = 5, SpectrumComment = SpectrumComment.acylchain, },
+                    new SpectrumPeak { Mass = 544.340, Intensity = 5, SpectrumComment = SpectrumComment.acylchain, },
+                    new SpectrumPeak { Mass = 810.601, Intensity = 30, SpectrumComment = SpectrumComment.precursor, },
                 }
             };
             var parameter = new MsRefSearchParameterBase
@@ -430,6 +432,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 Ms1Tolerance = 0.01f,
                 Ms2Tolerance = 0.05f,
                 RtTolerance = 0.5f,
+                WeightedDotProductCutOff = 0f,
+                SimpleDotProductCutOff = 0f,
+                ReverseDotProductCutOff = 0f,
+                MinimumSpectrumMatch = 0f,
+                MatchedPeaksPercentageCutOff = 0f,
                 IsUseTimeForAnnotationScoring = true,
             };
 
@@ -446,7 +453,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.EAD);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.EAD, true);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
             scorer.Validate(result, target, target, reference, parameter);
 
@@ -462,7 +469,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             Assert.IsTrue(result.IsRtMatch);
             Assert.IsTrue(result.IsSpectrumMatch);
             Assert.IsTrue(result.IsLipidClassMatch);
-            Assert.IsFalse(result.IsLipidChainsMatch);
+            Assert.IsTrue(result.IsLipidChainsMatch);
             Assert.IsFalse(result.IsLipidPositionMatch);
             Assert.IsFalse(result.IsOtherLipidMatch);
         }

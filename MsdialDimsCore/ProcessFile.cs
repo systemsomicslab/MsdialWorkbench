@@ -178,7 +178,8 @@ namespace CompMs.MsdialDimsCore
                 if (feature.MS2RawSpectrumID >= 0 && feature.MS2RawSpectrumID < spectra.Count) {
                     var peakElements = spectra[feature.MS2RawSpectrumID].Spectrum;
                     var spectrumPeaks = DataAccess.ConvertToSpectrumPeaks(peakElements);
-                    var centroidSpec = SpectralCentroiding.Centroid(spectrumPeaks);
+                    //var centroidSpec = SpectralCentroiding.Centroid(spectrumPeaks);
+                    var centroidSpec = SpectralCentroiding.CentroidByLocalMaximumMethod(spectrumPeaks);
                     feature.Spectrum = centroidSpec;
                 }
             }

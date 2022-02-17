@@ -73,7 +73,8 @@
             <Expander Header="Advanced"
                       HorizontalAlignment="Stretch" 
                       VerticalAlignment="Stretch" 
-                      ExpandDirection="Down">
+                      ExpandDirection="Down"
+                      d:IsExpanded="True">
 
                 <Grid>
                     <Grid.ColumnDefinitions>

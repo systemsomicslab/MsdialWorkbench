@@ -478,7 +478,7 @@ namespace CompMs.Common.Parser
             sw.WriteLine("NAME: " + record.Name);
             sw.WriteLine("PRECURSORMZ: " + record.PrecursorMz);
             sw.WriteLine("PRECURSORTYPE: " + adducttype);
-            sw.WriteLine("RETENTIONTIME: " + record.ChromXs.RT);
+            sw.WriteLine("RETENTIONTIME: " + record.ChromXs.RT.Value);
             sw.WriteLine("FORMULA: " + record.Formula);
             sw.WriteLine("SMILES: " + record.SMILES);
             sw.WriteLine("INCHIKEY: " + record.InChIKey);

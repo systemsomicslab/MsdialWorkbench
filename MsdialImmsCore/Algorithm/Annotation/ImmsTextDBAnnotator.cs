@@ -159,6 +159,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Annotation
 
             var diff = Math.Abs(property.CollisionCrossSection - reference.CollisionCrossSection);
             result.IsCcsMatch = diff <= parameter.CcsTolerance;
+            result.IsReferenceMatched = result.IsPrecursorMzMatch && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch);
         }
 
         public MsScanMatchResult SelectTopHit(IEnumerable<MsScanMatchResult> results) {

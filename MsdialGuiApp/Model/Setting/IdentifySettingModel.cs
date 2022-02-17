@@ -17,20 +17,31 @@ namespace CompMs.App.Msdial.Model.Setting
             this.parameter = parameter ?? throw new System.ArgumentNullException(nameof(parameter));
             this.annotatorFactory = annotatorFactory ?? throw new System.ArgumentNullException(nameof(annotatorFactory));
 
-            if (!(dataBaseStorage is null)) {
-                foreach (var dataBase in dataBaseStorage.MetabolomicsDataBases) {
-                    var dbModel = new DataBaseSettingModel(parameter, dataBase.DataBase);
-                    DataBaseModels.Add(dbModel);
-                    foreach (var pair in dataBase.Pairs) {
-                        AnnotatorModels.Add(annotatorFactory.Create(dbModel, pair.AnnotatorID, pair.SearchParameter));
-                    }
-                }
-                foreach (var dataBase in dataBaseStorage.ProteomicsDataBases) {
-                    var dbModel = new DataBaseSettingModel(parameter, dataBase.DataBase);
-                    DataBaseModels.Add(dbModel);
-                    foreach (var pair in dataBase.Pairs) {
-                        AnnotatorModels.Add(annotatorFactory.Create(dbModel, pair.AnnotatorID, pair.SearchParameter));
-                    }
+            var databases = new List<DataBaseSettingModel>();
+            var annotators = new List<(int Priority, IAnnotatorSettingModel Model)>();
+            if (dataBaseStorage != null) {
+                Restore(dataBaseStorage.MetabolomicsDataBases, databases, annotators, annotatorFactory, parameter);
+                Restore(dataBaseStorage.ProteomicsDataBases, databases, annotators, annotatorFactory, parameter);
+                Restore(dataBaseStorage.EadLipidomicsDatabases, databases, annotators, annotatorFactory, parameter);
+                annotators.Sort((a, b) => b.Priority.CompareTo(a.Priority));
+            }
+            DataBaseModels = new ObservableCollection<DataBaseSettingModel>(databases);
+            AnnotatorModels = new ObservableCollection<IAnnotatorSettingModel>(annotators.Select(pair => pair.Model));
+        }
+
+        private static void Restore<TQuery, TReference, TResult, TDataBase>(
+            IEnumerable<DataBaseItem<TQuery, TReference, TResult, TDataBase>> items,
+            IList<DataBaseSettingModel> dataBaseModels,
+            IList<(int, IAnnotatorSettingModel)> annotatorModels,
+            IAnnotatorSettingModelFactory annotatorFactory,
+            ParameterBase parameter)
+            where TDataBase : IReferenceDataBase {
+
+            foreach (var dataBase in items) {
+                var dbModel = new DataBaseSettingModel(parameter, dataBase.DataBase);
+                dataBaseModels.Add(dbModel);
+                foreach (var pair in dataBase.Pairs) {
+                    annotatorModels.Add((pair.SerializableAnnotator.Priority, annotatorFactory.Create(dbModel, pair.AnnotatorID, pair.SearchParameter)));
                 }
             }
         }
@@ -39,7 +50,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly IAnnotatorSettingModelFactory annotatorFactory;
         private int serialNumber = 1;
 
-        public ObservableCollection<DataBaseSettingModel> DataBaseModels { get; } = new ObservableCollection<DataBaseSettingModel>();
+        public ObservableCollection<DataBaseSettingModel> DataBaseModels { get; }
 
         public DataBaseSettingModel DataBaseModel {
             get => dataBaseModel;
@@ -53,7 +64,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private DataBaseSettingModel dataBaseModel;
 
-        public ObservableCollection<IAnnotatorSettingModel> AnnotatorModels { get; } = new ObservableCollection<IAnnotatorSettingModel>();
+        public ObservableCollection<IAnnotatorSettingModel> AnnotatorModels { get; }
 
         public IAnnotatorSettingModel AnnotatorModel {
             get => annotatorModel;
@@ -131,7 +142,9 @@ namespace CompMs.App.Msdial.Model.Setting
         public IAnnotatorSettingModel AddAnnotatorZZZ(DataBaseSettingModel db) {
             if (!(db is null)) {
                 var annotatorModel = annotatorFactory.Create(db, $"{db.DataBaseID}_{serialNumber++}", null);
-                AnnotatorModels.Add(annotatorModel);
+                lock (annotatorLock) {
+                    AnnotatorModels.Add(annotatorModel);
+                }
                 return annotatorModel;
             }
             return null;
@@ -205,11 +218,18 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
+        public bool IsCompleted {
+            get => isCompleted;
+            private set => SetProperty(ref isCompleted, value);
+        }
+        private bool isCompleted;
+
         public DataBaseStorage Create() {
             var result = DataBaseStorage.CreateEmpty();
             SetAnnotatorContainer(result);
             SetProteomicsAnnotatorContainer(result);
             SetEadLipidomicsAnnotatorContainer(result);
+            IsCompleted = true;
             return result;
         }
 

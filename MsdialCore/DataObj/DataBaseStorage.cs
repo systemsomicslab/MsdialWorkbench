@@ -128,6 +128,27 @@ namespace CompMs.MsdialCore.DataObj
             return result;
         }
 
+        public DataBaseMapper CreateDataBaseMapper() {
+            var mapper = new DataBaseMapper();
+            foreach (var db in MetabolomicsDataBases) {
+                foreach (var pair in db.Pairs) {
+                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
+                }
+            }
+            foreach (var db in ProteomicsDataBases) {
+                foreach (var pair in db.Pairs) {
+                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
+                }
+            }
+            foreach (var db in EadLipidomicsDatabases) {
+                foreach (var pair in db.Pairs) {
+                    mapper.Add(pair.SerializableAnnotator);
+                }
+            }
+
+            return mapper;
+        }
+
         public static DataBaseStorage CreateEmpty() {
             return new DataBaseStorage(
                 new List<DataBaseItem<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(),
@@ -137,7 +158,7 @@ namespace CompMs.MsdialCore.DataObj
     }
 
     [MessagePackObject]
-    public class DataBaseItem<TQuery, TReference, TResult, TDataBase> where TDataBase: IReferenceDataBase, IMatchResultRefer<TReference, TResult>
+    public class DataBaseItem<TQuery, TReference, TResult, TDataBase> where TDataBase: IReferenceDataBase
     {
         public DataBaseItem(
             TDataBase dataBase,

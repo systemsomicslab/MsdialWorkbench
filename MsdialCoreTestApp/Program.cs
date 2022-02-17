@@ -1,4 +1,5 @@
-﻿using CompMs.App.MsdialConsole.Parser;
+﻿using CompMs.App.MsdialConsole.MspCuration;
+using CompMs.App.MsdialConsole.Parser;
 using CompMs.App.MsdialConsole.Process;
 using CompMs.App.MsdialConsole.ProteomicsTest;
 using CompMs.Common.FormulaGenerator.Parser;
@@ -132,6 +133,10 @@ namespace CompMs.App.MsdialConsole {
             //tester.Export(projectPath, output, curator);
             //Console.WriteLine(Encoding.UTF8.GetString(output.ToArray()));
 #endif
+
+            MspCurator.WriteRtMzInChIKey(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Neg-VS15_PfppRT.msp");
+            //MspCurator.AddRT2MspQueries(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Neg-VS15.msp", @"E:\6_Projects\2_metabolome_protocol\PFPP_NEG.txt");
+            //MspCurator.AddRT2MspQueries(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Pos-VS15.msp", @"E:\6_Projects\2_metabolome_protocol\PFPP_POS.txt");
         }
 
         private static void DumpN(string file, int n) {

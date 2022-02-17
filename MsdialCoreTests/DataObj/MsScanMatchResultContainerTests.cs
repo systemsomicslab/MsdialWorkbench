@@ -234,8 +234,8 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var container1 = new MsScanMatchResultContainer();
             var results1 = new[]
             {
-                new MsScanMatchResult { Source = SourceType.TextDB, TotalScore = 0.7f, },
-                new MsScanMatchResult { Source = SourceType.MspDB, TotalScore = 0.8f, },
+                new MsScanMatchResult { Source = SourceType.TextDB, TotalScore = 0.7f, Priority = 2, },
+                new MsScanMatchResult { Source = SourceType.MspDB, TotalScore = 0.8f, Priority = 1, },
             };
             container1.AddResults(results1);
             CollectionAssert.IsSubsetOf(results1, container1.MatchResults);
@@ -244,9 +244,9 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var container2 = new MsScanMatchResultContainer();
             var results2 = new[]
             {
-                new MsScanMatchResult { Source = SourceType.TextDB, TotalScore = 0.4f, },
-                new MsScanMatchResult { Source = SourceType.MspDB | SourceType.Manual, TotalScore = 0.3f, },
-                new MsScanMatchResult { Source = SourceType.MspDB, TotalScore = 0.6f, },
+                new MsScanMatchResult { Source = SourceType.TextDB, TotalScore = 0.4f, Priority = 2, },
+                new MsScanMatchResult { Source = SourceType.MspDB | SourceType.Manual, TotalScore = 0.3f, Priority = 1, },
+                new MsScanMatchResult { Source = SourceType.MspDB, TotalScore = 0.6f, Priority = 1, },
             };
             container2.AddResults(results2);
             CollectionAssert.IsSubsetOf(results2, container2.MatchResults);

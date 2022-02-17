@@ -81,6 +81,8 @@ namespace CompMs.Common.DataObj.Result {
         public bool IsLipidChainsMatch { get; set; }
         [Key(21)]
         public bool IsLipidPositionMatch { get; set; }
+        [Key(35)]
+        public bool IsLipidDoubleBondPositionMatch { get; set; }
         [Key(22)]
         public bool IsOtherLipidMatch { get; set; }
         [IgnoreMember]
@@ -99,6 +101,10 @@ namespace CompMs.Common.DataObj.Result {
         public bool IsDecoy { get; set; } = false;
         [Key(31)]
         public int Priority { get; set; } = -1;
+        [Key(33)]
+        public bool IsReferenceMatched { get; set; } = false;
+        [Key(34)]
+        public bool IsAnnotationSuggested { get; set; } = false;
 
         public MsScanMatchResult Clone() {
             return (MsScanMatchResult)MemberwiseClone();

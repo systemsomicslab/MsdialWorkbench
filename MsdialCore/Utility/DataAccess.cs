@@ -1026,7 +1026,8 @@ namespace CompMs.MsdialCore.Utility {
             if (spectra.Count == 0) return new List<SpectrumPeak>();
             if (type == ExportspectraType.profile) return spectra;
 
-            var centroidedSpectra = SpectralCentroiding.Centroid(spectra, 0.0);
+           // var centroidedSpectra = SpectralCentroiding.Centroid(spectra, 0.0);
+            var centroidedSpectra = SpectralCentroiding.CentroidByLocalMaximumMethod(spectra);
             if (centroidedSpectra != null && centroidedSpectra.Count != 0)
                 return centroidedSpectra;
             else
@@ -1057,7 +1058,8 @@ namespace CompMs.MsdialCore.Utility {
 
             if (spectra.Count == 0) return new List<SpectrumPeak>();
 
-            var centroidedSpectra = SpectralCentroiding.Centroid(spectra, amplitudeThresh);
+            //var centroidedSpectra = SpectralCentroiding.Centroid(spectra, amplitudeThresh);
+            var centroidedSpectra = SpectralCentroiding.CentroidByLocalMaximumMethod(spectra, absThreshold: amplitudeThresh);
 
             if (centroidedSpectra != null && centroidedSpectra.Count != 0)
                 return centroidedSpectra;
@@ -1112,7 +1114,8 @@ namespace CompMs.MsdialCore.Utility {
            ChromatogramPeakFeature driftSpot, ChromatogramPeakFeature peakSpot, ParameterBase param) {
             var massSpectrum = CalcAccumulatedMs2Spectra(spectrumList, peakSpot, driftSpot, param.CentroidMs1Tolerance);
             if (param.MS2DataType == MSDataType.Profile && massSpectrum.Count > 0) {
-                return SpectralCentroiding.Centroid(massSpectrum);
+                //return SpectralCentroiding.Centroid(massSpectrum);
+                return SpectralCentroiding.CentroidByLocalMaximumMethod(massSpectrum);
             }
             else {
                 return massSpectrum;

@@ -152,6 +152,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
             return mapper;
         }
 
+        public override void Run(ProcessOption option) {
+            throw new NotImplementedException("Not implemented!");
+        }
+
         public async Task RunAnnotationProcess(AnalysisFileBean analysisfile, Action<int> action) {
             await Task.Run(() => FileProcess.Run(analysisfile, providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true, reportAction: action));
         }

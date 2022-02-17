@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.StartUp;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -49,6 +50,24 @@ namespace CompMs.App.Msdial.Utility
             parameter.License = vm.License;
             parameter.CollisionEnergy = vm.CollisionEnergy;
             parameter.Comment = vm.Comment;
+        }
+
+        public static void SetParameterFromDatasetParameterSettingModel(ParameterBase parameter, DatasetParameterSettingModel model) {
+            parameter.ProjectFileName = model.DatasetFileName;
+            parameter.ProjectFolderPath = model.DatasetFolderPath;
+            parameter.Ionization = model.Ionization;
+            parameter.CollistionType = model.CollisionType;
+            parameter.AcquisitionType = model.AcquisitionType;
+            parameter.MSDataType = model.MS1DataType;
+            parameter.MS2DataType = model.MS2DataType;
+            parameter.IonMode = model.IonMode;
+            parameter.TargetOmics = model.TargetOmics;
+            parameter.InstrumentType = model.InstrumentType;
+            parameter.Instrument = model.Instrument;
+            parameter.Authors = model.Authors;
+            parameter.License = model.License;
+            parameter.CollisionEnergy = model.CollisionEnergy;
+            parameter.Comment = model.Comment;
         }
 
         public static void SetParameterFromAnalysisFiles(ParameterBase parameter, IList<AnalysisFileBean> files) {
