@@ -145,8 +145,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             if (result.IsOtherLipidMatch)
                 return;
+
+            if (obj == string.Empty) obj = reference.Name;
             result.Name = obj;
-      
         }
 
         private void ValidateOnEadLipidomics(
