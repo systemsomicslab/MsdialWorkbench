@@ -204,11 +204,7 @@ namespace CompMs.Common.Lipidomics
             var chainMass = acylChain.Mass - MassDiffDictionary.HydrogenMass;
             return new[]
             {
-<<<<<<< HEAD
-                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - H2O - CH2), 100d, "-CH2(Sn1)"),
-=======
-                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - MassDiffDictionary.OxygenMass - CH2), 100d, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
->>>>>>> origin/Yuto,Kurizaki
+                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - H2O - CH2), 100d, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
             };
         }
 
