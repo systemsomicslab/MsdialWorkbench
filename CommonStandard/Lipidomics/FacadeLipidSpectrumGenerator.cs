@@ -55,8 +55,10 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.PG, new PGSpectrumGenerator());
                     generator.Add(LbmClass.PI, new PISpectrumGenerator());
                     generator.Add(LbmClass.PS, new PSSpectrumGenerator());
+                    generator.Add(LbmClass.MG, new MGSpectrumGenerator());
                     generator.Add(LbmClass.DG, new DGSpectrumGenerator());
                     generator.Add(LbmClass.TG, new TGSpectrumGenerator());
+                    generator.Add(LbmClass.BMP, new BMPSpectrumGenerator());
                     @default = generator;
                 }
                 return @default;

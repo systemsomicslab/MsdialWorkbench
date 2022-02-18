@@ -92,7 +92,7 @@ namespace CompMs.Common.Lipidomics
         {
             return new MoleculeMsReference
             {
-                PrecursorMz = lipid.Mass + adduct.AdductIonAccurateMass,
+                PrecursorMz = adduct.ConvertToMz(lipid.Mass),
                 IonMode = adduct.IonMode,
                 Spectrum = spectrum,
                 Name = lipid.Name,
@@ -110,8 +110,8 @@ namespace CompMs.Common.Lipidomics
         {
             var spectrum = new List<SpectrumPeak>
             {
-                new SpectrumPeak(lipid.Mass + adduct.AdductIonAccurateMass, 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                //new SpectrumPeak((lipid.Mass + adduct.AdductIonAccurateMass)/2, 150d, "[Precursor]2+") { SpectrumComment = SpectrumComment.precursor },
+                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                //new SpectrumPeak((adduct.ConvertToMz(lipid.Mass))/2, 150d, "[Precursor]2+") { SpectrumComment = SpectrumComment.precursor },
             };
             if (adduct.AdductIonName == "[M+NH4]+")
             {
@@ -119,7 +119,7 @@ namespace CompMs.Common.Lipidomics
                 (
                      new[]
                      {
-                        new SpectrumPeak(lipid.Mass + adduct.AdductIonAccurateMass-H2O, 150d, "Precursor-H2O"),
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass)-H2O, 150d, "Precursor-H2O"),
                         new SpectrumPeak(lipid.Mass + MassDiffDictionary.ProtonMass, 150d, "[M+H]+"),
                         new SpectrumPeak(lipid.Mass + MassDiffDictionary.ProtonMass-H2O, 150d, "[M+H]+ -H2O"),
                      }
@@ -131,7 +131,7 @@ namespace CompMs.Common.Lipidomics
                 (
                      new[]
                      {
-                        new SpectrumPeak(lipid.Mass + adduct.AdductIonAccurateMass-H2O, 100d, "Precursor-H2O"),
+                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass)-H2O, 100d, "Precursor-H2O"),
                      }
                 );
             }
