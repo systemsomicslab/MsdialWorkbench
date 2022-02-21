@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -92,7 +93,11 @@ namespace CompMs.Common.Lipidomics {
                 var classions = ref_spectrum.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.metaboliteclass)).ToList();
                 var classionsDetected = EadMsCharacterizationUtility.CountDetectedIons(exp_spectrum, classions, tolerance);
                 var isClassIonExisted = false;
-                if (classionsDetected >= classIonCutoff) {
+
+                var classMustIons = classions.Where(n => n.IsAbsolutelyRequiredFragmentForAnnotation == true).ToList();
+                var isClassMustIonsExisted = IsDiagnosticFragmentsExist(exp_spectrum, classMustIons, tolerance);
+
+                if (isClassMustIonsExisted && classionsDetected >= classIonCutoff) {
                     isClassIonExisted = true;
                 }
                 result.ClassIonsDetected = classionsDetected;
@@ -144,6 +149,19 @@ namespace CompMs.Common.Lipidomics {
             return result;
         }
 
+        public static bool IsDiagnosticFragmentsExist(List<SpectrumPeak> spectrum, List<SpectrumPeak> refSpectrum, double mzTolerance) {
+            var isAllExisted = true;
+            if (refSpectrum.IsEmptyOrNull()) return true;
+            foreach (var refpeak in refSpectrum) {
+                if (!IsDiagnosticFragmentExist(spectrum, mzTolerance, refpeak.Mass, refpeak.Intensity * 0.01)) {
+                    isAllExisted = false;
+                    break;
+                }
+            }
+            return isAllExisted;
+        }
+
+
         public static bool IsDiagnosticFragmentExist(List<SpectrumPeak> spectrum, 
             double mzTolerance,
             double diagnosticMz, 
@@ -171,5 +189,6 @@ namespace CompMs.Common.Lipidomics {
             }
             return ionDetectedCounter;
         }
+
     }
 }
