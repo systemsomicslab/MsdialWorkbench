@@ -16,7 +16,12 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ExperimentSpectrumViewModel(ExperimentSpectrumModel model) {
             Model = model;
             RangeSelectableChromatogramViewModel = new RangeSelectableChromatogramViewModel(Model.RangeSelectableChromatogramModel);
-            Spectrums = Model.Spectrums.ToReadOnlyReactiveCollection(m => new SummarizedSpectrumViewModel(m)).AddTo(Disposables);
+            Ms1Spectrum = Model.ObserveProperty(m => m.Ms1Spectrum)
+                .Select(m => m is null ? null : new SummarizedSpectrumViewModel(m))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            Ms2Spectrums = Model.Ms2Spectrums.ToReadOnlyReactiveCollection(m => new SummarizedSpectrumViewModel(m)).AddTo(Disposables);
 
             AccumulateSpectrumCommand = new ReactiveCommand().AddTo(Disposables);
             AccumulateSpectrumCommand
@@ -37,7 +42,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public RangeSelectableChromatogramViewModel RangeSelectableChromatogramViewModel { get; }
 
-        public ReadOnlyReactiveCollection<SummarizedSpectrumViewModel> Spectrums { get; }
+        public ReadOnlyReactivePropertySlim<SummarizedSpectrumViewModel> Ms1Spectrum { get; }
+
+        public ReadOnlyReactiveCollection<SummarizedSpectrumViewModel> Ms2Spectrums { get; }
 
         public IAxisManager HorizontalAxis { get; }
         public IAxisManager VerticalAxis { get; }
