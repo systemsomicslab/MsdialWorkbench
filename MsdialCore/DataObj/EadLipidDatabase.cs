@@ -410,15 +410,52 @@ namespace CompMs.MsdialCore.DataObj
                 "ScanID INTEGER NOT NULL," +
                 "Mass REAL NOT NULL," +
                 "Intensity REAL NOT NULL," +
-                "Comment TEXT";
+                "Comment TEXT," +
+                "Resolution REAL," +
+                "Charge INTEGER," +
+                "IsotopeFrag INTEGER," +
+                "PeakQuality INTEGER," +
+                "PeakID INTEGER," +
+                "IsotopeParentPeakID INTEGER," +
+                "IsotopeWeightNumber INTEGER," +
+                "IsMatched INTEGER," +
+                "SpectrumComment INTEGER," +
+                "IsAbsolutelyRequiredFragmentForAnnotation INTEGER";
 
             public string ToSpectrumValues() {
-                return string.Join(",", Spectrum.Select((peak, i) => $"({i + SpectrumIdFrom},{ScanID},{peak.Mass},{peak.Intensity},'{peak.Comment}')"));
+                return string.Join(",", Spectrum.Select((peak, i) => $"(" +
+                $"{i + SpectrumIdFrom}," +
+                $"{ScanID}," +
+                $"{peak.Mass}," +
+                $"{peak.Intensity}," +
+                $"'{peak.Comment}'," +
+                $"{peak.Resolution}," +
+                $"{peak.Charge}," +
+                $"{Convert.ToInt32(peak.IsotopeFrag)}," +
+                $"{(int)peak.PeakQuality}," +
+                $"{peak.PeakID}," +
+                $"{peak.IsotopeParentPeakID}," +
+                $"{peak.IsotopeWeightNumber}," +
+                $"{Convert.ToInt32(peak.IsMatched)}," +
+                $"{(int)peak.SpectrumComment}," +
+                $"{peak.IsAbsolutelyRequiredFragmentForAnnotation})"));
             }
 
             public static IEnumerable<SpectrumPeak> ParseSpectrum(SQLiteDataReader reader) {
                 while (reader.Read()) {
-                    yield return new SpectrumPeak(reader.GetDouble(2), reader.GetDouble(3), reader.GetString(4));
+                    yield return new SpectrumPeak(reader.GetDouble(2), reader.GetDouble(3), reader.GetString(4))
+                    {
+                        Resolution = reader.GetDouble(5),
+                        Charge = reader.GetInt32(6),
+                        IsotopeFrag = reader.GetBoolean(7),
+                        PeakQuality = (PeakQuality)reader.GetInt32(8),
+                        PeakID = reader.GetInt32(9),
+                        IsotopeParentPeakID = reader.GetInt32(10),
+                        IsotopeWeightNumber = reader.GetInt32(11),
+                        IsMatched = reader.GetBoolean(12),
+                        SpectrumComment = (SpectrumComment)reader.GetInt32(13),
+                        IsAbsolutelyRequiredFragmentForAnnotation = reader.GetBoolean(14),
+                    };
                 }
             }
         }
