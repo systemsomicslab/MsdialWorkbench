@@ -1,4 +1,5 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.Common.Enum;
+using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
@@ -52,6 +53,8 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         protected abstract void LoadAlignmentFileCore(AlignmentFileBean alignmentFile);
+
+        public abstract void Run(ProcessOption option);
 
         private bool disposedValue;
         protected CompositeDisposable Disposables = new CompositeDisposable();

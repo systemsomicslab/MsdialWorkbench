@@ -28,8 +28,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 addedAnnotator,
                 removedAnnotator.Select(avm => AnnotatorViewModels.LastOrDefault()),
                 selectedDataBase.Where(dvm => !(dvm is null)).Select(dvm => AnnotatorViewModels.LastOrDefault(avm => avm.Model.DataBaseSettingModel == dvm.Model)),
-            }.Merge().StartWith((IAnnotatorSettingViewModel)null)
-            .ToReactiveProperty().AddTo(Disposables);
+            }.Merge()
+            .ToReactiveProperty((IAnnotatorSettingViewModel)null).AddTo(Disposables);
             AnnotatorViewModel.Subscribe(selectedAnnotator);
 
             var dataBaseFactory = new DataBaseSettingViewModelFactory(
@@ -45,8 +45,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 addedDataBase,
                 removedDataBase.Select(dvm => DataBaseViewModels.LastOrDefault()),
                 selectedAnnotator.Where(avm => !(avm is null)).Select(avm => DataBaseViewModels.FirstOrDefault(dvm => dvm.Model == avm.Model.DataBaseSettingModel)),
-            }.Merge().StartWith((DataBaseSettingViewModel)null)
-            .ToReactiveProperty().AddTo(Disposables);
+            }.Merge()
+            .ToReactiveProperty((DataBaseSettingViewModel)null).AddTo(Disposables);
             DataBaseViewModel.Subscribe(selectedDataBase);
 
             // DataBase errors
@@ -55,8 +55,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 addedDataBase.ToUnit(),
                 removedDataBase.ToUnit(),
                 DataBaseViewModels.ObserveElementObservableProperty(vm => vm.DataBaseID).ToUnit(),
-            }.Merge().StartWith(Unit.Default)
-            .Select(_ => DataBaseViewModels.Select(vm => vm.DataBaseID.Value).Distinct().Count() != DataBaseViewModels.Count);
+            }.Merge()
+            .Select(_ => DataBaseViewModels.Select(vm => vm.DataBaseID.Value).Distinct().Count() != DataBaseViewModels.Count)
+            .StartWith(false);
             dataBaseIDDuplicate.Subscribe(hasError => {
                 if (hasError) {
                     AddError(nameof(DataBaseViewModels), DataBaseIDDuplicateErrorMessage);
@@ -70,8 +71,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 addedDataBase.ToUnit(),
                 removedDataBase.ToUnit(),
                 DataBaseViewModels.ObserveElementObservableProperty(vm => vm.ObserveHasErrors).ToUnit(),
-            }.Merge().StartWith(Unit.Default)
-            .Select(_ => DataBaseViewModels.Any(vm => vm.ObserveHasErrors.Value));
+            }.Merge()
+            .Select(_ => DataBaseViewModels.Any(vm => vm.ObserveHasErrors.Value))
+            .StartWith(false);
             var dataBasesDoesnotHaveError = new[]
             {
                 dataBaseIDDuplicate,
@@ -119,7 +121,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .AddTo(Disposables);
 
             // Commands
-            var notifier = new BusyNotifier();
             AddDataBaseCommand = dataBasesDoesnotHaveError.ToReactiveCommand()
                 .WithSubscribe(() => this.model.AddDataBaseZZZ())
                 .AddTo(Disposables);
@@ -176,20 +177,22 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             .AddTo(Disposables);
 
             DataBaseViewModels.ToObservable()
+                .Zip(Observable.Interval(TimeSpan.FromMilliseconds(100)), (a, _) => a)
                 .Concat(addedDataBase)
                 .Where(vm => !(vm is null))
                 .SelectMany(vm => dataBasesDoesnotHaveError
                     .TakeUntil(removedDataBase.Where(x => x == vm))
                     .Where(x => x)
-                    .Where(_ => DataBaseViewModel.Value == vm)
+                    .Do(x => Console.WriteLine("DB does not have error: {0}", x))
                     .Where(_ => AnnotatorViewModels.All(avm => avm.Model.DataBaseSettingModel != vm.Model))
                     .Take(1)
                     .SelectMany(_ => Observable.Interval(TimeSpan.FromMilliseconds(100)))
-                    .Do(_ => this.model.AddAnnotatorZZZ(DataBaseViewModel.Value.Model))
+                    .Do(_ => this.model.AddAnnotatorZZZ(vm.Model))
                     .Retry(5)
                     .Take(1)
                     .Catch((Exception ex) => Observable.Empty<long>()))
-                .Subscribe();
+                .Subscribe()
+                .AddTo(Disposables);
         }
 
         private readonly IdentifySettingModel model;

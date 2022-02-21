@@ -34,9 +34,9 @@ namespace CompMs.Common.Lipidomics
 
             var peaks = new List<SpectrumPeak>();
             for (int i = 0; i < chain.CarbonCount - 1; i++) {
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{chain} C{i + 1}-H"));
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), abundance, $"{chain} C{i + 1}"));
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{chain} C{i + 1}+H"));
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{chain} C{i + 1}-H") { SpectrumComment = SpectrumComment.doublebond });
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), abundance, $"{chain} C{i + 1}") { SpectrumComment = SpectrumComment.doublebond });
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{chain} C{i + 1}+H") { SpectrumComment = SpectrumComment.doublebond });
             }
 
             return peaks;

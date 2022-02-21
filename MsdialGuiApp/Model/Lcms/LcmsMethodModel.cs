@@ -118,6 +118,39 @@ namespace CompMs.App.Msdial.Model.Lcms
             .AddTo(Disposables);
         }
 
+        public override void Run(ProcessOption option) {
+            // Set analysis param
+            var parameter = Storage.MsdialLcmsParameter;
+            if (parameter.TargetOmics == TargetOmics.Proteomics) {
+                annotationProcess = BuildProteoMetabolomicsAnnotationProcess(Storage.DataBases, parameter);
+            }
+            else if(parameter.TargetOmics == TargetOmics.Lipidomics && parameter.CollistionType == CollisionType.EAD) {
+                annotationProcess = BuildEadLipidomicsAnnotationProcess(Storage.DataBases, parameter);
+            }
+            else {
+                annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
+            }
+
+            var processOption = option;
+            // Run Identification
+            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
+                if (!ProcessAnnotaion(null, Storage))
+                    return;
+            }
+
+            // Run second process
+            if (parameter.TargetOmics == TargetOmics.Proteomics) {
+                if (!ProcessSeccondAnnotaion4ShotgunProteomics(null, Storage))
+                    return;
+            } 
+
+            // Run Alignment
+            if (processOption.HasFlag(ProcessOption.Alignment)) {
+                if (!ProcessAlignment(null, Storage))
+                    return;
+            }
+        }
+
         public bool ProcessSetAnalysisParameter(Window owner) {
             var parameter = Storage.MsdialLcmsParameter;
             var analysisParamSetModel = new LcmsAnalysisParameterSetModel(parameter, AnalysisFiles, Storage.DataBases);
@@ -167,7 +200,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             else {
                 annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
             }
-            Storage.DataBaseMapper = CreateDataBaseMapper(Storage.DataBases);
+            Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             return true;
         }
@@ -210,27 +243,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 lipidContainerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(null, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<IAnnotationQuery>, annotator.ConvertToAnnotatorContainer())));
             }
             return new EadLipidomicsAnnotationProcess<IAnnotationQuery>(containerPairs, lipidContainerPairs);
-        }
-
-        private DataBaseMapper CreateDataBaseMapper(DataBaseStorage storage) {
-            var mapper = new DataBaseMapper();
-            foreach (var db in storage.MetabolomicsDataBases) {
-                foreach (var pair in db.Pairs) {
-                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
-                }
-            }
-            foreach (var db in storage.ProteomicsDataBases) {
-                foreach (var pair in db.Pairs) {
-                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
-                }
-            }
-            foreach (var db in storage.EadLipidomicsDatabases) {
-                foreach (var pair in db.Pairs) {
-                    mapper.Add(pair.SerializableAnnotator);
-                }
-            }
-
-            return mapper;
         }
 
         public bool ProcessAnnotaion(Window owner, MsdialLcmsDataStorage storage) {

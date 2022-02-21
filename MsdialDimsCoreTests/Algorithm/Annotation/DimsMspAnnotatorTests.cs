@@ -78,7 +78,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
                 Ms2Tolerance = 0.05f,
                 TotalScoreCutoff = 0,
             };
-            var annotator = new DimsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new DimsMspAnnotator(new MoleculeDataBase(db, "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Metabolomics, "MspDB", -1);
 
             var target = new ChromatogramPeakFeature { PrecursorMz = 100 };
             var results = annotator.FindCandidates(BuildQuery(target, annotator));
@@ -300,14 +300,13 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var annotator = new DimsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, },
             };
 
             var actuals = annotator.FilterByThreshold(results);
-            CollectionAssert.AreEquivalent(new[] { results[2], results[3], }, actuals);
+            CollectionAssert.AreEquivalent(new[] { results[1], results[2], }, actuals);
         }
 
         [TestMethod()]
@@ -316,46 +315,43 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation.Tests
             var annotator = new DimsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, },
             };
 
             var actuals = annotator.SelectReferenceMatchResults(results);
-            CollectionAssert.AreEquivalent(new[] { results[3], }, actuals);
+            CollectionAssert.AreEquivalent(new[] { results[2], }, actuals);
         }
 
         [TestMethod()]
         public void IsReferenceMatchTest() {
             var parameter = new MsRefSearchParameterBase();
-            var annotator = new DimsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new DimsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Metabolomics, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, },
             };
 
             var actuals = results.Select(result => annotator.IsReferenceMatched(result)).ToList();
-            CollectionAssert.AreEqual(new[] { false, false, false, true, }, actuals);
+            CollectionAssert.AreEqual(new[] { false, false, true, }, actuals);
         }
 
         [TestMethod()]
         public void IsSuggestedTest() {
             var parameter = new MsRefSearchParameterBase();
-            var annotator = new DimsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Lipidomics, "MspDB", -1);
+            var annotator = new DimsMspAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "MspDB", DataBaseSource.Msp, SourceType.MspDB), parameter, TargetOmics.Metabolomics, "MspDB", -1);
             var results = new List<MsScanMatchResult>
             {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, },
             };
 
             var actuals = results.Select(result => annotator.IsAnnotationSuggested(result)).ToList();
-            CollectionAssert.AreEqual(new[] { false, false, true, false, }, actuals);
+            CollectionAssert.AreEqual(new[] { false, true, false, }, actuals);
         }
 
         private AnnotationQuery BuildQuery(ChromatogramPeakFeature target, DimsMspAnnotator annotator) {

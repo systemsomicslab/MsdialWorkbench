@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="CompMs.App.Msdial.View.Setting.DatasetSettingView"
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Setting.DatasetParameterSettingView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -13,20 +13,24 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <converter:BooleanToEnumConverter x:Key="BooleanToEnum"/>
         </ResourceDictionary>
     </UserControl.Resources>
+    <UserControl.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.Open"
+                        Executed="Open_Executed"/>
+    </UserControl.CommandBindings>
 
     <StackPanel>
         <ui:ExecutableBar Label="Raw measurement folder:"
                           LabelWidth="160"
                           ButtonContent="Browse"
                           ButtonWidth="64"
-                          Command="{Binding ProjectFolderSelectCommand}"
+                          Command="ApplicationCommands.Open"
                           ToolTip="Select a folder which should be the same as the directory includeing measurement files.">
-            <TextBox Style="{StaticResource ToolTipErrorStyle}"
+            <TextBox x:Name="TextBox_ProjectFolderPath"
+                     Style="{StaticResource ToolTipErrorStyle}"
                      d:Text="/measurement/folder/path"
-                     Text="{Binding Path=ProjectFilePath, UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Path=ProjectFilePath}"
                      VerticalContentAlignment="Center" Margin="8,0"/>
         </ui:ExecutableBar>
 
@@ -35,13 +39,13 @@
                 <RadioButton Name="RadioButton_ESI"
                              Content="Soft ionization (LC/MS, LC/MS/MS, or precursor-oriented GC/MS/MS)"
                              d:IsChecked="True"
-                             IsChecked="{Binding Ionization, Converter={StaticResource BooleanToEnum}, ConverterParameter=ESI, Mode=TwoWay}"
+                             IsChecked="{Binding Ionization, Converter={StaticResource EnumToBoolean}, ConverterParameter=ESI, Mode=TwoWay}"
                              Margin="8,0,0,0"
                              ToolTip="Type 1: When you analyze an ESI type data like LC/MS or LS/MS/MS, select this option."
                              Grid.Row="0"/>
                 <RadioButton Name="RadioButton_EI"
                              Content="Hard ionization (GC/MS)"
-                             IsChecked="{Binding Ionization, Converter={StaticResource BooleanToEnum}, ConverterParameter=EI, Mode=TwoWay}"
+                             IsChecked="{Binding Ionization, Converter={StaticResource EnumToBoolean}, ConverterParameter=EI, Mode=TwoWay}"
                              Margin="8,8,0,0"
                              ToolTip="Type 2: When you analyze an EI type data like GC/MS, select this option."
                              Grid.Row="1"/>
@@ -89,7 +93,7 @@
             <StackPanel>
                 <RadioButton Name="RadioButton_DataDependentMSMS" 
                              Content="Conventional LC/MS or data dependent MS/MS" 
-                             IsChecked="{Binding AcquisitionType, Converter={StaticResource BooleanToEnum}, ConverterParameter=DDA}"
+                             IsChecked="{Binding AcquisitionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=DDA}"
                              d:IsChecked="True"
                              Margin="8,0,0,0"
                              ToolTip="Type 1: When you analyze a data set from data dependent MS/MS, select this option."
@@ -112,7 +116,7 @@
                     </Grid.ColumnDefinitions>
                     <RadioButton Name="RadioButton_DataIndependentMSMS_SWATH" 
                                  Content="SWATH-MS or conventional All-ions method" 
-                                 IsChecked="{Binding AcquisitionType, Converter={StaticResource BooleanToEnum}, ConverterParameter=SWATH}"
+                                 IsChecked="{Binding AcquisitionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=SWATH}"
                                  Margin="8,0,0,0"
                                  Grid.Column="0">
                         <ToolTipService.ToolTip>
@@ -130,7 +134,7 @@
 
                     <RadioButton x:Name="RadioButton_DataIndependentMSMS_AIF"
                                  Content="All-ions with multiple CEs (cycled like 0V-10V-40V)"
-                                 IsChecked="{Binding AcquisitionType, Converter={StaticResource BooleanToEnum}, ConverterParameter=AIF}"
+                                 IsChecked="{Binding AcquisitionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=AIF}"
                                  Margin="8,0,0,0"
                                  Grid.Column="1">
                         <ToolTipService.ToolTip>
@@ -147,7 +151,7 @@
 
                 <RadioButton Name="RadioButton_DataIndependentMSMS" 
                              Content="Data independent MS/MS" 
-                             IsChecked="{Binding AcquisitionType, Converter={StaticResource BooleanToEnum}, ConverterParameter=SWATH}"
+                             IsChecked="{Binding AcquisitionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=SWATH}"
                              Visibility="{Binding IsChecked, ElementName=RadioButton_Separation_LCIM, Converter={StaticResource boolean2visibility}}"
                              d:Visibility="Visible"
                              Margin="8,8,0,0"
@@ -167,9 +171,9 @@
                   Grid.Row="4">
             <UniformGrid Columns="2">
                 <RadioButton Content="CID, HCD"
-                             IsChecked="{Binding CollisionType, Converter={StaticResource BooleanToEnum}, ConverterParameter=HCD}"/>
+                             IsChecked="{Binding CollisionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=HCD}"/>
                 <RadioButton Content="EAD"
-                             IsChecked="{Binding CollisionType, Converter={StaticResource BooleanToEnum}, ConverterParameter=EAD}"/>
+                             IsChecked="{Binding CollisionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=EAD}"/>
             </UniformGrid>
         </GroupBox>
 
@@ -186,7 +190,7 @@
                 <StackPanel>
                     <RadioButton Name="RadioButton_ProfileMode"
                                  Content="Profile data"
-                                 IsChecked="{Binding MS1DataType, Converter={StaticResource BooleanToEnum}, ConverterParameter=Profile}"
+                                 IsChecked="{Binding MS1DataType, Converter={StaticResource EnumToBoolean}, ConverterParameter=Profile}"
                                  Margin="8,0,0,0">
                         <ToolTipService.ToolTip>
                             <TextBlock>
@@ -206,7 +210,7 @@
 
                     <RadioButton Name="RadioButton_CentroidMode"
                                  Content="Centroid data"
-                                 IsChecked="{Binding MS1DataType, Converter={StaticResource BooleanToEnum}, ConverterParameter=Centroid}"
+                                 IsChecked="{Binding MS1DataType, Converter={StaticResource EnumToBoolean}, ConverterParameter=Centroid}"
                                  d:IsChecked="True"
                                  Margin="8,8,0,0">
                         <ToolTipService.ToolTip>
@@ -235,7 +239,7 @@
                 <StackPanel>
                     <RadioButton Name="RadioButton_ProfileModeMS2"
                                  Content="Profile data"
-                                 IsChecked="{Binding MS2DataType, Converter={StaticResource BooleanToEnum}, ConverterParameter=Profile}"
+                                 IsChecked="{Binding MS2DataType, Converter={StaticResource EnumToBoolean}, ConverterParameter=Profile}"
                                  Margin="8,0,0,0">
                         <ToolTipService.ToolTip>
                             <TextBlock>
@@ -248,7 +252,7 @@
 
                     <RadioButton Name="RadioButton_CentroidModeMS2"
                                  Content="Centroid data"
-                                 IsChecked="{Binding MS2DataType, Converter={StaticResource BooleanToEnum}, ConverterParameter=Centroid}"
+                                 IsChecked="{Binding MS2DataType, Converter={StaticResource EnumToBoolean}, ConverterParameter=Centroid}"
                                  d:IsChecked="True"
                                  Margin="8,8,0,0">
                         <ToolTipService.ToolTip>
@@ -276,13 +280,13 @@
                 <StackPanel>
                     <RadioButton Name="RadioButton_PositiveMode"
                                  Content="Positive ion mode"
-                                 IsChecked="{Binding IonMode, Converter={StaticResource BooleanToEnum}, ConverterParameter=Positive}"
+                                 IsChecked="{Binding IonMode, Converter={StaticResource EnumToBoolean}, ConverterParameter=Positive}"
                                  d:IsChecked="True"
                                  Margin="8,0,0,0"
                                  ToolTip="Necessary for adduct ion setting"/>
                     <RadioButton Name="RadioButton_NegativeMode"
                                  Content="Negative ion mode"
-                                 IsChecked="{Binding IonMode, Converter={StaticResource BooleanToEnum}, ConverterParameter=Negative}"
+                                 IsChecked="{Binding IonMode, Converter={StaticResource EnumToBoolean}, ConverterParameter=Negative}"
                                  Margin="8,8,0,0"
                                  ToolTip="Necessary for adduct ion setting"/>
                 </StackPanel>
@@ -295,7 +299,7 @@
                 <StackPanel>
                     <RadioButton Name="RadioButton_Metabolomics"
                                  Content="Metabolomics"
-                                 IsChecked="{Binding TargetOmics, Converter={StaticResource BooleanToEnum}, ConverterParameter=Metabolomics}"
+                                 IsChecked="{Binding TargetOmics, Converter={StaticResource EnumToBoolean}, ConverterParameter=Metabolomics}"
                                  Margin="8,0,0,0">
                         <ToolTipService.ToolTip>
                             <TextBlock>
@@ -307,13 +311,13 @@
                     <RadioButton Name="RadioButton_Lipidomics"
                                  Content="Lipidomics"
                                  d:IsChecked="True"
-                                 IsChecked="{Binding TargetOmics, Converter={StaticResource BooleanToEnum}, ConverterParameter=Lipidomics}"
+                                 IsChecked="{Binding TargetOmics, Converter={StaticResource EnumToBoolean}, ConverterParameter=Lipidomics}"
                                  IsEnabled="{Binding IsChecked, ElementName=RadioButton_ESI}"
                                  Margin="8,8,0,0"
                                  ToolTip="The analysis procedure is optimized for lipidomics."/>
                     <RadioButton Name="RadioButton_Proteomics"
                                  Content="Proteomics"
-                                 IsChecked="{Binding TargetOmics, Converter={StaticResource BooleanToEnum}, ConverterParameter=Proteomics}"
+                                 IsChecked="{Binding TargetOmics, Converter={StaticResource EnumToBoolean}, ConverterParameter=Proteomics}"
                                  IsEnabled="{Binding IsChecked, ElementName=RadioButton_ESI}"
                                  Margin="8,8,0,0"
                                  ToolTip="The analysis procedure is optimized for proteomics."/>

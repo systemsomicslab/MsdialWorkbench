@@ -31,6 +31,15 @@
                     <chart:LineSpectrumControl.LinePen>
                         <Pen Brush="Black" Thickness="1.5" PresentationOptions:Freeze="True"/>
                     </chart:LineSpectrumControl.LinePen>
+                    <chart:LineSpectrumControl.ToolTip>
+                        <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding FocusedItem.Mass, StringFormat=m/z: {0}}"/>
+                                <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0}}"/>
+                                <TextBlock Text="{Binding FocusedItem.Comment, StringFormat=Comment: {0}}"/>
+                            </StackPanel>
+                        </ToolTip>
+                    </chart:LineSpectrumControl.ToolTip>
                 </chart:LineSpectrumControl>
                 <chart:Annotator ItemsSource="{Binding Spectrums}"
                                 HorizontalPropertyName="{Binding HorizontalProperty, Mode=OneTime}"

@@ -15,12 +15,13 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 {
     public class MsReferenceScorer : IReferenceScorer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
     {
-        public MsReferenceScorer(string id, int priority, TargetOmics omics, SourceType source, CollisionType collisionType) {
+        public MsReferenceScorer(string id, int priority, TargetOmics omics, SourceType source, CollisionType collisionType, bool useMs2) {
             this.id = id;
             this.priority = priority;
             this.omics = omics;
             this.source = source;
             this.collisionType = collisionType;
+            this.useMs2 = useMs2;
         }
 
         private readonly string id;
@@ -28,6 +29,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private readonly TargetOmics omics;
         private readonly SourceType source;
         private readonly CollisionType collisionType;
+        private readonly bool useMs2;
 
         public MsScanMatchResult Score(IAnnotationQuery query, MoleculeMsReference reference) {
             return CalculateScore(query.Property, query.NormalizedScan, query.Isotopes, reference, reference.IsotopicPeaks, query.Parameter);
@@ -38,7 +40,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var simpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var reverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var matchedPeaksScores = omics == TargetOmics.Lipidomics
-                ? MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd)
+                ? this.collisionType == CollisionType.EAD 
+                ? MsScanMatching.GetEadBasedLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd)
+                : MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd)
                 : MsScanMatching.GetMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
 
             var ms1Tol = MolecularFormulaUtility.CalculateMassToleranceBasedOn500Da(parameter.Ms1Tolerance, property.PrecursorMz);
@@ -101,12 +105,20 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             ValidateBase(result, property, reference, parameter);
             if (omics == TargetOmics.Lipidomics) {
                 if (collisionType == CollisionType.EAD) {
-                    ValidateOnEadLipidomics(result, reference);
+                    ValidateOnEadLipidomics(result, scan, reference, parameter);
                 }
                 else {
                     ValidateOnLipidomics(result, scan, reference, parameter);
                 }
             }
+            result.IsReferenceMatched = result.IsPrecursorMzMatch
+                && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch)
+                && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch)
+                && (!useMs2 || result.IsSpectrumMatch);
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch
+                && (!parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch)
+                && (!parameter.IsUseCcsForAnnotationScoring || result.IsCcsMatch)
+                && !result.IsReferenceMatched;
         }
 
         private void ValidateBase(MsScanMatchResult result, IMSIonProperty property, MoleculeMsReference reference, MsRefSearchParameterBase parameter) {
@@ -134,7 +146,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             MoleculeMsReference reference,
             MsRefSearchParameterBase parameter) {
 
-            var obj = MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, parameter.Ms2Tolerance, out var isLipidClassMatch, out var isLipidChainsMatch, out var isLipidPositionMatch, out var isOtherLipidMatch);
+            var name = MsScanMatching.GetRefinedLipidAnnotationLevel(scan, reference, parameter.Ms2Tolerance, out var isLipidClassMatch, out var isLipidChainsMatch, out var isLipidPositionMatch, out var isOtherLipidMatch);
             result.IsLipidChainsMatch = isLipidChainsMatch;
             result.IsLipidClassMatch = isLipidClassMatch;
             result.IsLipidPositionMatch = isLipidPositionMatch;
@@ -143,26 +155,24 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             if (result.IsOtherLipidMatch)
                 return;
-            result.Name = obj;
-            //var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(reference);
-            //if (molecule == null || molecule.SublevelLipidName == null || molecule.LipidName == null) {
-            //    result.Name = reference.Name; // for others and splash etc in compoundclass
-            //}
-            //else if (molecule.SublevelLipidName == molecule.LipidName) {
-            //    result.Name = molecule.LipidName;
-            //}
-            //else {
-            //    result.Name = $"{molecule.SublevelLipidName}|{molecule.LipidName}";
-            //}
+            result.Name = string.IsNullOrEmpty(name) ? reference.Name : name;
         }
 
-        private void ValidateOnEadLipidomics(MsScanMatchResult result, MoleculeMsReference reference) {
+        private void ValidateOnEadLipidomics(
+            MsScanMatchResult result, 
+            IMSScanProperty scan,
+            MoleculeMsReference reference,
+            MsRefSearchParameterBase parameter) {
 
-            var lipid = FacadeLipidParser.Default.Parse(reference.Name);
+            (var lipid, _) = MsScanMatching.GetEadBasedLipidMoleculeAnnotationResult(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            if (lipid is null) {
+                lipid = FacadeLipidParser.Default.Parse(reference.Name);
+            }
             result.Name = lipid.Name;
-            result.IsLipidClassMatch = lipid.AnnotationLevel >= 1;
-            result.IsLipidChainsMatch = lipid is SeparatedChains sepLipid && sepLipid.Chains.All(chain => chain.DoubleBond.UnDecidedCount == 0 && chain.Oxidized.UnDecidedCount == 0);
-            result.IsLipidPositionMatch = lipid is PositionLevelChains;
+            result.IsLipidClassMatch = lipid.Description.HasFlag(LipidDescription.Class);
+            result.IsLipidChainsMatch = lipid.Description.HasFlag(LipidDescription.Chain);
+            result.IsLipidPositionMatch = lipid.Description.HasFlag(LipidDescription.SnPosition);
+            result.IsLipidDoubleBondPositionMatch = lipid.Description.HasFlag(LipidDescription.DoubleBondPosition);
             result.IsOtherLipidMatch = false;
             result.IsSpectrumMatch &= result.IsLipidChainsMatch | result.IsLipidClassMatch | result.IsLipidPositionMatch | result.IsOtherLipidMatch;
         }

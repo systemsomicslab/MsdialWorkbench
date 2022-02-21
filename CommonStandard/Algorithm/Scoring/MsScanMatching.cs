@@ -29,12 +29,29 @@ namespace CompMs.Common.Algorithm.Scoring {
             return true;
         }
 
+        public static double[] GetEadBasedLipidomicsMatchedPeaksScores(IMSScanProperty scan, MoleculeMsReference reference, 
+            float tolerance, float mzBegin, float mzEnd) {
+
+            var returnedObj = GetEadBasedLipidMoleculeAnnotationResult(scan, reference, tolerance, mzBegin, mzEnd);
+            return returnedObj.Item2;
+        }
+
+        public static (ILipid, double[]) GetEadBasedLipidMoleculeAnnotationResult(IMSScanProperty scan, MoleculeMsReference reference,
+            float tolerance, float mzBegin, float mzEnd) {
+            var lipid = FacadeLipidParser.Default.Parse(reference.Name);
+            switch (lipid.LipidClass) {
+                case LbmClass.PC:
+                    return PCEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                default: return (null, new double[2] { 0.0, 0.0 });
+            }
+        }
+
         //public static MsScanMatchResult CompareIMMS2ScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec, 
         //    MsRefSearchParameterBase param, double scanCCS, List<IsotopicPeak> scanIsotopes = null, List<IsotopicPeak> refIsotopes = null) {
         //    var result = CompareMS2ScanProperties(scanProp, refSpec, param, scanIsotopes, refIsotopes);
         //    var isCcsMatch = false;
         //    var ccsSimilarity = GetGaussianSimilarity(scanCCS, refSpec.CollisionCrossSection, param.CcsTolerance, out isCcsMatch);
-            
+
         //    result.CcsSimilarity = (float)ccsSimilarity;
         //    result.IsCcsMatch = isCcsMatch;
 
@@ -43,13 +60,13 @@ namespace CompMs.Common.Algorithm.Scoring {
         //    return result;
         //}
 
-      
+
         //public static MsScanMatchResult CompareIMMS2LipidomicsScanProperties(IMSScanProperty scanProp, MoleculeMsReference refSpec,
         //    MsRefSearchParameterBase param, double scanCCS, List<IsotopicPeak> scanIsotopes = null, List<IsotopicPeak> refIsotopes = null) {
         //    var result = CompareMS2LipidomicsScanProperties(scanProp, refSpec, param, scanIsotopes, refIsotopes);
         //    var isCcsMatch = false;
         //    var ccsSimilarity = GetGaussianSimilarity(scanCCS, refSpec.CollisionCrossSection, param.CcsTolerance, out isCcsMatch);
-            
+
         //    result.CcsSimilarity = (float)ccsSimilarity;
         //    result.IsCcsMatch = isCcsMatch;
 
@@ -359,6 +376,13 @@ namespace CompMs.Common.Algorithm.Scoring {
             var peaks1 = prop1.Spectrum;
             var peaks2 = prop2.Spectrum;
 
+            return GetMatchedPeaksScores(peaks1, peaks2, bin, massBegin, massEnd);
+        }
+
+        public static double[] GetMatchedPeaksScores(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin,
+            double massBegin, double massEnd) {
+            if (!IsComparedAvailable(peaks1, peaks2)) return new double[2] { -1, -1 };
+
             double sumM = 0, sumL = 0;
             double minMz = peaks2[0].Mass;
             double maxMz = peaks2[peaks2.Count - 1].Mass;
@@ -408,6 +432,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             else
                 return new double[2] { (double)counter / (double)libCounter, libCounter };
         }
+
 
         /// <summary>
         /// please set the 'mached spectral peaks' list obtained from the method of GetMachedSpectralPeaks where isMatched property is set to each spectrum peak obj
@@ -548,7 +573,6 @@ namespace CompMs.Common.Algorithm.Scoring {
             if (comment != "SPLASH" && compClass != "Unknown" && compClass != "Others") {
                 var molecule = LipidomicsConverter.ConvertMsdialLipidnameToLipidMoleculeObjectVS2(molMsRef);
                 if (molecule == null || molecule.Adduct == null) return resultArray;
-                //if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3) return resultArray;
                 if (molecule.LipidClass == LbmClass.EtherPE && molMsRef.Spectrum.Count == 3 && msScanProp.IonMode == IonMode.Positive) return resultArray;
 
                 var result = GetLipidMoleculeAnnotationResult(msScanProp, molecule, bin);
@@ -667,7 +691,6 @@ namespace CompMs.Common.Algorithm.Scoring {
             var sn1Carbon = molecule.Sn1CarbonCount;
             var sn1DbBond = molecule.Sn1DoubleBondCount;
             var sn1Oxidized = molecule.Sn1Oxidizedount;
-
             var sn2Oxidized = molecule.Sn2Oxidizedount;
 
             // Console.WriteLine(molecule.LipidName);

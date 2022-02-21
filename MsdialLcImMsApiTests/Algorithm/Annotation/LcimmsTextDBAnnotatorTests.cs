@@ -559,26 +559,22 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             };
             var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult> {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = true, },
             };
 
             var actuals = annotator.FilterByThreshold(results);
-            CollectionAssert.AreEquivalent(new[] { results[11], results[15] }, actuals);
+            CollectionAssert.AreEquivalent(new[] { results[4], results[5], results[6], results[7], results[8], results[9], results[10], results[11], }, actuals);
         }
 
         [TestMethod()]
@@ -590,26 +586,22 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             };
             var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult> {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = true, },
             };
 
             var actuals = annotator.FilterByThreshold(results);
-            CollectionAssert.AreEquivalent(new[] { results[8], results[9], results[10], results[11], results[12], results[13], results[14], results[15] }, actuals);
+            CollectionAssert.AreEquivalent(new[] { results[4], results[5], results[6], results[7], results[8], results[9], results[10], results[11], }, actuals);
         }
 
         [TestMethod()]
@@ -621,26 +613,22 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             };
             var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult> {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = true, },
             };
 
             var actuals = annotator.SelectReferenceMatchResults(results);
-            CollectionAssert.AreEquivalent(new[] { results[11], results[15] }, actuals);
+            CollectionAssert.AreEquivalent(new[] { results[8], results[9], results[10], results[11], }, actuals);
         }
 
         [TestMethod()]
@@ -652,28 +640,23 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             };
             var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult> {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = true, },
             };
 
             var actuals = annotator.SelectReferenceMatchResults(results);
             CollectionAssert.AreEquivalent(new[] {
                 results[8], results[9], results[10], results[11],
-                results[12], results[13], results[14], results[15]
             }, actuals);
         }
 
@@ -686,22 +669,18 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             };
             var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult> {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = true, },
             };
 
             var actuals = results.Select(result => annotator.IsReferenceMatched(result)).ToList();
@@ -709,8 +688,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 new[] {
                     false, false, false, false,
                     false, false, false, false,
-                    false, false, false, true,
-                    false, false, false, true,
+                    true,  true,  true,  true,
                 },
                 actuals);
         }
@@ -724,22 +702,18 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             };
             var annotator = new LcimmsTextDBAnnotator(new MoleculeDataBase(Enumerable.Empty<MoleculeMsReference>(), "TextDB", DataBaseSource.Text, SourceType.TextDB), parameter, "TextDB", -1);
             var results = new List<MsScanMatchResult> {
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = false, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = false, IsRtMatch = true, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = false, IsCcsMatch = true, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = false, },
-                new MsScanMatchResult { IsPrecursorMzMatch = true, IsSpectrumMatch = true, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = false, IsAnnotationSuggested = true, IsRtMatch = true, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = false, IsCcsMatch = true, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = false, },
+                new MsScanMatchResult { IsReferenceMatched = true, IsAnnotationSuggested = false, IsRtMatch = true, IsCcsMatch = true, },
             };
 
             var actuals = results.Select(result => annotator.IsReferenceMatched(result)).ToList();
@@ -747,7 +721,6 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 new[] {
                     false, false, false, false,
                     false, false, false, false,
-                    true, true, true, true,
                     true, true, true, true,
                 },
                 actuals);

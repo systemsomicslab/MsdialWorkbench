@@ -33,7 +33,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             ReferObject = reference;
 
             OriginalOrderedDecoyPeptideMsRef = reference.DecoyPeptideMsRef;
-            evaluator = MsScanMatchResultEvaluator.CreateEvaluatorWithSpectrum(msrefSearchParameter);
+            evaluator = MsScanMatchResultEvaluator.CreateEvaluator(msrefSearchParameter);
         }
 
 
@@ -159,6 +159,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             var parameter = query.MsRefSearchParameter ?? MsRefSearchParameter;
             var proteomicsParam = query.ProteomicsParameter ?? ProteomicsParameter;
             ValidateCore(result, query.Property, query.Scan, query.IonFeature, reference, parameter, proteomicsParam);
+            result.IsReferenceMatched = result.IsPrecursorMzMatch && (!query.Parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && result.IsSpectrumMatch;
+            result.IsAnnotationSuggested = result.IsPrecursorMzMatch && (!query.Parameter.IsUseTimeForAnnotationScoring || result.IsRtMatch) && !result.IsReferenceMatched;
         }
 
         private static void ValidateCore(

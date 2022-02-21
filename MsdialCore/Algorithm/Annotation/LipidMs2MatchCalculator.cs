@@ -1,7 +1,6 @@
 ﻿using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using System;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
@@ -23,7 +22,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 return LipidMs2MatchResult.Empty;
             }
 
-            MsScanMatching.GetRefinedLipidAnnotationLevel(
+            var name = MsScanMatching.GetRefinedLipidAnnotationLevel(
                 scan, reference, query.Ms2Tolerance,
                 out var isLipidClassMatch, out var isLipidChainsMatch, out var isLipidPositionMatch, out var isOtherLipidMatch);
 
@@ -35,15 +34,16 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 && matchedPeaksScores[1] >= query.MinimumSpectrumMatch
                 && (isLipidClassMatch || isLipidChainsMatch || isLipidPositionMatch || isOtherLipidMatch);
             return new LipidMs2MatchResult(
+                name,
                 weightedDotProduct, simpleDotProduct, reverseDotProduct,
                 matchedPeaksScores[0], (int)matchedPeaksScores[1],
-                isSpectrumMatch,
-                isLipidClassMatch, isLipidChainsMatch, isLipidPositionMatch, isOtherLipidMatch);
+                isSpectrumMatch, isLipidClassMatch, isLipidChainsMatch, isLipidPositionMatch, isOtherLipidMatch);
         }
     }
 
     public interface ILipidMatchResult : IMatchResult
     {
+        string Name { get; }
         bool IsLipidClassMatch { get; }
         bool IsLipidChainsMatch { get; }
         bool IsLipidPositionMatch { get; }
@@ -53,10 +53,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     public sealed class LipidMs2MatchResult : Ms2MatchResult, ILipidMatchResult
     {
         public LipidMs2MatchResult(
+            string name,
             double weightedDotProduct, double simpleDotProduct, double reverseDotProduct,
             double matchedPeaksPercentage, int matchedPeaksCount,
-            bool isSpectrumMatch,
-            bool isLipidClassMatch, bool isLipidChainsMatch, bool isLipidPositionMatch, bool isOtherLipidMatch)
+            bool isSpectrumMatch, bool isLipidClassMatch, bool isLipidChainsMatch, bool isLipidPositionMatch, bool isOtherLipidMatch)
             : base(weightedDotProduct, simpleDotProduct, reverseDotProduct, matchedPeaksPercentage, matchedPeaksCount, isSpectrumMatch) {
             IsLipidClassMatch = isLipidClassMatch;
             IsLipidChainsMatch = isLipidChainsMatch;
@@ -64,6 +64,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             IsOtherLipidMatch = isOtherLipidMatch;
         }
 
+        public string Name { get; }
         public bool IsLipidClassMatch { get; }
         public bool IsLipidChainsMatch { get; }
         public bool IsLipidPositionMatch { get; }
@@ -82,7 +83,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         public static LipidMs2MatchResult Empty =>
-            empty ?? (empty = new LipidMs2MatchResult(0, 0, 0, 0, 0, false, false, false, false, false));
+            empty ?? (empty = new LipidMs2MatchResult(string.Empty, 0, 0, 0, 0, 0, false, false, false, false, false));
         private static LipidMs2MatchResult empty;
     }
 }

@@ -209,7 +209,7 @@
                     <ui:LabeledContent PrependLabel="Keep 'suggested (w/o MS2)' metabolite features: ">
                         <CheckBox HorizontalAlignment="Left"
                                   IsEnabled="{Binding Path=Param.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange}"
-                                  IsChecked="{Binding Path=Param.IsKeepRefMatchedMetaboliteFeatures}"
+                                  IsChecked="{Binding Path=Param.IsKeepSuggestedMetaboliteFeatures}"
                                   Height="25">
                             <ToolTipService.ToolTip>
                                 <TextBlock>

@@ -26,7 +26,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
             RangeSelectableChromatogramModel = model;
             this.provider = provider;
-            Spectrums = new ObservableCollection<SummarizedSpectrumModel>();
+            Ms2Spectrums = new ObservableCollection<SummarizedSpectrumModel>();
             Peak = peak;
             Refer = refer;
             Parameter = parameter;
@@ -34,7 +34,13 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public RangeSelectableChromatogramModel RangeSelectableChromatogramModel { get; }
 
-        public ObservableCollection<SummarizedSpectrumModel> Spectrums { get; }
+        public SummarizedSpectrumModel Ms1Spectrum {
+            get => ms1Spectrum;
+            set => SetProperty(ref ms1Spectrum, value);
+        }
+        private SummarizedSpectrumModel ms1Spectrum;
+
+        public ObservableCollection<SummarizedSpectrumModel> Ms2Spectrums { get; }
 
         public ChromatogramPeakFeature Peak { get; }
 
@@ -47,24 +53,25 @@ namespace CompMs.App.Msdial.Model.Chart
         }
 
         public void SetExperimentSpectrum() {
-            var spectrum = provider.LoadMsNSpectrums(level: 2);
-            var experiments = spectrum.Select(spec => spec.ExperimentID).Distinct().OrderBy(v => v).ToArray();
-
             var rangeModel = RangeSelectableChromatogramModel;
             (var mainStart, var mainEnd) = rangeModel.ConvertToRt(rangeModel.SelectedRanges[1]);
             (var subStart, var subEnd) = rangeModel.ConvertToRt(rangeModel.SelectedRanges[0]);
 
-            Spectrums.Clear();
-
+            var spectrum = provider.LoadMsNSpectrums(level: 2);
+            var experiments = spectrum.Select(spec => spec.ExperimentID).Distinct().OrderBy(v => v).ToArray();
+            Ms2Spectrums.Clear();
             foreach (var exp in experiments) {
-                Spectrums.Add(new SummarizedSpectrumModel(DataAccess.GetSubtractSpectrum(spectrum, mainStart, mainEnd, subStart, subEnd, 1e-3, exp), exp));
+                Ms2Spectrums.Add(new SummarizedSpectrumModel(DataAccess.GetSubtractSpectrum(spectrum, mainStart, mainEnd, subStart, subEnd, 1e-3, exp).OrderBy(s => s.Mass).ToList(), exp));
             }
+
+            var ms1Spectrum = provider.LoadMs1Spectrums();
+            Ms1Spectrum = new SummarizedSpectrumModel(DataAccess.GetSubtractSpectrum(ms1Spectrum, mainStart, mainEnd, subStart, subEnd, 1e-3, -1).OrderBy(s => s.Mass).ToList(), -1);
         }
 
         public void SaveSpectrumAsNist(string mspFileName) {
             var comment = Peak?.Comment ?? string.Empty;
             using (var fs = File.Open(mspFileName, FileMode.Create, FileAccess.Write, FileShare.None)) {
-                foreach (var spectra in Spectrums) {
+                foreach (var spectra in Ms2Spectrums) {
                     Peak.Comment = $"{comment}|ExperimentId={spectra.ExperimentId}";
                     SpectraExport.SaveSpectraTableAsNistFormat(fs, Peak, spectra.Spectrums, Refer, Parameter);
                 }
