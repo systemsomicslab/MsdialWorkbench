@@ -58,13 +58,17 @@ namespace CompMs.Common.Components
         public bool IsMatched { get; set; } = false;
         [Key(11)]
         public SpectrumComment SpectrumComment { get; set; }
+        [Key(12)]
+        public bool IsAbsolutelyRequiredFragmentForAnnotation { get; set; }
 
         public SpectrumPeak() { }
-        public SpectrumPeak(double mass, double intensity, string comment = null, SpectrumComment spectrumcomment = SpectrumComment.none) {
+        public SpectrumPeak(double mass, double intensity, 
+            string comment = null, SpectrumComment spectrumcomment = SpectrumComment.none, bool isMust = false) {
             Mass = mass;
             Intensity = intensity;
             Comment = comment;
             SpectrumComment = spectrumcomment;
+            IsAbsolutelyRequiredFragmentForAnnotation = isMust;
         }
         
         public SpectrumPeak Clone() {
