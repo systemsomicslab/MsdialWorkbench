@@ -3,9 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
         xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
-        xmlns:ccore="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
         xmlns:gchart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
         xmlns:resvm="clr-namespace:CompMs.App.Msdial.ViewModel.MsResult"
@@ -56,6 +54,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="200"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
@@ -65,22 +64,30 @@
         <chart:RangeSelectableChromatogramView DataContext="{Binding RangeSelectableChromatogramViewModel}"
                                                Grid.Row="1"/>
 
-        <gchart:MultiChart ItemsSource="{Binding Spectrums}"
-                           Style="{StaticResource SpectrumStyle}"
-                           Background="WhiteSmoke"
-                           BorderBrush="Black"
-                           Grid.Row="2">
-            <gchart:MultiChart.Resources>
-                <DataTemplate DataType="{x:Type resvm:SummarizedSpectrumViewModel}">
-                    <resvw:SummarizedSpectrumView Height="200"/>
-                </DataTemplate>
-            </gchart:MultiChart.Resources>
-            <gchart:MultiChart.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Save spectra as nist format"
-                              Command="{Binding SaveSpectraAsNistCommand, Mode=OneTime}"/>
-                </ContextMenu>
-            </gchart:MultiChart.ContextMenu>
-        </gchart:MultiChart>
+        <GroupBox Header="MS spectrum"
+                  BorderThickness="0"
+                  Grid.Row="2">
+            <resvw:SummarizedSpectrumView DataContext="{Binding Ms1Spectrum.Value}" Height="200"/>
+        </GroupBox>
+        <GroupBox Header="MS/MS spectrum"
+                  BorderThickness="0"
+                  Grid.Row="3">
+            <gchart:MultiChart ItemsSource="{Binding Ms2Spectrums}"
+                               Style="{StaticResource SpectrumStyle}"
+                               Background="WhiteSmoke"
+                               BorderBrush="Black">
+                <gchart:MultiChart.Resources>
+                    <DataTemplate DataType="{x:Type resvm:SummarizedSpectrumViewModel}">
+                        <resvw:SummarizedSpectrumView Height="200"/>
+                    </DataTemplate>
+                </gchart:MultiChart.Resources>
+                <gchart:MultiChart.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Save spectra as nist format"
+                                  Command="{Binding SaveSpectraAsNistCommand, Mode=OneTime}"/>
+                    </ContextMenu>
+                </gchart:MultiChart.ContextMenu>
+            </gchart:MultiChart>
+        </GroupBox>
     </Grid>
 </Window>
