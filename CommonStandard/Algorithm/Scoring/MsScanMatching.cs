@@ -42,6 +42,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             switch (lipid.LipidClass) {
                 case LbmClass.PC:
                     return PCEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.PE:
+                    return PEEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 default: return (null, new double[2] { 0.0, 0.0 });
             }
         }

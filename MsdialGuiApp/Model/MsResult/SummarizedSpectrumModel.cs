@@ -4,6 +4,7 @@ using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.MsResult
 {
@@ -18,7 +19,7 @@ namespace CompMs.App.Msdial.Model.MsResult
             verticalAxis.ChartMargin = new ConstantMargin(0, 30);
             var horizontalProperty = "Mass";
             var verticalProperty = "Intensity";
-            SpectrumModel = new SpectrumModel(spectrums, horizontalAxis, verticalAxis, horizontalProperty, verticalProperty, $"Experiment={experimentId}");
+            SpectrumModel = new SpectrumModel(spectrums.Where(s => s.Intensity>100).ToList(), horizontalAxis, verticalAxis, horizontalProperty, verticalProperty, $"Experiment={experimentId}");
         }
 
         public SpectrumModel SpectrumModel { get; }
