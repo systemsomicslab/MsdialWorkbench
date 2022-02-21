@@ -47,5 +47,39 @@ namespace CompMs.Common.Lipidomics
 
         public IEnumerable<SpectrumPeak> GetAlkylDoubleBondSpectrum(ILipid lipid, AlkylChain acylChain, AdductIon adduct, double nlMass, double abundance)
             => GetDoubleBondSpectrum(lipid, acylChain, adduct, nlMass, abundance);
+
+        public IEnumerable<SpectrumPeak> GetSphingoDoubleBondSpectrum(ILipid lipid, SphingoChain sphingo, AdductIon adduct, double nlMass, double abundance)
+        {
+            if (sphingo.DoubleBond.UnDecidedCount != 0 || sphingo.CarbonCount == 0)
+            {
+                return Enumerable.Empty<SpectrumPeak>();
+            }
+            var chainLoss = lipid.Mass - sphingo.Mass - nlMass + MassDiffDictionary.NitrogenMass + 12*2  + MassDiffDictionary.OxygenMass*2 +MassDiffDictionary.HydrogenMass*5;
+            var diffs = new double[sphingo.CarbonCount];
+            for (int i = 0; i < sphingo.CarbonCount; i++)
+            {
+                diffs[i] = CH2;
+            }
+
+            foreach (var bond in sphingo.DoubleBond.Bonds)
+            {
+                diffs[bond.Position - 1] -= MassDiffDictionary.HydrogenMass;
+                diffs[bond.Position] -= MassDiffDictionary.HydrogenMass;
+            }
+            for (int i = 1; i < sphingo.CarbonCount; i++)
+            {
+                diffs[i] += diffs[i - 1];
+            }
+
+            var peaks = new List<SpectrumPeak>();
+            for (int i = 0; i < sphingo.CarbonCount - 3; i++)
+            {
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{sphingo} C{i + 3}-H") { SpectrumComment = SpectrumComment.doublebond });
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), abundance, $"{sphingo} C{i + 3}") { SpectrumComment = SpectrumComment.doublebond });
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{sphingo} C{i + 3}+H") { SpectrumComment = SpectrumComment.doublebond });
+            }
+
+            return peaks;
+        }
     }
 }
