@@ -183,7 +183,7 @@ namespace CompMs.Common.Lipidomics {
             double tolerance) {
             var ionDetectedCounter = 0;
             foreach (var ion in ref_spectrum) {
-                if (EadMsCharacterizationUtility.IsDiagnosticFragmentExist(exp_spectrum, tolerance, ion.Mass, ion.Intensity * 0.01)) {
+                if (EadMsCharacterizationUtility.IsDiagnosticFragmentExist(exp_spectrum, tolerance, ion.Mass, ion.Intensity * 0.0001)) {
                     ionDetectedCounter++;
                 }
             }
