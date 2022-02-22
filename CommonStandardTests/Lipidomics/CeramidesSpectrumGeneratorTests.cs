@@ -190,7 +190,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var acyl = new AcylChain(24, DoubleBond.CreateFromPosition(9), new Oxidized(0));
             var lipid = new Lipid(LbmClass.Cer_NS, 645.6059954, new PositionLevelChains(sphingo, acyl));
 
-            var generator = new CerNSSpectrumGenerator();
+            var generator = new CeramideSpectrumGenerator();
             var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
 
             var expects = new[]
@@ -308,7 +308,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var acyl = new AcylChain(24, DoubleBond.CreateFromPosition(9), new Oxidized(0));
             var lipid = new Lipid(LbmClass.Cer_NS, 645.6059954, new PositionLevelChains(sphingo, acyl));//Cer 18:2(4,8);2O/24:1(9)
 
-            var generator = new CerNSSpectrumGenerator();
+            var generator = new CeramideSpectrumGenerator();
             var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H-H2O]+"));
 
             var expects = new[]
@@ -425,7 +425,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var acyl = new AcylChain(24, DoubleBond.CreateFromPosition(9), new Oxidized(0));
             var lipid = new Lipid(LbmClass.Cer_NS, 645.6059954, new PositionLevelChains(sphingo, acyl));
 
-            var generator = new CerNSSpectrumGenerator();
+            var generator = new CeramideSpectrumGenerator();
             var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
 
             var expects = new[]
