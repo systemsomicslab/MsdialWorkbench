@@ -127,7 +127,9 @@ namespace CompMs.Common.Lipidomics
             if (oxidized is null) {
                 throw new ArgumentNullException(nameof(oxidized));
             }
-            if (!oxidized.Oxidises.Contains(1) || !oxidized.Oxidises.Contains(3)) {
+            //if (!oxidized.Oxidises.Contains(1) || !oxidized.Oxidises.Contains(3))
+            //{
+            if (!oxidized.Oxidises.Contains(1)) {
                 throw new ArgumentException(nameof(oxidized));
             }
 

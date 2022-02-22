@@ -121,7 +121,7 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         [TestMethod()]
-        public void GenerateTest2()
+        public void PCGenerateTest2_H()
         {
             var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(), new Oxidized(0));
             var acyl2 = new AcylChain(18, DoubleBond.CreateFromPosition(9, 12), new Oxidized(0));
@@ -226,6 +226,121 @@ namespace CompMs.Common.Lipidomics.Tests
                 771.5775249 ,//Sn-17
                 772.5853499 ,//Sn-17+H
                 786.601, // Sn1 18 Sn2 18 MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ Precursor Mass
+            };
+
+            scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
+            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            {
+                Assert.AreEqual(expect, actual, 0.01d);
+            }
+        }
+
+        [TestMethod()]
+        public void PCGenerateTest2_Na()
+        {
+            var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(), new Oxidized(0));
+            var acyl2 = new AcylChain(18, DoubleBond.CreateFromPosition(9, 12), new Oxidized(0));
+            var lipid = new Lipid(LbmClass.PC, 785.5935, new PositionLevelChains(acyl1, acyl2));
+
+            var generator = new PCSpectrumGenerator();
+            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+
+            var expects = new[]
+            {
+                206.0542207 , // Header
+                246.0869442 , // Gly-C
+                248.0649442 , // Gly-O
+                511.3035888 , // Sn1 -CH2
+                525.3192389 , // Sn1 -O
+                529.350539  , // Sn2 -O
+                542.3219785 , //SN1 acyl loss
+                546.3532787 , //SN2 acyl loss
+                568.3012431 ,//Sn1-1-H
+                569.3090681 ,//Sn1-1
+                570.3168931 ,//Sn1-1+H
+                572.3325432 ,//Sn2-1-H
+                573.3403682 ,//Sn2-1
+                574.3481933 ,//Sn2-1+H
+                582.3168931 ,//Sn1-2-H
+                583.3247182 ,//Sn1-2
+                584.3325432 ,//Sn1-2+H
+                586.3481933 ,//Sn2-2-H
+                587.3560183 ,//Sn2-2
+                588.3638433 ,//Sn2-2+H
+                596.3325432 ,//Sn1-3-H
+                597.3403682 ,//Sn1-3
+                598.3481933 ,//Sn1-3+H
+                600.3638433 ,//Sn2-3-H
+                601.3716684 ,//Sn2-3
+                602.3794934 ,//Sn2-3+H
+                610.3481933 ,//Sn1-4-H
+                611.3560183 ,//Sn1-4
+                612.3638433 ,//Sn1-4+H
+                614.3794934 ,//Sn2-4-H
+                615.3873184 ,//Sn2-4
+                616.3951435 ,//Sn2-4+H
+                624.3638433 ,//Sn1-5-H
+                625.3716684 ,//Sn1-5
+                625.5179442 ,// precursor - header
+                626.3794934 ,//Sn1-5+H
+                628.3951435 ,//Sn2-5-H
+                629.4029685 ,//Sn2-5
+                630.4107935 ,//Sn2-5+H
+                638.3794934 ,//Sn1-6-H
+                639.3873184 ,//Sn1-6
+                640.3951435 ,//Sn1-6+H
+                642.4107935 ,//Sn2-6-H
+                643.4186186 ,//Sn2-6
+                644.4264436 ,//Sn2-6+H
+                652.3951435 ,//Sn1-7-H
+                653.4029685 ,//Sn1-7
+                654.4107935 ,//Sn1-7+H
+                656.4264436 ,//Sn2-7-H
+                657.4342686 ,//Sn2-7
+                658.4420937 ,//Sn2-7+H
+                666.4107935 ,//Sn1-8-H
+                667.4186186 ,//Sn1-8
+                668.4264436 ,//Sn1-8+H
+                670.4420937 ,//Sn2-8-H
+                671.4499187 ,//Sn2-8
+                672.4577437 ,//Sn2-8+H
+                680.4264436 ,//Sn1-Δ9-H
+                681.4342686 ,//Sn1-9
+                682.4420937 ,//Sn1-9+H
+                683.4499187 ,//Sn2-Δ9-H
+                684.4577437 ,//Sn2-Δ9
+                685.4655688 ,//Sn2-Δ9+H
+                694.4420937 ,//Sn1-10-H
+                695.4499187 ,//Sn1-10
+                696.4577437 ,//Sn1-10+H,//Sn2-10-H
+                697.4655688 ,//Sn2-10
+                698.4733938 ,//Sn2-10+H
+                708.4577437 ,//Sn1-11-H
+                709.4655688 ,//Sn1-11
+                710.4733938 ,//Sn1-11+H,//Sn2-11-H
+                711.4812188 ,//Sn2-11
+                712.4890439 ,//Sn2-11+H
+                722.4733938 ,//Sn1-Δ12-H
+                723.4812188 ,//Sn1-12,//Sn2-Δ12-H
+                724.4890439 ,//Sn2-Δ12,//Sn1-12+H
+                725.4968689 ,//Sn2-Δ12+H
+                736.4890439 ,//Sn-13-H
+                737.4968689 ,//Sn-13
+                738.5046939 ,//Sn-13+H
+                749.5094449 ,// precursor - C3H9N
+                750.5046939 ,//Sn-14-H
+                751.5125189 ,//Sn-14
+                752.520344  ,//Sn-14+H
+                764.520344  ,//Sn-15-H
+                765.528169  ,//Sn-15
+                766.535994  ,//Sn-15+H
+                778.535994  ,//Sn-16-H
+                779.5438191 ,//Sn-16
+                780.5516441 ,//Sn-16+H
+                792.5516441 ,//Sn-17-H
+                793.5594691 ,//Sn-17
+                794.5672942 ,//Sn-17+H
+                808.5829442 ,// precursor
             };
 
             scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));

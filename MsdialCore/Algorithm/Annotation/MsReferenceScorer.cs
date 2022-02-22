@@ -155,6 +155,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             if (result.IsOtherLipidMatch)
                 return;
+
             result.Name = string.IsNullOrEmpty(name) ? reference.Name : name;
         }
 

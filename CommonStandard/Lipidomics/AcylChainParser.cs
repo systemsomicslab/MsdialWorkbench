@@ -7,7 +7,8 @@ namespace CompMs.Common.Lipidomics
     {
         private static readonly string CarbonPattern = @"(?<carbon>\d+)";
         private static readonly string DoubleBondPattern = @"(?<db>\d+)(\(((?<dbpos>\d+[EZ]?),?)+\))?";
-        private static readonly string OxidizedPattern = @";((?<ox>O(?<oxnum>\d+)?)|((?<oxpos>\d+)OH,?)+)";
+        //private static readonly string OxidizedPattern = @";((?<ox>O(?<oxnum>\d+)?)|((?<oxpos>\d+)OH,?)+)";
+        private static readonly string OxidizedPattern = @";(\(?((?<oxpos>\d+)OH,?)+\)?|(?<ox>(?<oxnum>\d+)?O))";
 
         public static readonly string Pattern = $"{CarbonPattern}:{DoubleBondPattern}({OxidizedPattern})?";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);

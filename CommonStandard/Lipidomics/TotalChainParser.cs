@@ -6,7 +6,9 @@ namespace CompMs.Common.Lipidomics
     public class TotalChainParser {
         private static readonly string CarbonPattern = @"(?<carbon>\d+)";
         private static readonly string DoubleBondPattern = @"(?<db>\d+)";
-        private static readonly string OxidizedPattern = @";(?<ox>O(?<oxnum>\d+)?)";
+        //private static readonly string OxidizedPattern = @";(?<ox>O(?<oxnum>\d+)?)";
+        private static readonly string OxidizedPattern = @";(?<ox>(?<oxnum>\d+)?O)";
+
 
         private static readonly string ChainsPattern = $"(?<Chain>{AlkylChainParser.Pattern}|{AcylChainParser.Pattern})";
         private static readonly string AcylChainsPattern = $"(?<Chain>{AcylChainParser.Pattern})";

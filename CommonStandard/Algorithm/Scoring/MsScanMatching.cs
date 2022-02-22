@@ -42,6 +42,8 @@ namespace CompMs.Common.Algorithm.Scoring {
             switch (lipid.LipidClass) {
                 case LbmClass.PC:
                     return PCEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.PE:
+                    return PEEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 default: return (null, new double[2] { 0.0, 0.0 });
             }
         }
@@ -1348,7 +1350,10 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.STSPHex:
                     return LipidMsmsCharacterization.JudgeIfSteroidWithPa(molecule.LipidName, molecule.LipidClass,
                         msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
-
+                //20220201
+                case LbmClass.SPE:
+                    return LipidMsmsCharacterization.JudgeIfSpeSpecies(molecule.LipidName, molecule.LipidClass,
+                        msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
 
                 default:
                     return null;

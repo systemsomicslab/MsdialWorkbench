@@ -143,7 +143,7 @@ namespace CompMs.Common.Lipidomics
             return new[]
             {
                 new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass), 100d, $"-{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
-                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - H2O + MassDiffDictionary.HydrogenMass), 100d, $"-{acylChain}-O") { SpectrumComment = SpectrumComment.acylchain },
+                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - H2O), 100d, $"-{acylChain}-O") { SpectrumComment = SpectrumComment.acylchain },
             };
         }
 
@@ -152,7 +152,7 @@ namespace CompMs.Common.Lipidomics
             var chainMass = acylChain.Mass;
             return new[]
             {
-                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - MassDiffDictionary.OxygenMass - CH2), 100d, "-CH2(Sn1)"){ SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - MassDiffDictionary.OxygenMass - CH2), 100d, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
             };
         }
 
