@@ -120,7 +120,7 @@ namespace CompMs.Common.Lipidomics
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
                 new SpectrumPeak(lipid.Mass - H3PO4 + adductmass, 100d, "- Header") { SpectrumComment = SpectrumComment.metaboliteclass },
                 //new SpectrumPeak(H3PO4 - MassDiffDictionary.HydrogenMass + adductmass, 300d, "Header"),
-                new SpectrumPeak(C3H9O6P + adductmass, 150d, "C3H9O6P") { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(C3H9O6P + adductmass, 150d, "C3H9O6P") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
                 new SpectrumPeak(Gly_C + adductmass, 100d, "Gly-C") { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(Gly_O + adductmass, 100d, "Gly-O") { SpectrumComment = SpectrumComment.metaboliteclass },
             };
