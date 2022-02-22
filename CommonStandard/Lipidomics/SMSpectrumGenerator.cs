@@ -132,6 +132,16 @@ namespace CompMs.Common.Lipidomics
                      }
                 );
             }
+            else if (adduct.AdductIonName == "[M+H]+")
+            {
+                spectrum.AddRange
+                (
+                     new[]
+                     {
+                        new SpectrumPeak(adduct.ConvertToMz(C5H14NO4P+C2H3NO+MassDiffDictionary.CarbonMass), 150d, "C7H18N2O4P (Header+C3H3NO)") , // need to consider
+                     }
+                );
+            }
             return spectrum.ToArray();
         }
 
@@ -146,7 +156,7 @@ namespace CompMs.Common.Lipidomics
                      new[]
                      {
                         new SpectrumPeak(chainMass + MassDiffDictionary.ProtonMass - H2O*2,100d, "[sph+H]+ -Header -H2O"),
-                        new SpectrumPeak(chainMass + MassDiffDictionary.ProtonMass - CH4O2, 100d, "[sph+H]+ -CH4O2"),
+                        //new SpectrumPeak(chainMass + MassDiffDictionary.ProtonMass - CH4O2, 100d, "[sph+H]+ -CH4O2"),
                      }
                 );
             }

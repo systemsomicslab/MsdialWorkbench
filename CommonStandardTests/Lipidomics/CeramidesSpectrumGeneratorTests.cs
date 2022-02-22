@@ -25,7 +25,7 @@ namespace CompMs.Common.Lipidomics.Tests
             {
                 184.07332, // C5H14NO4P(Header)
                 225.09987, // C7H18N2O4P(Header+C2H3N)
-                252.26858, // [sph+H]+ -CH4O2
+                253.09478, // Header+C3H3NO
                 264.26858, // [sph+H]+ -Header -H2O
                 307.28697, // [FAA+C2H+adduct]+
                 489.34519, // [FAA+C2H+Header+adduct]+
