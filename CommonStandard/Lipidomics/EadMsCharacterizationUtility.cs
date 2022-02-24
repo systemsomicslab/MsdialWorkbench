@@ -140,7 +140,7 @@ namespace CompMs.Common.Lipidomics {
                 result.PositionIonScore = isPositionIonExisted ? 1.0 : 0.0;
                 result.DoubleBondIonScore = matchedPercent;
                 
-                var score = result.ClassIonScore + result.ChainIonScore + result.PositionIonScore * 5 + result.DoubleBondIonScore * 10.0;
+                var score = result.ClassIonScore + result.ChainIonScore + result.PositionIonScore + result.DoubleBondIonScore;
                 var counter = classionsDetected + chainIonsDetected + positionIonsDetected + matchedCount;
                 result.TotalScore = score;
                 result.TotalMatchedIonCount = counter;

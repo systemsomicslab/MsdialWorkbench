@@ -24,9 +24,11 @@ namespace CompMs.Common.Lipidomics
                 diffs[i] = CH2;
             }
 
+            var bondPositions = new List<int>();
             foreach (var bond in chain.DoubleBond.Bonds) {
                 diffs[bond.Position - 1] -= MassDiffDictionary.HydrogenMass;
                 diffs[bond.Position] -= MassDiffDictionary.HydrogenMass;
+                bondPositions.Add(bond.Position);
             }
             for (int i = 1; i < chain.CarbonCount; i++) {
                 diffs[i] += diffs[i - 1];
@@ -34,9 +36,13 @@ namespace CompMs.Common.Lipidomics
 
             var peaks = new List<SpectrumPeak>();
             for (int i = 0; i < chain.CarbonCount - 1; i++) {
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{chain} C{i + 1}-H") { SpectrumComment = SpectrumComment.doublebond });
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), abundance, $"{chain} C{i + 1}") { SpectrumComment = SpectrumComment.doublebond });
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{chain} C{i + 1}+H") { SpectrumComment = SpectrumComment.doublebond });
+                var factor = 1.0;
+                if (bondPositions.Contains(i - 1)) { 
+                    factor = 3.0;
+                }
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), factor * abundance * 0.5, $"{chain} C{i + 1}-H") { SpectrumComment = SpectrumComment.doublebond });
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), factor * abundance, $"{chain} C{i + 1}") { SpectrumComment = SpectrumComment.doublebond });
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), factor * abundance * 0.5, $"{chain} C{i + 1}+H") { SpectrumComment = SpectrumComment.doublebond });
             }
 
             return peaks;

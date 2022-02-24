@@ -85,6 +85,31 @@ namespace MsdialPrivateConsoleApp {
     public sealed class LipidomicsResultCuration {
         private LipidomicsResultCuration() { }
 
+        public static void Text2Msp(string input, string output) {
+
+            using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
+                using (var sr = new StreamReader(input, Encoding.ASCII)) {
+                    sr.ReadLine();
+                    while (sr.Peek() > -1) {
+                        var line = sr.ReadLine();
+                        var lineArray = line.Split('\t');
+                        var specString = lineArray[17];
+                        var peaks = textToSpectrumList(specString, ':', ' ');
+
+                        sw.WriteLine("NAME: " + lineArray[3]);
+                        sw.WriteLine("PRECURSORMZ: " + lineArray[2]);
+                        sw.WriteLine("PRECURSORTYPE: " + lineArray[4]);
+                        sw.WriteLine("COMMENT: " + lineArray[0]);
+                        sw.WriteLine("Num Peaks: " + peaks.Count);
+                        foreach (var peak in peaks) {
+                            sw.WriteLine(peak[0] + "\t" + peak[1]);
+                        }
+                        sw.WriteLine();
+                    }
+                }
+            }
+        }
+
         public static void Name2Smiles(string input, string output) {
 
             var lipidnames = new List<string>();

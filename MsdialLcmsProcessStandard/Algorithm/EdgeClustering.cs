@@ -774,7 +774,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm.Clustering
                     }
 
                     var msmsClusterScore = MsmsSimilarityScore(mspQueries[i], mspQueries[j], cutoff, masstol);
-                    if (msmsClusterScore >= 0.8) {
+                    if (msmsClusterScore >= 0.75) {
 
                         var pairKey = Math.Min(i, j) + "-" + Math.Max(i, j);
 
