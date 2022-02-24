@@ -220,9 +220,19 @@ namespace CompMs.MsdialCore.DataObj
                     reader.Close();
                 }
                 command.CommandText = $"SELECT MAX(ScanID) FROM {ReferenceTableName}";
-                scanId = 1 + int.Parse(command.ExecuteScalar().ToString());
+                try {
+                    scanId = 1 + int.Parse(command.ExecuteScalar().ToString());
+                }
+                catch (FormatException){
+                    scanId = 0;
+                }
                 command.CommandText = $"SELECT MAX(SpectrumID) FROM {SpectrumTableName}";
-                spectrumId = 1 + int.Parse(command.ExecuteScalar().ToString());
+                try {
+                    spectrumId = 1 + int.Parse(command.ExecuteScalar().ToString());
+                }
+                catch (FormatException) {
+                    spectrumId = 0;
+                }
             }
         }
 
