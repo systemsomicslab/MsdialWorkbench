@@ -8,13 +8,29 @@ namespace CompMs.Graphics.IO
 {
     public class SaveImageAsCommand : ICommand
     {
-        public static SaveImageAsCommand PngInstance { get; } = new SaveImageAsCommand();
+        public static SaveImageAsCommand PngInstance { get; } = new SaveImageAsCommand(ImageFormat.Png);
 
-        public SaveImageAsCommand() {
-            encoder = new FrameworkElementEncoder();
+        public static SaveImageAsCommand EmfInstance { get; } = new SaveImageAsCommand(ImageFormat.Emf);
+
+        public SaveImageAsCommand() : this(ImageFormat.Png) {
+
         }
 
-        private readonly FrameworkElementEncoder encoder;
+        private SaveImageAsCommand(ImageFormat format) {
+            switch (format) {
+                case ImageFormat.Png:
+                    encoder = new PngEncoder();
+                    filter = "PNG image(*.png)|.png";
+                    break;
+                case ImageFormat.Emf:
+                    encoder = new EmfEncoder();
+                    filter = "Extended Metafile Format(*.emf)|.emf";
+                    break;
+            }
+        }
+
+        private readonly IElementEncoder encoder;
+        private readonly string filter;
 
         public event EventHandler CanExecuteChanged;
 
@@ -27,13 +43,13 @@ namespace CompMs.Graphics.IO
                 var sfd = new SaveFileDialog
                 {
                     Title = "Save image dialog.",
-                    Filter = "PNG image(*.png)|*.png",
+                    Filter = filter,
                     RestoreDirectory = true,
                 };
                 if (sfd.ShowDialog() == true) {
 
                     using (var fs = File.Open(sfd.FileName, FileMode.Create)) {
-                        encoder.SaveAsPng(element, fs);
+                        encoder.Save(element, fs);
                     }
                 }
             }
