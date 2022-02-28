@@ -18,6 +18,19 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
     </Style>
+    <Style TargetType="TextBlock" x:Key="FormalAxisTitle">
+        <Setter Property="FontFamily" Value="Arial"/>
+        <Setter Property="FontSize" Value="17"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+    <Style TargetType="TextBlock" x:Key="FormalItalicAxisTitle">
+        <Setter Property="FontFamily" Value="Arial"/>
+        <Setter Property="FontStyle" Value="Italic"/>
+        <Setter Property="FontSize" Value="17"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
     
     <Style TargetType="{x:Type chart:SimpleChartControl}" x:Key="BasicChart">
         <Setter Property="Background" Value="WhiteSmoke"/>
@@ -291,6 +304,73 @@
         </Setter>
     </Style>
 
+    <Style TargetType="{x:Type chart:MultiChart}" x:Key="VerticalAlignedChartFormal">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="1"/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="15"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                BorderThickness="1.5,0,0,1.5"
+                                Background="{Binding Background, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                core:ChartBaseControl.VerticalAxis="{Binding Path=(core:ChartBaseControl.VerticalAxis)}"
+                                core:ChartBaseControl.FlippedY="{Binding Path=(core:ChartBaseControl.FlippedY)}"
+                                behavior:ZoomByDragBehavior.IsEnabled="True"
+                                behavior:ZoomByWheelBehavior.IsEnabled="True"
+                                behavior:MoveByDragBehavior.IsEnabled="True"
+                                behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"
+                                Grid.Column="2" Grid.Row="0">
+                            <ContentControl Content="{Binding}"/>
+                        </Border>
+                        <chart:VerticalAxisControl VerticalAxis="{Binding Path=(core:ChartBaseControl.VerticalAxis)}"
+                                                  FlippedY="{Binding Path=(core:ChartBaseControl.FlippedY)}"
+                                                  HorizontalAxis="{x:Null}"
+                                                  Margin="0,0,0,1.5"
+                                                  Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"/>
+                        <chart:HorizontalAxisControl HorizontalAxis="{Binding Path=(core:ChartBaseControl.HorizontalAxis)}"
+                                                     FlippedX="{Binding Path=(core:ChartBaseControl.FlippedX)}"
+                                                     VerticalAxis="{x:Null}"
+                                                     Margin="1.5,0,0,0"
+                                                     Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"/>
+                        <TextBlock Name="HorizontalTitle"
+                                   Text="{Binding HorizontalTitle, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                   Style="{StaticResource FormalItalicAxisTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="2" Grid.Column="2"/>
+                        <TextBlock Name="VerticalTitle"
+                                   Text="{Binding VerticalTitle, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                   Style="{StaticResource FormalAxisTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="0" Grid.Column="0">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                    </Grid>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type chart:MultiChart}" x:Key="VerticalConcatChart">
         <Setter Property="Background" Value="WhiteSmoke"/>
         <Setter Property="BorderBrush" Value="Black"/>
@@ -360,9 +440,83 @@
                             </Border>
                         </Border>
                         <chart:VerticalAxisControl VerticalAxis="{Binding Path=(core:ChartBaseControl.VerticalAxis)}"
-                                                  FlippedY="{Binding Path=(core:ChartBaseControl.FlippedY)}"
-                                                  HorizontalAxis="{x:Null}"
-                                                  Grid.Column="0"/>
+                                                   FlippedY="{Binding Path=(core:ChartBaseControl.FlippedY)}"
+                                                   HorizontalAxis="{x:Null}"
+                                                   Grid.Column="0"/>
+                    </Grid>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type chart:MultiChart}" x:Key="VerticalConcatChartFormal">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type chart:MultiChart}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25"/>
+                            <RowDefinition />
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="15"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Name="GraphTitle"
+                                   Text="{Binding GraphTitle, RelativeSource={RelativeSource TemplatedParent}}"
+                                   Style="{StaticResource GraphTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="0" Grid.Column="1" />
+                        <UniformGrid IsItemsHost="True"
+                                     Columns="1"
+                                     Grid.Row="1" Grid.Column="1"/>
+                        <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
+                                                    VerticalAxis="{x:Null}"
+                                                    Margin="41.5,0,0,0"
+                                                    Grid.Row="2" Grid.Column="1" />
+                        <TextBlock Name="HorizontalTitle"
+                                   Text="{TemplateBinding HorizontalTitle}"
+                                   Style="{StaticResource FormalItalicAxisTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="3" Grid.Column="1" />
+                        <TextBlock Name="VerticalTitle"
+                                   Text="{TemplateBinding VerticalTitle}"
+                                   Style="{StaticResource FormalAxisTitle}"
+                                   IsHitTestVisible="False"
+                                   Grid.Row="1" Grid.Column="0">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Border BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                BorderThickness="1.5,0,0,1.5"
+                                Grid.Column="1">
+                            <Border Background="{Binding Background, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                    core:ChartBaseControl.VerticalAxis="{Binding Path=(core:ChartBaseControl.VerticalAxis)}"
+                                    core:ChartBaseControl.FlippedY="{Binding Path=(core:ChartBaseControl.FlippedY)}">
+                                <ContentControl Content="{Binding}"/>
+                            </Border>
+                        </Border>
+                        <chart:VerticalAxisControl VerticalAxis="{Binding Path=(core:ChartBaseControl.VerticalAxis)}"
+                                                   FlippedY="{Binding Path=(core:ChartBaseControl.FlippedY)}"
+                                                   HorizontalAxis="{x:Null}"
+                                                   Grid.Column="0"/>
                     </Grid>
                 </DataTemplate>
             </Setter.Value>

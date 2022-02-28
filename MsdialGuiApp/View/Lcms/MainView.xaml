@@ -6,7 +6,6 @@
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Lcms"
              xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
              mc:Ignorable="d" 
-             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
@@ -25,8 +24,8 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="/View/ChartStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
             <!--
             <ContextMenu x:Key="menuReverseMassSpectrogram">
                 <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
@@ -144,14 +143,6 @@
                 </MenuItem>
             </ContextMenu>
             -->
-            <manager:ContinuousAxisManager x:Key="ChromAxis"
-                                           MinValue="{Binding DataContext.AnalysisVM.RtMin, Source={x:Reference Name=MainControl}}"
-                                           MaxValue="{Binding DataContext.AnalysisVM.RtMax, Source={x:Reference Name=MainControl}}"
-                                           ChartMargin="0.05" />
-            <manager:ContinuousAxisManager x:Key="MassAxis"
-                                           MinValue="{Binding DataContext.AnalysisVM.MassMin, Source={x:Reference Name=MainControl}}"
-                                           MaxValue="{Binding DataContext.AnalysisVM.MassMax, Source={x:Reference Name=MainControl}}"
-                                           ChartMargin="0.05" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -196,7 +187,28 @@
                                              Grid.Row="0" Grid.Column="0"/>
 
                     <chart:SurveyScanView DataContext="{Binding AnalysisVM.SurveyScanViewModel}"
-                                          Grid.Row="1" Grid.Column="0"/>
+                                          Grid.Row="1" Grid.Column="0">
+                        <chart:SurveyScanView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Save image as...">
+                                    <MenuItem Header="Save as emf"
+                                              Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    <MenuItem Header="Save as png"
+                                              Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                </MenuItem>
+                                <MenuItem Header="Copy image as...">
+                                    <MenuItem Header="Copy as emf"
+                                              Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    <MenuItem Header="Copy as png"
+                                              Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                </MenuItem>
+                            </ContextMenu>
+                        </chart:SurveyScanView.ContextMenu>
+                    </chart:SurveyScanView>
 
                     <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="1" Grid.Column="1" 
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
@@ -210,7 +222,32 @@
                                  DataContext="{Binding AnalysisVM}"
                                  Background="{StaticResource MainThemeColor}"
                                  DataContextChanged="TabItem_RtMzPairwisePlotPeakView_DataContextChanged">
-                            <chart:PeakView DataContext="{Binding PlotViewModel}">
+                            <chart:PeakView x:Name="PeakView" DataContext="{Binding PlotViewModel}">
+                                <chart:PeakView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Peak"/>
+                                        <MenuItem Header="Save image as...">
+                                            <!--
+                                            <MenuItem Header="Save as emf"
+                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                      -->
+                                            <MenuItem Header="Save as png"
+                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Copy image as...">
+                                            <!--
+                                            <MenuItem Header="Copy as emf"
+                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                      -->
+                                            <MenuItem Header="Copy as png"
+                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </chart:PeakView.ContextMenu>
                                 <chart:PeakView.LabelTemplate>
                                     <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
                                         <StackPanel Orientation="Horizontal">
@@ -227,13 +264,6 @@
                                         </StackPanel>
                                     </DataTemplate>
                                 </chart:PeakView.LabelTemplate>
-                                <chart:PeakView.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Save image as png"
-                                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
-                                                  CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                    </ContextMenu>
-                                </chart:PeakView.ContextMenu>
                             </chart:PeakView>
                         </TabItem>
 
@@ -261,9 +291,28 @@
                                 </chart:AlignmentPeakPlotView.LabelTemplate>
                                 <chart:AlignmentPeakPlotView.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Save image as png"
-                                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
-                                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        <MenuItem Header="Align"/>
+                                        <MenuItem Header="Peak"/>
+                                        <MenuItem Header="Save image as...">
+                                            <!--
+                                            <MenuItem Header="Save as emf"
+                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                      -->
+                                            <MenuItem Header="Save as png"
+                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Copy image as...">
+                                            <!--
+                                            <MenuItem Header="Copy as emf"
+                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                      -->
+                                            <MenuItem Header="Copy as png"
+                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
                                     </ContextMenu>
                                 </chart:AlignmentPeakPlotView.ContextMenu>
                             </chart:AlignmentPeakPlotView>
@@ -281,9 +330,22 @@
                             <chart:EicView DataContext="{Binding AnalysisVM.EicViewModel}">
                                 <chart:EicView.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Save image as png"
-                                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
-                                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        <MenuItem Header="Save image as...">
+                                            <MenuItem Header="Save as emf"
+                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            <MenuItem Header="Save as png"
+                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Copy image as...">
+                                            <MenuItem Header="Copy as emf"
+                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            <MenuItem Header="Copy as png"
+                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
                                     </ContextMenu>
                                 </chart:EicView.ContextMenu>
                             </chart:EicView>
@@ -296,9 +358,22 @@
                             <chart:BarChartView DataContext="{Binding AlignmentVM.BarChartViewModel}">
                                 <chart:BarChartView.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Save image as png"
-                                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
-                                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        <MenuItem Header="Save image as...">
+                                            <MenuItem Header="Save as emf"
+                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            <MenuItem Header="Save as png"
+                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Copy image as...">
+                                            <MenuItem Header="Copy as emf"
+                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            <MenuItem Header="Copy as png"
+                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
                                     </ContextMenu>
                                 </chart:BarChartView.ContextMenu>
                             </chart:BarChartView>
@@ -310,9 +385,22 @@
                             <chart:AlignmentEicView DataContext="{Binding AlignmentVM.AlignmentEicViewModel}">
                                 <chart:AlignmentEicView.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Save image as png"
-                                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
-                                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        <MenuItem Header="Save image as...">
+                                            <MenuItem Header="Save as emf"
+                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            <MenuItem Header="Save as png"
+                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Copy image as...">
+                                            <MenuItem Header="Copy as emf"
+                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            <MenuItem Header="Copy as png"
+                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
                                     </ContextMenu>
                                 </chart:AlignmentEicView.ContextMenu>
                             </chart:AlignmentEicView>
@@ -398,9 +486,22 @@
                                     <ContextMenu>
                                         <MenuItem Header="Save spectra table as.."
                                                   Command="{Binding SaveMs2SpectrumCommand}"/>
-                                        <MenuItem Header="Save image as png"
-                                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
-                                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        <MenuItem Header="Save image as...">
+                                            <MenuItem Header="Save as emf"
+                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            <MenuItem Header="Save as png"
+                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Copy image as...">
+                                            <MenuItem Header="Copy as emf"
+                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            <MenuItem Header="Copy as png"
+                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
                                     </ContextMenu>
                                 </chart:ExpRefView.ContextMenu>
                             </chart:ExpRefView>
@@ -424,9 +525,22 @@
                                     <ContextMenu>
                                         <MenuItem Header="Save spectra table as.."
                                                   Command="{Binding SaveMs2SpectrumCommand}"/>
-                                        <MenuItem Header="Save image as png"
-                                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
-                                                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        <MenuItem Header="Save image as...">
+                                            <MenuItem Header="Save as emf"
+                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            <MenuItem Header="Save as png"
+                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Copy image as...">
+                                            <MenuItem Header="Copy as emf"
+                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            <MenuItem Header="Copy as png"
+                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
                                     </ContextMenu>
                                 </chart:RawPurifiedView.ContextMenu>
                             </chart:RawPurifiedView>
@@ -442,6 +556,22 @@
                                     <ContextMenu>
                                         <MenuItem Header="Save spectra table as.."
                                                   Command="{Binding SaveMs2SpectrumCommand}"/>
+                                        <MenuItem Header="Save image as...">
+                                            <MenuItem Header="Save as emf"
+                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            <MenuItem Header="Save as png"
+                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Copy image as...">
+                                            <MenuItem Header="Copy as emf"
+                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                            <MenuItem Header="Copy as png"
+                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                        </MenuItem>
                                     </ContextMenu>
                                 </chart:RepRefView.ContextMenu>
                             </chart:RepRefView>
