@@ -65,7 +65,7 @@ namespace CompMs.App.Msdial.Model.Chart
             }
 
             var ms1Spectrum = provider.LoadMs1Spectrums();
-            Ms1Spectrum = new SummarizedSpectrumModel(DataAccess.GetSubtractSpectrum(ms1Spectrum, mainStart, mainEnd, subStart, subEnd, 1e-3, -1).OrderBy(s => s.Mass).ToList(), -1);
+            Ms1Spectrum = new SummarizedSpectrumModel(DataAccess.GetSubtractSpectrum(ms1Spectrum, mainStart, mainEnd, subStart, subEnd, 1e-3, -1).Where(s => s.Intensity > 5).OrderBy(s => s.Mass).ToList(), -1);
            
         }
 
