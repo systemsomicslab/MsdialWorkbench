@@ -3,18 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              mc:Ignorable="d" 
-             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
              Name="RawPurePlot"
+             d:Background="White"
              d:DesignHeight="600" d:DesignWidth="370">
-    <d:DesignerProperties.DesignStyle>
-        <Style TargetType="UserControl">
-            <Setter Property="Background" Value="White"/>
-        </Style>
-    </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -28,8 +22,7 @@
                           GraphTitle="{Binding GraphTitle.Value}"
                           HorizontalTitle="{Binding HorizontalTitle.Value}"
                           VerticalTitle="{Binding VerticalTitle.Value}"
-                          Style="{StaticResource VerticalConcatChart}"
-                          Background="WhiteSmoke" BorderBrush="Black">
+                          Style="{StaticResource VerticalAlignedChart}">
             <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis}">
                 <!--<TextBlock Text="Raw spectrum" FontStyle="Italic" FontFamily="Calibri"
                    VerticalAlignment="Top" HorizontalAlignment="Left" />-->
@@ -38,8 +31,7 @@
                                            HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                                            VerticalPropertyName="{Binding VerticalProperty}"
                                            BrushMapper="{Binding UpperSpectrumBrushSource.Value}"
-                                           HueProperty="SpectrumComment"
-                                           >
+                                           HueProperty="SpectrumComment">
                     <chart:LineSpectrumControl.ToolTip>
                         <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel Orientation="Horizontal">
@@ -70,8 +62,7 @@
                                            HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                                            VerticalPropertyName="{Binding VerticalProperty.Value}"
                                            BrushMapper="{Binding LowerSpectrumBrushSource.Value}"
-                                           HueProperty="SpectrumComment"
-                                           >
+                                           HueProperty="SpectrumComment">
                     <chart:LineSpectrumControl.ToolTip>
                         <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel Orientation="Horizontal">

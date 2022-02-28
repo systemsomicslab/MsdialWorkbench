@@ -225,7 +225,6 @@
                             <chart:PeakView x:Name="PeakView" DataContext="{Binding PlotViewModel}">
                                 <chart:PeakView.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Peak"/>
                                         <MenuItem Header="Save image as...">
                                             <!--
                                             <MenuItem Header="Save as emf"
@@ -291,8 +290,6 @@
                                 </chart:AlignmentPeakPlotView.LabelTemplate>
                                 <chart:AlignmentPeakPlotView.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Align"/>
-                                        <MenuItem Header="Peak"/>
                                         <MenuItem Header="Save image as...">
                                             <!--
                                             <MenuItem Header="Save as emf"
