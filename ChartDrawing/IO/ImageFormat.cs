@@ -1,7 +1,7 @@
 ﻿namespace CompMs.Graphics.IO
 {
-    internal enum ImageFormat
+    public enum ImageFormat
     {
-        Png, Emf,
+        None, Png, Emf,
     }
 }

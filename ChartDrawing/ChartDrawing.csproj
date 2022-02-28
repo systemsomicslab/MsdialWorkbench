@@ -133,9 +133,12 @@
     <Compile Include="IO\CopyImageAsCommand.cs" />
     <Compile Include="IO\IElementEncoder.cs" />
     <Compile Include="IO\EmfEncoder.cs" />
+    <Compile Include="IO\IElementFormatter.cs" />
+    <Compile Include="IO\NoneFormatter.cs" />
     <Compile Include="IO\ImageFormat.cs" />
     <Compile Include="IO\SaveImageAsCommand.cs" />
     <Compile Include="IO\PngEncoder.cs" />
+    <Compile Include="IO\StyleFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Base\Utility.cs" />
     <Compile Include="Base\DataPoint.cs" />

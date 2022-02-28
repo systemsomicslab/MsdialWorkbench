@@ -8,29 +8,24 @@ namespace CompMs.Graphics.IO
 {
     public class SaveImageAsCommand : ICommand
     {
+        public static SaveImageAsCommand Instance { get; } = new SaveImageAsCommand();
+
         public static SaveImageAsCommand PngInstance { get; } = new SaveImageAsCommand(ImageFormat.Png);
 
         public static SaveImageAsCommand EmfInstance { get; } = new SaveImageAsCommand(ImageFormat.Emf);
 
-        public SaveImageAsCommand() : this(ImageFormat.Png) {
+        public SaveImageAsCommand() : this(ImageFormat.None) {
 
         }
 
         private SaveImageAsCommand(ImageFormat format) {
-            switch (format) {
-                case ImageFormat.Png:
-                    encoder = new PngEncoder();
-                    filter = "PNG image(*.png)|.png";
-                    break;
-                case ImageFormat.Emf:
-                    encoder = new EmfEncoder();
-                    filter = "Extended Metafile Format(*.emf)|.emf";
-                    break;
-            }
+            this.Format = format;
+            Formatter = new NoneFormatter();
         }
 
-        private readonly IElementEncoder encoder;
-        private readonly string filter;
+        public ImageFormat Format { get; set; }
+
+        public IElementFormatter Formatter { get; set; }
 
         public event EventHandler CanExecuteChanged;
 
@@ -38,21 +33,64 @@ namespace CompMs.Graphics.IO
             return true;
         }
 
-        public void Execute(object parameter) {
+        public async void Execute(object parameter) {
             if (parameter is FrameworkElement element) {
-                var sfd = new SaveFileDialog
-                {
-                    Title = "Save image dialog.",
-                    Filter = filter,
-                    RestoreDirectory = true,
-                };
-                if (sfd.ShowDialog() == true) {
-
-                    using (var fs = File.Open(sfd.FileName, FileMode.Create)) {
+                if (TryGetPathAndEncoder(Format, out var path, out var encoder)) {
+                    using (await Formatter.Format(parameter))
+                    using (var fs = File.Open(path, FileMode.Create)) {
                         encoder.Save(element, fs);
                     }
                 }
             }
+        }
+
+        private static readonly string EmfFilter = "Extended Metafile Format(.emf)|*.emf";
+        private static readonly string PngFilter = "PNG image(.png)|*.png";
+        private bool TryGetPathAndEncoder(ImageFormat format, out string path, out IElementEncoder encoder) {
+            string filter;
+            switch (format) {
+                case ImageFormat.Emf:
+                    (filter, encoder) = (EmfFilter, new EmfEncoder());
+                    return TryGetSaveFilePath(filter, out path);
+                case ImageFormat.Png:
+                    (filter, encoder) = (PngFilter, new PngEncoder());
+                    return TryGetSaveFilePath(filter, out path);
+                default:
+                    return TryGetSaveFilePathAndFormat(out path, out encoder);
+            }
+        }
+
+        private bool TryGetSaveFilePath(string filter, out string path) {
+            var sfd = new SaveFileDialog
+            {
+                Title = "Save image dialog.",
+                Filter = filter,
+                RestoreDirectory = true,
+            };
+            var result = sfd.ShowDialog() ?? false;
+            path = sfd.FileName ?? string.Empty;
+            return result;
+        }
+
+        private bool TryGetSaveFilePathAndFormat(out string path, out IElementEncoder encoder) {
+            var sfd = new SaveFileDialog
+            {
+                Title = "Save image dialog.",
+                Filter = string.Join("|", EmfFilter, PngFilter),
+                RestoreDirectory = true,
+            };
+            var result = sfd.ShowDialog() ?? false;
+            path = sfd.FileName ?? string.Empty;
+            switch (Path.GetExtension(path)) {
+                case ".png":
+                    encoder = new PngEncoder();
+                    break;
+                case ".emf":
+                default:
+                    encoder = new EmfEncoder();
+                    break;
+            }
+            return result;
         }
     }
 }
