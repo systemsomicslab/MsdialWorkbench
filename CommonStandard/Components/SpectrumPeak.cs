@@ -27,7 +27,9 @@ namespace CompMs.Common.Components
         metaboliteclass = 16384, 
         acylchain = 32768,
         doublebond = 65536,
-        snposition = 131072
+        snposition = 131072,
+        doublebond_high = 262144,
+        doublebond_low = 524288
     }
 
 
