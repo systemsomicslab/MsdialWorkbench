@@ -131,6 +131,7 @@ namespace CompMs.Common.Lipidomics
                 new SpectrumPeak(adduct.ConvertToMz(C2H8NO4P), 100d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(adduct.ConvertToMz(Gly_C), 100d, "Gly-C")  { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(adduct.ConvertToMz(Gly_O), 100d, "Gly-O") { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass)/2, 100d, "[Precursor]2+") { SpectrumComment = SpectrumComment.metaboliteclass },
             };
             if (adduct.AdductIonName == "[M+Na]+")
             {

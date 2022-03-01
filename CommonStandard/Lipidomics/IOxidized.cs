@@ -38,7 +38,8 @@ namespace CompMs.Common.Lipidomics
                 return ";O";
             }
             else {
-                return $";O{Count}";
+                //return $";O{Count}";
+                return $";{Count}O";
             }
         }
 
