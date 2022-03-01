@@ -6,6 +6,7 @@ using CompMs.Common.Lipidomics;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,7 +16,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     {
         public EadLipidAnnotator(EadLipidDatabase db, string id, int priority, MsRefSearchParameterBase parameter) {
             lipidGenerator = new LipidGenerator(new TotalChainVariationGenerator(chainGenerator: new Omega3nChainGenerator(), minLength: 6));
-            Key = id ?? throw new System.ArgumentNullException(nameof(id));
+            Id = id ?? throw new System.ArgumentNullException(nameof(id));
             Priority = priority;
             EadLipidDatabase = db ?? throw new System.ArgumentNullException(nameof(db));
             scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EAD, true);
@@ -23,7 +24,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             evaluator = MsScanMatchResultEvaluator.CreateEvaluator(Parameter);
         }
 
-        public string Key { get; }
+        public string Id { get; }
+
+        [Obsolete]
+        public string Key => Id;
         public int Priority { get; }
 
         private readonly ILipidGenerator lipidGenerator;

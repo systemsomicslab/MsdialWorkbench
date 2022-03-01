@@ -6,6 +6,7 @@ using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,6 +14,20 @@ namespace CompMs.App.Msdial.Model.Imms
 {
     public class ImmsCompoundSearchModel<T> : CompoundSearchModel<T> where T : IMSIonProperty, IMoleculeProperty
     {
+        public ImmsCompoundSearchModel(
+            IFileBean fileBean,
+            T property,
+            MSDecResult msdecResult,
+            IReadOnlyList<CompoundSearcher> compoundSearchers)
+            :base(
+                 fileBean,
+                 property,
+                 msdecResult,
+                 compoundSearchers) {
+
+        }
+
+        [Obsolete]
         public ImmsCompoundSearchModel(
             IFileBean fileBean,
             T property,

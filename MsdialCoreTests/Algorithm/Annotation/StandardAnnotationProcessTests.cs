@@ -35,7 +35,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MSDecResult { },
             };
             var annotator = new MockAnnotator("Annotator");
-            var process = new StandardAnnotationProcess<MockQuery>(new MockFactory(), new MockAnnotatorContainer(annotator));
+            var process = new StandardAnnotationProcess<MockQuery>(new MockFactory(annotator.Id), new MockAnnotatorContainer(annotator));
             process.RunAnnotation(chromPeaks, msdecResults, new MockProvider(), 1);
 
             Assert.AreEqual(annotator.Dummy, chromPeaks[0].MatchResults.Representative);
@@ -62,7 +62,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MSDecResult { },
             };
             var annotator = new MockAnnotator("Annotator");
-            var process = new StandardAnnotationProcess<MockQuery>(new MockFactory(), new MockAnnotatorContainer(annotator));
+            var process = new StandardAnnotationProcess<MockQuery>(new MockFactory(annotator.Id), new MockAnnotatorContainer(annotator));
             process.RunAnnotation(chromPeaks, msdecResults, new MockProvider(), 4);
 
             Assert.AreEqual(annotator.Dummy, chromPeaks[0].MatchResults.Representative);
@@ -89,7 +89,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MSDecResult { },
             };
             var annotator = new MockAnnotator("Annotator");
-            var process = new StandardAnnotationProcess<MockQuery>(new MockFactory(), new MockAnnotatorContainer(annotator));
+            var process = new StandardAnnotationProcess<MockQuery>(new MockFactory(annotator.Id), new MockAnnotatorContainer(annotator));
             await process.RunAnnotationAsync(chromPeaks, msdecResults, new MockProvider(), 1);
 
             Assert.AreEqual(annotator.Dummy, chromPeaks[0].MatchResults.Representative);
@@ -116,7 +116,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 new MSDecResult { },
             };
             var annotator = new MockAnnotator("Annotator");
-            var process = new StandardAnnotationProcess<MockQuery>(new MockFactory(), new MockAnnotatorContainer(annotator));
+            var process = new StandardAnnotationProcess<MockQuery>(new MockFactory(annotator.Id), new MockAnnotatorContainer(annotator));
             await process.RunAnnotationAsync(chromPeaks, msdecResults, new MockProvider(), 4);
 
             Assert.AreEqual(annotator.Dummy, chromPeaks[0].MatchResults.Representative);
@@ -147,6 +147,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
         class MockFactory : IAnnotationQueryFactory<MockQuery>
         {
+            public string AnnotatorId { get; }
+
+            public MockFactory(string id) {
+                AnnotatorId = id;
+            }
+
             public MockQuery Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter) {
                 return new MockQuery();
             }
@@ -169,14 +175,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
         class MockAnnotator : IAnnotator<MockQuery, MoleculeMsReference, MsScanMatchResult>, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IMatchResultEvaluator<MsScanMatchResult>
         {
             public MockAnnotator(string key) {
-                Key = key;
+                Id = key;
                 Dummy = new MsScanMatchResult
                 {
                     Name = "dummy", AnnotatorID = Key, Source = SourceType.MspDB,
                 };
             }
 
-            public string Key { get; }
+            public string Id { get; }
+            public string Key => Id;
 
             public int Priority { get; } = 0;
 
