@@ -1,12 +1,10 @@
 ﻿using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
-using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.Common.Lipidomics {
 
@@ -38,7 +36,7 @@ namespace CompMs.Common.Lipidomics {
             var counter = result.TotalMatchedIonCount;
 
             if (!result.IsChainIonsExisted) { // chain existed expected: PC 36:2
-                var obj = new Lipid(LbmClass.PC, molecule.Mass, new TotalChain(chains.CarbonCount, chains.DoubleBondCount, chains.OxidizedCount,
+                var obj = new Lipid(molecule.LipidClass, molecule.Mass, new TotalChain(chains.CarbonCount, chains.DoubleBondCount, chains.OxidizedCount,
                     2, 0, 0));
                 return (obj, new double[2] { score, counter });
             }
@@ -54,13 +52,13 @@ namespace CompMs.Common.Lipidomics {
                     var acyl2 = new AcylChain(deepChains.Chains[1].CarbonCount,
                         new DoubleBond(deepChains.Chains[1].DoubleBondCount),
                         new Oxidized(0));
-                    var obj = new Lipid(LbmClass.PC, molecule.Mass, new PositionLevelChains(acyl1, acyl2));
+                    var obj = new Lipid(molecule.LipidClass, molecule.Mass, new PositionLevelChains(acyl1, acyl2));
                     return (obj, new double[2] { score, counter });
                 }
                 else if (result.IsDoubleBondIonsExisted) { // chain existed expected: PC 18:0_18:2(9,12)
                     var acyl1 = deepChains.Chains[0];
                     var acyl2 = deepChains.Chains[1];
-                    var obj = new Lipid(LbmClass.PC, molecule.Mass, new MolecularSpeciesLevelChains(acyl1, acyl2));
+                    var obj = new Lipid(molecule.LipidClass, molecule.Mass, new MolecularSpeciesLevelChains(acyl1, acyl2));
                     return (obj, new double[2] { score, counter });
                 }
                 else { // chain existed expected: PC 18:0_18:2
@@ -70,7 +68,7 @@ namespace CompMs.Common.Lipidomics {
                     var acyl2 = new AcylChain(deepChains.Chains[1].CarbonCount,
                         new DoubleBond(deepChains.Chains[1].DoubleBondCount),
                         new Oxidized(0));
-                    var obj = new Lipid(LbmClass.PC, molecule.Mass, new MolecularSpeciesLevelChains(acyl1, acyl2));
+                    var obj = new Lipid(molecule.LipidClass, molecule.Mass, new MolecularSpeciesLevelChains(acyl1, acyl2));
                     return (obj, new double[2] { score, counter });
                 }
             }
@@ -126,9 +124,18 @@ namespace CompMs.Common.Lipidomics {
 
                 // check the dtected ion nudouble bond position
                 var doublebondIons = ref_spectrum.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond)).ToList();
-                var matchedions = MsScanMatching.GetMatchedPeaksScores(exp_spectrum, doublebondIons, tolerance, mzBegin, mzEnd);
-                var matchedPercent = matchedions[0];
-                var matchedCount = matchedions[1];
+
+                var matchedpeaks = MsScanMatching.GetMachedSpectralPeaks(exp_spectrum, doublebondIons, tolerance, mzBegin, mzEnd);
+                var matchedpeaks_matched = matchedpeaks.Where(n => n.IsMatched).ToList();
+
+                //var matchedions = MsScanMatching.GetMatchedPeaksScores(exp_spectrum, doublebondIons, tolerance, mzBegin, mzEnd);
+                var matchedCount = matchedpeaks_matched.Count;
+                var matchedPercent = (double)matchedCount / (double)doublebondIons.Count;
+
+                var dbhigh_enriched = matchedpeaks_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high)).Sum(n => n.Resolution);
+                var dblow_enriched = matchedpeaks_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_low)).Sum(n => n.Resolution);
+                var dbBonusScore = dbhigh_enriched > 3.0 * dblow_enriched ? 0.5 : 0.0;
+
                 var isDoubleBondIdentified = matchedPercent > doublebondIonCutoff ? true : false;
 
                 result.DoubleBondIonsDetected = (int)matchedCount;
@@ -138,9 +145,9 @@ namespace CompMs.Common.Lipidomics {
                 result.ClassIonScore = isClassIonExisted ? 1.0 : 0.0;
                 result.ChainIonScore = isChainIonExisted ? 1.0 : 0.0;
                 result.PositionIonScore = isPositionIonExisted ? 1.0 : 0.0;
-                result.DoubleBondIonScore = matchedPercent;
+                result.DoubleBondIonScore = matchedPercent + dbBonusScore;
                 
-                var score = result.ClassIonScore + result.ChainIonScore + result.PositionIonScore * 5 + result.DoubleBondIonScore * 10.0;
+                var score = result.ClassIonScore + result.ChainIonScore + result.PositionIonScore + result.DoubleBondIonScore;
                 var counter = classionsDetected + chainIonsDetected + positionIonsDetected + matchedCount;
                 result.TotalScore = score;
                 result.TotalMatchedIonCount = counter;

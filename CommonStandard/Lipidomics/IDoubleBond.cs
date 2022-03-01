@@ -72,11 +72,16 @@ namespace CompMs.Common.Lipidomics
         public DoubleBondState State { get; }
 
         static readonly Dictionary<(int, DoubleBondState), DoubleBondInfo> cache = new Dictionary<(int, DoubleBondState), DoubleBondInfo>();
+        private static readonly object lockobj = new object();
 
         public static DoubleBondInfo Create(int position, DoubleBondState state = DoubleBondState.Unknown) {
-            return cache.TryGetValue((position, state), out var info)
-                ? info
-                : (cache[(position, state)] = new DoubleBondInfo(position, state));
+            DoubleBondInfo info;
+            lock (lockobj) {
+                if (!cache.TryGetValue((position, state), out info)) {
+                    return cache[(position, state)] = new DoubleBondInfo(position, state);
+                }
+            }
+            return info;
         }
 
         public static DoubleBondInfo E(int position) => Create(position, DoubleBondState.E);

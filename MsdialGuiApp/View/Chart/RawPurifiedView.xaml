@@ -3,33 +3,60 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
-             mc:Ignorable="d" 
-             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             xmlns:io="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+             mc:Ignorable="d" 
              Name="RawPurePlot"
+             d:Background="White"
              d:DesignHeight="600" d:DesignWidth="370">
-    <d:DesignerProperties.DesignStyle>
-        <Style TargetType="UserControl">
-            <Setter Property="Background" Value="White"/>
-        </Style>
-    </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/View/ChartStyles.xaml"/>
-                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <io:SaveImageAsCommand x:Key="SaveFormattedChartCommand" Format="Emf">
+                <io:SaveImageAsCommand.Formatter>
+                    <io:StyleFormatter Style="{StaticResource VerticalAlignedChartFormal}"/>
+                </io:SaveImageAsCommand.Formatter>
+            </io:SaveImageAsCommand>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid DataContext="{Binding RawPurifiedSpectrumsViewModel}">
+    <Grid DataContext="{Binding RawPurifiedSpectrumsViewModel}"
+          d:DataContext="{d:DesignInstance vm:RawPurifiedSpectrumsViewModel}">
         <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
                           GraphTitle="{Binding GraphTitle.Value}"
                           HorizontalTitle="{Binding HorizontalTitle.Value}"
                           VerticalTitle="{Binding VerticalTitle.Value}"
-                          Style="{StaticResource VerticalConcatChart}"
-                          Background="WhiteSmoke" BorderBrush="Black">
+                          Style="{StaticResource VerticalAlignedChart}">
+            <chart:MultiChart.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Save spectra table as.."
+                              Command="{Binding DataContext.SaveMs2SpectrumCommand, RelativeSource={RelativeSource AncestorType={x:Type local:RawPurifiedView}}}"/>
+                    <MenuItem Header="Save image as...">
+                        <MenuItem Header="Save as emf"
+                                  Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Save as png"
+                                  Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                    <MenuItem Header="Save chart image"
+                              Command="{StaticResource SaveFormattedChartCommand}"
+                              CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Copy image as...">
+                        <MenuItem Header="Copy as emf"
+                                  Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Copy as png"
+                                  Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                </ContextMenu>
+            </chart:MultiChart.ContextMenu>
             <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis}">
                 <!--<TextBlock Text="Raw spectrum" FontStyle="Italic" FontFamily="Calibri"
                    VerticalAlignment="Top" HorizontalAlignment="Left" />-->
@@ -38,8 +65,7 @@
                                            HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                                            VerticalPropertyName="{Binding VerticalProperty}"
                                            BrushMapper="{Binding UpperSpectrumBrushSource.Value}"
-                                           HueProperty="SpectrumComment"
-                                           >
+                                           HueProperty="SpectrumComment">
                     <chart:LineSpectrumControl.ToolTip>
                         <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel Orientation="Horizontal">
@@ -70,8 +96,7 @@
                                            HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                                            VerticalPropertyName="{Binding VerticalProperty.Value}"
                                            BrushMapper="{Binding LowerSpectrumBrushSource.Value}"
-                                           HueProperty="SpectrumComment"
-                                           >
+                                           HueProperty="SpectrumComment">
                     <chart:LineSpectrumControl.ToolTip>
                         <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel Orientation="Horizontal">

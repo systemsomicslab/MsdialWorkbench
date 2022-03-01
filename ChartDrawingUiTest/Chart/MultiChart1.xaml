@@ -8,6 +8,7 @@
       xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
       xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
       xmlns:am="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
+      xmlns:io="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
       xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="MultiChartsControl1">
@@ -60,6 +61,18 @@
                                    behavior:ZoomByWheelBehavior.IsEnabled="False"
                                    behavior:MoveByDragBehavior.IsEnabled="False"
                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False"/>
+            <chart:MultiChart.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Save image">
+                        <MenuItem Header="Save as png"
+                                  Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Save as emf"
+                                  Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                </ContextMenu>
+            </chart:MultiChart.ContextMenu>
         </chart:MultiChart>
     </Grid>
 </Page>

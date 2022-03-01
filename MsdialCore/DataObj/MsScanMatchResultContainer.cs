@@ -37,24 +37,10 @@ namespace CompMs.MsdialCore.DataObj
         public MsScanMatchResult Representative {
             get {
                 if (cacheRepresentative is null) {
-
-                    if (MatchResults.Any()) {
-                        var results = MatchResults.Where(n => !n.IsDecoy);
-                        if (results.IsEmptyOrNull()) {
-                            return null;
-                        }
-                        else {
-                            //cacheRepresentative = results.Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore));
-                            cacheRepresentative = results.Argmax(result => Tuple.Create(result.IsManuallyModified, result.IsReferenceMatched, result.IsAnnotationSuggested, result.Priority, result.TotalScore));
-                            return cacheRepresentative;
-                        }
-                    }
-                    else {
-                        cacheRepresentative = null;
-                    }
-                    //cacheRepresentative = MatchResults.Any()
-                    //    ? MatchResults.Where(n => !n.IsDecoy).Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore))
-                    //    : null;
+                    var results = MatchResults.Where(result => !result.IsDecoy).ToArray();
+                    cacheRepresentative = results.Length > 0
+                        ? results.DefaultIfEmpty(UnknownResult).Argmax(ResultOrder)
+                        : null;
                 }
                 return cacheRepresentative;
             }
@@ -62,27 +48,16 @@ namespace CompMs.MsdialCore.DataObj
         private MsScanMatchResult cacheRepresentative = null;
 
         [IgnoreMember]
+        public IEnumerable<MsScanMatchResult> TopResults => MatchResults.Where(result => !result.IsDecoy).OrderByDescending(ResultOrder);
+
+        [IgnoreMember]
         public MsScanMatchResult DecoyRepresentative {
             get {
                 if (cacheDecoyRepresentative is null) {
-                    if (MatchResults.Any()) {
-                        var decoyResults = MatchResults.Where(n => n.IsDecoy);
-                        if (decoyResults.IsEmptyOrNull()) {
-                            return null;
-                        }
-                        else {
-                            //cacheDecoyRepresentative = decoyResults.Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore));
-                            cacheDecoyRepresentative = decoyResults.Argmax(result => Tuple.Create(result.IsManuallyModified, result.IsReferenceMatched, result.IsAnnotationSuggested, result.Priority, result.TotalScore));
-                            //cacheDecoyRepresentative = decoyResults.Argmax(result => Tuple.Create(result.Priority, result.TotalScore));
-                            return cacheDecoyRepresentative;
-                        }
-                    }
-                    else {
-                        cacheDecoyRepresentative = null;
-                    }
-                    //cacheDecoyRepresentative = MatchResults.Any()
-                    //    ? MatchResults.Where(n => n.IsDecoy).Argmax(result => Tuple.Create(result.Source, result.Priority, result.TotalScore))
-                    //    : null;
+                    var decoyResults = MatchResults.Where(result => result.IsDecoy).ToArray();
+                    cacheDecoyRepresentative = decoyResults.Length > 0
+                        ? decoyResults.Argmax(ResultOrder)
+                        : null;
                 }
                 return cacheDecoyRepresentative;
             }
@@ -307,6 +282,10 @@ namespace CompMs.MsdialCore.DataObj
             foreach (var kvp in other.MSRawID2MspBasedMatchResult)
                 MSRawID2MspBasedMatchResult.Add(kvp.Key, kvp.Value);
             TextDbBasedMatchResults.AddRange(other.TextDbBasedMatchResults);
+        }
+
+        private static Tuple<bool, bool, bool, int, float> ResultOrder(MsScanMatchResult result) {
+            return Tuple.Create(result.IsManuallyModified, result.IsReferenceMatched, result.IsAnnotationSuggested, result.Priority, result.TotalScore);
         }
     }
 }

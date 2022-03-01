@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
         xmlns:gchart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+        xmlns:io="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
         xmlns:resvm="clr-namespace:CompMs.App.Msdial.ViewModel.MsResult"
         xmlns:resvw="clr-namespace:CompMs.App.Msdial.View.MsResult"
@@ -15,9 +16,6 @@
         Title="ExperimentSpectrum" Height="800" Width="800">
     <Window.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/View/ChartStyles.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
             <Style TargetType="{x:Type gchart:MultiChart}" x:Key="SpectrumStyle">
                 <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="True"/>
                 <Setter Property="Template">
@@ -67,11 +65,35 @@
         <GroupBox Header="MS spectrum"
                   BorderThickness="0"
                   Grid.Row="2">
-            <resvw:SummarizedSpectrumView DataContext="{Binding Ms1Spectrum.Value}" Height="200"/>
+            <resvw:SummarizedSpectrumView DataContext="{Binding Ms1Spectrum.Value}" Height="200">
+                <resvw:SummarizedSpectrumView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Save image as...">
+                            <MenuItem Header="Save as emf"
+                                      Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="Save as png"
+                                      Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        </MenuItem>
+                        <MenuItem Header="Copy image as...">
+                            <MenuItem Header="Copy as emf"
+                                      Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="Copy as png"
+                                      Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        </MenuItem>
+                    </ContextMenu>
+                </resvw:SummarizedSpectrumView.ContextMenu>
+            </resvw:SummarizedSpectrumView>
         </GroupBox>
         <GroupBox Header="MS/MS spectrum"
                   BorderThickness="0"
                   Grid.Row="3">
+            <GroupBox.Resources>
+                <ResourceDictionary Source="/View/ChartStyles.xaml"/>
+            </GroupBox.Resources>
             <gchart:MultiChart ItemsSource="{Binding Ms2Spectrums}"
                                Style="{StaticResource SpectrumStyle}"
                                Background="WhiteSmoke"
@@ -85,6 +107,22 @@
                     <ContextMenu>
                         <MenuItem Header="Save spectra as nist format"
                                   Command="{Binding SaveSpectraAsNistCommand, Mode=OneTime}"/>
+                        <MenuItem Header="Save image as...">
+                            <MenuItem Header="Save as emf"
+                                      Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="Save as png"
+                                      Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        </MenuItem>
+                        <MenuItem Header="Copy image as...">
+                            <MenuItem Header="Copy as emf"
+                                      Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="Copy as png"
+                                      Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        </MenuItem>
                     </ContextMenu>
                 </gchart:MultiChart.ContextMenu>
             </gchart:MultiChart>

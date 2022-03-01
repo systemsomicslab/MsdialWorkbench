@@ -28,6 +28,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
 
         public LcmsFastaAnnotator(ShotgunProteomicsDB reference, MsRefSearchParameterBase msrefSearchParameter, ProteomicsParameter proteomicsParameter,
             string annotatorID, SourceType type, int priority) : base(reference, msrefSearchParameter, proteomicsParameter, annotatorID, priority, type) {
+            Id = annotatorID;
             PeptideMsRef.Sort(comparer);
             DecoyPeptideMsRef.Sort(comparer);
             ReferObject = reference;
@@ -36,6 +37,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             evaluator = MsScanMatchResultEvaluator.CreateEvaluator(msrefSearchParameter);
         }
 
+        public string Id { get; }
 
         public MsScanMatchResult Annotate(IPepAnnotationQuery query) {
             var msrefParam = query.MsRefSearchParameter ?? MsRefSearchParameter;
