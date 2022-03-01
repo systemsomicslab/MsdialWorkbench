@@ -188,6 +188,16 @@
 
     <DataTemplate DataType="{x:Type vm:SplitSpectrumsViewModel}">
         <DataTemplate.Resources>
+            <AlternationConverter x:Key="BrushConverter">
+                <x:Static Member="Brushes.Black"/>
+                <x:Static Member="Brushes.Red"/>
+                <x:Static Member="Brushes.Blue"/>
+                <x:Static Member="Brushes.Green"/>
+                <x:Static Member="Brushes.Gray"/>
+                <x:Static Member="Brushes.Magenta"/>
+                <x:Static Member="Brushes.Cyan"/>
+                <x:Static Member="Brushes.Yellow"/>
+            </AlternationConverter>
             <AlternationConverter x:Key="PenConverter">
                 <Pen Brush="Black" Thickness="2" PresentationOptions:Freeze="True"/>
                 <Pen Brush="Red" Thickness="2" PresentationOptions:Freeze="True"/>
@@ -282,7 +292,9 @@
                                              LabelPropertyName="Mass"
                                              Format="N3"
                                              TopN="10"
-                                             Brush="Black"/>
+                                             Brush="{Binding Path=(ItemsControl.AlternationIndex),
+                                                             RelativeSource={RelativeSource TemplatedParent},
+                                                             Converter={StaticResource BrushConverter}}"/>
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -343,7 +355,9 @@
                                              LabelPropertyName="Mass"
                                              Format="N3"
                                              TopN="10"
-                                             Brush="Black"
+                                             Brush="{Binding Path=(ItemsControl.AlternationIndex),
+                                                             RelativeSource={RelativeSource TemplatedParent},
+                                                             Converter={StaticResource BrushConverter}}"
                                              FlippedY="False"
                                              ContentAlignment="BottomCenter"/>
                         </Grid>

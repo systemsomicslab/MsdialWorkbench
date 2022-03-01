@@ -19,7 +19,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <converter:MultiplyConverter x:Key="permille" By="1000"/>
             <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">

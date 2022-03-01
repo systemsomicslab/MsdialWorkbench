@@ -96,10 +96,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             AnalysisModel = new LcmsAnalysisModel(
                 analysisFile,
                 provider,
+                Storage.DataBases,
                 Storage.DataBaseMapper,
                 matchResultEvaluator,
-                Storage.MsdialLcmsParameter,
-                Storage.DataBaseMapper.MoleculeAnnotators)
+                Storage.MsdialLcmsParameter)
             .AddTo(Disposables);
         }
 
@@ -111,7 +111,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentModel = new LcmsAlignmentModel(
                 alignmentFile,
                 matchResultEvaluator,
-                Storage.DataBaseMapper.MoleculeAnnotators,
+                Storage.DataBases,
                 Storage.DataBaseMapper,
                 Storage.MsdialLcmsParameter,
                 barItemsLoader)
