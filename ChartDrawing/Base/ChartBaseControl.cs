@@ -144,7 +144,7 @@ namespace CompMs.Graphics.Core.Base
         public static bool GetFlippedX(DependencyObject d)
             => (bool)d.GetValue(FlippedXProperty);
 
-        public static void SetFlippedX(DependencyObject d, IAxisManager value)
+        public static void SetFlippedX(DependencyObject d, bool value)
             => d.SetValue(FlippedXProperty, value);
 
         public bool FlippedX {
@@ -163,7 +163,7 @@ namespace CompMs.Graphics.Core.Base
         public static bool GetFlippedY(DependencyObject d)
             => (bool)d.GetValue(FlippedYProperty);
 
-        public static void SetFlippedY(DependencyObject d, IAxisManager value)
+        public static void SetFlippedY(DependencyObject d, bool value)
             => d.SetValue(FlippedYProperty, value);
 
         public bool FlippedY {

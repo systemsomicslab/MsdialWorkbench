@@ -21,10 +21,13 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
 
         public LcimmsTextDBAnnotator(MoleculeDataBase textDB, MsRefSearchParameterBase parameter, string sourceKey, int priority)
             : base(textDB.Database, parameter, sourceKey, priority, SourceType.TextDB) {
+            Id = sourceKey;
             this.db.Sort(comparer);
             this.ReferObject = textDB;
             evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
         }
+
+        public string Id { get; }
 
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;

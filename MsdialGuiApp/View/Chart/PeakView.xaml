@@ -17,7 +17,7 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
-        <ResourceDictionary Source="/View/ChartStyles.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
     </UserControl.Resources>
 
     <Grid>

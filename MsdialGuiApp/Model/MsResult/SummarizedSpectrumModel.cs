@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.Model.MsResult
             verticalAxis.ChartMargin = new ConstantMargin(0, 30);
             var horizontalProperty = "Mass";
             var verticalProperty = "Intensity";
-            SpectrumModel = new SpectrumModel(spectrums.Where(s => s.Intensity > 5).ToList(), horizontalAxis, verticalAxis, horizontalProperty, verticalProperty, $"Experiment={experimentId}");
+            SpectrumModel = new SpectrumModel(spectrums, horizontalAxis, verticalAxis, horizontalProperty, verticalProperty, $"Experiment={experimentId}");
         }
 
         public SpectrumModel SpectrumModel { get; }

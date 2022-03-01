@@ -23,6 +23,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private readonly SourceType source;
         private readonly string sourceKey;
 
+        public string Id => sourceKey;
         public MsRefSearchParameterBase Parameter { get; }
         public int Priority { get; }
 

@@ -16,10 +16,13 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
         public DimsTextDBAnnotator(MoleculeDataBase textDB, MsRefSearchParameterBase parameter, string id, int priority)
             : base(textDB.Database, parameter, id, priority, SourceType.TextDB) {
 
+            Id = id;
             referObject = textDB;
             searcher = new MassReferenceSearcher<MoleculeMsReference>(textDB.Database);
             evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
         }
+
+        public string Id { get; }
 
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> referObject;
         private readonly MassReferenceSearcher<MoleculeMsReference> searcher;

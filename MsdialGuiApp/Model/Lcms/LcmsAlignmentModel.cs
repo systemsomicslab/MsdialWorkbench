@@ -39,12 +39,12 @@ namespace CompMs.App.Msdial.Model.Lcms
         public LcmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators,
+            DataBaseStorage databases,
             DataBaseMapper mapper,
             MsdialLcmsParameter parameter,
             IObservable<IBarItemsLoader> barItemsLoader) {
-            if (annotators is null) {
-                throw new ArgumentNullException(nameof(annotators));
+            if (databases is null) {
+                throw new ArgumentNullException(nameof(databases));
             }
 
             if (barItemsLoader is null) {
@@ -55,7 +55,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Parameter = parameter;
             DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
-            Annotators = annotators;
+            CompoundSearchers = ConvertToCompoundSearchers(databases);
             Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(AlignmentFile.FilePath);
             if (Container == null) {
                 MessageBox.Show("No aligned spot information.");
@@ -169,7 +169,9 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ParameterBase Parameter { get; }
         public DataBaseMapper DataBaseMapper { get; }
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
-        public IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> Annotators { get; }
+
+        private readonly List<CompoundSearcher> CompoundSearchers;
+
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
@@ -209,8 +211,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 AlignmentFile,
                 Target.Value.innerModel,
                 MsdecResult.Value,
-                null,
-                Annotators);
+                CompoundSearchers);
         }
 
         public void SaveSpectra(string filename) {
@@ -239,6 +240,24 @@ namespace CompMs.App.Msdial.Model.Lcms
                 MsdecResult.Value,
                 DataBaseMapper,
                 Parameter);
+        }
+
+        private List<CompoundSearcher> ConvertToCompoundSearchers(DataBaseStorage databases) {
+            var metabolomicsSearchers = databases
+                .MetabolomicsDataBases
+                .SelectMany(db => db.Pairs)
+                .Select(pair => new CompoundSearcher(
+                    new AnnotationQueryWithoutIsotopeFactory(pair.SerializableAnnotator),
+                    pair.SearchParameter,
+                    pair.SerializableAnnotator));
+            var lipidomicsSearchers = databases
+                .EadLipidomicsDatabases
+                .SelectMany(db => db.Pairs)
+                .Select(pair => new CompoundSearcher(
+                    new AnnotationQueryWithReferenceFactory(DataBaseMapper, pair.SerializableAnnotator, Parameter.PeakPickBaseParam),
+                    pair.SearchParameter,
+                    pair.SerializableAnnotator));
+            return metabolomicsSearchers.Concat(lipidomicsSearchers).ToList();
         }
     }
 }
