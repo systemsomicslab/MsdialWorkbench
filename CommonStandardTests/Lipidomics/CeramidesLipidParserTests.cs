@@ -23,6 +23,10 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(744.57814, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.SM, lipid.LipidClass);
 
+            lipid = parser.Parse("SM 18:1;1OH,3OH/18:1;O");
+            Assert.AreEqual(744.57814, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.SM, lipid.LipidClass);
+
             lipid = parser.Parse("SM 36:1;5O"); 
             Assert.AreEqual(778.58362, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.SM, lipid.LipidClass);
@@ -41,6 +45,15 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(LbmClass.Undefined, lipid.LipidClass);
 
             lipid = parser.Parse("Cer 18:2;2O/24:0"); // O=C(NC(CO)C(O)C=CCCC=CCCCCCCCCC)CCCCCCCCCCCCCCCCCCCCCCC
+            Assert.AreEqual(647.6216455, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.Cer_NS, lipid.LipidClass);
+
+            lipid = parser.Parse("Cer 18:2(4,8);2O/24:0"); 
+            Assert.AreEqual(647.6216455, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.Cer_NS, lipid.LipidClass);
+
+
+            lipid = parser.Parse("Cer 18:1(4);2O/24:1(9)"); 
             Assert.AreEqual(647.6216455, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.Cer_NS, lipid.LipidClass);
         }

@@ -123,9 +123,9 @@ namespace CompMs.Common.Lipidomics.Tests
         [TestMethod()]
         public void PCGenerateTest2_H()
         {
-            var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(), new Oxidized(0));
+            var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(), new Oxidized(0));//PC 18:0_18:2(9,12)
             var acyl2 = new AcylChain(18, DoubleBond.CreateFromPosition(9, 12), new Oxidized(0));
-            var lipid = new Lipid(LbmClass.PC, 785.5935, new PositionLevelChains(acyl1, acyl2));
+            var lipid = new Lipid(LbmClass.PC, 785.5935, new PositionLevelChains(acyl1, acyl2)); 
 
             var generator = new PCSpectrumGenerator();
             var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
