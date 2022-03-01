@@ -3,26 +3,52 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
              mc:Ignorable="d" 
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
+             xmlns:io="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:MsSpectrumViewModel}}"
+             d:Background="White"
              d:DesignHeight="600" d:DesignWidth="370" >
-    <d:DesingerProperties.DesignStyle>
-        <Style TargetType="UserControl">
-            <Setter Property="Background" Value="White"/>
-        </Style>
-    </d:DesingerProperties.DesignStyle>
     <UserControl.Resources>
-        <ResourceDictionary Source="/View/ChartStyles.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <io:StyleFormatter x:Key="ReverseMsSpectrumFormatter" Style="{StaticResource ResourceKey=VerticalConcatChartFormal}"/>
+            <io:SaveImageAsCommand x:Key="ReverseMsSpectrumSaveEmfCommand" Formatter="{StaticResource ReverseMsSpectrumFormatter}" Format="Emf"/>
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
                           GraphTitle="{Binding GraphTitle.Value}"
                           HorizontalTitle="{Binding HorizontalTitle.Value}"
                           VerticalTitle="{Binding VerticalTitle.Value}"
-                          Style="{StaticResource VerticalConcatChart}"
-                          Background="WhiteSmoke" BorderBrush="Black">
+                          Style="{StaticResource VerticalConcatChart}">
+            <chart:MultiChart.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Save image as...">
+                        <MenuItem Header="Save as emf"
+                                  Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Save as png"
+                                  Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                    <MenuItem Header="Save image"
+                              Command="{StaticResource ReverseMsSpectrumSaveEmfCommand}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Copy image as...">
+                        <MenuItem Header="Copy as emf"
+                                  Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Copy as png"
+                                  Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                </ContextMenu>
+            </chart:MultiChart.ContextMenu>
             <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis}">
                 <chart:LineSpectrumControl x:Name="MS2Line"
                                            ItemsSource="{Binding UpperSpectrum.Value}"
@@ -52,8 +78,7 @@
                                  ClipToBounds="True"/>
             </Grid>
 
-            <Grid core:ChartBaseControl.VerticalAxis="{Binding LowerVerticalAxis}"
-                  core:ChartBaseControl.FlippedY="False">
+            <Grid core:ChartBaseControl.FlippedY="False" core:ChartBaseControl.VerticalAxis="{Binding LowerVerticalAxis}">
                 <chart:LineSpectrumControl x:Name="MS2Ref"
                                            ItemsSource="{Binding LowerSpectrum.Value}"
                                            HorizontalPropertyName="{Binding HorizontalProperty.Value}"
@@ -62,11 +87,13 @@
                                            HueProperty="SpectrumComment">
                     <chart:LineSpectrumControl.ToolTip>
                         <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="m/z: "/>
-                                <TextBlock Text="{Binding FocusedItem.Mass}"/>
-                                <TextBlock Text=" Intensity: "/>
-                                <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding FocusedItem.Mass, StringFormat=m/z: {0}}"/>
+                                    <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0}}" Margin="4,0"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding FocusedItem.SpectrumComment, StringFormat=Spectrum: {0}}"/>
+                                <TextBlock Text="{Binding FocusedItem.Comment, StringFormat=Comment: {0}}"/>
                             </StackPanel>
                         </ToolTip>
                     </chart:LineSpectrumControl.ToolTip>

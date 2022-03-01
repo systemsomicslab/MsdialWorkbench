@@ -3,6 +3,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
@@ -11,13 +12,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     {
         public LcmsCompoundSearchViewModel(CompoundSearchModel model) : base(model) {
             ParameterHasErrors = ParameterVM.Select(parameter =>
-                new[]
-                {
-                    parameter.Ms1Tolerance.ObserveHasErrors,
-                    parameter.Ms2Tolerance.ObserveHasErrors,
-                    parameter.RtTolerance.ObserveHasErrors,
-                }.CombineLatestValuesAreAllFalse()
-                .Inverse())
+                parameter is null
+                    ? Observable.Return(true)
+                    : new[]
+                    {
+                        parameter.Ms1Tolerance.ObserveHasErrors,
+                        parameter.Ms2Tolerance.ObserveHasErrors,
+                        parameter.RtTolerance.ObserveHasErrors,
+                    }.CombineLatestValuesAreAllFalse()
+                    .Inverse())
             .Switch()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
@@ -30,12 +33,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .ToReactiveCommand().AddTo(Disposables);
 
             Compounds = ParameterVM.Select(parameter =>
-                new[]
-                {
-                    parameter.Ms1Tolerance.ToUnit(),
-                    parameter.Ms2Tolerance.ToUnit(),
-                    parameter.RtTolerance.ToUnit(),
-                }.Merge())
+                parameter is null
+                    ? Observable.Never<Unit>()
+                    : new[]
+                    {
+                        parameter.Ms1Tolerance.ToUnit(),
+                        parameter.Ms2Tolerance.ToUnit(),
+                        parameter.RtTolerance.ToUnit(),
+                    }.Merge())
                 .Switch()
                 .Where(_ => !ParameterHasErrors.Value)
                 .Select(_ => Observable.FromAsync(SearchAsync))

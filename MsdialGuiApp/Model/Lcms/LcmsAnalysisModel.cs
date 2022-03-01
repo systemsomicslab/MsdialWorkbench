@@ -33,9 +33,10 @@ namespace CompMs.App.Msdial.Model.Lcms
         public LcmsAnalysisModel(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
+            DataBaseStorage databases,
             DataBaseMapper mapper,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            ParameterBase parameter, IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators)
+            ParameterBase parameter)
             : base(analysisFile) {
             if (analysisFile is null) {
                 throw new ArgumentNullException(nameof(analysisFile));
@@ -57,15 +58,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            if (annotators is null) {
-                throw new ArgumentNullException(nameof(annotators));
-            }
-
             this.provider = provider;
             DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator;
             Parameter = parameter;
-            Annotators = annotators;
+            CompoundSearchers = ConvertToCompoundSearchers(databases);
 
             // Peak scatter plot
             var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -190,7 +187,9 @@ namespace CompMs.App.Msdial.Model.Lcms
         public DataBaseMapper DataBaseMapper { get; }
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
         public ParameterBase Parameter { get; }
-        public IReadOnlyList<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> Annotators { get; }
+
+        public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
+
         public EicLoader EicLoader { get; }
 
         public AnalysisPeakPlotModel PlotModel { get; }
@@ -224,8 +223,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 AnalysisFile,
                 Target.Value.InnerModel,
                 MsdecResult.Value,
-                null,
-                Annotators);
+                CompoundSearchers);
         }
 
         public void FragmentSearcher() {
@@ -257,6 +255,24 @@ namespace CompMs.App.Msdial.Model.Lcms
                 DataBaseMapper,
                 Parameter
                 );
+        }
+
+        private List<CompoundSearcher> ConvertToCompoundSearchers(DataBaseStorage databases) {
+            var metabolomicsSearchers = databases
+                .MetabolomicsDataBases
+                .SelectMany(db => db.Pairs)
+                .Select(pair => new CompoundSearcher(
+                    new AnnotationQueryWithoutIsotopeFactory(pair.SerializableAnnotator),
+                    pair.SearchParameter,
+                    pair.SerializableAnnotator));
+            var lipidomicsSearchers = databases
+                .EadLipidomicsDatabases
+                .SelectMany(db => db.Pairs)
+                .Select(pair => new CompoundSearcher(
+                    new AnnotationQueryWithReferenceFactory(DataBaseMapper, pair.SerializableAnnotator, Parameter.PeakPickBaseParam),
+                    pair.SearchParameter,
+                    pair.SerializableAnnotator));
+            return metabolomicsSearchers.Concat(lipidomicsSearchers).ToList();
         }
     }
 }
