@@ -725,7 +725,7 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Name="GraphTitle"
-                                   Text="{Binding GraphTitle, RelativeSource={RelativeSource AncestorType={x:Type chart:SimpleChartControl}}}"
+                                   Text="{Binding GraphTitle, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
                                    Style="{StaticResource GraphTitle}"
                                    IsHitTestVisible="False"
                                    LayoutTransform="{StaticResource RotateL}"
