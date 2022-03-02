@@ -2,13 +2,16 @@
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Design;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
+using System.Windows.Media;
 
 namespace CompMs.App.SpectrumViewer.ViewModel
 {
@@ -42,6 +45,19 @@ namespace CompMs.App.SpectrumViewer.ViewModel
                 .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0, 0), labelType: LabelType.Order)
                 .AddTo(Disposables);
 
+            ChartBrushes = new[]
+            {
+                Brushes.White,
+                Brushes.LightCoral,
+                Brushes.LightSkyBlue,
+                Brushes.LightGreen,
+                Brushes.LightGray,
+                Brushes.LightPink,
+                Brushes.LightBlue,
+                Brushes.LightYellow,
+            };
+            BrushMapper = new SequentialBrushMapper(ChartBrushes);
+
             DropCommand = new ReactiveCommand<DragEventArgs>().AddTo(Disposables);
             DropCommand
                 .Where(e => !e.Handled && e.Data.GetDataPresent(typeof(DisplayScan)))
@@ -70,6 +86,10 @@ namespace CompMs.App.SpectrumViewer.ViewModel
         public ReactiveContinuousAxisManager<double> HorizontalAxis { get; }
 
         public ReactiveContinuousAxisManager<double> VerticalAxis { get; }
+
+        public IBrushMapper BrushMapper { get; }
+
+        public Brush[] ChartBrushes { get; }
 
         public ReactiveCommand<DragEventArgs> DropCommand { get; }
 
