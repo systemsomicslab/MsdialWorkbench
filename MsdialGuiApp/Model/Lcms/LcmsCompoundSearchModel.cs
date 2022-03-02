@@ -6,6 +6,7 @@ using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,9 +18,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             IFileBean fileBean,
             T property,
             MSDecResult msdecResult,
-            IReadOnlyList<IsotopicPeak> isotopes,
-            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainer)
-            : base(fileBean, property, msdecResult, isotopes, annotatorContainer) {
+            IReadOnlyList<CompoundSearcher> compoundSearcher)
+            : base(fileBean, property, msdecResult, compoundSearcher) {
              
         }
 

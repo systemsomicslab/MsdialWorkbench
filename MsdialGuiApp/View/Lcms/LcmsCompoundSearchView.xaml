@@ -18,7 +18,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <setting:AnnotatorDataTemplateSelector xmlns:setting="clr-namespace:CompMs.App.Msdial.View.Setting"
                                                    x:Key="AnnotatorSettingTemplateSelector"/>
@@ -65,9 +65,9 @@
                 <ui:LabeledContent PrependLabel="Select annotation method:"
                                    HorizontalAlignment="Left"
                                    Margin="4">
-                    <ComboBox ItemsSource="{Binding Annotators}"
-                              SelectedItem="{Binding Annotator.Value}"
-                              DisplayMemberPath="AnnotatorID"
+                    <ComboBox ItemsSource="{Binding CompoundSearchers}"
+                              SelectedItem="{Binding CompoundSearcher.Value}"
+                              DisplayMemberPath="Id"
                               VerticalAlignment="Center"
                               Width="200"/>
                 </ui:LabeledContent>

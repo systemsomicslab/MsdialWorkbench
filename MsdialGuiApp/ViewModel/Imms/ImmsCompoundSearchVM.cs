@@ -2,6 +2,7 @@
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Reactive;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
@@ -10,13 +11,15 @@ namespace CompMs.App.Msdial.ViewModel.Imms
     {
         public ImmsCompoundSearchVM(CompoundSearchModel model) : base(model) {
             ParameterHasErrors = ParameterVM.Select(parameter =>
-                (new[]
-                {
-                    parameter.Ms1Tolerance.ObserveHasErrors,
-                    parameter.Ms2Tolerance.ObserveHasErrors,
-                    parameter.CcsTolerance.ObserveHasErrors,
-                }).CombineLatestValuesAreAllFalse()
-                .Inverse())
+                parameter is null
+                    ? Observable.Return(true)
+                    : new[]
+                    {
+                        parameter.Ms1Tolerance.ObserveHasErrors,
+                        parameter.Ms2Tolerance.ObserveHasErrors,
+                        parameter.CcsTolerance.ObserveHasErrors,
+                    }.CombineLatestValuesAreAllFalse()
+                    .Inverse())
             .Switch()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
@@ -27,13 +30,16 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand().AddTo(Disposables);
 
-            Compounds = ParameterVM.Select(parameter => new[]
-            {
-                parameter.Ms1Tolerance.ToUnit(),
-                parameter.Ms2Tolerance.ToUnit(),
-                parameter.CcsTolerance.ToUnit(),
-                SearchCommand.ToUnit(),
-            }.Merge())
+            Compounds = ParameterVM.Select(parameter =>
+                parameter is null
+                    ? Observable.Never<Unit>()
+                    : new[]
+                    {
+                        parameter.Ms1Tolerance.ToUnit(),
+                        parameter.Ms2Tolerance.ToUnit(),
+                        parameter.CcsTolerance.ToUnit(),
+                        SearchCommand.ToUnit(),
+                    }.Merge())
             .Switch()
             .Where(_ => !ParameterHasErrors.Value)
             .Select(_ => Observable.FromAsync(SearchAsync))

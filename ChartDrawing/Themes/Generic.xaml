@@ -105,6 +105,8 @@
     </Style>
 
     <Style TargetType="{x:Type chart:SimpleChartControl}">
+        <Setter Property="Background" Value="WhiteSmoke"/>
+        <Setter Property="BorderBrush" Value="Black"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type chart:SimpleChartControl}">

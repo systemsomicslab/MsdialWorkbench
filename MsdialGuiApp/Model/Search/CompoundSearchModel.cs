@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
@@ -13,7 +14,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -26,7 +26,7 @@ namespace CompMs.App.Msdial.Model.Search
             IFileBean file,
             IMSIonProperty msIonProperty,
             IMoleculeProperty moleculeProperty,
-            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators) {
+            IReadOnlyList<CompoundSearcher> compoundSearchers) {
             if (file is null) {
                 throw new ArgumentNullException(nameof(file));
             }
@@ -39,27 +39,21 @@ namespace CompMs.App.Msdial.Model.Search
                 throw new ArgumentNullException(nameof(moleculeProperty));
             }
 
-            if (annotators is null) {
-                throw new ArgumentNullException(nameof(annotators));
-            }
-
             File = file;
             MSIonProperty = msIonProperty;
             MoleculeProperty = moleculeProperty;
-            Annotators = annotators.Select(
-                annotator => new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(
-                    annotator.Annotator,
-                    new MsRefSearchParameterBase(annotator.Parameter)
-                )).ToList();
-            Annotator = Annotators.FirstOrDefault();
+
+            CompoundSearchers = compoundSearchers;
+            CompoundSearcher = CompoundSearchers.FirstOrDefault();
         }
 
-        public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> Annotators { get; } 
-        public IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Annotator {
-            get => annotator;
-            set => SetProperty(ref annotator, value);
+        public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
+
+        public CompoundSearcher CompoundSearcher {
+            get => compoundSearcher;
+            set => SetProperty(ref compoundSearcher, value);
         }
-        private IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotator;
+        private CompoundSearcher compoundSearcher;
         
         public IFileBean File { get; }
 
@@ -111,22 +105,59 @@ namespace CompMs.App.Msdial.Model.Search
         }
     }
 
+    public class CompoundSearcher
+    {
+        private readonly IAnnotationQueryFactory<IAnnotationQueryZZZ<MsScanMatchResult>> queryFactory;
+        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
+
+        public CompoundSearcher(
+            IAnnotationQueryFactory<IAnnotationQueryZZZ<MsScanMatchResult>> queryFactory,
+            MsRefSearchParameterBase msRefSearchParameter,
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            this.queryFactory = queryFactory ?? throw new ArgumentNullException(nameof(queryFactory));
+            MsRefSearchParameter = msRefSearchParameter is null
+                ? new MsRefSearchParameterBase()
+                : new MsRefSearchParameterBase(msRefSearchParameter);
+            this.refer = refer ?? throw new ArgumentNullException(nameof(refer));
+
+            Id = queryFactory.AnnotatorId;
+        }
+
+        public string Id { get; }
+
+        public MsRefSearchParameterBase MsRefSearchParameter { get; }
+
+        public IEnumerable<ICompoundResult> Search(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature) {
+            var candidates = queryFactory.Create(
+                property,
+                scan,
+                spectrum,
+                ionFeature,
+                MsRefSearchParameter
+            ).FindCandidates().ToList();
+            foreach (var candidate in candidates) {
+                candidate.Source |= SourceType.Manual;
+            }
+            return candidates
+                .OrderByDescending(result => result.TotalScore)
+                .Select(result => new CompoundResult(refer.Refer(result), result));
+        }
+    }
+
     public class CompoundSearchModel<T> : CompoundSearchModel where T: IMSIonProperty, IMoleculeProperty
     {
         public CompoundSearchModel(
             IFileBean fileBean,
-            T property, MSDecResult msdecResult,
-            IReadOnlyList<IsotopicPeak> isotopes,
-            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators)
-            : base(fileBean, property, property, annotators){
-
+            T property,
+            MSDecResult msdecResult,
+            IReadOnlyList<CompoundSearcher> compoundSearchers)
+            : base(fileBean, property, property, compoundSearchers) {
             if (property == null) {
                 throw new ArgumentException(nameof(property));
             }
 
             this.Property = property;
             this.msdecResult = msdecResult ?? throw new ArgumentNullException(nameof(msdecResult));
-            this.isotopes = isotopes;
 
             var referenceSpectrum = this.ObserveProperty(m => m.SelectedReference)
                 .Where(c => c != null)
@@ -153,20 +184,12 @@ namespace CompMs.App.Msdial.Model.Search
             IFileBean fileBean,
             T property, MSDecResult msdecResult,
             IReadOnlyList<IsotopicPeak> isotopes,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotator,
-            MsRefSearchParameterBase parameter = null)
-            : this(fileBean,
-                  property,
-                  msdecResult,
-                  isotopes,
-                  new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> {
-                      new AnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>(annotator, parameter ?? new MsRefSearchParameterBase())
-                  }) {
+            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators)
+            : this(fileBean, property, msdecResult, ConvertToSearcherAndConcat(isotopes, annotators, new List<CompoundSearcher>())) {
 
         }
 
         private readonly MSDecResult msdecResult;
-        private readonly IReadOnlyList<IsotopicPeak> isotopes;
 
         public T Property { get; }
 
@@ -178,16 +201,12 @@ namespace CompMs.App.Msdial.Model.Search
         }
 
         protected IEnumerable<ICompoundResult> SearchCore() {
-            var annotator = Annotator.Annotator;
-            var candidates = annotator.FindCandidates(
-                new AnnotationQuery(Property, msdecResult, isotopes,
-                new IonFeatureCharacter() { IsotopeWeightNumber = 0 },
-                Annotator.Parameter, annotator));
-            foreach (var candidate in candidates) {
-                candidate.Source |= SourceType.Manual;
-            }
-            return candidates.OrderByDescending(result => result.TotalScore)
-                .Select(result => new CompoundResult(annotator.Refer(result), result));
+            return CompoundSearcher.Search(
+                Property,
+                msdecResult,
+                new List<RawPeakElement>(),
+                new IonFeatureCharacter { IsotopeWeightNumber = 0, } // Assume this is not isotope.
+            );
         }
 
         public override void SetConfidence() {
@@ -216,6 +235,17 @@ namespace CompMs.App.Msdial.Model.Search
                 obj.MatchResults.RemoveManuallyResults();
                 obj.MatchResults.AddResult(new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown });
             }
+        }
+
+        private static List<CompoundSearcher> ConvertToSearcherAndConcat(
+            IReadOnlyList<IsotopicPeak> isotopes,
+            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators,
+            IEnumerable<CompoundSearcher> compoundSearchers) {
+            return annotators.Select(container => new CompoundSearcher(
+                new AnnotationQueryFactory(container.Annotator, (_1, _2) => isotopes),
+                container.Parameter,
+                container.Annotator))
+                .Concat(compoundSearchers).ToList();
         }
     }
 }

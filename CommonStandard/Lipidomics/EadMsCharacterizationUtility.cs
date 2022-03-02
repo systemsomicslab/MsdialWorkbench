@@ -1,12 +1,10 @@
 ﻿using CompMs.Common.Algorithm.Scoring;
 using CompMs.Common.Components;
-using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.Common.Lipidomics {
 
@@ -38,7 +36,7 @@ namespace CompMs.Common.Lipidomics {
             var counter = result.TotalMatchedIonCount;
 
             if (!result.IsChainIonsExisted) { // chain existed expected: PC 36:2
-                var obj = new Lipid(LbmClass.PC, molecule.Mass, new TotalChain(chains.CarbonCount, chains.DoubleBondCount, chains.OxidizedCount,
+                var obj = new Lipid(molecule.LipidClass, molecule.Mass, new TotalChain(chains.CarbonCount, chains.DoubleBondCount, chains.OxidizedCount,
                     2, 0, 0));
                 return (obj, new double[2] { score, counter });
             }
@@ -54,13 +52,13 @@ namespace CompMs.Common.Lipidomics {
                     var acyl2 = new AcylChain(deepChains.Chains[1].CarbonCount,
                         new DoubleBond(deepChains.Chains[1].DoubleBondCount),
                         new Oxidized(0));
-                    var obj = new Lipid(LbmClass.PC, molecule.Mass, new PositionLevelChains(acyl1, acyl2));
+                    var obj = new Lipid(molecule.LipidClass, molecule.Mass, new PositionLevelChains(acyl1, acyl2));
                     return (obj, new double[2] { score, counter });
                 }
                 else if (result.IsDoubleBondIonsExisted) { // chain existed expected: PC 18:0_18:2(9,12)
                     var acyl1 = deepChains.Chains[0];
                     var acyl2 = deepChains.Chains[1];
-                    var obj = new Lipid(LbmClass.PC, molecule.Mass, new MolecularSpeciesLevelChains(acyl1, acyl2));
+                    var obj = new Lipid(molecule.LipidClass, molecule.Mass, new MolecularSpeciesLevelChains(acyl1, acyl2));
                     return (obj, new double[2] { score, counter });
                 }
                 else { // chain existed expected: PC 18:0_18:2
@@ -70,7 +68,7 @@ namespace CompMs.Common.Lipidomics {
                     var acyl2 = new AcylChain(deepChains.Chains[1].CarbonCount,
                         new DoubleBond(deepChains.Chains[1].DoubleBondCount),
                         new Oxidized(0));
-                    var obj = new Lipid(LbmClass.PC, molecule.Mass, new MolecularSpeciesLevelChains(acyl1, acyl2));
+                    var obj = new Lipid(molecule.LipidClass, molecule.Mass, new MolecularSpeciesLevelChains(acyl1, acyl2));
                     return (obj, new double[2] { score, counter });
                 }
             }

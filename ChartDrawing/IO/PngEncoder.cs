@@ -1,15 +1,23 @@
-﻿using System.IO;
+﻿using System.Drawing;
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace CompMs.Graphics.IO
 {
-    public class FrameworkElementEncoder
-    {
-        public void SaveAsPng(FrameworkElement element, Stream stream) {
+    public class PngEncoder : IElementEncoder {
+        public void Save(FrameworkElement element, Stream stream) {
             var encoder = new PngBitmapEncoder();
             SaveUsingEncoder(element, stream, encoder);
+        }
+
+        public object Get(FrameworkElement element){
+            var encoder = new PngBitmapEncoder();
+            using (var memory = new MemoryStream()) {
+                SaveUsingEncoder(element, memory, encoder);
+                return new Bitmap(memory);
+            }
         }
 
         private void SaveUsingEncoder(FrameworkElement element, Stream stream, BitmapEncoder encoder) {

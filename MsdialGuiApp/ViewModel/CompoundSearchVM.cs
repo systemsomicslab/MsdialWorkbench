@@ -1,10 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
-using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -12,6 +9,7 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,9 +27,10 @@ namespace CompMs.App.Msdial.ViewModel
 
             MsSpectrumViewModel = new MsSpectrumViewModel(this.model.MsSpectrumModel).AddTo(Disposables);
 
-            Annotator = this.model.ToReactivePropertySlimAsSynchronized(m => m.Annotator).AddTo(Disposables);
-            ParameterVM = Annotator
-                .Select(annotator => new MsRefSearchParameterBaseViewModel(annotator.Parameter))
+            CompoundSearcher = this.model.ToReactivePropertySlimAsSynchronized(m => m.CompoundSearcher).AddTo(Disposables);
+
+            ParameterVM = CompoundSearcher
+                .Select(searcher => searcher is null ? null : new MsRefSearchParameterBaseViewModel(searcher.MsRefSearchParameter))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -51,13 +50,15 @@ namespace CompMs.App.Msdial.ViewModel
             SetUnknownCommand = canSet.ToReactiveCommand().AddTo(Disposables);
             SetUnknownCommand.Subscribe(this.model.SetUnknown);
 
-            ParameterHasErrors = ParameterVM.Select(
-                parameter => new[]
-                {
-                    parameter.Ms1Tolerance.ObserveHasErrors,
-                    parameter.Ms2Tolerance.ObserveHasErrors,
-                }.CombineLatestValuesAreAllFalse()
-                .Inverse())
+            ParameterHasErrors = ParameterVM.Select(parameter =>
+                parameter is null
+                    ? Observable.Return(true)
+                    : new[]
+                    {
+                        parameter.Ms1Tolerance.ObserveHasErrors,
+                        parameter.Ms2Tolerance.ObserveHasErrors,
+                    }.CombineLatestValuesAreAllFalse()
+                    .Inverse())
             .Switch()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
@@ -70,12 +71,15 @@ namespace CompMs.App.Msdial.ViewModel
             .ToReactiveCommand()
             .AddTo(Disposables);
 
-            Compounds = ParameterVM.Select(parameter => new[]
-            {
-                parameter.Ms1Tolerance.ToUnit(),
-                parameter.Ms2Tolerance.ToUnit(),
-                SearchCommand.ToUnit(),
-            }.Merge())
+            Compounds = ParameterVM.Select(parameter =>
+                parameter is null
+                    ? Observable.Never<Unit>()
+                    : new[]
+                    {
+                        parameter.Ms1Tolerance.ToUnit(),
+                        parameter.Ms2Tolerance.ToUnit(),
+                        SearchCommand.ToUnit(),
+                    }.Merge())
             .Switch()
             .Where(_ => !ParameterHasErrors.Value)
             .Select(_ => Observable.FromAsync(SearchAsync))
@@ -91,9 +95,9 @@ namespace CompMs.App.Msdial.ViewModel
 
         public MsSpectrumViewModel MsSpectrumViewModel { get; }
 
-        public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> Annotators => model.Annotators;
+        public IReadOnlyList<CompoundSearcher> CompoundSearchers => model.CompoundSearchers;
 
-        public ReactivePropertySlim<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> Annotator { get; }
+        public ReactivePropertySlim<CompoundSearcher> CompoundSearcher { get; }
 
         public ReadOnlyReactivePropertySlim<MsRefSearchParameterBaseViewModel> ParameterVM { get; }
 

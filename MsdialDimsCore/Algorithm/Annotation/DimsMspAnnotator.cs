@@ -20,10 +20,13 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
         public DimsMspAnnotator(MoleculeDataBase mspDB, MsRefSearchParameterBase parameter, TargetOmics omics, string sourceKey, int priority)
             : base(mspDB.Database, parameter, sourceKey, priority, SourceType.MspDB) {
             this.omics = omics;
+            Id = sourceKey;
             ReferObject = mspDB;
             searcher = new MassReferenceSearcher<MoleculeMsReference>(mspDB.Database);
             evaluator = MsScanMatchResultEvaluator.CreateEvaluator(parameter);
         }
+
+        public string Id { get; }
 
         private readonly MassReferenceSearcher<MoleculeMsReference> searcher;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> ReferObject;
