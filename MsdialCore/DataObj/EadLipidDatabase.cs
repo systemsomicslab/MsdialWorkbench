@@ -72,6 +72,75 @@ namespace CompMs.MsdialCore.DataObj
             GC.WaitForPendingFinalizers();
         }
 
+        private static readonly LipidGenerator ShortHandGenerator = new LipidGenerator(new ShortHandGenerator());
+
+        public List<MoleculeMsReference> BatchGenerate(IEnumerable<ILipid> lipids, ILipid seed, AdductIon adduct, MoleculeMsReference baseReference) {
+            if (connection is null) {
+                throw new ObjectDisposedException(nameof(connection));
+            }
+            var shortLipid = seed.Generate(ShortHandGenerator).SingleOrDefault();
+            if (shortLipid is null) {
+                return new List<MoleculeMsReference>();
+            }
+            var references = new List<MoleculeMsReference>();
+            if (cache.Contains(shortLipid.Name.GetHashCode())) {
+                var descendants = GetDescendant(shortLipid, adduct).ToDictionary(reference => reference.Name, reference => reference);
+                var needToConverts = new Dictionary<int, LipidReference>();
+                var needToRegisters = new List<ILipid>();
+                foreach (var lipid in lipids) {
+                    if (descendants.TryGetValue(lipid.Name, out var reference)) {
+                        needToConverts.Add(reference.ScanID, reference);
+                    }
+                    else {
+                        needToRegisters.Add(lipid);
+                    }
+                }
+                references.AddRange(BatchConvert(needToConverts));
+                var needToRegisterReferences = needToRegisters.Select(lipid => GenerateReference(lipid, adduct, baseReference)).ToArray();
+                Register(needToRegisterReferences, shortLipid);
+                references.AddRange(needToRegisterReferences);
+            }
+            else {
+                var needToRegisterReferences = lipids.Select(lipid => GenerateReference(lipid, adduct, baseReference)).ToArray();
+                Register(needToRegisterReferences, shortLipid);
+                references.AddRange(needToRegisterReferences);
+            }
+            return references;
+        }
+
+        private IEnumerable<LipidReference> GetDescendant(ILipid ancestor, AdductIon adduct) {
+            var command = connection.CreateCommand();
+            command.CommandText = $"SELECT * FROM {ReferenceTableName} WHERE ShortName = '{ancestor.Name}' AND AdductType = '{adduct.AdductIonName}'";
+            var reader = command.ExecuteReader();
+            while (reader.Read()) {
+                yield return LipidReference.ParseLipidReference(reader);
+            }
+        }
+
+        private MoleculeMsReference GenerateReference(ILipid lipid, AdductIon adduct, MoleculeMsReference baseReference) {
+            if (!lipidGenerator.CanGenerate(lipid, adduct)) {
+                return null;
+            }
+            var reference = lipid.GenerateSpectrum(lipidGenerator, adduct, baseReference) as MoleculeMsReference;
+            if (!(reference is null)) {
+                reference.ScanID = scanId++;
+            }
+            return reference;
+        }
+
+        private IEnumerable<MoleculeMsReference> BatchConvert(Dictionary<int, LipidReference> lipidReferences) {
+            if (lipidReferences.Count == 0) {
+                yield break;
+            }
+            var command = connection.CreateCommand();
+            command.CommandText = $"SELECT * FROM {SpectrumTableName} WHERE ScanID IN ({string.Join(",", lipidReferences.Values.Select(reference => $"'{reference.ScanID}'"))})";
+            var reader = command.ExecuteReader();
+            foreach (var group in LipidReference.ParseSpectrumAndId(reader).GroupBy(pair => pair.Item2, pair => pair.Item1)) {
+                lipidReferences[group.Key].Spectrum.AddRange(group);
+                yield return lipidReferences[group.Key].ConvertToReference();
+            }
+        }
+
         public MoleculeMsReference Generate(ILipid lipid, AdductIon adduct, MoleculeMsReference baseReference) {
             if (connection is null) {
                 throw new ObjectDisposedException(nameof(connection));
@@ -93,14 +162,10 @@ namespace CompMs.MsdialCore.DataObj
                     return reference.ConvertToReference();
                 }
             }
-            var reference_ = lipid.GenerateSpectrum(lipidGenerator, adduct, baseReference) as MoleculeMsReference;
-            if (reference_ != null) {
-                reference_.ScanID = scanId++;
-            }
-            return reference_;
+            return GenerateReference(lipid, adduct, baseReference);
         }
 
-        public void Register(IEnumerable<MoleculeMsReference> moleculeMsReferences) {
+        private void Register(IEnumerable<MoleculeMsReference> moleculeMsReferences, ILipid seed) {
             if (connection is null) {
                 throw new ObjectDisposedException(nameof(connection));
             }
@@ -119,13 +184,14 @@ namespace CompMs.MsdialCore.DataObj
                 }
 
                 foreach (var reference in lipidReferences) {
-                    command.CommandText = string.Format(commandText, ReferenceTableName, reference.ToReferenceValues());
+                    command.CommandText = string.Format(commandText, ReferenceTableName, reference.ToReferenceValues(seed.Name));
                     command.ExecuteNonQuery();
                 }
 
                 transaction.Commit();
             }
-            cache.UnionWith(lipidReferences.Select(r => r.Name.GetHashCode()));
+            cache.Add(seed.Name.GetHashCode());
+            // cache.UnionWith(lipidReferences.Select(r => r.Name.GetHashCode()));
         }
 
         string IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Key => Id;
@@ -328,7 +394,7 @@ namespace CompMs.MsdialCore.DataObj
                 };
             }
 
-            public static readonly string ReferenceColumns = "ScanID, PrecursorMz, RT, RI, Drift, Mz, IonMode, Name, Formula, Ontology, SMILES, InChIKey, AdductType, CollisionCrossSection, CompoundClass, Comment, CollisionEnergy, DatabaseID, Charge, MsLevel, SpectrumIdFrom, SpectrumIdTo";
+            public static readonly string ReferenceColumns = "ScanID, PrecursorMz, RT, RI, Drift, Mz, IonMode, Name, Formula, Ontology, SMILES, InChIKey, AdductType, CollisionCrossSection, CompoundClass, Comment, CollisionEnergy, DatabaseID, Charge, MsLevel, SpectrumIdFrom, SpectrumIdTo, ShortName";
 
             public static readonly string ReferenceColumnsDefine = "ScanID INTEGER NOT NULL PRIMARY KEY," +
                 "PrecursorMz REAL NOT NULL," +
@@ -351,11 +417,12 @@ namespace CompMs.MsdialCore.DataObj
                 "Charge INTEGER NOT NULL," +
                 "MsLevel INTEGER NOT NULL," +
                 "SpectrumIdFrom INTEGER NOT NULL," +
-                "SpectrumIdTo INTEGER NOT NULL";
+                "SpectrumIdTo INTEGER NOT NULL," +
+                "ShortName TEXT";
 
             public static readonly int ReferenceNameColumn = 7;
 
-            public string ToReferenceValues() => $"({ScanID}," +
+            public string ToReferenceValues(string shortName) => $"({ScanID}," +
                 $"{PrecursorMz}," +
                 $"{ChromXs.RT.Value}," +
                 $"{ChromXs.RI.Value}," +
@@ -376,7 +443,8 @@ namespace CompMs.MsdialCore.DataObj
                 $"{Charge}," +
                 $"{MsLevel}," +
                 $"{SpectrumIdFrom}," +
-                $"{SpectrumIdTo})";
+                $"{SpectrumIdTo}," +
+                $"'{shortName ?? Name}')";
 
             public static LipidReference ParseLipidReference(SQLiteDataReader reader) {
                 var reference = new LipidReference
@@ -466,6 +534,25 @@ namespace CompMs.MsdialCore.DataObj
                         SpectrumComment = (SpectrumComment)reader.GetInt32(13),
                         IsAbsolutelyRequiredFragmentForAnnotation = reader.GetBoolean(14),
                     };
+                }
+            }
+
+            public static IEnumerable<(SpectrumPeak, int)> ParseSpectrumAndId(SQLiteDataReader reader) {
+                while (reader.Read()) {
+                    yield return (new SpectrumPeak(reader.GetDouble(2), reader.GetDouble(3), reader.GetString(4))
+                        {
+                            Resolution = reader.GetDouble(5),
+                            Charge = reader.GetInt32(6),
+                            IsotopeFrag = reader.GetBoolean(7),
+                            PeakQuality = (PeakQuality)reader.GetInt32(8),
+                            PeakID = reader.GetInt32(9),
+                            IsotopeParentPeakID = reader.GetInt32(10),
+                            IsotopeWeightNumber = reader.GetInt32(11),
+                            IsMatched = reader.GetBoolean(12),
+                            SpectrumComment = (SpectrumComment)reader.GetInt32(13),
+                            IsAbsolutelyRequiredFragmentForAnnotation = reader.GetBoolean(14),
+                        },
+                        reader.GetInt32(1));
                 }
             }
         }

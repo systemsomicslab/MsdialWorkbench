@@ -45,17 +45,22 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 Charge = 2,
                 MsLevel = 2,
             };
-            var actual1 = db.Generate(lipid, adduct, reference);
+            var actuals1 = db.BatchGenerate(new[] { lipid, }, lipid, adduct, reference);
+
+            // var actual1 = db.Generate(lipid, adduct, reference);
+            var actual1 = actuals1.SingleOrDefault();
             Assert.AreEqual(0, actual1.ScanID);
 
             adduct = AdductIon.GetAdductIon("[M+Na]+");
             reference.PrecursorMz = adduct.ConvertToMz(lipid.Mass);
             reference.Name = "Lipid2";
             reference.AdductType = adduct;
-            var actual2 = db.Generate(lipid, adduct, reference);
+            var actuals2 = db.BatchGenerate(new[] { lipid, }, lipid, adduct, reference);
+            // var actual2 = db.Generate(lipid, adduct, reference);
+            var actual2 = actuals2.SingleOrDefault();
             Assert.AreEqual(1, actual2.ScanID);
 
-            db.Register(new[] { actual1, actual2, null }); // ignore null
+            // db.Register(new[] { actual1, actual2, null }, TODO); // ignore null
 
             var result = new MsScanMatchResult { LibraryID = 0, };
             var actual3 = db.Refer(result);
@@ -119,7 +124,8 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var actual5 = db.Refer(result);
             Assert.IsNull(actual5);
 
-            var actual6 = db.Generate(lipid, adduct, reference);
+            var actuals6 = db.BatchGenerate(new[] { lipid, }, lipid, adduct, reference);
+            var actual6 = actuals6.Single();
             Assert.AreEqual(actual2.ScanID, actual6.ScanID);
         }
     }

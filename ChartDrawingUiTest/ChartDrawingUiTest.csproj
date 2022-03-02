@@ -94,6 +94,10 @@
       <DependentUpon>ErrorBar1.xaml</DependentUpon>
     </Compile>
     <Compile Include="Chart\ErrorBarVM1.cs" />
+    <Compile Include="Chart\LineSpectrumControlSlimTest1.xaml.cs">
+      <DependentUpon>LineSpectrumControlSlimTest1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Chart\LineSpectrumControlSlimTestViewModel1.cs" />
     <Compile Include="Chart\MultiChart1.xaml.cs">
       <DependentUpon>MultiChart1.xaml</DependentUpon>
     </Compile>
@@ -192,6 +196,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Chart\ErrorBar1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Chart\LineSpectrumControlSlimTest1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

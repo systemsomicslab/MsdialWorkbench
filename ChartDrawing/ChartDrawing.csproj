@@ -70,6 +70,7 @@
     <Compile Include="AxisManager\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\Generic\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\Generic\BaseAxisManager.cs" />
+    <Compile Include="Chart\LineSpectrumControlSlim.cs" />
     <Compile Include="Chart\RangeSelector.cs" />
     <Compile Include="Chart\ScatterControlSlim.cs" />
     <Compile Include="Design\PenSelector.cs" />

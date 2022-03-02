@@ -37,6 +37,7 @@ namespace ChartDrawingUiTest
                 typeof(LineSpectrum1),
                 typeof(LineSpectrum2),
                 typeof(LineSpectrum3),
+                typeof(LineSpectrumControlSlimTest1),
                 typeof(Dendrogram5),
                 typeof(Heatmap4),
                 typeof(Bar1),
