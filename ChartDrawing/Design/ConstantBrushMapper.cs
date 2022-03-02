@@ -22,4 +22,13 @@ namespace CompMs.Graphics.Design
 
         public ConstantBrushMapper<U> As<U>() => new ConstantBrushMapper<U>(brush);
     }
+    
+    public class ConstantBrushMapper : IBrushMapper
+    {
+        public Brush Brush { get; set; }
+
+        public Brush Map(object key) => Brush;
+
+        public ConstantBrushMapper<T> As<T>() => new ConstantBrushMapper<T>(Brush);
+    }
 }
