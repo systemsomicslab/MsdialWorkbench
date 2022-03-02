@@ -39,6 +39,7 @@ namespace CompMs.Common.Algorithm.Scoring {
         public static (ILipid, double[]) GetEadBasedLipidMoleculeAnnotationResult(IMSScanProperty scan, MoleculeMsReference reference,
             float tolerance, float mzBegin, float mzEnd) {
             var lipid = FacadeLipidParser.Default.Parse(reference.Name);
+            if (lipid is null) return (null, new double[2] { 0.0, 0.0 });
             switch (lipid.LipidClass) {
                 case LbmClass.PC:
                     return PCEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
