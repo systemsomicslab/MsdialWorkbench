@@ -783,6 +783,12 @@ namespace CompMs.MsdialCore.Parameter {
                 { SpectrumComment.acylchain.ToString(), new List<byte>(){ 62, 106, 69, 255 } }, // #3e6a45
                 { SpectrumComment.snposition.ToString(), new List<byte>(){ 243, 124, 61, 255 } }, // #F37C3D
                 { SpectrumComment.doublebond.ToString(), new List<byte>(){ 78, 48, 45, 255 } }, // #4e302d
+                { SpectrumComment.doublebond_high.ToString(), new List<byte>(){ 78, 88, 45, 255 } }, // #4e302d
+                { SpectrumComment.doublebond_low.ToString(), new List<byte>(){ 78, 8, 45, 255 } }, // #4e302d
+                { SpectrumComment.c.ToString(), new List<byte>(){ 78, 48, 45, 255 } }, // #4e302d
+                { SpectrumComment.c2.ToString(), new List<byte>(){ 78, 48, 45, 255 } }, // #4e302d
+                { SpectrumComment.z.ToString(), new List<byte>(){ 62, 106, 69, 255 } }, // #4e302d
+                { SpectrumComment.z2.ToString(), new List<byte>(){ 62, 106, 69, 255 } }, // #4e302d
             };
         } 
         // Project type
