@@ -84,7 +84,8 @@ namespace CompMs.MsdialCore.DataObj
             }
             var references = new List<MoleculeMsReference>();
             if (cache.Contains(shortLipid.Name.GetHashCode())) {
-                var descendants = GetDescendant(shortLipid, adduct).ToDictionary(reference => reference.Name, reference => reference);
+                var descendantsList = GetDescendant(shortLipid, adduct).ToList();
+                var descendants = descendantsList.ToDictionary(reference => reference.Name, reference => reference);
                 var needToConverts = new Dictionary<int, LipidReference>();
                 var needToRegisters = new List<ILipid>();
                 foreach (var lipid in lipids) {
@@ -278,7 +279,7 @@ namespace CompMs.MsdialCore.DataObj
             connection = CreateConnection(dbPath);
 
             using (var command = connection.CreateCommand()) {
-                command.CommandText = $"SELECT Name FROM {ReferenceTableName}";
+                command.CommandText = $"SELECT ShortName FROM {ReferenceTableName}";
                 using (var reader = command.ExecuteReader()) {
                     while (reader.Read()) {
                         cache.Add(reader.GetString(0).GetHashCode());
