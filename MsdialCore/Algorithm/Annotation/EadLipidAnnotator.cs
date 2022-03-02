@@ -79,9 +79,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
             var description = LipidDescription.Class | LipidDescription.Chain | LipidDescription.SnPosition | LipidDescription.DoubleBondPosition;
             var lipids = GenerateLipid(lipid, lipidGenerator).Where(n => n.Description.HasFlag(description));
-
-            var references = lipids.Select(l => EadLipidDatabase.Generate(l, reference.AdductType, reference)).Where(reference_ => reference_ != null).ToList();
-            EadLipidDatabase.Register(references);
+            var references = EadLipidDatabase.BatchGenerate(lipids, lipid, reference.AdductType, reference);
+            // var references = lipids.Select(l => EadLipidDatabase.Generate(l, reference.AdductType, reference)).Where(reference_ => reference_ != null).ToList();
+            // EadLipidDatabase.Register(references, lipid);
             return references;
         }
 

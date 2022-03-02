@@ -448,6 +448,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 {
                     new SpectrumPeak { Mass = 86.094, Intensity = 5, },
                     new SpectrumPeak { Mass = 184.073, Intensity = 100, },
+                    new SpectrumPeak { Mass = 506.361, Intensity = 1, },
                     new SpectrumPeak { Mass = 524.367, Intensity = 1, },
                     new SpectrumPeak { Mass = 810.604, Intensity = 25, },
                 }
@@ -455,8 +456,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
 
             var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.EAD, true);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
-            scorer.Validate(result, target, target, reference, parameter);
 
+            Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");
+            Console.WriteLine($"SimpleDotProduct: {result.SimpleDotProduct}");
+            Console.WriteLine($"ReverseDotProduct: {result.ReverseDotProduct}");
+            Console.WriteLine($"MatchedPeaksPercentage: {result.MatchedPeaksPercentage}");
+            Console.WriteLine($"MatchedPeaksCount: {result.MatchedPeaksCount}");
             Console.WriteLine($"IsPrecursorMzMatch: {result.IsPrecursorMzMatch}");
             Console.WriteLine($"IsRtMatch: {result.IsRtMatch}");
             Console.WriteLine($"IsSpectrumMatch: {result.IsSpectrumMatch}");

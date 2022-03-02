@@ -125,8 +125,8 @@ namespace CompMs.Common.Lipidomics {
                 // check the dtected ion nudouble bond position
                 var doublebondIons = ref_spectrum.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond)).ToList();
                 var matchedions = MsScanMatching.GetMatchedPeaksScores(exp_spectrum, doublebondIons, tolerance, mzBegin, mzEnd);
-                var matchedPercent = matchedions[0];
-                var matchedCount = matchedions[1];
+                var matchedPercent = Math.Max(0, matchedions[0]);
+                var matchedCount = Math.Max(0, matchedions[1]);
                 var isDoubleBondIdentified = matchedPercent > doublebondIonCutoff ? true : false;
 
                 result.DoubleBondIonsDetected = (int)matchedCount;

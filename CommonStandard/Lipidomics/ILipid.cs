@@ -26,8 +26,8 @@ namespace CompMs.Common.Lipidomics
             LipidClass = lipidClass;
             Mass = mass;
             AnnotationLevel = GetAnnotationLevel(chains);
-            Chains = chains;
-            Description = GetLipidDescription(chains);
+            Chains = chains ?? throw new System.ArgumentNullException(nameof(chains));
+            Description = chains.Description;
         }
 
         public string Name => ToString();
@@ -63,35 +63,6 @@ namespace CompMs.Common.Lipidomics
                 default:
                     return 0;
             }
-        }
-
-        private static LipidDescription GetLipidDescription(ITotalChain chains) {
-            LipidDescription description = LipidDescription.None;
-            switch (chains) {
-                case TotalChain _:
-                    description = LipidDescription.Class; break;
-                case MolecularSpeciesLevelChains molecule:
-                    description = LipidDescription.Class | LipidDescription.Chain;
-                    var counter = 0;
-                    foreach (var chain in molecule.Chains) {
-                        counter += chain.DoubleBond.UnDecidedCount;
-                    }
-                    if (counter == 0) description |= LipidDescription.DoubleBondPosition;
-                    
-                    break;
-                case PositionLevelChains molecule:
-                    description = LipidDescription.Class | LipidDescription.Chain | LipidDescription.SnPosition;
-                    var cCounter = 0;
-                    foreach (var chain in molecule.Chains) {
-                        cCounter += chain.DoubleBond.UnDecidedCount;
-                    }
-                    if (cCounter == 0) description |= LipidDescription.DoubleBondPosition;
-
-                    break;
-                default:
-                    description = LipidDescription.None; break;
-            }
-            return description;
         }
     }
 }
