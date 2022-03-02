@@ -514,10 +514,7 @@ namespace CompMs.Common.Algorithm.Scoring {
 
         public static List<SpectrumPeak> GetMachedSpectralPeaks(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin,
            double massBegin, double massEnd) {
-            if (peaks2.Count == 0) {
-                return new List<SpectrumPeak>();
-            }
-            
+            if (!IsComparedAvailable(peaks1, peaks2)) return new List<SpectrumPeak>();
             var minMz = Math.Max(peaks2[0].Mass, massBegin);
             var maxMz = Math.Min(peaks2[peaks2.Count - 1].Mass, massEnd);
             var focusedMz = minMz;

@@ -74,6 +74,7 @@ namespace CompMs.Common.Proteomics.Function {
                 var aaResidueMass = sequence[i].ExactMass() - H2O;
                 bMz += aaResidueMass;
                 yMz -= aaResidueMass;
+                if (i == sequence.Count - 1) bMz += H2O;
 
                 bSequence += sequence[i].OneLetter;
                 ySequence = ySequence.Substring(1);
