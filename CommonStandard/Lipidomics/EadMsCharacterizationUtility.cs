@@ -124,9 +124,18 @@ namespace CompMs.Common.Lipidomics {
 
                 // check the dtected ion nudouble bond position
                 var doublebondIons = ref_spectrum.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond)).ToList();
-                var matchedions = MsScanMatching.GetMatchedPeaksScores(exp_spectrum, doublebondIons, tolerance, mzBegin, mzEnd);
-                var matchedPercent = Math.Max(0, matchedions[0]);
-                var matchedCount = Math.Max(0, matchedions[1]);
+
+                var matchedpeaks = MsScanMatching.GetMachedSpectralPeaks(exp_spectrum, doublebondIons, tolerance, mzBegin, mzEnd);
+                var matchedpeaks_matched = matchedpeaks.Where(n => n.IsMatched).ToList();
+
+                //var matchedions = MsScanMatching.GetMatchedPeaksScores(exp_spectrum, doublebondIons, tolerance, mzBegin, mzEnd);
+                var matchedCount = matchedpeaks_matched.Count;
+                var matchedPercent = (double)matchedCount / (double)doublebondIons.Count;
+
+                var dbhigh_enriched = matchedpeaks_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high)).Sum(n => n.Resolution);
+                var dblow_enriched = matchedpeaks_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_low)).Sum(n => n.Resolution);
+                var dbBonusScore = dbhigh_enriched > 3.0 * dblow_enriched ? 0.5 : 0.0;
+
                 var isDoubleBondIdentified = matchedPercent > doublebondIonCutoff ? true : false;
 
                 result.DoubleBondIonsDetected = (int)matchedCount;
@@ -136,9 +145,9 @@ namespace CompMs.Common.Lipidomics {
                 result.ClassIonScore = isClassIonExisted ? 1.0 : 0.0;
                 result.ChainIonScore = isChainIonExisted ? 1.0 : 0.0;
                 result.PositionIonScore = isPositionIonExisted ? 1.0 : 0.0;
-                result.DoubleBondIonScore = matchedPercent;
+                result.DoubleBondIonScore = matchedPercent + dbBonusScore;
                 
-                var score = result.ClassIonScore + result.ChainIonScore + result.PositionIonScore * 5 + result.DoubleBondIonScore * 10.0;
+                var score = result.ClassIonScore + result.ChainIonScore + result.PositionIonScore + result.DoubleBondIonScore;
                 var counter = classionsDetected + chainIonsDetected + positionIonsDetected + matchedCount;
                 result.TotalScore = score;
                 result.TotalMatchedIonCount = counter;

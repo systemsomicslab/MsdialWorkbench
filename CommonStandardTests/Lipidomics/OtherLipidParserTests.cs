@@ -135,4 +135,74 @@ namespace CompMs.Common.Lipidomics.Tests
         }
     }
 
+    [TestClass()]
+    public class DGTSLipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new DGTSLipidParser(); //CCCCCCCCCCCCCCCC(=O)OCC(COCCC(C([O-])=O)[N+](C)(C)C)OC(=O)CCCCCCC\C=C\CCCCCCCC
+
+            var lipid = parser.Parse("DGTS 34:1");
+            Assert.AreEqual(737.61695, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.DGTS, lipid.LipidClass);
+
+            lipid = parser.Parse("DGTS 16:0_18:1");
+            Assert.AreEqual(737.61695, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.DGTS, lipid.LipidClass);
+
+            lipid = parser.Parse("DGTS 16:0/18:1");
+            Assert.AreEqual(737.61695, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.DGTS, lipid.LipidClass);
+        }
+    }
+    [TestClass()]
+    public class DGTALipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new DGTALipidParser(); //DGTA(18:1/22:4(10Z,13Z,16Z,19Z)) CCCCCCCCC=CCCCCCCCC(=O)OCC(COCC(C[N+](C)(C)C)C(=O)[O-])OC(=O)CCCCCCCCC=CCC=CCC=CCC=CCC
+
+            var lipid = parser.Parse("DGTA 40:5");
+            Assert.AreEqual(813.64825, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.DGTA, lipid.LipidClass);
+
+            lipid = parser.Parse("DGTA 18:1_22:4");
+            Assert.AreEqual(813.64825, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.DGTA, lipid.LipidClass);
+
+            lipid = parser.Parse("DGTA 18:1/22:4");
+            Assert.AreEqual(813.64825, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.DGTA, lipid.LipidClass);
+        }
+    }
+
+    [TestClass()]
+    public class LDGTSLipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new LDGTSLipidParser(); 
+
+            var lipid = parser.Parse("LDGTS 18:1");//O=C(OCC(O)COCCC(C(=O)[O-])[N+](C)(C)C)CCCCCCCC=CCCCCCCCC
+            Assert.AreEqual(499.387288, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.LDGTS, lipid.LipidClass);
+        }
+    }
+    [TestClass()]
+    public class LDGTALipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new LDGTALipidParser(); 
+
+            var lipid = parser.Parse("LDGTA 18:1");
+            Assert.AreEqual(499.387288, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.LDGTA, lipid.LipidClass);
+        }
+    }
+
 }

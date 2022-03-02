@@ -51,6 +51,7 @@ namespace CompMs.MspGenerator
                 case LbmClass.MGDG:
                 case LbmClass.SQDG:
                 case LbmClass.DGTS:
+                case LbmClass.DGTA:
                 case LbmClass.DGCC:
                 case LbmClass.DGGA:
                 case LbmClass.CE:
@@ -224,6 +225,7 @@ namespace CompMs.MspGenerator
                 case LbmClass.MGDG:
                 case LbmClass.SQDG:
                 case LbmClass.DGTS:
+                case LbmClass.DGTA:
                 case LbmClass.DGCC:
                 case LbmClass.DGGA:
                 case LbmClass.CE:

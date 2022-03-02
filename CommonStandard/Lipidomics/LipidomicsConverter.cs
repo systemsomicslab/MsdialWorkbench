@@ -3697,6 +3697,7 @@ namespace CompMs.Common.Lipidomics {
                 case LbmClass.LPI: return "LPI";
                 case LbmClass.LPS: return "LPS";
                 case LbmClass.LDGTS: return "LDGTS";
+                case LbmClass.LDGTA: return "LDGTA";
                 case LbmClass.LDGCC: return "LDGCC";
                 case LbmClass.PC: return "PC";
                 case LbmClass.PA: return "PA";
@@ -3737,6 +3738,7 @@ namespace CompMs.Common.Lipidomics {
                 case LbmClass.MGDG: return "MGDG";
                 case LbmClass.SQDG: return "SQDG";
                 case LbmClass.DGTS: return "DGTS";
+                case LbmClass.DGTA: return "DGTA";
                 case LbmClass.DGCC: return "DGCC";
                 case LbmClass.DGGA: return "DGGA";
                 case LbmClass.ADGGA: return "ADGGA";
@@ -4055,6 +4057,7 @@ namespace CompMs.Common.Lipidomics {
                 case "LPI": return LbmClass.LPI;
                 case "LPS": return LbmClass.LPS;
                 case "LDGTS": return LbmClass.LDGTS;
+                case "LDGTA": return LbmClass.LDGTA;
                 case "LDGCC": return LbmClass.LDGCC;
 
                 case "EtherLPC": return LbmClass.EtherLPC;
@@ -4114,6 +4117,7 @@ namespace CompMs.Common.Lipidomics {
                 case "SMGDG": return LbmClass.SMGDG;
                 case "SQDG": return LbmClass.SQDG;
                 case "DGTS": return LbmClass.DGTS;
+                case "DGTA": return LbmClass.DGTA;
                 case "DGCC": return LbmClass.DGCC;
                 case "DGGA": return LbmClass.DGGA;
                 case "ADGGA": return LbmClass.ADGGA;
@@ -4486,12 +4490,14 @@ namespace CompMs.Common.Lipidomics {
                 case "EtherDG": return "Glycerolipids";
                 case "EtherTG": return "Glycerolipids";
                 case "LDGTS": return "Glycerolipids";
+                case "LDGTA": return "Glycerolipids";
                 case "LDGCC": return "Glycerolipids";
 
                 case "DGDG": return "Glycerolipids";
                 case "MGDG": return "Glycerolipids";
                 case "SQDG": return "Glycerolipids";
                 case "DGTS": return "Glycerolipids";
+                case "DGTA": return "Glycerolipids";
                 case "DGCC": return "Glycerolipids";
                 case "DGGA": return "Glycerolipids";
                 case "ADGGA": return "Glycerolipids";

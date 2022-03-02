@@ -637,6 +637,7 @@ namespace Rfx.Riken.OsakaUniv
                     new string[] { "DCAE", "[M+NH4]+" },
                     new string[] { "DGCC", "[M+H]+" },
                     new string[] { "DGTS", "[M+H]+" },
+                    new string[] { "DGTA", "[M+H]+" },
                     new string[] { "EtherDAG", "[M+NH4]+" },
                     new string[] { "EtherLPC", "[M+H]+" },
                     new string[] { "EtherLPE", "[M+H]+" },
@@ -650,6 +651,7 @@ namespace Rfx.Riken.OsakaUniv
                     new string[] { "Hex3Cer", "[M+H]+" },
                     new string[] { "LDGCC", "[M+H]+" },
                     new string[] { "LDGTS", "[M+H]+" },
+                    new string[] { "LDGTA", "[M+H]+" },
                     new string[] { "LPC", "[M+H]+" },
                     new string[] { "LPE", "[M+H]+" },
                     new string[] { "MAG", "[M+NH4]+" },
@@ -2025,7 +2027,8 @@ namespace Rfx.Riken.OsakaUniv
                                  && annotation.LipidClass != "MAG" && annotation.LipidClass != "ACar"
                                  && annotation.LipidClass != "CE" && annotation.LipidClass != "BMP"
                                  && annotation.LipidClass != "SQDG" && annotation.LipidClass != "DGTS"
-                                 && annotation.LipidClass != "LDGTS"
+                                 && annotation.LipidClass != "LDGTS" && annotation.LipidClass != "DGTA"
+                                 && annotation.LipidClass != "LDGTA"
                                  )
                             {
                                 continue;
@@ -2121,7 +2124,8 @@ namespace Rfx.Riken.OsakaUniv
                     && annotation.LipidClass != "MAG" && annotation.LipidClass != "ACar"
                     && annotation.LipidClass != "CE" && annotation.LipidClass != "BMP"
                     && annotation.LipidClass != "SQDG" && annotation.LipidClass != "DGTS"
-                    && annotation.LipidClass != "LDGTS"
+                    && annotation.LipidClass != "LDGTS" && annotation.LipidClass != "DGTA"
+                    && annotation.LipidClass != "LDGTA"
                     )
                     return;
 
@@ -4045,6 +4049,7 @@ namespace Rfx.Riken.OsakaUniv
                     new string[] { "DCAE", "[M+NH4]+" },
                     new string[] { "DGCC", "[M+H]+" },
                     new string[] { "DGTS", "[M+H]+" },
+                    new string[] { "DGTA", "[M+H]+" },
                     new string[] { "EtherDAG", "[M+NH4]+" },
                     new string[] { "EtherLPC", "[M+H]+" },
                     new string[] { "EtherLPE", "[M+H]+" },
@@ -4058,6 +4063,7 @@ namespace Rfx.Riken.OsakaUniv
                     new string[] { "Hex3Cer", "[M+H]+" },
                     new string[] { "LDGCC", "[M+H]+" },
                     new string[] { "LDGTS", "[M+H]+" },
+                    new string[] { "LDGTA", "[M+H]+" },
                     new string[] { "LPC", "[M+H]+" },
                     new string[] { "LPE", "[M+H]+" },
                     new string[] { "MAG", "[M+NH4]+" },

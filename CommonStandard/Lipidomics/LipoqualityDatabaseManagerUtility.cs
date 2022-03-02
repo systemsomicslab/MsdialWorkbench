@@ -48,6 +48,9 @@ namespace CompMs.Common.Lipidomics {
                 case "LDGTS":
                     setSingleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
                     break;
+                case "LDGTA":
+                    setSingleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
+                    break;
 
                 //Phospholipid
                 case "PC":
@@ -134,6 +137,9 @@ namespace CompMs.Common.Lipidomics {
                     setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
                     break;
                 case "DGTS":
+                    setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
+                    break;
+                case "DGTA":
                     setDoubleAcylChainsLipidAnnotation(lipidannotation, query, metaboliteName);
                     break;
                 case "GlcADG":
@@ -510,6 +516,7 @@ namespace CompMs.Common.Lipidomics {
                 case "LPI": return "LPI";
                 case "LPS": return "LPS";
                 case "LDGTS": return "LDGTS";
+                case "LDGTA": return "LDGTA";
 
                 case "PC": return "PC";
                 case "PA": return "PA";
@@ -541,6 +548,7 @@ namespace CompMs.Common.Lipidomics {
                 case "MGDG": return "MGDG";
                 case "SQDG": return "SQDG";
                 case "DGTS": return "DGTS";
+                case "DGTA": return "DGTA";
                 case "GlcADG": return "GlcADG";
                 case "AcylGlcADG": return "AcylGlcADG";
 
@@ -588,6 +596,7 @@ namespace CompMs.Common.Lipidomics {
                 case "LPI": return "Lyso phospholipid";
                 case "LPS": return "Lyso phospholipid";
                 case "LDGTS": return "Lyso algal lipid";
+                case "LDGTA": return "Lyso algal lipid";
 
                 case "PC": return "Phospholipid";
                 case "PA": return "Phospholipid";
@@ -619,6 +628,7 @@ namespace CompMs.Common.Lipidomics {
                 case "MGDG": return "Plant lipid";
                 case "SQDG": return "Plant lipid";
                 case "DGTS": return "Algal lipid";
+                case "DGTA": return "Algal lipid";
                 case "GlcADG": return "Plant lipid";
                 case "AcylGlcADG": return "Plant lipid";
 
