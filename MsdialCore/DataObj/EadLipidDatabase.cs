@@ -96,12 +96,12 @@ namespace CompMs.MsdialCore.DataObj
                     }
                 }
                 references.AddRange(BatchConvert(needToConverts));
-                var needToRegisterReferences = needToRegisters.Select(lipid => GenerateReference(lipid, adduct, baseReference)).ToArray();
+                var needToRegisterReferences = needToRegisters.Select(lipid => GenerateReference(lipid, adduct, baseReference)).Where(n => n != null).ToArray();
                 Register(needToRegisterReferences, shortLipid);
                 references.AddRange(needToRegisterReferences);
             }
             else {
-                var needToRegisterReferences = lipids.Select(lipid => GenerateReference(lipid, adduct, baseReference)).ToArray();
+                var needToRegisterReferences = lipids.Select(lipid => GenerateReference(lipid, adduct, baseReference)).Where(n => n != null).ToArray();
                 Register(needToRegisterReferences, shortLipid);
                 references.AddRange(needToRegisterReferences);
             }
