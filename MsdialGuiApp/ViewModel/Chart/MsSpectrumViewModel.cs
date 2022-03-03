@@ -2,7 +2,6 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
@@ -13,6 +12,7 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Windows.Media;
 using System.Linq;
+using CompMs.Graphics.AxisManager;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {

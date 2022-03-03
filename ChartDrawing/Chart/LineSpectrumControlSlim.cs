@@ -158,7 +158,7 @@ namespace CompMs.Graphics.Chart
         private AxisValue yBase;
         protected override void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             base.OnVerticalAxisChanged(oldValue, newValue);
-            yBase = newValue.TranslateToAxisValue(0d);
+            yBase = newValue?.TranslateToAxisValue(0d) ?? AxisValue.NaN;
             CoerceTree();
         }
 

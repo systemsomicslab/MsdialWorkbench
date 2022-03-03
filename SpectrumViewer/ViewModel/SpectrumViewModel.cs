@@ -1,6 +1,7 @@
 ﻿using CompMs.App.SpectrumViewer.Model;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
@@ -83,9 +84,9 @@ namespace CompMs.App.SpectrumViewer.ViewModel
 
         public ReactivePropertySlim<DisplayScan> DisplayScan { get; }
 
-        public ReactiveContinuousAxisManager<double> HorizontalAxis { get; }
+        public IAxisManager<double> HorizontalAxis { get; }
 
-        public ReactiveContinuousAxisManager<double> VerticalAxis { get; }
+        public IAxisManager<double> VerticalAxis { get; }
 
         public IBrushMapper BrushMapper { get; }
 
