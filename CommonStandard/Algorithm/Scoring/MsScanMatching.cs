@@ -46,6 +46,12 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return PEEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.PS:
                     return PSEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.PI:
+                    return PIEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.PG:
+                    return PGEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.PA:
+                    return PAEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 default: return (null, new double[2] { 0.0, 0.0 });
             }
         }
@@ -476,43 +482,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             var peaks1 = prop1.Spectrum;
             var peaks2 = prop2.Spectrum;
 
-            var minMz = Math.Max(peaks2[0].Mass, massBegin);
-            var maxMz = Math.Min(peaks2[peaks2.Count - 1].Mass, massEnd);
-            var focusedMz = minMz;
-
-            int remaindIndexM = 0, remaindIndexL = 0;
-            var searchedPeaks = new List<SpectrumPeak>();
-
-            while (focusedMz <= maxMz) {
-                var maxRefIntensity = double.MinValue;
-                var maxRefID = -1;
-                for (int i = remaindIndexL; i < peaks2.Count; i++) {
-                    if (peaks2[i].Mass < focusedMz - bin)  continue;
-                    else if (Math.Abs(focusedMz - peaks2[i].Mass) < bin) {
-                        if (maxRefIntensity < peaks2[i].Intensity) {
-                            maxRefIntensity = peaks2[i].Intensity;
-                            maxRefID = i;
-                        }
-                    }
-                    else { remaindIndexL = i; break; }
-                }
-
-                SpectrumPeak spectrumPeak = maxRefID >= 0 ? peaks2[maxRefID].Clone() : null;
-                if (spectrumPeak == null) continue;
-
-                for (int i = remaindIndexM; i < peaks1.Count; i++) {
-                    if (peaks1[i].Mass < focusedMz - bin) continue;
-                    else if (Math.Abs(focusedMz - peaks1[i].Mass) < bin) {
-                        spectrumPeak.IsMatched = true;
-                    }
-                    else { remaindIndexM = i; break; }
-                }
-
-                searchedPeaks.Add(spectrumPeak);
-
-                if (focusedMz + bin > peaks2[peaks2.Count - 1].Mass) break;
-                focusedMz = peaks2[remaindIndexL].Mass;
-            }
+            var searchedPeaks = GetMachedSpectralPeaks(peaks1, peaks2, bin, massBegin, massEnd);
 
             // at this moment...
             var finalPeaks = new List<SpectrumPeak>();
@@ -540,6 +510,52 @@ namespace CompMs.Common.Algorithm.Scoring {
             }
 
             return finalPeaks;
+        }
+
+        public static List<SpectrumPeak> GetMachedSpectralPeaks(List<SpectrumPeak> peaks1, List<SpectrumPeak> peaks2, double bin,
+           double massBegin, double massEnd) {
+            if (!IsComparedAvailable(peaks1, peaks2)) return new List<SpectrumPeak>();
+            var minMz = Math.Max(peaks2[0].Mass, massBegin);
+            var maxMz = Math.Min(peaks2[peaks2.Count - 1].Mass, massEnd);
+            var focusedMz = minMz;
+
+            int remaindIndexM = 0, remaindIndexL = 0;
+            var searchedPeaks = new List<SpectrumPeak>();
+
+            while (focusedMz <= maxMz) {
+                var maxRefIntensity = double.MinValue;
+                var maxRefID = -1;
+                for (int i = remaindIndexL; i < peaks2.Count; i++) {
+                    if (peaks2[i].Mass < focusedMz - bin) continue;
+                    else if (Math.Abs(focusedMz - peaks2[i].Mass) < bin) {
+                        if (maxRefIntensity < peaks2[i].Intensity) {
+                            maxRefIntensity = peaks2[i].Intensity;
+                            maxRefID = i;
+                        }
+                    }
+                    else { remaindIndexL = i; break; }
+                }
+
+                SpectrumPeak spectrumPeak = maxRefID >= 0 ? peaks2[maxRefID].Clone() : null;
+                if (spectrumPeak == null) continue;
+                var sumintensity = 0.0;
+                for (int i = remaindIndexM; i < peaks1.Count; i++) {
+                    if (peaks1[i].Mass < focusedMz - bin) continue;
+                    else if (Math.Abs(focusedMz - peaks1[i].Mass) < bin) {
+                        sumintensity += peaks1[i].Intensity;
+                        spectrumPeak.IsMatched = true;
+                    }
+                    else { remaindIndexM = i; break; }
+                }
+
+                spectrumPeak.Resolution = sumintensity;
+                searchedPeaks.Add(spectrumPeak);
+
+                if (focusedMz + bin > peaks2[peaks2.Count - 1].Mass) break;
+                focusedMz = peaks2[remaindIndexL].Mass;
+            }
+
+            return searchedPeaks;
         }
 
         /// <summary>

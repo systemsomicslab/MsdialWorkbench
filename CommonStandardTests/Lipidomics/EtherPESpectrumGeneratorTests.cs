@@ -10,7 +10,6 @@ namespace CompMs.Common.Lipidomics.Tests
     [TestClass()]
     public class EtherPESpectrumGeneratorTests
     {
-        #region
         //[TestMethod()]
         //public void GenerateEtherPEPTest() {
         //    var alkyl = new AlkylChain(18, DoubleBond.CreateFromPosition(1, 12), new Oxidized(0));
@@ -588,7 +587,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 614.4156437 ,//Sn1-8+H,//Sn2-10+H
                 626.4156437 ,//Sn1-9-H,//Sn2-11-H
                 627.4234688 ,//Sn1-9,//Sn2-11
-                628.4312938 ,//Sn1-9+H,//Sn2-11+H
+                628.4312938 ,//Sn1-9+H,//Sn2-11+Hdb.Generate(lipid, adduct, reference);
                 640.4312938 ,//Sn1-10-H,//Sn2-12-H
                 641.4391188 ,//Sn1-10,//Sn2-12
                 642.4469439 ,//Sn1-10+H,//Sn2-12+H

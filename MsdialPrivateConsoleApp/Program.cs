@@ -10,7 +10,8 @@ namespace MsdialPrivateConsoleApp {
         static void Main(string[] args) {
 
 
-            LipidomicsResultCuration.Name2Smiles(@"E:\6_Projects\Collaboration\NCC\20210406\temp.txt", @"E:\6_Projects\Collaboration\NCC\20210406\temp_result.txt");
+            //LipidomicsResultCuration.Name2Smiles(@"E:\6_Projects\Collaboration\NCC\20210406\temp.txt", @"E:\6_Projects\Collaboration\NCC\20210406\temp_result.txt");
+            LipidomicsResultCuration.Text2Msp(@"E:\6_Projects\PROJECT_Aging\paper\analysis_v2\Fig2\MN\node.txt", @"E:\6_Projects\PROJECT_Aging\paper\analysis_v2\Fig2\MN\feces_negspec.msp");
 
 
 

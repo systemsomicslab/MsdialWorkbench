@@ -9,15 +9,15 @@ namespace Riken.Metabolomics.MolecularNetworking {
         static int Main(string[] args) {
             #region arg[] examples
             //Networking test using local msp
-            //args = new string[] {
-            //    "msms"
-            //    , "-i"
-            //    , @"C:\Users\Hiroshi Tsugawa\Desktop\MolecularNetworking_20184281822_0.msp"
-            //    , "-t"
-            //    , @"0.025"
-            //    , "-o"
-            //    , @"C:\Users\Hiroshi Tsugawa\Desktop\MolecularNetworking_2018427188_0-edge.txt"
-            //};
+            args = new string[] {
+                "msms"
+                , "-i"
+                , @"E:\6_Projects\PROJECT_Aging\paper\analysis_v2\Fig2\MN\feces_negspec.msp"
+                , "-t"
+                , @"0.05"
+                , "-o"
+                , @"E:\6_Projects\PROJECT_Aging\paper\analysis_v2\Fig2\MN\edge.txt"
+            };
             #endregion
             if (args.Length == 0) return argsError();
             if (args.Length < 7) return argsError();

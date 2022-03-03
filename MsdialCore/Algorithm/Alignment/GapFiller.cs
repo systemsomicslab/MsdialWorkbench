@@ -67,7 +67,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 return;
             }
 
-            SetAlignmentChromPeakFeature(result, peaklist, id, leftId, rightId);
+            SetAlignmentChromPeakFeature(result, center, peaklist, id, leftId, rightId);
         }
 
         protected abstract List<ChromatogramPeak> GetPeaks(
@@ -156,7 +156,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             return (id, leftId, rightId);
         }
 
-        private static void SetAlignmentChromPeakFeature(AlignmentChromPeakFeature result, List<ChromatogramPeak> sPeaklist, int id, int leftId, int rightId) {
+        private static void SetAlignmentChromPeakFeature(AlignmentChromPeakFeature result, ChromXs center, List<ChromatogramPeak> sPeaklist, int id, int leftId, int rightId) {
             double peakAreaAboveZero = 0d;
             for (int i = leftId; i < rightId; i++)
                 peakAreaAboveZero += (sPeaklist[i].Intensity + sPeaklist[i + 1].Intensity) / 2 * (sPeaklist[i + 1].Mass - sPeaklist[i].Mass);
@@ -165,7 +165,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             System.Diagnostics.Debug.Assert(sPeaklist[leftId].ChromXs != null);
             System.Diagnostics.Debug.Assert(sPeaklist[rightId].ChromXs != null);
 
-            result.Mass = sPeaklist[id].Mass;
+            result.Mass = center.Mz.Value;
             result.ChromScanIdTop = id;
             result.ChromScanIdLeft = leftId;
             result.ChromScanIdRight = rightId;
