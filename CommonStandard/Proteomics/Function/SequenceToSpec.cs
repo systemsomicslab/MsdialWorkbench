@@ -34,7 +34,7 @@ namespace CompMs.Common.Proteomics.Function {
             switch (cType) {
                 case CollisionType.CID: return GetSpectrumPeaksByHCD(peptide, adduct);
                 case CollisionType.HCD: return GetSpectrumPeaksByHCD(peptide, adduct);
-                case CollisionType.EAD: return GetSpectrumPeaksByECD(peptide, adduct);
+                case CollisionType.EIEIO: return GetSpectrumPeaksByECD(peptide, adduct);
                 default: return GetSpectrumPeaksByHCD(peptide, adduct);
             }
         }

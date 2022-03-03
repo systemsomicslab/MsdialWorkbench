@@ -454,7 +454,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 }
             };
 
-            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.EAD, true);
+            var scorer = new MsReferenceScorer("MspDB", -1, TargetOmics.Lipidomics, SourceType.MspDB, CollisionType.EIEIO, true);
             var result = scorer.CalculateScore(target, target, null, reference, null, parameter);
 
             Console.WriteLine($"WeightedDotProduct: {result.WeightedDotProduct}");

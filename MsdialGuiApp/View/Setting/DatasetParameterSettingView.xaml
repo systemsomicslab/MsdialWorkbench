@@ -170,10 +170,19 @@
                   Visibility="{Binding IsChecked, ElementName=RadioButton_DataDependentMSMS, Converter={StaticResource boolean2visibility}}"
                   Grid.Row="4">
             <UniformGrid Columns="2">
+                <UniformGrid.Resources>
+                    <Style TargetType="RadioButton">
+                        <Setter Property="Margin" Value="4"/>
+                    </Style>
+                </UniformGrid.Resources>
                 <RadioButton Content="CID, HCD"
                              IsChecked="{Binding CollisionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=HCD}"/>
-                <RadioButton Content="EAD"
-                             IsChecked="{Binding CollisionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=EAD}"/>
+                <RadioButton Content="EIEIO"
+                             IsChecked="{Binding CollisionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=EIEIO}"/>
+                <RadioButton Content="ECD"
+                             IsChecked="{Binding CollisionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=ECD}"/>
+                <RadioButton Content="HotECD"
+                             IsChecked="{Binding CollisionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=HotECD}"/>
             </UniformGrid>
         </GroupBox>
 

@@ -251,8 +251,12 @@
             <UniformGrid Columns="2">
                 <RadioButton Content="CID, HCD"
                              IsChecked="{Binding CollisionType, Converter={StaticResource BTEConverter}, ConverterParameter=HCD}"/>
-                <RadioButton Content="EAD"
-                             IsChecked="{Binding CollisionType, Converter={StaticResource BTEConverter}, ConverterParameter=EAD}"/>
+                <RadioButton Content="EIEIO"
+                             IsChecked="{Binding CollisionType, Converter={StaticResource BTEConverter}, ConverterParameter=EIEIO}"/>
+                <RadioButton Content="ECD"
+                             IsChecked="{Binding CollisionType, Converter={StaticResource BTEConverter}, ConverterParameter=ECD}"/>
+                <RadioButton Content="HotECD"
+                             IsChecked="{Binding CollisionType, Converter={StaticResource BTEConverter}, ConverterParameter=HotECD}"/>
             </UniformGrid>
         </GroupBox>
 

@@ -6,7 +6,7 @@ namespace CompMs.Common.Enum {
     public enum IonMode { Positive, Negative, Both }
     public enum MachineCategory { GCMS, LCMS, IMMS, LCIMMS, IFMS, IMS }
     public enum MassToleranceType { Da, Ppm }
-    public enum CollisionType { CID, HCD, EAD }
+    public enum CollisionType { CID, HCD, EIEIO, ECD, HotECD }
     public enum SolventType { CH3COONH4, HCOONH4 }
     [Flags]
     public enum SeparationType {

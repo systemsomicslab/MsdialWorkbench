@@ -125,7 +125,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 annotationProcess = BuildProteoMetabolomicsAnnotationProcess(Storage.DataBases, parameter);
             }
-            else if(parameter.TargetOmics == TargetOmics.Lipidomics && parameter.CollistionType == CollisionType.EAD) {
+            else if(parameter.TargetOmics == TargetOmics.Lipidomics && parameter.CollistionType == CollisionType.EIEIO) {
                 annotationProcess = BuildEadLipidomicsAnnotationProcess(Storage.DataBases, Storage.DataBaseMapper, parameter);
             }
             else {
@@ -197,7 +197,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 annotationProcess = BuildProteoMetabolomicsAnnotationProcess(Storage.DataBases, parameter);
             }
-            else if(parameter.TargetOmics == TargetOmics.Lipidomics && parameter.CollistionType == CollisionType.EAD) {
+            else if(parameter.TargetOmics == TargetOmics.Lipidomics && parameter.CollistionType == CollisionType.EIEIO) {
                 annotationProcess = BuildEadLipidomicsAnnotationProcess(Storage.DataBases, Storage.DataBaseMapper, parameter);
             }
             else {
