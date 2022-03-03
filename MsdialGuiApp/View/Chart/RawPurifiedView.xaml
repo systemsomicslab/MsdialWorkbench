@@ -35,7 +35,7 @@
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Save spectra table as.."
-                              Command="{Binding DataContext.SaveMs2SpectrumCommand, RelativeSource={RelativeSource AncestorType={x:Type local:RawPurifiedView}}}"/>
+                              Command="{Binding DataContext.SaveMs2SpectrumCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"/>
                     <MenuItem Header="Save image as...">
                         <MenuItem Header="Save as emf"
                                   Command="{x:Static io:SaveImageAsCommand.EmfInstance}"

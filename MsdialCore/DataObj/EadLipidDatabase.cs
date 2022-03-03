@@ -279,12 +279,28 @@ namespace CompMs.MsdialCore.DataObj
             connection = CreateConnection(dbPath);
 
             using (var command = connection.CreateCommand()) {
-                command.CommandText = $"SELECT ShortName FROM {ReferenceTableName}";
+                command.CommandText = $"PRAGMA table_info('{ReferenceTableName}');";
+                var shortNameExists = false;
                 using (var reader = command.ExecuteReader()) {
                     while (reader.Read()) {
-                        cache.Add(reader.GetString(0).GetHashCode());
+                        if (reader.GetString(1) == "ShortName") {
+                            shortNameExists = true;
+                            break;
+                        }
                     }
-                    reader.Close();
+                }
+                if (shortNameExists) {
+                    command.CommandText = $"SELECT ShortName FROM {ReferenceTableName}";
+                    using (var reader = command.ExecuteReader()) {
+                        while (reader.Read()) {
+                            cache.Add(reader.GetString(0).GetHashCode());
+                        }
+                        reader.Close();
+                    }
+                }
+                else {
+                    command.CommandText = $"ALTER TABLE '{ReferenceTableName}' ADD COLUMN ShortName TEXT;";
+                    command.ExecuteNonQuery();
                 }
                 command.CommandText = $"SELECT MAX(ScanID) FROM {ReferenceTableName}";
                 try {
