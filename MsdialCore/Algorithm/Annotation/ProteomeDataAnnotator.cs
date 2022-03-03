@@ -344,14 +344,16 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 }
 
                 if (annotatedNum < minimumAnnotatedCount) {
-                    if (score.IsDecoy == false && score.PosteriorErrorProb > param.FalseDiscoveryRateForPeptide * 0.01) {
-                        //feature.MatchResults.Representative.IsSpectrumMatch = false;
-                        feature.MatchResults.Representative.IsReferenceMatched = false;
-                    }
+                    //if (score.IsDecoy == false && score.PosteriorErrorProb > param.FalseDiscoveryRateForPeptide * 0.01) {
+                    //    //feature.MatchResults.Representative.IsSpectrumMatch = false;
+                    //    feature.MatchResults.Representative.IsReferenceMatched = false;
+                    //    feature.MatchResults.Representative.IsAnnotationSuggested = true;
+                    //}
                 }
                 else {
                     if (counter > decoyCutOffNum && score.IsDecoy == false) {
                         feature.MatchResults.Representative.IsReferenceMatched = false;
+                        feature.MatchResults.Representative.IsAnnotationSuggested = true;
                         //feature.MatchResults.Representative.IsSpectrumMatch = false;
                     }
                 }

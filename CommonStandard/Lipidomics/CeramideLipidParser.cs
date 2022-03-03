@@ -12,7 +12,7 @@ namespace CompMs.Common.Lipidomics
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildCeramideParser(2);
         public static readonly string Pattern = $"^Cer\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
-        public static readonly string CeramideClassPattern = @"\d+:(?<d>\d+);((?<sp>\d+)OH,?)+/\d+:\d+(;(?<h>((?<oxnum>\d+)?O)$|\(?((?<ab>\d+)OH,?)+)\)?)?";
+        public static readonly string CeramideClassPattern = @"\d+:(?<d>\d+).*?;((?<sp>\d+)OH,?)+/\d+:\d+.*?(;(?<h>\(?((?<ab>\d+)OH,?)+\)?|((?<oxnum>\d+)?O)))?";
         private static readonly Regex ceramideClassPattern = new Regex(CeramideClassPattern, RegexOptions.Compiled);
 
         public ILipid Parse(string lipidStr)

@@ -56,6 +56,16 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return DGEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.BMP:
                     return BMPEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LPC:
+                    return LPCEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LPS:
+                    return LPSEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LPE:
+                    return LPEEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LPG:
+                    return LPGEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LPI:
+                    return LPIEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 default: return (null, new double[2] { 0.0, 0.0 });
             }
         }

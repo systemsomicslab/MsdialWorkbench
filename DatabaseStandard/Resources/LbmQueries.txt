@@ -33,9 +33,13 @@ DGDG	[M+NH4]+	Positive	FALSE
 EtherMGDG	[M+NH4]+	Positive	FALSE
 EtherDGDG	[M+NH4]+	Positive	FALSE
 LDGTS	[M+H]+	Positive	FALSE
+LDGTA	[M+H]+	Positive	FALSE
 DGTS	[M+H]+	Positive	FALSE
+DGTA	[M+H]+	Positive	FALSE
 LDGTS	[M+Na]+	Positive	FALSE
+LDGTA	[M+Na]+	Positive	FALSE
 DGTS	[M+Na]+	Positive	FALSE
+DGTA	[M+Na]+	Positive	FALSE
 LDGCC	[M+H]+	Positive	FALSE
 DGCC	[M+H]+	Positive	FALSE
 SQDG	[M+NH4]+	Positive	FALSE
@@ -198,6 +202,10 @@ LDGTS	[M+CH3COO]-	Negative	FALSE
 DGTS	[M+CH3COO]-	Negative	FALSE
 LDGTS	[M+HCOO]-	Negative	FALSE
 DGTS	[M+HCOO]-	Negative	FALSE
+LDGTA	[M+CH3COO]-	Negative	FALSE
+DGTA	[M+CH3COO]-	Negative	FALSE
+LDGTA	[M+HCOO]-	Negative	FALSE
+DGTA	[M+HCOO]-	Negative	FALSE
 #MGMG	[M+CH3COO]-	Negative	FALSE
 #MGMG	[M+HCOO]-	Negative	FALSE
 #DGMG	[M+CH3COO]-	Negative	FALSE

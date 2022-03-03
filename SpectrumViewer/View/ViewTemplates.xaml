@@ -5,6 +5,7 @@
                     xmlns:local="clr-namespace:CompMs.App.SpectrumViewer.View"
                     xmlns:vm="clr-namespace:CompMs.App.SpectrumViewer.ViewModel"
                     xmlns:model="clr-namespace:CompMs.App.SpectrumViewer.Model"
+                    xmlns:components="clr-namespace:CompMs.Common.Components;assembly=Common"
                     xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
                     xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
@@ -105,6 +106,27 @@
                 <Pen Brush="LightBlue" Thickness="2" PresentationOptions:Freeze="True"/>
                 <Pen Brush="LightYellow" Thickness="2" PresentationOptions:Freeze="True"/>
             </AlternationConverter>
+            <AlternationConverter x:Key="BrushConverter">
+                <x:Static Member="Brushes.White"/>
+                <x:Static Member="Brushes.LightCoral"/>
+                <x:Static Member="Brushes.LightSkyBlue"/>
+                <x:Static Member="Brushes.LightGreen"/>
+                <x:Static Member="Brushes.LightGray"/>
+                <x:Static Member="Brushes.LightPink"/>
+                <x:Static Member="Brushes.LightBlue"/>
+                <x:Static Member="Brushes.LightYellow"/>
+            </AlternationConverter>
+            <AlternationConverter x:Key="BrushMapperConverter"
+                                  xmlns:design="clr-namespace:CompMs.Graphics.Design;assembly=ChartDrawing">
+                <design:ConstantBrushMapper Brush="{x:Static Brushes.White}"/>
+                <design:ConstantBrushMapper Brush="{x:Static Brushes.LightCoral}"/>
+                <design:ConstantBrushMapper Brush="{x:Static Brushes.LightSkyBlue}"/>
+                <design:ConstantBrushMapper Brush="{x:Static Brushes.LightGreen}"/>
+                <design:ConstantBrushMapper Brush="{x:Static Brushes.LightGray}"/>
+                <design:ConstantBrushMapper Brush="{x:Static Brushes.LightPink}"/>
+                <design:ConstantBrushMapper Brush="{x:Static Brushes.LightBlue}"/>
+                <design:ConstantBrushMapper Brush="{x:Static Brushes.LightYellow}"/>
+            </AlternationConverter> 
             <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
         </DataTemplate.Resources>
         <Grid>
@@ -125,13 +147,15 @@
                     <DataTemplate>
                         <Grid HorizontalAlignment="Stretch"
                               Visibility="{Binding Visible, Converter={StaticResource BooleanToVisibility}}">
-                            <chart:LineSpectrumControl ItemsSource="{Binding Spectrum}"
-                                                       HorizontalPropertyName="Mass"
-                                                       VerticalPropertyName="Intensity"
-                                                       LinePen="{Binding Path=(ItemsControl.AlternationIndex),
-                                                                         RelativeSource={RelativeSource AncestorType=ContentControl},
-                                                                         Converter={StaticResource PenConverter}}">
-                                <chart:LineSpectrumControl.ToolTip>
+                            <chart:LineSpectrumControlSlim ItemsSource="{Binding Spectrum}"
+                                                           HorizontalProperty="Mass"
+                                                           VerticalProperty="Intensity"
+                                                           DataType="{x:Type components:SpectrumPeak}"
+                                                           LineThickness="2"
+                                                           LineBrush="{Binding Path=(ItemsControl.AlternationIndex),
+                                                                               RelativeSource={RelativeSource TemplatedParent},
+                                                                               Converter={StaticResource BrushMapperConverter}}">
+                                <chart:LineSpectrumControlSlim.ToolTip>
                                     <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                                         <StackPanel>
                                             <TextBlock Text="{Binding FocusedItem.Comment, StringFormat=Comment: {0}}"/>
@@ -139,8 +163,8 @@
                                             <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0}}"/>
                                         </StackPanel>
                                     </ToolTip>
-                                </chart:LineSpectrumControl.ToolTip>
-                            </chart:LineSpectrumControl>
+                                </chart:LineSpectrumControlSlim.ToolTip>
+                            </chart:LineSpectrumControlSlim>
                             <chart:Annotator ItemsSource="{Binding Spectrum}"
                                              HorizontalPropertyName="Mass"
                                              VerticalPropertyName="Intensity"
@@ -149,7 +173,9 @@
                                              LabelPropertyName="Mass"
                                              Format="N3"
                                              TopN="5"
-                                             Brush="White"/>
+                                             Brush="{Binding Path=(ItemsControl.AlternationIndex),
+                                                             RelativeSource={RelativeSource TemplatedParent},
+                                                             Converter={StaticResource BrushConverter}}"/>
                         </Grid>
                     </DataTemplate>
                 </chart:MultiChart.ItemTemplate>
@@ -208,6 +234,17 @@
                 <Pen Brush="Cyan" Thickness="2" PresentationOptions:Freeze="True"/>
                 <Pen Brush="Yellow" Thickness="2" PresentationOptions:Freeze="True"/>
             </AlternationConverter>
+            <AlternationConverter x:Key="BrushMapperConverter"
+                                  xmlns:design="clr-namespace:CompMs.Graphics.Design;assembly=ChartDrawing">
+                <design:ConstantBrushMapper Brush="{x:Static Brushes.Black}"/>
+                <design:ConstantBrushMapper Brush="{x:Static Brushes.Red}"/>
+                <design:ConstantBrushMapper Brush="{x:Static Brushes.Blue}"/>
+                <design:ConstantBrushMapper Brush="{x:Static Brushes.Green}"/>
+                <design:ConstantBrushMapper Brush="{x:Static Brushes.Gray}"/>
+                <design:ConstantBrushMapper Brush="{x:Static Brushes.Magenta}"/>
+                <design:ConstantBrushMapper Brush="{x:Static Brushes.Cyan}"/>
+                <design:ConstantBrushMapper Brush="{x:Static Brushes.Yellow}"/>
+            </AlternationConverter> 
             <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
             <DataTemplate x:Key="LegendItem">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"
@@ -268,13 +305,14 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid Visibility="{Binding Visible, Converter={StaticResource BooleanToVisibility}}">
-                            <chart:LineSpectrumControl ItemsSource="{Binding Spectrum}"
-                                                       HorizontalPropertyName="Mass"
-                                                       VerticalPropertyName="Intensity"
-                                                       LinePen="{Binding Path=(ItemsControl.AlternationIndex),
-                                                                         RelativeSource={RelativeSource TemplatedParent},
-                                                                         Converter={StaticResource PenConverter}}">
-                                <chart:LineSpectrumControl.ToolTip>
+                            <chart:LineSpectrumControlSlim ItemsSource="{Binding Spectrum}"
+                                                           HorizontalProperty="Mass"
+                                                           VerticalProperty="Intensity"
+                                                           DataType="{x:Type components:SpectrumPeak}"
+                                                           LineBrush="{Binding Path=(ItemsControl.AlternationIndex),
+                                                                               RelativeSource={RelativeSource TemplatedParent},
+                                                                               Converter={StaticResource BrushMapperConverter}}">
+                                <chart:LineSpectrumControlSlim.ToolTip>
                                     <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                                         <StackPanel>
                                             <TextBlock Text="{Binding FocusedItem.Comment, StringFormat=Comment: {0}}"/>
@@ -282,8 +320,8 @@
                                             <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0}}"/>
                                         </StackPanel>
                                     </ToolTip>
-                                </chart:LineSpectrumControl.ToolTip>
-                            </chart:LineSpectrumControl>
+                                </chart:LineSpectrumControlSlim.ToolTip>
+                            </chart:LineSpectrumControlSlim>
                             <chart:Annotator ItemsSource="{Binding Spectrum}"
                                              HorizontalPropertyName="Mass"
                                              VerticalPropertyName="Intensity"
@@ -330,14 +368,15 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid Visibility="{Binding Visible, Converter={StaticResource BooleanToVisibility}}">
-                            <chart:LineSpectrumControl ItemsSource="{Binding Spectrum}"
-                                                       HorizontalPropertyName="Mass"
-                                                       VerticalPropertyName="Intensity"
-                                                       LinePen="{Binding Path=(ItemsControl.AlternationIndex),
-                                                                         RelativeSource={RelativeSource TemplatedParent},
-                                                                         Converter={StaticResource PenConverter}}"
-                                                       FlippedY="False">
-                                <chart:LineSpectrumControl.ToolTip>
+                            <chart:LineSpectrumControlSlim ItemsSource="{Binding Spectrum}"
+                                                           HorizontalProperty="Mass"
+                                                           VerticalProperty="Intensity"
+                                                           DataType="{x:Type components:SpectrumPeak}"
+                                                           LineBrush="{Binding Path=(ItemsControl.AlternationIndex),
+                                                                               RelativeSource={RelativeSource TemplatedParent},
+                                                                               Converter={StaticResource BrushMapperConverter}}"
+                                                           FlippedY="False">
+                                <chart:LineSpectrumControlSlim.ToolTip>
                                     <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                                         <StackPanel>
                                             <TextBlock Text="{Binding FocusedItem.Comment, StringFormat=Comment: {0}}"/>
@@ -345,8 +384,8 @@
                                             <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0}}"/>
                                         </StackPanel>
                                     </ToolTip>
-                                </chart:LineSpectrumControl.ToolTip>
-                            </chart:LineSpectrumControl>
+                                </chart:LineSpectrumControlSlim.ToolTip>
+                            </chart:LineSpectrumControlSlim>
                             <chart:Annotator ItemsSource="{Binding Spectrum}"
                                              HorizontalPropertyName="Mass"
                                              VerticalPropertyName="Intensity"

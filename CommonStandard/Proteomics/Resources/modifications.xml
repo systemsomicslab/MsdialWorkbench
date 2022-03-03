@@ -5295,4 +5295,13 @@
       <type>Standard</type>
       <terminus_type>none</terminus_type>
    </modification>
+  <modification title="C8N3Azide (K)" description="C8N3Azide modification" create_date="2021-11-13T10:00:00.1976309+09:00" last_modified_date="2021-11-13T10:00:00.1976309+09:00" user="htsugawa" reporterCorrectionM2="0" reporterCorrectionM1="0" reporterCorrectionP1="0" reporterCorrectionP2="0" reporterCorrectionType="false" composition="C(8) H(13) N(3) O">
+    <position>anywhere</position>
+    <modification_site site="K">
+      <neutralloss_collection />
+      <diagnostic_collection />
+    </modification_site>
+    <type>Standard</type>
+    <terminus_type>none</terminus_type>
+  </modification>
 </modifications>

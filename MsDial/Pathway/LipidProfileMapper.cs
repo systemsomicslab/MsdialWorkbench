@@ -43,6 +43,7 @@ namespace Rfx.Riken.OsakaUniv {
             ticPropeties["LPS"] = new AlignmentPropertyBean() { MetaboliteName = "LPS" };
             ticPropeties["LPA"] = new AlignmentPropertyBean() { MetaboliteName = "LPA" };
             ticPropeties["LDGTS"] = new AlignmentPropertyBean() { MetaboliteName = "LDGTS" };
+            ticPropeties["LDGTA"] = new AlignmentPropertyBean() { MetaboliteName = "LDGTA" };
             ticPropeties["PC"] = new AlignmentPropertyBean() { MetaboliteName = "PC" };
             ticPropeties["PE"] = new AlignmentPropertyBean() { MetaboliteName = "PE" };
             ticPropeties["PG"] = new AlignmentPropertyBean() { MetaboliteName = "PG" };
@@ -67,6 +68,7 @@ namespace Rfx.Riken.OsakaUniv {
             ticPropeties["DGDG"] = new AlignmentPropertyBean() { MetaboliteName = "DGDG" };
             ticPropeties["SQDG"] = new AlignmentPropertyBean() { MetaboliteName = "SQDG" };
             ticPropeties["DGTS"] = new AlignmentPropertyBean() { MetaboliteName = "DGTS" };
+            ticPropeties["DGTA"] = new AlignmentPropertyBean() { MetaboliteName = "DGTA" };
             ticPropeties["GlcADG"] = new AlignmentPropertyBean() { MetaboliteName = "GlcADG" };
             ticPropeties["AcylGlcADG"] = new AlignmentPropertyBean() { MetaboliteName = "AcylGlcADG" };
             ticPropeties["CE"] = new AlignmentPropertyBean() { MetaboliteName = "CE" };
@@ -104,6 +106,7 @@ namespace Rfx.Riken.OsakaUniv {
             detailProperties["LPS"] = new List<AlignmentPropertyBean>();
             detailProperties["LPA"] = new List<AlignmentPropertyBean>();
             detailProperties["LDGTS"] = new List<AlignmentPropertyBean>();
+            detailProperties["LDGTA"] = new List<AlignmentPropertyBean>();
             detailProperties["PC"] = new List<AlignmentPropertyBean>();
             detailProperties["PE"] = new List<AlignmentPropertyBean>();
             detailProperties["PG"] = new List<AlignmentPropertyBean>();
@@ -128,6 +131,7 @@ namespace Rfx.Riken.OsakaUniv {
             detailProperties["DGDG"] = new List<AlignmentPropertyBean>();
             detailProperties["SQDG"] = new List<AlignmentPropertyBean>();
             detailProperties["DGTS"] = new List<AlignmentPropertyBean>();
+            detailProperties["DGTA"] = new List<AlignmentPropertyBean>();
             detailProperties["GlcADG"] = new List<AlignmentPropertyBean>();
             detailProperties["AcylGlcADG"] = new List<AlignmentPropertyBean>();
             detailProperties["CE"] = new List<AlignmentPropertyBean>();

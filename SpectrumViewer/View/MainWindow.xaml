@@ -8,10 +8,12 @@
         xmlns:local="clr-namespace:CompMs.App.SpectrumViewer.View"
         xmlns:vm="clr-namespace:CompMs.App.SpectrumViewer.ViewModel"
         xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+        xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
         xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
         mc:Ignorable="d"
         Background="Black"
         AllowDrop="True"
+        behavior:SuppressContextMenuBehavior.IsEnabled="True"
         d:DataContext="{d:DesignInstance Type={x:Type vm:MainViewModel}}"
         x:Name="Root"
         Title="MainWindow" Height="800" Width="1200">
