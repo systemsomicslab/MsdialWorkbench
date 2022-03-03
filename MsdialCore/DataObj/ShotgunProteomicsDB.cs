@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
 using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
@@ -72,6 +73,8 @@ namespace CompMs.MsdialCore.DataObj {
 
         [Key(17)]
         public double MassRangeEnd { get; set; } = 2000;
+        [Key(18)]
+        public CollisionType CollisionType { get; set; } = CollisionType.HCD;
 
         PeptideMsReference IMatchResultRefer<PeptideMsReference, MsScanMatchResult>.Refer(MsScanMatchResult result) {
             if (result.IsDecoy) {
@@ -102,14 +105,14 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         public ShotgunProteomicsDB(string file, string id, ProteomicsParameter proteomicsParam, string projectFolder,
-            double massRangeBegin, double massRangeEnd) {
+            double massRangeBegin, double massRangeEnd, CollisionType type) {
             FastaFile = file;
             Id = id;
             ProteomicsParameter = proteomicsParam;
             MassRangeBegin = massRangeBegin;
             MassRangeEnd = massRangeEnd;
             DataBaseSource = DataBaseSource.Fasta;
-
+            CollisionType = type;
 
             var dt = DateTime.Now;
             var refid = "_" + dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString();
@@ -153,8 +156,8 @@ namespace CompMs.MsdialCore.DataObj {
             Console.WriteLine("Peptide count {0}", peptides.Count);
 
             Console.WriteLine("MS peptide queries");
-            PeptideMsRef = MsfPepFileParser.GeneratePeptideMsObjcts(PeptideMsFile, PeptidesBinaryFile, peptides, ModificationContainer.Code2ID, MassRangeBegin, MassRangeEnd, out Stream pFS);
-            DecoyPeptideMsRef = MsfPepFileParser.GeneratePeptideMsObjcts(DecoyMsFile, DecoyPeptidesBinaryFile, decoyPeptides, ModificationContainer.Code2ID, MassRangeBegin, MassRangeEnd, out Stream dFS);
+            PeptideMsRef = MsfPepFileParser.GeneratePeptideMsObjcts(PeptideMsFile, PeptidesBinaryFile, peptides, ModificationContainer.Code2ID, MassRangeBegin, MassRangeEnd, CollisionType, out Stream pFS);
+            DecoyPeptideMsRef = MsfPepFileParser.GeneratePeptideMsObjcts(DecoyMsFile, DecoyPeptidesBinaryFile, decoyPeptides, ModificationContainer.Code2ID, MassRangeBegin, MassRangeEnd, CollisionType, out Stream dFS);
 
             Console.WriteLine("Peptide MS count {0}", PeptideMsRef.Count);
             PeptideMsStream = pFS;

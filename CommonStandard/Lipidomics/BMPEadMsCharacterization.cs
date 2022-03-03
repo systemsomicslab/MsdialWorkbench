@@ -9,7 +9,7 @@ using System.Text;
 
 namespace CompMs.Common.Lipidomics
 {
-    public static class DGEadMsCharacterization
+    public static class BMPEadMsCharacterization
     {
         public static (ILipid, double[]) Characterize(
             IMSScanProperty scan, ILipid molecule, MoleculeMsReference reference,
@@ -17,7 +17,7 @@ namespace CompMs.Common.Lipidomics
         {
 
             var defaultResult = EadMsCharacterizationUtility.GetDefaultScoreForGlycerophospholipid(
-                    scan, reference, tolerance, mzBegin, mzEnd, 0, 2, 1, 0.5);
+                    scan, reference, tolerance, mzBegin, mzEnd, 1, 2, 1, 0.5);
             return EadMsCharacterizationUtility.GetDefaultCharacterizationResultForGlycerophospholipid(molecule, defaultResult);
         }
     }

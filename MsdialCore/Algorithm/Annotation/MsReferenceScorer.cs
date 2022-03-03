@@ -169,6 +169,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             if (lipid is null) {
                 lipid = FacadeLipidParser.Default.Parse(reference.Name);
             }
+            if (lipid is null) {
+                return;
+            }
             result.Name = lipid.Name;
             result.IsLipidClassMatch = lipid.Description.HasFlag(LipidDescription.Class);
             result.IsLipidChainsMatch = lipid.Description.HasFlag(LipidDescription.Chain);

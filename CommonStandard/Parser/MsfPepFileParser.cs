@@ -13,7 +13,7 @@ namespace CompMs.Common.Parser {
         private MsfPepFileParser() { }
 
         private static int MSRefStorageFileVersionNumber = 1;
-        public static List<PeptideMsReference> GeneratePeptideMsObjcts(string msfile, string pepfile, List<Peptide> peptides, Dictionary<string, int> Code2ID, double minMz, double maxMz, out Stream fs) {
+        public static List<PeptideMsReference> GeneratePeptideMsObjcts(string msfile, string pepfile, List<Peptide> peptides, Dictionary<string, int> Code2ID, double minMz, double maxMz, CollisionType type, out Stream fs) {
             var pepMsQueries = new List<PeptideMsReference>();
             var adduct = AdductIonParser.GetAdductIonBean("[M+H]+");
 
@@ -25,7 +25,7 @@ namespace CompMs.Common.Parser {
                 foreach (var pep in peptides.OrderBy(n => n.ExactMass)) {
                     var sp = fs.Position;
                     var psp = ps.Position;
-                    var spec = SequenceToSpec.Convert2SpecPeaks(pep, adduct, CollisionType.HCD, minMz, maxMz);
+                    var spec = SequenceToSpec.Convert2SpecPeaks(pep, adduct, type, minMz, maxMz);
                     var msObj = new PeptideMsReference(pep, fs, sp, adduct, counter);
                     pepMsQueries.Add(msObj);
 
