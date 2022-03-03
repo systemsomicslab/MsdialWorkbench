@@ -119,15 +119,31 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 item => item.ToString(),
                 Colors.Blue);
 
-            var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-               this.model.Parameter.ProjectParam.SpectrumCommentToColorBytes
-               .ToDictionary(
-                   kvp => kvp.Key,
-                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-               ),
-               item => item.ToString(),
-               Colors.Red);
-
+            // var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
+            //    this.model.Parameter.ProjectParam.SpectrumCommentToColorBytes
+            //    .ToDictionary(
+            //        kvp => kvp.Key,
+            //        kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+            //    ),
+            //    item => item.ToString(),
+            //    Colors.Red);
+            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
+                comment =>
+                {
+                    var commentString = comment.ToString();
+                    var parameter = this.model.Parameter.ProjectParam;
+                    if (parameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
+                        return Color.FromRgb(color[0], color[1], color[2]);
+                    }
+                    else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
+                        && parameter.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
+                        return Color.FromRgb(color[0], color[1], color[2]);
+                    }
+                    else {
+                        return Colors.Red;
+                    }
+                },
+                true);
             RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel,
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
                 lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
