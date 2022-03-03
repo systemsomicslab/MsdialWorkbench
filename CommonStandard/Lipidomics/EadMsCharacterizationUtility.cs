@@ -80,42 +80,45 @@ namespace CompMs.Common.Lipidomics {
             var score = result.TotalScore;
             var counter = result.TotalMatchedIonCount;
 
-            if (!result.IsChainIonsExisted) { // chain existed expected: SM 18:1(4);O/18:1(9)
-                var obj = new Lipid(molecule.LipidClass, molecule.Mass, new TotalChain(chains.CarbonCount, chains.DoubleBondCount, chains.OxidizedCount, 1, 0, 1));
+                var obj = new Lipid(molecule.LipidClass, molecule.Mass, chains);
                 return (obj, new double[2] { score, counter });
-            }
-            else { // chain existed expected: PC O-18:0_18:2
-                var deepChains = (SeparatedChains)chains;
-                if (result.IsPositionIonsExisted && result.IsDoubleBondIonsExisted) { // chain existed expected: SM 18:1(4);O/18:1(9)
-                    return (molecule, new double[2] { score, counter });
-                }
-                else if (result.IsPositionIonsExisted) { // chain existed expected: SM 18:1;O/18:1
-                    var sphingo = new SphingoChain(deepChains.Chains[0].CarbonCount,
-                        new DoubleBond(deepChains.Chains[0].DoubleBondCount),
-                        new Oxidized(deepChains.Chains[0].OxidizedCount));
-                    var nacyl = new AcylChain(deepChains.Chains[1].CarbonCount,
-                        new DoubleBond(deepChains.Chains[1].DoubleBondCount),
-                        new Oxidized(deepChains.Chains[1].OxidizedCount));
-                    var obj = new Lipid(molecule.LipidClass, molecule.Mass, new PositionLevelChains(sphingo, nacyl));
-                    return (obj, new double[2] { score, counter });
-                }
-                else if (result.IsDoubleBondIonsExisted) { // chain existed expected: SM 18:1(4);O_18:1(9)
-                    var sphingo = deepChains.Chains[0];
-                    var nacyl = deepChains.Chains[1];
-                    var obj = new Lipid(molecule.LipidClass, molecule.Mass, new MolecularSpeciesLevelChains(sphingo, nacyl));
-                    return (obj, new double[2] { score, counter });
-                }
-                else { // chain existed expected: SM 18:1;O_18:1
-                    var sphingo = new SphingoChain(deepChains.Chains[0].CarbonCount,
-                        new DoubleBond(deepChains.Chains[0].DoubleBondCount),
-                        new Oxidized(deepChains.Chains[0].OxidizedCount));
-                    var nacyl = new AcylChain(deepChains.Chains[1].CarbonCount,
-                        new DoubleBond(deepChains.Chains[1].DoubleBondCount),
-                        new Oxidized(deepChains.Chains[1].OxidizedCount));
-                    var obj = new Lipid(molecule.LipidClass, molecule.Mass, new MolecularSpeciesLevelChains(sphingo, nacyl));
-                    return (obj, new double[2] { score, counter });
-                }
-            }
+
+            //if (!result.IsChainIonsExisted) { // chain existed expected: SM 18:1(4);2O/18:1(9)
+            //    var obj = new Lipid(molecule.LipidClass, molecule.Mass, new TotalChain(chains.CarbonCount, chains.DoubleBondCount, chains.OxidizedCount, 1, 0, 1));
+            //    return (obj, new double[2] { score, counter });
+            //}
+            //else { // chain existed expected: PC O-18:0_18:2
+            //    var deepChains = (SeparatedChains)chains;
+            //    if (result.IsPositionIonsExisted && result.IsDoubleBondIonsExisted) { // chain existed expected: SM 18:1(4);2O/18:1(9)
+            //        return (molecule, new double[2] { score, counter });
+            //    }
+            //    else if (result.IsPositionIonsExisted) { // chain existed expected: SM 18:1;2O/18:1
+            //        var sphingo = new SphingoChain(deepChains.Chains[0].CarbonCount,
+            //            new DoubleBond(deepChains.Chains[0].DoubleBondCount),
+            //            new Oxidized(deepChains.Chains[0].OxidizedCount));
+            //        var nacyl = new AcylChain(deepChains.Chains[1].CarbonCount,
+            //            new DoubleBond(deepChains.Chains[1].DoubleBondCount),
+            //            new Oxidized(deepChains.Chains[1].OxidizedCount));
+            //        var obj = new Lipid(molecule.LipidClass, molecule.Mass, new PositionLevelChains(sphingo, nacyl));
+            //        return (obj, new double[2] { score, counter });
+            //    }
+            //    else if (result.IsDoubleBondIonsExisted) { // chain existed expected: SM 18:1(4);2O_18:1(9)
+            //        var sphingo = deepChains.Chains[0];
+            //        var nacyl = deepChains.Chains[1];
+            //        var obj = new Lipid(molecule.LipidClass, molecule.Mass, new MolecularSpeciesLevelChains(sphingo, nacyl));
+            //        return (obj, new double[2] { score, counter });
+            //    }
+            //    else { // chain existed expected: SM 18:1;2O_18:1
+            //        var sphingo = new SphingoChain(deepChains.Chains[0].CarbonCount,
+            //            new DoubleBond(deepChains.Chains[0].DoubleBondCount),
+            //            new Oxidized(deepChains.Chains[0].OxidizedCount));
+            //        var nacyl = new AcylChain(deepChains.Chains[1].CarbonCount,
+            //            new DoubleBond(deepChains.Chains[1].DoubleBondCount),
+            //            new Oxidized(deepChains.Chains[1].OxidizedCount));
+            //        var obj = new Lipid(molecule.LipidClass, molecule.Mass, new MolecularSpeciesLevelChains(sphingo, nacyl));
+            //        return (obj, new double[2] { score, counter });
+            //    }
+            //}
         }
 
 
