@@ -30,6 +30,7 @@ namespace CompMs.Common.Lipidomics.Tests
                     365.2686532 ,//Sn-1-H
                     366.2764782 ,//Sn-1
                     367.2843032 ,//Sn-1+H
+                    372.27690 ,//[Precursor]2+
                     379.2843032 ,//Sn-2-H
                     380.2921283 ,//Sn-2
                     381.2999533 ,//Sn-2+H
@@ -160,6 +161,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 //330.2529431 ,//-Header -CH2(Sn1) calc
                 //343.2607682 ,//-Header -acylChain -O
                 //361.2713328 ,//-Header -acylChain
+                383.267872 ,//[Precursor]2+
                 387.2505974 ,//Sn-1-H
                 388.2584224 ,//Sn-1
                 389.2662475 ,//Sn-1+H
@@ -300,6 +302,7 @@ namespace CompMs.Common.Lipidomics.Tests
                     365.2686532 ,//Sn1-1-H,//Sn2-1-H,//Sn2-1-H
                     366.2764782 ,//Sn1-1,//Sn2-1
                     367.2843032 ,//Sn1-1+H,//Sn2-1+H
+                    372.27689 ,//[Precursor]2+
                     379.2843032 ,//Sn1-2-H,//Sn2-2-H
                     380.2921283 ,//Sn1-2,//Sn2-2
                     381.2999533 ,//Sn1-2+H,//Sn2-2+H
