@@ -105,6 +105,10 @@
                     Content="/Resources/Lipoquality.ico"
                     ToolTip="Show lipoquality database (developing, and the result of mouse experiments can be shown now.)"
                     Style="{StaticResource IconButton}"/>
+
+            <ComboBox ItemsSource="{Binding RawDecSpectrumsViewModel.UpperVerticalAxiss}"
+                      SelectedItem="{Binding RawDecSpectrumsViewModel.UpperVerticalAxis.Value}"
+                      DisplayMemberPath="Label"/>
         </StackPanel>
 
         <Grid DataContext="{Binding RawDecSpectrumsViewModel}" Grid.Row="1" Margin="0,0,10,0">
