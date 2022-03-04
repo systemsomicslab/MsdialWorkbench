@@ -1,4 +1,5 @@
-﻿using CompMs.Graphics.AxisManager.Generic;
+﻿using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using System;
 using System.Reactive.Linq;

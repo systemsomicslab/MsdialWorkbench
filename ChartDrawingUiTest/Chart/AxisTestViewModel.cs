@@ -40,7 +40,14 @@ namespace ChartDrawingUiTest.Chart
         }
 
         public IAxisManager AxisX { get; }
-        public IAxisManager AxisY { get; }
+
+        public IAxisManager AxisY {
+            get => axisY;
+            set => SetProperty(ref axisY, value);
+        }
+        private IAxisManager axisY;
+
+        public ObservableCollection<IAxisManager> AxisYs { get; }
 
         private ObservableCollection<DataPoint> series;
         private double minX;
@@ -49,7 +56,7 @@ namespace ChartDrawingUiTest.Chart
         private double maxY;
 
         public AxisTestViewModel() {
-            var xs = Enumerable.Range(0, 6000).Select(x => new DataPoint() { X = x / 1000d, Y = Math.Sin(x / 1000d), Type = x / 2000});
+            var xs = Enumerable.Range(-10000, 20000).Select(x => new DataPoint() { X = x / 1000d, Y = Math.Exp(x / 1000d), Type = x / 200});
             Series = new ObservableCollection<DataPoint>(xs);
             MinX = xs.Min(dp => dp.X);
             MaxX = xs.Max(dp => dp.X);
@@ -57,9 +64,17 @@ namespace ChartDrawingUiTest.Chart
             MaxY = xs.Max(dp => dp.Y);
 
             var axisX = new ContinuousAxisManager<double>(xs.Min(dp => dp.X), xs.Max(dp => dp.X));
-            var axisY = new ContinuousAxisManager<double>(xs.Min(dp => dp.Y), xs.Max(dp => dp.Y));
             axisX.ChartMargin = new ConstantMargin(100, 10);
+            var axisY = new ContinuousAxisManager<double>(xs.Min(dp => dp.Y), xs.Max(dp => dp.Y));
             axisY.ChartMargin = new ConstantMargin(20, 50);
+            var logAxisY = LogScaleAxisManager<double>.Build(Series, p => p.Y);
+            logAxisY.ChartMargin = new ConstantMargin(20, 50);
+
+            AxisYs = new ObservableCollection<IAxisManager>(new IAxisManager[]
+            {
+                axisY, logAxisY,
+            });
+
             AxisX = axisX;
             AxisY = axisY;
         }

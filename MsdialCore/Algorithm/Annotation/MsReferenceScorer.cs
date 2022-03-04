@@ -40,7 +40,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var simpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var reverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var matchedPeaksScores = omics == TargetOmics.Lipidomics
-                ? this.collisionType == CollisionType.EAD 
+                ? this.collisionType == CollisionType.EIEIO 
                 ? MsScanMatching.GetEadBasedLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd)
                 : MsScanMatching.GetLipidomicsMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd)
                 : MsScanMatching.GetMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
@@ -104,7 +104,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             ValidateBase(result, property, reference, parameter);
             if (omics == TargetOmics.Lipidomics) {
-                if (collisionType == CollisionType.EAD) {
+                if (collisionType == CollisionType.EIEIO) {
                     ValidateOnEadLipidomics(result, scan, reference, parameter);
                 }
                 else {

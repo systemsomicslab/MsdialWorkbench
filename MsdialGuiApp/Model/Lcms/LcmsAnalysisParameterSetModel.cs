@@ -26,7 +26,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             if (Parameter.TargetOmics == TargetOmics.Lipidomics) {
                 if (IdentitySettingModel.DataBaseModels.Count == 0) {
-                    if (Parameter.CollistionType == CollisionType.EAD
+                    if (Parameter.CollistionType == CollisionType.EIEIO
                         && IdentitySettingModel.DataBaseModels.All(m => m.DBSource != DataBaseSource.EadLipid)) {
                         var databaseModel = IdentitySettingModel.AddDataBaseZZZ();
                         databaseModel.DBSource = DataBaseSource.EadLipid;

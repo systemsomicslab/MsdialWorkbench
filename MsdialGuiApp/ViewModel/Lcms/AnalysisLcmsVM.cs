@@ -5,6 +5,7 @@ using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
+using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -144,11 +145,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     }
                 },
                 true);
+
+            var upperVerticalAxis = this.model.Ms2SpectrumModel
+                .RawRefSpectrumModels
+                .HorizontalRangeSource
+                .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
+                .AddTo(Disposables);
             RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel,
+                upperVerticalAxisSource: Observable.Return(upperVerticalAxis),
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
                 lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
-
-            //RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
 
             RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(this.model.RawPurifiedSpectrumsModel,
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),

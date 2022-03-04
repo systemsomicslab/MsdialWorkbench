@@ -11,13 +11,15 @@
     <Page.DataContext>
         <local:AxisTestViewModel/>
     </Page.DataContext>
-    <Grid>
+    <DockPanel>
+        <ComboBox ItemsSource="{Binding AxisYs}"
+                  SelectedItem="{Binding AxisY}"
+                  DockPanel.Dock="Bottom"/>
         <chart:SimpleChartControl VerticalAxis="{Binding AxisY}"
-                                  HorizontalAxis="{Binding AxisX}"
-                                  Background="WhiteSmoke">
+                                  HorizontalAxis="{Binding AxisX}">
             <chart:LineChartControl ItemsSource="{Binding Series}"
                                     HorizontalPropertyName="X"
                                     VerticalPropertyName="Y"/>
         </chart:SimpleChartControl>
-    </Grid>
+    </DockPanel>
 </Page>

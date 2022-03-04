@@ -21,7 +21,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
+        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis.Value}"
                           GraphTitle="{Binding GraphTitle.Value}"
                           HorizontalTitle="{Binding HorizontalTitle.Value}"
                           VerticalTitle="{Binding VerticalTitle.Value}"
@@ -49,7 +49,7 @@
                     </MenuItem>
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
-            <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis}">
+            <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis.Value}">
                 <chart:LineSpectrumControl x:Name="MS2Line"
                                            ItemsSource="{Binding UpperSpectrum.Value}"
                                            HorizontalPropertyName="{Binding HorizontalProperty.Value}"
@@ -78,7 +78,7 @@
                                  ClipToBounds="True"/>
             </Grid>
 
-            <Grid core:ChartBaseControl.FlippedY="False" core:ChartBaseControl.VerticalAxis="{Binding LowerVerticalAxis}">
+            <Grid core:ChartBaseControl.FlippedY="False" core:ChartBaseControl.VerticalAxis="{Binding LowerVerticalAxis.Value}">
                 <chart:LineSpectrumControl x:Name="MS2Ref"
                                            ItemsSource="{Binding LowerSpectrum.Value}"
                                            HorizontalPropertyName="{Binding HorizontalProperty.Value}"
