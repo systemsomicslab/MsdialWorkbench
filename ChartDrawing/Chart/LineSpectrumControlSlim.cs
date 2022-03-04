@@ -111,7 +111,8 @@ namespace CompMs.Graphics.Chart
                 typeof(LineSpectrumControlSlim),
                 new FrameworkPropertyMetadata(
                     null,
-                    FrameworkPropertyMetadataOptions.AffectsRender));
+                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    OnHorizontalPropertyChanged));
 
         private static void OnHorizontalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var scatter = (LineSpectrumControlSlim)d;
