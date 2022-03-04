@@ -15,9 +15,7 @@ namespace CompMs.Common.Lipidomics
             IMSScanProperty scan, ILipid molecule, MoleculeMsReference reference,
             float tolerance, float mzBegin, float mzEnd)
         {
-
             var defaultResult = EadMsCharacterizationUtility.GetDefaultScoreForGlycerophospholipid(
-                    scan, reference, tolerance, mzBegin, mzEnd, 3, 1, 1, 0.5);
                     scan, reference, tolerance, mzBegin, mzEnd, 3, 1, 1, 0.5);
             return EadMsCharacterizationUtility.GetDefaultCharacterizationResultForGlycerophospholipid(molecule, defaultResult);
         }
