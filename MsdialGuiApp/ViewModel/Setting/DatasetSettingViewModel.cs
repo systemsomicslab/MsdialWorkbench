@@ -11,21 +11,21 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public class ProjectSettingViewModel : ViewModelBase, ISettingViewModel
+    public class DatasetSettingViewModel : ViewModelBase, ISettingViewModel
     {
-        public ProjectSettingViewModel(ProjectSettingModel model) {
-            Model = model;
+        public DatasetSettingViewModel(DatasetSettingModel model, IObservable<bool> isEnabled) {
+            Model = model ?? throw new ArgumentNullException(nameof(model));
             SettingViewModels = new ObservableCollection<ISettingViewModel>(
                 new ISettingViewModel[]
                 {
-                    new ProjectParameterSettingViewModel(Model.ProjectParameterSettingModel).AddTo(Disposables),
+                    new DatasetFileSettingViewModel(model.DatasetFileSettingModel, isEnabled).AddTo(Disposables),
+                    new DatasetParameterSettingViewModel(model.DatasetParameterSettingModel, isEnabled).AddTo(Disposables),
                 });
 
             ObserveChanges = SettingViewModels.ObserveElementObservableProperty(vm => vm.ObserveChanges).Select(pack => pack.Value);
 
             ObserveHasErrors = SettingViewModels.ObserveElementObservableProperty(vm => vm.ObserveHasErrors)
                 .Switch(_ => SettingViewModels.Select(vm => vm.ObserveHasErrors).CombineLatestValuesAreAnyTrue())
-                .Do(v => Console.WriteLine($"Project ObserveHasErrors: {v}"))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -34,23 +34,25 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            DatasetSettingViewModel = Model
-                .ObserveProperty(m => m.DatasetSettingModel)
-                .Select(m => m is null ? null : new DatasetSettingViewModel(m, ObserveChangeAfterDecision.Inverse()))
+            var methodIsEnabled = new[]
+            {
+                isEnabled,
+                ObserveChangeAfterDecision.Inverse(),
+            }.CombineLatestValuesAreAllTrue();
+            MethodSettingViewModel = Model.ObserveProperty(m => m.MethodSettingModel)
+                .Select(m => m is null ? null : new MethodSettingViewModel(m, methodIsEnabled))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
         }
 
-        public ProjectSettingModel Model { get; }
+        public DatasetSettingModel Model { get; }
 
-        public ReadOnlyReactivePropertySlim<DatasetSettingViewModel> DatasetSettingViewModel { get; }
-
+        public ReadOnlyReactivePropertySlim<MethodSettingViewModel> MethodSettingViewModel { get; }
         public ObservableCollection<ISettingViewModel> SettingViewModels { get; }
-
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
-
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
+        public bool IsReadOnlyDatasetParameter { get; }
 
         public IObservable<Unit> ObserveChanges { get; }
 

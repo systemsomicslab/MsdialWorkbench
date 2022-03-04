@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
             SearchedAdductIons = new ObservableCollection<AdductIonVM>(Model.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
 
-            IdentifySettingViewModel = new IdentifySettingViewModel(Model.IdentifySettingModel, new LcimmsAnnotatorSettingViewModel()).AddTo(Disposables);
+            IdentifySettingViewModel = new IdentifySettingViewModel(Model.IdentifySettingModel, new LcimmsAnnotatorSettingViewModelFactory(), Observable.Return(true)).AddTo(Disposables);
 
             var rep = Model.FileID2CcsCoefficients.Values.FirstOrDefault();
             if (rep != null) {

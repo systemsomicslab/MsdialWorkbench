@@ -37,7 +37,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             DataCollectionSettingViewModel = new DimsDataCollectionSettingViewModel(Model.DataCollectionSettingModel).AddTo(Disposables);
 
-            IdentifySettingViewModel = new IdentifySettingViewModel(Model.IdentifySettingModel, new DimsAnnotatorSettingViewModelFactory()).AddTo(Disposables);
+            IdentifySettingViewModel = new IdentifySettingViewModel(Model.IdentifySettingModel, new DimsAnnotatorSettingViewModelFactory(), Observable.Return(true)).AddTo(Disposables);
 
             ContinueProcessCommand = new[]{
                 IdentifySettingViewModel.ObserveHasErrors,

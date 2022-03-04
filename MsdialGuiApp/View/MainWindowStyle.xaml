@@ -11,11 +11,13 @@
     <BooleanToVisibilityConverter x:Key="boolean2visibility"/>
     <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
     <converter:BooleanToEnumConverter x:Key="EnumToBoolean"/>
+    <converter:CBoolNegativeConverter x:Key="NegativeConverter"/>
 
     <ControlTemplate x:Key="InputErrorTemplate">
         <DockPanel>
+            <TextBlock Text="{Binding AdornedElement.(Validation.Errors)/ErrorContent, ElementName=adornedElem}" Foreground="Red" FontSize="9" DockPanel.Dock="Bottom"/>
             <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
-            <AdornedElementPlaceholder/>
+            <AdornedElementPlaceholder x:Name="adornedElem"/>
         </DockPanel>
     </ControlTemplate>
 
@@ -257,6 +259,7 @@
                                 CommandParameter="{TemplateBinding CommandParameter}"
                                 VerticalAlignment="Stretch"
                                 Margin="4"
+                                TabIndex="{TemplateBinding TabIndex}"
                                 Grid.Column="2"/>
                     </Grid>
                 </ControlTemplate>

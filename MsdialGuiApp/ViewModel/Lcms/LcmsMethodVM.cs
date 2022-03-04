@@ -7,7 +7,9 @@ using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -97,11 +99,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
         private AlignmentLcmsVM alignmentVM;
 
-        public MsdialLcmsDataStorage Storage {
+        public IMsdialDataStorage<MsdialLcmsParameter> Storage {
             get => storage;
             set => SetProperty(ref storage, value);
         }
-        private MsdialLcmsDataStorage storage;
+        private IMsdialDataStorage<MsdialLcmsParameter> storage;
 
         public bool RefMatchedChecked {
             get => ReadDisplayFilters(DisplayFilter.RefMatched);
@@ -177,7 +179,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             if (!model.ProcessSetAnalysisParameter(window))
                 return -1;
 
-            var processOption = Storage.MsdialLcmsParameter.ProcessOption;
+            var processOption = Storage.Parameter.ProcessOption;
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
                 if (!model.ProcessAnnotaion(window, Storage))
@@ -185,7 +187,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
 
             // Run second process
-            var param = Storage.MsdialLcmsParameter;
+            var param = Storage.Parameter;
             if (param.TargetOmics == TargetOmics.Proteomics) {
                 if (!model.ProcessSeccondAnnotaion4ShotgunProteomics(window, Storage))
                     return -1;

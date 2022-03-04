@@ -1,9 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -12,9 +14,9 @@ using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public class IdentifySettingViewModel : ViewModelBase
+    public class IdentifySettingViewModel : ViewModelBase, ISettingViewModel
     {
-        public IdentifySettingViewModel(IdentifySettingModel model, IAnnotatorSettingViewModelFactory annotatorFactory) {
+        public IdentifySettingViewModel(IdentifySettingModel model, IAnnotatorSettingViewModelFactory annotatorFactory, IObservable<bool> isEnabled) {
             this.model = model;
 
             var selectedAnnotator = new Subject<IAnnotatorSettingViewModel>();
@@ -111,12 +113,30 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 this.ErrorsChangedAsObservable().Select(_ => ContainsError(nameof(AnnotatorViewModels))).StartWith(false),
             }.CombineLatestValuesAreAllFalse();
 
+            IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
             ObserveHasErrors = new[]
             {
                 dataBasesDoesnotHaveError,
                 annotatorsDoesnotHaveError,
             }.CombineLatestValuesAreAllTrue()
             .Inverse()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
+
+            ObserveChanges = new[]
+            {
+                DataBaseViewModels.ObserveUntilRemove(item => ((INotifyPropertyChanged)item).PropertyChangedAsObservable()).ToUnit(),
+                AnnotatorViewModels.ObserveUntilRemove(item => ((INotifyPropertyChanged)item).PropertyChangedAsObservable()).ToUnit(),
+            }.Merge();
+
+            decide = new Subject<Unit>().AddTo(Disposables);
+            var changes = ObserveChanges.TakeFirstAfterEach(decide);
+            ObserveChangeAfterDecision = new[]
+            {
+                changes.Select(_ => true),
+                decide.Select(_ => false),
+            }.Merge()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
@@ -204,7 +224,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactiveProperty<IAnnotatorSettingViewModel> AnnotatorViewModel { get; }
 
-        public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
         public ReactiveCommand AddDataBaseCommand { get; }
         public ReactiveCommand RemoveDataBaseCommand { get; }
         public ReactiveCommand AddAnnotatorCommand { get; }
@@ -214,5 +233,19 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         private static readonly string DataBaseIDDuplicateErrorMessage = "DataBase name is duplicated.";
         private static readonly string AnnotatorIDDuplicateErrorMessage = "Annotation method name is duplicated.";
+
+        public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
+        IObservable<bool> ISettingViewModel.ObserveHasErrors => ObserveHasErrors;
+        public IObservable<Unit> ObserveChanges { get; }
+
+        private readonly Subject<Unit> decide;
+        public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
+        IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
+
+        public void Next() {
+            decide.OnNext(Unit.Default);
+        }
     }
 }

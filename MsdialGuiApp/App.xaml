@@ -12,28 +12,32 @@
 
             <ControlTemplate x:Key="InputErrorTemplate">
                 <DockPanel>
+                    <TextBlock Text="{Binding AdornedElement.(Validation.Errors)/ErrorContent, ElementName=adornedElem}" Foreground="Red" FontSize="9" DockPanel.Dock="Bottom"/>
                     <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
-                    <AdornedElementPlaceholder/>
+                    <AdornedElementPlaceholder x:Name="adornedElem"/>
                 </DockPanel>
             </ControlTemplate>
             <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
                 <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
                 <Style.Triggers>
                     <Trigger Property="Validation.HasError" Value="True">
-                        <Setter Property="ToolTip" Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                        <Setter Property="ToolTip" Value="{Binding (Validation.Errors)/ErrorContent, RelativeSource={RelativeSource Self}}" />
                         <Setter Property="BorderBrush" Value="Pink" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
+            <Style TargetType="TextBox" BasedOn="{StaticResource ToolTipErrorStyle}"/>
+
             <Style x:Key="GeneralToolTipErrorStyle" TargetType="{x:Type ContentControl}">
                 <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
                 <Style.Triggers>
                     <Trigger Property="Validation.HasError" Value="True">
-                        <Setter Property="ToolTip" Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}"/>
+                        <Setter Property="ToolTip" Value="{Binding (Validation.Errors)/ErrorContent, RelativeSource={RelativeSource Self}}"/>
                         <Setter Property="BorderBrush" Value="Pink"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
+            <Style TargetType="ContentControl" BasedOn="{StaticResource GeneralToolTipErrorStyle}"/>
 
             <SolidColorBrush x:Key="MainThemeColor" Color="LightBlue" PresentationOptions:Freeze="True"/>
             <SolidColorBrush x:Key="SubThemeColor" Color="DarkGreen" PresentationOptions:Freeze="True"/>
