@@ -25,30 +25,37 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             this.model = model;
 
-            var upperVerticalAxis = this.model
-                .RawRefSpectrumModels
-                .HorizontalRangeSource
-                .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
-                .AddTo(Disposables);
-            var upperLogVerticalAxis = this.model
-                .RawRefSpectrumModels
-                .HorizontalRangeSource
-                .Select(range => (range.Minimum.Value, range.Maximum.Value))
-                .ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d)
-                .AddTo(Disposables);
+            if (upperVerticalAxisSource is null) {
+                var upperVerticalAxis = this.model
+                    .RawRefSpectrumModels
+                    .UpperVerticalRangeSource
+                    .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
+                    .AddTo(Disposables);
+                var upperLogVerticalAxis = this.model
+                    .RawRefSpectrumModels
+                    .UpperVerticalRangeSource
+                    .Select(range => (range.Minimum.Value, range.Maximum.Value))
+                    .ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d)
+                    .AddTo(Disposables);
 
-            var axis = new AxisItemViewModel(upperVerticalAxis, "Normal");
-            UpperVerticalAxiss = new ObservableCollection<AxisItemViewModel>(new[]
-            {
-                axis,
-                new AxisItemViewModel(upperLogVerticalAxis, "Log10"),
-            });
-            UpperVerticalAxis = new ReactivePropertySlim<AxisItemViewModel>(axis).AddTo(Disposables);
+                var axis = new AxisItemViewModel(upperVerticalAxis, "Normal");
+                UpperVerticalAxiss = new ObservableCollection<AxisItemViewModel>(new[]
+                {
+                    axis,
+                    new AxisItemViewModel(upperLogVerticalAxis, "Log10"),
+                });
+                UpperVerticalAxis = new ReactivePropertySlim<AxisItemViewModel>(axis).AddTo(Disposables);
+                upperVerticalAxisSource = UpperVerticalAxis.Select(item => item.AxisManager);
+            }
+            else {
+                UpperVerticalAxiss = new ObservableCollection<AxisItemViewModel>();
+                UpperVerticalAxis = new ReactivePropertySlim<AxisItemViewModel>().AddTo(Disposables);
+            }
 
             RawRefSpectrumViewModels = new MsSpectrumViewModel(
                 this.model.RawRefSpectrumModels,
                 horizontalAxisSource,
-                UpperVerticalAxis.Select(item => item.AxisManager),
+                upperVerticalAxisSource,
                 lowerVerticalAxisSource,
                 upperSpectrumBrushSource,
                 lowerSpectrumBrushSource);
@@ -56,7 +63,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             DecRefSpectrumViewModels = new MsSpectrumViewModel(
                 this.model.DecRefSpectrumModels,
                 horizontalAxisSource,
-                UpperVerticalAxis.Select(item => item.AxisManager),
+                upperVerticalAxisSource,
                 lowerVerticalAxisSource,
                 upperSpectrumBrushSource,
                 lowerSpectrumBrushSource);
