@@ -176,6 +176,7 @@
     <Compile Include="Model\MsResult\SummarizedSpectrumModel.cs" />
     <Compile Include="Model\Setting\AdductIonSettingModel.cs" />
     <Compile Include="Model\Setting\AlignmentParameterSettingModel.cs" />
+    <Compile Include="Model\Setting\DatasetSettingModel.cs" />
     <Compile Include="Model\Setting\IDataCollectionRangeSetting.cs" />
     <Compile Include="Model\Setting\DataCollectionSettingModel.cs" />
     <Compile Include="Model\Setting\DatasetFileSettingModel.cs" />
@@ -183,6 +184,8 @@
     <Compile Include="Model\Setting\DeconvolutionSettingModel.cs" />
     <Compile Include="Model\Setting\IPeakEqualityParameterSetting.cs" />
     <Compile Include="Model\Setting\IsotopeTrackSettingModel.cs" />
+    <Compile Include="Model\Setting\MethodSettingModel.cs" />
+    <Compile Include="Model\Setting\MethodSettingModelFactory.cs" />
     <Compile Include="Model\Setting\MobilitySettingModel.cs" />
     <Compile Include="Model\Setting\PeakDetectionSettingModel.cs" />
     <Compile Include="Model\Setting\ProjectParameterSettingModel.cs" />
@@ -241,6 +244,7 @@
     <Compile Include="Model\Setting\ModificationSettingModel.cs" />
     <Compile Include="Model\Setting\MspAnnotationSettingModel.cs" />
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
+    <Compile Include="Utility\ObservableExtensions.cs" />
     <Compile Include="ViewModel\Chart\AlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentPeakPlotViewModel.cs" />
     <Compile Include="ViewModel\Chart\AnalysisPeakPlotViewModel.cs" />
@@ -297,6 +301,8 @@
     <Compile Include="ViewModel\Setting\AlignmentParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\DataCollectionRangeSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\DataCollectionSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\DatasetFileSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\DatasetParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\DeconvolutionSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\DisplayEicSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\FragmentQuerySettingViewModel.cs" />
@@ -328,6 +334,7 @@
     <Compile Include="ViewModel\Setting\EnzymeSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\IAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\IAnnotatorSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\ISettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\IsotopeTrackSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\MassAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\MobilitySettingViewModel.cs" />
@@ -336,6 +343,7 @@
     <Compile Include="ViewModel\Setting\PeakDetectionSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\PeakEqualityParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\PeakFeatureSearchValueViewModel.cs" />
+    <Compile Include="ViewModel\Setting\ProcessSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\ProjectParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\ProjectSettingViewModel.cs" />
     <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
@@ -599,9 +607,13 @@
     <Compile Include="View\Setting\DataCollectionSettingView.xaml.cs">
       <DependentUpon>DataCollectionSettingView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Setting\DatasetFileSettingView.xaml.cs">
+      <DependentUpon>DatasetFileSettingView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Setting\DatasetParameterSettingView.xaml.cs">
       <DependentUpon>DatasetParameterSettingView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\Setting\DatasetSettingViewModel.cs" />
     <Compile Include="View\Setting\DeconvolutionSettingView.xaml.cs">
       <DependentUpon>DeconvolutionSettingView.xaml</DependentUpon>
     </Compile>
@@ -620,6 +632,7 @@
     <Compile Include="View\Setting\IsotopeTrackSettingView.xaml.cs">
       <DependentUpon>IsotopeTrackSettingView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\Setting\MethodSettingViewModel.cs" />
     <Compile Include="View\Setting\MobilitySettingView.xaml.cs">
       <DependentUpon>MobilitySettingView.xaml</DependentUpon>
     </Compile>
@@ -1034,6 +1047,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\DataCollectionSettingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\DatasetFileSettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

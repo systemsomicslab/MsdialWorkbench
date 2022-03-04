@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             SearchedAdductIons = new ObservableCollection<AdductIonVM>(Model.SearchedAdductIons.Select(ion => new AdductIonVM(ion)));
 
-            IdentitySettingViewModel = new IdentifySettingViewModel(Model.IdentitySettingModel, new LcmsAnnotatorSettingViewModelFactory()).AddTo(Disposables);
+            IdentitySettingViewModel = new IdentifySettingViewModel(Model.IdentitySettingModel, new LcmsAnnotatorSettingViewModelFactory(), Observable.Return(true)).AddTo(Disposables);
 
             ContinueProcessCommand = new[]{
                 IdentitySettingViewModel.ObserveHasErrors,

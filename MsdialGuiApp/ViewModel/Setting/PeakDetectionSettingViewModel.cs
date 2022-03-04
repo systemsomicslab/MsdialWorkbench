@@ -1,30 +1,35 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
-using System.Windows;
+using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public class PeakDetectionSettingViewModel : ViewModelBase
+    public class PeakDetectionSettingViewModel : ViewModelBase, ISettingViewModel
     {
-        public PeakDetectionSettingViewModel(PeakDetectionSettingModel model) {
+        public PeakDetectionSettingViewModel(PeakDetectionSettingModel model, IObservable<bool> isEnabled) {
             Model = model;
 
             MinimumAmplitude = Model.ToReactivePropertyAsSynchronized(
                 m => m.MinimumAmplitude,
                 m => m.ToString(),
-                vm => float.Parse(vm)
+                vm => float.Parse(vm),
+                ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MinimumAmplitude).AddTo(Disposables);
 
             MassSliceWidth = Model.ToReactivePropertyAsSynchronized(
                 m => m.MassSliceWidth,
                 m => m.ToString(),
-                vm => float.Parse(vm)
+                vm => float.Parse(vm),
+                ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MassSliceWidth).AddTo(Disposables);
 
             SmoothingMethod = new ReactivePropertySlim<SmoothingMethod>(Model.SmoothingMethod).AddTo(Disposables);
@@ -32,13 +37,15 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             SmoothingLevel = Model.ToReactivePropertyAsSynchronized(
                 m => m.SmoothingLevel,
                 m => m.ToString(),
-                vm => int.Parse(vm)
+                vm => int.Parse(vm),
+                ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => SmoothingLevel).AddTo(Disposables);
 
             MinimumDatapoints = Model.ToReactivePropertyAsSynchronized(
                 m => m.MinimumDatapoints,
                 m => m.ToString(),
-                vm => double.Parse(vm)
+                vm => double.Parse(vm),
+                ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MinimumDatapoints).AddTo(Disposables);
 
             ExcludedMassList = Model.ExcludedMassList.ToReadOnlyReactiveCollection(m => new MzSearchQueryViewModel(m)).AddTo(Disposables);
@@ -59,6 +66,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .WithSubscribe(() => Model.RemoveQuery(SelectedQuery.Model))
                 .AddTo(Disposables);
 
+            IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
             ObserveHasErrors = new[]
             {
                 MinimumAmplitude.ObserveHasErrors,
@@ -73,6 +82,25 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .Select(_ => ExcludedMassList.Any(vm => vm.HasValidationErrors)),
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
+
+            ObserveChanges = new[]
+            {
+                MinimumAmplitude.ToUnit(),
+                MassSliceWidth.ToUnit(),
+                SmoothingMethod.ToUnit(),
+                SmoothingLevel.ToUnit(),
+                MinimumDatapoints.ToUnit(),
+                ExcludedMassList.ObserveElementPropertyChanged().ToUnit(),
+            }.Merge();
+
+            decide = new Subject<Unit>().AddTo(Disposables);
+            ObserveChangeAfterDecision = Observable.Merge(new[]
+            {
+                ObserveChanges.TakeFirstAfterEach(decide).ToConstant(true),
+                decide.ToConstant(false)
+            })
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
         }
@@ -109,8 +137,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
         private MzSearchQueryViewModel selectedQuery;
 
-        public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
-
         [RegularExpression(@"\d\.?\d*", ErrorMessage = "Invalid character entered.")]
         [Range(0, int.MaxValue, ErrorMessage = "Data points should be positive value.")]
         public double NewMass {
@@ -130,5 +156,20 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactiveCommand AddCommand { get; }
 
         public ReactiveCommand RemoveCommand { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
+        IObservable<bool> ISettingViewModel.ObserveHasErrors => ObserveHasErrors;
+
+        public IObservable<Unit> ObserveChanges { get; }
+
+        private readonly Subject<Unit> decide;
+        public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
+        IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
+
+        public void Next() {
+            decide.OnNext(Unit.Default);
+        }
     }
 }

@@ -146,13 +146,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 },
                 true);
 
-            var upperVerticalAxis = this.model.Ms2SpectrumModel
-                .RawRefSpectrumModels
-                .HorizontalRangeSource
-                .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
-                .AddTo(Disposables);
             RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel,
-                upperVerticalAxisSource: Observable.Return(upperVerticalAxis),
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
                 lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
 

@@ -3,10 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
              xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
              mc:Ignorable="d" 
              d:Background="White"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:DatasetParameterSettingViewModel}}"
              d:DesignHeight="800" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -20,35 +21,37 @@
                         Executed="Open_Executed"/>
     </UserControl.CommandBindings>
 
-    <StackPanel>
-        <ui:ExecutableBar Label="Raw measurement folder:"
-                          LabelWidth="160"
-                          ButtonContent="Browse"
-                          ButtonWidth="64"
-                          Command="ApplicationCommands.Open"
-                          ToolTip="Select a folder which should be the same as the directory includeing measurement files.">
-            <TextBox x:Name="TextBox_ProjectFolderPath"
-                     Style="{StaticResource ToolTipErrorStyle}"
-                     d:Text="/measurement/folder/path"
-                     Text="{Binding Path=ProjectFilePath}"
-                     VerticalContentAlignment="Center" Margin="8,0"/>
-        </ui:ExecutableBar>
+    <StackPanel ScrollViewer.VerticalScrollBarVisibility="Visible">
+        <ui:LabeledContent PrependLabel="Project folder:">
+            <TextBlock x:Name="TextBox_ProjectFolderPath"
+                       d:Text="/project/folder/path"
+                       Text="{Binding Path=DatasetFolderPath.Value}"
+                       VerticalAlignment="Center"
+                       Margin="8,0"/>
+        </ui:LabeledContent>
+
+        <ui:LabeledContent PrependLabel="Project name:">
+            <TextBox x:Name="TextBox_ProjectName"
+                     d:Text="project.mtd3"
+                     Text="{Binding Path=DatasetFileName.Value, UpdateSourceTrigger=PropertyChanged}"
+                     VerticalAlignment="Center"
+                     Margin="8,0"/>
+        </ui:LabeledContent>
 
         <GroupBox Header="Ionization type" Padding="4">
             <StackPanel>
                 <RadioButton Name="RadioButton_ESI"
                              Content="Soft ionization (LC/MS, LC/MS/MS, or precursor-oriented GC/MS/MS)"
                              d:IsChecked="True"
-                             IsChecked="{Binding Ionization, Converter={StaticResource EnumToBoolean}, ConverterParameter=ESI, Mode=TwoWay}"
+                             IsChecked="{Binding Ionization.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=ESI, Mode=TwoWay}"
                              Margin="8,0,0,0"
-                             ToolTip="Type 1: When you analyze an ESI type data like LC/MS or LS/MS/MS, select this option."
-                             Grid.Row="0"/>
+                             ToolTip="Type 1: When you analyze an ESI type data like LC/MS or LS/MS/MS, select this option."/>
                 <RadioButton Name="RadioButton_EI"
                              Content="Hard ionization (GC/MS)"
-                             IsChecked="{Binding Ionization, Converter={StaticResource EnumToBoolean}, ConverterParameter=EI, Mode=TwoWay}"
+                             IsChecked="{Binding Ionization.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=EI, Mode=TwoWay}"
+                             IsEnabled="False"
                              Margin="8,8,0,0"
-                             ToolTip="Type 2: When you analyze an EI type data like GC/MS, select this option."
-                             Grid.Row="1"/>
+                             ToolTip="Type 2: When you analyze an EI type data like GC/MS, select this option."/>
             </StackPanel>
         </GroupBox>
 
@@ -66,20 +69,20 @@
                 <RadioButton Name="RadioButton_Separation_GCorLC"
                              Content="Chromatography (GC, LC, CE, or SFC)"
                              d:IsChecked="True"
-                             IsChecked="{Binding SeparationChromatography, Mode=TwoWay}"
+                             IsChecked="{Binding SeparationChromatography.Value, Mode=TwoWay}"
                              Margin="8,0,0,0"
                              ToolTip="Type 1: When you analyze GC or LC data, please select this option."
                              Grid.Row="0" Grid.Column="0"/>
                 <RadioButton Name="RadioButton_Infusion"
                              Content="Direct infusion"
-                             IsChecked="{Binding DirectInfution, Mode=TwoWay}"
+                             IsChecked="{Binding DirectInfution.Value, Mode=TwoWay}"
                              Margin="8,0,0,0"
                              ToolTip="Type 3: When you analyze direct infusion data, please select this option"
                              Grid.Row="0" Grid.Column="1"/>
 
                 <CheckBox Name="RadioButton_Separation_LCIM"
                           Content="Ion mobility (now coupled with liquid chromatography or direct infusion)"
-                          IsChecked="{Binding SeparationIonMobility, Mode=TwoWay}"
+                          IsChecked="{Binding SeparationIonMobility.Value, Mode=TwoWay}"
                           Margin="8,8,0,0"
                           ToolTip="Type 2: When you analyze LC-IM or IM (ion mobility data), please select this option."
                           Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
@@ -88,23 +91,22 @@
 
         <GroupBox Name="GroupBox_MethodType"
                   Header="MS method type"
-                  IsEnabled="{Binding IsChecked, ElementName=RadioButton_ESI}"
+                  IsEnabled="{Binding Ionization.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=ESI, Mode=OneWay}"
                   Padding="4">
             <StackPanel>
                 <RadioButton Name="RadioButton_DataDependentMSMS" 
                              Content="Conventional LC/MS or data dependent MS/MS" 
-                             IsChecked="{Binding AcquisitionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=DDA}"
+                             IsChecked="{Binding AcquisitionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=DDA}"
                              d:IsChecked="True"
                              Margin="8,0,0,0"
-                             ToolTip="Type 1: When you analyze a data set from data dependent MS/MS, select this option."
-                             Grid.Row="0"/>
+                             ToolTip="Type 1: When you analyze a data set from data dependent MS/MS, select this option."/>
 
-                <Grid Margin="0,8,0,0" Grid.Row="1" d:Visibility="Visible">
+                <Grid Margin="0,8,0,0" d:Visibility="Visible">
                     <Grid.Style>
                         <Style TargetType="Grid">
                             <Setter Property="Visibility" Value="Collapsed"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding SeparationIonMobility}" Value="False">
+                                <DataTrigger Binding="{Binding SeparationIonMobility.Value}" Value="False">
                                     <Setter Property="Visibility" Value="Visible"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -116,7 +118,7 @@
                     </Grid.ColumnDefinitions>
                     <RadioButton Name="RadioButton_DataIndependentMSMS_SWATH" 
                                  Content="SWATH-MS or conventional All-ions method" 
-                                 IsChecked="{Binding AcquisitionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=SWATH}"
+                                 IsChecked="{Binding AcquisitionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=SWATH}"
                                  Margin="8,0,0,0"
                                  Grid.Column="0">
                         <ToolTipService.ToolTip>
@@ -134,7 +136,7 @@
 
                     <RadioButton x:Name="RadioButton_DataIndependentMSMS_AIF"
                                  Content="All-ions with multiple CEs (cycled like 0V-10V-40V)"
-                                 IsChecked="{Binding AcquisitionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=AIF}"
+                                 IsChecked="{Binding AcquisitionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=AIF}"
                                  Margin="8,0,0,0"
                                  Grid.Column="1">
                         <ToolTipService.ToolTip>
@@ -151,11 +153,10 @@
 
                 <RadioButton Name="RadioButton_DataIndependentMSMS" 
                              Content="Data independent MS/MS" 
-                             IsChecked="{Binding AcquisitionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=SWATH}"
-                             Visibility="{Binding IsChecked, ElementName=RadioButton_Separation_LCIM, Converter={StaticResource boolean2visibility}}"
+                             IsChecked="{Binding AcquisitionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=SWATH}"
+                             Visibility="{Binding SeparationIonMobility.Value, Converter={StaticResource BooleanToVisibility}}"
                              d:Visibility="Visible"
-                             Margin="8,8,0,0"
-                             Grid.Row="2">
+                             Margin="8,8,0,0">
                     <ToolTipService.ToolTip>
                         <TextBlock>
                             Type 2:<LineBreak /> 
@@ -167,8 +168,7 @@
         </GroupBox>
 
         <GroupBox Header="Collision type"
-                  Visibility="{Binding IsChecked, ElementName=RadioButton_DataDependentMSMS, Converter={StaticResource boolean2visibility}}"
-                  Grid.Row="4">
+                  Visibility="{Binding IsChecked, ElementName=RadioButton_DataDependentMSMS, Converter={StaticResource BooleanToVisibility}}">
             <UniformGrid Columns="2">
                 <UniformGrid.Resources>
                     <Style TargetType="RadioButton">
@@ -176,13 +176,13 @@
                     </Style>
                 </UniformGrid.Resources>
                 <RadioButton Content="CID, HCD"
-                             IsChecked="{Binding CollisionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=HCD}"/>
+                             IsChecked="{Binding CollisionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=HCD}"/>
                 <RadioButton Content="EIEIO"
-                             IsChecked="{Binding CollisionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=EIEIO}"/>
+                             IsChecked="{Binding CollisionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=EIEIO}"/>
                 <RadioButton Content="ECD"
-                             IsChecked="{Binding CollisionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=ECD}"/>
+                             IsChecked="{Binding CollisionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=ECD}"/>
                 <RadioButton Content="HotECD"
-                             IsChecked="{Binding CollisionType, Converter={StaticResource EnumToBoolean}, ConverterParameter=HotECD}"/>
+                             IsChecked="{Binding CollisionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=HotECD}"/>
             </UniformGrid>
         </GroupBox>
 
@@ -199,7 +199,7 @@
                 <StackPanel>
                     <RadioButton Name="RadioButton_ProfileMode"
                                  Content="Profile data"
-                                 IsChecked="{Binding MS1DataType, Converter={StaticResource EnumToBoolean}, ConverterParameter=Profile}"
+                                 IsChecked="{Binding MS1DataType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Profile}"
                                  Margin="8,0,0,0">
                         <ToolTipService.ToolTip>
                             <TextBlock>
@@ -219,7 +219,7 @@
 
                     <RadioButton Name="RadioButton_CentroidMode"
                                  Content="Centroid data"
-                                 IsChecked="{Binding MS1DataType, Converter={StaticResource EnumToBoolean}, ConverterParameter=Centroid}"
+                                 IsChecked="{Binding MS1DataType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Centroid}"
                                  d:IsChecked="True"
                                  Margin="8,8,0,0">
                         <ToolTipService.ToolTip>
@@ -242,13 +242,13 @@
 
             <GroupBox Name="GroupBox_DataTypeMS2"
                       Header="Data type (MS/MS)"
-                      IsEnabled="{Binding IsChecked, ElementName=RadioButton_ESI}"
+                      IsEnabled="{Binding Ionization.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=ESI, Mode=TwoWay}"
                       Padding="4"
                       Grid.Column="1">
                 <StackPanel>
                     <RadioButton Name="RadioButton_ProfileModeMS2"
                                  Content="Profile data"
-                                 IsChecked="{Binding MS2DataType, Converter={StaticResource EnumToBoolean}, ConverterParameter=Profile}"
+                                 IsChecked="{Binding MS2DataType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Profile}"
                                  Margin="8,0,0,0">
                         <ToolTipService.ToolTip>
                             <TextBlock>
@@ -261,7 +261,7 @@
 
                     <RadioButton Name="RadioButton_CentroidModeMS2"
                                  Content="Centroid data"
-                                 IsChecked="{Binding MS2DataType, Converter={StaticResource EnumToBoolean}, ConverterParameter=Centroid}"
+                                 IsChecked="{Binding MS2DataType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Centroid}"
                                  d:IsChecked="True"
                                  Margin="8,8,0,0">
                         <ToolTipService.ToolTip>
@@ -289,13 +289,13 @@
                 <StackPanel>
                     <RadioButton Name="RadioButton_PositiveMode"
                                  Content="Positive ion mode"
-                                 IsChecked="{Binding IonMode, Converter={StaticResource EnumToBoolean}, ConverterParameter=Positive}"
+                                 IsChecked="{Binding IonMode.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Positive}"
                                  d:IsChecked="True"
                                  Margin="8,0,0,0"
                                  ToolTip="Necessary for adduct ion setting"/>
                     <RadioButton Name="RadioButton_NegativeMode"
                                  Content="Negative ion mode"
-                                 IsChecked="{Binding IonMode, Converter={StaticResource EnumToBoolean}, ConverterParameter=Negative}"
+                                 IsChecked="{Binding IonMode.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Negative}"
                                  Margin="8,8,0,0"
                                  ToolTip="Necessary for adduct ion setting"/>
                 </StackPanel>
@@ -308,7 +308,7 @@
                 <StackPanel>
                     <RadioButton Name="RadioButton_Metabolomics"
                                  Content="Metabolomics"
-                                 IsChecked="{Binding TargetOmics, Converter={StaticResource EnumToBoolean}, ConverterParameter=Metabolomics}"
+                                 IsChecked="{Binding TargetOmics.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Metabolomics}"
                                  Margin="8,0,0,0">
                         <ToolTipService.ToolTip>
                             <TextBlock>
@@ -320,14 +320,14 @@
                     <RadioButton Name="RadioButton_Lipidomics"
                                  Content="Lipidomics"
                                  d:IsChecked="True"
-                                 IsChecked="{Binding TargetOmics, Converter={StaticResource EnumToBoolean}, ConverterParameter=Lipidomics}"
-                                 IsEnabled="{Binding IsChecked, ElementName=RadioButton_ESI}"
+                                 IsChecked="{Binding TargetOmics.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Lipidomics}"
+                                 IsEnabled="{Binding Ionization.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=ESI, Mode=TwoWay}"
                                  Margin="8,8,0,0"
                                  ToolTip="The analysis procedure is optimized for lipidomics."/>
                     <RadioButton Name="RadioButton_Proteomics"
                                  Content="Proteomics"
-                                 IsChecked="{Binding TargetOmics, Converter={StaticResource EnumToBoolean}, ConverterParameter=Proteomics}"
-                                 IsEnabled="{Binding IsChecked, ElementName=RadioButton_ESI}"
+                                 IsChecked="{Binding TargetOmics.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Proteomics}"
+                                 IsEnabled="{Binding Ionization.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=ESI, Mode=TwoWay}"
                                  Margin="8,8,0,0"
                                  ToolTip="The analysis procedure is optimized for proteomics."/>
                 </StackPanel>
@@ -361,31 +361,31 @@
                         </StackPanel.Resources>
                         <ui:LabeledBar Label="Instrument trype:">
                             <TextBox Name="TextBox_InstrumentType" 
-                                     Text="{Binding InstrumentType, UpdateSourceTrigger=PropertyChanged}"
+                                     Text="{Binding InstrumentType.Value, UpdateSourceTrigger=PropertyChanged}"
                                      d:Text="Instrument type"
                                      ToolTip="GC-EI-TOF, LC-ESI-QTOF etc. See MassBank definition"/>
                         </ui:LabeledBar>
                         <ui:LabeledBar Label="Instrument:">
                             <TextBox Name="TextBox_Instrument" 
-                                     Text="{Binding Instrument, UpdateSourceTrigger=PropertyChanged}"
+                                     Text="{Binding Instrument.Value, UpdateSourceTrigger=PropertyChanged}"
                                      d:Text="Instrument"
                                      ToolTip="ex. LTQ Orbitrap XL, Thermo Scientfic; HP-1100 HPLC, Agilent"/>
                         </ui:LabeledBar>
                         <ui:LabeledBar Label="Authors:">
                             <TextBox Name="TextBox_Authors" 
-                                     Text="{Binding Authors, UpdateSourceTrigger=PropertyChanged}"
+                                     Text="{Binding Authors.Value, UpdateSourceTrigger=PropertyChanged}"
                                      d:Text="Author"
                                      ToolTip="ex. Hiroshi Tsugawa, Kazutaka Ikeda, and Makoto Arita"/>
                         </ui:LabeledBar>
                         <ui:LabeledBar Label="License:">
                             <TextBox Name="TextBox_License" 
-                                     Text="{Binding License, UpdateSourceTrigger=PropertyChanged}"
+                                     Text="{Binding License.Value, UpdateSourceTrigger=PropertyChanged}"
                                      d:Text="License"
                                      ToolTip="ex. CC-BY"/>
                         </ui:LabeledBar>
                         <ui:LabeledBar Label="Collision energy:">
                             <TextBox Name="TextBox_CollisionEnergy" 
-                                     Text="{Binding CollisionEnergy, UpdateSourceTrigger=PropertyChanged}"
+                                     Text="{Binding CollisionEnergy.Value, UpdateSourceTrigger=PropertyChanged}"
                                      d:Text="Collision energy"
                                      ToolTip="ex. 70 eV (in GC-MS), 30 +/-15 V (in MS/MS)"/>
                         </ui:LabeledBar>
@@ -394,7 +394,7 @@
                     <DockPanel Grid.Column="1">
                         <Label Content="Comment:" Margin="8,4,0,0" DockPanel.Dock="Left"/>
                         <TextBox Name="TextBox_Comment"
-                                 Text="{Binding Path=Comment, UpdateSourceTrigger=PropertyChanged}" 
+                                 Text="{Binding Path=Comment.Value, UpdateSourceTrigger=PropertyChanged}" 
                                  AcceptsReturn="True"
                                  VerticalScrollBarVisibility="Auto"
                                  TextWrapping="WrapWithOverflow" 
@@ -404,13 +404,5 @@
                 </Grid>
             </StackPanel>
         </Expander>
-
-        <Button Name="Button_Next" 
-                Content="Next" 
-                Command="{Binding ContinueProcessCommand, UpdateSourceTrigger=PropertyChanged}" 
-                CommandParameter="{Binding ElementName=StartUpWindowView}"
-                Width="64" Height="24" 
-                Margin="4,4,4,0"
-                HorizontalAlignment="Right"/>
     </StackPanel>
 </UserControl>

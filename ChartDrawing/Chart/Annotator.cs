@@ -141,6 +141,20 @@ namespace CompMs.Graphics.Chart
             return result;
         }
 
+        protected override void OnHorizontalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
+            base.OnHorizontalAxisChanged(oldValue, newValue);
+            WriteCleanFlag(PropertyClean.Horizontal, false);
+            ShouldCoerceDatas = true;
+            CoerceValue(DatasProperty);
+        }
+
+        protected override void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
+            base.OnVerticalAxisChanged(oldValue, newValue);
+            WriteCleanFlag(PropertyClean.Vertical, false);
+            ShouldCoerceDatas = true;
+            CoerceValue(DatasProperty);
+        }
+
         public static readonly DependencyProperty HorizontalPropertyNameProperty =
             DependencyProperty.Register(
                 nameof(HorizontalPropertyName), typeof(string), typeof(Annotator),

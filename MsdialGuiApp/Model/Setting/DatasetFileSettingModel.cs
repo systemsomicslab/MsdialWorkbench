@@ -28,14 +28,17 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private string projectFolderPath = string.Empty;
 
-        public void AddFiles(IEnumerable<string> files) {
-            foreach (var file in files) {
+        public void SetFiles(IEnumerable<string> files) {
+            Files.Clear();
+            foreach ((var file, var i) in files.WithIndex()) {
                 var folder = Path.GetDirectoryName(file);
                 var name = Path.GetFileNameWithoutExtension(file);
                 var bean = new AnalysisFileBean
                 {
                     AnalysisFileClass = "1",
                     AnalysisFileIncluded = true,
+                    AnalysisFileAnalyticalOrder = i + 1,
+                    AnalysisFileId = i,
                     AnalysisFileName = name,
                     AnalysisFilePath = file,
                     AnalysisFileType = AnalysisFileType.Sample,
@@ -46,11 +49,7 @@ namespace CompMs.App.Msdial.Model.Setting
                     PeakAreaBeanInformationFilePath = Path.Combine(folder, $"{name}_{dateTime:yyyyMMddHHmm}.{MsdialDataStorageFormat.pai}"),
                     ProteinAssembledResultFilePath = Path.Combine(folder, $"{name}_{dateTime:yyyyMMddHHmm}.{MsdialDataStorageFormat.prf}"),
                 };
-            }
-
-            foreach ((var file, var i) in Files.WithIndex()) {
-                file.AnalysisFileAnalyticalOrder = i + 1;
-                file.AnalysisFileId = i;
+                Files.Add(bean);
             }
 
             ProjectFolderPath = Files.Select(f => Path.GetDirectoryName(f.AnalysisFilePath)).Distinct().SingleOrDefault() ?? string.Empty;
@@ -60,10 +59,6 @@ namespace CompMs.App.Msdial.Model.Setting
             foreach (var file in files) {
                 Files.Remove(file);
             }
-        }
-
-        public void ClearFiles() {
-            Files.Clear();
         }
     }
 }

@@ -1,17 +1,20 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.DataObj.Property;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public class AdductIonSettingViewModel : ViewModelBase
+    public class AdductIonSettingViewModel : ViewModelBase, ISettingViewModel
     {
-        public AdductIonSettingViewModel(AdductIonSettingModel model) {
+        public AdductIonSettingViewModel(AdductIonSettingModel model, IObservable<bool> isEnabled) {
             Model = model;
 
             AdductIons = Model.AdductIons.ToReadOnlyReactiveCollection(m => new AdductIonVM(m)).AddTo(Disposables);
@@ -31,6 +34,20 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .Where(m => m != null)
                 .Subscribe(Model.RemoveAdductIon)
                 .AddTo(Disposables);
+
+            IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            ObserveHasErrors = new ReadOnlyReactivePropertySlim<bool>(Observable.Return(false)).AddTo(Disposables);
+            ObserveChanges = AdductIons.ObserveElementPropertyChanged().ToUnit();
+            decide = new Subject<Unit>().AddTo(Disposables);
+            var changes = ObserveChanges.TakeFirstAfterEach(decide);
+            ObserveChangeAfterDecision = new[]
+            {
+                changes.Select(_ => true),
+                decide.Select(_ => false),
+            }.Merge()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
         }
 
         public AdductIonSettingModel Model { get; }
@@ -46,5 +63,20 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactiveCommand AddCommand { get; }
 
         public ReactiveCommand RemoveCommand { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
+        IObservable<bool> ISettingViewModel.ObserveHasErrors => ObserveHasErrors;
+
+        public IObservable<Unit> ObserveChanges { get; }
+
+        private readonly Subject<Unit> decide;
+        public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
+        IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
+
+        public void Next() {
+            decide.OnNext(Unit.Default);
+        }
     }
 }

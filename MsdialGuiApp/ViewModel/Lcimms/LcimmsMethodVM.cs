@@ -9,7 +9,9 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcImMsApi.DataObj;
+using CompMs.MsdialLcImMsApi.Parameter;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
@@ -133,7 +135,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             if (!ProcessSetAnalysisParameter(window))
                 return -1;
 
-            var processOption = model.Storage.MsdialLcImMsParameter.ProcessOption;
+            var processOption = model.Storage.Parameter.ProcessOption;
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(CompMs.Common.Enum.ProcessOption.PeakSpotting)) {
                 if (!ProcessAnnotaion(window, model.Storage))
@@ -151,7 +153,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            var parameter = model.Storage.MsdialLcImMsParameter;
+            var parameter = model.Storage.Parameter;
             var analysisParamSetModel = new LcimmsAnalysisParameterSetModel(parameter, model.Storage.AnalysisFiles, model.Storage.DataBases);
             using (var analysisParamSetVM = new LcimmsAnalysisParameterSetViewModel(analysisParamSetModel)) {
                 var apsw = new AnalysisParamSetForLcimmsWindow
@@ -169,7 +171,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             return true;
         }
 
-        private bool ProcessAnnotaion(Window owner, MsdialLcImMsDataStorage storage) {
+        private bool ProcessAnnotaion(Window owner, IMsdialDataStorage<MsdialLcImMsParameter> storage) {
             var vm = new ProgressBarMultiContainerVM
             {
                 MaxValue = storage.AnalysisFiles.Count,

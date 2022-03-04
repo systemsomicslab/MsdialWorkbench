@@ -70,6 +70,10 @@ namespace CompMs.App.Msdial.ViewModel.Core
             }
 
             Model = new MainWindowModel();
+#if DEBUG
+            TestCommand = new ReactiveCommand().AddTo(Disposables);
+            TestCommand.Subscribe(() => new View.Setting.ProjectSettingDialog() { DataContext = new ProcessSettingViewModel(Model.ProjectSetting) }.Show());
+#endif
 
             this.startUpService = startUpService;
             this.analysisFilePropertySetService = analysisFilePropertySetService;
@@ -90,6 +94,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private readonly ReactivePropertySlim<ParameterBase> parameter;
 
         public MainWindowModel Model { get; }
+
+        public ReactiveCommand TestCommand { get; }
 
         public MethodViewModel MethodVM {
             get => methodVM;
