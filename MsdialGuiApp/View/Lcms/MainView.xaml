@@ -481,8 +481,10 @@
                             <chart:ExpRefView>
                                 <chart:ExpRefView.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Save spectra table as.."
+                                        <MenuItem Header="Save deconvoluted spectra table as.."
                                                   Command="{Binding SaveMs2SpectrumCommand}"/>
+                                        <MenuItem Header="Save raw spectra table as.."
+                                                  Command="{Binding SaveMs2RawSpectrumCommand}"/>
                                         <MenuItem Header="Save image as...">
                                             <MenuItem Header="Save as emf"
                                                       Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
