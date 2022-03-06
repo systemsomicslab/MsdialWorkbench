@@ -336,11 +336,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 var feature = featureObjs[score.PeakID];
                 if (score.IsDecoy) {
                     feature.MatchResults.DecoyRepresentative.PEPScore = score.PosteriorErrorProb;
-                    //Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tScore\t{5}", "TRUE", total, feature.MasterPeakID, feature.Mass, feature.ChromXs.Value, score.PosteriorErrorProb);
+                    Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tAndromeda\t{5}\tPepScore\t{6}", total, "TRUE", feature.MasterPeakID, feature.Mass, feature.ChromXs.Value, score.AndromedaScore, score.PosteriorErrorProb);
                 }
                 else {
                     feature.MatchResults.Representative.PEPScore = score.PosteriorErrorProb;
-                    //Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tScore\t{5}", "FALSE", total, feature.MasterPeakID, feature.Mass, feature.ChromXs.Value, score.PosteriorErrorProb);
+                    Console.WriteLine("Rank\t{0}\tIsDecoy\t{1}\tPeakID\t{2}\tMZ\t{3}\tRT\t{4}\tAndromeda\t{5}\tPepScore\t{6}", total, "FALSE", feature.MasterPeakID, feature.Mass, feature.ChromXs.Value, score.AndromedaScore, score.PosteriorErrorProb);
                 }
 
                 if (annotatedNum < minimumAnnotatedCount) {
@@ -351,7 +351,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     //}
                 }
                 else {
-                    if (counter > decoyCutOffNum && score.IsDecoy == false) {
+                    if (counter > decoyCutOffNum + 1 && score.IsDecoy == false) {
                         feature.MatchResults.Representative.IsReferenceMatched = false;
                         feature.MatchResults.Representative.IsAnnotationSuggested = true;
                         //feature.MatchResults.Representative.IsSpectrumMatch = false;
