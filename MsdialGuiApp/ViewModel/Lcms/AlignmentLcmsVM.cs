@@ -427,6 +427,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             PlotViewModel?.VerticalAxis?.Focus(FocusMz - MzTol, FocusMz + MzTol);
         }
 
+        public DelegateCommand<Window> SaveSpectraCommand => saveSpectraCommand ?? (saveSpectraCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
+        private DelegateCommand<Window> saveSpectraCommand;
+
         private void SaveSpectra(Window owner) {
             var sfd = new SaveFileDialog {
                 Title = "Save spectra",
