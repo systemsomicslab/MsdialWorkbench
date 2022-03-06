@@ -123,9 +123,9 @@ namespace CompMs.Common.Lipidomics
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - H2O), 50d, "Precursor - H2O") { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(adduct.ConvertToMz(C8H16NO3), 100d, "C8H16NO3") { SpectrumComment = SpectrumComment.metaboliteclass}, //175[M+H]+
                 new SpectrumPeak(adduct.ConvertToMz(C7H13NO2), 100d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass}, //144[M+H]+
-                new SpectrumPeak(adduct.ConvertToMz(C7H13NO2 + MassDiffDictionary.OxygenMass), 200d, "Header + O") { SpectrumComment = SpectrumComment.metaboliteclass}, //160[M+H]+
+                new SpectrumPeak(adduct.ConvertToMz(C7H13NO2 + H2O), 200d, "Header + H2O") { SpectrumComment = SpectrumComment.metaboliteclass}, //162[M+H]+
                 //new SpectrumPeak(adduct.ConvertToMz(Gly_C), 150d, "Gly-C")  { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak(adduct.ConvertToMz(Gly_O), 150d, "Gly-O") { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(adduct.ConvertToMz(Gly_O), 150d, "Gly-O") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true  },
             };
             return spectrum.ToArray();
         }
@@ -139,7 +139,7 @@ namespace CompMs.Common.Lipidomics
             var chainMass = acylChain.Mass - MassDiffDictionary.HydrogenMass;
             return new[]
             {
-                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass), 100d, $"-{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
+                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass), 100d, $"-{acylChain}") { SpectrumComment = SpectrumComment.acylchain, IsAbsolutelyRequiredFragmentForAnnotation = true  },
                 new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - H2O ), 100d, $"-{acylChain}-O") { SpectrumComment = SpectrumComment.acylchain },
             };
         }

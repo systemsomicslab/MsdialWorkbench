@@ -9,39 +9,22 @@ using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public class PASpectrumGenerator : ILipidSpectrumGenerator
+    public class HBMPSpectrumGenerator : ILipidSpectrumGenerator
     {
-        private static readonly double H3PO4 = new[] {
-            MassDiffDictionary.HydrogenMass * 3,
-            MassDiffDictionary.OxygenMass * 4,
-            MassDiffDictionary.PhosphorusMass,
-        }.Sum();
 
-        private static readonly double C3H9O6P = new[] { // 172.013675 OCC(O)COP(O)(O)=O
+        private static readonly double C3H9O6P = new[]
+        {
             MassDiffDictionary.CarbonMass * 3,
             MassDiffDictionary.HydrogenMass * 9,
             MassDiffDictionary.OxygenMass * 6,
             MassDiffDictionary.PhosphorusMass,
         }.Sum();
 
-        private static readonly double Gly_C = new[] {
-            MassDiffDictionary.CarbonMass * 3,
-            MassDiffDictionary.HydrogenMass * 7,
-            MassDiffDictionary.OxygenMass * 4,
-            MassDiffDictionary.PhosphorusMass,
-        }.Sum();
-
-        private static readonly double Gly_O = new[] {
-            MassDiffDictionary.CarbonMass * 2,
-            MassDiffDictionary.HydrogenMass * 5,
-            MassDiffDictionary.OxygenMass * 5,
-            MassDiffDictionary.PhosphorusMass,
-        }.Sum();
-
-        private static readonly double H2O = new[]
+        private static readonly double C3H6O2 = new[]
         {
-            MassDiffDictionary.HydrogenMass * 2,
-            MassDiffDictionary.OxygenMass,
+            MassDiffDictionary.CarbonMass * 3,
+            MassDiffDictionary.HydrogenMass * 6,
+            MassDiffDictionary.OxygenMass * 2,
         }.Sum();
 
         private static readonly double CH2 = new[]
@@ -50,11 +33,19 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.CarbonMass,
         }.Sum();
 
-        public PASpectrumGenerator() {
+        private static readonly double H2O = new[]
+        {
+            MassDiffDictionary.HydrogenMass * 2,
+            MassDiffDictionary.OxygenMass,
+        }.Sum();
+
+        public HBMPSpectrumGenerator()
+        {
             spectrumGenerator = new SpectrumPeakGenerator();
         }
 
-        public PASpectrumGenerator(ISpectrumPeakGenerator spectrumGenerator) {
+        public HBMPSpectrumGenerator(ISpectrumPeakGenerator spectrumGenerator)
+        {
             this.spectrumGenerator = spectrumGenerator ?? throw new ArgumentNullException(nameof(spectrumGenerator));
         }
 
@@ -62,7 +53,7 @@ namespace CompMs.Common.Lipidomics
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct)
         {
-            if (lipid.LipidClass == LbmClass.PA)
+            if (lipid.LipidClass == LbmClass.HBMP)
             {
                 if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+NH4]+")
                 {
@@ -71,21 +62,23 @@ namespace CompMs.Common.Lipidomics
             }
             return false;
         }
-
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null)
         {
+            var nlMass = adduct.AdductIonName == "[M+NH4]+" ? adduct.AdductIonAccurateMass - MassDiffDictionary.ProtonMass + H2O : H2O;
             var spectrum = new List<SpectrumPeak>();
-            spectrum.AddRange(GetPASpectrum(lipid, adduct));
+            spectrum.AddRange(GetHBMPSpectrum(lipid, adduct));
+            // chains[0] = lyso
             if (lipid.Chains is MolecularSpeciesLevelChains mlChains)
             {
                 spectrum.AddRange(GetAcylLevelSpectrum(lipid, mlChains.Chains, adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>(), adduct, nlMass: H3PO4));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>(), adduct, nlMass: nlMass));
             }
             if (lipid.Chains is PositionLevelChains plChains)
             {
                 spectrum.AddRange(GetAcylLevelSpectrum(lipid, plChains.Chains, adduct));
                 spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.Chains[0], adduct));
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>(), adduct, nlMass: H3PO4));
+                spectrum.AddRange(GetAcylPositionSpectrum(lipid, plChains.Chains[1], adduct));
+                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, plChains.Chains.OfType<AcylChain>(), adduct, nlMass: nlMass));
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))
@@ -111,26 +104,28 @@ namespace CompMs.Common.Lipidomics
                 Charge = adduct.ChargeNumber,
             };
         }
-
-        private SpectrumPeak[] GetPASpectrum(ILipid lipid, AdductIon adduct)
+        private SpectrumPeak[] GetHBMPSpectrum(ILipid lipid, AdductIon adduct)
         {
             var adductmass = adduct.AdductIonName == "[M+NH4]+" ? MassDiffDictionary.ProtonMass : adduct.AdductIonAccurateMass;
             var spectrum = new List<SpectrumPeak>
             {
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                new SpectrumPeak(lipid.Mass - H3PO4 + adductmass, 100d, "- Header") { SpectrumComment = SpectrumComment.metaboliteclass },
-                //new SpectrumPeak(H3PO4 - MassDiffDictionary.HydrogenMass + adductmass, 300d, "Header"),
-                new SpectrumPeak(C3H9O6P + adductmass, 150d, "C3H9O6P") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
-                new SpectrumPeak(Gly_C + adductmass, 100d, "Gly-C") { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak(Gly_O + adductmass, 100d, "Gly-O") { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(lipid.Mass + adductmass - H2O, 100d, "Precursor -H2O") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
+                new SpectrumPeak(C3H9O6P + adductmass, 50d, "C3H9O6P") { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(C3H9O6P -H2O + adductmass, 50d, "C3H9O6P - H2O") { SpectrumComment = SpectrumComment.metaboliteclass },
             };
             if (adduct.AdductIonName == "[M+NH4]+")
             {
                 spectrum.Add(
-                    new SpectrumPeak(lipid.Mass + MassDiffDictionary.ProtonMass, 200d, "[M+H]+")
+                    new SpectrumPeak(lipid.Mass + MassDiffDictionary.ProtonMass, 200d, "[M+H]+") { SpectrumComment = SpectrumComment.metaboliteclass }
                 );
             }
             return spectrum.ToArray();
+        }
+
+        private IEnumerable<SpectrumPeak> GetAcylDoubleBondSpectrum(ILipid lipid, IEnumerable<AcylChain> acylChains, AdductIon adduct, double nlMass = 0.0)
+        {
+            return acylChains.SelectMany(acylChain => spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acylChain, adduct, nlMass, 25d));
         }
 
         private IEnumerable<SpectrumPeak> GetAcylLevelSpectrum(ILipid lipid, IEnumerable<IChain> acylChains, AdductIon adduct)
@@ -138,39 +133,39 @@ namespace CompMs.Common.Lipidomics
             return acylChains.SelectMany(acylChain => GetAcylLevelSpectrum(lipid, acylChain, adduct));
         }
 
-        private SpectrumPeak[] GetAcylLevelSpectrum(ILipid lipid, IChain acylChain,AdductIon adduct)
+        private SpectrumPeak[] GetAcylLevelSpectrum(ILipid lipid, IChain acylChain, AdductIon adduct)
         {
             var lipidMass = lipid.Mass;
             var chainMass = acylChain.Mass - MassDiffDictionary.HydrogenMass;
             var adductmass = adduct.AdductIonName == "[M+NH4]+" ? MassDiffDictionary.ProtonMass : adduct.AdductIonAccurateMass;
 
-            return new[]
+            var spectrum = new List<SpectrumPeak>
             {
-                new SpectrumPeak(lipidMass - chainMass + adductmass, 50d, $"-{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
-                new SpectrumPeak(lipidMass - chainMass - H2O + adductmass, 100d, $"-{acylChain}-O") { SpectrumComment = SpectrumComment.acylchain },
-                new SpectrumPeak(lipidMass - chainMass - H3PO4  + adductmass, 50d, $"- Header -{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
-                new SpectrumPeak(lipidMass - chainMass - H3PO4 - H2O  + adductmass, 50d, $"- Header -{acylChain}-O") { SpectrumComment = SpectrumComment.acylchain },
-            };
+                new SpectrumPeak(chainMass + C3H6O2 + adductmass, 100d, $"{acylChain}+C3H4O2+H"),
+                new SpectrumPeak(lipidMass - chainMass - MassDiffDictionary.HydrogenMass + adductmass, 50d, $"-{acylChain}"),
+                new SpectrumPeak(lipidMass - chainMass - H2O + adductmass, 50d, $"-{acylChain}-H2O") { SpectrumComment = SpectrumComment.acylchain },
+                new SpectrumPeak(lipidMass - chainMass - C3H9O6P + adductmass, 200d, $"-C3H9O6P -{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
+                //new SpectrumPeak(lipidMass - chainMass - C3H9O6P - H2O + adductmass, 50d, $"-C3H9O6P -{acylChain}-H2O") { SpectrumComment = SpectrumComment.acylchain },
+             };
+
+            return spectrum.ToArray();
         }
 
         private SpectrumPeak[] GetAcylPositionSpectrum(ILipid lipid, IChain acylChain, AdductIon adduct)
         {
-            var lipidMass = lipid.Mass;
-            var chainMass = acylChain.Mass - MassDiffDictionary.HydrogenMass;
             var adductmass = adduct.AdductIonName == "[M+NH4]+" ? MassDiffDictionary.ProtonMass : adduct.AdductIonAccurateMass;
+            var lipidMass = lipid.Mass + adductmass;
+            var chainMass = acylChain.Mass - MassDiffDictionary.HydrogenMass;
 
-            return new[]
+            var spectrum = new List<SpectrumPeak>
             {
-                new SpectrumPeak(lipidMass - chainMass - H2O - CH2 + adductmass, 40d, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
-                new SpectrumPeak(lipidMass - chainMass - H3PO4 - H2O - CH2 + adductmass, 40d, "- Header -CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak(lipidMass - chainMass - H2O - CH2 , 100d, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
             };
+            return spectrum.ToArray();
         }
 
-        private IEnumerable<SpectrumPeak> GetAcylDoubleBondSpectrum(ILipid lipid, IEnumerable<AcylChain> acylChains, AdductIon adduct, double nlMass = 0.0)
-        {
-            return acylChains.SelectMany(acylChain => spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acylChain, adduct, nlMass, 50));
-        }
 
         private static readonly IEqualityComparer<SpectrumPeak> comparer = new SpectrumEqualityComparer();
+
     }
 }

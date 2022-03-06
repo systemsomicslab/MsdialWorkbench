@@ -39,7 +39,6 @@ namespace CompMs.Common.Algorithm.Scoring {
         public static (ILipid, double[]) GetEadBasedLipidMoleculeAnnotationResult(IMSScanProperty scan, MoleculeMsReference reference,
             float tolerance, float mzBegin, float mzEnd) {
             var lipid = FacadeLipidParser.Default.Parse(reference.Name);
-            if (lipid is null) return (null, new double[2] { 0.0, 0.0 });
             switch (lipid.LipidClass) {
                 case LbmClass.PC:
                     return PCEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
@@ -57,6 +56,33 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return DGEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.BMP:
                     return BMPEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LPC:
+                    return LPCEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LPS:
+                    return LPSEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LPE:
+                    return LPEEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LPG:
+                    return LPGEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LPI:
+                    return LPIEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.DGTA:
+                    return DGTAEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.DGTS:
+                    return DGTSEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LDGTA:
+                    return LDGTAEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.LDGTS:
+                    return LDGTSEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.SM:
+                    return SMEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.Cer_NS:
+                    return CeramideEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.HexCer_NS:
+                    return HexCerEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.HBMP:
+                    return HBMPEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+
                 default: return (null, new double[2] { 0.0, 0.0 });
             }
         }
@@ -503,8 +529,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
                 foreach (var peak in group) {
                     if (chargeState <= 2 && (peak.SpectrumComment == SpectrumComment.b2 || peak.SpectrumComment == SpectrumComment.y2)) continue; // exclude
-                    if (!isParentExist && 
-                        (peak.SpectrumComment == SpectrumComment.b_h2o || 
+                    if (!isParentExist &&
+                        (peak.SpectrumComment == SpectrumComment.b_h2o ||
                          peak.SpectrumComment == SpectrumComment.b_nh3 ||
                          peak.SpectrumComment == SpectrumComment.y_h2o ||
                          peak.SpectrumComment == SpectrumComment.y_nh3)) {
