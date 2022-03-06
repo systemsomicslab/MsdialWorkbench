@@ -83,6 +83,13 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.HBMP:
                     return HBMPEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
 
+                case LbmClass.TG:
+                    return TGEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.EtherPC:
+                    return EtherPCEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.EtherPE:
+                    return EtherPEEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+
                 default: return (null, new double[2] { 0.0, 0.0 });
             }
         }
