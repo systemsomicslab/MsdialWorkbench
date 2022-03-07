@@ -73,6 +73,8 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
 
         public IObservable<Unit> CommitAsObservable => CommitTrigger.Where(_ => !HasErrors.Value).ToUnit();
 
+        public IObservable<Unit> ObserveChanges { get; }
+
         public AnalysisFileBeanViewModel(AnalysisFileBean file) : base(file) {
             AnalysisFilePath = new ReactiveProperty<string>(File.AnalysisFilePath)
                 .SetValidateAttribute(() => AnalysisFilePath)
@@ -172,7 +174,20 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
             .Inverse()
             .ToReadOnlyReactivePropertySlim(true)
             .AddTo(Disposables);
-            HasErrors.Subscribe(_ => Console.WriteLine($"{AnalysisFileName.Value} fired!"));
+
+            ObserveChanges = new[]
+            {
+                AnalysisFilePath.ToUnit(),
+                AnalysisFileName.ToUnit(),
+                AnalysisFileType.ToUnit(),
+                AnalysisFileClass.ToUnit(),
+                AnalysisFileAnalyticalOrder.ToUnit(),
+                AnalysisFileId.ToUnit(),
+                AnalysisFileIncluded.ToUnit(),
+                AnalysisBatch.ToUnit(),
+                DilutionFactor.ToUnit(),
+                ResponseVariable.ToUnit(),
+            }.Merge();
         }
 
         public void Commit() {

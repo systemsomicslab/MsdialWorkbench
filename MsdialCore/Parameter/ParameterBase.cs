@@ -778,7 +778,17 @@ namespace CompMs.MsdialCore.Parameter {
                 { SpectrumComment.y_nh3.ToString(), new List<byte>(){ 0, 138, 131, 255 } },// lime
                 { SpectrumComment.b_h3po4.ToString(), new List<byte>(){ 230, 0, 18, 255 } }, // red
                 { SpectrumComment.y_h3po4.ToString(), new List<byte>(){ 0, 138, 131, 255 } },// lime
-                { SpectrumComment.tyrosinep.ToString(), new List<byte>(){ 214, 0, 119, 255 } } // pink
+                { SpectrumComment.tyrosinep.ToString(), new List<byte>(){ 214, 0, 119, 255 } }, // pink
+                { SpectrumComment.metaboliteclass.ToString(), new List<byte>(){ 202, 0, 0, 255 } },  // 
+                { SpectrumComment.acylchain.ToString(), new List<byte>(){ 62, 106, 69, 255 } }, // #3e6a45
+                { SpectrumComment.snposition.ToString(), new List<byte>(){ 243, 124, 61, 255 } }, // #F37C3D
+                { SpectrumComment.doublebond.ToString(), new List<byte>(){ 78, 48, 45, 255 } }, // #4e302d
+                { SpectrumComment.doublebond_high.ToString(), new List<byte>(){ 78, 88, 45, 255 } }, // #4e302d
+                { SpectrumComment.doublebond_low.ToString(), new List<byte>(){ 78, 8, 45, 255 } }, // #4e302d
+                { SpectrumComment.c.ToString(), new List<byte>(){ 78, 48, 45, 255 } }, // #4e302d
+                { SpectrumComment.c2.ToString(), new List<byte>(){ 78, 48, 45, 255 } }, // #4e302d
+                { SpectrumComment.z.ToString(), new List<byte>(){ 62, 106, 69, 255 } }, // #4e302d
+                { SpectrumComment.z2.ToString(), new List<byte>(){ 62, 106, 69, 255 } }, // #4e302d
             };
         } 
         // Project type

@@ -2,7 +2,6 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
@@ -13,6 +12,7 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Windows.Media;
 using System.Linq;
+using CompMs.Graphics.AxisManager;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
@@ -33,34 +33,34 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public MsSpectrumViewModel(
             MsSpectrumModel model,
-            IAxisManager<double> horizontalAxis = null,
-            IAxisManager<double> upperVerticalAxis = null,
-            IAxisManager<double> lowerVerticalAxis = null,
+            IObservable<IAxisManager<double>> horizontalAxisSource = null,
+            IObservable<IAxisManager<double>> upperVerticalAxisSource = null,
+            IObservable<IAxisManager<double>> lowerVerticalAxisSource = null,
             IObservable<IBrushMapper<SpectrumComment>> upperSpectrumBrushSource = null,
             IObservable<IBrushMapper<SpectrumComment>> lowerSpectrumBrushSource = null) {
 
             this.model = model ?? throw new ArgumentNullException(nameof(model));
 
-            if (horizontalAxis is null) {
-                horizontalAxis = this.model.HorizontalRangeSource
+            if (horizontalAxisSource is null) {
+                horizontalAxisSource = Observable.Return(this.model.HorizontalRangeSource
                     .ToReactiveAxisManager<double>(new ConstantMargin(40))
-                    .AddTo(Disposables);
+                    .AddTo(Disposables));
             }
-            HorizontalAxis = horizontalAxis;
+            HorizontalAxis = horizontalAxisSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            if (upperVerticalAxis is null) {
-                upperVerticalAxis = this.model.UpperVerticalRangeSource
+            if (upperVerticalAxisSource is null) {
+                upperVerticalAxisSource = Observable.Return(this.model.UpperVerticalRangeSource
                     .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
-                    .AddTo(Disposables);
+                    .AddTo(Disposables));
             }
-            UpperVerticalAxis = upperVerticalAxis;
+            UpperVerticalAxis = upperVerticalAxisSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            if (lowerVerticalAxis is null) {
-                lowerVerticalAxis = this.model.LowerVerticalRangeSource
+            if (lowerVerticalAxisSource is null) {
+                lowerVerticalAxisSource = Observable.Return(this.model.LowerVerticalRangeSource
                     .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
-                    .AddTo(Disposables);
+                    .AddTo(Disposables));
             }
-            LowerVerticalAxis = lowerVerticalAxis;
+            LowerVerticalAxis = lowerVerticalAxisSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             UpperSpectrum = this.model.ObserveProperty(m => m.UpperSpectrum)
                 .ToReadOnlyReactivePropertySlim()
@@ -115,11 +115,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<List<SpectrumPeak>> LowerSpectrum { get; }
 
-        public IAxisManager<double> HorizontalAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<double>> HorizontalAxis { get; }
 
-        public IAxisManager<double> UpperVerticalAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<double>> UpperVerticalAxis { get; }
 
-        public IAxisManager<double> LowerVerticalAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<double>> LowerVerticalAxis { get; }
 
         public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
 

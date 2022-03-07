@@ -139,14 +139,29 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                item => item.ToString(),
                Colors.Blue);
 
-            var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-               model.Parameter.ProjectParam.SpectrumCommentToColorBytes
-               .ToDictionary(
-                   kvp => kvp.Key,
-                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-               ),
-               item => item.ToString(),
-               Colors.Red);
+            //var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
+            //   model.Parameter.ProjectParam.SpectrumCommentToColorBytes
+            //   .ToDictionary(
+            //       kvp => kvp.Key,
+            //       kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+            //   ),
+            //   item => item.ToString(),
+            //   Colors.Red);
+            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
+                comment => {
+                    var commentString = comment.ToString();
+                    if (model.Parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
+                        return Color.FromRgb(color[0], color[1], color[2]);
+                    }
+                    else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
+                        && model.Parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
+                        return Color.FromRgb(color[0], color[1], color[2]);
+                    }
+                    else {
+                        return Colors.Red;
+                    }
+                },
+                true);
 
             Ms2SpectrumViewModel = new MsSpectrumViewModel(this.model.Ms2SpectrumModel,
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
@@ -411,6 +426,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private void FocusByMz() {
             PlotViewModel?.VerticalAxis?.Focus(FocusMz - MzTol, FocusMz + MzTol);
         }
+
+        public DelegateCommand<Window> SaveSpectraCommand => saveSpectraCommand ?? (saveSpectraCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
+        private DelegateCommand<Window> saveSpectraCommand;
 
         private void SaveSpectra(Window owner) {
             var sfd = new SaveFileDialog {

@@ -14,28 +14,31 @@ using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.DataObj;
 using System;
+using System.ComponentModel;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
     public class DatasetParameterSettingModel : BindableBase
     {
-        private readonly Action<IDatasetModel> continuous;
         private readonly DatasetFileSettingModel fileSettingModel;
+        private readonly Action<DatasetModel> next;
 
-        public DatasetParameterSettingModel(Action<IDatasetModel> continuous, DatasetFileSettingModel fileSettingModel) {
-            this.continuous = continuous;
+        public DatasetParameterSettingModel(DateTime dt, DatasetFileSettingModel fileSettingModel, Action<DatasetModel> next) {
             this.fileSettingModel = fileSettingModel;
+            this.next = next;
+            fileSettingModel.PropertyChanged += UpdateDatasetFolderPath;
+            DatasetFileName = $"AlignmentResult_{dt:yyyy_MM_dd_hh_mm_ss}";
         }
-
-        public bool IsComplete {
-            get => isComplete;
-            private set => SetProperty(ref isComplete, value);
-        }
-        private bool isComplete;
 
         public string DatasetFolderPath {
             get => fileSettingModel.ProjectFolderPath;
+        }
+
+        private void UpdateDatasetFolderPath(object sender, PropertyChangedEventArgs e) {
+            if (e.PropertyName == nameof(DatasetFileSettingModel.ProjectFolderPath)) {
+                OnPropertyChanged(nameof(DatasetFolderPath));
+            }
         }
 
         public string DatasetFileName {
@@ -128,7 +131,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private string comment = string.Empty;
 
-        public DatasetModel Build() {
+        public void Build() {
             if (!string.IsNullOrEmpty(Comment))
                 Comment = Comment.Replace("\r", "").Replace("\n", " ");
 
@@ -141,9 +144,7 @@ namespace CompMs.App.Msdial.Model.Setting
             storage.DataBases = DataBaseStorage.CreateEmpty();
 
             var dataset = new DatasetModel(storage);
-            continuous?.Invoke(dataset);
-
-            return dataset;
+            next?.Invoke(dataset);
         }
 
         // TODO: How can I remove direct dependency to each methods?

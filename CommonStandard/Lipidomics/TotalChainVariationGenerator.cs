@@ -116,14 +116,16 @@ namespace CompMs.Common.Lipidomics
         }
 
         public IEnumerable<ITotalChain> Permutate(MolecularSpeciesLevelChains chains) {
-            return SearchCollection.Permutations(chains.Chains).Select<IChain[], ITotalChain>(set => new PositionLevelChains(set));
+            return SearchCollection.Permutations(chains.Chains).Select<IChain[], ITotalChain>(set => new PositionLevelChains(set)).Distinct(ChainsComparer);
         }
 
         public IEnumerable<ITotalChain> Product(PositionLevelChains chains) {
             if (chains.Chains.All(chain => chain.DoubleBond.UnDecidedCount == 0 && chain.Oxidized.UnDecidedCount == 0)) {
                 return Enumerable.Empty<ITotalChain>();
             }
-            return SearchCollection.CartesianProduct(chains.Chains.Select(c => c.GetCandidates(chainGenerator).ToArray()).ToArray()).Select(set => new PositionLevelChains(set));
+            return SearchCollection.CartesianProduct(chains.Chains.Select(c => c.GetCandidates(chainGenerator).ToArray()).ToArray())
+                .Select(set => new PositionLevelChains(set))
+                .Distinct(ChainsComparer);
         }
 
         private bool CarbonNumberValid(int curCarbon) {
@@ -207,6 +209,19 @@ namespace CompMs.Common.Lipidomics
                 return chain;
             }
             return alkylCache[(carbon, db, ox)] = new AlkylChain(carbon, new DoubleBond(db), new Oxidized(ox));
+        }
+
+        private static readonly PositionLevelChainEqualityCompaerer ChainsComparer = new PositionLevelChainEqualityCompaerer();
+
+        class PositionLevelChainEqualityCompaerer : IEqualityComparer<ITotalChain>
+        {
+            public bool Equals(ITotalChain x, ITotalChain y) {
+                return x.ToString() == y.ToString();
+            }
+
+            public int GetHashCode(ITotalChain obj) {
+                return obj.ToString().GetHashCode();
+            }
         }
     }
 }

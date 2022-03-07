@@ -46,7 +46,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
         public ImmsMethodModel(
-            MsdialImmsDataStorage storage)
+            IMsdialDataStorage<MsdialImmsParameter> storage)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             Storage = storage;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
@@ -76,7 +76,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
         private ImmsAlignmentModel alignmentModel;
 
-        public MsdialImmsDataStorage Storage { get; }
+        public IMsdialDataStorage<MsdialImmsParameter> Storage { get; }
 
         public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; private set; }
 
@@ -85,7 +85,7 @@ namespace CompMs.App.Msdial.Model.Imms
             if (!ProcessSetAnalysisParameter(window))
                 return -1;
 
-            var processOption = Storage.MsdialImmsParameter.ProcessOption;
+            var processOption = Storage.Parameter.ProcessOption;
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
                 if (!ProcessAnnotaion(window, Storage))
@@ -102,7 +102,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void Load() {
-            var parameter = Storage.MsdialImmsParameter;
+            var parameter = Storage.Parameter;
             if (parameter.ProviderFactoryParameter is null) {
                 parameter.ProviderFactoryParameter = new ImmsAverageDataProviderFactoryParameter(0.01, 0.02, 0, 100);
             }
@@ -110,7 +110,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         private bool ProcessSetAnalysisParameter(Window owner) {
-            var parameter = Storage.MsdialImmsParameter;
+            var parameter = Storage.Parameter;
             var analysisParameterSet = new ImmsAnalysisParameterSetModel(parameter, AnalysisFiles);
             using (var analysisParamSetVM = new ImmsAnalysisParameterSetViewModel(analysisParameterSet)) {
                 var apsw = new AnalysisParamSetForImmsWindow
@@ -133,10 +133,10 @@ namespace CompMs.App.Msdial.Model.Imms
                             {
                                 FileID = AlignmentFiles.Count,
                                 FileName = filename,
-                                FilePath = System.IO.Path.Combine(Storage.MsdialImmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
-                                EicFilePath = System.IO.Path.Combine(Storage.MsdialImmsParameter.ProjectFolderPath, filename + ".EIC.aef"),
-                                SpectraFilePath = System.IO.Path.Combine(Storage.MsdialImmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl),
-                                ProteinAssembledResultFilePath = System.IO.Path.Combine(Storage.MsdialImmsParameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.prf),
+                                FilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
+                                EicFilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + ".EIC.aef"),
+                                SpectraFilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl),
+                                ProteinAssembledResultFilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.prf),
                             }
                         );
                         Storage.AlignmentFiles = AlignmentFiles.ToList();
@@ -149,7 +149,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public override void Run(ProcessOption option) {
             Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
-            ProviderFactory = Storage.MsdialImmsParameter.ProviderFactoryParameter.Create(5, true);
+            ProviderFactory = Storage.Parameter.ProviderFactoryParameter.Create(5, true);
 
             var processOption = option;
             // Run Identification
@@ -165,7 +165,7 @@ namespace CompMs.App.Msdial.Model.Imms
             }
         }
 
-        private bool ProcessAnnotaion(Window owner, MsdialImmsDataStorage storage) {
+        private bool ProcessAnnotaion(Window owner, IMsdialDataStorage<MsdialImmsParameter> storage) {
             var vm = new ProgressBarMultiContainerVM
             {
                 MaxValue = storage.AnalysisFiles.Count,
@@ -194,7 +194,7 @@ namespace CompMs.App.Msdial.Model.Imms
             return true;
         }
 
-        private bool ProcessAlignment(Window owner, MsdialImmsDataStorage storage) {
+        private bool ProcessAlignment(Window owner, IMsdialDataStorage<MsdialImmsParameter> storage) {
             var vm = new ProgressBarVM
             {
                 IsIndeterminate = true,
@@ -221,7 +221,7 @@ namespace CompMs.App.Msdial.Model.Imms
             return true;
         }
 
-        private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(MsdialImmsDataStorage storage, IReadOnlyList<AlignmentSpotProperty> spots) {
+        private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialImmsParameter> storage, IReadOnlyList<AlignmentSpotProperty> spots) {
             var files = storage.AnalysisFiles;
 
             var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
@@ -260,7 +260,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 matchResultEvaluator,
                 Storage.DataBaseMapper.MoleculeAnnotators,
                 Storage.DataBaseMapper,
-                Storage.MsdialImmsParameter)
+                Storage.Parameter)
             .AddTo(Disposables);
         }
 
@@ -275,25 +275,25 @@ namespace CompMs.App.Msdial.Model.Imms
                 Storage.DataBaseMapper.MoleculeAnnotators,
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
-                Storage.MsdialImmsParameter)
+                Storage.Parameter)
             .AddTo(Disposables);
         }
 
         public void ExportAlignment(Window owner) {
             var container = Storage;
-            var metadataAccessor = new ImmsMetadataAccessor(container.DataBaseMapper, container.MsdialImmsParameter);
+            var metadataAccessor = new ImmsMetadataAccessor(container.DataBaseMapper, container.Parameter);
             var vm = new AlignmentResultExport2VM(AlignmentFile, container.AlignmentFiles, container);
             vm.ExportTypes.AddRange(
                 new List<ExportType2>
                 {
-                    new ExportType2("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", container.MsdialImmsParameter), "Height", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }, true),
-                    new ExportType2("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.MsdialImmsParameter), "Area", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.MsdialImmsParameter), "NormalizedHeight", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.MsdialImmsParameter), "NormalizedArea", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Alignment ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.MsdialImmsParameter), "PeakID"),
-                    new ExportType2("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.MsdialImmsParameter), "Mz"),
-                    new ExportType2("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.MsdialImmsParameter), "SN"),
-                    new ExportType2("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.MsdialImmsParameter), "MsmsIncluded"),
+                    new ExportType2("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", container.Parameter), "Height", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }, true),
+                    new ExportType2("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.Parameter), "Area", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
+                    new ExportType2("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.Parameter), "NormalizedHeight", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
+                    new ExportType2("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.Parameter), "NormalizedArea", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
+                    new ExportType2("Alignment ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.Parameter), "PeakID"),
+                    new ExportType2("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.Parameter), "Mz"),
+                    new ExportType2("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.Parameter), "SN"),
+                    new ExportType2("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.Parameter), "MsmsIncluded"),
                 });
             var dialog = new AlignmentResultExportWin
             {
@@ -311,13 +311,13 @@ namespace CompMs.App.Msdial.Model.Imms
             {
                 new Export.SpectraType(
                     ExportspectraType.deconvoluted,
-                    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.MsdialImmsParameter, ExportspectraType.deconvoluted)),
+                    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.deconvoluted)),
                 new Export.SpectraType(
                     ExportspectraType.centroid,
-                    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.MsdialImmsParameter, ExportspectraType.centroid)),
+                    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.centroid)),
                 new Export.SpectraType(
                     ExportspectraType.profile,
-                    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.MsdialImmsParameter, ExportspectraType.profile)),
+                    new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.profile)),
             };
             var spectraFormats = new List<Export.SpectraFormat>
             {
@@ -374,7 +374,7 @@ namespace CompMs.App.Msdial.Model.Imms
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
 
-            var param = container.MsdialImmsParameter;
+            var param = container.Parameter;
             var model = new Setting.DisplayEicSettingModel(param);
             var dialog = new EICDisplaySettingView() {
                 DataContext = new DisplayEicSettingViewModel(model),

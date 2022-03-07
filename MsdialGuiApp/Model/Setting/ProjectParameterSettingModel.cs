@@ -2,17 +2,18 @@
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 using System;
-using System.ComponentModel;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
     public class ProjectParameterSettingModel : BindableBase
     {
-        public ProjectParameterSettingModel(Action<IProjectModel> continuous) {
-            this.continuous = continuous;
+        public ProjectParameterSettingModel(Action<ProjectModel> next) {
+            var dt = DateTime.Now;
+            ProjectTitle = $"{dt:yyyy_MM_dd_hh_mm_ss}.msproject";
+            this.next = next;
         }
 
-        private readonly Action<IProjectModel> continuous;
+        private readonly Action<ProjectModel> next;
 
         public string ProjectTitle {
             get => projectTitle;
@@ -26,24 +27,13 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private string projectFolderPath;
 
-        public bool IsComplete {
-            get => isComplete;
-            private set => SetProperty(ref isComplete, value);
-        }
-        private bool isComplete;
-
-        public ProjectModel Build() {
-            var parameter = new ProjectParameter(DateTime.UtcNow, ProjectFolderPath, ProjectTitle);
-            var project = new ProjectModel(parameter);
-            continuous?.Invoke(project);
-            return project;
-        }
-
-        protected override void OnPropertyChanged(PropertyChangedEventArgs args) {
-            base.OnPropertyChanged(args);
-            if (args.PropertyName == nameof(ProjectFolderPath)) {
-                IsComplete = false;
+        public void Build() {
+            var title = ProjectTitle;
+            if (!title.EndsWith(".msproject")) {
+                title += ".msproject";
             }
+            var parameter = new ProjectParameter(DateTime.Now, ProjectFolderPath, title);
+            next?.Invoke(new ProjectModel(parameter));
         }
     }
 }

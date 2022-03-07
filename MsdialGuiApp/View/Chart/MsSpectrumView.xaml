@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:components="clr-namespace:CompMs.Common.Components;assembly=Common"
              xmlns:core="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
              xmlns:io="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
@@ -21,7 +22,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
+        <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis.Value}"
                           GraphTitle="{Binding GraphTitle.Value}"
                           HorizontalTitle="{Binding HorizontalTitle.Value}"
                           VerticalTitle="{Binding VerticalTitle.Value}"
@@ -49,14 +50,15 @@
                     </MenuItem>
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
-            <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis}">
-                <chart:LineSpectrumControl x:Name="MS2Line"
-                                           ItemsSource="{Binding UpperSpectrum.Value}"
-                                           HorizontalPropertyName="{Binding HorizontalProperty.Value}"
-                                           VerticalPropertyName="{Binding VerticalProperty}"
-                                           BrushMapper="{Binding UpperSpectrumBrushSource.Value}"
-                                           HueProperty="SpectrumComment">
-                    <chart:LineSpectrumControl.ToolTip>
+            <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis.Value}">
+                <chart:LineSpectrumControlSlim x:Name="MS2Line"
+                                               ItemsSource="{Binding UpperSpectrum.Value}"
+                                               DataType="{x:Type components:SpectrumPeak}"
+                                               HorizontalProperty="{Binding HorizontalProperty.Value}"
+                                               VerticalProperty="{Binding VerticalProperty}"
+                                               LineBrush="{Binding UpperSpectrumBrushSource.Value}"
+                                               HueProperty="SpectrumComment">
+                    <chart:LineSpectrumControlSlim.ToolTip>
                         <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="m/z: "/>
@@ -65,8 +67,8 @@
                                 <TextBlock Text="{Binding FocusedItem.Intensity}"/>
                             </StackPanel>
                         </ToolTip>
-                    </chart:LineSpectrumControl.ToolTip>
-                </chart:LineSpectrumControl>
+                    </chart:LineSpectrumControlSlim.ToolTip>
+                </chart:LineSpectrumControlSlim>
                 <chart:Annotator ItemsSource="{Binding UpperSpectrum.Value}"
                                  HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                                  VerticalPropertyName="{Binding VerticalProperty.Value}"
@@ -78,14 +80,15 @@
                                  ClipToBounds="True"/>
             </Grid>
 
-            <Grid core:ChartBaseControl.FlippedY="False" core:ChartBaseControl.VerticalAxis="{Binding LowerVerticalAxis}">
-                <chart:LineSpectrumControl x:Name="MS2Ref"
-                                           ItemsSource="{Binding LowerSpectrum.Value}"
-                                           HorizontalPropertyName="{Binding HorizontalProperty.Value}"
-                                           VerticalPropertyName="{Binding VerticalProperty.Value}"
-                                           BrushMapper="{Binding LowerSpectrumBrushSource.Value}"
-                                           HueProperty="SpectrumComment">
-                    <chart:LineSpectrumControl.ToolTip>
+            <Grid core:ChartBaseControl.FlippedY="False" core:ChartBaseControl.VerticalAxis="{Binding LowerVerticalAxis.Value}">
+                <chart:LineSpectrumControlSlim x:Name="MS2Ref"
+                                               ItemsSource="{Binding LowerSpectrum.Value}"
+                                               DataType="{x:Type components:SpectrumPeak}"
+                                               HorizontalProperty="{Binding HorizontalProperty.Value}"
+                                               VerticalProperty="{Binding VerticalProperty.Value}"
+                                               LineBrush="{Binding LowerSpectrumBrushSource.Value}"
+                                               HueProperty="SpectrumComment">
+                    <chart:LineSpectrumControlSlim.ToolTip>
                         <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal">
@@ -96,8 +99,8 @@
                                 <TextBlock Text="{Binding FocusedItem.Comment, StringFormat=Comment: {0}}"/>
                             </StackPanel>
                         </ToolTip>
-                    </chart:LineSpectrumControl.ToolTip>
-                </chart:LineSpectrumControl>
+                    </chart:LineSpectrumControlSlim.ToolTip>
+                </chart:LineSpectrumControlSlim>
                 <chart:Annotator ItemsSource="{Binding LowerSpectrum.Value}"
                                  HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                                  VerticalPropertyName="{Binding VerticalProperty.Value}"

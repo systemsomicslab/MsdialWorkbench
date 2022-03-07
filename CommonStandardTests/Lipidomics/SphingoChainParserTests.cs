@@ -70,6 +70,14 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(0, acyl.DoubleBondCount);
             Assert.AreEqual(3, acyl.OxidizedCount);
             CollectionAssert.AreEqual(new[] { 1, 3, 4 }, ((SphingoChain)acyl).Oxidized.Oxidises);
+
+            acyl = parser.Parse("18:1;3O"); // "18:1(4);1OH,3OH,4OH"
+            Assert.IsInstanceOfType(acyl, typeof(SphingoChain));
+            Assert.AreEqual(18, acyl.CarbonCount);
+            Assert.AreEqual(1, acyl.DoubleBondCount);
+            Assert.AreEqual(3, acyl.OxidizedCount);
+            CollectionAssert.AreEqual(new[] { 4 }, ((SphingoChain)acyl).DoubleBond.Bonds.Select(b => b.Position).ToArray());
+            CollectionAssert.AreEqual(new[] { 1, 3, 4 }, ((SphingoChain)acyl).Oxidized.Oxidises);
         }
     }
 }

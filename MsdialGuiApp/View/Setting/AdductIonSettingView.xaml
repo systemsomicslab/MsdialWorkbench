@@ -20,7 +20,7 @@
             <StackPanel Grid.Row="0">
                 <StackPanel Orientation="Horizontal" Margin="8,4">
                     <TextBlock Text="Adduct:"/>
-                    <TextBox Text="{Binding UserDefinedAdductName.Value}"
+                    <TextBox Text="{Binding UserDefinedAdductName.Value, UpdateSourceTrigger=PropertyChanged}"
                              Width="120"
                              Margin="8,0"/>
                     <TextBlock Text="{Binding UserDefinedAdduct.Value.AdductIonAccurateMass, StringFormat=Mass: {0}}" Margin="8,0"/>
@@ -42,8 +42,9 @@
             
             <DataGrid Name="DataGrid_AdductIonSetting" 
                       ItemsSource="{Binding Path=AdductIons}" 
+                      SelectedItem="{Binding SelectedAdduct.Value, Mode=OneWayToSource}"
                       CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" 
-                      CanUserSortColumns="False" SelectionUnit="Cell" IsReadOnly="False" 
+                      CanUserSortColumns="False" SelectionUnit="FullRow" IsReadOnly="False" 
                       HeadersVisibility="All" AutoGenerateColumns="False"
                       Margin="8" Grid.Row="1">
                 

@@ -18,30 +18,35 @@
               Padding="8">
         <StackPanel>
             <ui:LabeledBar Label="Project title:"
-                           LabelWidth="96">
+                           LabelWidth="96"
+                           IsTabStop="False">
                 <ui:LabeledBar.ToolTip>
                     Enter project title which is used as project file name.
                 </ui:LabeledBar.ToolTip>
                 <TextBox Text="{Binding ProjectTitle.Value}"
                          d:Text="ProjectTitle"
                          VerticalContentAlignment="Center"
-                         Margin="8,0,0,0"/>
+                         Margin="8,0,0,0"
+                         TabIndex="0"/>
             </ui:LabeledBar>
 
             <ui:ExecutableBar Label="Project file path:"
                               LabelWidth="96"
                               ButtonContent="Browse"
-                              ButtonWidth="96"
+                              ButtonWidth="72"
                               Command="ApplicationCommands.Open"
-                              Margin="0,16,0,0">
+                              Margin="0,16,0,0"
+                              IsTabStop="False"
+                              TabIndex="0">
                 <ui:ExecutableBar.ToolTip>
-                    Select a project folder which should be the same as the directory includeing abf files.
+                    Select a project folder.
                 </ui:ExecutableBar.ToolTip>
                 <TextBox x:Name="TextBox_ProjectFolderPath"
-                         Text="{Binding ProjectFolderPath.Value}"
+                         Text="{Binding ProjectFolderPath.Value, UpdateSourceTrigger=PropertyChanged}"
                          d:Text="/usr/project/folder/path"
                          VerticalContentAlignment="Center"
-                         Margin="8,0"/>
+                         Margin="8,0"
+                         TabIndex="0"/>
             </ui:ExecutableBar>
         </StackPanel>
     </GroupBox>

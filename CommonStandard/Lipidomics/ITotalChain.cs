@@ -12,6 +12,7 @@ namespace CompMs.Common.Lipidomics
         int OxidizedCount { get; }
         int ChainCount { get; }
         double Mass { get; }
+        LipidDescription Description { get; }
 
         IEnumerable<ITotalChain> GetCandidateSets(ITotalChainVariationGenerator totalChainGenerator);
     }
@@ -67,6 +68,7 @@ namespace CompMs.Common.Lipidomics
             AcylChainCount = acylChainCount;
             AlkylChainCount = alkylChainCount;
             SphingoChainCount = sphingoChainCount;
+            Description = LipidDescription.Class;
         }
 
         public int CarbonCount { get; }
@@ -76,6 +78,8 @@ namespace CompMs.Common.Lipidomics
         public int AcylChainCount { get; }
         public int AlkylChainCount { get; }
         public int SphingoChainCount { get; }
+
+        public LipidDescription Description { get; }
 
         public double Mass => CalculateSubLevelMass(CarbonCount, DoubleBondCount, OxidizedCount, ChainCount, AcylChainCount, AlkylChainCount, SphingoChainCount);
 
@@ -117,8 +121,12 @@ namespace CompMs.Common.Lipidomics
 
     public abstract class SeparatedChains
     {
-        public SeparatedChains(IChain[] chains) {
+        public SeparatedChains(IChain[] chains, LipidDescription description) {
             Chains = new ReadOnlyCollection<IChain>(chains);           
+            if (chains.All(c => c.DoubleBond.UnDecidedCount == 0)) {
+                description |= LipidDescription.DoubleBondPosition;
+            }
+            Description = description;
         }
 
         public int CarbonCount => Chains.Sum(c => c.CarbonCount);
@@ -131,12 +139,14 @@ namespace CompMs.Common.Lipidomics
 
         public int ChainCount => Chains.Count;
 
+        public LipidDescription Description { get; }
+
         public ReadOnlyCollection<IChain> Chains { get; }
     }
 
     public class MolecularSpeciesLevelChains : SeparatedChains, ITotalChain
     {
-        public MolecularSpeciesLevelChains(params IChain[] chains) : base(chains) {
+        public MolecularSpeciesLevelChains(params IChain[] chains) : base(chains, LipidDescription.Class | LipidDescription.Chain) {
 
         }
 
@@ -154,7 +164,7 @@ namespace CompMs.Common.Lipidomics
 
     public class PositionLevelChains : SeparatedChains, ITotalChain
     {
-        public PositionLevelChains(params IChain[] chains) : base(chains) {
+        public PositionLevelChains(params IChain[] chains) : base(chains, LipidDescription.Class | LipidDescription.Chain | LipidDescription.SnPosition) {
 
         }
 

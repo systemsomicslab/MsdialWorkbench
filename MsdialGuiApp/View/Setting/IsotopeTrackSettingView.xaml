@@ -41,16 +41,19 @@
             </CheckBox>
         </ui:LabeledContent>
 
-        <GroupBox Name="GroupBox_TrackingIsotopicLables" 
-                  Grid.Row="1" Grid.ColumnSpan="3" 
-                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                  IsEnabled="{Binding Path=TrackingIsotopeLabels.Value}"
-                  Margin="8">
+        <Border BorderBrush="Gray" BorderThickness=".5"
+                CornerRadius="5"
+                Padding="8"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                IsEnabled="{Binding Path=TrackingIsotopeLabels.Value}"
+                Margin="8"
+                Grid.Row="1" Grid.ColumnSpan="3" >
             <StackPanel>
                 <ui:LabeledContent PrependLabel="Labeled element:">
                     <ComboBox Name="ComboBox_LabeledElement" 
                               ItemsSource="{Binding IsotopeTrackingDictionary.IsotopeElements}" 
-                              DisplayMemberPath="ElementName" SelectedIndex="{Binding IsotopeTrackingDictionary.SelectedID}"
+                              DisplayMemberPath="ElementName"
+                              SelectedIndex="{Binding IsotopeTrackingDictionary.SelectedID}"
                               HorizontalAlignment="Stretch" />
                 </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="Non-labeled reference file:">
@@ -62,7 +65,7 @@
                 </ui:LabeledContent>
                 <ui:ExecutableBar LabelWidth="200"
                                   ButtonContent="Select"
-                                  Command="{Binding IsotopeTextDBFileSelectCommand}">
+                                  Command="ApplicationCommands.Open">
                         <ToolTipService.ToolTip>
                             <ToolTip Content="Text file should include a compound list consisting of formula (first column), accurate mass (second column), retention time (third), and adduct type (forth). A row header is considered." />
                         </ToolTipService.ToolTip>
@@ -76,7 +79,8 @@
                              Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
                              Text="{Binding Path=IsotopeTextDBFilePath.Value, 
                                             UpdateSourceTrigger=PropertyChanged}" 
-                             HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                             HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                             IsEnabled="{Binding Path=UseTargetFormulaLibrary.Value}"/>
                 </ui:ExecutableBar>
                 <ui:LabeledBar LabelWidth="200">
                     <ui:LabeledBar.Label>
@@ -87,11 +91,11 @@
                     <ComboBox Name="ComboBox_FullyLabeledReference" 
                               ItemsSource="{Binding AnalysisFiles}"
                               DisplayMemberPath="AnalysisFileName"
-                              SelectedIndex="{Binding FullyLabeledReference.Value}"
+                              SelectedItem="{Binding FullyLabeledReference.Value}"
                               IsEnabled="{Binding Path=SetFullyLabeledReferenceFile.Value}"
                               HorizontalAlignment="Stretch" />
                 </ui:LabeledBar>
             </StackPanel>
-        </GroupBox>
+        </Border>
     </StackPanel>
 </UserControl>

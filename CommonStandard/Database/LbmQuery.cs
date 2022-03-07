@@ -41,7 +41,8 @@ namespace Rfx.Riken.OsakaUniv
         OxTG, TG_EST,
         GPNAE, DGMG, MGMG,
         GD1a, GD1b, GD2, GD3, GM1, GT1b, GQ1b, NGcGM3,
-        ST
+        ST,
+        DGTA,LDGTA
 
 
         // new version

@@ -771,6 +771,16 @@ namespace Rfx.Riken.OsakaUniv {
                         TargetClass = "DGTS"
                     });
 
+                    compounds.Add(new StandardCompound()
+                    {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "DGTA"
+                    });
+
                     compounds.Add(new StandardCompound() {
                         StandardName = "LPC 18:1(d7)",
                         Concentration = 47.284175,
@@ -886,6 +896,16 @@ namespace Rfx.Riken.OsakaUniv {
                         MolecularWeight = 528.718,
                         PeakID = -1,
                         TargetClass = "LDGTS"
+                    });
+
+                    compounds.Add(new StandardCompound()
+                    {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "LDGTA"
                     });
 
                     compounds.Add(new StandardCompound() {
@@ -2504,6 +2524,16 @@ namespace Rfx.Riken.OsakaUniv {
                         TargetClass = "DGTS"
                     });
 
+                    compounds.Add(new StandardCompound()
+                    {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 189.1367,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "DGTA"
+                    });
+
                     compounds.Add(new StandardCompound() {
                         StandardName = "LPC 18:1(d7)",
                         Concentration = 189.1367,
@@ -2619,6 +2649,16 @@ namespace Rfx.Riken.OsakaUniv {
                         MolecularWeight = 528.718,
                         PeakID = -1,
                         TargetClass = "LDGTS"
+                    });
+
+                    compounds.Add(new StandardCompound()
+                    {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 189.1367,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "LDGTA"
                     });
 
                     compounds.Add(new StandardCompound() {

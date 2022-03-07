@@ -5,6 +5,7 @@ using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
+using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -119,20 +120,35 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 item => item.ToString(),
                 Colors.Blue);
 
-            var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-               this.model.Parameter.ProjectParam.SpectrumCommentToColorBytes
-               .ToDictionary(
-                   kvp => kvp.Key,
-                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-               ),
-               item => item.ToString(),
-               Colors.Red);
+            // var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
+            //    this.model.Parameter.ProjectParam.SpectrumCommentToColorBytes
+            //    .ToDictionary(
+            //        kvp => kvp.Key,
+            //        kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+            //    ),
+            //    item => item.ToString(),
+            //    Colors.Red);
+            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
+                comment =>
+                {
+                    var commentString = comment.ToString();
+                    var parameter = this.model.Parameter.ProjectParam;
+                    if (parameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
+                        return Color.FromRgb(color[0], color[1], color[2]);
+                    }
+                    else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
+                        && parameter.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
+                        return Color.FromRgb(color[0], color[1], color[2]);
+                    }
+                    else {
+                        return Colors.Red;
+                    }
+                },
+                true);
 
             RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel,
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
                 lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
-
-            //RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
 
             RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(this.model.RawPurifiedSpectrumsModel,
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
@@ -374,10 +390,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
+        private DelegateCommand<Window> saveMs2SpectrumCommand;
+
+        public DelegateCommand<Window> SaveMs2RawSpectrumCommand => saveMs2RawSpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveRawSpectra, CanSaveRawSpectra));
+        private DelegateCommand<Window> saveMs2RawSpectrumCommand;
 
         public ReadOnlyReactivePropertySlim<ExperimentSpectrumViewModel> ExperimentSpectrumViewModel { get; }
-
-        private DelegateCommand<Window> saveMs2SpectrumCommand;
 
         private void SaveSpectra(Window owner) {
             var sfd = new SaveFileDialog {
@@ -395,6 +413,24 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private bool CanSaveSpectra(Window owner) {
             return this.model.CanSaveSpectra();
+        }
+
+        private void SaveRawSpectra(Window owner) {
+            var sfd = new SaveFileDialog {
+                Title = "Save raw spectra",
+                Filter = "NIST format(*.msp)|*.msp", // MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf;
+                RestoreDirectory = true,
+                AddExtension = true,
+            };
+
+            if (sfd.ShowDialog(owner) == true) {
+                var filename = sfd.FileName;
+                this.model.SaveRawSpectra(filename);
+            }
+        }
+
+        private bool CanSaveRawSpectra(Window owner) {
+            return this.model.CanSaveRawSpectra();
         }
     }
 

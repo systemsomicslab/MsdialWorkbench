@@ -111,7 +111,8 @@ namespace CompMs.Graphics.Chart
                 typeof(LineSpectrumControlSlim),
                 new FrameworkPropertyMetadata(
                     null,
-                    FrameworkPropertyMetadataOptions.AffectsRender));
+                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    OnHorizontalPropertyChanged));
 
         private static void OnHorizontalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var scatter = (LineSpectrumControlSlim)d;
@@ -158,7 +159,10 @@ namespace CompMs.Graphics.Chart
         private AxisValue yBase;
         protected override void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             base.OnVerticalAxisChanged(oldValue, newValue);
-            yBase = newValue.TranslateToAxisValue(0d);
+            yBase = newValue?.TranslateToAxisValue(0d) ?? AxisValue.NaN;
+            if (double.IsNegativeInfinity(yBase.Value)) {
+                yBase = new AxisValue(1e-20);
+            }
             CoerceTree();
         }
 

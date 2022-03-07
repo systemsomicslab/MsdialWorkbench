@@ -2,7 +2,6 @@
 using CompMs.Common.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics.Tests
@@ -10,7 +9,6 @@ namespace CompMs.Common.Lipidomics.Tests
     [TestClass()]
     public class EtherPESpectrumGeneratorTests
     {
-        #region
         //[TestMethod()]
         //public void GenerateEtherPEPTest() {
         //    var alkyl = new AlkylChain(18, DoubleBond.CreateFromPosition(1, 12), new Oxidized(0));
@@ -213,7 +211,6 @@ namespace CompMs.Common.Lipidomics.Tests
         //        Assert.AreEqual(expect, actual, 0.01d);
         //    }
         //}
-
         [TestMethod()]
         public void GenerateEtherPEPTest2_H()//PE O-18:1(1)_18:1(9)
         {
@@ -232,6 +229,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 294.3155, // MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ SN1 ether +C2H8NO3P-H3PO4
                 308.2788, // -Header -CH2(Sn1)
                 339.28992, // MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ NL of C2H8NO4P+SN1
+                365.287259, // [Precursor]2+
                 392.29242, // MspGenerator\GlyceroLipidFragmentation.cs [M+H]+ Sn1ether+C2H8NO3P
                 447.3107946 ,//Sn2 FA loss
                 449.2900592 ,//-CH2
@@ -332,6 +330,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 204.0399442 ,//Gly-C
                 206.0189442 ,//Gly-O
                 330.2540034 ,//- Header -CH2(Sn1)
+                376.2782308, // [Precursor]2+
                 469.2927389 ,//Sn2 FA loss
                 471.2720034 ,//-CH2
                 485.2876535 ,//Sn1 Ether loss
@@ -437,6 +436,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 308.2721093 ,// -Header and -CH2
                 321.2799343 ,// -Header and Ether loss
                 339.290499  ,// -Header and Sn1 Chain loss
+                352.2794337, // [Precursor]2+
                 421.2951946 ,//FA loss
                 440.3135844 ,//Acyl loss
                 449.2901093 ,//-CH2
@@ -535,6 +535,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 330.2540535 ,// -Header and -CH2
                 343.2618785 ,// -Header and Ether loss
                 361.2724432 ,// -Header and Sn1 Chain loss
+                363.270405, // [Precursor]2+
                 443.2771389 ,//FA loss
                 462.2955286 ,//Acyl loss
                 471.2720535 ,//-CH2
@@ -584,7 +585,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 614.4156437 ,//Sn1-8+H,//Sn2-10+H
                 626.4156437 ,//Sn1-9-H,//Sn2-11-H
                 627.4234688 ,//Sn1-9,//Sn2-11
-                628.4312938 ,//Sn1-9+H,//Sn2-11+H
+                628.4312938 ,//Sn1-9+H,//Sn2-11+Hdb.Generate(lipid, adduct, reference);
                 640.4312938 ,//Sn1-10-H,//Sn2-12-H
                 641.4391188 ,//Sn1-10,//Sn2-12
                 642.4469439 ,//Sn1-10+H,//Sn2-12+H

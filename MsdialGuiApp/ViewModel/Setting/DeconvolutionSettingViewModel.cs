@@ -1,26 +1,33 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public class DeconvolutionSettingViewModel : ViewModelBase
+    public class DeconvolutionSettingViewModel : ViewModelBase, ISettingViewModel
     {
-        public DeconvolutionSettingViewModel(DeconvolutionSettingModel model) {
+        public DeconvolutionSettingViewModel(DeconvolutionSettingModel model, IObservable<bool> isEnabled) {
             this.model = model;
 
             SigmaWindowValue = model.ToReactivePropertyAsSynchronized(
                 m => m.SigmaWindowValue,
                 m => m.ToString(),
-                vm => float.Parse(vm)
+                vm => float.Parse(vm),
+                ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => SigmaWindowValue).AddTo(Disposables);
 
             AmplitudeCutoff = model.ToReactivePropertyAsSynchronized(
                 m => m.AmplitudeCutoff,
                 m => m.ToString(),
-                vm => float.Parse(vm)
+                vm => float.Parse(vm),
+                ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => AmplitudeCutoff).AddTo(Disposables);
 
             RemoveAfterPrecursor = model.ToReactivePropertySlimAsSynchronized(m => m.RemoveAfterPrecursor).AddTo(Disposables);
@@ -28,10 +35,41 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             KeptIsotopeRange = model.ToReactivePropertyAsSynchronized(
                 m => m.KeptIsotopeRange,
                 m => m.ToString(),
-                vm => float.Parse(vm)
+                vm => float.Parse(vm),
+                ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => KeptIsotopeRange).AddTo(Disposables);
 
             KeepOriginalPrecurosrIsotopes = model.ToReactivePropertySlimAsSynchronized(m => m.KeepOriginalPrecurosrIsotopes).AddTo(Disposables);
+
+            IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            ObserveHasErrors = new[]
+            {
+                SigmaWindowValue.ObserveHasErrors,
+                AmplitudeCutoff.ObserveHasErrors,
+                KeptIsotopeRange.ObserveHasErrors,
+            }.CombineLatestValuesAreAnyTrue()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
+
+            ObserveChanges = new[]
+            {
+                SigmaWindowValue.ToUnit(),
+                AmplitudeCutoff.ToUnit(),
+                RemoveAfterPrecursor.ToUnit(),
+                KeptIsotopeRange.ToUnit(),
+                KeepOriginalPrecurosrIsotopes.ToUnit(),
+            }.Merge();
+
+            decide = new Subject<Unit>().AddTo(Disposables);
+            var changes = ObserveChanges.TakeFirstAfterEach(decide);
+            ObserveChangeAfterDecision = new[]
+            {
+                changes.Select(_ => true),
+                decide.Select(_ => false)
+            }.Merge()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
         }
 
         private readonly DeconvolutionSettingModel model;
@@ -53,5 +91,20 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactiveProperty<string> KeptIsotopeRange { get; }
 
         public ReactivePropertySlim<bool> KeepOriginalPrecurosrIsotopes { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
+        IObservable<bool> ISettingViewModel.ObserveHasErrors => ObserveHasErrors;
+
+        public IObservable<Unit> ObserveChanges { get; }
+
+        private readonly Subject<Unit> decide;
+        public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
+        IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
+
+        public void Next() {
+            decide.OnNext(Unit.Default);
+        }
     }
 }

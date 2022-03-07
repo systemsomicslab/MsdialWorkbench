@@ -2,7 +2,7 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
@@ -16,7 +16,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace CompMs.App.Msdial.ViewModel.Chart {
+namespace CompMs.App.Msdial.ViewModel.Chart
+{
     class RawPurifiedSpectrumsViewModel : ViewModelBase {
         public RawPurifiedSpectrumsViewModel(
            RawPurifiedSpectrumsModel model,

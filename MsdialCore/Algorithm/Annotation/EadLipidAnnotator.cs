@@ -19,7 +19,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Id = id ?? throw new System.ArgumentNullException(nameof(id));
             Priority = priority;
             EadLipidDatabase = db ?? throw new System.ArgumentNullException(nameof(db));
-            scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EAD, true);
+            scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EIEIO, true);
             Parameter = parameter ?? throw new System.ArgumentNullException(nameof(parameter));
             evaluator = MsScanMatchResultEvaluator.CreateEvaluator(Parameter);
         }
@@ -79,9 +79,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
             var description = LipidDescription.Class | LipidDescription.Chain | LipidDescription.SnPosition | LipidDescription.DoubleBondPosition;
             var lipids = GenerateLipid(lipid, lipidGenerator).Where(n => n.Description.HasFlag(description));
-
-            var references = lipids.Select(l => EadLipidDatabase.Generate(l, reference.AdductType, reference)).Where(reference_ => reference_ != null).ToList();
-            EadLipidDatabase.Register(references);
+            var references = EadLipidDatabase.BatchGenerate(lipids, lipid, reference.AdductType, reference).Where(r => !(r is null)).ToList();
+            // var references = lipids.Select(l => EadLipidDatabase.Generate(l, reference.AdductType, reference)).Where(reference_ => reference_ != null).ToList();
+            // EadLipidDatabase.Register(references, lipid);
             return references;
         }
 

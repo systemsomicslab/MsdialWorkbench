@@ -30,6 +30,10 @@ namespace CompMs.Common.Lipidomics
             if (groups["dbpos"].Success) {
                 return new DoubleBond(dbnum, groups["dbpos"].Captures.Cast<Capture>().Select(c => ParseDoubleBondInfo(c.Value)).ToArray());
             }
+            else if (dbnum >=1) // sphingo doublebond >=1 one of them position "4"
+            {
+                return new DoubleBond(dbnum, DoubleBondInfo.Create(4));
+            }
             return new DoubleBond(dbnum);
         }
 

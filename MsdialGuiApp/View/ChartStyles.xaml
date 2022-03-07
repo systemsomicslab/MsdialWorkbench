@@ -448,7 +448,7 @@
                 <DataTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="56"/>
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Border BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"

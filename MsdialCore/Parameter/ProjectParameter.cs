@@ -42,7 +42,7 @@ namespace CompMs.MsdialCore.Parameter
         public string Title { get; }
 
         public void Save(Stream stream) {
-            FinalSavedDate = DateTime.UtcNow;
+            FinalSavedDate = DateTime.Now;
             MessagePackDefaultHandler.SaveToStream(this, stream);
         }
 
