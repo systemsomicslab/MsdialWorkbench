@@ -431,6 +431,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 321.2788069 ,//[Sn2 Acyl + C3H3O+H]+
                 337.2737215 ,//[Sn3 Acyl + C3H5O2+H]+
                 339.2893715 ,//[Sn2 Acyl + C3H5O2+H]+
+                428.879634, // [Precursor]2+
                 575.503387  ,//Sn2 FA loss
                 577.5190371 ,//Sn3 FA loss
                 593.5139517 ,//Sn2 Acyl loss
@@ -553,11 +554,13 @@ namespace CompMs.Common.Lipidomics.Tests
                 263.2374906 ,//Sn3 Acyl
                 265.2531407 ,//Sn2 Acyl
                 295.2631568 ,//[Sn1 Acyl + C3H3O+H]+
+                309.278806860, // Sn2 diagnostics
                 313.2737215 ,//[Sn1 Acyl + C3H5O2+H]+
                 319.2631568 ,//[Sn3 Acyl + C3H3O+H]+
                 321.2788069 ,//[Sn2 Acyl + C3H3O+H]+
                 337.2737215 ,//[Sn3 Acyl + C3H5O2+H]+
                 339.2893715 ,//[Sn2 Acyl + C3H5O2+H]+
+                437.3929082, // [Precursor]2+
                 575.503387  ,//Sn2 FA loss
                 577.5190371 ,//Sn3 FA loss
                 593.5139517 ,//Sn2 Acyl loss
@@ -680,20 +683,16 @@ namespace CompMs.Common.Lipidomics.Tests
                 239.2374906 ,//Sn1 Acyl
                 263.2374906 ,//Sn3 Acyl
                 265.2531407 ,//Sn2 Acyl
-                305.245101  ,//[Sn1 Acyl + C2H3O + Na]+
                 319.2607511 ,//[Sn1 Acyl + C3H5O + Na]+
                 321.2400157 ,//[Sn1 Acyl + C2H3O2 + Na]+
-                329.245101  ,//[Sn3 Acyl + C2H3O + Na]+
-                331.2607511 ,//[Sn2 Acyl + C2H3O + Na]+
-                343.2607511 ,//[Sn3 Acyl + C3H5O + Na]+
+                331.26129967454006, // Sn2 diagnostics
+                343.26129967  ,//[Sn3 Acyl + C3H5O + Na]+
                 345.2400157 ,//[Sn3 Acyl + C2H3O2 + Na]+
-                345.2764012 ,//[Sn2 Acyl + C3H5O + Na]+
-                347.2556657 ,//[Sn2 Acyl + C2H3O2 + Na]+
-                598.4931563 ,//Sn2 FA loss
-                600.5088064 ,//Sn3 FA loss
-                613.4802459 ,//Sn2 Acyl loss
+                439.87060580049996, //[Precursor]2+
+                575.5039356 ,//Sn2 FA loss
+                599.50152991 ,//Sn3 FA loss
                 615.495896  ,//Sn3 Acyl loss
-                624.5088064 ,//Sn1 FA loss
+                623.50152991 ,//Sn1 FA loss
                 639.495896  ,//Sn1 Acyl loss
                 641.4751605 ,//Sn2-1-H
                 642.4829856 ,//Sn2-1
