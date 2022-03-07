@@ -112,7 +112,7 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>
             {
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                new SpectrumPeak((adduct.ConvertToMz(lipid.Mass))/2, 50d, "[Precursor]2+") { SpectrumComment = SpectrumComment.precursor },
+                //new SpectrumPeak((adduct.ConvertToMz(lipid.Mass))/2, 50d, "[Precursor]2+") { SpectrumComment = SpectrumComment.precursor },
             };
             if (adduct.AdductIonName == "[M+NH4]+")
             {

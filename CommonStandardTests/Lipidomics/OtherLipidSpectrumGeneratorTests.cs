@@ -425,6 +425,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 263.2374906 ,//Sn3 Acyl
                 265.2531407 ,//Sn2 Acyl
                 295.2631568 ,//[Sn1 Acyl + C3H3O+H]+
+                309.27935542571,  //Sn2 diagnostics
                 313.2737215 ,//[Sn1 Acyl + C3H5O2+H]+
                 319.2631568 ,//[Sn3 Acyl + C3H3O+H]+
                 321.2788069 ,//[Sn2 Acyl + C3H3O+H]+
@@ -1271,7 +1272,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 175.12029482877,//C8H16NO3  
                 204.1230344804,//Gly-O  
                 204.12303618681,// -CH2(SN1)  
-                217.13086121888,// -20:5-O  
+                218.13868625,// -20:5-O  
                 236.14925093465,// -20:5  
                 262.12851549007,// 20:5 C1-H 
                 263.13634052214,// 20:5 C1 
@@ -1358,7 +1359,7 @@ namespace CompMs.Common.Lipidomics.Tests
             var expects = new[]
             {
                 144.101905113,//Header  
-                160.0968197,//Header + O
+                162.1124698,//Header + O
                 175.12029482877,//C8H16NO3  
                 204.1230344804,//Gly-O  
                 204.12303618681,// -CH2(SN1)  
