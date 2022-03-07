@@ -787,8 +787,8 @@ namespace CompMs.MsdialCore.Parameter {
                 { SpectrumComment.doublebond_low.ToString(), new List<byte>(){ 78, 8, 45, 255 } }, // #4e302d
                 { SpectrumComment.c.ToString(), new List<byte>(){ 78, 48, 45, 255 } }, // #4e302d
                 { SpectrumComment.c2.ToString(), new List<byte>(){ 78, 48, 45, 255 } }, // #4e302d
-                { SpectrumComment.z.ToString(), new List<byte>(){ 62, 106, 69, 255 } }, // #4e302d
-                { SpectrumComment.z2.ToString(), new List<byte>(){ 62, 106, 69, 255 } }, // #4e302d
+                { SpectrumComment.z.ToString(), new List<byte>(){ 20, 20, 80, 255 } }, // #4e302d
+                { SpectrumComment.z2.ToString(), new List<byte>(){ 20, 20, 80, 255 } }, // #4e302d
             };
         } 
         // Project type

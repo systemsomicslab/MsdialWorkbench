@@ -100,7 +100,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
                 ValidateCore(result, property, scan, character, candidate, msrefSearchParam, proteomicsParam);
                 results.Add(result);
             }
-            return results.OrderByDescending(result => result.TotalScore).ToList();
+            return results.OrderByDescending(result => result.AndromedaScore).ToList();
         }
 
         public MsScanMatchResult CalculateScore(IPepAnnotationQuery query, PeptideMsReference reference) {

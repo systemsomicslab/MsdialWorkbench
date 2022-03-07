@@ -4,12 +4,137 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
+        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
         mc:Ignorable="d"
-        Title="ProjectSettingDialog" Height="450" Width="800">
+        d:DataContext="{d:DesignInstance Type={x:Type vm:ProcessSettingViewModel}}"
+        Title="Setting project parameters" Height="450" Width="800">
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Close"
                         Executed="Close_Executed"/>
     </Window.CommandBindings>
-    <ContentControl>
-    </ContentControl>
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <CollectionViewSource x:Key="ProjectViewModels" Source="{Binding ProjectSettingViewModel.Value.SettingViewModels}"/>
+            <CollectionViewSource x:Key="DatasetViewModels" Source="{Binding DatasetSettingViewModel.Value.SettingViewModels}"/>
+            <CollectionViewSource x:Key="MethodViewModels" Source="{Binding MethodSettingViewModel.Value.SettingViewModels}"/>
+
+            <CompositeCollection x:Key="SettingViewModels">
+                <CollectionContainer Collection="{Binding Source={StaticResource ProjectViewModels}}"/>
+                <CollectionContainer Collection="{Binding Source={StaticResource DatasetViewModels}}"/>
+                <CollectionContainer Collection="{Binding Source={StaticResource MethodViewModels}}"/>
+            </CompositeCollection>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="2"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <ListBox ItemsSource="{StaticResource SettingViewModels}"
+                 SelectedItem="{Binding SelectedSettingViewModel.Value, Mode=TwoWay}"
+                 IsSynchronizedWithCurrentItem="True"
+                 TabIndex="0"
+                 Grid.Column="0">
+            <ListBox.Resources>
+                <DataTemplate DataType="{x:Type vm:ProjectParameterSettingViewModel}">
+                    <Label Content="Project parameters"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:DatasetFileSettingViewModel}">
+                    <Label Content="Raw measrurement files" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:DatasetParameterSettingViewModel}">
+                    <Label Content="Measrurement parameters" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:DataCollectionSettingViewModel}">
+                    <Label Content="Data collection" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:PeakDetectionSettingViewModel}">
+                    <Label Content="Peak detection" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:DeconvolutionSettingViewModel}">
+                    <Label Content="Spectrum deconvolution" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:IdentifySettingViewModel}">
+                    <Label Content="Identification" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:AdductIonSettingViewModel}">
+                    <Label Content="Adduct ion" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:AlignmentParameterSettingViewModel}">
+                    <Label Content="Alignment parameters" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:MobilitySettingViewModel}">
+                    <Label Content="Mobility parameters" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:IsotopeTrackSettingViewModel}">
+                    <Label Content="Isotope tracking" IsEnabled="{Binding IsEnabled.Value}"/>
+                </DataTemplate>
+            </ListBox.Resources>
+        </ListBox>
+        <GridSplitter HorizontalAlignment="Stretch"
+                      IsTabStop="False"
+                      Grid.Column="1"/>
+        <DockPanel Grid.Column="2">
+            <StackPanel Orientation="Horizontal"
+                        Height="24"
+                        Margin="8"
+                        HorizontalAlignment="Right"
+                        DockPanel.Dock="Bottom">
+                <StackPanel.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Margin" Value="8,0"/>
+                        <Setter Property="Width" Value="64"/>
+                    </Style>
+                </StackPanel.Resources>
+                <Button Content="Cancel" Command="ApplicationCommands.Close"/>
+                <Button Content="Next" Command="{Binding ContinueCommand, Mode=OneTime}"/>
+                <Button Content="Run" Command="{Binding RunCommand, Mode=OneTime}"/>
+            </StackPanel>
+            <ScrollViewer>
+            <ContentControl Content="{Binding /, Source={StaticResource SettingViewModels}}"
+                            IsTabStop="False">
+                <ContentControl.Resources>
+                    <DataTemplate DataType="{x:Type vm:ProjectParameterSettingViewModel}">
+                        <local:ProjectParameterSettingView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:DatasetFileSettingViewModel}">
+                        <local:DatasetFileSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:DatasetParameterSettingViewModel}">
+                        <local:DatasetParameterSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:DataCollectionSettingViewModel}">
+                        <local:DataCollectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:PeakDetectionSettingViewModel}">
+                        <local:PeakDetectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:DeconvolutionSettingViewModel}">
+                        <local:DeconvolutionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:IdentifySettingViewModel}">
+                        <local:IdentifySettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:AdductIonSettingViewModel}">
+                        <local:AdductIonSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:AlignmentParameterSettingViewModel}">
+                        <local:AlignmentParameterSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:MobilitySettingViewModel}">
+                        <local:MobilitySettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:IsotopeTrackSettingViewModel}">
+                        <local:IsotopeTrackSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                    </DataTemplate>
+                </ContentControl.Resources>
+            </ContentControl>
+            </ScrollViewer>
+        </DockPanel>
+    </Grid>
 </Window>

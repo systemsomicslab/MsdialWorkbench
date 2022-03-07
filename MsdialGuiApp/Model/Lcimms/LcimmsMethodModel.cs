@@ -24,6 +24,7 @@ using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Algorithm;
 using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcImMsApi.DataObj;
+using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Process;
 using Reactive.Bindings.Extensions;
 using System;
@@ -42,7 +43,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
-        public LcimmsMethodModel(MsdialLcImMsDataStorage storage)
+        public LcimmsMethodModel(IMsdialDataStorage<MsdialLcImMsParameter> storage)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
@@ -56,7 +57,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         private FacadeMatchResultEvaluator matchResultEvaluator;
 
-        public MsdialLcImMsDataStorage Storage { get; }
+        public IMsdialDataStorage<MsdialLcImMsParameter> Storage { get; }
 
         public LcimmsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -87,7 +88,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 accProviderFactory.Create(rawObj),
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
-                Storage.MsdialLcImMsParameter)
+                Storage.Parameter)
             .AddTo(Disposables);
         }
 
@@ -100,28 +101,45 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 alignmentFile,
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
-                Storage.MsdialLcImMsParameter)
+                Storage.Parameter)
             .AddTo(Disposables);
         }
 
+        public override void Run(ProcessOption option) {
+            // Set analysis param
+            var parameter = Storage.Parameter;
+            annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
+
+            var processOption = option;
+            // Run Identification
+            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
+                Storage.AnalysisFiles.ForEach(file => RunAnnotationProcess(file, null).Wait()); // TODO: change to async method
+            }
+
+            // Run Alignment
+            if (processOption.HasFlag(ProcessOption.Alignment)) {
+                RunAlignmentProcess();
+            }
+        }
+
         public void SetAnalysisParameter(LcimmsAnalysisParameterSetModel analysisParamSetModel) {
-            if (Storage.MsdialLcImMsParameter.ProcessOption.HasFlag(ProcessOption.Alignment)) {
+            if (Storage.Parameter.ProcessOption.HasFlag(ProcessOption.Alignment)) {
                 var filename = analysisParamSetModel.AlignmentResultFileName;
                 AlignmentFiles.Add(
                     new AlignmentFileBean
                     {
                         FileID = AlignmentFiles.Count,
                         FileName = filename,
-                        FilePath = Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.arf}"),
-                        EicFilePath = Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, $"{filename}.EIC.aef"),
-                        SpectraFilePath = Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.dcl}"),
-                        ProteinAssembledResultFilePath = Path.Combine(Storage.MsdialLcImMsParameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.prf}"),
+                        FilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.arf}"),
+                        EicFilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, $"{filename}.EIC.aef"),
+                        SpectraFilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.dcl}"),
+                        ProteinAssembledResultFilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.prf}"),
                     });
                 Storage.AlignmentFiles = AlignmentFiles.ToList();
             }
 
-            annotationProcess = BuildAnnotationProcess(Storage.DataBases, Storage.MsdialLcImMsParameter.PeakPickBaseParam);
-            Storage.DataBaseMapper = CreateDataBaseMapper(Storage.DataBases);
+            annotationProcess = BuildAnnotationProcess(Storage.DataBases, Storage.Parameter.PeakPickBaseParam);
+            Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
         }
 
@@ -137,25 +155,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 )).ToList());
         }
 
-        private DataBaseMapper CreateDataBaseMapper(DataBaseStorage storage) {
-            var mapper = new DataBaseMapper();
-            foreach (var db in storage.MetabolomicsDataBases) {
-                foreach (var pair in db.Pairs) {
-                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
-                }
-            }
-            foreach (var db in storage.ProteomicsDataBases) {
-                foreach (var pair in db.Pairs) {
-                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
-                }
-            }
-            return mapper;
-        }
-
-        public override void Run(ProcessOption option) {
-            throw new NotImplementedException("Not implemented!");
-        }
-
         public async Task RunAnnotationProcess(AnalysisFileBean analysisfile, Action<int> action) {
             await Task.Run(() => FileProcess.Run(analysisfile, providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true, reportAction: action));
         }
@@ -169,7 +168,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(Storage, result.AlignmentSpotProperties).ToList());
         }
 
-        private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(MsdialLcImMsDataStorage storage, IReadOnlyList<AlignmentSpotProperty> spots) {
+        private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcImMsParameter> storage, IReadOnlyList<AlignmentSpotProperty> spots) {
             var files = storage.AnalysisFiles;
 
             var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
@@ -237,7 +236,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
 
-            var param = container.MsdialLcImMsParameter;
+            var param = container.Parameter;
             var model = new Setting.DisplayEicSettingModel(param);
             var dialog = new EICDisplaySettingView() {
                 DataContext = new DisplayEicSettingViewModel(model),

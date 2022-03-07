@@ -159,6 +159,18 @@ namespace CompMs.MsdialCore.DataObj {
             PeptideMsRef = MsfPepFileParser.GeneratePeptideMsObjcts(PeptideMsFile, PeptidesBinaryFile, peptides, ModificationContainer.Code2ID, MassRangeBegin, MassRangeEnd, CollisionType, out Stream pFS);
             DecoyPeptideMsRef = MsfPepFileParser.GeneratePeptideMsObjcts(DecoyMsFile, DecoyPeptidesBinaryFile, decoyPeptides, ModificationContainer.Code2ID, MassRangeBegin, MassRangeEnd, CollisionType, out Stream dFS);
 
+            //for (int i = 0; i < PeptideMsRef.Count; i++) {
+            //    var forward = PeptideMsRef[i];
+            //    var reverse = DecoyPeptideMsRef[i];
+
+            //    Console.WriteLine(forward.Peptide.ModifiedSequence + "\t" + reverse.Peptide.ModifiedSequence);
+            //    for (int j = 0; j < forward.Spectrum.Count; j++) {
+            //        if (forward.Spectrum.Count - 1 < j || reverse.Spectrum.Count - 1 < j) break;
+            //        Console.WriteLine(forward.Spectrum[j].Mass + "\t" + reverse.Spectrum[j].Mass);
+            //    }
+            //}
+
+
             Console.WriteLine("Peptide MS count {0}", PeptideMsRef.Count);
             PeptideMsStream = pFS;
             DecoyMsStream = dFS;

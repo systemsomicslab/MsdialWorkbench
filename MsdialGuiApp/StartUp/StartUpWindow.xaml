@@ -248,15 +248,15 @@
         <GroupBox Header="Collision type"
                   Visibility="{Binding IsChecked, ElementName=RadioButton_DataDependentMSMS, Converter={StaticResource BTVConverter}}"
                   Grid.Row="4">
-            <UniformGrid Columns="2">
-                <RadioButton Content="CID, HCD"
-                             IsChecked="{Binding CollisionType, Converter={StaticResource BTEConverter}, ConverterParameter=HCD}"/>
-                <RadioButton Content="EIEIO"
-                             IsChecked="{Binding CollisionType, Converter={StaticResource BTEConverter}, ConverterParameter=EIEIO}"/>
+            <UniformGrid Columns="4">
+                <RadioButton Content="CID/HCD"
+                             IsChecked="{Binding CollisionType, Converter={StaticResource BTEConverter}, ConverterParameter=HCD}" Height="25" Margin="0,10,0,0" />
                 <RadioButton Content="ECD"
-                             IsChecked="{Binding CollisionType, Converter={StaticResource BTEConverter}, ConverterParameter=ECD}"/>
+                             IsChecked="{Binding CollisionType, Converter={StaticResource BTEConverter}, ConverterParameter=ECD}" Height="25" Margin="0,10,0,0"/>
                 <RadioButton Content="HotECD"
-                             IsChecked="{Binding CollisionType, Converter={StaticResource BTEConverter}, ConverterParameter=HotECD}"/>
+                             IsChecked="{Binding CollisionType, Converter={StaticResource BTEConverter}, ConverterParameter=HotECD}" Height="25" Margin="0,10,0,0"/>
+                <RadioButton Content="EIEIO"
+                             IsChecked="{Binding CollisionType, Converter={StaticResource BTEConverter}, ConverterParameter=EIEIO}" Height="25" Margin="0,10,0,0"/>
             </UniformGrid>
         </GroupBox>
 

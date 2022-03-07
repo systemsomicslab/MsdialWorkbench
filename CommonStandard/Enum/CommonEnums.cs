@@ -10,6 +10,7 @@ namespace CompMs.Common.Enum {
     public enum SolventType { CH3COONH4, HCOONH4 }
     [Flags]
     public enum SeparationType {
+        None = 0x0,
         Infusion = 0x0,
         Chromatography = 0x1,
         IonMobility = 0x2,

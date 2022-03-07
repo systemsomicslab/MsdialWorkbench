@@ -102,11 +102,14 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
+            rawSpectrumLoader = new MsRawSpectrumLoader(this.provider, Parameter);
+            var decSpectrumLoader = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
+
             // Ms2 spectrum
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
-                new MsRawSpectrumLoader(this.provider, Parameter),
-                new MsDecSpectrumLoader(decLoader, Ms1Peaks),
+                rawSpectrumLoader,
+                decSpectrumLoader,
                 new MsRefSpectrumLoader(mapper),
                 peak => peak.Mass,
                 peak => peak.Intensity) {
@@ -122,8 +125,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Raw vs Purified spectrum model
             RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(
                 Target,
-                new MsRawSpectrumLoader(this.provider, Parameter),
-                new MsDecSpectrumLoader(decLoader, Ms1Peaks),
+                rawSpectrumLoader,
+                decSpectrumLoader,
                 peak => peak.Mass,
                 peak => peak.Intensity) {
                 GraphTitle = "Raw vs. Purified spectrum",
@@ -196,6 +199,9 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public EicModel EicModel { get; }
         public ReadOnlyReactivePropertySlim<ExperimentSpectrumModel> ExperimentSpectrumModel { get; }
+
+        private MsRawSpectrumLoader rawSpectrumLoader;
+
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public RawPurifiedSpectrumsModel RawPurifiedSpectrumsModel { get; }
 
@@ -245,6 +251,22 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
+
+        public void SaveRawSpectra(string filename) {
+            using (var file = File.Open(filename, FileMode.Create)) {
+                var target = Target.Value;
+                SpectraExport.SaveSpectraTable(
+                    (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
+                    file,
+                    target.InnerModel,
+                    new MSScanProperty() { Spectrum = rawSpectrumLoader.LoadSpectrum(target) },
+                    provider.LoadMs1Spectrums(),
+                    DataBaseMapper,
+                    Parameter);
+            }
+        }
+
+        public bool CanSaveRawSpectra() => Target.Value.InnerModel != null;
 
         public void GoToMsfinderMethod() {
             MsDialToExternalApps.SendToMsFinderProgram(

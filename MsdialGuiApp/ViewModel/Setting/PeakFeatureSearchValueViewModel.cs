@@ -123,7 +123,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             .Inverse()
             .ToReadOnlyReactivePropertySlim(true)
             .AddTo(Disposables);
-            //HasErrors.Subscribe(_ => Console.WriteLine($"{Title.Value} fired!"));
         }
 
         public void Commit() {

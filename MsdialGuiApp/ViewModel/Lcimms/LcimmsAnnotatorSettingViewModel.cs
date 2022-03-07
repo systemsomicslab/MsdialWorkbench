@@ -92,7 +92,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
     }
 
-    public sealed class LcimmsAnnotatorSettingViewModel : IAnnotatorSettingViewModelFactory
+    public sealed class LcimmsAnnotatorSettingViewModelFactory : IAnnotatorSettingViewModelFactory
     {
         public IAnnotatorSettingViewModel Create(IAnnotatorSettingModel model) {
             switch (model) {

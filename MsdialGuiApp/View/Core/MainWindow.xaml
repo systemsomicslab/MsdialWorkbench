@@ -37,8 +37,8 @@
                         HorizontalAlignment="Center">
                 <StackPanel VerticalAlignment="Center">
                     <Image Source="/Resources/msdial_icon.png" Width="200"/>
-                    <TextBlock Text="MS-DIAL" FontSize="100" FontFamily="arial" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    <TextBlock Text="{x:Static properties:Resources.VERSION}" FontSize="70" FontFamily="arial" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <TextBlock Text="MS-DIAL" FontSize="100" FontFamily="arial" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Static properties:Resources.VERSION}" FontSize="70" FontFamily="arial" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </StackPanel>
 
                 <StackPanel VerticalAlignment="Center"
@@ -56,8 +56,10 @@
                             ToolTip="Start new project.">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource New_project_is}"
-                                   VerticalAlignment="Center"/>
-                            <TextBlock Text="Start new project."
+                                   VerticalAlignment="Center"
+                                   Margin="15,0,0,0"
+                                   />
+                            <TextBlock Text="New project"
                                        FontSize="20"
                                        VerticalAlignment="Center"
                                        Margin="20,0,0,0"/>
@@ -67,12 +69,12 @@
                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                             Background="Transparent"
                             Margin="0,50,0,0"
-                            ToolTip="Load project.">
+                            ToolTip="Load project">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <Image Source="{StaticResource Open_is}"
                                    VerticalAlignment="Center"
-                                   Margin="-40,0,0,0"/>
-                            <TextBlock Text="Load project."
+                                   Margin="25,0,0,0"/>
+                            <TextBlock Text="Load project"
                                        FontSize="20"
                                        VerticalAlignment="Center"
                                        Margin="20,0,0,0"/>
@@ -82,12 +84,12 @@
                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                             Margin="0,50,0,0"
                             Background="Transparent"
-                            ToolTip="Learn MS-DIAL.">
+                            ToolTip="MS-DIAL tutorial">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource Tutorial_is}"
                                    VerticalAlignment="Center"
                                    Margin="-20,0,0,0"/>
-                            <TextBlock Text="Learn MS-DIAL."
+                            <TextBlock Text="Tutorial"
                                        FontSize="20"
                                        VerticalAlignment="Center"
                                        Margin="20,0,0,0"/>

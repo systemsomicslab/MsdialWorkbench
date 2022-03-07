@@ -146,13 +146,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 },
                 true);
 
-            var upperVerticalAxis = this.model.Ms2SpectrumModel
-                .RawRefSpectrumModels
-                .HorizontalRangeSource
-                .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
-                .AddTo(Disposables);
             RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel,
-                upperVerticalAxisSource: Observable.Return(upperVerticalAxis),
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
                 lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
 
@@ -396,10 +390,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
+        private DelegateCommand<Window> saveMs2SpectrumCommand;
+
+        public DelegateCommand<Window> SaveMs2RawSpectrumCommand => saveMs2RawSpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveRawSpectra, CanSaveRawSpectra));
+        private DelegateCommand<Window> saveMs2RawSpectrumCommand;
 
         public ReadOnlyReactivePropertySlim<ExperimentSpectrumViewModel> ExperimentSpectrumViewModel { get; }
-
-        private DelegateCommand<Window> saveMs2SpectrumCommand;
 
         private void SaveSpectra(Window owner) {
             var sfd = new SaveFileDialog {
@@ -417,6 +413,24 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private bool CanSaveSpectra(Window owner) {
             return this.model.CanSaveSpectra();
+        }
+
+        private void SaveRawSpectra(Window owner) {
+            var sfd = new SaveFileDialog {
+                Title = "Save raw spectra",
+                Filter = "NIST format(*.msp)|*.msp", // MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf;
+                RestoreDirectory = true,
+                AddExtension = true,
+            };
+
+            if (sfd.ShowDialog(owner) == true) {
+                var filename = sfd.FileName;
+                this.model.SaveRawSpectra(filename);
+            }
+        }
+
+        private bool CanSaveRawSpectra(Window owner) {
+            return this.model.CanSaveRawSpectra();
         }
     }
 
