@@ -9,6 +9,7 @@ namespace CompMs.Common.Lipidomics.Tests
     [TestClass()]
     public class EtherPESpectrumGeneratorTests
     {
+        #region
         //[TestMethod()]
         //public void GenerateEtherPEPTest() {
         //    var alkyl = new AlkylChain(18, DoubleBond.CreateFromPosition(1, 12), new Oxidized(0));
@@ -211,6 +212,7 @@ namespace CompMs.Common.Lipidomics.Tests
         //        Assert.AreEqual(expect, actual, 0.01d);
         //    }
         //}
+        #endregion
         [TestMethod()]
         public void GenerateEtherPEPTest2_H()//PE O-18:1(1)_18:1(9)
         {
