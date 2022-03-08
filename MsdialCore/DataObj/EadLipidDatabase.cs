@@ -166,30 +166,36 @@ namespace CompMs.MsdialCore.DataObj
             return GenerateReference(lipid, adduct, baseReference);
         }
 
+        private readonly object check = new object();
+
         private void Register(IEnumerable<MoleculeMsReference> moleculeMsReferences, ILipid seed) {
             if (connection is null) {
                 throw new ObjectDisposedException(nameof(connection));
             }
+
             var lipidReferences = moleculeMsReferences.Where(reference => reference != null).Select(reference => new LipidReference(reference)).ToList();
-            using (var transaction = connection.BeginTransaction()) {
-                var command = connection?.CreateCommand();
-                command.Transaction = transaction;
 
-                var commandText = "INSERT OR IGNORE INTO {0} VALUES {1}";
-                foreach (var reference in lipidReferences) {
-                    var prev = spectrumId;
-                    spectrumId += reference.Spectrum.Count;
-                    reference.SetSpectrumId(prev, spectrumId - 1);
-                    command.CommandText = string.Format(commandText, SpectrumTableName, reference.ToSpectrumValues());
-                    command.ExecuteNonQuery();
+            lock (check) {
+                using (var transaction = connection.BeginTransaction()) {
+                    var command = connection?.CreateCommand();
+                    command.Transaction = transaction;
+
+                    var commandText = "INSERT OR IGNORE INTO {0} VALUES {1}";
+                    foreach (var reference in lipidReferences) {
+                        var prev = spectrumId;
+                        spectrumId += reference.Spectrum.Count;
+                        reference.SetSpectrumId(prev, spectrumId - 1);
+                        command.CommandText = string.Format(commandText, SpectrumTableName, reference.ToSpectrumValues());
+                        command.ExecuteNonQuery();
+                    }
+
+                    foreach (var reference in lipidReferences) {
+                        command.CommandText = string.Format(commandText, ReferenceTableName, reference.ToReferenceValues(seed.Name));
+                        command.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
                 }
-
-                foreach (var reference in lipidReferences) {
-                    command.CommandText = string.Format(commandText, ReferenceTableName, reference.ToReferenceValues(seed.Name));
-                    command.ExecuteNonQuery();
-                }
-
-                transaction.Commit();
             }
             cache.Add(seed.Name.GetHashCode());
             // cache.UnionWith(lipidReferences.Select(r => r.Name.GetHashCode()));
@@ -202,20 +208,22 @@ namespace CompMs.MsdialCore.DataObj
             //    return null;
             //}
             if (result.LibraryID < 0 || result.LibraryID >= scanId) return null;
-            var command = connection?.CreateCommand();
-            command.CommandText = $"SELECT * FROM {ReferenceTableName} WHERE ScanID = {result.LibraryID}";
-            var reader = command.ExecuteReader();
-            if (!reader.Read()) {
-                return null;
+
+            lock (check) {
+                var command = connection?.CreateCommand();
+                command.CommandText = $"SELECT * FROM {ReferenceTableName} WHERE ScanID = {result.LibraryID}";
+                var reader = command.ExecuteReader();
+                if (!reader.Read()) {
+                    return null;
+                }
+                var reference = LipidReference.ParseLipidReference(reader);
+                reader.Close();
+
+                command.CommandText = $"SELECT * FROM {SpectrumTableName} WHERE SpectrumId BETWEEN {reference.SpectrumIdFrom} AND {reference.SpectrumIdTo}";
+                reader = command.ExecuteReader();
+                reference.Spectrum.AddRange(LipidReference.ParseSpectrum(reader));
+                return reference.ConvertToReference();
             }
-            var reference = LipidReference.ParseLipidReference(reader);
-            reader.Close();
-
-            command.CommandText = $"SELECT * FROM {SpectrumTableName} WHERE SpectrumId BETWEEN {reference.SpectrumIdFrom} AND {reference.SpectrumIdTo}";
-            reader = command.ExecuteReader();
-            reference.Spectrum.AddRange(LipidReference.ParseSpectrum(reader));
-
-            return reference.ConvertToReference();
         }
 
         private bool disposedValue;

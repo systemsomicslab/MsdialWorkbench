@@ -31,6 +31,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                         var databaseModel = IdentitySettingModel.AddDataBaseZZZ();
                         databaseModel.DBSource = DataBaseSource.EadLipid;
                     }
+
                     string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                     var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
                     var lbmFile = lbmFiles.FirstOrDefault();
@@ -42,23 +43,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 }
             }
             else if (Parameter.TargetOmics == TargetOmics.Proteomics) {
-                Parameter.MaxChargeNumber = 6;
+                Parameter.MaxChargeNumber = 8;
                 Parameter.RemoveAfterPrecursor = false;
-                //Parameter.MinimumAmplitude = 500000;
-                //Parameter.AmplitudeCutoff = 1000;
-
-                //Parameter.RetentionTimeBegin = 10;
-                //Parameter.RetentionTimeEnd = 30;
-                //Parameter.MassRangeBegin = 400;
-                //Parameter.MassRangeEnd = 900;
-
-                Parameter.MspSearchParam.SimpleDotProductCutOff = 0.0F;
-                Parameter.MspSearchParam.WeightedDotProductCutOff = 0.0F;
-                Parameter.MspSearchParam.ReverseDotProductCutOff = 0.0F;
-                Parameter.MspSearchParam.MatchedPeaksPercentageCutOff = 0.0F;
-                Parameter.MspSearchParam.MinimumSpectrumMatch = 0.0F;
-                Parameter.MspSearchParam.TotalScoreCutoff = 0.0F;
-                Parameter.MspSearchParam.AndromedaScoreCutOff = 0.0F;
             }
         }
 

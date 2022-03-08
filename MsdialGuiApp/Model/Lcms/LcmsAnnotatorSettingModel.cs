@@ -19,7 +19,25 @@ namespace CompMs.App.Msdial.Model.Lcms
         public LcmsMspAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter) {
             DataBaseSettingModel = dataBaseSettingModel;
             AnnotatorID = annotatorID;
-            SearchParameter = searchParameter ?? new MsRefSearchParameterBase();
+            if (dataBaseSettingModel.DBSource == DataBaseSource.Msp) {
+                SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
+                    SimpleDotProductCutOff = 0.5F,
+                    WeightedDotProductCutOff = 0.5F,
+                    ReverseDotProductCutOff = 0.7F,
+                    MatchedPeaksPercentageCutOff = 0.3F,
+                    MinimumSpectrumMatch = 3,
+                };
+            }
+            else { // meaning lbm
+                SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
+                    SimpleDotProductCutOff = 0.1F,
+                    WeightedDotProductCutOff = 0.1F,
+                    ReverseDotProductCutOff = 0.1F,
+                    MatchedPeaksPercentageCutOff = 0.0F,
+                    MinimumSpectrumMatch = 1
+                };
+            }
+            
         }
 
         public DataBaseSettingModel DataBaseSettingModel { get; }
@@ -109,7 +127,13 @@ namespace CompMs.App.Msdial.Model.Lcms
         public LcmsEadLipidAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter) {
             DataBaseSettingModel = dataBaseSettingModel;
             AnnotatorID = annotatorID;
-            SearchParameter = searchParameter ?? new MsRefSearchParameterBase();
+            SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
+                SimpleDotProductCutOff = 0.1F,
+                WeightedDotProductCutOff = 0.1F,
+                ReverseDotProductCutOff = 0.1F,
+                MatchedPeaksPercentageCutOff = 0.0F,
+                MinimumSpectrumMatch = 1
+            };
         }
 
         public DataBaseSettingModel DataBaseSettingModel { get; }
