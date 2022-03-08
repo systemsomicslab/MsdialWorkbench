@@ -140,9 +140,9 @@ namespace CompMs.Common.Lipidomics.Tests
                 393.300388, //[Precursor]2+
                 489.321, // Sn1 -CH2
                 //502.329, // MspGenerator\GlyceroLipidFragmentation.cs SN1-H2O //it is not the optimum value
-                503.337, // Sn1 -O
+                502.329246, // Sn1 -O
                 //506.360, // MspGenerator\GlyceroLipidFragmentation.cs SN2-H2O //it is not the optimum value
-                507.368, // Sn2 -O
+                506.360546, // Sn2 -O
                 520.340, // Sn1 -C=O MspGenerator\GlyceroLipidFragmentation.cs SN1 acyl loss
                 524.371, // Sn2 -C=O MspGenerator\GlyceroLipidFragmentation.cs SN2 acyl loss
                 546.3192989 ,//Sn1-1-H
@@ -255,8 +255,8 @@ namespace CompMs.Common.Lipidomics.Tests
                 248.0649442 , // Gly-O
                 404.291360, //[Precursor]2+
                 511.3035888 , // Sn1 -CH2
-                525.3192389 , // Sn1 -O
-                529.350539  , // Sn2 -O
+                524.31119 , // Sn1 -O
+                528.3424904  , // Sn2 -O
                 542.3219785 , //SN1 acyl loss
                 546.3532787 , //SN2 acyl loss
                 568.3012431 ,//Sn1-1-H

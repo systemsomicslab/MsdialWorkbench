@@ -83,6 +83,13 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.HBMP:
                     return HBMPEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
 
+                case LbmClass.TG:
+                    return TGEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.EtherPC:
+                    return EtherPCEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.EtherPE:
+                    return EtherPEEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+
                 default: return (null, new double[2] { 0.0, 0.0 });
             }
         }
@@ -493,7 +500,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                 var q_prob = Math.Pow(q, n - j);
                 sum += bc * p_prob * q_prob;
             }
-            return -10.0 * Math.Log10(sum);
+            var andromeda = -10.0 * Math.Log10(sum);
+            return andromeda < 0.000001 ? 0.000001 : andromeda;
         }
 
         /// </summary>
@@ -520,20 +528,21 @@ namespace CompMs.Common.Algorithm.Scoring {
             foreach (var group in searchedPeaks.GroupBy(n => n.PeakID)) {
                 var isParentExist = false;
                 foreach (var peak in group) {
-                    if (peak.SpectrumComment == SpectrumComment.b && peak.IsMatched) {
+                    if (peak.SpectrumComment.HasFlag(SpectrumComment.b) && peak.IsMatched) {
                         isParentExist = true;
                     }
-                    if (peak.SpectrumComment == SpectrumComment.y && peak.IsMatched) {
+                    if (peak.SpectrumComment.HasFlag(SpectrumComment.y) && peak.IsMatched) {
                         isParentExist = true;
                     }
                 }
                 foreach (var peak in group) {
-                    if (chargeState <= 2 && (peak.SpectrumComment == SpectrumComment.b2 || peak.SpectrumComment == SpectrumComment.y2)) continue; // exclude
+                    if (peak.SpectrumComment.HasFlag(SpectrumComment.precursor)) continue; // exclude
+                    if (chargeState <= 2 && (peak.SpectrumComment.HasFlag(SpectrumComment.b2) || peak.SpectrumComment.HasFlag(SpectrumComment.y2))) continue; // exclude
                     if (!isParentExist &&
-                        (peak.SpectrumComment == SpectrumComment.b_h2o ||
-                         peak.SpectrumComment == SpectrumComment.b_nh3 ||
-                         peak.SpectrumComment == SpectrumComment.y_h2o ||
-                         peak.SpectrumComment == SpectrumComment.y_nh3)) {
+                        (peak.SpectrumComment.HasFlag(SpectrumComment.b_h2o) ||
+                         peak.SpectrumComment.HasFlag(SpectrumComment.b_nh3) ||
+                         peak.SpectrumComment.HasFlag(SpectrumComment.y_h2o) ||
+                         peak.SpectrumComment.HasFlag(SpectrumComment.y_nh3))) {
                         continue;
                     }
                     finalPeaks.Add(peak);

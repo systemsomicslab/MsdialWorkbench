@@ -121,7 +121,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public ShotgunProteomicsDB CreatePorteomicsDB() {
             switch (DBSource) {
                 case DataBaseSource.Fasta:
-                    return proteomicsDB ?? new ShotgunProteomicsDB(DataBasePath, DataBaseID, ProteomicsParameter, this.parameter.ProjectFolderPath, MassRangeBegin, MassRangeEnd, this.parameter.CollistionType);
+                    return proteomicsDB ?? new ShotgunProteomicsDB(DataBasePath, DataBaseID, ProteomicsParameter, this.parameter.ProjectFolderPath, this.parameter.Ms2MassRangeBegin, this.parameter.Ms2MassRangeEnd, this.parameter.CollistionType);
                 default:
                     return null;
             }
