@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Function;
+using CompMs.Common.Lipidomics;
 using CompMs.Common.Proteomics.DataObj;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace CompMs.Common.Proteomics.Function {
         private static double NH2 = 16.01872407;
         private static double H3PO4 = 97.976895575;
 
-
+        private static readonly IEqualityComparer<SpectrumPeak> comparer = new SpectrumEqualityComparer();
         public static MoleculeMsReference Convert2SpecObj(Peptide peptide, AdductIon adduct, CollisionType cType, double minMz = 100, double maxMz = 1000000) {
             switch (cType) {
                 case CollisionType.CID: return GetTheoreticalSpectrumByHCD(peptide, adduct);
@@ -32,10 +33,11 @@ namespace CompMs.Common.Proteomics.Function {
 
         public static List<SpectrumPeak> Convert2SpecPeaks(Peptide peptide, AdductIon adduct, CollisionType cType, double minMz = 100, double maxMz = 1000000) {
             switch (cType) {
-                case CollisionType.CID: return GetSpectrumPeaksByHCD(peptide, adduct);
-                case CollisionType.HCD: return GetSpectrumPeaksByHCD(peptide, adduct);
-                case CollisionType.EIEIO: return GetSpectrumPeaksByECD(peptide, adduct);
-                default: return GetSpectrumPeaksByHCD(peptide, adduct);
+                case CollisionType.CID: return GetSpectrumPeaksByHCD(peptide, adduct, minMz, maxMz);
+                case CollisionType.HCD: return GetSpectrumPeaksByHCD(peptide, adduct, minMz, maxMz);
+                case CollisionType.ECD: return GetSpectrumPeaksByECD(peptide, adduct, minMz, maxMz);
+                case CollisionType.HotECD: return GetSpectrumPeaksByHotECD(peptide, adduct, minMz, maxMz);
+                default: return GetSpectrumPeaksByHCD(peptide, adduct, minMz, maxMz);
             }
         }
 
@@ -53,14 +55,12 @@ namespace CompMs.Common.Proteomics.Function {
             var sequence = peptide.SequenceObj;
             var precursorMz = adduct.ConvertToMz(peptide.ExactMass);
 
-            var spectrum = new List<SpectrumPeak>() {
-                new SpectrumPeak() {
-                    Mass = precursorMz, Intensity = 1000, SpectrumComment = SpectrumComment.precursor, PeakID = sequence.Count
-                },
-                new SpectrumPeak() {
-                    Mass = precursorMz * 0.5, Intensity = 1000, SpectrumComment = SpectrumComment.precursor, PeakID = sequence.Count
-                }
-            };
+            var spectrum = new List<SpectrumPeak>();
+            if (precursorMz >= minMz && precursorMz <= maxMz)
+                spectrum.Add(new SpectrumPeak() { Mass = precursorMz, Intensity = 1000, SpectrumComment = SpectrumComment.precursor, PeakID = sequence.Count });
+            if (precursorMz * 0.5 >= minMz && precursorMz * 0.5 <= maxMz)
+                spectrum.Add(new SpectrumPeak() { Mass = precursorMz * 0.5, Intensity = 1000, SpectrumComment = SpectrumComment.precursor, PeakID = sequence.Count });
+
             var bMz = Proton;
             var yMz = precursorMz;
 
@@ -124,7 +124,12 @@ namespace CompMs.Common.Proteomics.Function {
                         spectrum.Add(new SpectrumPeak() { Mass = yMz - H3PO4, Intensity = 400, SpectrumComment = SpectrumComment.y_h3po4, PeakID = sequence.Count - i - 1 });
                 }
             }
-            return spectrum.OrderBy(n => n.Mass).ToList();
+
+            spectrum = spectrum.GroupBy(spec => spec, comparer)
+                .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Max(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))
+                .OrderBy(peak => peak.Mass)
+                .ToList();
+            return spectrum;
         }
 
         public static List<SpectrumPeak> GetSpectrumPeaksByHotECD(Peptide peptide, AdductIon adduct, double minMz = 100, double maxMz = 1000000) {
@@ -132,14 +137,11 @@ namespace CompMs.Common.Proteomics.Function {
             var sequence = peptide.SequenceObj;
             var precursorMz = adduct.ConvertToMz(peptide.ExactMass);
 
-            var spectrum = new List<SpectrumPeak>() {
-                new SpectrumPeak() {
-                    Mass = precursorMz, Intensity = 1000, SpectrumComment = SpectrumComment.precursor, PeakID = sequence.Count
-                },
-                new SpectrumPeak() {
-                    Mass = precursorMz * 0.5, Intensity = 1000, SpectrumComment = SpectrumComment.precursor, PeakID = sequence.Count
-                }
-            };
+            var spectrum = new List<SpectrumPeak>();
+            if (precursorMz >= minMz && precursorMz <= maxMz)
+                spectrum.Add(new SpectrumPeak() { Mass = precursorMz, Intensity = 1000, SpectrumComment = SpectrumComment.precursor, PeakID = sequence.Count });
+            if (precursorMz * 0.5 >= minMz && precursorMz * 0.5 <= maxMz)
+                spectrum.Add(new SpectrumPeak() { Mass = precursorMz * 0.5, Intensity = 1000, SpectrumComment = SpectrumComment.precursor, PeakID = sequence.Count });
 
             var bMz = Proton;
             var yMz = precursorMz;
@@ -226,7 +228,11 @@ namespace CompMs.Common.Proteomics.Function {
                         spectrum.Add(new SpectrumPeak() { Mass = yMz - H3PO4, Intensity = 400, SpectrumComment = SpectrumComment.y_h3po4, PeakID = sequence.Count - i - 1 });
                 }
             }
-            return spectrum.OrderBy(n => n.Mass).ToList();
+            spectrum = spectrum.GroupBy(spec => spec, comparer)
+                .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Max(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))
+                .OrderBy(peak => peak.Mass)
+                .ToList();
+            return spectrum;
         }
 
         public static List<SpectrumPeak> GetSpectrumPeaksByECD(Peptide peptide, AdductIon adduct, double minMz = 100, double maxMz = 1000000) {
@@ -234,14 +240,12 @@ namespace CompMs.Common.Proteomics.Function {
             var sequence = peptide.SequenceObj;
             var precursorMz = adduct.ConvertToMz(peptide.ExactMass);
 
-            var spectrum = new List<SpectrumPeak>() {
-                new SpectrumPeak() {
-                    Mass = precursorMz, Intensity = 1000, SpectrumComment = SpectrumComment.precursor, PeakID = sequence.Count
-                },
-                new SpectrumPeak() {
-                    Mass = precursorMz * 0.5, Intensity = 1000, SpectrumComment = SpectrumComment.precursor, PeakID = sequence.Count
-                }
-            };
+            var spectrum = new List<SpectrumPeak>();
+            if (precursorMz >= minMz && precursorMz <= maxMz)
+                spectrum.Add(new SpectrumPeak() { Mass = precursorMz, Intensity = 1000, SpectrumComment = SpectrumComment.precursor, PeakID = sequence.Count });
+            if (precursorMz * 0.5 >= minMz && precursorMz * 0.5 <= maxMz)
+                spectrum.Add(new SpectrumPeak() { Mass = precursorMz * 0.5, Intensity = 1000, SpectrumComment = SpectrumComment.precursor, PeakID = sequence.Count });
+
             var cMz = Proton + NH2 + H * 2.0;
             var zMz = precursorMz - NH2;
             spectrum.Add(new SpectrumPeak() { Mass = zMz, Intensity = 1000, SpectrumComment = SpectrumComment.z, PeakID = sequence.Count });
@@ -305,7 +309,11 @@ namespace CompMs.Common.Proteomics.Function {
                         spectrum.Add(new SpectrumPeak() { Mass = zMz - H3PO4, Intensity = 400, SpectrumComment = SpectrumComment.y_h3po4, PeakID = sequence.Count - i - 1 });
                 }
             }
-            return spectrum.OrderBy(n => n.Mass).ToList();
+            spectrum = spectrum.GroupBy(spec => spec, comparer)
+               .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Max(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))
+               .OrderBy(peak => peak.Mass)
+               .ToList();
+            return spectrum;
         }
 
         public static MoleculeMsReference GetBasicMsRefProperty(Peptide peptide, AdductIon adduct) {

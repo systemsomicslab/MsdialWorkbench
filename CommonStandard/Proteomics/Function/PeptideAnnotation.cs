@@ -16,7 +16,7 @@ namespace CompMs.Common.Proteomics.Function {
         public Dictionary<Tuple<int, int, int>, bool> ID2Availability { get; } = new Dictionary<Tuple<int, int, int>, bool>();
         public Dictionary<Tuple<int, int, int>, Tuple<int, int, int>> ID2ProbDictUsed { get; } = new Dictionary<Tuple<int, int, int>, Tuple<int, int, int>>();
 
-        public int MiminumPeptideCountForDist { get; } = 30;
+        public int MiminumPeptideCountForDist { get; } = 10;
 
         public List<PeptideScore> PeptideScores { get; }
         public bool IsContainerAvailability { get; protected set; } = true;
@@ -50,17 +50,47 @@ namespace CompMs.Common.Proteomics.Function {
         public double GetPosteriorErrorProbability(float score, int peptideLength, int modificationNum, int missedCleavageNum) {
             var key = new Tuple<int, int, int>(peptideLength, missedCleavageNum, modificationNum);
             var keyUsed = ID2ProbDictUsed[key];
+            
 
-            Console.WriteLine("PEPLength\t{0}\tMCleavage\t{1}\tModification\t{2}\tUsedPepLength\t{3}\tUsedMCleavage\t{4}\tUsedModification\t{5}",
-                peptideLength, missedCleavageNum, modificationNum, keyUsed.Item1, keyUsed.Item2, keyUsed.Item3);
+            //Console.WriteLine("PEPLength\t{0}\tMCleavage\t{1}\tModification\t{2}\tUsedPepLength\t{3}\tUsedMCleavage\t{4}\tUsedModification\t{5}",
+            //    peptideLength, missedCleavageNum, modificationNum, keyUsed.Item1, keyUsed.Item2, keyUsed.Item3);
 
             var probAll = ProbAllDict[keyUsed];
             var probFalse = ProbFalseDict[keyUsed];
 
+            //if (score <= 0.000001) {
+            //    score = 0.000001F;
+            //}
+
             var scoreDensity = new double[] { score };
-            var probSL = probAll.ProbabilityDensityFunction(scoreDensity);
-            var probSLF = probFalse.ProbabilityDensityFunction(scoreDensity);
-            return 0.5 * probSLF / probSL;
+            var prob = 100.0;
+            try {
+                var probSL = probAll.ProbabilityDensityFunction(scoreDensity);
+                var probSLF = probFalse.ProbabilityDensityFunction(scoreDensity);
+                prob = 0.5 * probSLF / probSL;
+            }
+            catch (Accord.NonPositiveDefiniteMatrixException ex) {
+                Console.WriteLine(ex.Message);
+            }
+            
+            if (prob == 100.0) {
+                var key_all = new Tuple<int, int, int>(-1, -1, -1);
+                var keyUsed_all = ID2ProbDictUsed[key_all];
+
+                var probAll_all = ProbAllDict[keyUsed_all];
+                var probFalse_all = ProbFalseDict[keyUsed_all];
+
+                try {
+                    var probSL = probAll.ProbabilityDensityFunction(scoreDensity);
+                    var probSLF = probFalse.ProbabilityDensityFunction(scoreDensity);
+                    prob = 0.5 * probSLF / probSL;
+                }
+                catch (Accord.NonPositiveDefiniteMatrixException ex) {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+           
+            return prob;
         }
 
         private void SetID2ProbDistUsed(int minPepLength, int minMissedCleavages, int minMods) {

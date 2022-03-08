@@ -15,7 +15,7 @@ namespace CompMs.Common.Lipidomics
         private static readonly double Skelton = new[]
         {
             MassDiffDictionary.CarbonMass * 3,
-            MassDiffDictionary.HydrogenMass * 7,
+            MassDiffDictionary.HydrogenMass * 6,
             MassDiffDictionary.OxygenMass * 3,
         }.Sum();
 

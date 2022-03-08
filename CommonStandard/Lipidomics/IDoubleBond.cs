@@ -11,6 +11,9 @@ namespace CompMs.Common.Lipidomics
         int UnDecidedCount { get; }
 
         ReadOnlyCollection<IDoubleBondInfo> Bonds { get; }
+
+        IDoubleBond Add(params IDoubleBondInfo[] infos);
+        IDoubleBond Decide(params IDoubleBondInfo[] infos);
     }
 
     public class DoubleBond : IDoubleBond
@@ -35,6 +38,17 @@ namespace CompMs.Common.Lipidomics
         public int UnDecidedCount => Count - DecidedCount;
 
         public ReadOnlyCollection<IDoubleBondInfo> Bonds { get; }
+
+        public IDoubleBond Add(params IDoubleBondInfo[] infos) {
+            return new DoubleBond(Count + infos.Length, Bonds.Concat(infos).OrderBy(x => x.Position).ToArray());
+        }
+
+        public IDoubleBond Decide(params IDoubleBondInfo[] infos) {
+            if (Bonds.Count + infos.Length > Count) {
+                return null;
+            }
+            return new DoubleBond(Count, Bonds.Concat(infos).OrderBy(x => x.Position).ToArray());
+        }
 
         public static DoubleBond CreateFromPosition(params int[] positions) {
             return new DoubleBond(positions.Length, positions.Select(p => DoubleBondInfo.Create(p)).ToArray());

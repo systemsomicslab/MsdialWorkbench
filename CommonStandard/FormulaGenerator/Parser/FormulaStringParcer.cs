@@ -228,6 +228,9 @@ namespace CompMs.Common.FormulaGenerator.Parser
                     numString = string.Empty;
                     for (int j = i + 1; j < formulaString.Length; j++) {
                         elem = formulaString[j];
+                        if (char.IsWhiteSpace(elem)) {
+                            continue;
+                        }
                         if (Char.IsNumber(elem)) {
                             numString += elem;
                         }
@@ -252,6 +255,94 @@ namespace CompMs.Common.FormulaGenerator.Parser
             }
 
             return new Formula(dict);
+        }
+
+        public static Formula Convert2FormulaObjV3(string formulaString) {
+            return ToFormula(TokenizeFormula(formulaString));
+        }
+
+        private static Formula ToFormula(List<(string, int)> elements) {
+            var result = new Dictionary<string, int>();
+            foreach ((var element, var number) in elements) {
+                if (result.ContainsKey(element)) {
+                    result[element] += number;
+                }
+                else {
+                    result[element] = number;
+                }
+            }
+            return new Formula(result);
+        }
+
+        public static List<(string, int)> TokenizeFormula(string formulaString) {
+            return TokenizeFormulaCharacter(formulaString).Select(ParseToken).ToList();
+        }
+
+        private static List<string> TokenizeFormulaCharacter(string formulaString) {
+            // C12H24O12 -> C12, H24, O12
+            var result = new List<string>();
+            var i = 0;
+            while (i < formulaString.Length) {
+                while (i < formulaString.Length && !char.IsUpper(formulaString[i]) && formulaString[i] != '[') {
+                    i++;
+                }
+
+                if (i >= formulaString.Length) {
+                    break;
+                }
+
+                if (char.IsUpper(formulaString[i])) {
+                    var j = i;
+                    j++;
+                    while (j < formulaString.Length && (!char.IsUpper(formulaString[j]) && formulaString[j] != '[')) {
+                        j++;
+                    }
+                    result.Add(formulaString.Substring(i, j - i));
+                    i = j;
+                }
+                else if (formulaString[i] == '[') {
+                    var j = i;
+                    j++;
+                    while (j < formulaString.Length && formulaString[j] != ']') {
+                        j++;
+                    }
+                    while (j < formulaString.Length && (!char.IsUpper(formulaString[j]) && formulaString[j] != '[')) {
+                        j++;
+                    }
+                    result.Add(formulaString.Substring(i, j - i));
+                    i = j;
+                }
+                else {
+                    throw new ArgumentException(nameof(formulaString));
+                }
+            }
+            return result;
+        }
+
+        private static (string, int) ParseToken(string token) {
+            // C2 -> C, 2 , [13C]2 -> [13C], 2
+            var cleaned = new string(token.Where(c => !char.IsWhiteSpace(c)).ToArray());
+            int i = 0, j = 0;
+            if (char.IsUpper(cleaned[i])) {
+                while (j < cleaned.Length && !char.IsNumber(cleaned[j])) {
+                    j++;
+                }
+                var element = cleaned.Substring(i, j - i);
+                var number = int.TryParse(cleaned.Substring(j, cleaned.Length - j), out var result) ? result : 1;
+                return (element, number);
+            }
+            else if (cleaned[i] == '[') {
+                while (j < cleaned.Length && cleaned[j] != ']') {
+                    j++;
+                }
+                j++;
+                var element = cleaned.Substring(i, j - i);
+                var number = int.TryParse(cleaned.Substring(j, cleaned.Length - j), out var result) ? result : 1;
+                return (element, number);
+            }
+            else {
+                throw new ArgumentException(nameof(token));
+            }
         }
 
         private static void setElementNumbers(string formulaString, out int cnum, out int hnum, out int nnum, out int onum, out int pnum, out int snum, out int fnum,
