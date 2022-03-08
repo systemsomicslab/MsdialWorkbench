@@ -421,15 +421,15 @@ namespace CompMs.App.Msdial.Model.Lcms
             var container = Storage;
             var spectraTypes = new List<Export.SpectraType>
             {
-                // new Export.SpectraType(
-                //     ExportspectraType.deconvoluted,
-                //     new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.deconvoluted)),
-                // new Export.SpectraType(
-                //     ExportspectraType.centroid,
-                //     new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.centroid)),
-                // new Export.SpectraType(
-                //     ExportspectraType.profile,
-                //     new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.profile)),
+                new Export.SpectraType(
+                    ExportspectraType.deconvoluted,
+                    new LcmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.deconvoluted)),
+                new Export.SpectraType(
+                    ExportspectraType.centroid,
+                    new LcmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.centroid)),
+                new Export.SpectraType(
+                    ExportspectraType.profile,
+                    new LcmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.profile)),
             };
             var spectraFormats = new List<Export.SpectraFormat>
             {

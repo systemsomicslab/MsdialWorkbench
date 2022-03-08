@@ -251,7 +251,8 @@
                    KeyTip="E">
             <RibbonGroup>
                 <RibbonButton Label="Peak list result" LargeImageSource="{StaticResource Peak_list_export_is}"
-                              IsEnabled="False"
+                              Command="{Binding ExportAnalysisResultCommand}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                               KeyTip="P"/>
                 <RibbonButton Label="Alignment result" LargeImageSource="{StaticResource Alignment_result_export_is}"
                               Command="{Binding ExportAlignmentResultCommand}"
