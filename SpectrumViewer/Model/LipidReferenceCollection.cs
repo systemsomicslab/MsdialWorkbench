@@ -18,7 +18,7 @@ namespace CompMs.App.SpectrumViewer.Model
             Scans = new ObservableCollection<IMSScanProperty>();
 
             lipidParser = FacadeLipidParser.Default;
-            lipidGenerator = new LipidGenerator();
+            lipidGenerator = new LipidGenerator(new TotalChainVariationGenerator(new Omega3nChainGenerator(), 6));
             spectrumGenerator = FacadeLipidSpectrumGenerator.Default;
         }
 
