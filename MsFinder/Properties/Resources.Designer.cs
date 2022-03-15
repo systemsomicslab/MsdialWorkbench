@@ -119,7 +119,7 @@ namespace Rfx.Riken.OsakaUniv.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MS-FINDER ver. 3.52.
+        ///   Looks up a localized string similar to MS-FINDER ver. 3.54.
         /// </summary>
         internal static string VERSION {
             get {
