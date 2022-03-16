@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.View;
+using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
@@ -100,25 +101,36 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ReactiveCommand<Window> ContinueProcessCommand { get; }
 
         private void ContinueProcess(Window window) {
-            Mouse.OverrideCursor = Cursors.Wait;
+            //Mouse.OverrideCursor = Cursors.Wait;
 
-            var message = new ShortMessageWindow {
-                Owner = window,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Text = Model.ParameterBase.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection
-                        ? "RT correction viewer will be opened\nafter libraries are loaded."
-                        : "Loading libraries.."
-            };
-            message.Show();
+            //var message = new ShortMessageWindow {
+            //    Owner = window,
+            //    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            //    Text = Model.ParameterBase.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection
+            //            ? "RT correction viewer will be opened\nafter libraries are loaded."
+            //            : "Loading libraries.."
+            //};
+            //message.Show();
             var result = ClosingMethod();
-            message.Close();
+            if (Model.ParameterBase.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection) {
+                var rtCorrectionWin = new RetentionTimeCorrectionWinLegacy(AnalysisFiles, Model.ParameterBase, false);
+                rtCorrectionWin.Owner = window;
+                rtCorrectionWin.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                if (rtCorrectionWin.ShowDialog() == true) {
 
+                }
+                else {
+                    return;
+                }
+            }
+
+            //message.Close();
             if (result) {
                 window.DialogResult = true;
                 window.Close();
             }
 
-            Mouse.OverrideCursor = null;
+            //Mouse.OverrideCursor = null;
         }
 
         protected virtual bool ClosingMethod() {

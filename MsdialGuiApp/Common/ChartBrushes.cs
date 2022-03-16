@@ -34,5 +34,25 @@ namespace CompMs.App.Msdial.Common
             }
             return SolidColorBrushList[i];
         }
+
+        public static Dictionary<string, List<byte>> ConvertToBytesDictionary(Dictionary<string, SolidColorBrush> classToBrush) {
+            var classToBytes = new Dictionary<string, List<byte>>();
+            foreach (var pair in classToBrush) {
+                var classname = pair.Key;
+                var bytes = new List<byte>() { pair.Value.Color.R, pair.Value.Color.G, pair.Value.Color.B, pair.Value.Color.A };
+                classToBytes[classname] = bytes;
+            }
+            return classToBytes;
+        }
+
+        public static Dictionary<string, SolidColorBrush> ConvertToSolidBrushDictionary(Dictionary<string, List<byte>> classToBytes) {
+            var classToBrush = new Dictionary<string, SolidColorBrush>();
+            foreach (var pair in classToBytes) {
+                var classname = pair.Key;
+                var bytes = pair.Value;
+                classToBrush[classname] = new SolidColorBrush() { Color = new Color() { R = bytes[0], G = bytes[1], B = bytes[2], A = bytes[3] } };
+            }
+            return classToBrush;
+        }
     }
 }

@@ -1,0 +1,449 @@
+﻿<Window x:Class="CompMs.App.Msdial.View.Setting.RetentionTimeCorrectionWinLegacy"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:chart="clr-namespace:CompMs.Graphics.Core.Base;assembly=ChartDrawing"
+        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
+        mc:Ignorable="d"
+        Closing="Window_Closing"
+        Name="RtCorrectionWin"
+        Title="Retention time correction" Height="680" Width="1074">
+    <Window.Resources>
+        <ContextMenu x:Key="menuDefaultUC">
+            <MenuItem Header="Save image as.." Click="contextMenu_SaveImageAs_Click" />
+            <MenuItem Header="Copy image as.." Click="contextMenu_CopyImageAs_Click" />
+        </ContextMenu>
+
+        <!-- Combobox style: https://stackoverflow.com/questions/22695145/wpf-change-background-color-of-a-combobox -->
+        <Style x:Key="ColorPickerStyle" TargetType="ComboBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton Grid.Column="2" Focusable="false" IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}" >
+                                <ToggleButton.Template>
+                                    <ControlTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="8" />
+                                            </Grid.ColumnDefinitions>
+                                            <Border x:Name="Border" Grid.ColumnSpan="2" CornerRadius="2" Background="Blue" BorderBrush="DarkGray" BorderThickness="1" />
+                                            <Border Grid.Column="0" CornerRadius="1.5,0,0,1.5"  Margin="1"  Background="AliceBlue"  BorderBrush="DarkGray" BorderThickness="0,0,1,0" />
+                                            <Path x:Name="Arrow" Grid.Column="1"  Fill="Orange" HorizontalAlignment="Center" VerticalAlignment="Center"  Data="M -1 1 L 3 5 L 7 1 Z"/>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="ToggleButton.IsMouseOver" Value="true">
+                                                <Setter TargetName="Border" Property="Background" Value="DarkBlue" />
+                                            </Trigger>
+                                            <Trigger Property="ToggleButton.IsChecked" Value="true">
+                                                <Setter TargetName="Border" Property="Background" Value="DarkBlue" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter Name="ContentSite" IsHitTestVisible="False" HorizontalAlignment="Center" Margin="3,3,8,0" Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"  />
+                            <TextBox x:Name="PART_EditableTextBox" Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}" HorizontalContentAlignment="Center" TextAlignment="Center"/>
+                            <Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" HorizontalAlignment="Center" AllowsTransparency="True"  Focusable="False" PopupAnimation="Slide">
+                                <Grid  Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}" Margin="0,0,5,0">
+                                    <Border x:Name="DropDownBorder" Background="AliceBlue"/>
+                                    <ScrollViewer SnapsToDevicePixels="True">
+                                        <StackPanel IsItemsHost="True" >
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="100"/>
+            <ColumnDefinition Width="*" MinWidth="370" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Name="LeftPart" Grid.Column="0">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="270" MinHeight="100"/>
+                <RowDefinition Height="*" MinHeight="100"/>
+                <RowDefinition Height="35" MinHeight="35"/>
+            </Grid.RowDefinitions>
+
+            <Label Content="Retention time correction settings" Background="LightSteelBlue" 
+                   Height="28"
+                   Foreground="Black" 
+                   VerticalAlignment="Top"
+                   HorizontalAlignment="Stretch"
+                   HorizontalContentAlignment="Center" Grid.Column="0"/>
+            <Grid Name="Setting" Grid.Row="0" Grid.Column="0">
+
+                <Label Content="Interpolation method: " Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,30,5,0" />
+                <Label Content="Extrapolation method to RT begin: " Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,60,0,0" />
+                <Label Content="Intercepts at 0 min (sample - reference): " Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,90,0,0" />
+                <Label Content="min"  FontSize="10" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,90,5,0" />
+                <Label Content="Extrapolation method to RT end: "  Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,120,0,0" />
+                <Label Content="Calculation method of RT difference: "  Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5,150,0,0" />
+                <Label Content="Smoothing (simple moving average, 50 datapoints): " Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,180,0,0"/>
+                <Label Content="Do not confirm the RT correction result: " Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5, 210,0,0"/>
+
+
+                <Button Content="Browse Ref file" Command="{Binding LoadLibrary}" 
+                        Height="25" Width="100" VerticalAlignment="Bottom" 
+                        HorizontalAlignment="Left" Margin="10,5,0,5">
+
+                    <ToolTipService.ToolTip>
+                        <ToolTip>
+                            <TextBlock>
+                                Please prepare the following format file saved as tab-delimited text.
+                                 <LineBreak />
+                                The first row should be the header like below
+                                 <LineBreak />
+                                [0]Name [1]Retention time (min) [2]RT tolerance (min) [3]m/z(Da) [4]m/z tolerance(Da) [5]Minimu peak height [6]Include(True or False)
+                                 <LineBreak />
+                                 Name A\t2.0\t0.1\t100.000\t0.01\t1000\tTRUE
+                                 <LineBreak />
+                                 Name B\t4.0\t0.1\t200.000\t0.01\t1000\tTRUE
+                                 <LineBreak />
+                                 Name C\t6.0\t0.1\t300.000\t0.01\t1000\tTRUE
+                            </TextBlock>
+                        </ToolTip>
+                    </ToolTipService.ToolTip>
+
+                </Button>
+
+
+
+
+                <Button Content="RT correction" Command="{Binding RtCorrection}" CommandParameter="{Binding Path=StandardData}"  
+                        Height="25" Width="100" VerticalAlignment="Bottom"
+                        HorizontalAlignment="Left" Margin="120,5,5,5"/>
+
+                <ComboBox Height="22" Width="200" Name="ComboBox_Interpolation" 
+                          ItemsSource="{Binding Path=Interpolation}"
+                                      HorizontalAlignment="Right" 
+                                      VerticalAlignment="Top" 
+                                      SelectedIndex="0"
+                                      Margin="0, 33, 15, 0"
+                                      SelectionChanged="ComboBox_Interpolation_SelectionChanged" />
+                <ComboBox Height="22" Width="200" Name="ComboBox_Extrapolation_Begin" 
+                                      ItemsSource="{Binding Path=ExtrapolationMethod_Begin}" HorizontalAlignment="Right" 
+                                      VerticalAlignment="Top" 
+                                      SelectedIndex="0"
+                                      Margin="0, 63, 15, 0"
+                                    SelectionChanged="ComboBox_ExtrapolationBegin_SelectionChanged" />
+
+                <TextBox Name="UserSettingValue" 
+                         Text="{Binding Path=UserSettingIntercept, Mode=TwoWay,  
+                    UpdateSourceTrigger = LostFocus}"  
+                         BorderBrush="WhiteSmoke" HorizontalAlignment="Right" 
+                         VerticalAlignment="Top" TextAlignment="Right" 
+                         Height="22" Width="180" Margin="0,93,35,0"/>
+
+                <ComboBox Height="22" Width="200" Name="ComboBox_Extrapolation_End" 
+                          ItemsSource="{Binding Path=ExtrapolationMethod_End}"
+                                      HorizontalAlignment="Right" 
+                                      VerticalAlignment="Top" 
+                                      SelectedIndex="0"
+                                      Margin="0, 123, 15, 0"
+                        SelectionChanged="ComboBox_ExtrapolationEnd_SelectionChanged" />
+                <ComboBox Height="22" Width="200" Name="ComboBox_RtDiffCalcMethod" 
+                                      ItemsSource="{Binding Path=RtDiffCalcMethod}" HorizontalAlignment="Right" 
+                                      VerticalAlignment="Top" 
+                                      SelectedIndex="0"
+                                      Margin="0, 153, 15, 0"
+                                    SelectionChanged="ComboBox_RtDiffCalcMethod_SelectionChanged" />
+
+                <CheckBox Name="CheckBox_SmoothingCheck" Height="20" IsChecked="{Binding CheckBox_WithSmoothing}" Width="20" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10,187,196,-2"/>
+                <CheckBox Name="CheckBox_SkipResultCheck" Height="20" IsChecked="{Binding CheckBox_SkipCheck}" Width="20" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10,217,196,-2">
+                    <ToolTipService.ToolTip>
+                        <ToolTip>
+                            <TextBlock>
+                                If you do not need to check the RT correction behaviors, please check this.
+                                 <LineBreak />
+                                When really large data sets (~2000 samples) are imported, the viewer of right panels will become very busy. 
+                                 <LineBreak />
+                                In such case, this option can be used. But basically, this option should be unchecked to curate the RT corrected data.
+                            </TextBlock>
+                        </ToolTip>
+                    </ToolTipService.ToolTip>
+                </CheckBox>
+
+            </Grid>
+
+            <Grid Name="Grid_TableView" Grid.Row="1">
+                <TabControl Name="TabControl_TableViewer" Margin="0,0,0,0" >
+                    <TabItem Header="Reference compound information" 
+                           Background="LightSteelBlue" 
+                           Height="28">
+
+                        <DataGrid Name="DataGrid_StdData" ClipboardCopyMode="IncludeHeader" Background="GhostWhite" ItemsSource="{Binding StandardData, UpdateSourceTrigger=PropertyChanged}"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Stretch" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" 
+                  AutoGenerateColumns="False" SelectionMode="Extended" SelectionUnit="CellOrRowHeader" PreviewKeyDown="Datagrid_StandardTable_PreviewKeyDown" 
+                  AllowDrop="False"
+                  CurrentCellChanged="Datagrid_StdData_CurrentCellChanged" Margin="0,0,0,0" >
+
+                            <DataGrid.ColumnHeaderStyle>
+                                <Style TargetType="DataGridColumnHeader" >
+                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                </Style>
+                            </DataGrid.ColumnHeaderStyle>
+
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID" Width="40" Binding="{Binding Path=ReferenceId}" IsReadOnly="True" />
+
+                                <DataGridTemplateColumn SortMemberPath="MetaboliteName" Width="2*" Header="Name" IsReadOnly="False" ClipboardContentBinding="{Binding Path=MetaboliteName}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Name="TextBox_Std_Name" 
+                                                 Text="{Binding Path=MetaboliteName, 
+                                            ValidatesOnDataErrors=True,
+                                            UpdateSourceTrigger=LostFocus, 
+                                            NotifyOnValidationError=True}" 
+                                                 VerticalContentAlignment="Stretch"  
+                                                 HorizontalAlignment="Stretch"
+                                                 TextAlignment="Left"
+                                                 BorderThickness="0"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+
+                                    <DataGridTemplateColumn.CellEditingTemplate>
+                                        <DataTemplate>
+                                            <Grid  FocusManager.FocusedElement="{Binding ElementName= TextBox_Std_Name}">
+                                                <TextBox Name="TextBox_Std_Name" Text="{Binding MetaboliteName, UpdateSourceTrigger=PropertyChanged}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellEditingTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn SortMemberPath="RetentionTime"
+                                                    Width="*" Header="RT (min)"
+                                                    IsReadOnly="False" ClipboardContentBinding="{Binding Path=RetentionTime}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Name="TextBox_Std_RT" Text="{Binding Path=RetentionTime, StringFormat=0.00, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, NotifyOnValidationError=True}" VerticalContentAlignment="Stretch"  HorizontalAlignment="Stretch" TextAlignment="Center" BorderThickness="0"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+
+                                    <DataGridTemplateColumn.CellEditingTemplate>
+                                        <DataTemplate>
+                                            <Grid  FocusManager.FocusedElement="{Binding ElementName= TextBox_Std_RT}">
+                                                <TextBox Name="TextBox_Std_RT" Text="{Binding RetentionTime, UpdateSourceTrigger=LostFocus}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellEditingTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn SortMemberPath="RetentionTimeTolerance"
+                                                    Width="*" Header="RT tol.&#13; (min)" IsReadOnly="False" ClipboardContentBinding="{Binding Path=RetentionTimeTolerance}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Name="TextBox_Std_RtTol" Text="{Binding Path=RetentionTimeTolerance, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, NotifyOnValidationError=True}" VerticalContentAlignment="Stretch"  HorizontalAlignment="Stretch" TextAlignment="Center" BorderThickness="0"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+
+                                    <DataGridTemplateColumn.CellEditingTemplate>
+                                        <DataTemplate>
+                                            <Grid  FocusManager.FocusedElement="{Binding ElementName= TextBox_Std_RtTol}">
+                                                <TextBox Name="TextBox_Std_RtTol" Text="{Binding RetentionTimeTolerance, UpdateSourceTrigger=LostFocus}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellEditingTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn SortMemberPath="AccurateMass" Width="*" Header="m/z&#13;(Da)" IsReadOnly="False" ClipboardContentBinding="{Binding Path=AccurateMass}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Name="TextBox_Std_AM" Text="{Binding Path=AccurateMass, StringFormat=0.000, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, NotifyOnValidationError=True}" VerticalContentAlignment="Stretch"  HorizontalAlignment="Stretch" TextAlignment="Center" BorderThickness="0"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+
+                                    <DataGridTemplateColumn.CellEditingTemplate>
+                                        <DataTemplate>
+                                            <Grid  FocusManager.FocusedElement="{Binding ElementName= TextBox_Std_AM}">
+                                                <TextBox Name="TextBox_Std_AM" Text="{Binding AccurateMass, UpdateSourceTrigger=LostFocus}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellEditingTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn SortMemberPath="AccurateMassTolerance" 
+                                                    Width="*" Header="m/z tol.&#13;  (Da)" IsReadOnly="False" ClipboardContentBinding="{Binding Path=AccurateMassTolerance}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Name="TextBox_Std_AMtol" Text="{Binding Path=AccurateMassTolerance, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, NotifyOnValidationError=True}" VerticalContentAlignment="Stretch"  HorizontalAlignment="Stretch" TextAlignment="Center" BorderThickness="0"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+
+                                    <DataGridTemplateColumn.CellEditingTemplate>
+                                        <DataTemplate>
+                                            <Grid  FocusManager.FocusedElement="{Binding ElementName= TextBox_Std_AMtol}">
+                                                <TextBox Name="TextBox_Std_AMtol" Text="{Binding AccurateMassTolerance, UpdateSourceTrigger=LostFocus}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellEditingTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn SortMemberPath="MinimumPeakHeight" 
+                                                    Width="*" Header="Minimum&#13;   height" IsReadOnly="False" ClipboardContentBinding="{Binding Path=MinimumPeakHeight}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Name="TextBox_Std_minHeight" Text="{Binding Path=MinimumPeakHeight, ValidatesOnDataErrors=True, UpdateSourceTrigger=LostFocus, NotifyOnValidationError=True}" VerticalContentAlignment="Stretch"  HorizontalAlignment="Stretch" TextAlignment="Center" BorderThickness="0"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+
+                                    <DataGridTemplateColumn.CellEditingTemplate>
+                                        <DataTemplate>
+                                            <Grid  FocusManager.FocusedElement="{Binding ElementName= TextBox_Std_minHeight}">
+                                                <TextBox Name="TextBox_Std_minHeight" Text="{Binding MinimumPeakHeight, UpdateSourceTrigger=LostFocus}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellEditingTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="50" Header="T/F" ClipboardContentBinding="{Binding Path=IsTarget}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding Path=IsTarget, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
+                    <TabItem Header="Result table" 
+                           Background="LightSteelBlue" 
+                           Height="28">
+                        <Grid Name="Grid_SampleData">
+                            <Grid.Resources>
+                                <Style x:Key="HeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                                </Style>
+
+                                <Style x:Key="TextStyle" TargetType="{x:Type TextBlock}">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                </Style>
+
+                                <Style x:Key="CellStyle" TargetType="{x:Type DataGridCell}">
+                                    <Setter Property="Background" Value="{Binding BgColor}"/>
+                                </Style>
+                            </Grid.Resources>
+                            <DataGrid Name="DataGrid_SampleTable" ClipboardCopyMode="IncludeHeader" Background="WhiteSmoke" ItemsSource="{Binding SampleListVMs, UpdateSourceTrigger=PropertyChanged}" 
+                              ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" 
+                              VerticalAlignment="Stretch" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" 
+                              AutoGenerateColumns="False" SelectionMode="Extended" SelectionUnit="CellOrRowHeader"  
+                              DataGridCell.Selected="DataGrid_GotFocus" Margin="0, 0, 0, 30">
+
+                                <DataGrid.ColumnHeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader" >
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGrid.ColumnHeaderStyle>
+                                <DataGrid.CellStyle>
+                                    <Style TargetType="DataGridCell" >
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                        <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGrid.CellStyle>
+
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID" Width="40" Binding="{Binding Path=SampleID}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="FileName" Width="100" Binding="{Binding Path=FileName}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Class" Width="60" Binding="{Binding Path=SampleClass}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Num Hit" Width="60" Binding="{Binding Path=NumHit}" IsReadOnly="True" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <Button Content="Auto fill" Command="{Binding AutoFill}"
+                                    CommandParameter="{Binding Path=Processed}"  
+                                    Height="25" Width="100" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0, 0, 115, 2">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Replace 0 values (red cells) by previous samples, auto-filled cell color is blue" />
+                                </ToolTipService.ToolTip>
+                            </Button>
+                            <Button Content="Recalculate RTs" 
+                                    Command="{Binding UpdateRtTune}" 
+                                    CommandParameter="{Binding Path=Processed}"  
+                                    Height="25" Width="100" VerticalAlignment="Bottom" 
+                                    HorizontalAlignment="Right" Margin="0, 0, 5, 2">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="Update RT correction by using you manually changed" />
+                                </ToolTipService.ToolTip>
+                            </Button>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+
+            </Grid>
+            <Grid Name="ButtonSpace" Grid.Row="2">
+                <Button Content="Run" Command="{Binding Next}"  CommandParameter="{Binding Path=Processed}"  Height="25" Width="60" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,5,5,0"/>
+                <!--             <Button Content="Cancel" Command="{Binding Cancel}"  Height="25" Width="60" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,5,5,0"/>
+        -->
+                <CheckBox Name="CheckBox_canRtCorrection" Height="20" IsChecked="{Binding CheckBox_RunWithRtCorrection}" Width="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,8,0,0"/>
+                <Label Name="Label_checkbox1" Content="Run the processing with RT corrections" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,2,0,0"/>
+            </Grid>
+        </Grid>
+
+        <GridSplitter Margin="0, 0, 0, 0" Width="2" 
+            ResizeDirection="Columns"  Grid.Column="0" Grid.RowSpan="3" 
+            VerticalAlignment="Stretch" HorizontalAlignment="Right" />
+
+        <Grid Name="RightPart" Grid.Column="1" Margin="2,0,0,0">
+
+            <Label Content="" Background="LightSteelBlue" 
+                           Height="28"
+                           VerticalAlignment="Top"/>
+
+            <TabControl Name="TabControl_CorrectedRes" SelectionChanged="TabControl_CorrectedRes_SelectionChanged" Margin="0,0,0,0" >
+                <TabItem Header="Overview RT shift" 
+                        Height="26"
+                        Name="TabItem_CorrectedRetentionTime_OverView" Background="LightSteelBlue">
+                    <Grid>
+                        <chart:DefaultUC Name="AllRtDiffUC" Content="{Binding Path=AllRtDiffUC}" ContextMenu="{DynamicResource ResourceKey=menuDefaultUC}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="RT shift for each" 
+                        Height="26"
+                        Name="TabItem_CorrectedRetentionTIme" Background="LightSteelBlue">
+                    <Grid>
+                        <ScrollViewer Name="ScrollEachRtDiff" Content="{Binding Path=StackPanel_EachRtDiffUc}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" />
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Abundance plots" 
+                        Height="26"
+                        Name="TabItem_StdIntensity" Background="LightSteelBlue">
+                    <ScrollViewer Name="Scroll_EachStdPeakHeight" Content="{Binding Path=StackPanel_EachStdPeakHeightUc}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" />
+                </TabItem>
+
+                <TabItem Header="Chromatograms" 
+                        Height="26"
+                        Name="TabItem_StdEIC" Background="LightSteelBlue">
+                    <ScrollViewer Name="Scroll_EachStdEIC" Content="{Binding Path=Grid_EachStdEICUc}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" />
+                </TabItem>
+
+            </TabControl>
+            <Label Name="Label_RtDiff_Label" Content="Label:" Margin="0,3,64,0" 
+                   HorizontalAlignment="Right" VerticalAlignment="Top" Height="25" Width="40"/>
+            <ComboBox Name="ComboBox_RtDiff_Label" Style="{StaticResource ColorPickerStyle}"
+                      SelectedIndex="0" HorizontalContentAlignment="Center"
+                        SelectionChanged="ComboBox_RtDiff_Label_SelectionChanged" 
+                      Height="20" Width ="60" 
+                      HorizontalAlignment="Right" VerticalAlignment="Top" 
+                      ItemsSource="{Binding Combobox_LabelArr}" 
+                      Margin="0,5,5,5">
+            </ComboBox>
+        </Grid>
+    </Grid>
+</Window>

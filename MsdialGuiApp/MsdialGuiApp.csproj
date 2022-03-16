@@ -166,6 +166,7 @@
     <Compile Include="Model\Chart\RangeSelectableChromatogramModel.cs" />
     <Compile Include="Model\Chart\RawDecSpectrumsModel.cs" />
     <Compile Include="Model\Chart\RawPurifiedSpectrumsModel.cs" />
+    <Compile Include="Model\Chart\RetentionTimeCorrectionChart.cs" />
     <Compile Include="Model\Chart\SpectrumModel.cs" />
     <Compile Include="Model\Chart\SurveyScanModel.cs" />
     <Compile Include="Model\Core\DatasetModel.cs" />
@@ -173,6 +174,7 @@
     <Compile Include="Model\Core\IProjectModel.cs" />
     <Compile Include="Model\Core\MainWindowModel.cs" />
     <Compile Include="Model\Core\ProjectModel.cs" />
+    <Compile Include="Model\Core\RtCorrectionProcessModelLegacy.cs" />
     <Compile Include="Model\MsResult\SummarizedSpectrumModel.cs" />
     <Compile Include="Model\Setting\AdductIonSettingModel.cs" />
     <Compile Include="Model\Setting\AlignmentParameterSettingModel.cs" />
@@ -231,6 +233,7 @@
     <Compile Include="Model\Lcms\LcmsMethodModel.cs" />
     <Compile Include="Model\Lcms\LcmsPeakSpotTableModel.cs" />
     <Compile Include="Model\Setting\ProjectSettingModel.cs" />
+    <Compile Include="Model\Setting\RetentionTimeCorrectionModelLegacy.cs" />
     <Compile Include="Model\Setting\TextDBAnnotationSettingModel.cs" />
     <Compile Include="Model\Loader\EicLoader.cs" />
     <Compile Include="Model\Search\CompoundSearchModel.cs" />
@@ -346,6 +349,7 @@
     <Compile Include="ViewModel\Setting\ProcessSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\ProjectParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\ProjectSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\RetentionTimeCorrectionViewModelLegacy.cs" />
     <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
     <Compile Include="View\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
@@ -433,6 +437,12 @@
     </Compile>
     <Compile Include="View\Export\AnalysisResultExportWin.xaml.cs">
       <DependentUpon>AnalysisResultExportWin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Export\CopyImageAsWinLegacy.xaml.cs">
+      <DependentUpon>CopyImageAsWinLegacy.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Export\SaveImageAsWinLegacy.xaml.cs">
+      <DependentUpon>SaveImageAsWinLegacy.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Imms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
@@ -648,6 +658,9 @@
     <Compile Include="View\Setting\ProjectParameterSettingView.xaml.cs">
       <DependentUpon>ProjectParameterSettingView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Setting\RetentionTimeCorrectionWinLegacy.xaml.cs">
+      <DependentUpon>RetentionTimeCorrectionWinLegacy.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ShortMessageView.xaml.cs">
       <DependentUpon>ShortMessageView.xaml</DependentUpon>
     </Compile>
@@ -835,6 +848,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Export\AnalysisResultExportWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Export\CopyImageAsWinLegacy.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Export\SaveImageAsWinLegacy.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1099,6 +1120,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\ProjectParameterSettingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\RetentionTimeCorrectionWinLegacy.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

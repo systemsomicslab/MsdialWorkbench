@@ -1,0 +1,48 @@
+﻿<Window x:Class="CompMs.App.Msdial.View.Export.CopyImageAsWinLegacy"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:CompMs.CommonMVVM.Validator;assembly=CommonMVVM"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        Title="Copy image" Height="120" Width="600">
+    <i:Interaction.Behaviors>
+        <local:ValidationBehavior HasViewError="{Binding HasViewError, Mode=OneWayToSource}" />
+    </i:Interaction.Behaviors>
+    <Window.Resources>
+        <ControlTemplate x:Key="InputErrorTemplate">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="!" Foreground="Red" FontSize="18" FontWeight="Bold" Margin="5,2"/>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+        <Style x:Key="ToolTipErrorStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Self}}" />
+                    <Setter Property="BorderBrush" Value="Pink" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+
+        <Label Content="Horizontal: " Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,5,5" />
+        <TextBox Name="TextBox_HorizontalResolution" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="90" Height="24" Margin="80, 0, 0, 0" />
+        <Label Content="dpi" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="170,5,5,5" />
+
+        <Label Content="Vertical: " Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="220,5,5,5" />
+        <TextBox Name="TextBox_VerticalResolution" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="90" Height="24" Margin="280, 0, 0, 0" />
+        <Label Content="dpi" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="370,5,5,5" />
+
+        <Label Content="Format: " Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="430,5,5,5" />
+        <ComboBox Name="ComboBox_Format" ItemsSource="{Binding}" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Width="90" Height="24" Margin="490, 0, 0, 0" />
+
+        <Button x:Name="Cancel" Content="Cancel" Click="Click_Cancel" Grid.Row="1" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5" />
+        <Button x:Name="Copy" Content="Export" Click="Finish_Click" Grid.Row="1" Height="25" Width="70" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,80,5" />
+    </Grid>
+</Window>
