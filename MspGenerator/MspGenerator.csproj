@@ -56,8 +56,8 @@
     <Reference Include="DynamicInterop, Version=0.9.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DynamicInterop.0.9.1\lib\netstandard2.0\DynamicInterop.dll</HintPath>
     </Reference>
-    <Reference Include="MathNet.Numerics, Version=4.12.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MathNet.Numerics.4.12.0\lib\net461\MathNet.Numerics.dll</HintPath>
+    <Reference Include="MathNet.Numerics, Version=4.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.4.9.0\lib\net461\MathNet.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="MessagePack, Version=1.7.3.7, Culture=neutral, PublicKeyToken=b4a0369545f0a1be, processorArchitecture=MSIL">
       <HintPath>..\packages\MessagePack.1.7.3.7\lib\net47\MessagePack.dll</HintPath>
@@ -70,6 +70,9 @@
     </Reference>
     <Reference Include="Microsoft.Win32.Registry, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Win32.Registry.5.0.0\lib\net461\Microsoft.Win32.Registry.dll</HintPath>
+    </Reference>
+    <Reference Include="NCDK, Version=1.5.6.0, Culture=neutral, PublicKeyToken=7b3355892b3327a8, processorArchitecture=MSIL">
+      <HintPath>..\packages\NCDK.1.5.6\lib\net461\NCDK.dll</HintPath>
     </Reference>
     <Reference Include="RDotNet, Version=1.9.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\R.NET.1.9.0\lib\netstandard2.0\RDotNet.dll</HintPath>
@@ -148,10 +151,6 @@
     <ProjectReference Include="..\MsdialCommon\MsdialCommon.csproj">
       <Project>{049645f4-4ea5-41a2-b369-22d23fb09040}</Project>
       <Name>MsdialCommon</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NCDK\NCDK.csproj">
-      <Project>{7976aefc-8382-47d3-ba50-55fa18babadf}</Project>
-      <Name>NCDK</Name>
     </ProjectReference>
     <ProjectReference Include="..\StructureFinderStandard\StructureFinderStandard.csproj">
       <Project>{0001B4AC-83AE-4011-B314-085C8D3F6157}</Project>

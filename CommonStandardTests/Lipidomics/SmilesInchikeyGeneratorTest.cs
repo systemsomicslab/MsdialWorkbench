@@ -30,6 +30,22 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual("C(OC=CCCCCCCCCCC=CCCCCC)C(OC(CCCC=CCC=CCC=CCC=CCC=CCC)=O)COP([O-])(=O)OCC[N+](C)(C)C", result.Smiles);
             Assert.AreEqual("VZRVIPQLHQGIMS-UHFFFAOYSA-N", result.InchiKey);
 
+
+            // Cer 18:1;2O/20:5(5,8,11,14,17) Cer_NS
+            var sphingo = new SphingoChain(18, DoubleBond.CreateFromPosition(4), Oxidized.CreateFromPosition(1, 3));
+            lipid = new Lipid(LbmClass.Cer_NS, 585.512095, new PositionLevelChains(sphingo, acyl));
+
+            result = SmilesInchikeyGenerator.Generate(lipid);
+            Assert.AreEqual("C(OC=CCCCCCCCCCC=CCCCCC)C(OC(CCCC=CCC=CCC=CCC=CCC=CCC)=O)COP([O-])(=O)OCC[N+](C)(C)C", result.Smiles);
+            Assert.AreEqual("VZRVIPQLHQGIMS-UHFFFAOYSA-N", result.InchiKey);
+
+            var parser3 = new CeramideLipidParser();
+            var lipid3 = parser.Parse("Cer 18:1;2O/20:5(5,8,11,14,17)");
+            result = SmilesInchikeyGenerator.Generate((Lipid)lipid2);
+
+            Assert.AreEqual("C(OC=CCCCCCCCCCC=CCCCCC)C(OC(CCCC=CCC=CCC=CCC=CCC=CCC)=O)COP([O-])(=O)OCC[N+](C)(C)C", result.Smiles);
+            Assert.AreEqual("VZRVIPQLHQGIMS-UHFFFAOYSA-N", result.InchiKey);
+
         }
     }
 }
