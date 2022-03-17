@@ -94,7 +94,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public DataCollectionSettingModel CreateDataCollectionSetting() {
-            return new DataCollectionSettingModel(storage.Parameter, process);
+            return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
         public DeconvolutionSettingModel CreateDeconvolutionSetting() {
@@ -169,7 +169,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public DataCollectionSettingModel CreateDataCollectionSetting() {
-            return new DataCollectionSettingModel(storage.Parameter, process);
+            return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
         public DeconvolutionSettingModel CreateDeconvolutionSetting() {
@@ -241,7 +241,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public DataCollectionSettingModel CreateDataCollectionSetting() {
-            return new DataCollectionSettingModel(storage.Parameter, process);
+            return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
         public DeconvolutionSettingModel CreateDeconvolutionSetting() {
@@ -310,7 +310,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public DataCollectionSettingModel CreateDataCollectionSetting() {
-            return new DataCollectionSettingModel(storage.Parameter, process);
+            return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
         }
 
         public DeconvolutionSettingModel CreateDeconvolutionSetting() {

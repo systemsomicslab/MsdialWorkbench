@@ -52,6 +52,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => NumberOfThreads).AddTo(Disposables);
 
+            ExcuteRtCorrection = Model.ToReactivePropertySlimAsSynchronized(m => m.ExcuteRtCorrection).AddTo(Disposables);
+
             DataCollectionRangeSettings = Model.DataCollectionRangeSettings.Select(DataCollectionRangeSettingViewModelFactory.Create).ToList().AsReadOnly();
 
             DimsDataCollectionSettingViewModel = Model.DimsProviderFactoryParameter is null
@@ -124,6 +126,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         [Required(ErrorMessage = "Number of threads is required.")]
         [RegularExpression(@"\d+", ErrorMessage = "Invalid character entered.")]
         public ReactiveProperty<string> NumberOfThreads { get; }
+
+        public ReactivePropertySlim<bool> ExcuteRtCorrection { get; }
 
         public ReadOnlyCollection<DataCollectionRangeSettingViewModel> DataCollectionRangeSettings { get; }
 

@@ -63,9 +63,11 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public bool IsReadOnlyAlignmentParameter { get; }
 
-        public void Run() {
+        public bool Run() {
             if (Option.HasFlag(ProcessOption.PeakSpotting)) {
-                DataCollectionSettingModel.Commit();
+                if (!DataCollectionSettingModel.Commit()) {
+                    return false;
+                }
                 PeakDetectionSettingModel.Commit();
                 DeconvolutionSettingModel.Commit();
             }
@@ -83,6 +85,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
             var method = settingModelFactory.BuildMethod();
             handler?.Invoke(this, method);
+            return true;
         }
     }
 }

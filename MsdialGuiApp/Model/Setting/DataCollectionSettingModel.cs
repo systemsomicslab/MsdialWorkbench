@@ -1,7 +1,9 @@
 ﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Imms;
+using CompMs.App.Msdial.View.Setting;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.MsdialGcMsApi.Parameter;
@@ -14,9 +16,11 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     public class DataCollectionSettingModel : BindableBase {
         private readonly ParameterBase parameter;
+        private readonly IReadOnlyList<AnalysisFileBean> analysisFiles;
 
-        public DataCollectionSettingModel(ParameterBase parameter, ProcessOption process) {
+        public DataCollectionSettingModel(ParameterBase parameter, IReadOnlyList<AnalysisFileBean> analysisFiles, ProcessOption process) {
             this.parameter = parameter;
+            this.analysisFiles = analysisFiles;
             IsReadOnly = (process & ProcessOption.PeakSpotting) == 0;
 
             Ms1Tolerance = parameter.PeakPickBaseParam.CentroidMs1Tolerance;
@@ -24,14 +28,15 @@ namespace CompMs.App.Msdial.Model.Setting
             MaxChargeNumber = parameter.PeakPickBaseParam.MaxChargeNumber;
             IsBrClConsideredForIsotopes = parameter.PeakPickBaseParam.IsBrClConsideredForIsotopes;
             NumberOfThreads = parameter.ProcessBaseParam.NumThreads;
+            ExcuteRtCorrection = parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection;
             DataCollectionRangeSettings = PrepareRangeSettings(parameter);
         }
 
-        public DataCollectionSettingModel(MsdialDimsParameter parameter, ProcessOption process) : this((ParameterBase)parameter, process) {
+        public DataCollectionSettingModel(MsdialDimsParameter parameter, IReadOnlyList<AnalysisFileBean> analysisFiles, ProcessOption process) : this((ParameterBase)parameter, analysisFiles, process) {
             DimsProviderFactoryParameter = new DimsDataCollectionSettingModel(parameter.ProcessBaseParam, parameter.PeakPickBaseParam, parameter.ProviderFactoryParameter);
         }
 
-        public DataCollectionSettingModel(MsdialImmsParameter parameter, ProcessOption process) : this((ParameterBase)parameter, process) {
+        public DataCollectionSettingModel(MsdialImmsParameter parameter, IReadOnlyList<AnalysisFileBean> analysisFiles, ProcessOption process) : this((ParameterBase)parameter, analysisFiles, process) {
             ImmsProviderFactoryParameter = new ImmsDataCollectionSettingModel(parameter);
         }
 
@@ -69,12 +74,24 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private int numberOfThreads;
 
+        public bool ExcuteRtCorrection {
+            get => excuteRtCorrection;
+            set => SetProperty(ref excuteRtCorrection, value);
+        }
+        private bool excuteRtCorrection;
+
         public DimsDataCollectionSettingModel DimsProviderFactoryParameter { get; }
         public ImmsDataCollectionSettingModel ImmsProviderFactoryParameter { get; }
 
-        public void Commit() {
+        public bool Commit() {
             if (IsReadOnly) {
-                return;
+                return false;
+            }
+            if (ExcuteRtCorrection) {
+                var rtCorrectionWin = new RetentionTimeCorrectionWinLegacy(analysisFiles, parameter, false);
+                if (!(rtCorrectionWin.ShowDialog() ?? false)) {
+                    return false;
+                }
             }
             parameter.PeakPickBaseParam.CentroidMs1Tolerance = Ms1Tolerance;
             parameter.PeakPickBaseParam.CentroidMs2Tolerance = Ms2Tolerance;
@@ -90,6 +107,7 @@ namespace CompMs.App.Msdial.Model.Setting
                     immsParameter.ProviderFactoryParameter = ImmsProviderFactoryParameter.CreateDataProviderFactoryParameter();
                     break;
             }
+            return true;
         }
 
         private static List<IDataCollectionRangeSetting> PrepareRangeSettings(ParameterBase parameter) {
