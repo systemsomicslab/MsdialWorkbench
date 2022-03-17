@@ -46,7 +46,7 @@ namespace CompMs.MsdialGcMsApi.DataObj.Tests
 
             var memory = new MemoryStream();
             using (var manager = ZipStreamManager.OpenCreate(memory)) {
-                await storage.Save(manager, "Test", "TestFolder");
+                await storage.SaveAsync(manager, "Test", "TestFolder");
             }
 
             using (var manager = ZipStreamManager.OpenGet(memory)) {

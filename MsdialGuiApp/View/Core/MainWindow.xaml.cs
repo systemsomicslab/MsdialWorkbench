@@ -31,13 +31,15 @@ namespace CompMs.App.Msdial.View.Core
             var peakSpotTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
             var proteomicsTableService = new DialogService<ProteomicsSpotTable, PeakSpotTableViewModelBase>(this);
             var analysisFilePropertyResetService = new DialogService<AnalysisFilePropertyResettingWindow, AnalysisFilePropertySetViewModel>(this);
+            var processSettingDialogService = new DialogService<ProjectSettingDialog, ProcessSettingViewModel>(this);
             DataContext = new MainWindowVM(
                 startUpService,
                 analysisFilePropertySetService,
                 compoundSearchService,
                 peakSpotTableService,
                 analysisFilePropertyResetService,
-                proteomicsTableService);
+                proteomicsTableService,
+                processSettingDialogService);
 
             broker = MessageBroker.Default;
 

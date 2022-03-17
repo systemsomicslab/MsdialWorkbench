@@ -117,7 +117,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
         }
 
         private IdentifySettingModel BuildModel() {
-            return new IdentifySettingModel(new ParameterBase(), new MockAnnotatorSettingModelFactory());
+            return new IdentifySettingModel(new ParameterBase(), new MockAnnotatorSettingModelFactory(), process);
         }
 
         private IdentifySettingViewModel BuildViewModel(IdentifySettingModel model) {

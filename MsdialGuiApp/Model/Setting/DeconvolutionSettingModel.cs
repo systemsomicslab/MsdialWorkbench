@@ -1,4 +1,5 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.Common.Enum;
+using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 
 namespace CompMs.App.Msdial.Model.Setting
@@ -7,14 +8,17 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         private readonly ChromDecBaseParameter parameter;
 
-        public DeconvolutionSettingModel(ChromDecBaseParameter parameter) {
+        public DeconvolutionSettingModel(ChromDecBaseParameter parameter, ProcessOption process) {
             this.parameter = parameter;
+            IsReadOnly = (process & ProcessOption.PeakSpotting) == 0;
             SigmaWindowValue = parameter.SigmaWindowValue;
             AmplitudeCutoff = parameter.AmplitudeCutoff;
             RemoveAfterPrecursor = parameter.RemoveAfterPrecursor;
             KeptIsotopeRange = parameter.KeptIsotopeRange;
             KeepOriginalPrecurosrIsotopes = parameter.KeepOriginalPrecursorIsotopes;
         }
+
+        public bool IsReadOnly { get; }
 
         public float SigmaWindowValue {
             get => sigmaWindowValue;
@@ -47,6 +51,9 @@ namespace CompMs.App.Msdial.Model.Setting
         private bool keepOriginalPrecurosrIsotopes;
 
         public void Commit() {
+            if (IsReadOnly) {
+                return;
+            }
             parameter.SigmaWindowValue = SigmaWindowValue;
             parameter.AmplitudeCutoff = AmplitudeCutoff;
             parameter.RemoveAfterPrecursor = RemoveAfterPrecursor;

@@ -244,10 +244,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             AlignmentVM = new AlignmentDimsVM(Model.AlignmentModel, compoundSearchService, peakSpotTableService) { DisplayFilters = displayFilters }.AddTo(Disposables);
         }
 
-        public override void SaveProject() {
-            Model.SaveProject();
-        }
-
         public DelegateCommand<Window> ExportAnalysisResultCommand => exportAnalysisResultCommand ?? (exportAnalysisResultCommand = new DelegateCommand<Window>(ExportAnalysis));
         private DelegateCommand<Window> exportAnalysisResultCommand;
 

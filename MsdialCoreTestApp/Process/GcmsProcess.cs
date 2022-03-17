@@ -184,7 +184,7 @@ namespace CompMs.App.MsdialConsole.Process
 
             Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             var streamManager = new DirectoryTreeStreamManager(storage.MsdialGcmsParameter.ProjectFolderPath);
-            storage.Save(streamManager, storage.MsdialGcmsParameter.ProjectFileName, string.Empty).Wait();
+            storage.SaveAsync(streamManager, storage.MsdialGcmsParameter.ProjectFileName, string.Empty).Wait();
             return 0;
         }
 

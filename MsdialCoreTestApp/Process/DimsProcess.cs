@@ -65,7 +65,7 @@ namespace CompMs.App.MsdialConsole.Process
 
             Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
             var streamManager = new DirectoryTreeStreamManager(storage.MsdialDimsParameter.ProjectFolderPath);
-            storage.Save(streamManager, storage.MsdialDimsParameter.ProjectFileName, string.Empty).Wait();
+            storage.SaveAsync(streamManager, storage.MsdialDimsParameter.ProjectFileName, string.Empty).Wait();
 
             return 0;
         }

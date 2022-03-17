@@ -17,6 +17,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ProjectParameterSettingViewModel(ProjectParameterSettingModel model) {
             Model = model ?? throw new ArgumentNullException(nameof(model));
 
+            IsReadOnly = model.IsReadOnly;
+
             ProjectTitle = Model
                 .ToReactivePropertyAsSynchronized(m => m.ProjectTitle)
                 .SetValidateAttribute(() => ProjectTitle)
@@ -61,6 +63,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         [Required(ErrorMessage = "Project folder path is required.")]
         [PathExists(IsDirectory = true, ErrorMessage = "Project folder must exist.")]
         public ReactiveProperty<string> ProjectFolderPath { get; }
+
+        public bool IsReadOnly { get; }
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
         IObservable<bool> ISettingViewModel.ObserveHasErrors => ObserveHasErrors;

@@ -30,7 +30,6 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
-using CompMs.MsdialLcMsApi.DataObj;
 using CompMs.MsdialLcMsApi.Export;
 using Reactive.Bindings.Extensions;
 using System;
@@ -105,12 +104,12 @@ namespace CompMs.App.Msdial.Model.Lcms
             .AddTo(Disposables);
         }
 
-        protected override void LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
             }
-            AlignmentModel = new LcmsAlignmentModel(
+            return AlignmentModel = new LcmsAlignmentModel(
                 alignmentFile,
                 matchResultEvaluator,
                 Storage.DataBases,
@@ -123,6 +122,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public override void Run(ProcessOption option) {
             // Set analysis param
             var parameter = Storage.Parameter;
+            // matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 annotationProcess = BuildProteoMetabolomicsAnnotationProcess(Storage.DataBases, parameter);
             }
@@ -151,6 +151,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 if (!ProcessAlignment(null, Storage))
                     return;
             }
+
+            LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
         }
 
         public bool ProcessSetAnalysisParameter(Window owner) {

@@ -226,10 +226,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             LoadAnalysisFileCommand.Execute();
         }
 
-        public override void SaveProject() {
-            model.SaveProject();
-        }
-
         protected override void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile) {
             if (analysisFile?.File is null || analysisFile.File == model.AnalysisFile) {
                 return;

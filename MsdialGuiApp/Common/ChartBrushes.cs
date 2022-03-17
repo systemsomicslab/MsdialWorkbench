@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Common
@@ -29,10 +25,8 @@ namespace CompMs.App.Msdial.Common
         );
 
         public static SolidColorBrush GetChartBrush(int i) {
-            while (i > SolidColorBrushList.Count - 1) {
-                i = i - SolidColorBrushList.Count;
-            }
-            return SolidColorBrushList[i];
+            var count = SolidColorBrushList.Count;
+            return SolidColorBrushList[(i % count + count) % count];
         }
     }
 }

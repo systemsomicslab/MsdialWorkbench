@@ -23,8 +23,8 @@ namespace CompMs.MsdialCore.Parameter
         /// <param name="title"></param>
         [SerializationConstructor]
         public ProjectParameter(DateTime startDate, DateTime finalSavedDate, string folderPath, string title) {
-            StartDate = startDate;
-            FinalSavedDate = finalSavedDate;
+            StartDate = startDate.ToLocalTime();
+            FinalSavedDate = finalSavedDate.ToLocalTime();
             FolderPath = folderPath;
             Title = title;
         }
@@ -36,10 +36,17 @@ namespace CompMs.MsdialCore.Parameter
         public DateTime FinalSavedDate { get; private set; }
 
         [Key(nameof(FolderPath))]
-        public string FolderPath { get; }
+        public string FolderPath { get; private set; }
 
         [Key(nameof(Title))]
         public string Title { get; }
+
+        [IgnoreMember]
+        public string FilePath => Path.Combine(FolderPath, Title);
+
+        public void FixProjectFolder(string newFolderPath) {
+            FolderPath = newFolderPath;
+        }
 
         public void Save(Stream stream) {
             FinalSavedDate = DateTime.Now;

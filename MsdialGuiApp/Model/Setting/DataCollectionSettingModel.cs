@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Imms;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialDimsCore.Parameter;
@@ -8,15 +9,15 @@ using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
     public class DataCollectionSettingModel : BindableBase {
         private readonly ParameterBase parameter;
 
-        public DataCollectionSettingModel(ParameterBase parameter) {
+        public DataCollectionSettingModel(ParameterBase parameter, ProcessOption process) {
             this.parameter = parameter;
+            IsReadOnly = (process & ProcessOption.PeakSpotting) == 0;
 
             Ms1Tolerance = parameter.PeakPickBaseParam.CentroidMs1Tolerance;
             Ms2Tolerance = parameter.PeakPickBaseParam.CentroidMs2Tolerance;
@@ -26,13 +27,15 @@ namespace CompMs.App.Msdial.Model.Setting
             DataCollectionRangeSettings = PrepareRangeSettings(parameter);
         }
 
-        public DataCollectionSettingModel(MsdialDimsParameter parameter) : this((ParameterBase)parameter) {
+        public DataCollectionSettingModel(MsdialDimsParameter parameter, ProcessOption process) : this((ParameterBase)parameter, process) {
             DimsProviderFactoryParameter = new DimsDataCollectionSettingModel(parameter.ProcessBaseParam, parameter.PeakPickBaseParam, parameter.ProviderFactoryParameter);
         }
 
-        public DataCollectionSettingModel(MsdialImmsParameter parameter) : this((ParameterBase)parameter) {
+        public DataCollectionSettingModel(MsdialImmsParameter parameter, ProcessOption process) : this((ParameterBase)parameter, process) {
             ImmsProviderFactoryParameter = new ImmsDataCollectionSettingModel(parameter);
         }
+
+        public bool IsReadOnly { get; }
 
         public float Ms1Tolerance {
             get => ms1Tolerance;
@@ -70,6 +73,9 @@ namespace CompMs.App.Msdial.Model.Setting
         public ImmsDataCollectionSettingModel ImmsProviderFactoryParameter { get; }
 
         public void Commit() {
+            if (IsReadOnly) {
+                return;
+            }
             parameter.PeakPickBaseParam.CentroidMs1Tolerance = Ms1Tolerance;
             parameter.PeakPickBaseParam.CentroidMs2Tolerance = Ms2Tolerance;
             parameter.PeakPickBaseParam.MaxChargeNumber = MaxChargeNumber;

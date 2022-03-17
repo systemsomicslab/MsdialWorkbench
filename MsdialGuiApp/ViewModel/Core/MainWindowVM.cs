@@ -30,6 +30,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -37,14 +39,14 @@ namespace CompMs.App.Msdial.ViewModel.Core
 {
     class MainWindowVM : ViewModelBase
     {
-
         public MainWindowVM(
             IWindowService<StartUpWindowVM> startUpService,
             IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertySetService,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService, 
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService) {
+            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService,
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
+            IWindowService<ProcessSettingViewModel> processSettingSerivce) {
             if (startUpService is null) {
                 throw new ArgumentNullException(nameof(startUpService));
             }
@@ -69,20 +71,59 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 throw new ArgumentNullException(nameof(proteomicsTableService));
             }
 
-            Model = new MainWindowModel();
-#if DEBUG
-            TestCommand = new ReactiveCommand().AddTo(Disposables);
-            TestCommand.Subscribe(() => new View.Setting.ProjectSettingDialog() { DataContext = new ProcessSettingViewModel(Model.ProjectSetting) }.Show());
-#endif
-
             this.startUpService = startUpService;
             this.analysisFilePropertySetService = analysisFilePropertySetService;
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
             this.analysisFilePropertyResetService = analysisFilePropertyResetService;
             this.proteomicsTableService = proteomicsTableService;
+            this.processSettingService = processSettingSerivce ?? throw new ArgumentNullException(nameof(processSettingSerivce));
+            parameter = new ReactivePropertySlim<ParameterBase>().AddTo(Disposables);
+            Model = new MainWindowModel();
 
-            this.parameter = new ReactivePropertySlim<ParameterBase>().AddTo(Disposables);
+            var projectViewModel = Model.ObserveProperty(m => m.CurrentProject)
+                .Select(m => m is null ? null : new ProjectViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService))
+                .DisposePreviousValue();
+            var datasetViewModel = projectViewModel
+                .Switch(project => project?.CurrentDatasetViewModel.StartWith(project.CurrentDatasetViewModel.Value));
+            var methodViewModel = datasetViewModel
+                .Switch(dataset => dataset?.MethodViewModel.StartWith(dataset.MethodViewModel.Value));
+
+            ProjectViewModel = projectViewModel
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            DatasetViewModel = datasetViewModel
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            MethodViewModel = methodViewModel
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+
+            var projectSaveEnableState = new ReactivePropertySlim<bool>(true);
+            CreateNewProjectCommand = projectSaveEnableState.ToAsyncReactiveCommand()
+                .WithSubscribe(CreateNewProject)
+                .AddTo(Disposables);
+            AddNewDatasetCommand = projectSaveEnableState.ToAsyncReactiveCommand()
+                .WithSubscribe(AddNewDataset)
+                .AddTo(Disposables);
+            ExecuteAllMethodProcessCommand = projectSaveEnableState.ToAsyncReactiveCommand()
+                .WithSubscribe(ExecuteAllMethodProcess)
+                .AddTo(Disposables);
+            ExecuteIdentificationMethodProcessCommand = projectSaveEnableState.ToAsyncReactiveCommand()
+                .WithSubscribe(ExecuteIdentificationMethodProcess)
+                .AddTo(Disposables);
+            ExecuteAlignmentMethodProcessCommand = projectSaveEnableState.ToAsyncReactiveCommand()
+                .WithSubscribe(ExecuteAlignmentMethodProcess)
+                .AddTo(Disposables);
+            SaveProjectCommand = projectSaveEnableState.ToAsyncReactiveCommand()
+                .WithSubscribe(Model.SaveAsync)
+                .AddTo(Disposables);
+            SaveAsProjectCommand = new AsyncReactiveCommand()
+                .WithSubscribe(Model.SaveAsAsync)
+                .AddTo(Disposables);
+            OpenProjectCommand = new AsyncReactiveCommand()
+                .WithSubscribe(Model.LoadAsync)
+                .AddTo(Disposables);
         }
 
         private readonly IWindowService<StartUpWindowVM> startUpService;
@@ -91,17 +132,20 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
         private readonly IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService;
         private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
+        private readonly IWindowService<ProcessSettingViewModel> processSettingService;
         private readonly ReactivePropertySlim<ParameterBase> parameter;
 
         public MainWindowModel Model { get; }
 
-        public ReactiveCommand TestCommand { get; }
+        public ReadOnlyReactivePropertySlim<ProjectViewModel> ProjectViewModel { get; }
+        public ReadOnlyReactivePropertySlim<DatasetViewModel> DatasetViewModel { get; }
+        public ReadOnlyReactivePropertySlim<MethodViewModel> MethodViewModel { get; }
 
-        public MethodViewModel MethodVM {
-            get => methodVM;
-            set => SetProperty(ref methodVM, value);
-        }
-        private MethodViewModel methodVM;
+        public MethodViewModel MethodVM => MethodViewModel.Value; //{
+        //     get => methodVM;
+        //     set => SetProperty(ref methodVM, value);
+        // }
+        // private MethodViewModel methodVM;
 
         public IMsdialDataStorage<ParameterBase> Storage {
             get => storage;
@@ -115,10 +159,58 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         public string ProjectFile => Storage?.Parameter is null ? string.Empty : Storage.Parameter.ProjectParam.ProjectFilePath;
 
-        public DelegateCommand<Window> CreateNewProjectCommand {
-            get => createNewProjectCommand ?? (createNewProjectCommand = new DelegateCommand<Window>(CreateNewProject));
+        public AsyncReactiveCommand CreateNewProjectCommand { get; }
+
+        private Task RunProcess(ProcessSettingViewModel viewmodel) {
+            processSettingService.ShowDialog(viewmodel);
+            if (viewmodel.DialogResult.Value) {
+                return Model.SaveAsync();
+            }
+            return Task.CompletedTask;
         }
-        private DelegateCommand<Window> createNewProjectCommand;
+
+        private Task CreateNewProject() {
+            using (var vm = new ProcessSettingViewModel(Model.ProjectSetting)) {
+                return RunProcess(vm);
+            }
+        }
+
+        public AsyncReactiveCommand AddNewDatasetCommand { get; }
+
+        private Task AddNewDataset() {
+            using (var vm = new ProcessSettingViewModel(Model.CurrentProject)) {
+                return RunProcess(vm);
+            }
+        }
+
+        public AsyncReactiveCommand ExecuteAllMethodProcessCommand { get; }
+
+        private Task ExecuteAllMethodProcess() {
+            using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.AllProcessMethodSettingModel)) {
+                return RunProcess(vm);
+            }
+        }
+
+        public AsyncReactiveCommand ExecuteIdentificationMethodProcessCommand { get; }
+
+        private Task ExecuteIdentificationMethodProcess() {
+            using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.IdentificationProcessMethodSettingModel)) {
+                return RunProcess(vm);
+            }
+        }
+
+        public AsyncReactiveCommand ExecuteAlignmentMethodProcessCommand { get; }
+
+        private Task ExecuteAlignmentMethodProcess() {
+            using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.AlignmentProcessMethodSettingModel)) {
+                return RunProcess(vm);
+            }
+        }
+
+        // public DelegateCommand<Window> CreateNewProjectCommand {
+        //     get => createNewProjectCommand ?? (createNewProjectCommand = new DelegateCommand<Window>(CreateNewProject));
+        // }
+        // private DelegateCommand<Window> createNewProjectCommand;
 
         private void CreateNewProject(Window window) {
             // Set parameterbase
@@ -163,12 +255,12 @@ namespace CompMs.App.Msdial.ViewModel.Core
             throw new NotImplementedException("This method is not implemented");
         }
 
-        public DelegateCommand<Window> RunProcessAllCommand => runProcessAllCommand ?? (runProcessAllCommand = new DelegateCommand<Window>(owner => RunProcessAll(owner, Storage)));
-
-        private DelegateCommand<Window> runProcessAllCommand;
+        public ReactiveCommand RunProcessAllCommand { get; }
+        // public DelegateCommand<Window> RunProcessAllCommand => runProcessAllCommand ?? (runProcessAllCommand = new DelegateCommand<Window>(owner => RunProcessAll(owner, Storage)));
+        // private DelegateCommand<Window> runProcessAllCommand;
 
         private void RunProcessAll(Window window, IMsdialDataStorage<ParameterBase> storage) {
-            MethodVM?.Dispose();
+            MethodViewModel.Value?.Dispose();
 
             var analysisFiles = storage.AnalysisFiles; // TODO: temporary
             storage.AnalysisFiles = storage.AnalysisFiles.Select(file => new AnalysisFileBean(file)).ToList();
@@ -191,9 +283,9 @@ namespace CompMs.App.Msdial.ViewModel.Core
             Console.WriteLine(string.Join("\n", storage.Parameter.ParametersAsText()));
 #endif
 
-            MethodVM = method;
+            // MethodVM = method;
 
-            SaveProject(method, storage);
+            SaveProject().Wait();
         }
 
         private MethodViewModel CreateNewMethodVM(IMsdialDataStorage<ParameterBase> storage) {
@@ -240,10 +332,11 @@ namespace CompMs.App.Msdial.ViewModel.Core
             return analysisFilePropertySetModel.GetAnalysisFileBeanCollection();
         }
 
-        public DelegateCommand<Window> OpenProjectCommand {
-            get => openProjectCommand ?? (openProjectCommand = new DelegateCommand<Window>(OpenProject));
-        }
-        private DelegateCommand<Window> openProjectCommand;
+        public AsyncReactiveCommand OpenProjectCommand { get; }
+        // public DelegateCommand<Window> OpenProjectCommand {
+        //     get => openProjectCommand ?? (openProjectCommand = new DelegateCommand<Window>(OpenProject));
+        // }
+        // private DelegateCommand<Window> openProjectCommand;
 
         private void OpenProject(Window owner) {
             var ofd = new OpenFileDialog
@@ -269,8 +362,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
                     MessageBox.Show("Msdial cannot open the project: \n" + ofd.FileName, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 this.parameter.Value = Storage.Parameter;
-                MethodVM = CreateNewMethodVM(Storage);
-                MethodVM.LoadProject();
+                // MethodVM = CreateNewMethodVM(Storage);
+                MethodViewModel.Value.LoadProject();
 
                 message.Close();
                 Mouse.OverrideCursor = null;
@@ -325,54 +418,24 @@ namespace CompMs.App.Msdial.ViewModel.Core
             throw new ArgumentException("Invalid path or directory.");
         }
 
-        public DelegateCommand SaveProjectCommand {
-            get => saveProjectCommand ?? (saveProjectCommand = new DelegateCommand(() => SaveProject(MethodVM, Storage)));
-        }
-        private DelegateCommand saveProjectCommand;
+        public AsyncReactiveCommand SaveProjectCommand { get; }
+        // public DelegateCommand SaveProjectCommand {
+        //     get => saveProjectCommand ?? (saveProjectCommand = new DelegateCommand(() => SaveProject(MethodVM, Storage)));
+        // }
+        // private DelegateCommand saveProjectCommand;
 
-        private static void SaveProject(MethodViewModel methodVM, IMsdialDataStorage<ParameterBase> storage) {
-            // TODO: implement process when project save failed.
-            var streamManager = new DirectoryTreeStreamManager(storage.Parameter.ProjectFolderPath);
-            storage.Save(streamManager, storage.Parameter.ProjectFileName, string.Empty);
-            // storage.Save(storage.Parameter.ProjectFilePath);
-            methodVM?.SaveProject();
+        private Task SaveProject() {
+            return Model.SaveAsync();
         }
 
-        public DelegateCommand<Window> SaveAsProjectCommand {
-            get => saveAsProjectCommand ?? (saveAsProjectCommand = new DelegateCommand<Window>(owner => SaveAsProject(owner, methodVM, Storage)));
-        }
-        private DelegateCommand<Window> saveAsProjectCommand;
+        public AsyncReactiveCommand SaveAsProjectCommand { get; }
+        // public DelegateCommand<Window> SaveAsProjectCommand {
+        //     get => saveAsProjectCommand ?? (saveAsProjectCommand = new DelegateCommand<Window>(owner => SaveAsProject(owner, MethodVM, Storage)));
+        // }
+        // private DelegateCommand<Window> saveAsProjectCommand;
 
-        private static void SaveAsProject(Window owner, MethodViewModel methodVM, IMsdialDataStorage<ParameterBase> storage) {
-            var sfd = new SaveFileDialog
-            {
-                Filter = "MTD file(*.mtd2)|*.mtd2",
-                Title = "Save project dialog",
-                InitialDirectory = storage.Parameter.ProjectFolderPath,
-            };
-
-            if (sfd.ShowDialog() == true) {
-                if (Path.GetDirectoryName(sfd.FileName) != storage.Parameter.ProjectFolderPath) {
-                    MessageBox.Show("Save folder should be the same folder as analysis files.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-                Mouse.OverrideCursor = Cursors.Wait;
-
-                var message = new ShortMessageWindow()
-                {
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    Text = "Saving the project as...",
-                };
-                message.Show();
-
-                storage.Parameter.ProjectFileName = Path.GetFileName(sfd.FileName);
-                SaveProject(methodVM, storage);
-
-                message.Close();
-                Mouse.OverrideCursor = null;
-            }
+        private Task SaveAsProject() {
+            return Model.SaveAsAsync();
         }
 
         public DelegateCommand<Window> SaveParameterCommand => saveParameterCommand ?? (saveParameterCommand = new DelegateCommand<Window>(owner => SaveParameter(owner, Storage)));

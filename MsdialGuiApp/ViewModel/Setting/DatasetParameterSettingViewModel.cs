@@ -17,6 +17,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
     {
         public DatasetParameterSettingViewModel(DatasetParameterSettingModel model, IObservable<bool> isEnabled) {
             Model = model;
+            IsReadOnly = model.IsReadOnly;
+
             DatasetFolderPath = Model.ObserveProperty(m => m.DatasetFolderPath).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             DatasetFileName = Model.ToReactivePropertyAsSynchronized(m => m.DatasetFileName)
@@ -108,6 +110,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public DatasetParameterSettingModel Model { get; }
 
         private readonly Subject<Unit> decide;
+
+        public bool IsReadOnly { get; }
 
         public ReadOnlyReactivePropertySlim<string> DatasetFolderPath { get; }
 

@@ -279,6 +279,8 @@
     <Compile Include="Model\Search\CompoundResult.cs" />
     <Compile Include="ViewModel\Converter\PeakToChromatogramConverter.cs" />
     <Compile Include="ViewModel\Converter\SpotToBarItemConverter.cs" />
+    <Compile Include="ViewModel\Core\DatasetViewModel.cs" />
+    <Compile Include="ViewModel\Core\ProjectViewModel.cs" />
     <Compile Include="ViewModel\DataObj\AnalysisFileBeanViewModel.cs" />
     <Compile Include="ViewModel\DataObj\PeakPickBaseParameterViewModel.cs" />
     <Compile Include="ViewModel\DataObj\ProcessBaseParameterViewModel.cs" />

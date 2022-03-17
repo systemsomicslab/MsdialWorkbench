@@ -20,6 +20,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public DataCollectionSettingViewModel(DataCollectionSettingModel model, IObservable<bool> isEnabled) {
             Model = model ?? throw new ArgumentNullException(nameof(model));
 
+            IsReadOnly = model.IsReadOnly;
+
             Ms1Tolerance = Model.ToReactivePropertyAsSynchronized(
                 m => m.Ms1Tolerance,
                 m => m.ToString(),
@@ -99,6 +101,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
 
         public DataCollectionSettingModel Model { get; }
+
+        public bool IsReadOnly { get; }
 
         [Required(ErrorMessage = "Ms1 tolerance is required.")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]

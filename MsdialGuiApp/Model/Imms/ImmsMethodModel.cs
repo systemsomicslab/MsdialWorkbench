@@ -163,6 +163,8 @@ namespace CompMs.App.Msdial.Model.Imms
                 if (!ProcessAlignment(null, Storage))
                     return;
             }
+
+            LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
         }
 
         private bool ProcessAnnotaion(Window owner, IMsdialDataStorage<MsdialImmsParameter> storage) {
@@ -264,13 +266,13 @@ namespace CompMs.App.Msdial.Model.Imms
             .AddTo(Disposables);
         }
 
-        protected override void LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
             }
 
-            AlignmentModel = new ImmsAlignmentModel(
+            return AlignmentModel = new ImmsAlignmentModel(
                 alignmentFile,
                 Storage.DataBaseMapper.MoleculeAnnotators,
                 matchResultEvaluator,

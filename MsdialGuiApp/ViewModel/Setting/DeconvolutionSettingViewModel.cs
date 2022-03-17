@@ -16,6 +16,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public DeconvolutionSettingViewModel(DeconvolutionSettingModel model, IObservable<bool> isEnabled) {
             this.model = model;
 
+            IsReadOnly = model.IsReadOnly;
+
             SigmaWindowValue = model.ToReactivePropertyAsSynchronized(
                 m => m.SigmaWindowValue,
                 m => m.ToString(),
@@ -73,6 +75,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
 
         private readonly DeconvolutionSettingModel model;
+
+        public bool IsReadOnly { get; }
 
         [Required(ErrorMessage = "Sigma window value is required.")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]

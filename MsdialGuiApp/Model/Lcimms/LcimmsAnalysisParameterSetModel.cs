@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
             Parameter = parameter;
 
-            IdentifySettingModel = new IdentifySettingModel(Parameter, new LcimmsAnnotatorSettingFactory(), dataBaseStorage);
+            IdentifySettingModel = new IdentifySettingModel(Parameter, new LcimmsAnnotatorSettingFactory(), Parameter.ProcessOption, dataBaseStorage);
             if (files.Count <= 1) {
                 Parameter.ProcessOption &= ~ProcessOption.Alignment;
             }

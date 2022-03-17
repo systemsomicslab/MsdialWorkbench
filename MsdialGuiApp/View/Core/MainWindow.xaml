@@ -10,7 +10,7 @@
               d:DataContext="{d:DesignInstance Type={x:Type vm:MainWindowVM}}"
               Title="{Binding ProjectFile, StringFormat='MS-DIAL alpha version {0}'}" Height="800" Width="1280">
     <i:Interaction.Triggers>
-        <i:PropertyChangedTrigger Binding="{Binding MethodVM, Mode=OneWay}">
+        <i:PropertyChangedTrigger Binding="{Binding MethodViewModel.Value, Mode=OneWay}">
             <i:CallMethodAction TargetObject="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                 MethodName="CloseOwnedWindows"/>
         </i:PropertyChangedTrigger>
@@ -26,7 +26,7 @@
                 <Style TargetType="Grid">
                     <Setter Property="Visibility" Value="Collapsed"/>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding MethodVM}" Value="{x:Null}">
+                        <DataTrigger Binding="{Binding MethodViewModel.Value}" Value="{x:Null}">
                             <Setter Property="Visibility" Value="Visible"/>
                         </DataTrigger>
                     </Style.Triggers>
@@ -99,7 +99,7 @@
             </StackPanel>
         </Grid>
 
-        <ContentControl Content="{Binding MethodVM}">
+        <ContentControl Content="{Binding MethodViewModel.Value}">
             <ContentControl.Resources>
                 <DataTemplate DataType="{x:Type lcvm:LcmsMethodVM}"
                               xmlns:lcvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"

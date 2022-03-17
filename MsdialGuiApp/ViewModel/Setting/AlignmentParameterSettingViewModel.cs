@@ -19,6 +19,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
     {
         public AlignmentParameterSettingViewModel(AlignmentParameterSettingModel model, IObservable<bool> isEnabled) {
             Model = model;
+            IsReadOnly = model.IsReadOnly;
 
             AlignmentResultFileName = Model.ToReactivePropertyAsSynchronized(m => m.AlignmentResultFileName, ignoreValidationErrorValue: true)
                 .SetValidateAttribute(() => AlignmentResultFileName)
@@ -56,6 +57,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             IsKeepSuggestedMetaboliteFeatures = Model.ToReactivePropertySlimAsSynchronized(m => m.IsKeepSuggestedMetaboliteFeatures).AddTo(Disposables);
             IsKeepRemovableFeaturesAndAssignedTagForChecking = Model.ToReactivePropertySlimAsSynchronized(m => m.IsKeepRemovableFeaturesAndAssignedTagForChecking).AddTo(Disposables);
             IsForceInsertForGapFilling = Model.ToReactivePropertySlimAsSynchronized(m => m.IsForceInsertForGapFilling).AddTo(Disposables);
+            ShouldRunAlignment = Model.ToReactivePropertySlimAsSynchronized(m => m.ShouldRunAlignment).AddTo(Disposables);
 
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
@@ -98,6 +100,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public AlignmentParameterSettingModel Model { get; }
 
+        public bool IsReadOnly { get; }
+
         [Required(ErrorMessage = "Result file name required.")]
         public ReactiveProperty<string> AlignmentResultFileName { get; }
 
@@ -134,6 +138,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactivePropertySlim<bool> IsKeepRemovableFeaturesAndAssignedTagForChecking { get; }
 
         public ReactivePropertySlim<bool> IsForceInsertForGapFilling { get; }
+
+        public ReactivePropertySlim<bool> ShouldRunAlignment { get; }
 
         public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
 

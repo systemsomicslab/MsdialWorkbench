@@ -25,7 +25,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
@@ -42,7 +41,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseStorage databases,
             DataBaseMapper mapper,
             MsdialLcmsParameter parameter,
-            IObservable<IBarItemsLoader> barItemsLoader) {
+            IObservable<IBarItemsLoader> barItemsLoader)
+            : base(alignmentFileBean.FilePath) {
             if (databases is null) {
                 throw new ArgumentNullException(nameof(databases));
             }
@@ -56,13 +56,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             CompoundSearchers = ConvertToCompoundSearchers(databases);
-            Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(AlignmentFile.FilePath);
-            if (Container == null) {
-                MessageBox.Show("No aligned spot information.");
-            }
-            Ms1Spots = Container == null ? new ObservableCollection<AlignmentSpotPropertyModel>() : 
-                new ObservableCollection<AlignmentSpotPropertyModel>(
-                Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
+            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
            
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             this.decLoader = new MSDecLoader(AlignmentFile.SpectraFilePath);
@@ -163,8 +157,6 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
-        public readonly AlignmentResultContainer Container;
-
         public AlignmentFileBean AlignmentFile { get; }
         public ParameterBase Parameter { get; }
         public DataBaseMapper DataBaseMapper { get; }
@@ -195,10 +187,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             set => SetProperty(ref selectedBrush, value);
         }
         private IBrushMapper<AlignmentSpotPropertyModel> selectedBrush;
-
-        public void SaveProject() {
-            MessagePackHandler.SaveToFile(Container, AlignmentFile.FilePath);
-        }
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 
