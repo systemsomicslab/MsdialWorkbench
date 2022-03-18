@@ -153,6 +153,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+
+#if DEBUG
+            Console.WriteLine(string.Join("\n", Storage.Parameter.ParametersAsText()));
+#endif
         }
 
         public bool ProcessSetAnalysisParameter(Window owner) {

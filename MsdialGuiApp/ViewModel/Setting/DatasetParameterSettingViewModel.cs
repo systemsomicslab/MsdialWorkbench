@@ -164,7 +164,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public void Next() {
             decide.OnNext(Unit.Default);
-            Model.Build();
+            Model.Prepare();
         }
     }
 }

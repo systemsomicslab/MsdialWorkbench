@@ -159,72 +159,80 @@
                     <GroupBox.Header>
                         <TextBlock Text="Data collection parameters" FontStyle="Italic"/>
                     </GroupBox.Header>
-                    <ItemsControl ItemsSource="{Binding DataCollectionRangeSettings}">
-                        <ItemsControl.Resources>
-                            <DataTemplate DataType="{x:Type vm:RetentionTimeDataCollectionRangeSettingViewModel}">
-                                <StackPanel Margin="8,0,0,0">
-                                    <ui:LabeledContent PrependLabel="Retention time begin:" AppendLabel="min">
-                                        <TextBox Text="{Binding Begin.Value}"
-                                                 IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                 ToolTip="You can remove un-wanted retention time range."/>
-                                    </ui:LabeledContent>
-                                    <ui:LabeledContent PrependLabel="Retention time range end:" AppendLabel="min">
-                                        <TextBox Text="{Binding End.Value}"
-                                                 IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                 ToolTip="You can remove un-wanted retention time range."/>
-                                    </ui:LabeledContent>
-                                    <ui:LabeledContent PrependLabel="Accumulation retention time range:" AppendLabel="min"
-                                                       Visibility="{Binding NeedAccumulation, Mode=OneTime, Converter={StaticResource BooleanToVisibility}}">
-                                        <TextBox Name="TextBox_AccumulatedRtRagne"
-                                                 Text="{Binding AccumulatedRange.Value}"
-                                                 IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
-                                    </ui:LabeledContent>
-                                </StackPanel>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type vm:DriftTimeDataCollectionRangeSettingViewModel}">
-                                <StackPanel Margin="8,0,0,0">
-                                    <ui:LabeledContent PrependLabel="Drift time begin:" AppendLabel="1/k0">
-                                        <TextBox Text="{Binding Begin.Value}"
-                                                 IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                 ToolTip="You can remove un-wanted drift time range."/>
-                                    </ui:LabeledContent>
-                                    <ui:LabeledContent PrependLabel="Drift time end:" AppendLabel="1/k0">
-                                        <TextBox Text="{Binding End.Value}"
-                                                 IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                 ToolTip="You can remove un-wanted drift time range."/>
-                                    </ui:LabeledContent>
-                                </StackPanel>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type vm:Ms1DataCollectionRangeSettingViewModel}">
-                                <StackPanel Margin="8,0,0,0">
-                                    <ui:LabeledContent PrependLabel="MS1 mass range begin:" AppendLabel="Da">
-                                        <TextBox Text="{Binding Begin.Value}"
-                                                 IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                 ToolTip="You can remove un-wanted mass range."/>
-                                    </ui:LabeledContent>
-                                    <ui:LabeledContent PrependLabel="MS1 mass range end:" AppendLabel="Da">
-                                        <TextBox Text="{Binding End.Value}"
-                                                 IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                 ToolTip="You can remove un-wanted mass range."/>
-                                    </ui:LabeledContent>
-                                </StackPanel>
-                            </DataTemplate>
-                            <DataTemplate DataType="{x:Type vm:Ms2DataCollectionRangeSettingViewModel}">
-                                <StackPanel Margin="8,0,0,0">
-                                    <ui:LabeledContent PrependLabel="MS/MS mass range begin:" AppendLabel="Da">
-                                        <TextBox Text="{Binding Begin.Value}"
-                                                 IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                 ToolTip="You can remove un-wanted mass range."/>
-                                    </ui:LabeledContent>
-                                    <ui:LabeledContent PrependLabel="MS/MS mass range end:" AppendLabel="Da">
-                                        <TextBox Text="{Binding End.Value}"
-                                                 IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                 ToolTip="You can remove un-wanted mass range."/>
-                                    </ui:LabeledContent>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ItemsControl.Resources>
-                    </ItemsControl>
+                    <StackPanel>
+                        <ItemsControl ItemsSource="{Binding DataCollectionRangeSettings}">
+                            <ItemsControl.Resources>
+                                <DataTemplate DataType="{x:Type vm:RetentionTimeDataCollectionRangeSettingViewModel}">
+                                    <StackPanel>
+                                        <ui:LabeledContent PrependLabel="Retention time begin:" AppendLabel="min">
+                                            <TextBox Text="{Binding Begin.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     ToolTip="You can remove un-wanted retention time range."/>
+                                        </ui:LabeledContent>
+                                        <ui:LabeledContent PrependLabel="Retention time range end:" AppendLabel="min">
+                                            <TextBox Text="{Binding End.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     ToolTip="You can remove un-wanted retention time range."/>
+                                        </ui:LabeledContent>
+                                        <ui:LabeledContent PrependLabel="Accumulation retention time range:" AppendLabel="min"
+                                                           Visibility="{Binding NeedAccumulation, Mode=OneTime, Converter={StaticResource BooleanToVisibility}}">
+                                            <TextBox Name="TextBox_AccumulatedRtRagne"
+                                                     Text="{Binding AccumulatedRange.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                        </ui:LabeledContent>
+                                    </StackPanel>
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type vm:DriftTimeDataCollectionRangeSettingViewModel}">
+                                    <StackPanel>
+                                        <ui:LabeledContent PrependLabel="Drift time begin:" AppendLabel="1/k0">
+                                            <TextBox Text="{Binding Begin.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     ToolTip="You can remove un-wanted drift time range."/>
+                                        </ui:LabeledContent>
+                                        <ui:LabeledContent PrependLabel="Drift time end:" AppendLabel="1/k0">
+                                            <TextBox Text="{Binding End.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     ToolTip="You can remove un-wanted drift time range."/>
+                                        </ui:LabeledContent>
+                                    </StackPanel>
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type vm:Ms1DataCollectionRangeSettingViewModel}">
+                                    <StackPanel>
+                                        <ui:LabeledContent PrependLabel="MS1 mass range begin:" AppendLabel="Da">
+                                            <TextBox Text="{Binding Begin.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     ToolTip="You can remove un-wanted mass range."/>
+                                        </ui:LabeledContent>
+                                        <ui:LabeledContent PrependLabel="MS1 mass range end:" AppendLabel="Da">
+                                            <TextBox Text="{Binding End.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     ToolTip="You can remove un-wanted mass range."/>
+                                        </ui:LabeledContent>
+                                    </StackPanel>
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type vm:Ms2DataCollectionRangeSettingViewModel}">
+                                    <StackPanel>
+                                        <ui:LabeledContent PrependLabel="MS/MS mass range begin:" AppendLabel="Da">
+                                            <TextBox Text="{Binding Begin.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     ToolTip="You can remove un-wanted mass range."/>
+                                        </ui:LabeledContent>
+                                        <ui:LabeledContent PrependLabel="MS/MS mass range end:" AppendLabel="Da">
+                                            <TextBox Text="{Binding End.Value}"
+                                                     IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                     ToolTip="You can remove un-wanted mass range."/>
+                                        </ui:LabeledContent>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.Resources>
+                        </ItemsControl>
+                        <ui:LabeledContent PrependLabel="Execute retention time corrections:">
+                            <CheckBox HorizontalAlignment="Left" 
+                                      IsChecked="{Binding Path=ExcuteRtCorrection.Value}" 
+                                      IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}"
+                                      ToolTip="If checked, RT correction wizard is shown after the parameter setup."/>
+                        </ui:LabeledContent>
+                    </StackPanel>
                 </GroupBox>
 
                 <GroupBox>
@@ -265,17 +273,6 @@
                                     <ToolTip Content="This is one of parameters for peak detections. 1-2 is better for a laptop." />
                                 </ToolTipService.ToolTip>
                             </TextBox>
-                        </ui:LabeledContent>
-                    </StackPanel>
-                </GroupBox>
-
-                <GroupBox>
-                    <StackPanel>
-                        <ui:LabeledContent PrependLabel="Execute retention time corrections:">
-                            <CheckBox HorizontalAlignment="Left" 
-                                      IsChecked="{Binding Path=ExcuteRtCorrection.Value}" 
-                                      IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}"
-                                      ToolTip="If checked, RT correction wizard is shown after the parameter setup."/>
                         </ui:LabeledContent>
                     </StackPanel>
                 </GroupBox>

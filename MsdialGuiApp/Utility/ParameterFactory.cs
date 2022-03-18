@@ -1,6 +1,4 @@
 ﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.StartUp;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
@@ -12,7 +10,6 @@ using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Utility
@@ -31,25 +28,6 @@ namespace CompMs.App.Msdial.Utility
             if (ionization == Ionization.ESI && separationType == (SeparationType.Infusion | SeparationType.IonMobility))
                 return new MsdialImmsParameter();
             throw new Exception("Not supported separation type is selected.");
-        }
-
-        public static void SetParameterFromStartUpVM(ParameterBase parameter, StartUpWindowVM vm) {
-            parameter.ProjectFileName = Path.GetFileName(vm.ProjectFilePath);
-            parameter.ProjectFolderPath = Path.GetDirectoryName(vm.ProjectFilePath);
-            parameter.Ionization = vm.Ionization;
-            // parameter.SeparationType = vm.SeparationType;
-            parameter.CollistionType = vm.CollisionType;
-            parameter.AcquisitionType = vm.AcquisitionType;
-            parameter.MSDataType = vm.MS1DataType;
-            parameter.MS2DataType = vm.MS2DataType;
-            parameter.IonMode = vm.IonMode;
-            parameter.TargetOmics = vm.TargetOmics;
-            parameter.InstrumentType = vm.InstrumentType;
-            parameter.Instrument = vm.Instrument;
-            parameter.Authors = vm.Authors;
-            parameter.License = vm.License;
-            parameter.CollisionEnergy = vm.CollisionEnergy;
-            parameter.Comment = vm.Comment;
         }
 
         public static void SetParameterFromAnalysisFiles(ParameterBase parameter, IList<AnalysisFileBean> files) {

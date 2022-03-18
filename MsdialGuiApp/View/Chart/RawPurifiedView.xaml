@@ -27,6 +27,11 @@
     </UserControl.Resources>
     <Grid DataContext="{Binding RawPurifiedSpectrumsViewModel}"
           d:DataContext="{d:DesignInstance vm:RawPurifiedSpectrumsViewModel}">
+        <Grid.Resources>
+            <MenuItem x:Key="SaveSpectra"
+                      Header="Save spectra table as.."
+                      Command="{Binding DataContext.SaveMs2SpectrumCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+        </Grid.Resources>
         <chart:MultiChart HorizontalAxis="{Binding HorizontalAxis}"
                           GraphTitle="{Binding GraphTitle.Value}"
                           HorizontalTitle="{Binding HorizontalTitle.Value}"
@@ -34,8 +39,7 @@
                           Style="{StaticResource VerticalAlignedChart}">
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Save spectra table as.."
-                              Command="{Binding DataContext.SaveMs2SpectrumCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"/>
+                    <StaticResource ResourceKey="SaveSpectra"/>
                     <MenuItem Header="Save image as...">
                         <MenuItem Header="Save as emf"
                                   Command="{x:Static io:SaveImageAsCommand.EmfInstance}"

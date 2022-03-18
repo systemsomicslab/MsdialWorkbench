@@ -22,6 +22,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             ProjectTitle = Model
                 .ToReactivePropertyAsSynchronized(m => m.ProjectTitle)
                 .SetValidateAttribute(() => ProjectTitle)
+                .SetValidateNotifyError(ValidateProjectTitle)
                 .AddTo(Disposables);
 
             ProjectFolderPath = Model
@@ -59,6 +60,26 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         [Required(ErrorMessage = "Project title is required.")]
         [RegularExpression(@"[a-zA-Z0-9_\.\-]+", ErrorMessage = "Contains invalid characters.")]
         public ReactiveProperty<string> ProjectTitle { get; }
+
+        private static string ValidateProjectTitle(string fileName) {
+            if (string.IsNullOrEmpty(fileName)) {
+                return "Project title is required.";
+            }
+
+            char[] invalidChars = System.IO.Path.GetInvalidPathChars();
+            if (fileName.IndexOfAny(invalidChars) >= 0) {
+                return "Contains invalid characters.";
+            }
+
+            if (System.Text.RegularExpressions.Regex.IsMatch(
+                fileName,
+                @"(^|\\|/)(CON|PRN|AUX|NUL|CLOCK\$|COM[0-9]|LPT[0-9])(\.|\\|/|$)",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase)) {
+                return "Contains invalid character or word";
+            }
+
+            return null;
+        }
 
         [Required(ErrorMessage = "Project folder path is required.")]
         [PathExists(IsDirectory = true, ErrorMessage = "Project folder must exist.")]

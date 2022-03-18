@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.StartUp;
-using CompMs.App.Msdial.View.Chart;
+﻿using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.View.Table;
 using CompMs.App.Msdial.ViewModel;
@@ -25,16 +24,12 @@ namespace CompMs.App.Msdial.View.Core
         public MainWindow() {
             InitializeComponent();
 
-            var startUpService = new DialogService<StartUpWindow, StartUpWindowVM>(this);
-            var analysisFilePropertySetService = new DialogService<AnalysisFilePropertySetWindow, AnalysisFilePropertySetViewModel>(this);
             var compoundSearchService = new DialogService<CompoundSearchWindow, CompoundSearchVM>(this);
             var peakSpotTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
             var proteomicsTableService = new DialogService<ProteomicsSpotTable, PeakSpotTableViewModelBase>(this);
             var analysisFilePropertyResetService = new DialogService<AnalysisFilePropertyResettingWindow, AnalysisFilePropertySetViewModel>(this);
             var processSettingDialogService = new DialogService<ProjectSettingDialog, ProcessSettingViewModel>(this);
             DataContext = new MainWindowVM(
-                startUpService,
-                analysisFilePropertySetService,
                 compoundSearchService,
                 peakSpotTableService,
                 analysisFilePropertyResetService,
