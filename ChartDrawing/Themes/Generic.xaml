@@ -312,6 +312,7 @@
                                 Width="{TemplateBinding ButtonWidth}"
                                 Command="{TemplateBinding Command}"
                                 CommandParameter="{TemplateBinding CommandParameter}"
+                                IsEnabled="{TemplateBinding CommandIsEnabled}"
                                 TabIndex="{TemplateBinding TabIndex}"
                                 VerticalAlignment="Center"
                                 Grid.Column="2"/>

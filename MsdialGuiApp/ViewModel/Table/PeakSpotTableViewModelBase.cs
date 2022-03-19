@@ -7,7 +7,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Table
 {
-    abstract class PeakSpotTableViewModelBase : ViewModelBase
+    public abstract class PeakSpotTableViewModelBase : ViewModelBase
     {
         private readonly IPeakSpotTableModelBase model;
 

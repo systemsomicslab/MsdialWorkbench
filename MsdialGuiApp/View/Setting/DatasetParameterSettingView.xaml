@@ -12,7 +12,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -34,11 +34,12 @@
             <TextBox x:Name="TextBox_ProjectName"
                      d:Text="project.mtd3"
                      Text="{Binding Path=DatasetFileName.Value, UpdateSourceTrigger=PropertyChanged}"
+                     IsReadOnly="{Binding IsReadOnly}"
                      VerticalAlignment="Center"
                      Margin="8,0"/>
         </ui:LabeledContent>
 
-        <GroupBox Header="Ionization type" Padding="4">
+        <GroupBox Header="Ionization type" Padding="4" IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}">
             <StackPanel>
                 <RadioButton Name="RadioButton_ESI"
                              Content="Soft ionization (LC/MS, LC/MS/MS, or precursor-oriented GC/MS/MS)"
@@ -55,7 +56,7 @@
             </StackPanel>
         </GroupBox>
 
-        <GroupBox Header="Separation type" Padding="4">
+        <GroupBox Header="Separation type" Padding="4" IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -93,7 +94,7 @@
                   Header="MS method type"
                   IsEnabled="{Binding Ionization.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=ESI, Mode=OneWay}"
                   Padding="4">
-            <StackPanel>
+            <StackPanel  IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}">
                 <RadioButton Name="RadioButton_DataDependentMSMS" 
                              Content="Conventional LC/MS or data dependent MS/MS" 
                              IsChecked="{Binding AcquisitionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=DDA}"
@@ -168,21 +169,22 @@
         </GroupBox>
 
         <GroupBox Header="Collision type"
-                  Visibility="{Binding IsChecked, ElementName=RadioButton_DataDependentMSMS, Converter={StaticResource BooleanToVisibility}}">
-            <UniformGrid Columns="2">
+                  Visibility="{Binding IsChecked, ElementName=RadioButton_DataDependentMSMS, Converter={StaticResource BooleanToVisibility}}"
+                  IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}">
+            <UniformGrid Columns="4">
                 <UniformGrid.Resources>
                     <Style TargetType="RadioButton">
-                        <Setter Property="Margin" Value="4"/>
+                        <Setter Property="Margin" Value="8"/>
                     </Style>
                 </UniformGrid.Resources>
-                <RadioButton Content="CID, HCD"
+                <RadioButton Content="CID/HCD"
                              IsChecked="{Binding CollisionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=HCD}"/>
-                <RadioButton Content="EIEIO"
-                             IsChecked="{Binding CollisionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=EIEIO}"/>
                 <RadioButton Content="ECD"
                              IsChecked="{Binding CollisionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=ECD}"/>
                 <RadioButton Content="HotECD"
                              IsChecked="{Binding CollisionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=HotECD}"/>
+                <RadioButton Content="EIEIO"
+                             IsChecked="{Binding CollisionType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=EIEIO}"/>
             </UniformGrid>
         </GroupBox>
 
@@ -195,6 +197,7 @@
             <GroupBox Name="GroupBox_DataType"
                       Header="Data type (MS1)"
                       Padding="4"
+                      IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}"
                       Grid.Column="0">
                 <StackPanel>
                     <RadioButton Name="RadioButton_ProfileMode"
@@ -245,7 +248,7 @@
                       IsEnabled="{Binding Ionization.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=ESI, Mode=TwoWay}"
                       Padding="4"
                       Grid.Column="1">
-                <StackPanel>
+                <StackPanel IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}">
                     <RadioButton Name="RadioButton_ProfileModeMS2"
                                  Content="Profile data"
                                  IsChecked="{Binding MS2DataType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Profile}"
@@ -285,6 +288,7 @@
             <GroupBox Name="GroupBox_IonMode"
                       Header="Ion mode"
                       Padding="4"
+                      IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}"
                       Grid.Column="0">
                 <StackPanel>
                     <RadioButton Name="RadioButton_PositiveMode"
@@ -304,6 +308,7 @@
             <GroupBox Name="GroupBox_TargetOmics"
                       Header="Target omics"
                       Padding="4"
+                      IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}"
                       Grid.Column="1">
                 <StackPanel>
                     <RadioButton Name="RadioButton_Metabolomics"
@@ -363,30 +368,35 @@
                             <TextBox Name="TextBox_InstrumentType" 
                                      Text="{Binding InstrumentType.Value, UpdateSourceTrigger=PropertyChanged}"
                                      d:Text="Instrument type"
+                                     IsReadOnly="{Binding IsReadOnly}"
                                      ToolTip="GC-EI-TOF, LC-ESI-QTOF etc. See MassBank definition"/>
                         </ui:LabeledBar>
                         <ui:LabeledBar Label="Instrument:">
                             <TextBox Name="TextBox_Instrument" 
                                      Text="{Binding Instrument.Value, UpdateSourceTrigger=PropertyChanged}"
                                      d:Text="Instrument"
+                                     IsReadOnly="{Binding IsReadOnly}"
                                      ToolTip="ex. LTQ Orbitrap XL, Thermo Scientfic; HP-1100 HPLC, Agilent"/>
                         </ui:LabeledBar>
                         <ui:LabeledBar Label="Authors:">
                             <TextBox Name="TextBox_Authors" 
                                      Text="{Binding Authors.Value, UpdateSourceTrigger=PropertyChanged}"
                                      d:Text="Author"
+                                     IsReadOnly="{Binding IsReadOnly}"
                                      ToolTip="ex. Hiroshi Tsugawa, Kazutaka Ikeda, and Makoto Arita"/>
                         </ui:LabeledBar>
                         <ui:LabeledBar Label="License:">
                             <TextBox Name="TextBox_License" 
                                      Text="{Binding License.Value, UpdateSourceTrigger=PropertyChanged}"
                                      d:Text="License"
+                                     IsReadOnly="{Binding IsReadOnly}"
                                      ToolTip="ex. CC-BY"/>
                         </ui:LabeledBar>
                         <ui:LabeledBar Label="Collision energy:">
                             <TextBox Name="TextBox_CollisionEnergy" 
                                      Text="{Binding CollisionEnergy.Value, UpdateSourceTrigger=PropertyChanged}"
                                      d:Text="Collision energy"
+                                     IsReadOnly="{Binding IsReadOnly}"
                                      ToolTip="ex. 70 eV (in GC-MS), 30 +/-15 V (in MS/MS)"/>
                         </ui:LabeledBar>
                     </StackPanel>
@@ -395,6 +405,7 @@
                         <Label Content="Comment:" Margin="8,4,0,0" DockPanel.Dock="Left"/>
                         <TextBox Name="TextBox_Comment"
                                  Text="{Binding Path=Comment.Value, UpdateSourceTrigger=PropertyChanged}" 
+                                 IsReadOnly="{Binding IsReadOnly}"
                                  AcceptsReturn="True"
                                  VerticalScrollBarVisibility="Auto"
                                  TextWrapping="WrapWithOverflow" 

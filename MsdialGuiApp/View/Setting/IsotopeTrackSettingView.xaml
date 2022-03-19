@@ -15,7 +15,7 @@
                         CanExecute="Open_CanExecute"/>
     </UserControl.CommandBindings>
     <UserControl.Resources>
-        <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
     </UserControl.Resources>
     <StackPanel>
         <StackPanel.Resources>
@@ -34,11 +34,9 @@
                            Grid.ColumnSpan="3">
             <CheckBox Name="CheckBox_TrackingIsotopeLabels" 
                       IsChecked="{Binding Path=TrackingIsotopeLabels.Value}"
-                      HorizontalAlignment="Left" VerticalAlignment="Center">
-                <ToolTipService.ToolTip>
-                    <ToolTip Content="Check this option if you want to track isotope labels." />
-                </ToolTipService.ToolTip>
-            </CheckBox>
+                      IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
+                      HorizontalAlignment="Left" VerticalAlignment="Center"
+                      ToolTip="Check this option if you want to track isotope labels."/>
         </ui:LabeledContent>
 
         <Border BorderBrush="Gray" BorderThickness=".5"
@@ -54,6 +52,7 @@
                               ItemsSource="{Binding IsotopeTrackingDictionary.IsotopeElements}" 
                               DisplayMemberPath="ElementName"
                               SelectedIndex="{Binding IsotopeTrackingDictionary.SelectedID}"
+                              IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
                               HorizontalAlignment="Stretch" />
                 </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="Non-labeled reference file:">
@@ -61,18 +60,19 @@
                               ItemsSource="{Binding AnalysisFiles}"
                               DisplayMemberPath="AnalysisFileName"
                               SelectedItem="{Binding NonLabeledReference.Value}"
+                              IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
                               HorizontalAlignment="Stretch" />
                 </ui:LabeledContent>
                 <ui:ExecutableBar LabelWidth="200"
                                   ButtonContent="Select"
-                                  Command="ApplicationCommands.Open">
-                        <ToolTipService.ToolTip>
-                            <ToolTip Content="Text file should include a compound list consisting of formula (first column), accurate mass (second column), retention time (third), and adduct type (forth). A row header is considered." />
-                        </ToolTipService.ToolTip>
+                                  Command="ApplicationCommands.Open"
+                                  CommandIsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
+                                  ToolTip="Text file should include a compound list consisting of formula (first column), accurate mass (second column), retention time (third), and adduct type (forth). A row header is considered.">
                     <ui:ExecutableBar.Label>
                         <CheckBox x:Name="CheckBox_UseTargetLibrary"
                                   Content="Use target formula library: " 
                                   VerticalContentAlignment="Center" 
+                                  IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
                                   IsChecked="{Binding Path=UseTargetFormulaLibrary.Value}"/>
                     </ui:ExecutableBar.Label>
                     <TextBox Name="TextBox_TargetFormulaLibraryFilePath"
@@ -80,12 +80,14 @@
                              Text="{Binding Path=IsotopeTextDBFilePath.Value, 
                                             UpdateSourceTrigger=PropertyChanged}" 
                              HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                             IsEnabled="{Binding Path=UseTargetFormulaLibrary.Value}"/>
+                             IsEnabled="{Binding Path=UseTargetFormulaLibrary.Value}"
+                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                 </ui:ExecutableBar>
                 <ui:LabeledBar LabelWidth="200">
                     <ui:LabeledBar.Label>
                         <CheckBox Content="Set fully-labeled reference file: " 
                                   VerticalContentAlignment="Center" 
+                                  IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
                                   IsChecked="{Binding Path=SetFullyLabeledReferenceFile.Value}"/>
                     </ui:LabeledBar.Label>
                     <ComboBox Name="ComboBox_FullyLabeledReference" 
@@ -93,6 +95,7 @@
                               DisplayMemberPath="AnalysisFileName"
                               SelectedItem="{Binding FullyLabeledReference.Value}"
                               IsEnabled="{Binding Path=SetFullyLabeledReferenceFile.Value}"
+                              IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
                               HorizontalAlignment="Stretch" />
                 </ui:LabeledBar>
             </StackPanel>

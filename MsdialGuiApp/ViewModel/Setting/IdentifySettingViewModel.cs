@@ -18,6 +18,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
     {
         public IdentifySettingViewModel(IdentifySettingModel model, IAnnotatorSettingViewModelFactory annotatorFactory, IObservable<bool> isEnabled) {
             this.model = model;
+            IsReadOnly = model.IsReadOnly;
 
             var selectedAnnotator = new Subject<IAnnotatorSettingViewModel>();
             var selectedDataBase = new Subject<IDataBaseSettingViewModel>();
@@ -216,6 +217,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
 
         private readonly IdentifySettingModel model;
+
+        public bool IsReadOnly { get; }
 
         public ReadOnlyReactiveCollection<IDataBaseSettingViewModel> DataBaseViewModels { get; }
         public ReactiveProperty<IDataBaseSettingViewModel> DataBaseViewModel { get; }

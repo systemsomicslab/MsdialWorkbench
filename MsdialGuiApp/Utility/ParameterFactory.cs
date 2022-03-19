@@ -1,6 +1,4 @@
 ﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.StartUp;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
@@ -12,7 +10,6 @@ using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Utility
@@ -31,43 +28,6 @@ namespace CompMs.App.Msdial.Utility
             if (ionization == Ionization.ESI && separationType == (SeparationType.Infusion | SeparationType.IonMobility))
                 return new MsdialImmsParameter();
             throw new Exception("Not supported separation type is selected.");
-        }
-
-        public static void SetParameterFromStartUpVM(ParameterBase parameter, StartUpWindowVM vm) {
-            parameter.ProjectFileName = Path.GetFileName(vm.ProjectFilePath);
-            parameter.ProjectFolderPath = Path.GetDirectoryName(vm.ProjectFilePath);
-            parameter.Ionization = vm.Ionization;
-            // parameter.SeparationType = vm.SeparationType;
-            parameter.CollistionType = vm.CollisionType;
-            parameter.AcquisitionType = vm.AcquisitionType;
-            parameter.MSDataType = vm.MS1DataType;
-            parameter.MS2DataType = vm.MS2DataType;
-            parameter.IonMode = vm.IonMode;
-            parameter.TargetOmics = vm.TargetOmics;
-            parameter.InstrumentType = vm.InstrumentType;
-            parameter.Instrument = vm.Instrument;
-            parameter.Authors = vm.Authors;
-            parameter.License = vm.License;
-            parameter.CollisionEnergy = vm.CollisionEnergy;
-            parameter.Comment = vm.Comment;
-        }
-
-        public static void SetParameterFromDatasetParameterSettingModel(ParameterBase parameter, DatasetParameterSettingModel model) {
-            parameter.ProjectFileName = model.DatasetFileName;
-            parameter.ProjectFolderPath = model.DatasetFolderPath;
-            parameter.Ionization = model.Ionization;
-            parameter.CollistionType = model.CollisionType;
-            parameter.AcquisitionType = model.AcquisitionType;
-            parameter.MSDataType = model.MS1DataType;
-            parameter.MS2DataType = model.MS2DataType;
-            parameter.IonMode = model.IonMode;
-            parameter.TargetOmics = model.TargetOmics;
-            parameter.InstrumentType = model.InstrumentType;
-            parameter.Instrument = model.Instrument;
-            parameter.Authors = model.Authors;
-            parameter.License = model.License;
-            parameter.CollisionEnergy = model.CollisionEnergy;
-            parameter.Comment = model.Comment;
         }
 
         public static void SetParameterFromAnalysisFiles(ParameterBase parameter, IList<AnalysisFileBean> files) {

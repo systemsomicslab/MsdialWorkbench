@@ -10,7 +10,15 @@
              d:DataContext="{d:DesignInstance Type={x:Type vm:DeconvolutionSettingViewModel}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="TextBox" BasedOn="{StaticResource ToolTipErrorStyle}">
+                <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+            </Style>
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -24,23 +32,17 @@
             </GroupBox.Header>
             <StackPanel Margin="8,0">
                 <ui:LabeledContent PrependLabel="Sigma window value:"
-                                   Style="{StaticResource AlignedContent}">
+                                   Style="{StaticResource AlignedContent}"
+                                   ToolTip="Recommend: 0.1-1.0">
                     <TextBox Text="{Binding SigmaWindowValue.Value}"
-                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}">
-                        <ToolTipService.ToolTip>
-                            <ToolTip Content="Recommend: 0.1-1.0" />
-                        </ToolTipService.ToolTip>
-                    </TextBox>
+                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                 </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="MS/MS abundance cut off:"
                                    AppendLabel="amplitude"
+                                   ToolTip="Recommend: 0-100"
                                    Style="{StaticResource AlignedContent}">
                     <TextBox Text="{Binding AmplitudeCutoff.Value}"
-                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}">
-                        <ToolTipService.ToolTip>
-                            <ToolTip Content="Recommend: 0-100" />
-                        </ToolTipService.ToolTip>
-                    </TextBox>
+                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                 </ui:LabeledContent>
             </StackPanel>
         </GroupBox>
@@ -52,32 +54,25 @@
             <StackPanel Margin="8,0">
                 <ui:LabeledContent PrependLabel="Exclude after precursor ion:"
                                    Style="{StaticResource AlignedContent}">
-                    <CheckBox IsChecked="{Binding Path=RemoveAfterPrecursor.Value}">
-                        <ToolTipService.ToolTip>
-                            <ToolTip Content="If you want to remove the ions after precursor, please check." />
-                        </ToolTipService.ToolTip>
-                    </CheckBox>
+                    <CheckBox IsChecked="{Binding Path=RemoveAfterPrecursor.Value}"
+                              IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
+                              ToolTip="If you want to remove the ions after precursor, please check."/>
                 </ui:LabeledContent>
 
                 <ui:LabeledContent PrependLabel="Keep the isotopic ions until:"
                                    AppendLabel="Da"
                                    Style="{StaticResource AlignedContent}">
                     <TextBox Text="{Binding KeptIsotopeRange.Value}"
-                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}"  
-                             IsEnabled="{Binding Path=RemoveAfterPrecursor.Value}">    
-                        <ToolTipService.ToolTip>
-                            <ToolTip Content="Recommend: 0.5-3" />
-                        </ToolTipService.ToolTip>
-                    </TextBox>
+                             IsEnabled="{Binding Path=RemoveAfterPrecursor.Value}"
+                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
+                             ToolTip="Recommend: 0.5-3"/>
                 </ui:LabeledContent>
 
                 <ui:LabeledContent PrependLabel="Keep the isotopic ions w/o MS2Dec:"
                                    Style="{StaticResource AlignedContent}">
-                    <CheckBox IsChecked="{Binding Path=KeepOriginalPrecurosrIsotopes.Value}">
-                        <ToolTipService.ToolTip>
-                            <ToolTip Content="If you want to keep the original precursor's isotopic ions, please check." />
-                        </ToolTipService.ToolTip>
-                    </CheckBox>
+                    <CheckBox IsChecked="{Binding Path=KeepOriginalPrecurosrIsotopes.Value}"
+                              IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
+                              ToolTip="If you want to keep the original precursor's isotopic ions, please check."/>
                 </ui:LabeledContent>
             </StackPanel>
         </Expander>

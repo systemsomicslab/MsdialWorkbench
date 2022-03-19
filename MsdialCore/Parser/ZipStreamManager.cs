@@ -8,8 +8,8 @@ namespace CompMs.MsdialCore.Parser
 {
     public class ZipStreamManager : IStreamManager, IDisposable
     {
-        public ZipStreamManager(Stream stream, ZipArchiveMode mode, CompressionLevel compressionLevel = CompressionLevel.NoCompression) {
-            zipArchive = new ZipArchive(stream, mode, true);
+        public ZipStreamManager(Stream stream, ZipArchiveMode mode, CompressionLevel compressionLevel = CompressionLevel.NoCompression, bool leaveOpen = true) {
+            zipArchive = new ZipArchive(stream, mode, leaveOpen);
             semaphore = new SemaphoreSlim(1);
             this.compressionLevel = compressionLevel;
         }
@@ -38,12 +38,12 @@ namespace CompMs.MsdialCore.Parser
             }
         }
 
-        public static ZipStreamManager OpenCreate(Stream stream, CompressionLevel compressionLevel = CompressionLevel.NoCompression) {
-            return new ZipStreamManager(stream, ZipArchiveMode.Update, compressionLevel);
+        public static ZipStreamManager OpenCreate(Stream stream, CompressionLevel compressionLevel = CompressionLevel.NoCompression, bool leaveOpen = true) {
+            return new ZipStreamManager(stream, ZipArchiveMode.Update, compressionLevel, leaveOpen);
         }
 
-        public static ZipStreamManager OpenGet(Stream stream) {
-            return new ZipStreamManager(stream, ZipArchiveMode.Read);
+        public static ZipStreamManager OpenGet(Stream stream, bool leaveOpen = true) {
+            return new ZipStreamManager(stream, ZipArchiveMode.Read, leaveOpen: leaveOpen);
         }
 
         class StreamWrapper : Stream

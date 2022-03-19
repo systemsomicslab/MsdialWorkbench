@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
@@ -45,24 +46,25 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<AlignmentSpotPropertyModel> source,
             IBarItemsLoader loader) {
 
-            return new BarChartModel(
-                source.SelectMany(src => 
-                    Observable.DeferAsync(async token => {
-                        var result = await loader.LoadBarItemsAsync(src, token);
-                        return Observable.Return(result);
-                    })));
+            return Create(source, Observable.Return(loader));
         }
 
         public static BarChartModel Create(
             IObservable<AlignmentSpotPropertyModel> source,
-            IObservable<IBarItemsLoader> loader) {
+            IObservable<IBarItemsLoader> barItemsLoader) {
 
             return new BarChartModel(
-                source.SelectMany(src => loader.SelectMany(n => 
-                    Observable.DeferAsync(async token => {
-                        var result = await n.LoadBarItemsAsync(src, token);
-                        return Observable.Return(result);
-                    }))));
+                source.CombineLatest(barItemsLoader,
+                    (src, loader) => src is null || loader is null
+                        ? Observable.Return(new List<BarItem>())
+                        : Observable.FromAsync(token => loader.LoadBarItemsAsync(src, token)))
+                .Switch());
+            // return new BarChartModel(
+            //     source.SelectMany(src => loader.SelectMany(n => 
+            //         Observable.DeferAsync(async token => {
+            //             var result = await n.LoadBarItemsAsync(src, token);
+            //             return Observable.Return(result);
+            //         }))));
         }
     }
 }

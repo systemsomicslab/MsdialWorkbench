@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -13,9 +14,10 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     public class IdentifySettingModel : BindableBase
     {
-        public IdentifySettingModel(ParameterBase parameter, IAnnotatorSettingModelFactory annotatorFactory, DataBaseStorage dataBaseStorage = null) {
+        public IdentifySettingModel(ParameterBase parameter, IAnnotatorSettingModelFactory annotatorFactory, ProcessOption process, DataBaseStorage dataBaseStorage = null) {
             this.parameter = parameter ?? throw new System.ArgumentNullException(nameof(parameter));
             this.annotatorFactory = annotatorFactory ?? throw new System.ArgumentNullException(nameof(annotatorFactory));
+            IsReadOnly = (process & ProcessOption.Identification) == 0;
 
             var databases = new List<DataBaseSettingModel>();
             var annotators = new List<(int Priority, IAnnotatorSettingModel Model)>();
@@ -49,6 +51,8 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly ParameterBase parameter;
         private readonly IAnnotatorSettingModelFactory annotatorFactory;
         private int serialNumber = 1;
+
+        public bool IsReadOnly { get; }
 
         public ObservableCollection<DataBaseSettingModel> DataBaseModels { get; }
 
@@ -225,6 +229,9 @@ namespace CompMs.App.Msdial.Model.Setting
         private bool isCompleted;
 
         public DataBaseStorage Create() {
+            if (IsReadOnly) {
+                return null;
+            }
             var result = DataBaseStorage.CreateEmpty();
             SetAnnotatorContainer(result);
             SetProteomicsAnnotatorContainer(result);

@@ -16,6 +16,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
     {
         public AdductIonSettingViewModel(AdductIonSettingModel model, IObservable<bool> isEnabled) {
             Model = model;
+            IsReadOnly = model.IsReadOnly;
 
             AdductIons = Model.AdductIons.ToReadOnlyReactiveCollection(m => new AdductIonVM(m)).AddTo(Disposables);
             SelectedAdduct = new ReactivePropertySlim<AdductIonVM>().AddTo(Disposables);
@@ -51,6 +52,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
 
         public AdductIonSettingModel Model { get; }
+
+        public bool IsReadOnly { get; }
 
         public ReadOnlyReactiveCollection<AdductIonVM> AdductIons { get; }
 

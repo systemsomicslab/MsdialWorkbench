@@ -17,6 +17,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
     {
         public IsotopeTrackSettingViewModel(IsotopeTrackSettingModel model, IObservable<bool> isEnabled) {
             Model = model;
+            IsReadOnly = model.IsReadOnly;
 
             TrackingIsotopeLabels = model.ToReactivePropertySlimAsSynchronized(m => m.TrackingIsotopeLabels).AddTo(Disposables);
             NonLabeledReference = model.ToReactivePropertySlimAsSynchronized(m => m.NonLabeledReference).AddTo(Disposables);
@@ -50,6 +51,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
 
         public IsotopeTrackSettingModel Model { get; }
+
+        public bool IsReadOnly { get; }
 
         public ReactivePropertySlim<bool> TrackingIsotopeLabels { get; }
 

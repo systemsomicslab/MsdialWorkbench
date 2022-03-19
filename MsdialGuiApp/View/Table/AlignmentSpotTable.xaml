@@ -3,8 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Table"
-        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
         xmlns:lcv="clr-namespace:CompMs.App.Msdial.View.Lcms"
         xmlns:lcvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
         xmlns:imv="clr-namespace:CompMs.App.Msdial.View.Imms"
@@ -32,6 +30,12 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type imvm:ImmsAlignmentSpotTableViewModel}">
                 <imv:ImmsAlignmentSpotTableView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type lcvm:LcmsProteomicsPeakTableViewModel}">
+                <lcv:LcmsProteomicsPeakTableView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type lcvm:LcmsProteomicsAlignmentTableViewModel}">
+                <lcv:LcmsProteomicsAlignmentTableView />
             </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>

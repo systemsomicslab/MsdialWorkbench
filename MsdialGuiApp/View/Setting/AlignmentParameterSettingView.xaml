@@ -11,7 +11,7 @@
              d:Background="White"
              d:DesignHeight="600" d:DesignWidth="800">
     <UserControl.Resources>
-        <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -21,8 +21,11 @@
 
         <GroupBox BorderThickness="0" Margin="8,0" Grid.Row="0">
             <GroupBox.Header>
-                <Label Content="Alignment parameters setting" FontStyle="Italic"
-                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <CheckBox VerticalContentAlignment="Center"
+                          IsChecked="{Binding ShouldRunAlignment.Value}"
+                          IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                    <Label Content="Alignment parameters setting" FontStyle="Italic"/>
+                </CheckBox>
             </GroupBox.Header>
             <StackPanel  Margin="16,0">
                 <StackPanel.Resources>
@@ -34,6 +37,7 @@
                 <ui:LabeledContent PrependLabel="Result name:">
                     <TextBox Text="{Binding AlignmentResultFileName.Value}"
                              d:Text="Result file name"
+                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
                              ToolTip="Decide an alignment file name"
                              Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
                              Height="24"
@@ -46,6 +50,7 @@
                               SelectedItem="{Binding ReferenceFile.Value}"
                               DisplayMemberPath="AnalysisFileName"
                               SelectedIndex="0"
+                              IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
                               Height="24"
                               VerticalContentAlignment="Center" />
                 </ui:LabeledContent>
@@ -62,6 +67,7 @@
                                                AppendLabel="min">
                                 <TextBox Text="{Binding Tolerance.Value}"
                                          d:Text="0.5"
+                                         IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                          ToolTip="At least for ODS column, 0.05-0.1 is better."/>
                             </ui:LabeledContent>
                         </DataTemplate>
@@ -69,7 +75,8 @@
                             <ui:LabeledContent PrependLabel="Drift time tolerance:"
                                                AppendLabel="1/k0">
                                 <TextBox Text="{Binding Tolerance.Value}"
-                                         d:Text="10"/>
+                                         d:Text="10"
+                                         IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
                             </ui:LabeledContent>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:Ms1EqualityParameterSettingViewModel}">
@@ -77,6 +84,7 @@
                                                AppendLabel="Da">
                                 <TextBox Text="{Binding Tolerance.Value}"
                                          d:Text="0.01"
+                                         IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                          ToolTip="At least for QTOF, 0.01-0.025 is better."/>
                             </ui:LabeledContent>
                         </DataTemplate>
@@ -110,6 +118,7 @@
                                                AppendLabel="(0-1)">
                                 <TextBox Text="{Binding Factor.Value}"
                                          d:Text="1"
+                                         IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                          ToolTip="At least for ODS column, 0.5 is good."/>
                             </ui:LabeledContent>
                         </DataTemplate>
@@ -117,7 +126,8 @@
                             <ui:LabeledContent PrependLabel="Drift time factor:"
                                                AppendLabel="(0-1)">
                                 <TextBox Text="{Binding Factor.Value}"
-                                         d:Text="1"/>
+                                         d:Text="1"
+                                         IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
                             </ui:LabeledContent>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:Ms1EqualityParameterSettingViewModel}">
@@ -125,6 +135,7 @@
                                                AppendLabel="(0-1)">
                                 <TextBox Text="{Binding Factor.Value}"
                                          d:Text="1"
+                                         IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                          ToolTip="At least for QTOF column, 0.5-0.7 is good."/>
                             </ui:LabeledContent>
                         </DataTemplate>
@@ -136,6 +147,7 @@
                     <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
                              Text="{Binding PeakCountFilter.Value}"
                              d:Text="1"
+                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
                              ToolTip="Aligned peaks which are less than this parameter will be removed from the final result."
                              Height="24"
                              VerticalContentAlignment="Center"
@@ -147,6 +159,7 @@
                     <TextBox Name="TextBox_NpercentDetectedInOneGroup" 
                              Text="{Binding NPercentDetectedInOneGroup.Value}"
                              d:Text="0.5"
+                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
                              Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
                              ToolTip="Present in at least n% of samples in at least one sample group."
                              Height="24"
@@ -156,6 +169,7 @@
 
                 <ui:LabeledContent PrependLabel="Remove features based on blank information:">
                     <CheckBox IsChecked="{Binding Path=IsRemoveFeatureBasedOnBlankPeakHeightFoldChange.Value}"
+                              IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
                               Height="24"
                               VerticalContentAlignment="Center"/>
                 </ui:LabeledContent>
@@ -169,6 +183,7 @@
 
                     <ComboBox SelectedValue="{Binding BlankFiltering.Value}"
                               SelectedValuePath="DataContext"
+                              IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
                               ToolTip="Select the filtering criterion."
                               HorizontalContentAlignment="Left" HorizontalAlignment="Stretch"
                               Height="24" Margin="0,0,8,0"
@@ -183,6 +198,7 @@
                     <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
                              Text="{Binding FoldChangeForBlankFiltering.Value}"
                              IsEnabled="{Binding Path=IsRemoveFeatureBasedOnBlankPeakHeightFoldChange.Value}"
+                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
                              d:Text="5"
                              VerticalContentAlignment="Center" 
                              HorizontalContentAlignment="Right" 
@@ -205,7 +221,8 @@
                     <Label Content="fold change" VerticalContentAlignment="Center" Grid.Column="2"/>
                 </Grid>
 
-                <ui:LabeledContent PrependLabel="Keep 'reference matched' metabolite features:">
+                <ui:LabeledContent PrependLabel="Keep 'reference matched' metabolite features:"
+                                   IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
                     <CheckBox HorizontalAlignment="Left" VerticalAlignment="Center" 
                               IsEnabled="{Binding Path=IsRemoveFeatureBasedOnBlankPeakHeightFoldChange.Value}"
                               IsChecked="{Binding Path=IsKeepRefMatchedMetaboliteFeatures.Value}"
@@ -221,7 +238,8 @@
                     </CheckBox>
                 </ui:LabeledContent>
 
-                <ui:LabeledContent PrependLabel="Keep 'suggested (w/o MS2)' metabolite features: ">
+                <ui:LabeledContent PrependLabel="Keep 'suggested (w/o MS2)' metabolite features: "
+                                   IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
                     <CheckBox HorizontalAlignment="Left"
                               IsEnabled="{Binding Path=IsRemoveFeatureBasedOnBlankPeakHeightFoldChange.Value}"
                               IsChecked="{Binding Path=IsKeepSuggestedMetaboliteFeatures.Value}"
@@ -237,7 +255,8 @@
                     </CheckBox>
                 </ui:LabeledContent>
 
-                <ui:LabeledContent PrependLabel="Keep removable features and assign the tag: ">
+                <ui:LabeledContent PrependLabel="Keep removable features and assign the tag: "
+                                   IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
                     <CheckBox HorizontalAlignment="Left"
                               IsEnabled="{Binding Path=IsRemoveFeatureBasedOnBlankPeakHeightFoldChange.Value}"
                               IsChecked="{Binding Path=IsKeepRemovableFeaturesAndAssignedTagForChecking.Value}"
@@ -255,6 +274,7 @@
 
                 <ui:LabeledContent PrependLabel="Gap filling by compulsion:">
                     <CheckBox IsChecked="{Binding Path=IsForceInsertForGapFilling.Value}"
+                              IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
                               HorizontalAlignment="Left"
                               ToolTip="Ad hoc peak area is forcibly detected within +- 5 data points even if there is no local maximum. "
                               VerticalContentAlignment="Center"

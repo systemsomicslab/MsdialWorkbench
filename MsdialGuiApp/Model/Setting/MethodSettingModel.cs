@@ -3,21 +3,18 @@ using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialDimsCore.Parameter;
-using CompMs.MsdialImmsCore.Parameter;
-using CompMs.MsdialLcImMsApi.Parameter;
-using CompMs.MsdialLcmsApi.Parameter;
 using System;
+using System.Reactive;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
     public class MethodSettingModel : BindableBase
     {
-        public MethodSettingModel(ProcessOption option, IMsdialDataStorage<ParameterBase> storage, Action<MethodSettingModel, MethodModelBase> handler) {
+        public MethodSettingModel(ProcessOption option, IMsdialDataStorage<ParameterBase> storage, Action<MethodSettingModel, MethodModelBase> handler, IObservable<Unit> observeParameterChanged) {
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
             this.handler = handler;
 
-            settingModelFactory = PrepareFactory(Storage);
+            settingModelFactory = new MethodSettingModelFactory(Storage, observeParameterChanged, option);
             DataCollectionSettingModel = settingModelFactory.CreateDataCollectionSetting();
             PeakDetectionSettingModel = settingModelFactory.CreatePeakDetectionSetting();
             DeconvolutionSettingModel = settingModelFactory.CreateDeconvolutionSetting();
@@ -66,14 +63,19 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public bool IsReadOnlyAlignmentParameter { get; }
 
-        public void Run() {
+        public bool Run() {
             if (Option.HasFlag(ProcessOption.PeakSpotting)) {
-                DataCollectionSettingModel.Commit();
+                if (!DataCollectionSettingModel.Commit()) {
+                    return false;
+                }
                 PeakDetectionSettingModel.Commit();
                 DeconvolutionSettingModel.Commit();
             }
             if (Option.HasFlag(ProcessOption.Identification)) {
-                Storage.DataBases = IdentifySettingModel.Create();
+                if (!IdentifySettingModel.IsReadOnly) {
+                    Storage.DataBases = IdentifySettingModel.Create();
+                    Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
+                }
                 AdductIonSettingModel.Commit();
             }
             if (Option.HasFlag(ProcessOption.Alignment)) {
@@ -83,21 +85,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
             var method = settingModelFactory.BuildMethod();
             handler?.Invoke(this, method);
-        }
-
-        private static IMethodSettingModelFactory PrepareFactory(IMsdialDataStorage<ParameterBase> storage) {
-            switch (storage) {
-                case IMsdialDataStorage<MsdialLcImMsParameter> lcimmsStorage:
-                    return new LcimmsMethodSettingModelFactory(lcimmsStorage);
-                case IMsdialDataStorage<MsdialLcmsParameter> lcmsStorage:
-                    return new LcmsMethodSettingModelFactory(lcmsStorage);
-                case IMsdialDataStorage<MsdialImmsParameter> immsStorage:
-                    return new ImmsMethodSettingModelFactory(immsStorage);
-                case IMsdialDataStorage<MsdialDimsParameter> dimsStorage:
-                    return new DimsMethodSettingModelFactory(dimsStorage);
-                default:
-                    throw new ArgumentException(nameof(storage));
-            }
+            return true;
         }
     }
 }

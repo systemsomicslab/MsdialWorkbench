@@ -4,8 +4,10 @@ using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using MessagePack;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj
@@ -22,7 +24,9 @@ namespace CompMs.MsdialCore.DataObj
         DataBaseMapper DataBaseMapper { get; set; }
         DataBaseStorage DataBases { get; set; }
 
-        Task Save(IStreamManager streamManager, string projectTitle, string prefix);
+        Task SaveAsync(IStreamManager streamManager, string projectTitle, string prefix);
+
+        void FixDatasetFolder(string projectFolder);
     }
 
     [MessagePackObject]
@@ -45,7 +49,7 @@ namespace CompMs.MsdialCore.DataObj
         [Key(8)]
         public DataBaseStorage DataBases { get; set; }
 
-        public async Task Save(IStreamManager streamManager, string projectTitle, string prefix = "") {
+        public async Task SaveAsync(IStreamManager streamManager, string projectTitle, string prefix = "") {
             using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, MsdialSerializer.GetNewMspFileName(projectTitle))).ConfigureAwait(false)) {
                 SaveMspDB(stream);
             }
@@ -53,7 +57,7 @@ namespace CompMs.MsdialCore.DataObj
                 SaveDataBaseMapper(stream);
             }
             using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, MsdialSerializer.GetDataBasesFileName(projectTitle))).ConfigureAwait(false)) {
-                SaveDataBases(stream);
+                await Task.Run(() => SaveDataBases(stream)).ConfigureAwait(false);
             }
 
             using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, projectTitle)).ConfigureAwait(false)) {
@@ -81,9 +85,48 @@ namespace CompMs.MsdialCore.DataObj
             MessagePackDefaultHandler.SaveToStream(this, stream);
         }
 
+        public void FixDatasetFolder(string projectFolder) {
+            var storage = this as IMsdialDataStorage<ParameterBase>;
+            if (storage is null || storage.Parameter.ProjectFolderPath == projectFolder) {
+                return;
+            }
+
+            var previousFolder = storage.Parameter.ProjectFolderPath;
+            storage.Parameter.ProjectFileName = Path.GetFileName(storage.Parameter.ProjectFileName);
+            storage.Parameter.ProjectFolderPath = projectFolder;
+            storage.Parameter.TextDBFilePath = ReplaceFolderPath(storage.Parameter.TextDBFilePath, previousFolder, projectFolder);
+            storage.Parameter.IsotopeTextDBFilePath = ReplaceFolderPath(storage.Parameter.IsotopeTextDBFilePath, previousFolder, projectFolder);
+
+            foreach (var file in storage.AnalysisFiles) {
+                file.AnalysisFilePath = ReplaceFolderPath(file.AnalysisFilePath, previousFolder, projectFolder);
+                file.DeconvolutionFilePath = ReplaceFolderPath(file.DeconvolutionFilePath, previousFolder, projectFolder);
+                file.PeakAreaBeanInformationFilePath = ReplaceFolderPath(file.PeakAreaBeanInformationFilePath, previousFolder, projectFolder);
+                file.ProteinAssembledResultFilePath = ReplaceFolderPath(file.ProteinAssembledResultFilePath, previousFolder, projectFolder);
+                file.RiDictionaryFilePath = ReplaceFolderPath(file.RiDictionaryFilePath, previousFolder, projectFolder);
+                file.DeconvolutionFilePathList = file.DeconvolutionFilePathList.Select(decfile => ReplaceFolderPath(decfile, previousFolder, projectFolder)).ToList();
+            }
+
+            foreach (var file in storage.AlignmentFiles) {
+                file.FilePath = ReplaceFolderPath(file.FilePath, previousFolder, projectFolder);
+                file.EicFilePath = ReplaceFolderPath(file.EicFilePath, previousFolder, projectFolder);
+                file.SpectraFilePath = ReplaceFolderPath(file.SpectraFilePath, previousFolder, projectFolder);
+                file.ProteinAssembledResultFilePath = ReplaceFolderPath(file.ProteinAssembledResultFilePath, previousFolder, projectFolder);
+            }
+        }
+
+        private static string ReplaceFolderPath(string path, string oldFolder, string newFolder) {
+            if (string.IsNullOrEmpty(path))
+                return path;
+            if (path.StartsWith(oldFolder))
+                return Path.Combine(newFolder, path.Substring(oldFolder.Length).TrimStart('\\', '/'));
+            if (!Path.IsPathRooted(path))
+                return Path.Combine(newFolder, path);
+            throw new ArgumentException("Invalid path or directory.");
+        }
+
         protected class MsdialSerializer : IMsdialSerializer {
             public virtual Task SaveAsync(IMsdialDataStorage<ParameterBase> dataStorage, IStreamManager streamManager, string projectTitle, string prefix) {
-                return dataStorage.Save(streamManager, projectTitle, prefix);
+                return dataStorage.SaveAsync(streamManager, projectTitle, prefix);
             }
 
             public virtual async Task<IMsdialDataStorage<ParameterBase>> LoadAsync(IStreamManager streamManager, string projectTitle, string projectFolderPath, string prefix = "") {

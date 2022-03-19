@@ -17,6 +17,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
     {
         public PeakDetectionSettingViewModel(PeakDetectionSettingModel model, IObservable<bool> isEnabled) {
             Model = model;
+            IsReadOnly = model.IsReadOnly;
 
             MinimumAmplitude = Model.ToReactivePropertyAsSynchronized(
                 m => m.MinimumAmplitude,
@@ -106,6 +107,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
 
         public PeakDetectionSettingModel Model { get; }
+
+        public bool IsReadOnly { get; }
 
         [Required(ErrorMessage = "Minimum amplitude is required.")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]

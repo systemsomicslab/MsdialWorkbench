@@ -19,6 +19,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public MobilitySettingViewModel(MobilitySettingModel model, IObservable<bool> isEnabled) {
             this.model = model;
+            IsReadOnly = model.IsReadOnly;
             IonMobilityType = model.ToReactivePropertySlimAsSynchronized(m => m.IonMobilityType).AddTo(Disposables);
 
             IsTims = IonMobilityType.Select(t => t == CompMs.Common.Enum.IonMobilityType.Tims).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -89,6 +90,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReadOnlyReactivePropertySlim<bool> IsAllCalibrantDataImported { get; }
 
         public ReadOnlyCollection<CcsCalibrationInfoVS> CalibrationInfoCollection => model.CalibrationInfoCollection;
+
+        public bool IsReadOnly { get; }
 
         public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
 

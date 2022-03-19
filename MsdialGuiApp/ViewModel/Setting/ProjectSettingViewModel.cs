@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
@@ -15,6 +16,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
     {
         public ProjectSettingViewModel(ProjectSettingModel model) {
             Model = model;
+            IsReadOnly = new ReadOnlyReactivePropertySlim<bool>(Observable.Return(model.IsReadOnlyProjectParameter)).AddTo(Disposables);
             SettingViewModels = new ObservableCollection<ISettingViewModel>(
                 new ISettingViewModel[]
                 {
@@ -25,7 +27,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             ObserveHasErrors = SettingViewModels.ObserveElementObservableProperty(vm => vm.ObserveHasErrors)
                 .Switch(_ => SettingViewModels.Select(vm => vm.ObserveHasErrors).CombineLatestValuesAreAnyTrue())
-                .Do(v => Console.WriteLine($"Project ObserveHasErrors: {v}"))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -52,6 +53,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
 
+        public ReadOnlyReactivePropertySlim<bool> IsReadOnly { get; }
+
         public IObservable<Unit> ObserveChanges { get; }
 
         IObservable<bool> ISettingViewModel.ObserveHasErrors => ObserveHasErrors;
@@ -62,6 +65,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             foreach (var vm in SettingViewModels) {
                 vm.Next();
             }
+        }
+
+        public Task RunAsync() {
+            return Model.RunAsync();
         }
     }
 }

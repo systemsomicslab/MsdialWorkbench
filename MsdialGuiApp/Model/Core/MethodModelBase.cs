@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Core
 {
@@ -44,17 +45,30 @@ namespace CompMs.App.Msdial.Model.Core
 
         public ObservableCollection<AlignmentFileBean> AlignmentFiles { get; }
 
+        public AlignmentModelBase AlignmentModel {
+            get => alignmentModel;
+            private set => SetProperty(ref alignmentModel, value);
+        }
+        private AlignmentModelBase alignmentModel;
+
         public void LoadAlignmentFile(AlignmentFileBean alignmentFile) {
             if (AlignmentFile == alignmentFile || alignmentFile is null) {
                 return;
             }
             AlignmentFile = alignmentFile;
-            LoadAlignmentFileCore(AlignmentFile);
+            AlignmentModel = LoadAlignmentFileCore(AlignmentFile);
         }
 
-        protected abstract void LoadAlignmentFileCore(AlignmentFileBean alignmentFile);
+        protected abstract AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile);
 
         public abstract void Run(ProcessOption option);
+
+        public virtual async Task SaveAsync() {
+            if (AlignmentModel is null) {
+                return;
+            }
+            await AlignmentModel.SaveAsync();
+        }
 
         private bool disposedValue;
         protected CompositeDisposable Disposables = new CompositeDisposable();

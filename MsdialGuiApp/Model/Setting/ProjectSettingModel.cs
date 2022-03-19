@@ -1,24 +1,33 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.CommonMVVM;
 using System;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
     public class ProjectSettingModel : BindableBase
     {
-        public ProjectSettingModel(Action<IProjectModel> run) {
+        public ProjectSettingModel(Func<IProjectModel, Task> run) {
             ProjectParameterSettingModel = new ProjectParameterSettingModel(PrepareDatasetSetting);
             IsReadOnlyProjectParameter = false;
             this.run = run;
         }
 
-        private readonly Action<IProjectModel> run;
+        public ProjectSettingModel(IProjectModel model) {
+            Result = model;
+            DatasetSettingModel = model.DatasetSettingModel;
+            ProjectParameterSettingModel = new ProjectParameterSettingModel(model.Storage.ProjectParameter);
+            IsReadOnlyProjectParameter = true;
+            run = null;
+        }
 
-        public ProjectModel Result {
+        private readonly Func<IProjectModel, Task> run;
+
+        public IProjectModel Result {
             get => result;
             private set => SetProperty(ref result, value);
         }
-        private ProjectModel result;
+        private IProjectModel result;
 
         public ProjectParameterSettingModel ProjectParameterSettingModel { get; }
 
@@ -32,10 +41,11 @@ namespace CompMs.App.Msdial.Model.Setting
 
         private void PrepareDatasetSetting(ProjectModel projectModel) {
             DatasetSettingModel = projectModel.DatasetSettingModel;
+            Result = projectModel;
         }
 
-        public void Run() {
-            run?.Invoke(Result);
+        public Task RunAsync() {
+            return run?.Invoke(Result) ?? Task.CompletedTask;
         }
     }
 }

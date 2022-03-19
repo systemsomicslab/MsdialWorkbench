@@ -2,8 +2,10 @@
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,8 +19,8 @@ namespace CompMs.MsdialCore.DataObj
             ProjectParameter = projectParameter;
             InnerStorages = storages;
             Storages = InnerStorages.AsReadOnly();
-            InnerProjectPaths = Storages.Select(storage => storage.Parameter.ProjectParam.ProjectFileName).ToList();
-            ProjectPaths = InnerProjectPaths.AsReadOnly();
+            InnerProjectParameters = Storages.Select(storage => storage.Parameter.ProjectParam).ToList();
+            ProjectParameters = InnerProjectParameters.AsReadOnly();
         }
 
         public ProjectDataStorage(ProjectParameter projectParameter) : this(projectParameter, new List<IMsdialDataStorage<ParameterBase>>()) {
@@ -27,29 +29,21 @@ namespace CompMs.MsdialCore.DataObj
         
         // MessagePack for C# use this constructor.
         [SerializationConstructor]
-        public ProjectDataStorage(ReadOnlyCollection<string> projectPaths) {
+        public ProjectDataStorage(ReadOnlyCollection<ProjectBaseParameter> projectParameters) {
             InnerStorages = new List<IMsdialDataStorage<ParameterBase>>();
             Storages = InnerStorages.AsReadOnly();
-            InnerProjectPaths = projectPaths.ToList();
-            this.ProjectPaths = InnerProjectPaths.AsReadOnly();
-        }
-
-        public ProjectDataStorage(ProjectParameter projectParameter, ReadOnlyCollection<string> projectPaths) {
-            this.ProjectParameter = projectParameter;
-            InnerStorages = new List<IMsdialDataStorage<ParameterBase>>();
-            Storages = InnerStorages.AsReadOnly();
-            InnerProjectPaths = projectPaths.ToList();
-            this.ProjectPaths = InnerProjectPaths.AsReadOnly();
+            InnerProjectParameters = projectParameters.ToList();
+            this.ProjectParameters = InnerProjectParameters.AsReadOnly();
         }
 
         [IgnoreMember]
         public ProjectParameter ProjectParameter { get; private set; }
 
-        [Key(nameof(ProjectPaths))]
-        public ReadOnlyCollection<string> ProjectPaths { get; }
+        [Key(nameof(ProjectParameters))]
+        public ReadOnlyCollection<ProjectBaseParameter> ProjectParameters { get; }
 
         [IgnoreMember]
-        private List<string> InnerProjectPaths { get; }
+        private List<ProjectBaseParameter> InnerProjectParameters { get; }
 
         [IgnoreMember]
         public ReadOnlyCollection<IMsdialDataStorage<ParameterBase>> Storages { get; }
@@ -62,10 +56,14 @@ namespace CompMs.MsdialCore.DataObj
 
         public void AddStorage(IMsdialDataStorage<ParameterBase> storage) {
             InnerStorages.Add(storage);
-            InnerProjectPaths.Add(storage.Parameter.ProjectParam.ProjectFilePath);
+            InnerProjectParameters.Add(storage.Parameter.ProjectParam);
         }
 
-        public async Task Save(IStreamManager streamManager, IMsdialSerializer serializer) {
+        public void FixProjectFolder(string projectDir) {
+            ProjectParameter.FixProjectFolder(projectDir);
+        }
+
+        public async Task Save(IStreamManager streamManager, IMsdialSerializer serializer, Func<string, IStreamManager> datasetStreamManagerFactory, Action<ProjectBaseParameter> faultedHandle) {
             using (var parameterStream = await streamManager.Create(ParameterKey).ConfigureAwait(false)) {
                 ProjectParameter.Save(parameterStream);
             }
@@ -73,24 +71,94 @@ namespace CompMs.MsdialCore.DataObj
                 MessagePackDefaultHandler.SaveToStream(this, projectStream);
             }
 
-            var tasks = Storages.Select(storage => serializer.SaveAsync(storage, streamManager, Path.GetFileNameWithoutExtension(storage.Parameter.ProjectFileName), storage.Parameter.ProjectFolderPath));
+            var tasks = Storages.Select(storage => SaveDataStorage(datasetStreamManagerFactory, storage, serializer, faultedHandle));
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
-        public static async Task<ProjectDataStorage> Load(IStreamManager streamManager, IMsdialSerializer serializer) {
+        public static async Task<ProjectDataStorage> LoadAsync(IStreamManager streamManager, IMsdialSerializer serializer, Func<string, IStreamManager> datasetStreamManagerFactory, Func<ProjectBaseParameter, Task<string>> setNewPlacement, Action<ProjectBaseParameter> faultedHandle) {
             ProjectDataStorage storage;
-            using (var projectStream = await streamManager.Get(SerializationKey)) {
+            using (var projectStream = await streamManager.Get(SerializationKey).ConfigureAwait(false)) {
                 storage = MessagePackDefaultHandler.LoadFromStream<ProjectDataStorage>(projectStream);
             }
-            using (var parameterStream = await streamManager.Get(ParameterKey)) {
+            using (var parameterStream = await streamManager.Get(ParameterKey).ConfigureAwait(false)) {
                 storage.ProjectParameter = ProjectParameter.Load(parameterStream);
             }
 
-            var tasks = storage.ProjectPaths.Select(projectPath => serializer.LoadAsync(streamManager, projectPath, null, string.Empty));
-            var datas = await Task.WhenAll(tasks).ConfigureAwait(false);
-            storage.InnerStorages.AddRange(datas);
+            var tasks = storage.ProjectParameters.Select(projectParameter => LoadDataStorage(datasetStreamManagerFactory, projectParameter, serializer, setNewPlacement, faultedHandle)).ToArray();
+            try {
+                var datas = await Task.WhenAll(tasks).ConfigureAwait(false);
+                storage.InnerStorages.AddRange(datas);
+            }
+            catch (Exception ex) {
+                Debug.WriteLine(ex.ToString());
+                storage.InnerStorages.AddRange(tasks.Where(t => t.Status == TaskStatus.RanToCompletion).Select(t => t.Result).Where(s => !(s is null)));
+                storage.InnerProjectParameters.Clear();
+                storage.InnerProjectParameters.AddRange(storage.Storages.Select(s => s.Parameter.ProjectParam));
+            }
 
             return storage;
+        }
+
+        private async static Task SaveDataStorage(
+            Func<string, IStreamManager> datasetStreamManagerFactory,
+            IMsdialDataStorage<ParameterBase> storage,
+            IMsdialSerializer serializer,
+            Action<ProjectBaseParameter> faultedHandle) {
+
+            var dir = storage.Parameter.ProjectFolderPath;
+            var file = storage.Parameter.ProjectFileName;
+            try {
+                await serializer.SaveAsync(storage, datasetStreamManagerFactory(dir), Path.GetFileNameWithoutExtension(file), dir);
+            }
+            catch (Exception ex) {
+                Debug.WriteLine(ex);
+                faultedHandle?.Invoke(storage.Parameter.ProjectParam);
+            }
+        }
+
+        private static async Task<IMsdialDataStorage<ParameterBase>> LoadDataStorage(
+            Func<string, IStreamManager> datasetStreamManagerFactory,
+            ProjectBaseParameter projectParameter,
+            IMsdialSerializer serializer,
+            Func<ProjectBaseParameter, Task<string>> setNewPlacement,
+            Action<ProjectBaseParameter> faultedHandle) {
+
+            var dir = projectParameter.ProjectFolderPath;
+            var file = projectParameter.ProjectFileName;
+            try {
+                return await LoadDataStorageCore(datasetStreamManagerFactory(dir), serializer, dir, file);
+            }
+            catch {
+                faultedHandle?.Invoke(projectParameter);
+                var path = await setNewPlacement?.Invoke(projectParameter);
+                if (!(path is null)) {
+                    dir = Path.GetDirectoryName(path);
+                    file = Path.GetFileName(path);
+                }
+                else {
+                    faultedHandle?.Invoke(projectParameter);
+                    throw;
+                }
+            }
+
+            try {
+                return await LoadDataStorageCore(datasetStreamManagerFactory(dir), serializer, dir, file)
+                    .ContinueWith(t =>
+                    {
+                        var s = t.Result;
+                        s.FixDatasetFolder(dir);
+                        return s;
+                    },
+                    TaskContinuationOptions.OnlyOnRanToCompletion);
+            }
+            catch {
+                faultedHandle?.Invoke(projectParameter);
+                throw;
+            }
+        }
+
+        private static Task<IMsdialDataStorage<ParameterBase>> LoadDataStorageCore(IStreamManager manager, IMsdialSerializer serializer, string projectFolderPath, string projectFileName) {
+            return serializer.LoadAsync(manager, projectFileName, projectFolderPath, string.Empty);
         }
     }
 }

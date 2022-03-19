@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using System;
 
@@ -9,11 +10,22 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         public ProjectParameterSettingModel(Action<ProjectModel> next) {
             var dt = DateTime.Now;
-            ProjectTitle = $"{dt:yyyy_MM_dd_hh_mm_ss}.msproject";
+            ProjectTitle = $"{dt:yyyy_MM_dd_hh_mm_ss}.mdproject";
             this.next = next;
+            IsReadOnly = false;
+        }
+
+        public ProjectParameterSettingModel(ProjectParameter parameter) {
+            ProjectTitle = parameter.Title;
+            ProjectFolderPath = parameter.FolderPath;
+            this.parameter = parameter;
+            IsReadOnly = true;
         }
 
         private readonly Action<ProjectModel> next;
+        private readonly ProjectParameter parameter;
+
+        public bool IsReadOnly { get; }
 
         public string ProjectTitle {
             get => projectTitle;
@@ -29,11 +41,12 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public void Build() {
             var title = ProjectTitle;
-            if (!title.EndsWith(".msproject")) {
-                title += ".msproject";
+            if (!title.EndsWith(".mdproject")) {
+                title += ".mdproject";
             }
-            var parameter = new ProjectParameter(DateTime.Now, ProjectFolderPath, title);
-            next?.Invoke(new ProjectModel(parameter));
+            var parameter = this.parameter ?? new ProjectParameter(DateTime.Now, ProjectFolderPath, title);
+            var storage = new ProjectDataStorage(parameter);
+            next?.Invoke(new ProjectModel(storage));
         }
     }
 }

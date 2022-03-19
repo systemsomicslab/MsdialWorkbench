@@ -1,4 +1,4 @@
-﻿using CompMs.App.Msdial.StartUp;
+﻿using CompMs.App.Msdial.Model.Notification;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.View.Table;
@@ -8,12 +8,14 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM.WindowService;
+using CompMs.Graphics.UI.Message;
 using Microsoft.Win32;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls.Ribbon;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.View.Core
 {
@@ -25,19 +27,17 @@ namespace CompMs.App.Msdial.View.Core
         public MainWindow() {
             InitializeComponent();
 
-            var startUpService = new DialogService<StartUpWindow, StartUpWindowVM>(this);
-            var analysisFilePropertySetService = new DialogService<AnalysisFilePropertySetWindow, AnalysisFilePropertySetViewModel>(this);
             var compoundSearchService = new DialogService<CompoundSearchWindow, CompoundSearchVM>(this);
             var peakSpotTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
             var proteomicsTableService = new DialogService<ProteomicsSpotTable, PeakSpotTableViewModelBase>(this);
             var analysisFilePropertyResetService = new DialogService<AnalysisFilePropertyResettingWindow, AnalysisFilePropertySetViewModel>(this);
+            var processSettingDialogService = new DialogService<ProjectSettingDialog, ProcessSettingViewModel>(this);
             DataContext = new MainWindowVM(
-                startUpService,
-                analysisFilePropertySetService,
                 compoundSearchService,
                 peakSpotTableService,
                 analysisFilePropertyResetService,
-                proteomicsTableService);
+                proteomicsTableService,
+                processSettingDialogService);
 
             broker = MessageBroker.Default;
 
@@ -72,6 +72,27 @@ namespace CompMs.App.Msdial.View.Core
                 var filename = sfd.FileName;
                 broker.Publish(new SaveNistFileNameResponse(filename));
             }
+        }
+
+        protected override void OnContentRendered(EventArgs e) {
+            base.OnContentRendered(e);
+
+            if (Properties.Resources.VERSION.Contains("-tada")
+                || Properties.Resources.VERSION.Contains("-beta")
+                || Properties.Resources.VERSION.Contains("-dev")) {
+                return;
+            }
+            Mouse.OverrideCursor = Cursors.Wait;
+            var window = new ShortMessageWindow() {
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Text = "Checking for updates.."
+            };
+            window.Show();
+            VersionUpdateNotificationService.CheckForUpdates();
+            window.Close();
+
+            Mouse.OverrideCursor = null;
         }
     }
 }
