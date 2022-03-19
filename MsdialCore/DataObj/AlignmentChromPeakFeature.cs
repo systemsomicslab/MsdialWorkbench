@@ -238,5 +238,8 @@ namespace CompMs.MsdialCore.DataObj {
             }
             return MSDecResultIdUsed;
         }
+
+        [Key(52)]
+        public bool IsManuallyModifiedForQuant { get; set; }
     }
 }

@@ -187,6 +187,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public MsSpectrumModel Ms2SpectrumModel { get; }
         public BarChartModel BarChartModel { get; }
         public AlignmentEicModel AlignmentEicModel { get; }
+
         public LcmsAlignmentSpotTableModel AlignmentSpotTableModel { get; private set; }
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 

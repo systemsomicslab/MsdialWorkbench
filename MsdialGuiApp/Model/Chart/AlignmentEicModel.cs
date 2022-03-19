@@ -18,9 +18,15 @@ namespace CompMs.App.Msdial.Model.Chart
     class AlignmentEicModel : BindableBase
     {
         public AlignmentEicModel(
+            IObservable<AlignmentSpotPropertyModel> model,
             IObservable<List<Chromatogram>> chromatoramSource,
             Func<PeakItem, double> horizontalSelector,
             Func<PeakItem, double> verticalSelector) {
+            
+            if (model is null) {
+                throw new ArgumentNullException(nameof(model));
+            }
+
             if (chromatoramSource is null) {
                 throw new ArgumentNullException(nameof(chromatoramSource));
             }
@@ -32,6 +38,8 @@ namespace CompMs.App.Msdial.Model.Chart
             if (verticalSelector is null) {
                 throw new ArgumentNullException(nameof(verticalSelector));
             }
+
+            AlignmentSpotPropertyModel = model;
 
             EicChromatogramsSource = chromatoramSource;
             EicChromatogramsSource.Subscribe(chromatograms => EicChromatograms = chromatograms);
@@ -64,6 +72,8 @@ namespace CompMs.App.Msdial.Model.Chart
             }
         }
         private List<Chromatogram> eicChromatogram;
+
+        public IObservable<AlignmentSpotPropertyModel> AlignmentSpotPropertyModel { get; set; }
 
         public Range HorizontalRange {
             get {
@@ -118,6 +128,7 @@ namespace CompMs.App.Msdial.Model.Chart
             Func<PeakItem, double> verticalSelector) {
 
             return new AlignmentEicModel(
+                source,
                 source.Select(loader.LoadEic),
                 horizontalSelector, verticalSelector
             );
@@ -132,6 +143,7 @@ namespace CompMs.App.Msdial.Model.Chart
             );
             */
         }
+
     }
 
     class AlignmentEicLoader
