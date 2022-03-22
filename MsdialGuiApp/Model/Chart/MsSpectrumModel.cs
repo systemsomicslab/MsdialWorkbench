@@ -1,28 +1,46 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.Common.Components;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Design;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    public class MsSpectrumModel : BindableBase {
-        public MsSpectrumModel(
-            Func<SpectrumPeak, double> horizontalSelector,
-            Func<SpectrumPeak, double> verticalSelector)
-            : this(Observable.Return(new List<SpectrumPeak>(0)),
-                  Observable.Return(new List<SpectrumPeak>(0)),
-                  horizontalSelector, verticalSelector) {
-
+    public class MsSpectrumModel : DisposableModelBase {
+        static MsSpectrumModel() {
+            SpectrumBrushes = Enum.GetValues(typeof(SpectrumComment))
+                .Cast<SpectrumComment>()
+                .Where(comment => comment != SpectrumComment.none)
+                .Zip(ChartBrushes.SolidColorBrushList, (comment, brush) => (comment, brush))
+                .ToDictionary(
+                    kvp => kvp.comment,
+                    kvp => (Brush)kvp.brush
+                );
         }
+
+        private static readonly IReadOnlyDictionary<SpectrumComment, Brush> SpectrumBrushes;
 
         public MsSpectrumModel(
             IObservable<List<SpectrumPeak>> upperSpectrum,
             IObservable<List<SpectrumPeak>> lowerSpectrum,
-            Func<SpectrumPeak, double> horizontalSelector,
-            Func<SpectrumPeak, double> verticalSelector) {
+            PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
+            PropertySelector<SpectrumPeak, double> verticalPropertySelector,
+            GraphLabels graphLabels,
+            string hueProperty,
+            IObservable<IBrushMapper> upperSpectrumBrush,
+            IObservable<IBrushMapper> lowerSpectrumBrush) {
+
             if (upperSpectrum is null) {
                 throw new ArgumentNullException(nameof(upperSpectrum));
             }
@@ -31,156 +49,120 @@ namespace CompMs.App.Msdial.Model.Chart
                 throw new ArgumentNullException(nameof(lowerSpectrum));
             }
 
-            UpperSpectrumSource = upperSpectrum;
-            LowerSpectrumSource = lowerSpectrum;
-            HorizontalSelector = horizontalSelector ?? throw new ArgumentNullException(nameof(horizontalSelector));
-            VerticalSelector = verticalSelector ?? throw new ArgumentNullException(nameof(verticalSelector));
-
+            var verticalSelector = verticalPropertySelector.Selector;
             var upperEmpty = upperSpectrum.Where(spec => spec is null || !spec.Any());
             var upperAny = upperSpectrum.Where(spec => spec?.Any() ?? false);
-            UpperVerticalRangeSource = upperAny
-                .Select(spec => new Range(spec.Min(VerticalSelector), spec.Max(VerticalSelector)))
+            var upperVerticalRangeSource = upperAny
+                .Select(spec => new Range(spec.Min(verticalSelector), spec.Max(verticalSelector)))
                 .Merge(upperEmpty.Select(_ => new Range(0, 1)));
+            UpperVerticalRangeSource = upperVerticalRangeSource;
+            var upperContinuousVerticalAxis = upperVerticalRangeSource
+                .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent);
+            var upperLogVerticalAxis = upperVerticalRangeSource
+                .Select(range => (range.Minimum.Value, range.Maximum.Value))
+                .ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d);
+            UpperVerticalAxisItemCollection = new ObservableCollection<AxisItemModel>(new[]
+            {
+                new AxisItemModel(upperContinuousVerticalAxis, "Normal"),
+                new AxisItemModel(upperLogVerticalAxis, "Log10"),
+            });
+
             var lowerEmpty = lowerSpectrum.Where(spec => spec is null || !spec.Any());
             var lowerAny = lowerSpectrum.Where(spec => spec?.Any() ?? false);
-            LowerVerticalRangeSource = lowerAny
-                .Select(spec => new Range(spec.Min(VerticalSelector), spec.Max(VerticalSelector)))
+            var lowerVerticalRangeSource = lowerAny
+                .Select(spec => new Range(spec.Min(verticalSelector), spec.Max(verticalSelector)))
                 .Merge(lowerEmpty.Select(_ => new Range(0, 1)));
 
-            HorizontalRangeSource = new[]
+            var horizontalSelector = horizontalPropertySelector.Selector;
+            var horizontalRangeSource = new[]
             {
                 upperSpectrum.Where(spec => !(spec is null)).StartWith(new List<SpectrumPeak>(0)),
                 lowerSpectrum.Where(spec => !(spec is null)).StartWith(new List<SpectrumPeak>(0)),
             }.CombineLatest(specs => specs.SelectMany(spec => spec))
             .Where(spec => spec.Any())
-            .Select(spec => new Range(spec.Min(HorizontalSelector), spec.Max(HorizontalSelector)));
+            .Select(spec => new Range(spec.Min(horizontalSelector), spec.Max(horizontalSelector)));
 
-            UpperSpectrumSource.Subscribe(spectrum => UpperSpectrum = spectrum);
-            LowerSpectrumSource.Subscribe(spectrum => LowerSpectrum = spectrum);
+            var horizontalAxis = horizontalRangeSource.ToReactiveContinuousAxisManager<double>(new ConstantMargin(40));
+            var horizontalAxisObservable = Observable.Return(horizontalAxis);
+            var upperVerticalAxisObservable = new ReactivePropertySlim<AxisItemModel>(UpperVerticalAxisItemCollection[0]).AddTo(Disposables);
+            var lowerVerticalAxis = lowerVerticalRangeSource.ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent);
+            var lowerVerticalAxisObservable = Observable.Return(lowerVerticalAxis);
+            if (upperSpectrumBrush is null)
+                upperSpectrumBrush = Observable.Return(GetBrush(Brushes.Blue));
+            if (lowerSpectrumBrush is null)
+                lowerSpectrumBrush = Observable.Return(GetBrush(Brushes.Red));
+            if (string.IsNullOrEmpty(hueProperty))
+                hueProperty = nameof(SpectrumPeak.SpectrumComment);
+
+            HorizontalAxis = horizontalAxisObservable;
+            UpperVerticalAxisItem = upperVerticalAxisObservable;
+            UpperVerticalAxis = UpperVerticalAxisItem.Select(item => item.AxisManager);
+            LowerVerticalAxis = lowerVerticalAxisObservable;
+            VerticalPropertySelector = verticalPropertySelector;
+            HorizontalPropertySelector = horizontalPropertySelector;
+            GraphLabels = graphLabels;
+
+            UpperSpectrumModel = new SingleSpectrumModel(
+                upperSpectrum,
+                horizontalAxisObservable, horizontalPropertySelector,
+                UpperVerticalAxis, verticalPropertySelector,
+                upperSpectrumBrush, hueProperty,
+                graphLabels);
+            LowerSpectrumModel = new SingleSpectrumModel(
+                lowerSpectrum,
+                horizontalAxisObservable, horizontalPropertySelector,
+                LowerVerticalAxis, verticalPropertySelector,
+                lowerSpectrumBrush, hueProperty,
+                graphLabels);
         }
 
-        public IObservable<List<SpectrumPeak>> UpperSpectrumSource { get; }
+        public SingleSpectrumModel UpperSpectrumModel { get; }
+        public SingleSpectrumModel LowerSpectrumModel { get; }
 
-        public IObservable<List<SpectrumPeak>> LowerSpectrumSource { get; }
+        public IObservable<IAxisManager<double>> HorizontalAxis { get; }
+        public IObservable<IAxisManager<double>> UpperVerticalAxis { get; }
+        public IObservable<IAxisManager<double>> LowerVerticalAxis { get; }
 
-        public List<SpectrumPeak> UpperSpectrum {
-            get => upperSpectrum;
-            set {
-                if (SetProperty(ref upperSpectrum, value)) {
-                    OnPropertyChanged(nameof(HorizontalRange));
-                    OnPropertyChanged(nameof(UpperVerticalRange));
-                }
-            }
-        }
-        private List<SpectrumPeak> upperSpectrum;
+        public ReactivePropertySlim<AxisItemModel> UpperVerticalAxisItem { get; }
+        public ObservableCollection<AxisItemModel> UpperVerticalAxisItemCollection { get; }
 
-        public List<SpectrumPeak> LowerSpectrum {
-            get => lowerSpectrum;
-            set {
-                if (SetProperty(ref lowerSpectrum, value)) {
-                    OnPropertyChanged(nameof(HorizontalRange));
-                    OnPropertyChanged(nameof(LowerVerticalRange));
-                }
-            }
-        }
-        private List<SpectrumPeak> lowerSpectrum;
-
-        public string GraphTitle {
-            get => graphTitle;
-            set => SetProperty(ref graphTitle, value);
-        }
-        private string graphTitle;
-
-        public string HorizontalTitle {
-            get => horizontalTitle;
-            set => SetProperty(ref horizontalTitle, value);
-        }
-        private string horizontalTitle;
-
-        public string VerticalTitle {
-            get => verticalTitle;
-            set => SetProperty(ref verticalTitle, value);
-        }
-        private string verticalTitle;
-
-        public string HorizontalProperty {
-            get => horizontalProperty;
-            set => SetProperty(ref horizontalProperty, value);
-        }
-        private string horizontalProperty;
-
-        public string VerticalProperty {
-            get => verticalProperty;
-            set => SetProperty(ref verticalProperty, value);
-        }
-        private string verticalProperty;
-
-        public string LabelProperty {
-            get => labelProperty;
-            set => SetProperty(ref labelProperty, value);
-        }
-        private string labelProperty;
-
-        public string OrderingProperty {
-            get => orderingProperty;
-            set => SetProperty(ref orderingProperty, value);
-        }
-        private string orderingProperty;
-
-        public Func<SpectrumPeak, double> HorizontalSelector { get; }
-        public Func<SpectrumPeak, double> VerticalSelector { get; }
-
-        public IObservable<Range> HorizontalRangeSource { get; }
+        public GraphLabels GraphLabels { get; }
+        public PropertySelector<SpectrumPeak, double> HorizontalPropertySelector { get; }
+        public PropertySelector<SpectrumPeak, double> VerticalPropertySelector { get; }
 
         public IObservable<Range> UpperVerticalRangeSource { get; }
-
-        public IObservable<Range> LowerVerticalRangeSource { get; }
-
-        public Range HorizontalRange {
-            get {
-                if ((UpperSpectrum.Any() || LowerSpectrum.Any()) && HorizontalSelector != null) {
-                    var minimum = UpperSpectrum.Concat(LowerSpectrum).Min(HorizontalSelector);
-                    var maximum = UpperSpectrum.Concat(LowerSpectrum).Max(HorizontalSelector);
-                    return new Range(minimum, maximum);
-                }
-                return new Range(0, 1);
-            }
-        }
-
-        public Range UpperVerticalRange {
-            get {
-                if (UpperSpectrum.Any() && VerticalSelector != null) {
-                    var minimum = UpperSpectrum.Min(VerticalSelector);
-                    var maximum = UpperSpectrum.Max(VerticalSelector);
-                    return new Range(minimum, maximum);
-                }
-                return new Range(0, 1);
-            }
-        }
-
-        public Range LowerVerticalRange {
-            get {
-                if (LowerSpectrum.Any() && VerticalSelector != null) {
-                    var minimum = LowerSpectrum.Min(VerticalSelector);
-                    var maximum = LowerSpectrum.Max(VerticalSelector);
-                    return new Range(minimum, maximum);
-                }
-                return new Range(0, 1);
-            }
-        }
 
         public static MsSpectrumModel Create<T, U, V>(
             IObservable<T> source,
             IMsSpectrumLoader<U> upperLoader,
             IMsSpectrumLoader<V> lowerLoader,
             Func<SpectrumPeak, double> horizontalSelector,
-            Func<SpectrumPeak, double> verticalSelector)
+            Func<SpectrumPeak, double> verticalSelector,
+            string graphTitle,
+            string horizontalTitle,
+            string verticalTitle,
+            string horizontalProperty,
+            string verticalProperty,
+            string labelProperty,
+            string orderingProperty,
+            string hueProperty,
+            IObservable<IBrushMapper> upperBrush,
+            IObservable<IBrushMapper> lowerBrush)
             where T: U, V {
 
             return new MsSpectrumModel(
                 source.Select(src => Observable.FromAsync(token => upperLoader.LoadSpectrumAsync(src, token))).Switch(),
                 source.Select(src => Observable.FromAsync(token => lowerLoader.LoadSpectrumAsync(src, token))).Switch(),
-                horizontalSelector, verticalSelector);
+                new PropertySelector<SpectrumPeak, double>(horizontalProperty, horizontalSelector),
+                new PropertySelector<SpectrumPeak, double>(verticalProperty, verticalSelector),
+                new GraphLabels(graphTitle, horizontalTitle, verticalTitle, labelProperty, orderingProperty),
+                hueProperty,
+                upperBrush,
+                lowerBrush);
+        }
+
+        public static IBrushMapper<SpectrumComment> GetBrush(Brush defaultBrush) {
+            return new KeyBrushMapper<SpectrumComment>(SpectrumBrushes, defaultBrush);
         }
     }
 }

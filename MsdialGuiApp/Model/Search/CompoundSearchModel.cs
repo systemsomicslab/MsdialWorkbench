@@ -15,12 +15,12 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    public abstract class CompoundSearchModel : BindableBase, IDisposable
+    public abstract class CompoundSearchModel : DisposableModelBase, IDisposable
     {
         public CompoundSearchModel(
             IFileBean file,
@@ -84,25 +84,6 @@ namespace CompMs.App.Msdial.Model.Search
         public abstract void SetUnsettled();
 
         public abstract void SetUnknown();
-
-
-        private bool disposedValue;
-        protected CompositeDisposable disposables = new CompositeDisposable();
-
-        protected virtual void Dispose(bool disposing) {
-            if (!disposedValue) {
-                if (disposing) {
-                    disposables.Dispose();
-                }
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose() {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
     }
 
     public class CompoundSearcher
@@ -156,27 +137,23 @@ namespace CompMs.App.Msdial.Model.Search
                 throw new ArgumentException(nameof(property));
             }
 
-            this.Property = property;
+            Property = property;
             this.msdecResult = msdecResult ?? throw new ArgumentNullException(nameof(msdecResult));
 
             var referenceSpectrum = this.ObserveProperty(m => m.SelectedReference)
                 .Where(c => c != null)
                 .Select(c => c.Spectrum)
                 .ToReadOnlyReactivePropertySlim()
-                .AddTo(disposables);
+                .AddTo(Disposables);
             MsSpectrumModel = new MsSpectrumModel(
                 Observable.Return(this.msdecResult.Spectrum),
                 referenceSpectrum,
-                peak => peak.Mass,
-                peak => peak.Intensity)
-            {
-                HorizontalTitle = "m/z",
-                VerticalTitle = "Abundance",
-                HorizontalProperty = nameof(SpectrumPeak.Mass),
-                VerticalProperty = nameof(SpectrumPeak.Intensity),
-                LabelProperty = nameof(SpectrumPeak.Mass),
-                OrderingProperty = nameof(SpectrumPeak.Intensity)
-            };
+                new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
+                new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
+                new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
+                nameof(SpectrumPeak.SpectrumComment),
+                Observable.Return(MsSpectrumModel.GetBrush(Brushes.Blue)),
+                Observable.Return(MsSpectrumModel.GetBrush(Brushes.Red))).AddTo(Disposables);
         }
 
         [Obsolete]

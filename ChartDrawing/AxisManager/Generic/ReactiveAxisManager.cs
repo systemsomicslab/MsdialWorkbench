@@ -2,6 +2,7 @@
 using CompMs.Graphics.Core.Base;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CompMs.Graphics.AxisManager.Generic
 {
@@ -96,13 +97,17 @@ namespace CompMs.Graphics.AxisManager.Generic
             }
 
             public void OnNext(Range value) {
-                axis.UpdateInitialRange(value);
+                _ = UpdateInitialRange(value);
             }
 
             public void OnNext((T, T) value) {
-                axis.UpdateInitialRange(new Range(
-                    axis.TranslateToAxisValue(value.Item1),
-                    axis.TranslateToAxisValue(value.Item2)));
+                _ = UpdateInitialRange(new Range(
+                        axis.TranslateToAxisValue(value.Item1),
+                        axis.TranslateToAxisValue(value.Item2)));
+            }
+
+            private async Task UpdateInitialRange(Range range) {
+                await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => axis.UpdateInitialRange(range));
             }
 
             protected virtual void Dispose(bool disposing) {

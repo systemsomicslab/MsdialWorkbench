@@ -61,17 +61,45 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
             var refLoader = new MsRefSpectrumLoader(mapper);
+            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
+               Parameter.ProjectParam.SpectrumCommentToColorBytes
+               .ToDictionary(
+                   kvp => kvp.Key,
+                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+               ),
+               item => item.ToString(),
+               Colors.Blue);
+            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
+                comment =>
+                {
+                    var commentString = comment.ToString();
+                    var projectParameter = Parameter.ProjectParam;
+                    if (projectParameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
+                        return Color.FromRgb(color[0], color[1], color[2]);
+                    }
+                    else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
+                        && projectParameter.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
+                        return Color.FromRgb(color[0], color[1], color[2]);
+                    }
+                    else {
+                        return Colors.Red;
+                    }
+                },
+                true);
             Ms2SpectrumModel = MsSpectrumModel.Create(
                 Target, decLoader, refLoader,
                 peak => peak.Mass,
-                peak => peak.Intensity);
-            Ms2SpectrumModel.GraphTitle = "Representation vs. Reference";
-            Ms2SpectrumModel.HorizontalTitle = "m/z";
-            Ms2SpectrumModel.VerticalTitle = "Abundance";
-            Ms2SpectrumModel.HorizontalProperty = nameof(SpectrumPeak.Mass);
-            Ms2SpectrumModel.VerticalProperty = nameof(SpectrumPeak.Intensity);
-            Ms2SpectrumModel.LabelProperty = nameof(SpectrumPeak.Mass);
-            Ms2SpectrumModel.OrderingProperty = nameof(SpectrumPeak.Intensity);
+                peak => peak.Intensity,
+                "Representation vs. Reference",
+                "m/z",
+                "Abundance",
+                nameof(SpectrumPeak.Mass),
+                nameof(SpectrumPeak.Intensity),
+                nameof(SpectrumPeak.Mass),
+                nameof(SpectrumPeak.Intensity),
+                nameof(SpectrumPeak.SpectrumComment),
+                Observable.Return(upperSpecBrush),
+                Observable.Return(lowerSpecBrush)).AddTo(Disposables);
 
             BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
             BarChartModel = BarChartModel.Create(Target, BarItemsLoader);
