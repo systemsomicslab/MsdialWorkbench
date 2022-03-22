@@ -34,7 +34,8 @@ namespace CompMs.App.Msdial.Model.Imms
             IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseMapper mapper,
-            ParameterBase parameter) {
+            ParameterBase parameter)
+            : base(alignmentFileBean.FilePath) {
 
             AlignmentFile = alignmentFileBean;
             ResultFile = alignmentFileBean.FilePath;
@@ -42,14 +43,8 @@ namespace CompMs.App.Msdial.Model.Imms
             DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             AnnotatorContainers = annotatorContainers;
-            container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(ResultFile);
-            if (container == null) {
-                MessageBox.Show("No aligned spot information.");
-            }
 
-            Ms1Spots = container == null ? new ObservableCollection<AlignmentSpotPropertyModel>() : 
-                new ObservableCollection<AlignmentSpotPropertyModel>(
-                container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
+            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
 
             MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
             MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
@@ -204,7 +199,6 @@ namespace CompMs.App.Msdial.Model.Imms
         private IBarItemsLoader barItemsLoader;
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
-        private readonly AlignmentResultContainer container;
 
         public AlignmentFileBean AlignmentFile { get; }
 
@@ -230,7 +224,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public bool CanSaveSpectra() => Target.Value.innerModel != null && MsdecResult.Value != null;
 
         public void SaveProject() {
-            MessagePackHandler.SaveToFile(container, ResultFile);
+            MessagePackHandler.SaveToFile(Container, ResultFile);
         }
     }
 }

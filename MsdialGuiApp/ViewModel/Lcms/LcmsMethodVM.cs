@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model;
 using CompMs.App.Msdial.Model.Lcms;
-using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
@@ -71,9 +70,22 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             Storage = model.Storage;
 
+            AnalysisViewModel = model.ObserveProperty(m => m.AnalysisModel)
+                .Where(m => m != null)
+                .Select(m => new AnalysisLcmsVM(m, compoundSearchService, peakSpotTableService, proteomicsTableService) { DisplayFilters = displayFilters, })
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            AlignmentViewModel = model.ObserveProperty(m => m.AlignmentModel)
+                .Where(m => m != null)
+                .Select(m => new AlignmentLcmsVM(m, compoundSearchService, peakSpotTableService, proteomicsTableService, parameter) { DisplayFilters = displayFilters, })
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+
             ShowExperimentSpectrumCommand = new ReactiveCommand().AddTo(Disposables);
 
-            this.ObserveProperty(m => m.AnalysisVM)
+            AnalysisViewModel //this.ObserveProperty(m => m.AnalysisVM)
                 .Where(vm => vm != null)
                 .Select(vm => ShowExperimentSpectrumCommand.WithLatestFrom(vm.ExperimentSpectrumViewModel, (a, b) => b))
                 .Switch()
@@ -87,17 +99,23 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
         private readonly IObservable<ParameterBase> parameter;
 
-        public AnalysisLcmsVM AnalysisVM {
-            get => analysisVM;
-            set => SetProperty(ref analysisVM, value);
-        }
-        private AnalysisLcmsVM analysisVM;
+        public AnalysisLcmsVM AnalysisVM => AnalysisViewModel.Value;
+        // {
+        //     get => analysisVM;
+        //     set => SetProperty(ref analysisVM, value);
+        // }
+        // private AnalysisLcmsVM analysisVM;
 
-        public AlignmentLcmsVM AlignmentVM {
-            get => alignmentVM;
-            set => SetProperty(ref alignmentVM, value);
-        }
-        private AlignmentLcmsVM alignmentVM;
+        public ReadOnlyReactivePropertySlim<AnalysisLcmsVM> AnalysisViewModel { get; }
+
+        public AlignmentLcmsVM AlignmentVM => AlignmentViewModel.Value;
+        // {
+        //     get => alignmentVM;
+        //     set => SetProperty(ref alignmentVM, value);
+        // }
+        // private AlignmentLcmsVM alignmentVM;
+
+        public ReadOnlyReactivePropertySlim<AlignmentLcmsVM> AlignmentViewModel { get; }
 
         public IMsdialDataStorage<MsdialLcmsParameter> Storage {
             get => storage;
@@ -208,27 +226,23 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             LoadAnalysisFileCommand.Execute();
         }
 
-        public override void SaveProject() {
-            AlignmentVM?.SaveProject();
-        }
-
         protected override void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile) {
             if (analysisFile?.File == null || analysisFile.File == model.AnalysisFile) {
                 return;
             }
             model.LoadAnalysisFile(analysisFile.File);
 
-            if (AnalysisVM != null) {
-                AnalysisVM.Dispose();
-                Disposables.Remove(AnalysisVM);
-            }
-            AnalysisVM = new AnalysisLcmsVM(
-                model.AnalysisModel,
-                compoundSearchService,
-                peakSpotTableService, 
-                proteomicsTableService) {
-                DisplayFilters = displayFilters
-            }.AddTo(Disposables);
+            // if (AnalysisVM != null) {
+            //     AnalysisVM.Dispose();
+            //     Disposables.Remove(AnalysisVM);
+            // }
+            // AnalysisVM = new AnalysisLcmsVM(
+            //     model.AnalysisModel,
+            //     compoundSearchService,
+            //     peakSpotTableService, 
+            //     proteomicsTableService) {
+            //     DisplayFilters = displayFilters
+            // }.AddTo(Disposables);
         }
 
         protected override void LoadAlignmentFileCore(AlignmentFileBeanViewModel alignmentFile) {
@@ -237,17 +251,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
             model.LoadAlignmentFile(alignmentFile.File);
 
-            if (AlignmentVM != null) {
-                AlignmentVM?.Dispose();
-                Disposables.Remove(AlignmentVM);
-            }
-            AlignmentVM = new AlignmentLcmsVM(
-                model.AlignmentModel,
-                compoundSearchService,
-                peakSpotTableService,
-                proteomicsTableService, parameter) {
-                DisplayFilters = displayFilters
-            }.AddTo(Disposables);
+            // if (AlignmentVM != null) {
+            //     AlignmentVM?.Dispose();
+            //     Disposables.Remove(AlignmentVM);
+            // }
+            // AlignmentVM = new AlignmentLcmsVM(
+            //     model.AlignmentModel,
+            //     compoundSearchService,
+            //     peakSpotTableService,
+            //     proteomicsTableService, parameter) {
+            //     DisplayFilters = displayFilters
+            // }.AddTo(Disposables);
         }
 
         public DelegateCommand<Window> ExportAnalysisResultCommand => exportAnalysisResultCommand ?? (exportAnalysisResultCommand = new DelegateCommand<Window>(model.ExportAnalysis));

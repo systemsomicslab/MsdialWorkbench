@@ -20,6 +20,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public DataCollectionSettingViewModel(DataCollectionSettingModel model, IObservable<bool> isEnabled) {
             Model = model ?? throw new ArgumentNullException(nameof(model));
 
+            IsReadOnly = model.IsReadOnly;
+
             Ms1Tolerance = Model.ToReactivePropertyAsSynchronized(
                 m => m.Ms1Tolerance,
                 m => m.ToString(),
@@ -49,6 +51,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 vm => Math.Max(1, Math.Min(Environment.ProcessorCount, int.Parse(vm))),
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => NumberOfThreads).AddTo(Disposables);
+
+            ExcuteRtCorrection = Model.ToReactivePropertySlimAsSynchronized(m => m.ExcuteRtCorrection).AddTo(Disposables);
 
             DataCollectionRangeSettings = Model.DataCollectionRangeSettings.Select(DataCollectionRangeSettingViewModelFactory.Create).ToList().AsReadOnly();
 
@@ -100,6 +104,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public DataCollectionSettingModel Model { get; }
 
+        public bool IsReadOnly { get; }
+
         [Required(ErrorMessage = "Ms1 tolerance is required.")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
         [Range(0.0001, double.MaxValue, ErrorMessage = "Tolerance should be positive value.")]
@@ -120,6 +126,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         [Required(ErrorMessage = "Number of threads is required.")]
         [RegularExpression(@"\d+", ErrorMessage = "Invalid character entered.")]
         public ReactiveProperty<string> NumberOfThreads { get; }
+
+        public ReactivePropertySlim<bool> ExcuteRtCorrection { get; }
 
         public ReadOnlyCollection<DataCollectionRangeSettingViewModel> DataCollectionRangeSettings { get; }
 

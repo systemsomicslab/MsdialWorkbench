@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Extension;
-using System.Collections;
+using CompMs.Common.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -36,7 +37,7 @@ namespace CompMs.Common.Lipidomics
 
         private static readonly int eariestPositionOfOxInSphingosine = 4;
         public IEnumerable<IChain> Generate(SphingoChain chain) {
-            var bs = EnumerateDoubleBond(chain.CarbonCount, chain.DoubleBond);
+            var bs = EnumerateDoubleBondInSphingosine(chain.CarbonCount, chain.DoubleBond);
             var os = EnumerateOxidized(chain.CarbonCount, chain.Oxidized, eariestPositionOfOxInSphingosine).ToArray();
             return bs.SelectMany(_ => os, (b, o) => new SphingoChain(chain.CarbonCount, b, o));
         }
@@ -48,7 +49,11 @@ namespace CompMs.Common.Lipidomics
             if (!DoubleBondIsValid(carbon, doubleBond.Count)) {
                 return Enumerable.Empty<IDoubleBond>();
             }
-            return InnerEnumerateDoubleBond(carbon, doubleBond);
+            var result = InnerEnumerateDoubleBond(carbon, doubleBond);
+            if (carbon == 14 && doubleBond.Count == 1 && doubleBond.UnDecidedCount == 1) {
+                result = result.Prepend(new DoubleBond(DoubleBondInfo.Z(9)));
+            }
+            return result;
         }
 
         private IEnumerable<IDoubleBond> InnerEnumerateDoubleBond(int carbon, IDoubleBond doubleBond) {
@@ -106,6 +111,13 @@ namespace CompMs.Common.Lipidomics
             return GenerateDoubleBonds(set, SetToBitArray(carbon, doubleBond), carbon - doubleBond.UnDecidedCount * 3, carbon);
         }
 
+        private IEnumerable<IDoubleBond> EnumerateDoubleBondInSphingosine(int carbon, IDoubleBond doubleBond) {
+            if (doubleBond.UnDecidedCount == 0) {
+                return new[]{ doubleBond, };
+            }
+            return GenerateDoubleBondsForSphingosine(doubleBond, carbon);
+        }
+
         private IEnumerable<IDoubleBond> GenerateDoubleBonds(HashSet<int> set, HashSet<int> sup, int nextHead, int prevTail) {
             if (nextHead == prevTail) {
                 if (set.IsSupersetOf(sup)) {
@@ -127,6 +139,50 @@ namespace CompMs.Common.Lipidomics
                 }
                 nextHead -= 3;
             }
+        }
+
+        private IEnumerable<IDoubleBond> GenerateDoubleBondsForSphingosine(IDoubleBond doubleBond, int length) {
+            var sets = new HashSet<int>(doubleBond.Bonds.Select(b => b.Position));
+
+            var blank = 3;
+            if (length > 4 && sets.Contains(4)) --blank;
+            if (length > 8 && sets.Contains(8)) --blank;
+            if (length > 14 && sets.Contains(14)) --blank;
+
+            IEnumerable<IDoubleBond> bs = new[] { doubleBond };
+            var next = bs;
+            var result = Enumerable.Empty<IDoubleBond>();
+            if (length > 4 && !sets.Contains(4)) {
+                var tmp = next.Select(b => b.Decide(DoubleBondInfo.Create(4))).ToArray();
+                result = result.Concat(tmp.Where(b => b.UnDecidedCount == 0));
+                next = next.Concat(tmp.Where(b => b.UnDecidedCount > 0));
+                sets.Add(4);
+            }
+            if (length > 8 && !sets.Contains(8)) {
+                var tmp = next.Select(b => b.Decide(DoubleBondInfo.Create(8))).ToArray();
+                result = result.Concat(tmp.Where(b => b.UnDecidedCount == 0));
+                next = next.Concat(tmp.Where(b => b.UnDecidedCount > 0));
+                sets.Add(8);
+            }
+            if (length > 14 && !sets.Contains(14)) {
+                var tmp = next.Select(b => b.Decide(DoubleBondInfo.Create(14))).ToArray();
+                result = result.Concat(tmp.Where(b => b.UnDecidedCount == 0));
+                next = next.Concat(tmp.Where(b => b.UnDecidedCount > 0));
+                sets.Add(14);
+            }
+
+            if (blank <= doubleBond.UnDecidedCount) {
+                next = next.Where(b => b.UnDecidedCount > 0 && new[] { 4, 8, 14, }.All(i => b.Bonds.Select(bd => bd.Position).Contains(i)));
+                for (int i = 6; i < length; i += 2) {
+                    if (!sets.Contains(i)) {
+                        sets.Add(i);
+                        var tmp = next.Select(b => b.Decide(DoubleBondInfo.Create(i))).ToArray();
+                        result = result.Concat(tmp.Where(b => b.UnDecidedCount == 0));
+                        next = next.Concat(tmp.Where(b => b.UnDecidedCount > 0));
+                    }
+                }
+            }
+            return result;
         }
 
         private HashSet<int> SetToBitArray(int length, IDoubleBond doubleBond) {

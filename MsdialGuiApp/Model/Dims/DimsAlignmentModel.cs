@@ -40,7 +40,8 @@ namespace CompMs.App.Msdial.Model.Dims
             IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorCotnainers,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseMapper mapper,
-            ParameterBase param) {
+            ParameterBase param)
+            : base(alignmentFileBean.FilePath) {
 
             alignmentFile = alignmentFileBean;
             fileName = alignmentFileBean.FileName;
@@ -51,13 +52,8 @@ namespace CompMs.App.Msdial.Model.Dims
             this.DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             AnnotatorContainers = annotatorCotnainers;
-            Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
-            if (Container == null) {
-                MessageBox.Show("No aligned spot information.");
-            }
 
-            Ms1Spots = Container == null ? new ObservableCollection<AlignmentSpotPropertyModel>() :
-                new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
+            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
 
             MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
             MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;

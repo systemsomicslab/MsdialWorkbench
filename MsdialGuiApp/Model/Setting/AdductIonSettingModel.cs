@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.CommonMVVM;
@@ -10,13 +11,16 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     public class AdductIonSettingModel : BindableBase
     {
-        public AdductIonSettingModel(ParameterBase parameter) {
+        public AdductIonSettingModel(ParameterBase parameter, ProcessOption process) {
             referenceParameter = parameter.ReferenceFileParam;
             if (referenceParameter.SearchedAdductIons.IsEmptyOrNull()) {
                 referenceParameter.SearchedAdductIons = AdductResourceParser.GetAdductIonInformationList(parameter.IonMode);
             }
             AdductIons = new ObservableCollection<AdductIon>(referenceParameter.SearchedAdductIons);
+            IsReadOnly = (process & ProcessOption.Identification) == 0;
         }
+
+        public bool IsReadOnly { get; }
 
         private readonly ReferenceBaseParameter referenceParameter;
 
@@ -44,6 +48,9 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public void Commit() {
+            if (IsReadOnly) {
+                return;
+            }
             referenceParameter.SearchedAdductIons = AdductIons.ToList();
         }
     }

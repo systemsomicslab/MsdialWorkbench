@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.Table
 {
-    interface IPeakSpotTableModelBase
+    public interface IPeakSpotTableModelBase
     {
         IReadOnlyList<object> PeakSpots { get; }
 

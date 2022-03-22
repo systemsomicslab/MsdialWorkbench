@@ -9,6 +9,21 @@
              d:Background="White"
              d:DataContext="{d:DesignInstance Type={x:Type vm:ProjectParameterSettingViewModel}}"
              d:DesignHeight="120" d:DesignWidth="400">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="TextBox">
+                <Setter Property="IsReadOnly" Value="False"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsReadOnly}" Value="True">
+                        <Setter Property="IsReadOnly" Value="True"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <UserControl.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Open"
                         Executed="Open_Executed"
@@ -35,6 +50,7 @@
                               ButtonContent="Browse"
                               ButtonWidth="72"
                               Command="ApplicationCommands.Open"
+                              CommandIsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}"
                               Margin="0,16,0,0"
                               IsTabStop="False"
                               TabIndex="0">

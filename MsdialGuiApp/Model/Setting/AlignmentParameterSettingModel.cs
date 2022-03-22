@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialDimsCore.Parameter;
 using CompMs.MsdialGcMsApi.Parameter;
@@ -10,13 +11,16 @@ using CompMs.MsdialLcmsApi.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
     public class AlignmentParameterSettingModel : BindableBase
     {
-        public AlignmentParameterSettingModel(ParameterBase parameter, DateTime now, List<AnalysisFileBean> files) {
+        public AlignmentParameterSettingModel(ParameterBase parameter, DateTime now, List<AnalysisFileBean> files, IList<AlignmentFileBean> alignmentFiles, ProcessOption process) {
+            IsReadOnly = (process & ProcessOption.Alignment) == 0;
+
             AlignmentResultFileName = $"AlignmentResult_{now:yyyy_MM_dd_hh_mm_ss}";
             AnalysisFiles = files.AsReadOnly();
             ReferenceFile = AnalysisFiles.FirstOrDefault(f => f.AnalysisFileId == parameter.AlignmentReferenceFileID);
@@ -30,10 +34,15 @@ namespace CompMs.App.Msdial.Model.Setting
             IsKeepSuggestedMetaboliteFeatures = parameter.PostProcessBaseParam.IsKeepSuggestedMetaboliteFeatures;
             IsKeepRemovableFeaturesAndAssignedTagForChecking = parameter.PostProcessBaseParam.IsKeepRemovableFeaturesAndAssignedTagForChecking;
             IsForceInsertForGapFilling = parameter.PostProcessBaseParam.IsForceInsertForGapFilling;
+            ShouldRunAlignment = AnalysisFiles.Count > 1 && !IsReadOnly;
             this.parameter = parameter;
+            this.alignmentFiles = alignmentFiles;
         }
 
         private readonly ParameterBase parameter;
+        private readonly IList<AlignmentFileBean> alignmentFiles;
+
+        public bool IsReadOnly { get; }
 
         public string AlignmentResultFileName {
             get => alignmentResultFileName;
@@ -105,6 +114,12 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool isForceInsertForGapFilling;
 
+        public bool ShouldRunAlignment {
+            get => shouldRunAlignment;
+            set => SetProperty(ref shouldRunAlignment, value);
+        }
+        private bool shouldRunAlignment;
+
         public bool IsCompleted {
             get => isCompleted;
             private set => SetProperty(ref isCompleted, value);
@@ -112,16 +127,33 @@ namespace CompMs.App.Msdial.Model.Setting
         private bool isCompleted;
 
         public void Commit() {
+            if (!ShouldRunAlignment) {
+                parameter.ProcessBaseParam.ProcessOption &= ~ProcessOption.Alignment;
+                return;
+            }
+
+            parameter.ProcessBaseParam.ProcessOption |= ProcessOption.Alignment;
+            var projectFolder = parameter.ProjectParam.ProjectFolderPath;
+            alignmentFiles.Add(new AlignmentFileBean
+            {
+                FileID = alignmentFiles.DefaultIfEmpty().Max(file => file?.FileID) ?? 0,
+                FileName = alignmentResultFileName,
+                FilePath = Path.Combine(projectFolder, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
+                EicFilePath = Path.Combine(projectFolder, alignmentResultFileName + ".EIC.aef"),
+                SpectraFilePath = Path.Combine(projectFolder, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl),
+                ProteinAssembledResultFilePath = Path.Combine(projectFolder, alignmentResultFileName + "." + MsdialDataStorageFormat.prf),
+            });
             parameter.AlignmentBaseParam.AlignmentReferenceFileID = ReferenceFile.AnalysisFileId;
-            parameter.PostProcessBaseParam.PeakCountFilter = PeakCountFilter;
-            parameter.PostProcessBaseParam.NPercentDetectedInOneGroup = NPercentDetectedInOneGroup;
-            parameter.PostProcessBaseParam.BlankFiltering = BlankFiltering;
-            parameter.PostProcessBaseParam.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = IsRemoveFeatureBasedOnBlankPeakHeightFoldChange;
-            parameter.PostProcessBaseParam.FoldChangeForBlankFiltering = FoldChangeForBlankFiltering;
-            parameter.PostProcessBaseParam.IsKeepRefMatchedMetaboliteFeatures = IsKeepRefMatchedMetaboliteFeatures;
-            parameter.PostProcessBaseParam.IsKeepSuggestedMetaboliteFeatures = IsKeepSuggestedMetaboliteFeatures;
-            parameter.PostProcessBaseParam.IsKeepRemovableFeaturesAndAssignedTagForChecking = IsKeepRemovableFeaturesAndAssignedTagForChecking;
-            parameter.PostProcessBaseParam.IsForceInsertForGapFilling = IsForceInsertForGapFilling;
+            var postProcessParameter = parameter.PostProcessBaseParam;
+            postProcessParameter.PeakCountFilter = PeakCountFilter;
+            postProcessParameter.NPercentDetectedInOneGroup = NPercentDetectedInOneGroup;
+            postProcessParameter.BlankFiltering = BlankFiltering;
+            postProcessParameter.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = IsRemoveFeatureBasedOnBlankPeakHeightFoldChange;
+            postProcessParameter.FoldChangeForBlankFiltering = FoldChangeForBlankFiltering;
+            postProcessParameter.IsKeepRefMatchedMetaboliteFeatures = IsKeepRefMatchedMetaboliteFeatures;
+            postProcessParameter.IsKeepSuggestedMetaboliteFeatures = IsKeepSuggestedMetaboliteFeatures;
+            postProcessParameter.IsKeepRemovableFeaturesAndAssignedTagForChecking = IsKeepRemovableFeaturesAndAssignedTagForChecking;
+            postProcessParameter.IsForceInsertForGapFilling = IsForceInsertForGapFilling;
             EqualityParameterSettings.ForEach(s => s.Commit());
             IsCompleted = true;
         }

@@ -7,13 +7,15 @@
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:Components="clr-namespace:CompMs.Common.Components;assembly=Common" 
+             xmlns:design="clr-namespace:CompMs.Graphics.Design;assembly=ChartDrawing"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type vm:SpectrumViewModel}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/View/ChartStyles.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -24,14 +26,16 @@
                                   VerticalTitle="{Binding VerticalProperty, Mode=OneTime}"
                                   GraphTitle="{Binding GraphTitle, Mode=OneTime}"
                                   Style="{StaticResource NoWheelBasicChart}">
-            <Grid>                      
-                <chart:LineSpectrumControl ItemsSource="{Binding Spectrums}"
-                                           HorizontalPropertyName="{Binding HorizontalProperty, Mode=OneTime}"
-                                           VerticalPropertyName="{Binding VerticalProperty, Mode=OneTime}">
-                    <chart:LineSpectrumControl.LinePen>
-                        <Pen Brush="Black" Thickness="1.5" PresentationOptions:Freeze="True"/>
-                    </chart:LineSpectrumControl.LinePen>
-                    <chart:LineSpectrumControl.ToolTip>
+            <Grid>
+                <chart:LineSpectrumControlSlim ItemsSource="{Binding Spectrums}"
+                                               HorizontalProperty="{Binding HorizontalProperty, Mode=OneTime}"
+                                               VerticalProperty="{Binding VerticalProperty, Mode=OneTime}"
+                                               DataType="{x:Type Components:SpectrumPeak}"
+                                               LineThickness="1.5">
+                    <chart:LineSpectrumControlSlim.LineBrush>
+                        <design:ConstantBrushMapper Brush="Black"/>
+                    </chart:LineSpectrumControlSlim.LineBrush>
+                    <chart:LineSpectrumControlSlim.ToolTip>
                         <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel>
                                 <TextBlock Text="{Binding FocusedItem.Mass, StringFormat=m/z: {0}}"/>
@@ -39,15 +43,15 @@
                                 <TextBlock Text="{Binding FocusedItem.Comment, StringFormat=Comment: {0}}"/>
                             </StackPanel>
                         </ToolTip>
-                    </chart:LineSpectrumControl.ToolTip>
-                </chart:LineSpectrumControl>
+                    </chart:LineSpectrumControlSlim.ToolTip>
+                </chart:LineSpectrumControlSlim>
                 <chart:Annotator ItemsSource="{Binding Spectrums}"
-                                HorizontalPropertyName="{Binding HorizontalProperty, Mode=OneTime}"
-                                VerticalPropertyName="{Binding VerticalProperty, Mode=OneTime}"
-                                OrderingPropertyName="{Binding VerticalProperty, Mode=OneTime}"
-                                LabelPropertyName="{Binding HorizontalProperty, Mode=OneTime}"
-                                TopN="5"
-                                Overlap="Direct,Horizontal"/>
+                                 HorizontalPropertyName="{Binding HorizontalProperty, Mode=OneTime}"
+                                 VerticalPropertyName="{Binding VerticalProperty, Mode=OneTime}"
+                                 OrderingPropertyName="{Binding VerticalProperty, Mode=OneTime}"
+                                 LabelPropertyName="{Binding HorizontalProperty, Mode=OneTime}"
+                                 TopN="5"
+                                 Overlap="Direct,Horizontal"/>
             </Grid>
         </chart:SimpleChartControl>
     </Grid>

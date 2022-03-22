@@ -37,7 +37,7 @@ namespace CompMs.App.MsdialConsole.Process {
             foreach (var file in files) {
             }
             var streamManager = new DirectoryTreeStreamManager(container.MsdialLcImMsParameter.ProjectFolderPath);
-            container.Save(streamManager, container.MsdialLcImMsParameter.ProjectFileName, string.Empty).Wait();
+            container.SaveAsync(streamManager, container.MsdialLcImMsParameter.ProjectFileName, string.Empty).Wait();
             return 0;
         }
     }

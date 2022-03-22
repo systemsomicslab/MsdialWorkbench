@@ -11,8 +11,9 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         private readonly PeakPickBaseParameter parameter;
 
-        public PeakDetectionSettingModel(PeakPickBaseParameter parameter) {
+        public PeakDetectionSettingModel(PeakPickBaseParameter parameter, ProcessOption process) {
             this.parameter = parameter;
+            IsReadOnly = (process & ProcessOption.PeakSpotting) == 0;
             MinimumAmplitude = parameter.MinimumAmplitude;
             MassSliceWidth = parameter.MassSliceWidth;
             SmoothingMethod = parameter.SmoothingMethod;
@@ -27,6 +28,8 @@ namespace CompMs.App.Msdial.Model.Setting
                         MassTolerance = query.MassTolerance,
                     }));
         }
+
+        public bool IsReadOnly { get; }
 
         public double MinimumAmplitude {
             get => minimumAmplitude;
@@ -69,6 +72,9 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public void Commit() {
+            if (IsReadOnly) {
+                return;
+            }
             parameter.MinimumAmplitude = MinimumAmplitude;
             parameter.MassSliceWidth = MassSliceWidth;
             parameter.SmoothingMethod = SmoothingMethod;

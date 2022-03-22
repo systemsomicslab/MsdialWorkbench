@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Normalize;
+using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
@@ -168,6 +169,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
             BarChartViewModel = new BarChartViewModel(this.model.BarChartModel, brushSource: classBrush).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(this.model.AlignmentEicModel).AddTo(Disposables);
+            
+            
             AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(
                 this.model.AlignmentSpotTableModel,
                 Observable.Return(model.BarItemsLoader),
@@ -226,6 +229,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public AlignmentEicViewModel AlignmentEicViewModel { get; }
         public LcmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
         public LcmsProteomicsAlignmentTableViewModel ProteomicsAlignmentTableViewModel { get; }
+        public AlignedChromatogramModificationViewModelLegacy AlignedChromatogramModificationViewModel { get; }
 
         public double MassMin { get; }
         public double MassMax { get; }
@@ -448,7 +452,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             return this.model.CanSaveSpectra();
         }
         public void SaveProject() {
-            model.SaveProject();
+            model.SaveAsync();
         }
 
         public DelegateCommand<Window> NormalizeCommand => normalizeCommand ?? (normalizeCommand = new DelegateCommand<Window>(Normalize));

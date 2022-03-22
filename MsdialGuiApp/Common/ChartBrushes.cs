@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Common
@@ -29,10 +25,28 @@ namespace CompMs.App.Msdial.Common
         );
 
         public static SolidColorBrush GetChartBrush(int i) {
-            while (i > SolidColorBrushList.Count - 1) {
-                i = i - SolidColorBrushList.Count;
+            var count = SolidColorBrushList.Count;
+            return SolidColorBrushList[(i % count + count) % count];
+        }
+
+        public static Dictionary<string, List<byte>> ConvertToBytesDictionary(Dictionary<string, SolidColorBrush> classToBrush) {
+            var classToBytes = new Dictionary<string, List<byte>>();
+            foreach (var pair in classToBrush) {
+                var classname = pair.Key;
+                var bytes = new List<byte>() { pair.Value.Color.R, pair.Value.Color.G, pair.Value.Color.B, pair.Value.Color.A };
+                classToBytes[classname] = bytes;
             }
-            return SolidColorBrushList[i];
+            return classToBytes;
+        }
+
+        public static Dictionary<string, SolidColorBrush> ConvertToSolidBrushDictionary(Dictionary<string, List<byte>> classToBytes) {
+            var classToBrush = new Dictionary<string, SolidColorBrush>();
+            foreach (var pair in classToBytes) {
+                var classname = pair.Key;
+                var bytes = pair.Value;
+                classToBrush[classname] = new SolidColorBrush() { Color = new Color() { R = bytes[0], G = bytes[1], B = bytes[2], A = bytes[3] } };
+            }
+            return classToBrush;
         }
     }
 }

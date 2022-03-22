@@ -12,7 +12,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -33,11 +33,14 @@
                     </Style>
                 </StackPanel.Resources>
                 <RadioButton Name="RadioButton_UseTIMS" Content="TIMS (Bruker)"
-                             IsChecked="{Binding Path=IonMobilityType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Tims}"/>
+                             IsChecked="{Binding Path=IonMobilityType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Tims}"
+                             IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"/>
                 <RadioButton Name="RadioButton_UseDTIMS" Content="DTIMS (Agilent)"
-                             IsChecked="{Binding Path=IonMobilityType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Dtims}"/>
+                             IsChecked="{Binding Path=IonMobilityType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Dtims}"
+                             IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"/>
                 <RadioButton Name="RadioButton_UseTWIMS" Content="TWIMS (Waters)"
-                             IsChecked="{Binding Path=IonMobilityType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Twims}"/>
+                             IsChecked="{Binding Path=IonMobilityType.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Twims}"
+                             IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Margin="8">
@@ -92,6 +95,7 @@
                       ClipboardCopyMode="IncludeHeader" 
                       ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"
                       Visibility="{Binding IsDtims.Value, Converter={StaticResource ResourceKey=BooleanToVisibility}}"
+                      IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
                       behavior:DataGridPasteBehavior.Enable="True"
                       Margin="8">
                 <DataGrid.Columns>
@@ -99,7 +103,6 @@
                                         Binding="{Binding Filename}"
                                         IsReadOnly="True"
                                         Width="2*"/>
-
                     <DataGridTextColumn Header="Beta"
                                         Binding="{Binding AgilentBeta, UpdateSourceTrigger=PropertyChanged}"
                                         ElementStyle="{StaticResource NumberCell}"
@@ -121,6 +124,7 @@
                       CanUserReorderColumns="False" CanUserSortColumns="True"
                       ClipboardCopyMode="IncludeHeader" 
                       ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                      IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"
                       Visibility="{Binding IsTwims.Value, Converter={StaticResource ResourceKey=BooleanToVisibility}}"
                       behavior:DataGridPasteBehavior.Enable="True"
                       Margin="8">

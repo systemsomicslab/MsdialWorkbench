@@ -423,7 +423,7 @@
                                      Grid.Row="1" Grid.Column="1"/>
                         <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
                                                     VerticalAxis="{x:Null}"
-                                                    Margin="41.5,0,0,0"
+                                                    Margin="57.5,0,0,0"
                                                     Grid.Row="2" Grid.Column="1" />
                         <TextBlock Name="HorizontalTitle"
                                    Text="{TemplateBinding HorizontalTitle}"

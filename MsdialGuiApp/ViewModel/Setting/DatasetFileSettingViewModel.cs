@@ -18,6 +18,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
     {
         public DatasetFileSettingViewModel(DatasetFileSettingModel model, IObservable<bool> isEnabled) {
             Model = model ?? throw new ArgumentNullException(nameof(model));
+
+            IsReadOnly = model.IsReadOnly;
+
             AnalysisFilePropertyCollection = Model.Files
                 .ToReadOnlyReactiveCollection(v => new AnalysisFileBeanViewModel(v))
                 .AddTo(Disposables);
@@ -85,6 +88,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
 
         public DatasetFileSettingModel Model { get; }
+
+        public bool IsReadOnly { get; }
 
         private readonly Subject<Unit> decide;
 

@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcimms
@@ -31,20 +30,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AlignmentFileBean alignmentFileBean,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseMapper mapper,
-            ParameterBase parameter) {
+            ParameterBase parameter)
+            : base(alignmentFileBean.FilePath) {
             Parameter = parameter;
             AlignmentFile = alignmentFileBean;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             ResultFile = alignmentFileBean.FilePath;
-            Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(ResultFile);
-            if (Container == null) {
-                MessageBox.Show("No aligned spot information.");
-            }
 
-            Ms1Spots = Container == null
-                ? new ObservableCollection<AlignmentSpotPropertyModel>()
-                : new ObservableCollection<AlignmentSpotPropertyModel>(
-                    Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
+            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
 
             MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
             MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
@@ -144,8 +137,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public AlignmentFileBean AlignmentFile { get; }
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
         public string ResultFile { get; }
-        public AlignmentResultContainer Container { get; }
-
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
 
         public double MassMin { get; }

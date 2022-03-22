@@ -98,5 +98,15 @@ namespace CompMs.Graphics.UI
             get => GetValue(CommandParameterProperty);
             set => SetValue(CommandParameterProperty, value);
         }
+
+        public static readonly DependencyProperty CommandIsEnabledProperty =
+            DependencyProperty.Register(
+                nameof(CommandIsEnabled), typeof(bool), typeof(ExecutableBar),
+                new FrameworkPropertyMetadata(true));
+
+        public bool CommandIsEnabled {
+            get => (bool)GetValue(CommandIsEnabledProperty);
+            set => SetValue(CommandIsEnabledProperty, value);
+        }
     }
 }

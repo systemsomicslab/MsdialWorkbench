@@ -36,7 +36,7 @@ namespace CompMs.MsdialIntegrate.Parser
         }
 
         public Task SaveAsync(IMsdialDataStorage<ParameterBase> dataStorage, IStreamManager streamManager, string projectTitle, string prefix) {
-            return dataStorage.Save(streamManager, projectTitle, prefix);
+            return dataStorage.SaveAsync(streamManager, projectTitle, prefix);
         }
 
         private static string Combine(string path1, string path2) {

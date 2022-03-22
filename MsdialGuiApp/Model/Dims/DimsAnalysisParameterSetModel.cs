@@ -18,7 +18,7 @@ namespace CompMs.App.Msdial.Model.Dims
             Parameter = parameter;
 
             DataCollectionSettingModel = new DimsDataCollectionSettingModel(parameter.ProcessBaseParam, parameter.PeakPickBaseParam, parameter.ProviderFactoryParameter);
-            IdentifySettingModel = new IdentifySettingModel(parameter, new DimsAnnotatorSettingModelFactory());
+            IdentifySettingModel = new IdentifySettingModel(parameter, new DimsAnnotatorSettingModelFactory(), Parameter.ProcessOption);
 
             if (Parameter.TargetOmics == TargetOmics.Lipidomics) {
                 string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);

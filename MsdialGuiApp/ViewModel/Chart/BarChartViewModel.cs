@@ -58,7 +58,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             }
             BrushSource = brushSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            Errors = BarItems.Select(items => items.Select(item => item.Error).ToArray())
+            Errors = BarItems
+                .Where(items => items != null)
+                .Select(items => items.Select(item => item.Error).ToArray())
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
