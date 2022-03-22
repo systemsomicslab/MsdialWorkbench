@@ -4,8 +4,9 @@ using System.Text;
 using NCDK.Smiles;
 using NCDK.Graphs.InChI;
 using System.Linq;
+using CompMs.Common.Lipidomics;
 
-namespace CompMs.Common.Lipidomics
+namespace CompMs.MspGenerator
 {
     public class SmilesInchikeyGenerator
     {
@@ -36,7 +37,7 @@ namespace CompMs.Common.Lipidomics
                     chainList.Add(chainSmiles);
                     jointPosition = jointPosition + 10;
                 }
-                var smilesHeaderDict = SmilesLipidHeader.HeaderDictionary;
+                var smilesHeaderDict = SmilesLipidHeader2.HeaderDictionary;
                 var headerSmiles = smilesHeaderDict[lipid.LipidClass.ToString()];
 
                 var rawSmiles = headerSmiles + string.Join(".", chainList);
@@ -109,9 +110,9 @@ namespace CompMs.Common.Lipidomics
         public string Smiles { get; set; }
         public string InchiKey { get; set; }
     }
-    public sealed class SmilesLipidHeader
+    public sealed class SmilesLipidHeader2
     {
-        private SmilesLipidHeader() { }
+        private SmilesLipidHeader2() { }
 
         public static Dictionary<string, string> HeaderDictionary = new Dictionary<string, string>()
         {
@@ -280,9 +281,6 @@ namespace CompMs.Common.Lipidomics
             //{"NAGlySer_OxFA", "OCC(NC(=O)CN%20)C(O)=O."},
             //{"NAGly_OxFA", "OC(=O)CN%20."},
             //{"NAOrn_OxFA", "NCCCC(N%20)C(O)=O."},
-            //{"NATau_FA", "OS(=O)(=O)CCN%20."},
-            //{"NAPhe_OxFA", "OC(=O)C(CC1=CC=CC=C1)N%20."},
-
 
 
             //steroid and cholic acid 

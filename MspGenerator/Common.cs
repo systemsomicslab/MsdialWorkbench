@@ -369,6 +369,13 @@ namespace CompMs.MspGenerator
                 case "NAGly_OxFA":
                 case "NAOrn_OxFA":
 
+                case "NATau_FA":
+                case "NATau_OxFA":
+                case "NAPhe_FA":
+                case "NAPhe_OxFA":
+                case "NAGly_FA":
+                case "NAOrn_FA":
+
                     OtherLipidMspGenerator.singleAcylChainLipidGenerator(chain1, lipidClass, output);
                     break;
                 case "CE":

@@ -13398,6 +13398,99 @@ AdductIon adduct)
             }
             return null;
         }
+        //  add 20220322
+        public static LipidMolecule JudgeIfNAcylTauFa(IMSScanProperty msScanProp, double ms2Tolerance,
+    double theoreticalMz, int totalCarbon, int totalDoubleBond, int totalOxidized,
+    AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Positive)
+            { // Positive ion mode 
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+NH4]+")
+                {
+                    //  seek 126.02 (Taurine+ fragment)
+                    var threshold = 10.0;
+                    var diagnosticMz = 12 * 2 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.SulfurMass + MassDiffDictionary.OxygenMass * 3 + Proton;
+
+                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    if (isClassIonFound == false) return null;
+
+                    var candidates = new List<LipidMolecule>();
+
+                    return returnAnnotationResult("NATau", LbmClass.NATau, "", theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
+                }
+            }
+            else if (adduct.AdductIonName == "[M-H]-")
+            {
+                //  seek 124.01 (Taurine- fragment)
+                var threshold = 1.0;
+                var diagnosticMz = 12 * 2 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.SulfurMass + MassDiffDictionary.OxygenMass * 3 - Proton;
+                //  seek 79.96 (SO3- fragment)
+                var threshold2 = 10.0;
+                var diagnosticMz2 = MassDiffDictionary.SulfurMass + MassDiffDictionary.OxygenMass * 3 + Electron;
+
+                var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                var isClassIonFound2 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                if (!isClassIonFound || !isClassIonFound2) return null;
+
+                var candidates = new List<LipidMolecule>();
+
+                return returnAnnotationResult("NATau", LbmClass.NATau, "", theoreticalMz, adduct,
+                    totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
+            }
+            return null;
+        }
+
+        public static LipidMolecule JudgeIfNAcylPheFa(IMSScanProperty msScanProp, double ms2Tolerance,
+         double theoreticalMz, int totalCarbon, int totalDoubleBond, int totalOxidized,
+         AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (adduct.IonMode == IonMode.Positive)
+            { // Positive ion mode 
+                if (adduct.AdductIonName == "[M+H]+")
+                {
+                    //  seek 166.086  (phenylalanine fragment)
+                    var threshold = 10.0;
+                    var diagnosticMz = 12 * 9 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 + Proton;
+                    //  seek 120.08  (phenylalanine-H2CO2 fragment)
+                    var threshold2 = 10.0;
+                    var diagnosticMz2 = diagnosticMz - 12 - MassDiffDictionary.OxygenMass * 2 - MassDiffDictionary.HydrogenMass * 2;
+
+                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    var isClassIonFound2 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                    if (!isClassIonFound || !isClassIonFound2) return null;
+
+                    var candidates = new List<LipidMolecule>();
+
+                    return returnAnnotationResult("NAPhe", LbmClass.NAPhe, "", theoreticalMz, adduct,
+                        totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
+                }
+            }
+            else if (adduct.AdductIonName == "[M-H]-")
+            {
+                //  seek 164.07  (phenylalanine fragment)
+                var threshold = 10.0;
+                var diagnosticMz = 12 * 9 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 - Proton;
+
+                //  seek 147.04  (phenylalanine-NH3 fragment)
+                var threshold2 = 10.0;
+                var diagnosticMz2 = diagnosticMz - MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass * 3;
+
+                var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                var isClassIonFound2 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                if (!isClassIonFound || !isClassIonFound2) return null;
+
+                var candidates = new List<LipidMolecule>();
+
+                return returnAnnotationResult("NAPhe", LbmClass.NAPhe, "", theoreticalMz, adduct,
+                    totalCarbon, totalDoubleBond, totalOxidized, candidates, 1);
+            }
+            return null;
+        }
 
 
         // 

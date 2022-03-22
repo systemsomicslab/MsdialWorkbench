@@ -787,6 +787,15 @@ namespace CompMs.Common.Lipidomics {
                         result = LipidMsmsCharacterization.JudgeIfSpeSpecies(molecule.LipidName, molecule.LipidClass,
                             msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
                         break;
+                    //20220322
+                    case LbmClass.NAPhe:
+                        result = LipidMsmsCharacterization.JudgeIfNAcylPheFa(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
+                    case LbmClass.NATau:
+                        result = LipidMsmsCharacterization.JudgeIfNAcylTauFa(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
 
 
                     default:
