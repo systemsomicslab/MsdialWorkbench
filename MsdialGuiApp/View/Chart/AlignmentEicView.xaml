@@ -46,9 +46,10 @@
                           Style="{StaticResource OverlapChart}">
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Peak curation (EICs overlay)">
-                        
-                    </MenuItem>
+                    <MenuItem Header="Peak curation (EICs overlay)"
+                        Command="{Binding ShowPeakCurationWinByOverlayEICs}"
+                        />
+
                     <MenuItem Header="Peak curation (Sample table)">
 
                     </MenuItem>

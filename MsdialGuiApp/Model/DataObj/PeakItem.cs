@@ -8,6 +8,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             this.chrom = chrom;
         }
         private readonly IChromatogramPeak chrom;
+        public IChromatogramPeak Chrom { get => this.chrom; }
 
         public double Intensity => chrom.Intensity;
         public double Time => chrom.ChromXs.Value;

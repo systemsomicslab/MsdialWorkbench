@@ -115,7 +115,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.DataBases,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
-                barItemsLoader)
+                barItemsLoader,
+                Storage.AnalysisFiles)
             .AddTo(Disposables);
         }
 

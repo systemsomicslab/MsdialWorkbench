@@ -1,4 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.View.PeakCuration;
+using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
@@ -6,20 +8,25 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    class AlignmentEicModel : BindableBase
+    class AlignmentEicModel : DisposableModelBase
     {
         public AlignmentEicModel(
             IObservable<AlignmentSpotPropertyModel> model,
             IObservable<List<Chromatogram>> chromatoramSource,
+            List<AnalysisFileBean> AnalysisFiles,
+            ParameterBase Param,
             Func<PeakItem, double> horizontalSelector,
             Func<PeakItem, double> verticalSelector) {
             
@@ -60,6 +67,17 @@ namespace CompMs.App.Msdial.Model.Chart
 
             HorizontalRangeSource = hrox.Merge(nopeak).ToReadOnlyReactivePropertySlim();
             VerticalRangeSource = vrox.Merge(nopeak).ToReadOnlyReactivePropertySlim();
+
+            var legacyvm = new AlignedChromatogramModificationViewModelLegacy();
+            var legacymodel = 
+                model.CombineLatest(chromatoramSource).
+                Where(n => n.First != null && n.Second != null && n.Second.Count > 0).
+                Select((c) => new AlignedChromatogramModificationModelLegacy(c.First, c.Second, AnalysisFiles, Param));
+            legacymodel.Subscribe((m) => legacyvm.UpdateModel(m)).AddTo(Disposables);
+
+            click = new Subject<Unit>();
+            // click.WithLatestFrom(model, (a, b) => b).WithLatestFrom(chromatoramSource).Subscribe((c) => CreateAlignedPeakCorrectionWinLegacy(c.First, c.Second, null, null));
+            click.Subscribe((c) => CreateAlignedPeakCorrectionWinLegacy(legacyvm));
         }
 
         public List<Chromatogram> EicChromatograms {
@@ -115,6 +133,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public IObservable<Range> VerticalRangeSource { get; }
 
+
         public GraphElements Elements { get; } = new GraphElements();
 
         public Func<PeakItem, double> HorizontalSelector { get; }
@@ -124,12 +143,16 @@ namespace CompMs.App.Msdial.Model.Chart
         public static AlignmentEicModel Create(
             IObservable<AlignmentSpotPropertyModel> source,
             AlignmentEicLoader loader,
+            List<AnalysisFileBean> AnalysisFiles,
+            ParameterBase Param,
             Func<PeakItem, double> horizontalSelector,
             Func<PeakItem, double> verticalSelector) {
 
             return new AlignmentEicModel(
                 source,
                 source.Select(loader.LoadEic),
+                AnalysisFiles, 
+                Param,
                 horizontalSelector, verticalSelector
             );
             /*
@@ -144,6 +167,20 @@ namespace CompMs.App.Msdial.Model.Chart
             */
         }
 
+        private readonly Subject<Unit> click;
+        public void Click() {
+            click.OnNext(Unit.Default);
+        }
+
+        private static void CreateAlignedPeakCorrectionWinLegacy(
+            AlignedChromatogramModificationViewModelLegacy vm) {
+            System.Windows.Application.Current.Dispatcher.Invoke(() => 
+                {
+                    var window = new AlignedPeakCorrectionWinLegacy(vm);
+                    window.Show();
+                }
+            );
+        }
     }
 
     class AlignmentEicLoader

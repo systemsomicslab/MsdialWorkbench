@@ -9,6 +9,7 @@ using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -30,12 +31,28 @@ namespace CompMs.App.Msdial.View.PeakCuration {
             InitializeComponent();
         }
 
+        //public AlignedPeakCorrectionWinLegacy(ChromatogramSpotInfo alignedData, AlignmentSpotProperty bean, List<AnalysisFileBean> files, ParameterBase param) {
+        //    InitializeComponent();
+        //    var peakPropertyList = AlignedChromatogramModificationModelLegacy.LoadPeakProperty(alignedData, bean, files, param);
+        //    VM = new AlignedChromatogramModificationViewModelLegacy(bean, peakPropertyList, param);
+        //    this.DataContext = VM;
+        //}
 
-
-        public AlignedPeakCorrectionWinLegacy(ChromatogramSpotInfo alignedData, AlignmentSpotProperty bean, List<AnalysisFileBean> files, ParameterBase param) {
+        public AlignedPeakCorrectionWinLegacy(AlignedChromatogramModificationViewModelLegacy vm) {
             InitializeComponent();
-            var peakPropertyList = AlignedChromatogramModificationModelLegacy.LoadPeakProperty(alignedData, bean, files, param);
-            VM = new AlignedChromatogramModificationViewModelLegacy(bean, peakPropertyList, param);
+            VM = vm;
+            this.DataContext = VM;
+        }
+
+        public AlignedPeakCorrectionWinLegacy(
+            AlignmentSpotPropertyModel bean,
+            List<Chromatogram> chromatoramSource,
+            List<AnalysisFileBean> files, ParameterBase param) {
+            InitializeComponent();
+            // var peakPropertyListObs = bean.CombineLatest(chromatoramSource, (b, c) => AlignedChromatogramModificationModelLegacy.LoadPeakProperty(b, c, files, param));
+
+            var model = new AlignedChromatogramModificationModelLegacy(bean, chromatoramSource, files, param);
+            VM = new AlignedChromatogramModificationViewModelLegacy(model);
             this.DataContext = VM;
         }
 
@@ -49,17 +66,18 @@ namespace CompMs.App.Msdial.View.PeakCuration {
     }
 
     public class AlignedChromatogramModificationModelLegacy : BindableBase {
-        public IObservable<AlignmentSpotPropertyModel> Model { get; }
-        public IObservable<List<Chromatogram>> Chromatograms { get; }
+        public AlignmentSpotPropertyModel Model { get; }
+        public List<Chromatogram> Chromatograms { get; }
         public List<AnalysisFileBean> Files { get; }
         public ParameterBase Parameter { get; }
         public List<PeakPropertyLegacy> PeakProperties { get; }
+
         public AlignedChromatogramModificationModelLegacy(
-            IObservable<AlignmentSpotPropertyModel> model,
-            IObservable<List<Chromatogram>> chromatoramSource,
+            AlignmentSpotPropertyModel model,
+            List<Chromatogram> chromatoramSource,
             List<AnalysisFileBean> files, 
-            ParameterBase param,
-            List<PeakPropertyLegacy> peakProperties) {
+            ParameterBase param
+            ) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -76,25 +94,14 @@ namespace CompMs.App.Msdial.View.PeakCuration {
                 throw new ArgumentNullException(nameof(param));
             }
 
-            if (peakProperties is null) {
-                throw new ArgumentNullException(nameof(peakProperties));
-            }
-
             Model = model;
             Chromatograms = chromatoramSource;
             Files = files;
             Parameter = param;
-            PeakProperties = peakProperties;
+            PeakProperties = LoadPeakProperty(model, chromatoramSource, files, param);
         }
 
-        public static AlignedChromatogramModificationModelLegacy Create(
-            IObservable<AlignmentSpotPropertyModel> model,
-            IObservable<List<Chromatogram>> chromatoramSource,
-            List<AnalysisFileBean> files,
-            ParameterBase param) {
-            return null;
-        }
-
+      
         //public static List<PeakPropertyLegacy> LoadPeakProperty(
         //    AlignmentSpotPropertyModel model,
         //    List<Chromatogram> chromatoramSource, 
@@ -120,25 +127,50 @@ namespace CompMs.App.Msdial.View.PeakCuration {
         //    return peakPropList;
         //}
 
-        public static List<PeakPropertyLegacy> LoadPeakProperty(ChromatogramSpotInfo alignedData, AlignmentSpotProperty bean, List<AnalysisFileBean> files, ParameterBase param) {
+        //public static List<PeakPropertyLegacy> LoadPeakProperty(ChromatogramSpotInfo alignedData, AlignmentSpotProperty bean, List<AnalysisFileBean> files, ParameterBase param) {
            
-            var peakPropArr = new PeakPropertyLegacy[files.Count];
+        //    var peakPropArr = new PeakPropertyLegacy[files.Count];
+        //    var classnameToBytes = param.ClassnameToColorBytes;
+        //    var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
+        //    //var classIdColorDictionary = MsDialStatistics.GetClassIdColorDictionary(files, solidColorBrushList);
+
+        //    Parallel.For(0, files.Count, (i) => {
+        //        //(var i = 0; i < alignedData.NumAnalysisFiles; i++) {
+        //        var brush = classnameToBrushes[files[i].AnalysisFileClass];
+        //        var peaks = alignedData.PeakInfos[i].Chromatogram;
+        //        var speaks = DataAccess.GetSmoothedPeaklist(peaks, param.SmoothingMethod, param.SmoothingLevel);
+        //        var peakProp = new PeakPropertyLegacy(bean.AlignedPeakProperties[i], alignedData.PeakInfos[i], brush, speaks);
+        //        var offset = bean.AlignedPeakProperties[i].ChromXsTop.Value - bean.TimesCenter.Value;
+        //        peakProp.SetAlignOffSet((float)offset);
+        //        peakPropArr[i] = peakProp;
+        //    });
+        //    var peakPropList = peakPropArr.ToList();
+        //    peakPropList[0].AverageRt = (float)bean.TimesCenter.Value;
+        //    return peakPropList;
+        //}
+
+        public static List<PeakPropertyLegacy> LoadPeakProperty(
+            AlignmentSpotPropertyModel model,
+            List<Chromatogram> chromatoramSource,
+            List<AnalysisFileBean> files,
+            ParameterBase param) {
+
+            var peakPropArr = new PeakPropertyLegacy[chromatoramSource.Count];
             var classnameToBytes = param.ClassnameToColorBytes;
             var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
             //var classIdColorDictionary = MsDialStatistics.GetClassIdColorDictionary(files, solidColorBrushList);
 
-            Parallel.For(0, files.Count, (i) => {
-                //(var i = 0; i < alignedData.NumAnalysisFiles; i++) {
+            Parallel.For(0, chromatoramSource.Count, (i) => {
                 var brush = classnameToBrushes[files[i].AnalysisFileClass];
-                var peaks = alignedData.PeakInfos[i].Chromatogram;
+                var peaks = chromatoramSource[i].Peaks.Select(n => n.Chrom).ToList();
                 var speaks = DataAccess.GetSmoothedPeaklist(peaks, param.SmoothingMethod, param.SmoothingLevel);
-                var peakProp = new PeakPropertyLegacy(bean.AlignedPeakProperties[i], alignedData.PeakInfos[i], brush, speaks);
-                var offset = bean.AlignedPeakProperties[i].ChromXsTop.Value - bean.TimesCenter.Value;
+                var peakProp = new PeakPropertyLegacy(model.AlignedPeakPropertiesModel[i], brush, speaks);
+                var offset = model.AlignedPeakProperties[i].ChromXsTop.Value - model.TimesCenter;
                 peakProp.SetAlignOffSet((float)offset);
                 peakPropArr[i] = peakProp;
             });
             var peakPropList = peakPropArr.ToList();
-            peakPropList[0].AverageRt = (float)bean.TimesCenter.Value;
+            peakPropList[0].AverageRt = (float)model.TimesCenter;
             return peakPropList;
         }
     }

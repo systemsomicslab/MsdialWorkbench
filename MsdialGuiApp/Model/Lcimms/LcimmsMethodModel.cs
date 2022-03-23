@@ -101,7 +101,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 alignmentFile,
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
-                Storage.Parameter)
+                Storage.Parameter,
+                Storage.AnalysisFiles)
             .AddTo(Disposables);
         }
 

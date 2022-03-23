@@ -1,10 +1,12 @@
-﻿using CompMs.App.Msdial.View.PeakCuration;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Chromatogram.ManualPeakModification;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialGcMsApi.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +19,8 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration {
         public PeakModUCLegacy OriginalChromUC { get; set; }
         public PeakModUCLegacy AlignedChromUC { get; set; }
         public PeakModUCLegacy PickingUC { get; set; }
-        public AlignmentSpotProperty AlignmentPropertyBean { get; set; }
+        //public AlignmentSpotProperty AlignmentPropertyBean { get; set; }
+        public AlignmentSpotPropertyModel AlignmentPropertyBeanModel { get; set; }
         public List<PeakPropertyLegacy> PeakPropertyList { get; set; }
         public ParameterBase Param { get; set; }
         public bool IsRI { get; set; } = false;
@@ -25,22 +28,72 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration {
         public bool UpdateTrigger { get; set; }
 
         // LC
+        //public AlignedChromatogramModificationViewModelLegacy(
+        //    AlignmentSpotProperty bean,
+        //    List<PeakPropertyLegacy> peakPropertyList, 
+        //    ParameterBase param, 
+        //    bool isRI = false) {
+        //    AlignmentPropertyBean = bean;
+        //    Param = param;
+        //    PeakPropertyList = peakPropertyList;
+        //    IsRI = isRI;
+        //    IsDrift = bean.TimesCenter.Type == ChromXType.Drift ? true : false;
+        //    var dv = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Original);
+        //    var dv2 = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Aligned);
+        //    var dv3 = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Picking);
+        //    OriginalChromUC = new PeakModUCLegacy(this, dv, new MouseActionSetting() { FixMinY = true }, PeakModType.Original, PeakPropertyList);
+        //    AlignedChromUC = new PeakModUCLegacy(this, dv2, new MouseActionSetting() { FixMinY = true }, PeakModType.Aligned, PeakPropertyList);
+        //    PickingUC = new PeakModUCLegacy(this, dv3, new MouseActionSetting() { CanMouseAction = false }, PeakModType.Picking);
+        //}
+
+        public AlignedChromatogramModificationViewModelLegacy() {
+
+        }
+
         public AlignedChromatogramModificationViewModelLegacy(
-            AlignmentSpotProperty bean,
-            List<PeakPropertyLegacy> peakPropertyList, 
-            ParameterBase param, 
-            bool isRI = false) {
-            AlignmentPropertyBean = bean;
-            Param = param;
-            PeakPropertyList = peakPropertyList;
-            IsRI = isRI;
-            IsDrift = bean.TimesCenter.Type == ChromXType.Drift ? true : false;
+            AlignedChromatogramModificationModelLegacy model) {
+            
+            AlignmentPropertyBeanModel = model.Model;
+            Param = model.Parameter;
+            PeakPropertyList = model.PeakProperties;
+
+            if (model.Model.ChromXType == ChromXType.RI) {
+                IsRI = true;
+            }
+            IsDrift = AlignmentPropertyBeanModel.ChromXType == ChromXType.Drift ? true : false;
             var dv = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Original);
             var dv2 = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Aligned);
             var dv3 = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Picking);
             OriginalChromUC = new PeakModUCLegacy(this, dv, new MouseActionSetting() { FixMinY = true }, PeakModType.Original, PeakPropertyList);
             AlignedChromUC = new PeakModUCLegacy(this, dv2, new MouseActionSetting() { FixMinY = true }, PeakModType.Aligned, PeakPropertyList);
             PickingUC = new PeakModUCLegacy(this, dv3, new MouseActionSetting() { CanMouseAction = false }, PeakModType.Picking);
+        }
+
+        public void UpdateModel(AlignedChromatogramModificationModelLegacy model) {
+            AlignmentPropertyBeanModel = model.Model;
+            Param = model.Parameter;
+            PeakPropertyList = model.PeakProperties;
+
+            if (model.Model.ChromXType == ChromXType.RI) {
+                IsRI = true;
+            }
+            IsDrift = AlignmentPropertyBeanModel.ChromXType == ChromXType.Drift ? true : false;
+            var dv = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Original);
+            var dv2 = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Aligned);
+            var dv3 = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Picking);
+            OriginalChromUC = new PeakModUCLegacy(this, dv, new MouseActionSetting() { FixMinY = true }, PeakModType.Original, PeakPropertyList);
+            AlignedChromUC = new PeakModUCLegacy(this, dv2, new MouseActionSetting() { FixMinY = true }, PeakModType.Aligned, PeakPropertyList);
+            PickingUC = new PeakModUCLegacy(this, dv3, new MouseActionSetting() { CanMouseAction = false }, PeakModType.Picking);
+            RefleshUI();
+        }
+
+        private void RefleshUI() {
+            OriginalChromUC.RefreshUI();
+            PickingUC.RefreshUI();
+            AlignedChromUC.RefreshUI();
+            OnPropertyChanged("OriginalChromUC");
+            OnPropertyChanged("PickingUC");
+            OnPropertyChanged("AlignedChromUC");
         }
 
         public void UpdateAlignedChromUC() {
@@ -69,35 +122,25 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration {
                 if (IsDrift) chromunit = ChromXUnit.Msec;
                 if (IsRI) chromunit = ChromXUnit.None;
 
-                p.PeakBean.ChromXsLeft = new ChromXs(p.Accessory.Chromatogram.RtLeft, chromtype, chromunit);
-                p.PeakBean.ChromXsTop = new ChromXs(p.Accessory.Chromatogram.RtTop, chromtype, chromunit);
-                p.PeakBean.ChromXsRight = new ChromXs(p.Accessory.Chromatogram.RtRight, chromtype, chromunit);
+                p.Model.ChromXsLeft = new ChromXs(p.Accessory.Chromatogram.RtLeft, chromtype, chromunit);
+                p.Model.ChromXsTop = new ChromXs(p.Accessory.Chromatogram.RtTop, chromtype, chromunit);
+                p.Model.ChromXsRight = new ChromXs(p.Accessory.Chromatogram.RtRight, chromtype, chromunit);
 
                 rtList.Add(p.Accessory.Chromatogram.RtTop);
 
                 //p.PeakBean.PeakID = -3;
-                p.PeakBean.IsManuallyModifiedForQuant = true;
-                p.PeakBean.PeakAreaAboveZero = p.PeakAreaAboveZero;
-                p.PeakBean.PeakHeightTop = p.PeakHeight;
-                p.PeakBean.PeakShape.SignalToNoise = p.Accessory.Chromatogram.SignalToNoise;
+                p.Model.IsManuallyModifiedForQuant = true;
+                p.Model.PeakAreaAboveZero = p.PeakAreaAboveZero;
+                p.Model.PeakHeightTop = p.PeakHeight;
+                p.Model.SignalToNoise = p.Accessory.Chromatogram.SignalToNoise;
             }
 
             if (rtList.Max() > 0) {
                 PeakPropertyList[0].AverageRt = (float)rtList.Average();
             }
-            
-            if (IsDrift) {
-                AlignmentPropertyBean.TimesCenter = new ChromXs(new DriftTime(PeakPropertyList[0].AverageRt));
-                AlignmentPropertyBean.IsManuallyModifiedForQuant = true;
-            }
-            else if (IsRI) {
-                AlignmentPropertyBean.TimesCenter = new ChromXs(new RetentionIndex(PeakPropertyList[0].AverageRt));
-                AlignmentPropertyBean.IsManuallyModifiedForQuant = true;
-            }
-            else {
-                AlignmentPropertyBean.TimesCenter = new ChromXs(new RetentionTime(PeakPropertyList[0].AverageRt));
-                AlignmentPropertyBean.IsManuallyModifiedForQuant = true;
-            }
+            AlignmentPropertyBeanModel.TimesCenter = PeakPropertyList[0].AverageRt;
+            AlignmentPropertyBeanModel.IsManuallyModifiedForQuant = true;
+           
             OnPropertyChanged("UpdateTrigger");
         }
 
@@ -110,8 +153,8 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration {
     }
 
     public class PeakPropertyLegacy {
-        public AlignmentChromPeakFeature PeakBean { get; set; }
-        public ChromatogramPeakInfo PeakSpotInfo { get; set; }
+        public AlignmentChromPeakFeatureModel Model { get; set; }
+        //public ChromatogramPeakInfo PeakSpotInfo { get; set; }
         public Brush Brush { get; set; }
         public List<ChromatogramPeak> SmoothedPeakList { get; set; }
         public List<ChromatogramPeak> AlignedPeakList { get; set; }
@@ -121,9 +164,15 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration {
         public float PeakHeight { get; set; }
         public Accessory Accessory { get; set; }
 
-        public PeakPropertyLegacy(AlignmentChromPeakFeature bean, ChromatogramPeakInfo info, Brush brush, List<ChromatogramPeak> speaks) {
-            PeakBean = bean;
-            PeakSpotInfo = info;
+        //public PeakPropertyLegacy(AlignmentChromPeakFeature bean, ChromatogramPeakInfo info, Brush brush, List<ChromatogramPeak> speaks) {
+        //    Model = bean;
+        //    PeakSpotInfo = info;
+        //    Brush = brush;
+        //    SmoothedPeakList = speaks;
+        //}
+
+        public PeakPropertyLegacy(AlignmentChromPeakFeatureModel bean, Brush brush, List<ChromatogramPeak> speaks) {
+            Model = bean;
             Brush = brush;
             SmoothedPeakList = speaks;
         }
@@ -194,7 +243,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration {
                     maxRt = (minX + maxX) * 0.5;
                 }
                 var peakHeightFromBaseline = maxInt - Math.Min(sPeaklist[0].Intensity, sPeaklist[sPeaklist.Count - 1].Intensity);
-                var noise = sample.PeakBean.PeakShape.EstimatedNoise;
+                var noise = sample.Model.EstimatedNoise;
                 var sn = peakHeightFromBaseline / noise;
 
                 sample.PeakAreaAboveZero = (float)peakAreaAboveZero * 60.0f;
@@ -247,11 +296,11 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration {
                     }
                     point.Accessory = new Accessory();
                     point.Accessory.SetChromatogram(
-                        (float)prop.PeakBean.ChromXsTop.Value, 
-                        (float)prop.PeakBean.ChromXsLeft.Value, 
-                        (float)prop.PeakBean.ChromXsRight.Value,
-                        prop.PeakBean.PeakShape.EstimatedNoise, 
-                        prop.PeakBean.PeakShape.SignalToNoise);
+                        (float)prop.Model.ChromXsTop.Value, 
+                        (float)prop.Model.ChromXsLeft.Value, 
+                        (float)prop.Model.ChromXsRight.Value,
+                        prop.Model.EstimatedNoise, 
+                        prop.Model.SignalToNoise);
                 }
                 else if (type == PeakModType.Aligned) {
                     foreach (var p in prop.AlignedPeakList) {
@@ -260,18 +309,18 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration {
                     point.Accessory = new Accessory();
                     if (prop.Accessory == null) {
                         point.Accessory.SetChromatogram(
-                            (float)prop.PeakBean.ChromXsTop.Value - prop.AlignOffset,
-                            (float)prop.PeakBean.ChromXsLeft.Value - prop.AlignOffset,
-                            (float)prop.PeakBean.ChromXsRight.Value - prop.AlignOffset,
-                            prop.PeakBean.PeakShape.EstimatedNoise,
-                            prop.PeakBean.PeakShape.SignalToNoise);
+                            (float)prop.Model.ChromXsTop.Value - prop.AlignOffset,
+                            (float)prop.Model.ChromXsLeft.Value - prop.AlignOffset,
+                            (float)prop.Model.ChromXsRight.Value - prop.AlignOffset,
+                            prop.Model.EstimatedNoise,
+                            prop.Model.SignalToNoise);
                     }
                     else {
                         point.Accessory.SetChromatogram(prop.Accessory.Chromatogram.RtTop - prop.AlignOffset,
                             prop.Accessory.Chromatogram.RtLeft - prop.AlignOffset,
                             prop.Accessory.Chromatogram.RtRight - prop.AlignOffset,
-                            prop.PeakBean.PeakShape.EstimatedNoise,
-                            prop.PeakBean.PeakShape.SignalToNoise);
+                            prop.Model.EstimatedNoise,
+                            prop.Model.SignalToNoise);
                     }
                 }
                 else if (type == PeakModType.Picking) {
@@ -281,11 +330,11 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration {
                     point.Accessory = new Accessory();
                     if (prop.Accessory == null) {
                         point.Accessory.SetChromatogram(
-                            (float)prop.PeakBean.ChromXsTop.Value,
-                            (float)prop.PeakBean.ChromXsLeft.Value,
-                            (float)prop.PeakBean.ChromXsRight.Value,
-                            prop.PeakBean.PeakShape.EstimatedNoise,
-                            prop.PeakBean.PeakShape.SignalToNoise);
+                            (float)prop.Model.ChromXsTop.Value,
+                            (float)prop.Model.ChromXsLeft.Value,
+                            (float)prop.Model.ChromXsRight.Value,
+                            prop.Model.EstimatedNoise,
+                            prop.Model.SignalToNoise);
                     }
                     else
                         point.Accessory = prop.Accessory;
