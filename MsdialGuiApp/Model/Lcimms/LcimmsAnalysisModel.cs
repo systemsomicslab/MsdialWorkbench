@@ -12,6 +12,7 @@ using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
@@ -113,6 +114,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     }
                 },
                 true);
+            var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
                 new MsRawSpectrumLoader(spectrumProvider, parameter),
@@ -123,7 +125,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 new GraphLabels("Measure vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
                 nameof(SpectrumPeak.SpectrumComment),
                 Observable.Return(upperSpecBrush),
-                Observable.Return(lowerSpecBrush)).AddTo(Disposables);
+                Observable.Return(lowerSpecBrush),
+                Observable.Return(spectraExporter),
+                Observable.Return(spectraExporter),
+                Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
             SurveyScanModel = new SurveyScanModel(
                 Target.SelectMany(t =>

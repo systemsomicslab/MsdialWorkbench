@@ -1,4 +1,6 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using System;
@@ -12,25 +14,25 @@ namespace CompMs.MsdialCore.Export
     public class NistSpectraExporter : ISpectraExporter, IDisposable, IObserver<ChromatogramPeakFeature>
     {
         private IDisposable unsubscriber;
-        private readonly DataBaseMapper mapper;
+        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
         private readonly ParameterBase parameter;
 
         public NistSpectraExporter(
             IObservable<ChromatogramPeakFeature> chromatogramPeakFeature,
-            DataBaseMapper mapper,
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             ParameterBase parameter) {
-            this.mapper = mapper;
+            this.refer = refer;
             this.parameter = parameter;
             unsubscriber = chromatogramPeakFeature.Subscribe(this);
         }
         private ChromatogramPeakFeature cache;
 
         public void Save(Stream stream, IReadOnlyList<SpectrumPeak> peaks) {
-            SpectraExport.SaveSpectraTableAsNistFormat(stream, cache, peaks, mapper, parameter);
+            SpectraExport.SaveSpectraTableAsNistFormat(stream, cache, peaks, refer, parameter);
         }
 
         public Task SaveAsync(Stream stream, IReadOnlyList<SpectrumPeak> peaks, CancellationToken token) {
-            SpectraExport.SaveSpectraTableAsNistFormat(stream, cache, peaks, mapper, parameter);
+            SpectraExport.SaveSpectraTableAsNistFormat(stream, cache, peaks, refer, parameter);
             return Task.CompletedTask;
         }
 

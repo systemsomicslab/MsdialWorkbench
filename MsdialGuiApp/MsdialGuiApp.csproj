@@ -310,6 +310,7 @@
     <Compile Include="ViewModel\Lcimms\MsdialLcimmsParameterViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsCompoundSearchViewModel.cs" />
     <Compile Include="ViewModel\MsResult\SummarizedSpectrumViewModel.cs" />
+    <Compile Include="ViewModel\Service\SaveFileNameRequest.cs" />
     <Compile Include="ViewModel\Setting\AdductIonSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\AlignmentParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\DataCollectionRangeSettingViewModel.cs" />

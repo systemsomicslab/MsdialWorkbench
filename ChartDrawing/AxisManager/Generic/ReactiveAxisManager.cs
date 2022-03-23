@@ -89,7 +89,7 @@ namespace CompMs.Graphics.AxisManager.Generic
             }
 
             public void OnCompleted() {
-                Dispose();
+
             }
 
             public void OnError(Exception error) {
@@ -113,7 +113,7 @@ namespace CompMs.Graphics.AxisManager.Generic
             protected virtual void Dispose(bool disposing) {
                 if (!disposedValue) {
                     if (disposing) {
-                        unsubscriber.Dispose();
+                        unsubscriber?.Dispose();
                         unsubscriber = null;
                         axis = null;
                     }

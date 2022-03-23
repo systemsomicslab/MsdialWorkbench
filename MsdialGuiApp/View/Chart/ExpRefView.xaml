@@ -116,11 +116,11 @@
             <local:MsSpectrumView DataContext="{Binding RawRefSpectrumViewModels}"
                                   Visibility="{Binding IsChecked,
                                                        ElementName=Button_ShowCentroid,
-                                                       Converter={StaticResource boolean2visibility}}"/>
+                                                       Converter={StaticResource BooleanToVisibility}}"/>
             <local:MsSpectrumView DataContext="{Binding DecRefSpectrumViewModels}"
                                   Visibility="{Binding IsChecked,
                                                        ElementName=Button_ShowDeconvolution,
-                                                       Converter={StaticResource boolean2visibility}}"/>
+                                                       Converter={StaticResource BooleanToVisibility}}"/>
         </Grid>
     </Grid>
 </UserControl>

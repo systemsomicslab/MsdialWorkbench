@@ -6,11 +6,13 @@ using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
+using CompMs.MsdialCore.Export;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Media;
@@ -39,7 +41,9 @@ namespace CompMs.App.Msdial.Model.Chart
             GraphLabels graphLabels,
             string hueProperty,
             IObservable<IBrushMapper> upperSpectrumBrush,
-            IObservable<IBrushMapper> lowerSpectrumBrush) {
+            IObservable<IBrushMapper> lowerSpectrumBrush,
+            IObservable<ISpectraExporter> upperSpectraExporter,
+            IObservable<ISpectraExporter> lowerSpectraExporter) {
 
             if (upperSpectrum is null) {
                 throw new ArgumentNullException(nameof(upperSpectrum));
@@ -107,13 +111,15 @@ namespace CompMs.App.Msdial.Model.Chart
                 horizontalAxisObservable, horizontalPropertySelector,
                 UpperVerticalAxis, verticalPropertySelector,
                 upperSpectrumBrush, hueProperty,
-                graphLabels);
+                graphLabels,
+                upperSpectraExporter).AddTo(Disposables);
             LowerSpectrumModel = new SingleSpectrumModel(
                 lowerSpectrum,
                 horizontalAxisObservable, horizontalPropertySelector,
                 LowerVerticalAxis, verticalPropertySelector,
                 lowerSpectrumBrush, hueProperty,
-                graphLabels);
+                graphLabels,
+                lowerSpectraExporter).AddTo(Disposables);
         }
 
         public SingleSpectrumModel UpperSpectrumModel { get; }
@@ -129,6 +135,18 @@ namespace CompMs.App.Msdial.Model.Chart
         public GraphLabels GraphLabels { get; }
         public PropertySelector<SpectrumPeak, double> HorizontalPropertySelector { get; }
         public PropertySelector<SpectrumPeak, double> VerticalPropertySelector { get; }
+
+        public IObservable<bool> CanSaveUpperSpectrum => UpperSpectrumModel.CanSave;
+
+        public void SaveUpperSpectrum(Stream stream) {
+            UpperSpectrumModel.Save(stream);
+        }
+
+        public IObservable<bool> CanSaveLowerSpectrum => LowerSpectrumModel.CanSave;
+
+        public void SaveLowerSpectrum(Stream stream) {
+            LowerSpectrumModel.Save(stream);
+        }
 
         public IObservable<Range> UpperVerticalRangeSource { get; }
 
@@ -158,7 +176,9 @@ namespace CompMs.App.Msdial.Model.Chart
                 new GraphLabels(graphTitle, horizontalTitle, verticalTitle, labelProperty, orderingProperty),
                 hueProperty,
                 upperBrush,
-                lowerBrush);
+                lowerBrush,
+                Observable.Return((ISpectraExporter)null),
+                Observable.Return((ISpectraExporter)null));
         }
 
         public static IBrushMapper<SpectrumComment> GetBrush(Brush defaultBrush) {

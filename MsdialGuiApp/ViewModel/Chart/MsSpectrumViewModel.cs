@@ -9,6 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Linq;
+using CompMs.App.Msdial.ViewModel.Service;
+using System.IO;
+using Reactive.Bindings.Notifiers;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
@@ -77,6 +80,14 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             LowerSpectrumBrushSource = (lowerSpectrumBrushSource?.OfType<IBrushMapper>() ?? model.LowerSpectrumModel.Brush)
                 .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            SaveUpperSpectrumCommand = model.CanSaveUpperSpectrum.ToReactiveCommand()
+                .WithSubscribe(SaveSpectrum(model.SaveUpperSpectrum))
+                .AddTo(Disposables);
+
+            SaveLowerSpectrumCommand = model.CanSaveLowerSpectrum.ToReactiveCommand()
+                .WithSubscribe(SaveSpectrum(model.SaveLowerSpectrum))
+                .AddTo(Disposables);
         }
 
         private readonly MsSpectrumModel model;
@@ -108,5 +119,28 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<IBrushMapper> UpperSpectrumBrushSource { get; }
 
         public ReadOnlyReactivePropertySlim<IBrushMapper> LowerSpectrumBrushSource { get; }
+
+        public ReactiveCommand SaveUpperSpectrumCommand { get; }
+
+        public ReactiveCommand SaveLowerSpectrumCommand { get; }
+
+        private Action SaveSpectrum(Action<Stream> handler) {
+            void result() {
+                var request = new SaveFileNameRequest(path =>
+                {
+                    using (var fs = File.Open(path, FileMode.Create)) {
+                        handler(fs);
+                    }
+                })
+                {
+                    Title = "Save spectra",
+                    Filter = "NIST format(*.msp)|*.msp",
+                    RestoreDirectory = true,
+                    AddExtension = true,
+                };
+                MessageBroker.Default.Publish(request);
+            }
+            return result;
+        }
     }
 }

@@ -8,6 +8,7 @@ using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
@@ -153,7 +154,9 @@ namespace CompMs.App.Msdial.Model.Search
                 new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
                 nameof(SpectrumPeak.SpectrumComment),
                 Observable.Return(MsSpectrumModel.GetBrush(Brushes.Blue)),
-                Observable.Return(MsSpectrumModel.GetBrush(Brushes.Red))).AddTo(Disposables);
+                Observable.Return(MsSpectrumModel.GetBrush(Brushes.Red)),
+                Observable.Return((ISpectraExporter)null),
+                Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
         }
 
         [Obsolete]

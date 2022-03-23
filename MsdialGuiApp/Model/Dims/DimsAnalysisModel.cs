@@ -92,6 +92,7 @@ namespace CompMs.App.Msdial.Model.Dims
                     }
                 },
                 true);
+            var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
                 new MsRawSpectrumLoader(provider, Parameter),
@@ -99,10 +100,13 @@ namespace CompMs.App.Msdial.Model.Dims
                 new MsRefSpectrumLoader(mapper),
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
-                new GraphLabels( "Measure vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
+                new GraphLabels("Measure vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
                 nameof(SpectrumPeak.SpectrumComment),
                 Observable.Return(upperSpecBrush),
-                Observable.Return(lowerSpecBrush)).AddTo(Disposables);
+                Observable.Return(lowerSpecBrush),
+                Observable.Return(spectraExporter),
+                Observable.Return(spectraExporter),
+                Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
             PeakTableModel = new DimsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax);
 
