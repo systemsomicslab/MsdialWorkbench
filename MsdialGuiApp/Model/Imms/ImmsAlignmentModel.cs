@@ -34,7 +34,8 @@ namespace CompMs.App.Msdial.Model.Imms
             IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseMapper mapper,
-            ParameterBase parameter)
+            ParameterBase parameter,
+            List<AnalysisFileBean> files)
             : base(alignmentFileBean.FilePath) {
 
             AlignmentFile = alignmentFileBean;
@@ -116,9 +117,9 @@ namespace CompMs.App.Msdial.Model.Imms
             var eicFile = alignmentFileBean.EicFilePath;
             var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, parameter.PeakPickBaseParam, parameter.FileID_ClassName);
             AlignmentEicModel = AlignmentEicModel.Create(
-                Target, eicLoader,
+                Target, eicLoader, files, parameter,
                 peak => peak.Time,
-                peak => peak.Intensity);
+                peak => peak.Intensity).AddTo(Disposables);
             AlignmentEicModel.Elements.GraphTitle = "TIC, EIC, or BPC chromatograms";
             AlignmentEicModel.Elements.HorizontalTitle = "Drift time [1/k0]";
             AlignmentEicModel.Elements.VerticalTitle = "Abundance";

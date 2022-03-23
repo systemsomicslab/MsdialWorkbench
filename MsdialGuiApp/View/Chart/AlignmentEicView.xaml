@@ -44,6 +44,17 @@
                           AlternationCount="1"
                           ItemsSource="{Binding EicChromatograms.Value}"
                           Style="{StaticResource OverlapChart}">
+            <chart:MultiChart.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Peak curation (EICs overlay)"
+                        Command="{Binding ShowPeakCurationWinByOverlayEICs}"
+                        />
+
+                    <MenuItem Header="Peak curation (Sample table)">
+
+                    </MenuItem>
+                </ContextMenu>
+            </chart:MultiChart.ContextMenu>
             <chart:MultiChart.ItemTemplate>
                 <DataTemplate>
                     <Grid>

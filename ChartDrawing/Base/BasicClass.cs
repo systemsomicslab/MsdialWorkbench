@@ -235,6 +235,24 @@ namespace CompMs.Graphics.Core.Base
             }
         }
 
+        public void SetChromatogram(double rtTop, double rtLeft, double rtRight,
+            double estimatedNoise = 1.0, double signalToNoise = 1.0, double areaFactore = 1.0) {
+            var width = rtRight - rtLeft;
+            if (width < 0.00001) {
+                //this.Chromatogram = new PeakInfo();
+            }
+            else {
+                this.Chromatogram = new PeakInfo() {
+                    RtTop = (float)rtTop,
+                    RtLeft = (float)rtLeft,
+                    RtRight = (float)rtRight,
+                    AreaFactor = (float)areaFactore,
+                    SignalToNoise = (float)signalToNoise,
+                    EstimatedNoise = (float)estimatedNoise
+                };
+            }
+        }
+
         public class PeakInfo {
             public float RtTop { get; set; }
             public float RtLeft { get; set; }

@@ -41,7 +41,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseStorage databases,
             DataBaseMapper mapper,
             MsdialLcmsParameter parameter,
-            IObservable<IBarItemsLoader> barItemsLoader)
+            IObservable<IBarItemsLoader> barItemsLoader,
+            List<AnalysisFileBean> files)
             : base(alignmentFileBean.FilePath) {
             if (databases is null) {
                 throw new ArgumentNullException(nameof(databases));
@@ -136,8 +137,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target,
                 new AlignmentEicLoader(chromatogramSpotSerializer, alignmentFileBean.EicFilePath, parameter.PeakPickBaseParam, parameter.FileID_ClassName),
+                files, parameter,
                 peak => peak.Time,
-                peak => peak.Intensity);
+                peak => peak.Intensity).AddTo(Disposables);
             AlignmentEicModel.Elements.GraphTitle = "TIC, EIC, or BPC chromatograms";
             AlignmentEicModel.Elements.HorizontalTitle = "Retention time [min]";
             AlignmentEicModel.Elements.VerticalTitle = "Abundance";
@@ -207,6 +209,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public MsSpectrumModel Ms2SpectrumModel { get; }
         public BarChartModel BarChartModel { get; }
         public AlignmentEicModel AlignmentEicModel { get; }
+
         public LcmsAlignmentSpotTableModel AlignmentSpotTableModel { get; private set; }
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 

@@ -205,7 +205,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 Storage.DataBaseMapper.MoleculeAnnotators,
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
-                Storage.Parameter).AddTo(Disposables);
+                Storage.Parameter,
+                Storage.AnalysisFiles).AddTo(Disposables);
         }
     }
 }

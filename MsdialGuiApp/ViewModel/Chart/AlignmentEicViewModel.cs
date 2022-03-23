@@ -59,6 +59,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             VerticalProperty = this.model.Elements.ObserveProperty(m => m.VerticalProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+
+            ShowPeakCurationWinByOverlayEICs = new ReactiveCommand().WithSubscribe(model.Click).AddTo(Disposables);
         }
 
         private AlignmentEicModel model;
@@ -78,5 +80,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<string> HorizontalProperty { get; }
 
         public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
+
+        public ReactiveCommand ShowPeakCurationWinByOverlayEICs { get; }
     }
 }

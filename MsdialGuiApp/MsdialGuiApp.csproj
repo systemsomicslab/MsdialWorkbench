@@ -181,6 +181,7 @@
     <Compile Include="Model\Core\ProjectModel.cs" />
     <Compile Include="Model\Core\RtCorrectionProcessModelLegacy.cs" />
     <Compile Include="Model\MsResult\SummarizedSpectrumModel.cs" />
+    <Compile Include="Model\PeakCuration\PeakModFELegacy.cs" />
     <Compile Include="Model\Notification\VersionDescriptionDocument.cs" />
     <Compile Include="Model\Notification\VersionUpdateNotificationService.cs" />
     <Compile Include="Model\Setting\AdductIonSettingModel.cs" />
@@ -311,6 +312,7 @@
     <Compile Include="ViewModel\Lcms\LcmsCompoundSearchViewModel.cs" />
     <Compile Include="ViewModel\MsResult\SummarizedSpectrumViewModel.cs" />
     <Compile Include="ViewModel\Service\SaveFileNameRequest.cs" />
+    <Compile Include="ViewModel\PeakCuration\AlignedChromatogramModificationViewModelLegacy.cs" />
     <Compile Include="ViewModel\Setting\AdductIonSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\AlignmentParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\DataCollectionRangeSettingViewModel.cs" />
@@ -517,6 +519,18 @@
     </Compile>
     <Compile Include="View\Normalize\SplashSetView.xaml.cs">
       <DependentUpon>SplashSetView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PeakCuration\AlignedPeakCorrectionWinLegacy.xaml.cs">
+      <DependentUpon>AlignedPeakCorrectionWinLegacy.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PeakCuration\ChromatogramManualPeakPickViewerLegacy.xaml.cs">
+      <DependentUpon>ChromatogramManualPeakPickViewerLegacy.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PeakCuration\PeakModUCLegacy.xaml.cs">
+      <DependentUpon>PeakModUCLegacy.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PeakCuration\SampleTableViewerInAlignmentLegacy.xaml.cs">
+      <DependentUpon>SampleTableViewerInAlignmentLegacy.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\PeakDetectionView.xaml.cs">
       <DependentUpon>PeakDetectionView.xaml</DependentUpon>
@@ -963,6 +977,22 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Normalize\SplashSetView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PeakCuration\AlignedPeakCorrectionWinLegacy.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PeakCuration\ChromatogramManualPeakPickViewerLegacy.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PeakCuration\PeakModUCLegacy.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PeakCuration\SampleTableViewerInAlignmentLegacy.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
