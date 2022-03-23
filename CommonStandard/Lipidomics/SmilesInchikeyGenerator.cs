@@ -38,6 +38,7 @@ namespace CompMs.Common.Lipidomics
                 }
                 var smilesHeaderDict = SmilesLipidHeader.HeaderDictionary;
                 var headerSmiles = smilesHeaderDict[lipid.LipidClass.ToString()];
+                if (headerSmiles==null) return null;
 
                 var rawSmiles = headerSmiles + string.Join(".", chainList);
 
@@ -81,7 +82,6 @@ namespace CompMs.Common.Lipidomics
                     //chainSmiles = chainSmiles + "=";
                     chainSmiles = chainSmiles + item[0].State.ToString().ToUpper()[0];
                 }
-
             }
 
             if (chain is AcylChain)

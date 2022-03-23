@@ -61,8 +61,6 @@ namespace CompMs.Common.Lipidomics.Tests
 
             Assert.AreEqual("OCC1OC(OCC(NC(=O)CCCCCCCCCCCCCCCCCCCCC)C(O)C=CCCCCCCCCCCCCC)C(O)C(O)C1O", result6.Smiles);
             Assert.AreEqual("YIGARKIIFOHVPF-UHFFFAOYSA-N", result6.InchiKey);
-
-
         }
     }
 }

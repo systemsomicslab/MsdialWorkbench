@@ -13410,7 +13410,7 @@ AdductIon adduct)
                 if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+NH4]+")
                 {
                     //  seek 126.02 (Taurine+ fragment)
-                    var threshold = 10.0;
+                    var threshold = 50.0;
                     var diagnosticMz = 12 * 2 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.SulfurMass + MassDiffDictionary.OxygenMass * 3 + Proton;
 
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
@@ -13457,7 +13457,7 @@ AdductIon adduct)
                     var threshold = 10.0;
                     var diagnosticMz = 12 * 9 + MassDiffDictionary.HydrogenMass * 11 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 + Proton;
                     //  seek 120.08  (phenylalanine-H2CO2 fragment)
-                    var threshold2 = 10.0;
+                    var threshold2 = 50.0;
                     var diagnosticMz2 = diagnosticMz - 12 - MassDiffDictionary.OxygenMass * 2 - MassDiffDictionary.HydrogenMass * 2;
 
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
