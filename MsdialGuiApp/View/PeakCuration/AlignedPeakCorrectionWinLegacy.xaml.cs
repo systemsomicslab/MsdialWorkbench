@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
-using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -10,23 +9,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.PeakCuration {
+namespace CompMs.App.Msdial.View.PeakCuration
+{
     /// <summary>
     /// Interaction logic for AlignedPeakCorrectionWinLegacy.xaml
     /// </summary>
     public partial class AlignedPeakCorrectionWinLegacy : Window {
-        public AlignedChromatogramModificationViewModelLegacy VM { get; set; }
+        public AlignedChromatogramModificationViewModelLegacy VM { get; }
         public AlignedPeakCorrectionWinLegacy() {
             InitializeComponent();
         }

@@ -3,6 +3,7 @@ using CompMs.App.Msdial.LC;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Export;

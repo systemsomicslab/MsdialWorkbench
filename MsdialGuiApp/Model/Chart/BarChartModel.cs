@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using System;
@@ -57,14 +58,8 @@ namespace CompMs.App.Msdial.Model.Chart
                 source.CombineLatest(barItemsLoader,
                     (src, loader) => src is null || loader is null
                         ? Observable.Return(new List<BarItem>())
-                        : Observable.FromAsync(token => loader.LoadBarItemsAsync(src, token)))
+                        : loader.LoadBarItemsAsObservable(src))
                 .Switch());
-            // return new BarChartModel(
-            //     source.SelectMany(src => loader.SelectMany(n => 
-            //         Observable.DeferAsync(async token => {
-            //             var result = await n.LoadBarItemsAsync(src, token);
-            //             return Observable.Return(result);
-            //         }))));
         }
     }
 }

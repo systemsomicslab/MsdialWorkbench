@@ -47,9 +47,7 @@
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Peak curation (EICs overlay)"
-                        Command="{Binding ShowPeakCurationWinByOverlayEICs}"
-                        />
-
+                              Command="{Binding ShowPeakCurationWinByOverlayEICsCommand, Mode=OneTime}"/>
                     <MenuItem Header="Peak curation (Sample table)">
 
                     </MenuItem>

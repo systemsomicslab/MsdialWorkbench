@@ -150,28 +150,7 @@ namespace CompMs.MsdialCore.DataObj
             }
 
             protected virtual Task LoadDataBaseMapperAsync(IStreamManager streamManager, string path, IMsdialDataStorage<ParameterBase> storage) {
-                var mapper = new DataBaseMapper();
-                if (!(storage.DataBases is null)) {
-                    foreach (var db in storage.DataBases.MetabolomicsDataBases) {
-                        mapper.Add(db.DataBase);
-                        foreach (var pair in db.Pairs) {
-                            mapper.Add(pair.SerializableAnnotator, db.DataBase);
-                        }
-                    }
-                    foreach (var db in storage.DataBases.ProteomicsDataBases) {
-                        foreach (var pair in db.Pairs) {
-                            mapper.Add(pair.SerializableAnnotator, db.DataBase);
-                        }
-                    }
-                    foreach (var db in storage.DataBases.EadLipidomicsDatabases) {
-                        mapper.Add(db.DataBase);
-                        foreach (var pair in db.Pairs) {
-                            mapper.Add(pair.SerializableAnnotator);
-                        }
-                    }
-                }
-                storage.DataBaseMapper = mapper;
-
+                storage.DataBaseMapper = storage.DataBases.CreateDataBaseMapper();
                 return Task.CompletedTask;
             }
 

@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;

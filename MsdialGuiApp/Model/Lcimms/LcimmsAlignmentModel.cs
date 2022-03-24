@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -110,7 +111,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
 
             var eicFile = alignmentFileBean.EicFilePath;
-            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, parameter.PeakPickBaseParam, parameter.FileID_ClassName);
+            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, parameter.FileID_ClassName);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader, files, parameter,
                 peak => peak.Time,
