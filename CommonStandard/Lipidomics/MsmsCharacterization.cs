@@ -13428,7 +13428,7 @@ AdductIon adduct)
                 var threshold = 1.0;
                 var diagnosticMz = 12 * 2 + MassDiffDictionary.HydrogenMass * 7 + MassDiffDictionary.NitrogenMass + MassDiffDictionary.SulfurMass + MassDiffDictionary.OxygenMass * 3 - Proton;
                 //  seek 79.96 (SO3- fragment)
-                var threshold2 = 10.0;
+                var threshold2 = 5.0;
                 var diagnosticMz2 = MassDiffDictionary.SulfurMass + MassDiffDictionary.OxygenMass * 3 + Electron;
 
                 var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);

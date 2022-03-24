@@ -67,6 +67,7 @@ namespace CompMs.Common.Lipidomics
                         new LDGTSLipidParser(),
                         new GM3LipidParser(),
                         new SHexCerLipidParser(),
+                        new CARLipidParser(),
                     }.ForEach(parser.Add);
                     @default = parser;
                 }
