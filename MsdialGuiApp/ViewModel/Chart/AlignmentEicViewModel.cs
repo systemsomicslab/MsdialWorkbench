@@ -1,10 +1,12 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 
@@ -60,7 +62,12 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            ShowPeakCurationWinByOverlayEICs = new ReactiveCommand().WithSubscribe(model.Click).AddTo(Disposables);
+            var legacyvm = new AlignedChromatogramModificationViewModelLegacy(model.AlignedChromatogramModificationModel).AddTo(Disposables);
+
+            ShowPeakCurationWinByOverlayEICsCommand = new ReactiveCommand().AddTo(Disposables);
+            ShowPeakCurationWinByOverlayEICsCommand
+                .Subscribe(_ => MessageBroker.Default.Publish(legacyvm))
+                .AddTo(Disposables);
         }
 
         private AlignmentEicModel model;
@@ -81,6 +88,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
 
-        public ReactiveCommand ShowPeakCurationWinByOverlayEICs { get; }
+        public ReactiveCommand ShowPeakCurationWinByOverlayEICsCommand { get; }
     }
 }

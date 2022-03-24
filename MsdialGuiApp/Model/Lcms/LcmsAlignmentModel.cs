@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -136,7 +137,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Class eic
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target,
-                new AlignmentEicLoader(chromatogramSpotSerializer, alignmentFileBean.EicFilePath, parameter.PeakPickBaseParam, parameter.FileID_ClassName),
+                new AlignmentEicLoader(chromatogramSpotSerializer, alignmentFileBean.EicFilePath, parameter.FileID_ClassName),
                 files, parameter,
                 peak => peak.Time,
                 peak => peak.Intensity).AddTo(Disposables);

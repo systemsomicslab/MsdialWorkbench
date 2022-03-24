@@ -44,7 +44,9 @@ namespace CompMs.App.Msdial.Common
             foreach (var pair in classToBytes) {
                 var classname = pair.Key;
                 var bytes = pair.Value;
-                classToBrush[classname] = new SolidColorBrush() { Color = new Color() { R = bytes[0], G = bytes[1], B = bytes[2], A = bytes[3] } };
+                var brush = new SolidColorBrush() { Color = new Color() { R = bytes[0], G = bytes[1], B = bytes[2], A = bytes[3] } };
+                brush.Freeze();
+                classToBrush[classname] = brush;
             }
             return classToBrush;
         }

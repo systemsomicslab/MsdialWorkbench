@@ -1,14 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using BCDev.XamlToys;
-using System.IO;
-using System.Windows.Interop;
 using System.Diagnostics;
 
 using CompMs.Graphics.Core.Base;

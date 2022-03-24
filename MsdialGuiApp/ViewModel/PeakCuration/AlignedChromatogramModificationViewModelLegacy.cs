@@ -4,17 +4,16 @@ using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Chromatogram.ManualPeakModification;
 using CompMs.Graphics.Core.Base;
-using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialGcMsApi.Parameter;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reactive.Linq;
 using System.Windows.Media;
 
-namespace CompMs.App.Msdial.ViewModel.PeakCuration {
+namespace CompMs.App.Msdial.ViewModel.PeakCuration
+{
     public class AlignedChromatogramModificationViewModelLegacy : ViewModelBase {
         public PeakModUCLegacy OriginalChromUC { get; set; }
         public PeakModUCLegacy AlignedChromUC { get; set; }
@@ -46,8 +45,8 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration {
         //    PickingUC = new PeakModUCLegacy(this, dv3, new MouseActionSetting() { CanMouseAction = false }, PeakModType.Picking);
         //}
 
-        public AlignedChromatogramModificationViewModelLegacy() {
-
+        public AlignedChromatogramModificationViewModelLegacy(IObservable<AlignedChromatogramModificationModelLegacy> model) {
+            model.ObserveOnDispatcher().Subscribe(UpdateModel).AddTo(Disposables);
         }
 
         public AlignedChromatogramModificationViewModelLegacy(
@@ -69,7 +68,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration {
             PickingUC = new PeakModUCLegacy(this, dv3, new MouseActionSetting() { CanMouseAction = false }, PeakModType.Picking);
         }
 
-        public void UpdateModel(AlignedChromatogramModificationModelLegacy model) {
+        private void UpdateModel(AlignedChromatogramModificationModelLegacy model) {
             AlignmentPropertyBeanModel = model.Model;
             Param = model.Parameter;
             PeakPropertyList = model.PeakProperties;
