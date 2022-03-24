@@ -1,7 +1,10 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Mathematics.Basic;
+using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,9 +14,10 @@ namespace CompMs.App.Msdial.Model
     {
         List<BarItem> LoadBarItems(AlignmentSpotPropertyModel target);
         Task<List<BarItem>> LoadBarItemsAsync(AlignmentSpotPropertyModel target, CancellationToken token);
+        IObservable<List<BarItem>> LoadBarItemsAsObservable(AlignmentSpotPropertyModel target);
     }
 
-    abstract class BaseBarItemsLoader : IBarItemsLoader
+    abstract class BaseBarItemsLoader
     {
         public BaseBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) {
             this.id2cls = id2cls;
@@ -25,35 +29,64 @@ namespace CompMs.App.Msdial.Model
             return LoadBarItemsCore(target);
         }
 
-        public async Task<List<BarItem>> LoadBarItemsAsync(AlignmentSpotPropertyModel target, CancellationToken token) {
-            if (target == null) {
-                return new List<BarItem>();
+        public Task<List<BarItem>> LoadBarItemsAsync(AlignmentSpotPropertyModel target, CancellationToken token) {
+            if (target is null) {
+                return Task.FromResult(new List<BarItem>());
             }
-            return await Task.Run(() => LoadBarItemsCore(target), token).ConfigureAwait(false);
+            return Task.Run(() => LoadBarItemsCore(target), token);
         }
 
         protected abstract List<BarItem> LoadBarItemsCore(AlignmentSpotPropertyModel target);
+
+        protected Func<AlignmentSpotPropertyModel, IObservable<List<BarItem>>> LoadBarItemsAsObserbleBySpot(System.Linq.Expressions.Expression<Func<AlignmentChromPeakFeatureModel, double>> expression) {
+            var selector = expression.Compile();
+            IObservable<List<BarItem>> LoadBarItemsAsObservable(AlignmentSpotPropertyModel target) {
+                return target
+                    .AlignedPeakPropertiesModel
+                    .GroupBy(
+                        peak => id2cls[peak.FileID],
+                        (cls, peaks) =>
+                            peaks.Select(peak => peak.ObserveProperty(expression))
+                                .CombineLatest()
+                                .Throttle(TimeSpan.FromMilliseconds(50))
+                                .Select(_ => 
+                                    new BarItem(
+                                        cls,
+                                        peaks.Average(selector),
+                                        BasicMathematics.Stdev(peaks.Select(selector).ToArray()))))
+                    .CombineLatest()
+                    .Select(items => items.ToList());
+            }
+            return LoadBarItemsAsObservable;
+        }
     }
 
-    internal class HeightBarItemsLoader : BaseBarItemsLoader
+    internal class HeightBarItemsLoader : BaseBarItemsLoader, IBarItemsLoader
     {
-        public HeightBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(id2cls) {
+        private readonly Func<AlignmentSpotPropertyModel, IObservable<List<BarItem>>> loadAsObservable;
 
+        public HeightBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(id2cls) {
+            loadAsObservable = LoadBarItemsAsObserbleBySpot(p => p.PeakHeightTop);
         }
 
         protected override List<BarItem> LoadBarItemsCore(AlignmentSpotPropertyModel target) {
-            // TODO: Implement other features (PeakHeight, PeakArea, Normalized PeakHeight, Normalized PeakArea)
             return target.AlignedPeakProperties
                 .GroupBy(peak => id2cls[peak.FileID])
                 .Select(pair => new BarItem(pair.Key, pair.Average(peak => peak.PeakHeightTop), BasicMathematics.Stdev(pair.Select(peak => peak.PeakHeightTop).ToArray())))
                 .ToList();
         }
+
+        public IObservable<List<BarItem>> LoadBarItemsAsObservable(AlignmentSpotPropertyModel target) {
+            return loadAsObservable(target);
+        }
     }
 
-    internal class AreaAboveBaseLineBarItemsLoader : BaseBarItemsLoader
+    internal class AreaAboveBaseLineBarItemsLoader : BaseBarItemsLoader, IBarItemsLoader
     {
-        public AreaAboveBaseLineBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(id2cls) {
+        private readonly Func<AlignmentSpotPropertyModel, IObservable<List<BarItem>>> loadAsObservable;
 
+        public AreaAboveBaseLineBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(id2cls) {
+            loadAsObservable = LoadBarItemsAsObserbleBySpot(p => p.PeakAreaAboveBaseline);
         }
 
         protected override List<BarItem> LoadBarItemsCore(AlignmentSpotPropertyModel target) {
@@ -62,12 +95,18 @@ namespace CompMs.App.Msdial.Model
                 .Select(pair => new BarItem(pair.Key, pair.Average(peak => peak.PeakAreaAboveBaseline), BasicMathematics.Stdev(pair.Select(peak => peak.PeakAreaAboveBaseline).ToArray())))
                 .ToList();
         }
+
+        public IObservable<List<BarItem>> LoadBarItemsAsObservable(AlignmentSpotPropertyModel target) {
+            return loadAsObservable(target);
+        }
     }
 
-    internal class AreaAboveZeroBarItemsLoader : BaseBarItemsLoader
+    internal class AreaAboveZeroBarItemsLoader : BaseBarItemsLoader, IBarItemsLoader
     {
-        public AreaAboveZeroBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(id2cls) {
+        private readonly Func<AlignmentSpotPropertyModel, IObservable<List<BarItem>>> loadAsObservable;
 
+        public AreaAboveZeroBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(id2cls) {
+            loadAsObservable = LoadBarItemsAsObserbleBySpot(p => p.PeakAreaAboveZero);
         }
 
         protected override List<BarItem> LoadBarItemsCore(AlignmentSpotPropertyModel target) {
@@ -76,12 +115,18 @@ namespace CompMs.App.Msdial.Model
                 .Select(pair => new BarItem(pair.Key, pair.Average(peak => peak.PeakAreaAboveZero), BasicMathematics.Stdev(pair.Select(peak => peak.PeakAreaAboveZero).ToArray())))
                 .ToList();
         }
+
+        public IObservable<List<BarItem>> LoadBarItemsAsObservable(AlignmentSpotPropertyModel target) {
+            return loadAsObservable(target);
+        }
     }
 
-    internal class NormalizedHeightBarItemsLoader : BaseBarItemsLoader
+    internal class NormalizedHeightBarItemsLoader : BaseBarItemsLoader, IBarItemsLoader
     {
-        public NormalizedHeightBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(id2cls) {
+        private readonly Func<AlignmentSpotPropertyModel, IObservable<List<BarItem>>> loadAsObservable;
 
+        public NormalizedHeightBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(id2cls) {
+            loadAsObservable = LoadBarItemsAsObserbleBySpot(peak => peak.NormalizedPeakHeight);
         }
 
         protected override List<BarItem> LoadBarItemsCore(AlignmentSpotPropertyModel target) {
@@ -90,12 +135,18 @@ namespace CompMs.App.Msdial.Model
                 .Select(pair => new BarItem(pair.Key, pair.Average(peak => peak.NormalizedPeakHeight), BasicMathematics.Stdev(pair.Select(peak => peak.NormalizedPeakHeight).ToArray())))
                 .ToList();
         }
+
+        public IObservable<List<BarItem>> LoadBarItemsAsObservable(AlignmentSpotPropertyModel target) {
+            return loadAsObservable(target);
+        }
     }
 
-    internal class NormalizedAreaAboveBaseLineBarItemsLoader : BaseBarItemsLoader
+    internal class NormalizedAreaAboveBaseLineBarItemsLoader : BaseBarItemsLoader, IBarItemsLoader
     {
-        public NormalizedAreaAboveBaseLineBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(id2cls) {
+        private readonly Func<AlignmentSpotPropertyModel, IObservable<List<BarItem>>> loadAsObservable;
 
+        public NormalizedAreaAboveBaseLineBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(id2cls) {
+            loadAsObservable = LoadBarItemsAsObserbleBySpot(peak => peak.NormalizedPeakAreaAboveBaseline);
         }
 
         protected override List<BarItem> LoadBarItemsCore(AlignmentSpotPropertyModel target) {
@@ -104,12 +155,18 @@ namespace CompMs.App.Msdial.Model
                 .Select(pair => new BarItem(pair.Key, pair.Average(peak => peak.NormalizedPeakAreaAboveBaseline), BasicMathematics.Stdev(pair.Select(peak => peak.NormalizedPeakAreaAboveBaseline).ToArray())))
                 .ToList();
         }
+
+        public IObservable<List<BarItem>> LoadBarItemsAsObservable(AlignmentSpotPropertyModel target) {
+            return loadAsObservable(target);
+        }
     }
 
-    internal class NormalizedAreaAboveZeroBarItemsLoader : BaseBarItemsLoader
+    internal class NormalizedAreaAboveZeroBarItemsLoader : BaseBarItemsLoader, IBarItemsLoader
     {
-        public NormalizedAreaAboveZeroBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(id2cls) {
+        private readonly Func<AlignmentSpotPropertyModel, IObservable<List<BarItem>>> loadAsObservable;
 
+        public NormalizedAreaAboveZeroBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(id2cls) {
+            loadAsObservable = LoadBarItemsAsObserbleBySpot(peak => peak.NormalizedPeakAreaAboveBaseline);
         }
 
         protected override List<BarItem> LoadBarItemsCore(AlignmentSpotPropertyModel target) {
@@ -117,6 +174,10 @@ namespace CompMs.App.Msdial.Model
                 .GroupBy(peak => id2cls[peak.FileID])
                 .Select(pair => new BarItem(pair.Key, pair.Average(peak => peak.NormalizedPeakAreaAboveZero), BasicMathematics.Stdev(pair.Select(peak => peak.NormalizedPeakAreaAboveZero).ToArray())))
                 .ToList();
+        }
+
+        public IObservable<List<BarItem>> LoadBarItemsAsObservable(AlignmentSpotPropertyModel target) {
+            return loadAsObservable(target);
         }
     }
 }

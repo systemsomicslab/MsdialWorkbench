@@ -18,6 +18,8 @@ namespace CompMs.App.Msdial.Model.DataObj {
             this.innerModel = innerModel;
         }
 
+        public int FileID => innerModel.FileID;
+
         public ChromXs ChromXsLeft { 
             get => this.innerModel.ChromXsLeft; 
             set {
@@ -93,6 +95,36 @@ namespace CompMs.App.Msdial.Model.DataObj {
                 if (innerModel.PeakAreaAboveBaseline != value) {
                     innerModel.PeakAreaAboveBaseline = value;
                     OnPropertyChanged(nameof(PeakAreaAboveBaseline));
+                }
+            }
+        }
+
+        public double NormalizedPeakHeight {
+            get => this.innerModel.NormalizedPeakHeight;
+            set {
+                if (innerModel.NormalizedPeakHeight != value) {
+                    innerModel.NormalizedPeakHeight = value;
+                    OnPropertyChanged(nameof(NormalizedPeakHeight));
+                }
+            }
+        }
+
+        public double NormalizedPeakAreaAboveZero {
+            get => this.innerModel.PeakAreaAboveZero;
+            set {
+                if (innerModel.NormalizedPeakAreaAboveZero != value) {
+                    innerModel.NormalizedPeakAreaAboveZero = value;
+                    OnPropertyChanged(nameof(NormalizedPeakAreaAboveZero));
+                }
+            }
+        }
+
+        public double NormalizedPeakAreaAboveBaseline {
+            get => this.innerModel.NormalizedPeakAreaAboveBaseline;
+            set {
+                if (innerModel.NormalizedPeakAreaAboveBaseline != value) {
+                    innerModel.NormalizedPeakAreaAboveBaseline = value;
+                    OnPropertyChanged(nameof(NormalizedPeakAreaAboveBaseline));
                 }
             }
         }
