@@ -28,7 +28,7 @@ namespace CompMs.Graphics.AxisManager
                 GetIntTicks(ld, hd, longInterval,
                     (i, interval) => new LabelTickData
                     {
-                        Label = (i * interval * 100).ToString("f0"),
+                        Label = (i * interval * 100).ToString("f"),
                         TickType = TickType.LongTick,
                         Center = (double)(i * interval * factor) + standardLow,
                         Width = (double)(interval * factor),
@@ -43,7 +43,7 @@ namespace CompMs.Graphics.AxisManager
                 GetIntTicks(ld, hd, shortInterval,
                     (i, interval) => new LabelTickData
                     {
-                        Label = (i * interval * 100).ToString("f0"),
+                        Label = (i * interval * 100).ToString("f"),
                         TickType = TickType.ShortTick,
                         Center = (double)(i * interval * factor) + standardLow,
                         Width = 0,

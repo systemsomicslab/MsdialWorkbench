@@ -15,7 +15,7 @@ using System.Text;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class ChromatogramPeakFeature : IChromatogramPeakFeature, IMoleculeMsProperty, IMSIonProperty, IAnnotatedObject
+    public class ChromatogramPeakFeature : IChromatogramPeakFeature, IChromatogramPeak, IMoleculeMsProperty, IMSIonProperty, IAnnotatedObject
     {
 
         // basic property of IChromatogramPeakFeature
@@ -131,30 +131,9 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(53)]
         public int ProteinGroupID { get; set; } = -1;
 
-        public string GetFormula(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
-            return MatchResults.RepresentativeFormula(refer);
-        }
-
-        public string GetProtein(IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer) {
-            return MatchResults.RepresentativeProtein(refer);
-        }
-
-        public string GetOntology(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
-            return MatchResults.RepresentativeOntology(refer);
-        }
-
-        public string GetSMILES(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
-            return MatchResults.RepresentativeSMILES(refer);
-        }
-
-        public string GetInChIKey(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
-            return MatchResults.RepresentativeInChIKey(refer);
-        }
-
         public bool IsValidInChIKey() {
             return !string.IsNullOrWhiteSpace(InChIKey) && InChIKey.Length == 27;
         }
-
 
         // ion physiochemical information
         [Key(30)]
@@ -349,6 +328,28 @@ namespace CompMs.MsdialCore.DataObj {
         //        return MSDecResultIdUsed;
         //    }
         //}
+
+        // ISpectrumPeak
+        double ISpectrumPeak.Intensity {
+            get => PeakHeightTop;
+            set => PeakHeightTop = value;
+        }
+
+        double ISpectrumPeak.Mass {
+            get => PrecursorMz;
+            set => PrecursorMz = value;
+        }
+
+        // IChromatogramPeak
+        int IChromatogramPeak.ID {
+            get => MasterPeakID;
+            set => MasterPeakID = value;
+        }
+
+        ChromXs IChromatogramPeak.ChromXs {
+            get => ChromXsTop;
+            set => ChromXsTop = value;
+        }
     }
 
     [MessagePackObject]

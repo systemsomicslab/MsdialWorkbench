@@ -139,11 +139,30 @@ namespace CompMs.MsdialCore.Export
             sw.WriteLine("COMMENT: " + GetCommentField(feature));
         }
 
-        private static void WriteChromPeakFeatureInfoAsMSP(StreamWriter sw, AlignmentSpotProperty feature, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+        private static void WriteChromPeakFeatureInfoAsMSP(
+            StreamWriter sw,
+            AlignmentSpotProperty feature,
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             sw.WriteLine("NAME: " + GetNameField(feature));
             sw.WriteLine("PRECURSORMZ: " + feature.MassCenter);
             sw.WriteLine("PRECURSORTYPE: " + feature.AdductType.AdductIonName);
             WriteChromXFieldAsMSP(sw, feature.TimesCenter, feature.CollisionCrossSection);
+            sw.WriteLine("FORMULA: " + feature.GetFormula(refer));
+            sw.WriteLine("ONTOLOGY: " + feature.GetOntology(refer));
+            sw.WriteLine("INCHIKEY: " + feature.GetInChIKey(refer));
+            sw.WriteLine("SMILES: " + feature.GetSMILES(refer));
+            sw.WriteLine("COMMENT: " + GetCommentField(feature));
+        }
+
+        private static void WriteChromPeakFeatureInfoAsMSP<T>(
+            StreamWriter sw,
+            T feature,
+            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer)
+            where T: IMoleculeProperty, IChromatogramPeak, IIonProperty, IAnnotatedObject {
+            sw.WriteLine("NAME: " + GetNameField(feature));
+            sw.WriteLine("PRECURSORMZ: " + feature.Mass);
+            sw.WriteLine("PRECURSORTYPE: " + feature.AdductType.AdductIonName);
+            WriteChromXFieldAsMSP(sw, feature.ChromXs, feature.CollisionCrossSection);
             sw.WriteLine("FORMULA: " + feature.GetFormula(refer));
             sw.WriteLine("ONTOLOGY: " + feature.GetOntology(refer));
             sw.WriteLine("INCHIKEY: " + feature.GetInChIKey(refer));
@@ -422,6 +441,16 @@ namespace CompMs.MsdialCore.Export
             return comment + id + isotope;
         }
 
+        private static string GetCommentField(IChromatogramPeak feature) {
+            if (feature is ChromatogramPeakFeature chromatogramPeakFeature) {
+                return GetCommentField(chromatogramPeakFeature);
+            }
+            if (feature is AlignmentSpotProperty alignmentSpotProperty) {
+                return GetCommentField(alignmentSpotProperty);
+            }
+            return $"PEAKID={feature.ID}|PEAKHEIGHT={Math.Round(feature.Intensity, 0)}";
+        }
+
         private static string GetNameField(ChromatogramPeakFeature feature) {
             if (feature.Name.IsEmptyOrNull() || feature.Name.ToLower() == "unknown") {
                 var id = "|ID=" + feature.MasterPeakID;
@@ -443,6 +472,20 @@ namespace CompMs.MsdialCore.Export
                 var ri = feature.TimesCenter.RI.Value > 0 ? "|RI=" + Math.Round(feature.TimesCenter.RI.Value, 3) : string.Empty;
                 var dt = feature.TimesCenter.Drift.Value > 0 ? "|DT=" + Math.Round(feature.TimesCenter.Drift.Value, 3) : string.Empty;
                 var mz = Math.Round(feature.MassCenter, 4).ToString();
+                return "Unknown" + id + mz + rt + ri + dt;
+            }
+            else {
+                return feature.Name;
+            }
+        }
+
+        private static string GetNameField<T>(T feature) where T : IMoleculeProperty, IChromatogramPeak {
+            if (feature.Name.IsEmptyOrNull() || feature.Name.ToLower() == "unknown") {
+                var id = "|ID=" + feature.ID;
+                var rt = feature.ChromXs.RT.Value > 0 ? "|RT=" + Math.Round(feature.ChromXs.RT.Value, 3) : string.Empty;
+                var ri = feature.ChromXs.RI.Value > 0 ? "|RI=" + Math.Round(feature.ChromXs.RI.Value, 3) : string.Empty;
+                var dt = feature.ChromXs.Drift.Value > 0 ? "|DT=" + Math.Round(feature.ChromXs.Drift.Value, 3) : string.Empty;
+                var mz = Math.Round(feature.Mass, 4).ToString();
                 return "Unknown" + id + mz + rt + ri + dt;
             }
             else {

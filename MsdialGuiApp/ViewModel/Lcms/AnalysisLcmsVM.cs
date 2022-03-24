@@ -5,10 +5,8 @@ using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.Win32;
 using Reactive.Bindings;
@@ -90,7 +88,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }.Merge()
             .Throttle(TimeSpan.FromMilliseconds(500))
             .ObserveOnDispatcher()
-            .Subscribe(_ => { Console.WriteLine("call refresh"); Ms1PeaksView?.Refresh(); })
+            .Subscribe(_ => Ms1PeaksView?.Refresh())
             .AddTo(Disposables);
 
             var hAxis = this.model.PlotModel
@@ -120,14 +118,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 item => item.ToString(),
                 Colors.Blue);
 
-            // var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-            //    this.model.Parameter.ProjectParam.SpectrumCommentToColorBytes
-            //    .ToDictionary(
-            //        kvp => kvp.Key,
-            //        kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-            //    ),
-            //    item => item.ToString(),
-            //    Colors.Red);
             var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
                 comment =>
                 {
@@ -392,7 +382,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
         private DelegateCommand<Window> saveMs2SpectrumCommand;
 
-        public DelegateCommand<Window> SaveMs2RawSpectrumCommand => saveMs2RawSpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveRawSpectra, CanSaveRawSpectra));
+        public DelegateCommand<Window> SaveMs2RawSpectrumCommand => saveMs2RawSpectrumCommand ?? (saveMs2RawSpectrumCommand = new DelegateCommand<Window>(SaveRawSpectra, CanSaveRawSpectra));
         private DelegateCommand<Window> saveMs2RawSpectrumCommand;
 
         public ReadOnlyReactivePropertySlim<ExperimentSpectrumViewModel> ExperimentSpectrumViewModel { get; }

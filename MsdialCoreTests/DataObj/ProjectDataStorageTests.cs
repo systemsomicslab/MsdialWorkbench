@@ -28,7 +28,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var serializer = new MockSerializer();
             var stream = new MemoryStream();
             using (var streamManager = ZipStreamManager.OpenCreate(stream)) {
-                await proj.Save(streamManager, serializer, TODO, TODO);
+                await proj.Save(streamManager, serializer, _ => streamManager, null);
             }
 
             using (var streamManager = ZipStreamManager.OpenGet(stream)) {
@@ -64,7 +64,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var serializer = new FaultSerializer();
             var stream = new MemoryStream();
             using (var streamManager = ZipStreamManager.OpenCreate(stream)) {
-                await proj.Save(streamManager, serializer, TODO, TODO);
+                await proj.Save(streamManager, serializer, null, null);
             }
 
             var parameters = new List<ProjectBaseParameter>();
@@ -109,6 +109,10 @@ namespace CompMs.MsdialCore.DataObj.Tests
 
         public DataBaseMapper DataBaseMapper { get; set; }
         public DataBaseStorage DataBases { get; set; }
+
+        public void FixDatasetFolder(string projectFolder) {
+            throw new NotImplementedException();
+        }
 
         public Task SaveAsync(IStreamManager streamManager, string projectTitle, string prefix) {
             throw new NotImplementedException();
