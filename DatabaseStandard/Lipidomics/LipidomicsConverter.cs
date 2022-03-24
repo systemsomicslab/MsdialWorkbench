@@ -2109,6 +2109,14 @@ namespace Riken.Metabolomics.Lipidomics {
                     if (lipidsemicoronCount == 1)
                         level = "Chain resolved";
                     break;
+                case "NAPhe":
+                    if (lipidsemicoronCount == 1)
+                        level = "Chain resolved";
+                    break;
+                case "NATau":
+                    if (lipidsemicoronCount == 1)
+                        level = "Chain resolved";
+                    break;
 
                 //Plantlipid
                 case "MGDG":
@@ -3828,6 +3836,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case LbmClass.NAGly: return "NAGly";
                 case LbmClass.NAGlySer: return "NAGlySer";
                 case LbmClass.NAOrn: return "NAOrn";
+                case LbmClass.NAPhe: return "NAPhe";
+                case LbmClass.NATau: return "NATau";
                 case LbmClass.FAHFA: return "FAHFA";
                 case LbmClass.PhytoSph: return "PhytoSph";
                 case LbmClass.DHSph: return "DHSph";
@@ -4264,6 +4274,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "NAGly": return LbmClass.NAGly;
                 case "NAGlySer": return LbmClass.NAGlySer;
                 case "NAOrn": return LbmClass.NAOrn;
+                case "NAPhe": return LbmClass.NAPhe;
+                case "NATau": return LbmClass.NATau;
 
                 case "PhytoSph": return LbmClass.PhytoSph;
                 case "DHSph": return LbmClass.DHSph;
@@ -4575,6 +4587,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 case "NAGly": return "FattyAcyls";
                 case "NAGlySer": return "FattyAcyls";
                 case "NAOrn": return "FattyAcyls";
+                case "NAPhe": return "FattyAcyls";
+                case "NATau": return "FattyAcyls";
 
                 case "CAR": return "FattyAcyls";
                 case "FA": return "FattyAcyls";

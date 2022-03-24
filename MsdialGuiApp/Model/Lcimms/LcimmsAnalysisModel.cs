@@ -12,6 +12,7 @@ using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
@@ -40,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             this.spectrumProvider = spectrumProvider;
             this.accSpectrumProvider = accSpectrumProvider;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
-            this.parameter = parameter;
+            Parameter = parameter;
 
             FileName = analysisFile.AnalysisFileName;
 
@@ -55,7 +56,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             };
-            RtEicLoader = new EicLoader(accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, this.parameter.RetentionTimeBegin, this.parameter.RetentionTimeEnd);
+            RtEicLoader = new EicLoader(accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
             RtEicModel = new EicModel(Target, RtEicLoader)
             {
                 HorizontalTitle = RtMzPlotModel.HorizontalTitle,
@@ -75,7 +76,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     : $"Spot ID: {t.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5} RT min: {t.InnerModel.ChromXsTop.RT.Value} Drift time msec: {t.InnerModel.ChromXsTop.Drift.Value}")
                 .Subscribe(title => DtMzPlotModel.GraphTitle = title);
 
-            DtEicLoader = new EicLoader(spectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, this.parameter.RetentionTimeBegin, this.parameter.RetentionTimeEnd);
+            DtEicLoader = new EicLoader(spectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
             DtEicModel = new EicModel(Target, DtEicLoader)
             {
                 HorizontalTitle = DtMzPlotModel.HorizontalTitle,
@@ -85,25 +86,49 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 DtEicModel.MaxIntensitySource,
                 (t, i) => t is null
                     ? string.Empty
-                    : $"EIC chromatogram of {t.Mass:N4} tolerance [Da]: {this.parameter.CentroidMs1Tolerance:F} Max intensity: {i:F0}")
+                    : $"EIC chromatogram of {t.Mass:N4} tolerance [Da]: {Parameter.CentroidMs1Tolerance:F} Max intensity: {i:F0}")
                 .Subscribe(title => DtEicModel.GraphTitle = title);
 
+            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
+               parameter.ProjectParam.SpectrumCommentToColorBytes
+               .ToDictionary(
+                   kvp => kvp.Key,
+                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+               ),
+               item => item.ToString(),
+               Colors.Blue);
+            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
+                comment =>
+                {
+                    var commentString = comment.ToString();
+                    var projectParameter = parameter.ProjectParam;
+                    if (projectParameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
+                        return Color.FromRgb(color[0], color[1], color[2]);
+                    }
+                    else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
+                        && projectParameter.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
+                        return Color.FromRgb(color[0], color[1], color[2]);
+                    }
+                    else {
+                        return Colors.Red;
+                    }
+                },
+                true);
+            var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
                 new MsRawSpectrumLoader(spectrumProvider, parameter),
                 new MsDecSpectrumLoader(decLoader, Ms1Peaks),
                 new MsRefSpectrumLoader(mapper),
-                peak => peak.Mass,
-                peak => peak.Intensity)
-            {
-                GraphTitle = "Measure vs. Reference",
-                HorizontalTitle = "m/z",
-                VerticalTitle = "Relative abundance",
-                HorizontaProperty = nameof(SpectrumPeak.Mass),
-                VerticalProperty = nameof(SpectrumPeak.Intensity),
-                LabelProperty = nameof(SpectrumPeak.Mass),
-                OrderingProperty = nameof(SpectrumPeak.Intensity),
-            };
+                new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
+                new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
+                new GraphLabels("Measure vs. Reference", "m/z", "Relative abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
+                nameof(SpectrumPeak.SpectrumComment),
+                Observable.Return(upperSpecBrush),
+                Observable.Return(lowerSpecBrush),
+                Observable.Return(spectraExporter),
+                Observable.Return(spectraExporter),
+                Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
             SurveyScanModel = new SurveyScanModel(
                 Target.SelectMany(t =>
@@ -143,7 +168,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Target.Subscribe(OnTargetChanged);
         }
 
-        public ParameterBase parameter { get; }
+        public ParameterBase Parameter { get; }
 
         public double RtMin => Ms1Peaks.Min(peak => peak.InnerModel?.ChromXs.RT.Value) ?? 0;
         public double RtMax => Ms1Peaks.Max(peak => peak.InnerModel?.ChromXs.RT.Value) ?? 0;
@@ -172,7 +197,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
 
-        public double Ms1Tolerance => parameter.CentroidMs1Tolerance;
+        public double Ms1Tolerance => Parameter.CentroidMs1Tolerance;
 
         public string FileName {
             get => fileName;
@@ -216,7 +241,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     if (target.MS1RawSpectrumIdTop < 0) {
                         return;
                     }
-                    var spectra = DataAccess.GetCentroidMassSpectra(spectrumProvider.LoadMs1Spectrums()[target.MS1RawSpectrumIdTop], parameter.MSDataType, 0, float.MinValue, float.MaxValue);
+                    var spectra = DataAccess.GetCentroidMassSpectra(spectrumProvider.LoadMs1Spectrums()[target.MS1RawSpectrumIdTop], Parameter.MSDataType, 0, float.MinValue, float.MaxValue);
                     token.ThrowIfCancellationRequested();
                     ms1Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
                 }, token);

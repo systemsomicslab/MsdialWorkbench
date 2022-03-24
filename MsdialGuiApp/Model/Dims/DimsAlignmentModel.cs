@@ -49,8 +49,8 @@ namespace CompMs.App.Msdial.Model.Dims
             resultFile = alignmentFileBean.FilePath;
             eicFile = alignmentFileBean.EicFilePath;
 
-            this.Parameter = param;
-            this.DataBaseMapper = mapper;
+            Parameter = param;
+            DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             AnnotatorContainers = annotatorCotnainers;
 
@@ -73,17 +73,45 @@ namespace CompMs.App.Msdial.Model.Dims
             var decLoader = new MSDecLoader(alignmentFileBean.SpectraFilePath).AddTo(Disposables);
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Spots);
             var refLoader = new MsRefSpectrumLoader(mapper);
+            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
+               Parameter.ProjectParam.SpectrumCommentToColorBytes
+               .ToDictionary(
+                   kvp => kvp.Key,
+                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+               ),
+               item => item.ToString(),
+               Colors.Blue);
+            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
+                comment =>
+                {
+                    var commentString = comment.ToString();
+                    var parameter = Parameter.ProjectParam;
+                    if (parameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
+                        return Color.FromRgb(color[0], color[1], color[2]);
+                    }
+                    else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
+                        && parameter.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
+                        return Color.FromRgb(color[0], color[1], color[2]);
+                    }
+                    else {
+                        return Colors.Red;
+                    }
+                },
+                true);
             Ms2SpectrumModel = MsSpectrumModel.Create(
                 Target, decSpecLoader, refLoader,
                 spot => spot.Mass,
-                spot => spot.Intensity);
-            Ms2SpectrumModel.GraphTitle = "Representation vs. Reference";
-            Ms2SpectrumModel.HorizontalTitle = "m/z";
-            Ms2SpectrumModel.VerticalTitle = "Abundance";
-            Ms2SpectrumModel.HorizontalProperty = nameof(SpectrumPeak.Mass);
-            Ms2SpectrumModel.VerticalProperty = nameof(SpectrumPeak.Intensity);
-            Ms2SpectrumModel.LabelProperty = nameof(SpectrumPeak.Mass);
-            Ms2SpectrumModel.OrderingProperty = nameof(SpectrumPeak.Intensity);
+                spot => spot.Intensity,
+                "Representation vs. Reference",
+                "m/z",
+                "Abundance",
+                nameof(SpectrumPeak.Mass),
+                nameof(SpectrumPeak.Intensity),
+                nameof(SpectrumPeak.Mass),
+                nameof(SpectrumPeak.Intensity),
+                nameof(SpectrumPeak.SpectrumComment),
+                Observable.Return(upperSpecBrush),
+                Observable.Return(lowerSpecBrush)).AddTo(Disposables);
 
             BarItemsLoader = new HeightBarItemsLoader(Parameter.FileID_ClassName);
             BarChartModel = BarChartModel.Create(Target, BarItemsLoader);

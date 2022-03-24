@@ -962,13 +962,32 @@ namespace Rfx.Riken.OsakaUniv {
                         TargetClass = "NAGlySer"
                     });
 
-                    compounds.Add(new StandardCompound() {
+                    compounds.Add(new StandardCompound()
+                    {
                         StandardName = "LPC 18:1(d7)",
                         Concentration = 47.284175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 528.718,
                         PeakID = -1,
                         TargetClass = "NAOrn"
+                    });
+                    compounds.Add(new StandardCompound()
+                    {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "NAPhe"
+                    });
+                    compounds.Add(new StandardCompound()
+                    {
+                        StandardName = "LPC 18:1(d7)",
+                        Concentration = 47.284175,
+                        DilutionRate = 0.015625,
+                        MolecularWeight = 528.718,
+                        PeakID = -1,
+                        TargetClass = "NATau"
                     });
 
                     compounds.Add(new StandardCompound() {

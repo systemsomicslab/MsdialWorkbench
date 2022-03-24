@@ -73,7 +73,7 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         public IMSScanProperty GenerateSpectrum(ILipidSpectrumGenerator generator, AdductIon adduct, IMoleculeProperty molecule = null) {
-            return generator.Generate(new Lipid(LipidClass, 0, null), adduct);
+            return generator.Generate(new Lipid(LipidClass, 0, new TotalChain(0, 0, 0, 0, 0, 0)), adduct);
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.ViewModel.MsResult;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
@@ -32,10 +33,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             SaveSpectraAsNistCommand = new ReactiveCommand()
                 .WithSubscribe(SaveSpectraAsNist)
                 .AddTo(Disposables);
-
-            MessageBroker.Default.ToObservable<SaveNistFileNameResponse>()
-                .Subscribe(response => Model.SaveSpectrumAsNist(response.FileName))
-                .AddTo(Disposables);
         }
 
         public ExperimentSpectrumModel Model { get; }
@@ -54,20 +51,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReactiveCommand SaveSpectraAsNistCommand { get; }
 
         private void SaveSpectraAsNist() {
-            MessageBroker.Default.Publish(new SaveNistFileNameRequest());
+            MessageBroker.Default.Publish(new SaveFileNameRequest(Model.SaveSpectrumAsNist)
+            {
+                Title = "Save spectra",
+                Filter = "NIST format(*.msp)|*.msp",
+                RestoreDirectory = true,
+                AddExtension = true,
+            });
         }
-    }
-
-    public class SaveNistFileNameRequest
-    {
-    }
-
-    public class SaveNistFileNameResponse
-    {
-        public SaveNistFileNameResponse(string fileName) {
-            FileName = fileName;
-        }
-
-        public string FileName { get; }
     }
 }

@@ -14,7 +14,7 @@ using CompMs.Common.Proteomics.DataObj;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class AlignmentSpotProperty : IMSIonProperty, IMoleculeProperty, IAnnotatedObject{
+    public class AlignmentSpotProperty : IMSIonProperty, IMoleculeProperty, IChromatogramPeak, IAnnotatedObject{
 
         // IDs to link properties
         [Key(0)]
@@ -66,25 +66,6 @@ namespace CompMs.MsdialCore.DataObj {
         public string Protein { get; set; } = string.Empty;
         [Key(61)]
         public int ProteinGroupID { get; set; } = -1;
-
-        public string GetFormula(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
-            return MatchResults.RepresentativeFormula(refer);
-        }
-
-        public string GetOntology(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
-            return MatchResults.RepresentativeOntology(refer);
-        }
-
-        public string GetSMILES(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
-            return MatchResults.RepresentativeSMILES(refer);
-        }
-
-        public string GetInChIKey(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
-            return MatchResults.RepresentativeInChIKey(refer);
-        }
-        public string GetProtein(IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer) {
-            return MatchResults.RepresentativeProtein(refer);
-        }
 
         // ion physiochemical information
         [Key(17)]
@@ -296,19 +277,6 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(52)]
         public List<AlignmentSpotVariableCorrelation> AlignmentSpotVariableCorrelations { get; set; } = new List<AlignmentSpotVariableCorrelation>();
 
-        ChromXs IMSProperty.ChromXs {
-            get => TimesCenter;
-            set => TimesCenter = value;
-        }
-        IonMode IMSProperty.IonMode {
-            get => IonMode;
-            set => IonMode = value;
-        }
-        double IMSProperty.PrecursorMz {
-            get => MassCenter;
-            set => MassCenter = value;
-        }
-
         // Post curation result
         [Key(58)]
         public bool IsFilteredByPostCurator { get; set; } = false;
@@ -329,6 +297,42 @@ namespace CompMs.MsdialCore.DataObj {
             else {
                 return MSDecResultIdUsed;
             }
+        }
+
+        // IMSProperty
+        ChromXs IMSProperty.ChromXs {
+            get => TimesCenter;
+            set => TimesCenter = value;
+        }
+        IonMode IMSProperty.IonMode {
+            get => IonMode;
+            set => IonMode = value;
+        }
+        double IMSProperty.PrecursorMz {
+            get => MassCenter;
+            set => MassCenter = value;
+        }
+
+        // ISpectrumPeak
+        double ISpectrumPeak.Intensity {
+            get => HeightAverage;
+            set => HeightAverage = (float)value;
+        }
+
+        double ISpectrumPeak.Mass {
+            get => MassCenter;
+            set => MassCenter = value;
+        }
+
+        // IChromatogramPeak
+        int IChromatogramPeak.ID {
+            get => MasterAlignmentID;
+            set => MasterAlignmentID = value;
+        }
+
+        ChromXs IChromatogramPeak.ChromXs {
+            get => TimesCenter;
+            set => TimesCenter = value;
         }
     }
 

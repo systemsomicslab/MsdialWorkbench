@@ -789,8 +789,15 @@ namespace Riken.Metabolomics.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfSpeSpecies(molecule.LipidName, molecule.LipidClass,
                             spectrum, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
                         break;
-
-
+                    //20220322
+                    case LbmClass.NAPhe:
+                        result = LipidMsmsCharacterization.JudgeIfNAcylPheFa(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
+                    case LbmClass.NATau:
+                        result = LipidMsmsCharacterization.JudgeIfNAcylTauFa(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
+                        break;
                 }
 
                 if (result != null)

@@ -416,8 +416,8 @@ namespace Rfx.Riken.OsakaUniv
                 case "PE_Cer": return new SolidColorBrush(Color.FromArgb(180, 118, 10, 118)); // purple modified
                 case "MIPC": return new SolidColorBrush(Color.FromArgb(180, 225, 30, 205)); // fuchsia modified modified
                 case "NAE": return new SolidColorBrush(Color.FromArgb(180, 245, 59, 10)); // orangered modified
-                case "NAAG": return new SolidColorBrush(Color.FromArgb(180, 235, 49, 20)); // orangered modified
-                case "NAAGS": return new SolidColorBrush(Color.FromArgb(180, 225, 39, 30)); // orangered modified
+                case "NAPhe": return new SolidColorBrush(Color.FromArgb(180, 235, 49, 20)); // orangered modified
+                case "NATau": return new SolidColorBrush(Color.FromArgb(180, 225, 39, 30)); // orangered modified
                 case "NAAO": return new SolidColorBrush(Color.FromArgb(180, 215, 29, 40)); // orangered
                 case "NAGly": return new SolidColorBrush(Color.FromArgb(180, 235, 49, 20)); // orangered modified
                 case "NAGlySer": return new SolidColorBrush(Color.FromArgb(180, 225, 39, 30)); // orangered modified

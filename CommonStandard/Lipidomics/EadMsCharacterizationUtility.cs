@@ -321,7 +321,7 @@ namespace CompMs.Common.Lipidomics
             var doublebondIons = matchedpeaks.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond)).ToList();
             var doublebondIons_matched = doublebondIons.Where(n => n.IsMatched).ToList();
             var matchedCount = doublebondIons_matched.Count;
-            var matchedPercent = (double)matchedCount / (double)doublebondIons.Count;
+            var matchedPercent = matchedCount / (doublebondIons.Count + 1e-10);
 
             var dbhigh_enriched = doublebondIons_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high)).Sum(n => n.Resolution);
             var dblow_enriched = doublebondIons_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_low)).Sum(n => n.Resolution);

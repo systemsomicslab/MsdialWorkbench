@@ -1432,4 +1432,290 @@ namespace CompMs.Common.Lipidomics.Tests
             }
         }
     }
+    [TestClass()]
+    public class MGSpectrumGeneratorTests
+    {
+        [TestMethod()]
+        public void GenerateTest_H()
+        {
+            //
+            var acyl1 = new AcylChain(16, DoubleBond.CreateFromPosition(11), new Oxidized(0));
+            var lipid = new Lipid(LbmClass.MG, 328.2614, new PositionLevelChains(acyl1));
+
+            var generator = new MGSpectrumGenerator();
+            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+
+            var expects = new[]
+            {
+                101.02281, // Acyl 16:1(11) C1-H
+                102.03064, // Acyl 16:1(11) C1
+                103.03846, // Acyl 16:1(11) C1+H
+                115.03846, // Acyl 16:1(11) C2-H
+                116.04629, // Acyl 16:1(11) C2
+                117.05411, // Acyl 16:1(11) C2+H
+                129.05411, // Acyl 16:1(11) C3-H
+                130.06194, // Acyl 16:1(11) C3
+                131.06976, // Acyl 16:1(11) C3+H
+                143.06976, // Acyl 16:1(11) C4-H
+                144.07759, // Acyl 16:1(11) C4
+                145.08541, // Acyl 16:1(11) C4+H
+                157.08541, // Acyl 16:1(11) C5-H
+                158.09324, // Acyl 16:1(11) C5
+                159.10106, // Acyl 16:1(11) C5+H
+                171.10106, // Acyl 16:1(11) C6-H
+                172.10889, // Acyl 16:1(11) C6
+                173.11671, // Acyl 16:1(11) C6+H
+                185.11671, // Acyl 16:1(11) C7-H
+                186.12454, // Acyl 16:1(11) C7
+                187.13236, // Acyl 16:1(11) C7+H
+                199.13236, // Acyl 16:1(11) C8-H
+                200.14019, // Acyl 16:1(11) C8
+                201.14801, // Acyl 16:1(11) C8+H
+                213.14801, // Acyl 16:1(11) C9-H
+                214.15584, // Acyl 16:1(11) C9
+                215.16366, // Acyl 16:1(11) C9+H
+                227.16366, // Acyl 16:1(11) C10-H
+                228.17149, // Acyl 16:1(11) C10
+                229.17931, // Acyl 16:1(11) C10+H
+                240.17149, // Acyl 16:1(11) C11-H
+                241.17931, // Acyl 16:1(11) C11
+                242.18714, // Acyl 16:1(11) C11+H
+                253.17931, // Acyl 16:1(11) C12-H
+                254.18714, // Acyl 16:1(11) C12
+                255.19496, // Acyl 16:1(11) C12+H
+                267.19496, // Acyl 16:1(11) C13-H
+                268.20279, // Acyl 16:1(11) C13
+                269.21061, // Acyl 16:1(11) C13+H
+                281.21061, // Acyl 16:1(11) C14-H
+                282.21844, // Acyl 16:1(11) C14
+                283.22626, // Acyl 16:1(11) C14+H
+                295.22626, // Acyl 16:1(11) C15-H
+                296.23409, // Acyl 16:1(11) C15
+                297.24191, // Acyl 16:1(11) C15+H
+                311.25811, // Precursor-H2O 
+                329.26868, // Precursor 
+
+            };
+
+            scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
+            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            {
+                Assert.AreEqual(expect, actual, 0.01d);
+            }
+        }
+
+        [TestMethod()]
+        public void GenerateTest_NH4()
+        {
+            var acyl1 = new AcylChain(16, DoubleBond.CreateFromPosition(11), new Oxidized(0));
+            var lipid = new Lipid(LbmClass.MG, 328.2614, new PositionLevelChains(acyl1));
+
+            var generator = new MGSpectrumGenerator();
+            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+NH4]+"));
+
+            var expects = new[]
+            {
+                101.02281, // Acyl 16:1(11) C1-H
+                102.03064, // Acyl 16:1(11) C1
+                103.03846, // Acyl 16:1(11) C1+H
+                115.03846, // Acyl 16:1(11) C2-H
+                116.04629, // Acyl 16:1(11) C2
+                117.05411, // Acyl 16:1(11) C2+H
+                129.05411, // Acyl 16:1(11) C3-H
+                130.06194, // Acyl 16:1(11) C3
+                131.06976, // Acyl 16:1(11) C3+H
+                143.06976, // Acyl 16:1(11) C4-H
+                144.07759, // Acyl 16:1(11) C4
+                145.08541, // Acyl 16:1(11) C4+H
+                157.08541, // Acyl 16:1(11) C5-H
+                158.09324, // Acyl 16:1(11) C5
+                159.10106, // Acyl 16:1(11) C5+H
+                171.10106, // Acyl 16:1(11) C6-H
+                172.10889, // Acyl 16:1(11) C6
+                173.11671, // Acyl 16:1(11) C6+H
+                185.11671, // Acyl 16:1(11) C7-H
+                186.12454, // Acyl 16:1(11) C7
+                187.13236, // Acyl 16:1(11) C7+H
+                199.13236, // Acyl 16:1(11) C8-H
+                200.14019, // Acyl 16:1(11) C8
+                201.14801, // Acyl 16:1(11) C8+H
+                213.14801, // Acyl 16:1(11) C9-H
+                214.15584, // Acyl 16:1(11) C9
+                215.16366, // Acyl 16:1(11) C9+H
+                227.16366, // Acyl 16:1(11) C10-H
+                228.17149, // Acyl 16:1(11) C10
+                229.17931, // Acyl 16:1(11) C10+H
+                240.17149, // Acyl 16:1(11) C11-H
+                241.17931, // Acyl 16:1(11) C11
+                242.18714, // Acyl 16:1(11) C11+H
+                253.17931, // Acyl 16:1(11) C12-H
+                254.18714, // Acyl 16:1(11) C12
+                255.19496, // Acyl 16:1(11) C12+H
+                267.19496, // Acyl 16:1(11) C13-H
+                268.20279, // Acyl 16:1(11) C13
+                269.21061, // Acyl 16:1(11) C13+H
+                281.21061, // Acyl 16:1(11) C14-H
+                282.21844, // Acyl 16:1(11) C14
+                283.22626, // Acyl 16:1(11) C14+H
+                295.22626, // Acyl 16:1(11) C15-H
+                296.23409, // Acyl 16:1(11) C15
+                297.24191, // Acyl 16:1(11) C15+H
+                311.25811, // [M+H]+  -H2O
+                329.26868, // [M+H]+ 
+                346.29523, // Precursor
+            };
+
+            scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
+            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            {
+                Assert.AreEqual(expect, actual, 0.01d);
+            }
+        }
+        [TestMethod()]
+        public void GenerateTest_Na()
+        {
+            var acyl1 = new AcylChain(16, DoubleBond.CreateFromPosition(11), new Oxidized(0));
+            var lipid = new Lipid(LbmClass.MG, 328.2614, new PositionLevelChains(acyl1));
+
+            var generator = new MGSpectrumGenerator();
+            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+Na]+"));
+
+            var expects = new[]
+            {
+                141.01587, // Acyl 16:1(11) C1-H
+                142.02369, // Acyl 16:1(11) C1
+                143.03152, // Acyl 16:1(11) C1+H
+                155.03152, // Acyl 16:1(11) C2-H
+                156.03934, // Acyl 16:1(11) C2
+                157.04717, // Acyl 16:1(11) C2+H
+                169.04717, // Acyl 16:1(11) C3-H
+                170.05499, // Acyl 16:1(11) C3
+                171.06282, // Acyl 16:1(11) C3+H
+                183.06282, // Acyl 16:1(11) C4-H
+                184.07064, // Acyl 16:1(11) C4
+                185.07847, // Acyl 16:1(11) C4+H
+                197.07847, // Acyl 16:1(11) C5-H
+                198.0863, // Acyl 16:1(11) C5
+                199.09412, // Acyl 16:1(11) C5+H
+                211.09412, // Acyl 16:1(11) C6-H
+                212.10195, // Acyl 16:1(11) C6
+                213.10977, // Acyl 16:1(11) C6+H
+                225.10977, // Acyl 16:1(11) C7-H
+                226.1176, // Acyl 16:1(11) C7
+                227.12542, // Acyl 16:1(11) C7+H
+                239.12542, // Acyl 16:1(11) C8-H
+                240.13325, // Acyl 16:1(11) C8
+                241.14107, // Acyl 16:1(11) C8+H
+                253.14107, // Acyl 16:1(11) C9-H
+                254.1489, // Acyl 16:1(11) C9
+                255.15672, // Acyl 16:1(11) C9+H
+                267.15672, // Acyl 16:1(11) C10-H
+                268.16455, // Acyl 16:1(11) C10
+                269.17237, // Acyl 16:1(11) C10+H
+                280.16455, // Acyl 16:1(11) C11-H
+                281.17237, // Acyl 16:1(11) C11
+                282.1802, // Acyl 16:1(11) C11+H
+                293.17237, // Acyl 16:1(11) C12-H
+                294.1802, // Acyl 16:1(11) C12
+                295.18802, // Acyl 16:1(11) C12+H
+                307.18802, // Acyl 16:1(11) C13-H
+                308.19585, // Acyl 16:1(11) C13
+                309.20367, // Acyl 16:1(11) C13+H
+                321.20367, // Acyl 16:1(11) C14-H
+                322.2115, // Acyl 16:1(11) C14
+                323.21932, // Acyl 16:1(11) C14+H
+                335.21932, // Acyl 16:1(11) C15-H
+                336.22715, // Acyl 16:1(11) C15
+                337.23497, // Acyl 16:1(11) C15+H
+                351.25062, // Precursor 
+
+            };
+
+            scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
+            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            {
+                Assert.AreEqual(expect, actual, 0.01d);
+            }
+        }
+    }
+    [TestClass()]
+    public class CARSpectrumGeneratorTests
+    {
+        [TestMethod()]
+        public void GenerateTest_H()
+        {
+            var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
+            var lipid = new Lipid(LbmClass.CAR, 425.350509, new PositionLevelChains(acyl1));
+
+            var generator = new CARSpectrumGenerator();
+            var scan = lipid.GenerateSpectrum(generator, AdductIonParser.GetAdductIonBean("[M+H]+"));
+
+            var expects = new[]
+            {
+                144.10191, //  Header-H2O 
+                162.11247, //  Header 
+                188.09173, // Acyl 18:1(9) C1-H
+                189.09956, // Acyl 18:1(9) C1
+                190.10738, // Acyl 18:1(9) C1+H
+                202.10738, // Acyl 18:1(9) C2-H
+                203.11521, // Acyl 18:1(9) C2
+                204.12303, // Acyl 18:1(9) C2+H
+                216.12303, // Acyl 18:1(9) C3-H
+                217.13086, // Acyl 18:1(9) C3
+                218.13868, // Acyl 18:1(9) C3+H
+                230.13868, // Acyl 18:1(9) C4-H
+                231.14651, // Acyl 18:1(9) C4
+                232.15433, // Acyl 18:1(9) C4+H
+                244.15433, // Acyl 18:1(9) C5-H
+                245.16216, // Acyl 18:1(9) C5
+                246.16998, // Acyl 18:1(9) C5+H
+                258.16998, // Acyl 18:1(9) C6-H
+                259.17781, // Acyl 18:1(9) C6
+                260.18563, // Acyl 18:1(9) C6+H
+                265.25259, //  [Acyl]+ 
+                272.18563, // Acyl 18:1(9) C7-H
+                273.19346, // Acyl 18:1(9) C7
+                274.20128, // Acyl 18:1(9) C7+H
+                286.20128, // Acyl 18:1(9) C8-H
+                287.20911, // Acyl 18:1(9) C8
+                288.21693, // Acyl 18:1(9) C8+H
+                299.20911, // Acyl 18:1(9) C9-H
+                300.21693, // Acyl 18:1(9) C9
+                301.22476, // Acyl 18:1(9) C9+H
+                312.21693, // Acyl 18:1(9) C10-H
+                313.22476, // Acyl 18:1(9) C10
+                314.23258, // Acyl 18:1(9) C10+H
+                326.23258, // Acyl 18:1(9) C11-H
+                327.24041, // Acyl 18:1(9) C11
+                328.24824, // Acyl 18:1(9) C11+H
+                340.24824, // Acyl 18:1(9) C12-H
+                341.25606, // Acyl 18:1(9) C12
+                342.26389, // Acyl 18:1(9) C12+H
+                354.26389, // Acyl 18:1(9) C13-H
+                355.27171, // Acyl 18:1(9) C13
+                356.27954, // Acyl 18:1(9) C13+H
+                368.27954, // Acyl 18:1(9) C14-H
+                369.28736, // Acyl 18:1(9) C14
+                370.29519, // Acyl 18:1(9) C14+H
+                381.36013, // Precursor-CHO2 
+                382.29519, // Acyl 18:1(9) C15-H
+                383.30301, // Acyl 18:1(9) C15
+                384.31084, // Acyl 18:1(9) C15+H
+                396.31084, // Acyl 18:1(9) C16-H
+                397.31866, // Acyl 18:1(9) C16
+                398.32649, // Acyl 18:1(9) C16+H
+                410.32649, // Acyl 18:1(9) C17-H
+                411.33431, // Acyl 18:1(9) C17
+                412.34214, // Acyl 18:1(9) C17+H
+                426.35779, // Precursor 
+
+            };
+
+            scan.Spectrum.ForEach(spec => System.Console.WriteLine($"Mass {spec.Mass}, Intensity {spec.Intensity}, Comment {spec.Comment}"));
+            foreach ((var expect, var actual) in expects.Zip(scan.Spectrum.Select(spec => spec.Mass)))
+            {
+                Assert.AreEqual(expect, actual, 0.01d);
+            }
+        }
+    }
 }

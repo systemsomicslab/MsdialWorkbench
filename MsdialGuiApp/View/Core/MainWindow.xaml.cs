@@ -5,6 +5,7 @@ using CompMs.App.Msdial.View.Table;
 using CompMs.App.Msdial.ViewModel;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM.WindowService;
@@ -43,8 +44,8 @@ namespace CompMs.App.Msdial.View.Core
 
             broker.ToObservable<ExperimentSpectrumViewModel>()
                 .Subscribe(OpenExperimentSpectrumView);
-            broker.ToObservable<SaveNistFileNameRequest>()
-                .Subscribe(SelectSaveFileName);
+            broker.ToObservable<SaveFileNameRequest>()
+                .Subscribe(GetSaveFilePath);
         }
 
         private readonly IMessageBroker broker;
@@ -60,17 +61,17 @@ namespace CompMs.App.Msdial.View.Core
             dialog.Show();
         }
 
-        private void SelectSaveFileName(SaveNistFileNameRequest request) {
-            var sfd = new SaveFileDialog {
-                Title = "Save spectra",
-                Filter = "NIST format(*.msp)|*.msp",
-                RestoreDirectory = true,
-                AddExtension = true,
+        private void GetSaveFilePath(SaveFileNameRequest request) {
+            var sfd = new SaveFileDialog
+            {
+                Title = request.Title,
+                Filter = request.Filter,
+                RestoreDirectory = request.RestoreDirectory,
+                AddExtension = request.AddExtension,
             };
 
             if (sfd.ShowDialog(this) == true) {
-                var filename = sfd.FileName;
-                broker.Publish(new SaveNistFileNameResponse(filename));
+                request.Run(sfd.FileName);
             }
         }
 

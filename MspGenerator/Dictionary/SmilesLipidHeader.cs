@@ -178,6 +178,13 @@ namespace CompMs.MspGenerator
             {"NAGlySer_OxFA", "OCC(NC(=O)CN%20)C(O)=O."},
             {"NAGly_OxFA", "OC(=O)CN%20."},
             {"NAOrn_OxFA", "NCCCC(N%20)C(O)=O."},
+            {"NAGly_FA", "OC(=O)CN%20."},
+            {"NAOrn_FA", "NCCCC(N%20)C(O)=O."},
+            {"NATau_OxFA", "OS(=O)(=O)CCN%20."},
+            {"NATau_FA", "OS(=O)(=O)CCN%20."},
+            {"NAPhe_OxFA", "OC(=O)C(CC1=CC=CC=C1)N%20."},
+            {"NAPhe_FA", "OC(=O)C(CC1=CC=CC=C1)N%20."},
+
 
 
             //steroid and cholic acid 

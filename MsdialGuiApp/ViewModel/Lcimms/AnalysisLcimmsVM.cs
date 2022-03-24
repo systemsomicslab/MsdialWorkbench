@@ -125,7 +125,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 horizontalAxis: dtHAxis).AddTo(Disposables);
 
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-                this.model.parameter.ProjectParam.SpectrumCommentToColorBytes
+                this.model.Parameter.ProjectParam.SpectrumCommentToColorBytes
                 .ToDictionary(
                     kvp => kvp.Key,
                     kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
@@ -134,7 +134,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 Colors.Blue);
 
             var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-               this.model.parameter.ProjectParam.SpectrumCommentToColorBytes
+               this.model.Parameter.ProjectParam.SpectrumCommentToColorBytes
                .ToDictionary(
                    kvp => kvp.Key,
                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])

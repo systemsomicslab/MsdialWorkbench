@@ -29,6 +29,8 @@
                           Style="{StaticResource VerticalConcatChart}">
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
+                    <MenuItem Header="Save spectrum as nist format"
+                              Command="{Binding PlacementTarget.DataContext.SaveUpperSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     <MenuItem Header="Save image as...">
                         <MenuItem Header="Save as emf"
                                   Command="{x:Static io:SaveImageAsCommand.EmfInstance}"

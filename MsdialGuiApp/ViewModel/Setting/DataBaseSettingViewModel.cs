@@ -10,6 +10,7 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
@@ -18,7 +19,7 @@ using System.Text.RegularExpressions;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public interface IDataBaseSettingViewModel
+    public interface IDataBaseSettingViewModel : INotifyPropertyChanged
     {
         DataBaseSettingModel Model { get; }
         IReadOnlyReactiveProperty<string> DataBaseID { get; }
