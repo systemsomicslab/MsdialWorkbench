@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using System;

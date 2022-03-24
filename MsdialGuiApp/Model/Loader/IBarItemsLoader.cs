@@ -8,7 +8,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CompMs.App.Msdial.Model
+namespace CompMs.App.Msdial.Model.Loader
 {
     public interface IBarItemsLoader
     {
@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Model
                             peaks.Select(peak => peak.ObserveProperty(expression))
                                 .CombineLatest()
                                 .Throttle(TimeSpan.FromMilliseconds(50))
-                                .Select(_ => 
+                                .Select(_ =>
                                     new BarItem(
                                         cls,
                                         peaks.Average(selector),

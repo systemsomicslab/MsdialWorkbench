@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Model;
-using CompMs.App.Msdial.Model.Imms;
+﻿using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.ViewModel.Table;
 using Reactive.Bindings;
