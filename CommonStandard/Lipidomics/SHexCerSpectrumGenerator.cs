@@ -116,12 +116,12 @@ namespace CompMs.Common.Lipidomics
             {
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - SO3), 100d, "[M-SO3+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass},
-                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - SO3 - H2O), 250d, "[M-H2SO4+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass},
+                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - SO3 - H2O), 250d, "[M-H2SO4+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true},
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - SO3 - C6H10O5), 100d, "[M-C6H10O8S+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - SO3 - C6H10O5 - H2O), 250d, "[M-C6H12O9S+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true},
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - SO3 - C6H10O5 - H2O*2), 150d, "[M-C6H12O9S-H2O+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
                 new SpectrumPeak(adduct.ConvertToMz(C8H16NO6 + SO3), 150d, "[C8H16NO9S+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak(adduct.ConvertToMz(C8H16NO6), 150d, "[C8H16NO6+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(adduct.ConvertToMz(C8H16NO6), 150d, "[C8H16NO6+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
             };
             return spectrum.ToArray();
         }

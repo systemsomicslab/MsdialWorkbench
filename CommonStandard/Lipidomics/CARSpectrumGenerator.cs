@@ -98,9 +98,9 @@ namespace CompMs.Common.Lipidomics
             var spectrum = new List<SpectrumPeak>
             {
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass) -CHO2, 150d, "Precursor-CHO2") { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak(adduct.ConvertToMz(C7H15NO3) , 150d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak(adduct.ConvertToMz(C7H15NO3 - H2O) , 150d, "Header-H2O") { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass) -CHO2, 150d, "Precursor-CHO2") { SpectrumComment = SpectrumComment.metaboliteclass }, // M-45
+                new SpectrumPeak(adduct.ConvertToMz(C7H15NO3) , 150d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true }, //172
+                new SpectrumPeak(adduct.ConvertToMz(C7H15NO3 - H2O) , 150d, "Header-H2O") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true}, //144
             };
             return spectrum.ToArray();
         }

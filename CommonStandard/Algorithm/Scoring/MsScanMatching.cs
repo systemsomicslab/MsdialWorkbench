@@ -90,6 +90,16 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.EtherPE:
                     return EtherPEEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
 
+                case LbmClass.SHexCer:
+                    return SHexCerEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.GM3:
+                    return GM3EadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+
+                case LbmClass.MG:
+                    return MGEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.CAR:
+                    return CAREadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+
                 default: return (null, new double[2] { 0.0, 0.0 });
             }
         }
