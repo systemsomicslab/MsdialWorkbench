@@ -80,8 +80,13 @@ namespace CompMs.App.Msdial.Model.Setting
             }
             if (Option.HasFlag(ProcessOption.Alignment)) {
                 AlignmentParameterSettingModel.Commit();
-                MobilitySettingModel?.Commit();
-                IsotopeTrackSettingModel.Commit();
+                if (AlignmentParameterSettingModel.ShouldRunAlignment) {
+                    MobilitySettingModel?.Commit();
+                    IsotopeTrackSettingModel.Commit();
+                }
+                else {
+                    Option &= ~ProcessOption.Alignment;
+                }
             }
             var method = settingModelFactory.BuildMethod();
             handler?.Invoke(this, method);
