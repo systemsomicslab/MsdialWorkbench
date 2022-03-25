@@ -18,32 +18,12 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
         public PeakModUCLegacy OriginalChromUC { get; set; }
         public PeakModUCLegacy AlignedChromUC { get; set; }
         public PeakModUCLegacy PickingUC { get; set; }
-        //public AlignmentSpotProperty AlignmentPropertyBean { get; set; }
         public AlignmentSpotPropertyModel AlignmentPropertyBeanModel { get; set; }
         public List<PeakPropertyLegacy> PeakPropertyList { get; set; }
         public ParameterBase Param { get; set; }
         public bool IsRI { get; set; } = false;
         public bool IsDrift { get; set; } = false;
         public bool UpdateTrigger { get; set; }
-
-        // LC
-        //public AlignedChromatogramModificationViewModelLegacy(
-        //    AlignmentSpotProperty bean,
-        //    List<PeakPropertyLegacy> peakPropertyList, 
-        //    ParameterBase param, 
-        //    bool isRI = false) {
-        //    AlignmentPropertyBean = bean;
-        //    Param = param;
-        //    PeakPropertyList = peakPropertyList;
-        //    IsRI = isRI;
-        //    IsDrift = bean.TimesCenter.Type == ChromXType.Drift ? true : false;
-        //    var dv = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Original);
-        //    var dv2 = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Aligned);
-        //    var dv3 = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Picking);
-        //    OriginalChromUC = new PeakModUCLegacy(this, dv, new MouseActionSetting() { FixMinY = true }, PeakModType.Original, PeakPropertyList);
-        //    AlignedChromUC = new PeakModUCLegacy(this, dv2, new MouseActionSetting() { FixMinY = true }, PeakModType.Aligned, PeakPropertyList);
-        //    PickingUC = new PeakModUCLegacy(this, dv3, new MouseActionSetting() { CanMouseAction = false }, PeakModType.Picking);
-        //}
 
         public AlignedChromatogramModificationViewModelLegacy(IObservable<AlignedChromatogramModificationModelLegacy> model) {
             model.ObserveOnDispatcher().Subscribe(UpdateModel).AddTo(Disposables);

@@ -38,7 +38,8 @@ namespace CompMs.Graphics.Legacy {
         public bool FillPeakArea { set; get; }
 
         public ChromatogramXicViewModelLegacy(ChromatogramBeanLegacy chromatogramBean, ChromatogramEditMode editMode, ChromatogramDisplayLabel displayLabel, ChromatogramQuantitativeMode quantitativeMode,
-            ChromatogramIntensityMode intensityMode, int selectedPeakId, string graphTitle, float mass, float massTolerance, float targetRt, float targetLeftRt, float targetRightRt, bool scaleToFocus = false, string xAxisTitle = "") {
+            ChromatogramIntensityMode intensityMode, int selectedPeakId, string graphTitle, float mass, float massTolerance, 
+            float targetRt, float targetLeftRt, float targetRightRt, bool scaleToFocus = false, string xAxisTitle = "") {
             this.chromatogramBean = chromatogramBean;
 
             this.editMode = editMode;

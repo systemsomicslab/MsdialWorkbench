@@ -17,8 +17,13 @@ namespace CompMs.App.Msdial.Model.DataObj {
         public AlignmentChromPeakFeatureModel(AlignmentChromPeakFeature innerModel) {
             this.innerModel = innerModel;
         }
-
+        public string Name => innerModel.Name;
         public int FileID => innerModel.FileID;
+        public string FileName => innerModel.FileName;
+        public int PeakID => innerModel.PeakID;
+        public double TotalScore => innerModel.MatchResults.Representative.TotalScore;
+        public double Mass => innerModel.Mass;
+        public double Time => ChromXsTop.Value;
 
         public ChromXs ChromXsLeft { 
             get => this.innerModel.ChromXsLeft; 
@@ -225,7 +230,7 @@ namespace CompMs.App.Msdial.Model.DataObj {
     {
         public int AlignmentID => innerModel.AlignmentID;
         public int MasterAlignmentID => innerModel.MasterAlignmentID;
-
+        public int RepresentativeFileID => innerModel.RepresentativeFileID;
         public ChromXType ChromXType => innerModel.TimesCenter.MainType;
         public ChromXUnit ChromXUnit => innerModel.TimesCenter.Unit;
         public double MassCenter => innerModel.MassCenter;
@@ -357,6 +362,8 @@ namespace CompMs.App.Msdial.Model.DataObj {
         public double NominalKM => Math.Round(KM);
         public double KMD => NominalKM - KM;
         public double KMR => NominalKM % KMNominalUnit;
+
+        public bool IsMultiLayeredData => innerModel.IsMultiLayeredData();
 
         static AlignmentSpotPropertyModel() {
             KMIupacUnit = AtomMass.hMass * 2 + AtomMass.cMass; // CH2

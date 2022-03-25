@@ -30,16 +30,16 @@
                 </DataGrid.CellStyle>
 
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="File ID" Width="0.8*" Binding="{Binding Path=AlignedPeakPropertyBeanCollection.FileID}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="File Name" Width="1*" Binding="{Binding Path=AlignedPeakPropertyBeanCollection.FileName}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Peak ID" Width="0.8*" Binding="{Binding Path=AlignedPeakPropertyBeanCollection.PeakID, StringFormat=0}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="File ID" Width="0.8*" Binding="{Binding Path=AlignedPeakProperty.FileID}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="File Name" Width="1*" Binding="{Binding Path=AlignedPeakProperty.FileName}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Peak ID" Width="0.8*" Binding="{Binding Path=AlignedPeakProperty.PeakID, StringFormat=0}" IsReadOnly="True" />
                     <DataGridTextColumn Header="Class" Width="1*" Binding="{Binding Path=AnalysisClass}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Annotation" Width="1.5*" Binding="{Binding Path=AlignedPeakPropertyBeanCollection.MetaboliteName}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="TotalScore" Width="1*" Binding="{Binding Path=AlignedPeakPropertyBeanCollection.TotalSimilairty, StringFormat=0.00}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Mz" Width="0.8*" Binding="{Binding Path=AlignedPeakPropertyBeanCollection.AccurateMass, StringFormat=0.000}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Rt" Width="0.8*" Binding="{Binding Path=AlignedPeakPropertyBeanCollection.RetentionTime, StringFormat=0.00}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="S/N" Width="0.8*" Binding="{Binding Path=AlignedPeakPropertyBeanCollection.SignalToNoise, StringFormat=0.0}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Peak Int." Width="1*" Binding="{Binding Path=AlignedPeakPropertyBeanCollection.Variable, StringFormat=0}"  IsReadOnly="True" >
+                    <DataGridTextColumn Header="Annotation" Width="1.5*" Binding="{Binding Path=AlignedPeakProperty.Name}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="TotalScore" Width="1*" Binding="{Binding Path=AlignedPeakProperty.TotalScore, StringFormat=0.00}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Mz" Width="0.8*" Binding="{Binding Path=AlignedPeakProperty.Mass, StringFormat=0.000}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Rt" Width="0.8*" Binding="{Binding Path=AlignedPeakProperty.Time, StringFormat=0.00}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="S/N" Width="0.8*" Binding="{Binding Path=AlignedPeakProperty.SignalToNoise, StringFormat=0.0}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Peak Int." Width="1*" Binding="{Binding Path=AlignedPeakProperty.PeakHeightTop, StringFormat=0}"  IsReadOnly="True" >
                         <DataGridTextColumn.CellStyle>
                             <Style TargetType="{x:Type DataGridCell}">
                                 <Setter Property="Background" Value="{Binding BackgroundColInt}"/>
@@ -53,7 +53,7 @@
                             </Style>
                         </DataGridTextColumn.CellStyle>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="Peak Area" Width="1*" Binding="{Binding Path=AlignedPeakPropertyBeanCollection.Area, StringFormat=0}" IsReadOnly="True" >
+                    <DataGridTextColumn Header="Peak Area" Width="1*" Binding="{Binding Path=AlignedPeakProperty.PeakAreaAboveZero, StringFormat=0}" IsReadOnly="True" >
                         <DataGridTextColumn.CellStyle>
                             <Style TargetType="{x:Type DataGridCell}">
                                 <Setter Property="Background" Value="{Binding BackgroundColArea}"/>

@@ -61,10 +61,15 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalRangeSource = hrox.Merge(nopeak).ToReadOnlyReactivePropertySlim();
             VerticalRangeSource = vrox.Merge(nopeak).ToReadOnlyReactivePropertySlim();
 
-            var legacymodel = model.Where(model_ => model_ != null).CombineLatest(
+            var alignedChromatogramModificationModel = model.Where(model_ => model_ != null).CombineLatest(
                 chromatoramSource.Where(chromatogram => chromatogram != null && chromatogram.Count > 0),
                 (model_, chromatogram) => new AlignedChromatogramModificationModelLegacy(model_, chromatogram, analysisFiles, parameter));
-            AlignedChromatogramModificationModel = legacymodel;
+            AlignedChromatogramModificationModel = alignedChromatogramModificationModel;
+
+            var sampleTableViewerInAlignmentModelLegacy = model.Where(model_ => model_ != null).CombineLatest(
+                chromatoramSource.Where(chromatogram => chromatogram != null && chromatogram.Count > 0),
+                (model_, chromatogram) => new SampleTableViewerInAlignmentModelLegacy(model_, chromatogram, analysisFiles, parameter));
+            SampleTableViewerInAlignmentModel = sampleTableViewerInAlignmentModelLegacy;
         }
 
         public List<Chromatogram> EicChromatograms {
@@ -128,6 +133,7 @@ namespace CompMs.App.Msdial.Model.Chart
         public Func<PeakItem, double> VerticalSelector { get; }
 
         public IObservable<AlignedChromatogramModificationModelLegacy> AlignedChromatogramModificationModel { get; }
+        public IObservable<SampleTableViewerInAlignmentModelLegacy> SampleTableViewerInAlignmentModel { get; }
 
         public static AlignmentEicModel Create(
             IObservable<AlignmentSpotPropertyModel> source,

@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model;
 using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
@@ -27,7 +28,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService, 
             IObservable<ParameterBase> parameter)
             : this(
-                  new LcmsMethodModel(storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true), parameter.Select(p => new HeightBarItemsLoader(p.FileID_ClassName))),
+                  new LcmsMethodModel(storage, 
+                      new StandardDataProviderFactory(retry: 5, isGuiProcess: true), 
+                      parameter.Select(p => new HeightBarItemsLoader(p.FileID_ClassName))),
                   compoundSearchService,
                   peakSpotTableService, 
                   proteomicsTableService,
