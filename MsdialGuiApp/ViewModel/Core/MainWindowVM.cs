@@ -209,16 +209,13 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private DelegateCommand filePropertyResetCommand;
 
         private void FilePropertyResettingWindow() {
-            var files = Storage.AnalysisFiles;
+            var storage = DatasetViewModel.Value.Model.Storage;
+            var files = storage.AnalysisFiles;
             var analysisFilePropertySetModel = new AnalysisFilePropertySetModel(files);
             using (var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetViewModel(analysisFilePropertySetModel)) {
                 var afpsw_result = analysisFilePropertyResetService.ShowDialog(analysisFilePropertySetWindowVM);
-                if (afpsw_result != true) {
-                    return;
-                }
-                else {
-                    ParameterFactory.SetParameterFromAnalysisFiles(Storage.Parameter, files);
-                    parameter.Value = Storage.Parameter;
+                if (afpsw_result == true) {
+                    ParameterFactory.SetParameterFromAnalysisFiles(storage.Parameter, files);
                     parameter.ForceNotify();
                 }
             }

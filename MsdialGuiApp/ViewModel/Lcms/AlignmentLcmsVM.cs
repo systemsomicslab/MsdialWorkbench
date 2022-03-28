@@ -173,7 +173,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             
             AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(
                 this.model.AlignmentSpotTableModel,
-                Observable.Return(model.BarItemsLoader),
                 MassLower,
                 MassUpper,
                 RtLower,
@@ -183,7 +182,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .AddTo(Disposables);
             ProteomicsAlignmentTableViewModel = new LcmsProteomicsAlignmentTableViewModel(
                 this.model.AlignmentSpotTableModel,
-                Observable.Return(model.BarItemsLoader),
                 MassLower,
                 MassUpper,
                 RtLower,

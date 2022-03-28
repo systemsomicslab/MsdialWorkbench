@@ -79,7 +79,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
     {
         public ImmsAlignmentSpotTableViewModel(
             ImmsAlignmentSpotTableModel model,
-            IObservable<IBarItemsLoader> barItemsLoader,
             IReactiveProperty<double> massLower,
             IReactiveProperty<double> massUpper,
             IReactiveProperty<double> driftLower,
@@ -94,13 +93,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                   driftUpper,
                   metaboliteFilterKeyword,
                   commentFilterKeyword) {
-            if (barItemsLoader is null) {
-                throw new ArgumentNullException(nameof(barItemsLoader));
-            }
 
-            BarItemsLoader = barItemsLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
-
-        public ReadOnlyReactivePropertySlim<IBarItemsLoader> BarItemsLoader { get; }
     }
 }
