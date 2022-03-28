@@ -199,7 +199,7 @@
                 <RibbonButton Label="Show experiment spectrum"
                               IsEnabled="True"
                               Command="{Binding ShowExperimentSpectrumCommand, Mode=OneTime}"
-                              KeyTip="C"/>
+                              KeyTip="X"/>
                 <RibbonButton Label="Display retention time correction window"
                               IsEnabled="false"
                               KeyTip="R"/>
