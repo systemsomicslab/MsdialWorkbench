@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    class AlignmentEicViewModel : ViewModelBase
+    sealed class AlignmentEicViewModel : ViewModelBase
     {
         public AlignmentEicViewModel(
             AlignmentEicModel model,

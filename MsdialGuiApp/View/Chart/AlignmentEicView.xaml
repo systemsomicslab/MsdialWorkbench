@@ -3,11 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              mc:Ignorable="d" 
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
              Name="AlignedEicView"
              d:DataContext="{d:DesignInstance Type=vm:AlignmentEicViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -33,6 +33,8 @@
                 <SolidColorBrush Color="Green" Opacity="0.25" PresentationOptions:Freeze="True"/>
                 <SolidColorBrush Color="Black" Opacity="0.25" PresentationOptions:Freeze="True"/>-->
             </AlternationConverter>
+            <converter:ColorToBrushConverter x:Key="ColorToBrushConverter" Opacity="0.25"/>
+            <converter:ColorToPenConverter x:Key="ColorToPenConverter" Thickness="2"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -57,11 +59,9 @@
                 <DataTemplate>
                     <Grid>
                         <chart:LineChartControl ItemsSource="{Binding Peaks}"
-                                               LinePen="{Binding Path=(ItemsControl.AlternationIndex),
-                                                                 RelativeSource={RelativeSource Mode=TemplatedParent},
-                                                                 Converter={StaticResource LinePenConverter}}"
-                                               HorizontalPropertyName="{Binding DataContext.HorizontalProperty.Value, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
-                                               VerticalPropertyName="{Binding DataContext.VerticalProperty.Value, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}">
+                                                LinePen="{Binding Color, Converter={StaticResource ColorToPenConverter}}"
+                                                HorizontalPropertyName="{Binding DataContext.HorizontalProperty.Value, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                                VerticalPropertyName="{Binding DataContext.VerticalProperty.Value, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}">
                             <chart:LineChartControl.ToolTip>
                                 <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                                     <StackPanel Orientation="Horizontal">
@@ -72,12 +72,10 @@
                             </chart:LineChartControl.ToolTip>
                         </chart:LineChartControl>
                         <chart:AreaChartControl ItemsSource="{Binding PeakArea}"
-                                               AreaBrush="{Binding Path=(ItemsControl.AlternationIndex),
-                                                                   RelativeSource={RelativeSource Mode=TemplatedParent},
-                                                                   Converter={StaticResource AreaBrushConverter}}"
-                                               HorizontalPropertyName="{Binding DataContext.HorizontalProperty.Value, RelativeSource={RelativeSource AncestorType=chart:MultiChart}}"
-                                               VerticalPropertyName="{Binding DataContext.VerticalProperty.Value, RelativeSource={RelativeSource AncestorType=chart:MultiChart}}"
-                                               IsHitTestVisible="False"/>
+                                                AreaBrush="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"
+                                                HorizontalPropertyName="{Binding DataContext.HorizontalProperty.Value, RelativeSource={RelativeSource AncestorType=chart:MultiChart}}"
+                                                VerticalPropertyName="{Binding DataContext.VerticalProperty.Value, RelativeSource={RelativeSource AncestorType=chart:MultiChart}}"
+                                                IsHitTestVisible="False"/>
                     </Grid>
                 </DataTemplate>
             </chart:MultiChart.ItemTemplate>
