@@ -9,31 +9,36 @@ namespace CompMs.Graphics.AxisManager.Generic
     public abstract class BaseAxisManager<T> : ViewModelBase, IAxisManager<T>
     {
         public BaseAxisManager(Range range, Range bounds) {
-            InitialRangeCore = InitialRange = range;
+            InitialRangeCore = range;
+            InitialRange = CoerceRange(InitialRangeCore, bounds);
             Bounds = bounds;
             Range = InitialRange;
         }
 
         public BaseAxisManager(Range range, IChartMargin margin) {
-            InitialRangeCore = InitialRange = range;
+            InitialRangeCore = range;
+            InitialRange = CoerceRange(InitialRangeCore, null);
             ChartMargin = margin;
             Range = InitialRange;
         }
 
         public BaseAxisManager(Range range, IChartMargin margin, Range bounds) {
-            InitialRangeCore = InitialRange = range;
+            InitialRangeCore = range;
+            InitialRange = CoerceRange(InitialRangeCore, bounds);
             Bounds = bounds;
             ChartMargin = margin;
             Range = InitialRange;
         }
 
         public BaseAxisManager(Range range) {
-            InitialRangeCore = InitialRange = range;
+            InitialRangeCore = range;
+            InitialRange = CoerceRange(InitialRangeCore, null);
             Range = InitialRange;
         }
 
         public BaseAxisManager(BaseAxisManager<T> source) {
-            InitialRangeCore = InitialRange = source.InitialRangeCore;
+            InitialRangeCore = source.InitialRangeCore;
+            InitialRange = CoerceRange(InitialRangeCore, null);
             Bounds = source.Bounds;
             Range = InitialRange;
         }
