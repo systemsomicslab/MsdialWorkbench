@@ -1,10 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
 using Reactive.Bindings;
 using System;
+using System.ComponentModel;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public interface IAnnotatorSettingViewModel : IDisposable
+    public interface IAnnotatorSettingViewModel : IDisposable, INotifyPropertyChanged
     {
         IAnnotatorSettingModel Model { get; }
         ReactiveProperty<string> AnnotatorID { get; }

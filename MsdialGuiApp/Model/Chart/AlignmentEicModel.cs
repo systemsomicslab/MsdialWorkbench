@@ -1,26 +1,32 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Parser;
-using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    class AlignmentEicModel : BindableBase
+    class AlignmentEicModel : DisposableModelBase
     {
         public AlignmentEicModel(
+            IObservable<AlignmentSpotPropertyModel> model,
             IObservable<List<Chromatogram>> chromatoramSource,
+            List<AnalysisFileBean> analysisFiles,
+            ParameterBase parameter,
             Func<PeakItem, double> horizontalSelector,
             Func<PeakItem, double> verticalSelector) {
+
+            if (model is null) {
+                throw new ArgumentNullException(nameof(model));
+            }
+
             if (chromatoramSource is null) {
                 throw new ArgumentNullException(nameof(chromatoramSource));
             }
@@ -32,6 +38,8 @@ namespace CompMs.App.Msdial.Model.Chart
             if (verticalSelector is null) {
                 throw new ArgumentNullException(nameof(verticalSelector));
             }
+
+            AlignmentSpotPropertyModel = model;
 
             EicChromatogramsSource = chromatoramSource;
             EicChromatogramsSource.Subscribe(chromatograms => EicChromatograms = chromatograms);
@@ -52,6 +60,11 @@ namespace CompMs.App.Msdial.Model.Chart
 
             HorizontalRangeSource = hrox.Merge(nopeak).ToReadOnlyReactivePropertySlim();
             VerticalRangeSource = vrox.Merge(nopeak).ToReadOnlyReactivePropertySlim();
+
+            var legacymodel = model.Where(model_ => model_ != null).CombineLatest(
+                chromatoramSource.Where(chromatogram => chromatogram != null && chromatogram.Count > 0),
+                (model_, chromatogram) => new AlignedChromatogramModificationModelLegacy(model_, chromatogram, analysisFiles, parameter));
+            AlignedChromatogramModificationModel = legacymodel;
         }
 
         public List<Chromatogram> EicChromatograms {
@@ -64,6 +77,8 @@ namespace CompMs.App.Msdial.Model.Chart
             }
         }
         private List<Chromatogram> eicChromatogram;
+
+        public IObservable<AlignmentSpotPropertyModel> AlignmentSpotPropertyModel { get; set; }
 
         public Range HorizontalRange {
             get {
@@ -105,94 +120,30 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public IObservable<Range> VerticalRangeSource { get; }
 
+
         public GraphElements Elements { get; } = new GraphElements();
 
         public Func<PeakItem, double> HorizontalSelector { get; }
 
         public Func<PeakItem, double> VerticalSelector { get; }
 
+        public IObservable<AlignedChromatogramModificationModelLegacy> AlignedChromatogramModificationModel { get; }
+
         public static AlignmentEicModel Create(
             IObservable<AlignmentSpotPropertyModel> source,
             AlignmentEicLoader loader,
+            List<AnalysisFileBean> AnalysisFiles,
+            ParameterBase Param,
             Func<PeakItem, double> horizontalSelector,
             Func<PeakItem, double> verticalSelector) {
 
             return new AlignmentEicModel(
-                source.Select(loader.LoadEic),
+                source,
+                source.Select(loader.LoadEicAsObservable).Switch(),
+                AnalysisFiles,
+                Param,
                 horizontalSelector, verticalSelector
             );
-            /*
-            return new AlignmentEicModel(
-                source.SelectMany(src =>
-                    Observable.DeferAsync(async token => {
-                        var result = await loader.LoadEicAsync(src, token);
-                        return Observable.Return(result);
-                    })),
-                horizontalSelector, verticalSelector
-            );
-            */
-        }
-    }
-
-    class AlignmentEicLoader
-    {
-        public AlignmentEicLoader(
-            ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer,
-            string eicFile,
-            PeakPickBaseParameter peakPickParameter, IReadOnlyDictionary<int, string> id2cls) {
-
-            this.chromatogramSpotSerializer = chromatogramSpotSerializer;
-            this.eicFile = eicFile;
-            this.id2cls = id2cls;
-            this.peakPickParameter = peakPickParameter;
-        }
-
-        private readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
-        private readonly string eicFile;
-        private readonly IReadOnlyDictionary<int, string> id2cls;
-        private readonly PeakPickBaseParameter peakPickParameter;
-
-        public async Task<List<Chromatogram>> LoadEicAsync(AlignmentSpotPropertyModel target, CancellationToken token) {
-            var eicChromatograms = new List<Chromatogram>();
-            if (target != null) {
-                // maybe using file pointer is better
-                eicChromatograms = await Task.Run(() => {
-                    var spotinfo = chromatogramSpotSerializer.DeserializeAtFromFile(eicFile, target.MasterAlignmentID);
-                    var chroms = new List<Chromatogram>(spotinfo.PeakInfos.Count);
-                    foreach (var peakinfo in spotinfo.PeakInfos) {
-                        var items = DataAccess.GetSmoothedPeaklist(peakinfo.Chromatogram, peakPickParameter.SmoothingMethod, peakPickParameter.SmoothingLevel).Select(chrom => new PeakItem(chrom)).ToList();
-                        var peakitems = items.Where(item => peakinfo.ChromXsLeft.Value <= item.Time && item.Time <= peakinfo.ChromXsRight.Value).ToList();
-                        chroms.Add(new Chromatogram
-                        {
-                            Class = id2cls[peakinfo.FileID],
-                            Peaks = items,
-                            PeakArea = peakitems,
-                        });
-                    }
-                    return chroms;
-                }, token).ConfigureAwait(false);
-            }
-            return eicChromatograms;
-        }
-
-        public List<Chromatogram> LoadEic(AlignmentSpotPropertyModel target) {
-            var eicChromatograms = new List<Chromatogram>();
-            if (target != null) {
-                // maybe using file pointer is better
-                var spotinfo = chromatogramSpotSerializer.DeserializeAtFromFile(eicFile, target.MasterAlignmentID);
-                eicChromatograms = new List<Chromatogram>(spotinfo.PeakInfos.Count);
-                foreach (var peakinfo in spotinfo.PeakInfos) {
-                    var items = peakinfo.Chromatogram.Select(chrom => new PeakItem(chrom)).ToList();
-                    var peakitems = items.Where(item => peakinfo.ChromXsLeft.Value <= item.Time && item.Time <= peakinfo.ChromXsRight.Value).ToList();
-                    eicChromatograms.Add(new Chromatogram
-                    {
-                        Class = id2cls[peakinfo.FileID],
-                        Peaks = items,
-                        PeakArea = peakitems,
-                    });
-                }
-            }
-            return eicChromatograms;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using NCDK.Smiles;
 using NCDK.Graphs.InChI;
+using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
@@ -24,7 +25,14 @@ namespace CompMs.Common.Lipidomics
                     }
                     var c = new SmilesInchikeyGenerator();
                     var chainSmiles = c.ChainSmilesGen(chain);
-                    chainSmiles = chainSmiles + ("%" + jointPosition);
+                    if (chain is SphingoChain)
+                    {
+                        chainSmiles = chainSmiles + ("%" + jointPosition);
+                    }
+                    else
+                    {
+                        chainSmiles = chainSmiles + ("%" + jointPosition);
+                    }
                     chainList.Add(chainSmiles);
                     jointPosition = jointPosition + 10;
                 }
@@ -47,14 +55,9 @@ namespace CompMs.Common.Lipidomics
         }
         public string ChainSmilesGen(IChain chain)
         {
-            string chainSmiles = new string('C', chain.CarbonCount);
             var doubleBond = chain.DoubleBond;
             var oxidized = chain.Oxidized;
-            if (chain is AcylChain)
-            {
-                chainSmiles = chainSmiles + "(=O)";
-            }
-
+ 
             if (doubleBond.UnDecidedCount > 0)
             {
                 return null;
@@ -63,7 +66,29 @@ namespace CompMs.Common.Lipidomics
             {
                 return "H";
             }
-            if (doubleBond.DecidedCount > 0)
+
+            string chainSmiles ="";
+            for (int i = 1;i< chain.CarbonCount+1;i++)
+            {
+                chainSmiles = chainSmiles + "C";
+                //if (doubleBond.Bonds.Contains(i))
+                //{
+                //    var state = item.State.ToString()[0].ToString().ToUpper();
+                //    chainSmiles = chainSmiles + "(O)";
+
+                //}
+                //if (oxidized.Oxidises.Contains(i))
+                //{
+                //    chainSmiles = chainSmiles + "(O)";
+
+                //}
+            }
+
+            if (chain is AcylChain)
+            {
+                chainSmiles = chainSmiles + "(=O)";
+            }
+           if (doubleBond.DecidedCount > 0)
             {
                 foreach (var item in doubleBond.Bonds)
                 {
@@ -78,7 +103,7 @@ namespace CompMs.Common.Lipidomics
             foreach (var item in oxidized.Oxidises)
             {
                 var oxPosition = item;
-                chainSmiles = chainSmiles.Insert((chain.CarbonCount - oxPosition), "(O)");
+                chainSmiles = chainSmiles.Insert((chain.CarbonCount - oxPosition+1), "(O)");
             }
             return chainSmiles;
         }
@@ -112,7 +137,7 @@ namespace CompMs.Common.Lipidomics
             {"PMeOH", "C(O%10)C(O%20)COP(O)(OC)=O."},
 
             {"LPC", "C(O%10)C(O)COP([O-])(=O)OCC[N+](C)(C)C."},
-            {"LPCSN1", "C(O%10)C(O)COP([O-])(=O)OCC[N+](C)(C)C."},
+            //{"LPCSN1", "C(O%10)C(O)COP([O-])(=O)OCC[N+](C)(C)C."},
             {"LPA", "C(O%10)C(O)COP(O)(O)=O."},
             {"LPE", "C(O%10)C(O)COP(O)(=O)OCCN."},
             {"LPG", "C(O)(CO)COP(O)(=O)OCC(O)C(O%10)."},
@@ -120,7 +145,7 @@ namespace CompMs.Common.Lipidomics
             {"LPS", "C(N)(COP(O)(=O)OCC(O)C(O%10))C(O)=O."},
             {"EtherLPC", "C(O)C(O%10)COP([O-])(=O)OCC[N+](C)(C)C."},
             {"EtherLPE", "C(O%10)C(O)COP(O)(=O)OCCN."},
-            {"EtherLPE_P", "C(O%10)C(O)COP(O)(=O)OCCN."},
+            //{"EtherLPE_P", "C(O%10)C(O)COP(O)(=O)OCCN."},
             {"EtherLPG", "C(O)(CO)COP(O)(=O)OCC(O)C(O%10)."},
             //{"EtherLPI", "C(O%10)C(O)COP(O)(=O)OC1C(O)C(O)C(O)C(O)C1O."},
             //{"EtherLPS", "C(N)(COP(O)(=O)OCC(O)C(O%10))C(O)=O."},
@@ -140,7 +165,7 @@ namespace CompMs.Common.Lipidomics
 
             {"EtherPC", "C(O%10)C(O%20)COP([O-])(=O)OCC[N+](C)(C)C."},
             {"EtherPE", "C(O%10)C(O%20)COP(O)(=O)OCCN."},
-            {"EtherPE_O", "C(O%10)C(O%20)COP(O)(=O)OCCN."},
+            //{"EtherPE_O", "C(O%10)C(O%20)COP(O)(=O)OCCN."},
             {"EtherPG", "C(O)(CO)COP(O)(=O)OCC(O%20)C(O%10)."},
             {"EtherPI", "C(O%10)C(O%20)COP(O)(=O)OC1C(O)C(O)C(O)C(O)C1O."},
             {"EtherPS", "C(N)(COP(O)(=O)OCC(O%20)C(O%10))C(O)=O."},
@@ -183,55 +208,55 @@ namespace CompMs.Common.Lipidomics
             //{"NAPE", "OP(=O)(OCC%20)OCC(O%10)C(O%20)."},
 
             //ceramide 2chains
-            {"Cer_ADS", "OCC%20N%30."},
-            {"Cer_AP", "OCC%20N%30."},
-            {"Cer_AS", "OCC%20N%30."},
-            {"Cer_BDS", "OCC%20N%30."},
-            {"Cer_BS", "OCC%20N%30."},
-            {"Cer_HDS", "OCC%20N%30."},
-            {"Cer_HS", "OCC%20N%30."},
-            {"Cer_NDS", "OCC%20N%30."},
-            {"Cer_NP", "OCC%20N%30."},
-            {"Cer_NS", "OCC%20N%30."},
-            {"HexCer_ADS", "OCC1OC(OCC%20N%30)C(O)C(O)C1O."},
-            {"HexCer_AP", "OCC1OC(OCC%20N%30)C(O)C(O)C1O."},
-            {"HexCer_AS", "OCC1OC(OCC%20N%30)C(O)C(O)C1O."},
-            {"HexCer_BDS", "OCC1OC(OCC%20N%30)C(O)C(O)C1O."},
-            {"HexCer_BS", "OCC1OC(OCC%20N%30)C(O)C(O)C1O."},
-            {"HexCer_HDS", "OCC1OC(OCC%20N%30)C(O)C(O)C1O."},
-            {"HexCer_HS", "OCC1OC(OCC%20N%30)C(O)C(O)C1O."},
-            {"HexCer_NDS", "OCC1OC(OCC%20N%30)C(O)C(O)C1O."},
-            {"HexCer_NP", "OCC1OC(OCC%20N%30)C(O)C(O)C1O."},
-            {"HexCer_NS", "OCC1OC(OCC%20N%30)C(O)C(O)C1O."},
-            {"HexCer_OS", "OCC1OC(OCC%20N%30)C(O)C(O)C1O."},
+            {"Cer_ADS", "OCC%10N%20."},
+            {"Cer_AP", "OCC%10N%20."},
+            {"Cer_AS", "OCC%10N%20."},
+            {"Cer_BDS", "OCC%10N%20."},
+            {"Cer_BS", "OCC%10N%20."},
+            {"Cer_HDS", "OCC%10N%20."},
+            {"Cer_HS", "OCC%10N%20."},
+            {"Cer_NDS", "OCC%10N%20."},
+            {"Cer_NP", "OCC%10N%20."},
+            {"Cer_NS", "OCC%10N%20."},
+            {"HexCer_ADS", "OCC1OC(OCC%10N%20)C(O)C(O)C1O."},
+            {"HexCer_AP", "OCC1OC(OCC%10N%20)C(O)C(O)C1O."},
+            {"HexCer_AS", "OCC1OC(OCC%10N%20)C(O)C(O)C1O."},
+            {"HexCer_BDS", "OCC1OC(OCC%10N%20)C(O)C(O)C1O."},
+            {"HexCer_BS", "OCC1OC(OCC%10N%20)C(O)C(O)C1O."},
+            {"HexCer_HDS", "OCC1OC(OCC%10N%20)C(O)C(O)C1O."},
+            {"HexCer_HS", "OCC1OC(OCC%10N%20)C(O)C(O)C1O."},
+            {"HexCer_NDS", "OCC1OC(OCC%10N%20)C(O)C(O)C1O."},
+            {"HexCer_NP", "OCC1OC(OCC%10N%20)C(O)C(O)C1O."},
+            {"HexCer_NS", "OCC1OC(OCC%10N%20)C(O)C(O)C1O."},
+            {"HexCer_OS", "OCC1OC(OCC%10N%20)C(O)C(O)C1O."},
 
-            {"GM1", "CC(=O)NC1C(O)CC(OC2C(O)C(OC3C(O)C(O)C(OCC%20N%30)OC3CO)OC(CO)C2OC2OC(CO)C(O)C(OC3OC(CO)C(O)C(O)C3O)C2NC(C)=O)(OC1C(O)C(O)CO)C(O)=O."},
-            {"GM3", "CC(O)=NC1C(O)CC(OC2C(O)C(CO)OC(OC3C(CO)OC(OCC%20N%30)C(O)C3O)C2O)(OC1C(O)C(O)CO)C(O)=O."},
-            {"GD1a", "CC(=O)NC1C(O)CC(OC2C(O)C(CO)OC(OC3C(O)C(CO)OC(OC4C(CO)OC(OC5C(O)C(O)C(OCC%20N%30)OC5CO)C(O)C4OC4(CC(O)C(NC(C)=O)C(O4)C(O)C(O)CO)C(O)=O)C3NC(C)=O)C2O)(OC1C(O)C(O)CO)C(O)=O."},
-            {"GD1b", "CC(=O)NC1C(O)CC(OC(CO)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(OC3C(O)C(O)C(OCC%20N%30)OC3CO)OC(CO)C2OC2OC(CO)C(O)C(OC3OC(CO)C(O)C(O)C3O)C2NC(C)=O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
-            {"GD2", "CC(=O)NC1C(O)CC(OC(CO)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(OC3C(O)C(O)C(OCC%20N%30)OC3CO)OC(CO)C2OC2OC(CO)C(O)C(O)C2NC(C)=O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
-            {"GD3", "CC(=O)NC1C(O)CC(OCC(O)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(CO)OC(OC3C(O)C(O)C(OCC%20N%30)OC3CO)C2O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
-            {"GT1b", "CC(=O)NC1C(O)CC(OC(CO)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(OC3C(O)C(O)C(OCC%20N%30)OC3CO)OC(CO)C2OC2OC(CO)C(O)C(OC3OC(CO)C(O)C(OC4(CC(O)C(NC(C)=O)C(O4)C(O)C(O)CO)C(O)=O)C3O)C2NC(C)=O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
-            {"GQ1b", "CC(=O)NC1C(O)CC(OC(CO)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(CO)OC(OC3C(O)C(CO)OC(OC4C(CO)OC(OC5C(O)C(O)C(OCC%20N%30)OC5CO)C(O)C4OC4(CC(O)C(NC(C)=O)C(O4)C(O)C(CO)OC4(CC(O)C(NC(C)=O)C(O4)C(O)C(O)CO)C(O)=O)C(O)=O)C3NC(C)=O)C2O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
-            {"NGcGM3", "OCC(O)C(O)C1OC(CC(O)C1N=C(O)CO)(OC1C(O)C(CO)OC(OC2C(O)C(O)C(OCC%20N%30)OC2CO)C1O)C(O)=O."},
-            {"CerP", "OP(O)(=O)OCC%20N%30."},
-            {"Hex2Cer", "N%30C%20COC1OC(CO)C(OC2OC(CO)C(O)C(O)C2O)C(O)C1O."},
-            {"Hex3Cer", "N%30C%20COC1OC(CO)C(OC2OC(CO)C(OC3OC(CO)C(O)C(O)C3O)C(O)C2O)C(O)C1O."},
+            {"GM1", "CC(=O)NC1C(O)CC(OC2C(O)C(OC3C(O)C(O)C(OCC%10N%20)OC3CO)OC(CO)C2OC2OC(CO)C(O)C(OC3OC(CO)C(O)C(O)C3O)C2NC(C)=O)(OC1C(O)C(O)CO)C(O)=O."},
+            {"GM3", "CC(O)=NC1C(O)CC(OC2C(O)C(CO)OC(OC3C(CO)OC(OCC%10N%20)C(O)C3O)C2O)(OC1C(O)C(O)CO)C(O)=O."},
+            {"GD1a", "CC(=O)NC1C(O)CC(OC2C(O)C(CO)OC(OC3C(O)C(CO)OC(OC4C(CO)OC(OC5C(O)C(O)C(OCC%10N%20)OC5CO)C(O)C4OC4(CC(O)C(NC(C)=O)C(O4)C(O)C(O)CO)C(O)=O)C3NC(C)=O)C2O)(OC1C(O)C(O)CO)C(O)=O."},
+            {"GD1b", "CC(=O)NC1C(O)CC(OC(CO)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(OC3C(O)C(O)C(OCC%10N%20)OC3CO)OC(CO)C2OC2OC(CO)C(O)C(OC3OC(CO)C(O)C(O)C3O)C2NC(C)=O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
+            {"GD2", "CC(=O)NC1C(O)CC(OC(CO)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(OC3C(O)C(O)C(OCC%10N%20)OC3CO)OC(CO)C2OC2OC(CO)C(O)C(O)C2NC(C)=O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
+            {"GD3", "CC(=O)NC1C(O)CC(OCC(O)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(CO)OC(OC3C(O)C(O)C(OCC%10N%20)OC3CO)C2O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
+            {"GT1b", "CC(=O)NC1C(O)CC(OC(CO)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(OC3C(O)C(O)C(OCC%10N%20)OC3CO)OC(CO)C2OC2OC(CO)C(O)C(OC3OC(CO)C(O)C(OC4(CC(O)C(NC(C)=O)C(O4)C(O)C(O)CO)C(O)=O)C3O)C2NC(C)=O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
+            {"GQ1b", "CC(=O)NC1C(O)CC(OC(CO)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(CO)OC(OC3C(O)C(CO)OC(OC4C(CO)OC(OC5C(O)C(O)C(OCC%10N%20)OC5CO)C(O)C4OC4(CC(O)C(NC(C)=O)C(O4)C(O)C(CO)OC4(CC(O)C(NC(C)=O)C(O4)C(O)C(O)CO)C(O)=O)C(O)=O)C3NC(C)=O)C2O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
+            {"NGcGM3", "OCC(O)C(O)C1OC(CC(O)C1N=C(O)CO)(OC1C(O)C(CO)OC(OC2C(O)C(O)C(OCC%10N%20)OC2CO)C1O)C(O)=O."},
+            {"CerP", "OP(O)(=O)OCC%10N%20."},
+            {"Hex2Cer", "N%20C%10COC1OC(CO)C(OC2OC(CO)C(O)C(O)C2O)C(O)C1O."},
+            {"Hex3Cer", "N%20C%10COC1OC(CO)C(OC2OC(CO)C(OC3OC(CO)C(O)C(O)C3O)C(O)C2O)C(O)C1O."},
 
-            {"MIPC", "OCC1OC(OC2C(O)C(O)C(O)C(O)C2OP(O)(=O)OCC(%20)N%30)C(O)C(O)C1O."},
+            {"MIPC", "OCC1OC(OC2C(O)C(O)C(O)C(O)C2OP(O)(=O)OCC(%10)N%20)C(O)C(O)C1O."},
 
 
             //ceramide need chain conbination
-            {"SHexCer", "OCC1OC(OCC%20N%30)C(O)C(OS(O)(=O)=O)C1O."},
-            {"SHexCer+O", "OCC1OC(OCC%20N%30)C(O)C(OS(O)(=O)=O)C1O."},
-            {"SM", "C[N+](C)(C)CCOP([O-])(=O)OCC%20N%30."},
-            {"SM+O", "C[N+](C)(C)CCOP([O-])(=O)OCC%20N%30."},
-            {"SL", "C%20N%30CS(O)(=O)=O."},
-            {"SL+O", "C%20N%30CS(O)(=O)=O."},
-            {"PI_Cer_d", "OC1C(O)C(O)C(OP(O)(=O)OCC(%20)N%30)C(O)C1O."},
-            {"PI_Cer_d+O", "OC1C(O)C(O)C(OP(O)(=O)OCC(%20)N%30)C(O)C1O."},
-            {"PE_Cer_d", "NCCOP(O)(=O)OCC%20N%30."},
-            {"PE_Cer_d+O", "NCCOP(O)(=O)OCC%20N%30."},
+            {"SHexCer", "OCC1OC(OCC%10N%20)C(O)C(OS(O)(=O)=O)C1O."},
+            {"SHexCer+O", "OCC1OC(OCC%10N%20)C(O)C(OS(O)(=O)=O)C1O."},
+            {"SM", "C[N+](C)(C)CCOP([O-])(=O)OCC%10N%20."},
+            {"SM+O", "C[N+](C)(C)CCOP([O-])(=O)OCC%10N%20."},
+            {"SL", "C%10N%20CS(O)(=O)=O."},
+            {"SL+O", "C%10N%20CS(O)(=O)=O."},
+            {"PI_Cer", "OC1C(O)C(O)C(OP(O)(=O)OCC(%10)N%20)C(O)C1O."},
+            //{"PI_Cer_d+O", "OC1C(O)C(O)C(OP(O)(=O)OCC(%10)N%20)C(O)C1O."},
+            {"PE_Cer", "NCCOP(O)(=O)OCC%10N%20."},
+            //{"PE_Cer_d+O", "NCCOP(O)(=O)OCC%10N%20."},
 
             //ceramide 3chains
             {"AHexCer", "OC1C(O)C(CO)OC(OCC%20N%30)C1O%10."},
@@ -242,9 +267,9 @@ namespace CompMs.Common.Lipidomics
             {"ASM", "C[N+](C)(C)CCOP([O-])(=O)OCC%20N%30."},
 
             //ceramide single chains
-            {"Sph", "NC(%20)CO."},
-            {"DHSph", "NC(%20)CO."},
-            {"PhytoSph", "NC(%20)CO."},
+            {"Sph", "NC(%10)CO."},
+            {"DHSph", "NC(%10)CO."},
+            {"PhytoSph", "NC(%10)CO."},
 
 
             //{"PG-Cer", "C(O)(CO)COP(O)(=O)OCC%20N%30."},

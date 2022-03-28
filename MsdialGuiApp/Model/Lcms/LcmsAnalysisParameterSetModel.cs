@@ -19,8 +19,8 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             Parameter = parameter;
 
-            IdentitySettingModel = new IdentifySettingModel(parameter, new LcmsAnnotatorSettingFactory(), dataBaseStorages);
-            if (files.Count() <= 1) {
+            IdentitySettingModel = new IdentifySettingModel(parameter, new LcmsAnnotatorSettingFactory(), Parameter.ProcessOption, dataBaseStorages);
+            if (AnalysisFiles.Count <= 1) {
                 Parameter.ProcessOption &= ~ProcessOption.Alignment;
             }
 

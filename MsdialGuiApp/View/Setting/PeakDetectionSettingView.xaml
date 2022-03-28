@@ -12,7 +12,15 @@
              d:DataContext="{d:DesignInstance Type={x:Type vm:PeakDetectionSettingViewModel}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="TextBox" BasedOn="{StaticResource ToolTipErrorStyle}">
+                <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+            </Style>
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -27,21 +35,17 @@
             <StackPanel Margin="8,0">
                 <ui:LabeledContent PrependLabel="Minimum peak height:"
                                    AppendLabel="amplitude"
+                                   ToolTip="Recommend: 1000-3000 (QTOF), 10000-30000 (Orbitrap, FT-MS)"
                                    Style="{StaticResource AlignedContent}">
                     <TextBox Text="{Binding MinimumAmplitude.Value}"
-                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}"/>
-                    <ToolTipService.ToolTip>
-                        <ToolTip Content="Recommend: 1000-3000 (QTOF), 10000-30000 (Orbitrap, FT-MS)"/>
-                    </ToolTipService.ToolTip>
+                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                 </ui:LabeledContent>
                 <ui:LabeledContent PrependLabel="Mass slice width:"
                                    AppendLabel="Da"
+                                   ToolTip="Recommend: 0.05-0.1"
                                    Style="{StaticResource AlignedContent}">
                     <TextBox Text="{Binding MassSliceWidth.Value}"
-                             Style="{StaticResource ResourceKey=ToolTipErrorStyle}"/>
-                    <ToolTipService.ToolTip>
-                        <ToolTip Content="Recommend: 0.05-0.1" />
-                    </ToolTipService.ToolTip>
+                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                 </ui:LabeledContent>
             </StackPanel>
         </GroupBox>
@@ -59,11 +63,10 @@
 
                 <StackPanel Grid.Row="0">
                     <ui:LabeledContent PrependLabel="Smoothing method:"
-                                       Style="{StaticResource AlignedContent}">
-                        <ComboBox SelectedValue="{Binding SmoothingMethod.Value}" SelectedValuePath="DataContext">
-                            <ToolTipService.ToolTip>
-                                <ToolTip Content="Linear weighted moving average is recommended." />
-                            </ToolTipService.ToolTip>
+                                       Style="{StaticResource AlignedContent}"
+                                       ToolTip="Linear weighted moving average is recommended.">
+                        <ComboBox SelectedValue="{Binding SmoothingMethod.Value}" SelectedValuePath="DataContext"
+                                  IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
                             <ComboBox.Items>
                                 <ComboBoxItem Content="Simple moving average" DataContext="{x:Static enum:SmoothingMethod.SimpleMovingAverage}"/>
                                 <ComboBoxItem Content="Linear weighted moving average" DataContext="{x:Static enum:SmoothingMethod.LinearWeightedMovingAverage}"/>
@@ -75,24 +78,18 @@
 
                     <ui:LabeledContent PrependLabel="Smoothing level:"
                                        AppendLabel="scan"
+                                       ToolTip="Recommend: 2-4 (if a peak have just 5-10 data points)"
                                        Style="{StaticResource AlignedContent}">
                         <TextBox Text="{Binding SmoothingLevel.Value}"
-                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}" >
-                            <ToolTipService.ToolTip>
-                                <ToolTip Content="Recommend: 2-4 (if a peak have just 5-10 data points)" />
-                            </ToolTipService.ToolTip>
-                        </TextBox>
+                                 IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                     </ui:LabeledContent>
 
                     <ui:LabeledContent PrependLabel="Minimum peak width:"
                                        AppendLabel="scan"
+                                       ToolTip="Recommend: 3-5"
                                        Style="{StaticResource AlignedContent}">
                         <TextBox Text="{Binding MinimumDatapoints.Value}"
-                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}">
-                            <ToolTipService.ToolTip>
-                                <ToolTip Content="Recommend: 3-5" />
-                            </ToolTipService.ToolTip>
-                        </TextBox>
+                                 IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                     </ui:LabeledContent>
                 </StackPanel>
 
@@ -104,13 +101,17 @@
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Right">
                             <ui:LabeledContent PrependLabel="Mass:">
-                                <TextBox Text="{Binding NewMass}" Width="64"/>
+                                <TextBox Text="{Binding NewMass}" Width="64"
+                                         IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                             </ui:LabeledContent>
                             <ui:LabeledContent PrependLabel="Tolerane:">
-                                <TextBox Text="{Binding NewTolerance}" Width="64"/>
+                                <TextBox Text="{Binding NewTolerance}" Width="64"
+                                         IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"/>
                             </ui:LabeledContent>
-                            <Button Content="Add" Command="{Binding AddCommand, Mode=OneTime}" Width="64" Margin="8,0"/>
-                            <Button Content="Remove" Command="{Binding RemoveCommand, Mode=OneTime}" Width="64" Margin="8,0"/>
+                            <Button Content="Add" Command="{Binding AddCommand, Mode=OneTime}" Width="64" Margin="8,0"
+                                    IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"/>
+                            <Button Content="Remove" Command="{Binding RemoveCommand, Mode=OneTime}" Width="64" Margin="8,0"
+                                    IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}"/>
                         </StackPanel>
                     </Grid>
 
@@ -134,9 +135,7 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Name="TextBox_ExcludedMass" 
-                                                 Text="{Binding Mass, TargetNullValue=''}"
-                                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                                                 VerticalContentAlignment="Center"/>
+                                                 Text="{Binding Mass, TargetNullValue=''}"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
 
@@ -154,8 +153,7 @@
                                     <DataTemplate>
                                         <TextBox Name="TextBox_MassTolerance"
                                                  Text="{Binding MassTolerance, TargetNullValue=''}"
-                                                 Style="{StaticResource ResourceKey=ToolTipErrorStyle}" 
-                                                 VerticalContentAlignment="Center"/>
+                                                 IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
 
@@ -163,7 +161,8 @@
                                     <DataTemplate>
                                         <Grid FocusManager.FocusedElement="{Binding ElementName=TextBox_MassTolerance}">
                                             <TextBox Name="TextBox_MassTolerance" 
-                                                     Text="{Binding Tolerance, TargetNullValue=''}" />
+                                                     Text="{Binding Tolerance, TargetNullValue=''}"
+                                                     IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
                                         </Grid>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellEditingTemplate>

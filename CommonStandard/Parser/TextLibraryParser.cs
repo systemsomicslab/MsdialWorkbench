@@ -301,5 +301,128 @@ namespace CompMs.Common.Parser
             error = string.Join("\r\n", messages);
             return textQueries;
         }
+
+        public static List<MoleculeMsReference> StandardTextLibraryReader(string filePath, out string error) {
+            error = string.Empty;
+
+            var textQueries = new List<MoleculeMsReference>();
+            var textQuery = new MoleculeMsReference();
+
+            string line, errorMessage = string.Empty, adductString = string.Empty, inchikey = string.Empty;
+            string[] lineArray;
+            float retentionTime, accurateMass, rtTol, massTol, minInt;
+            int counter = 1;
+
+            using (StreamReader sr = new StreamReader(filePath, Encoding.ASCII)) {
+                sr.ReadLine();
+
+                while (sr.Peek() > -1) {
+                    #region
+                    line = sr.ReadLine();
+                    counter++;
+
+                    if (line == string.Empty) break;
+
+                    lineArray = line.Split('\t');
+
+                    if (lineArray.Length < 2) { errorMessage += "Error type 1: line " + counter + " is not suitable.\r\n"; continue; }
+
+                    retentionTime = -1; accurateMass = -1; rtTol = -1; massTol = -1;
+
+                    textQuery = new MoleculeMsReference();
+                    textQuery.Name = lineArray[0];
+                    textQuery.ScanID = textQueries.Count;
+
+                    if (lineArray.Length >= 2) {
+                        if (float.TryParse(lineArray[1], out retentionTime)) {
+                            textQuery.ChromXs.RT.Value = retentionTime;
+                        }
+                        else {
+                            errorMessage += "Error type 2: line " + counter + "includes non-numerical value for retention time information.\r\n";
+                            continue;
+                        }
+                    }
+
+                    if (lineArray.Length >= 4) {
+                        if (float.TryParse(lineArray[3], out accurateMass)) {
+                            if (accurateMass < 0) {
+                                errorMessage += "Error type 3: line " + counter + "includes negative value for accurate mass information.\r\n";
+                                continue;
+                            }
+                            else {
+                                textQuery.PrecursorMz = accurateMass;
+                            }
+                        }
+                        else {
+                            errorMessage += "Error type 2: line " + counter + "includes non-numerical value for accurate mass information.\r\n";
+                            continue;
+                        }
+                    }
+
+                    if (lineArray.Length >= 3) {
+                        if (float.TryParse(lineArray[2], out rtTol)) {
+                            textQuery.RetentionTimeTolerance = rtTol;
+                        }
+                        else {
+                            errorMessage += "Error type 2: line " + counter + "includes non-numerical value for retention time tolerance.\r\n";
+                            continue;
+                        }
+                    }
+
+                    if (lineArray.Length >= 5) {
+                        if (float.TryParse(lineArray[4], out massTol)) {
+                            textQuery.MassTolerance = massTol;
+                        }
+                        else {
+                            errorMessage += "Error type 2: line " + counter + "includes non-numerical value for accurate mass tolerance.\r\n";
+                            continue;
+                        }
+                    }
+
+                    if (lineArray.Length >= 6) {
+                        if (float.TryParse(lineArray[5], out minInt)) {
+                            textQuery.MinimumPeakHeight = minInt;
+                        }
+                        else {
+                            errorMessage += "Error type 2: line " + counter + "includes non-numerical value for minimum peak height.\r\n";
+                            continue;
+                        }
+                    }
+
+                    if (lineArray.Length >= 7) {
+                        if (bool.TryParse(lineArray[6], out var res)) {
+                            textQuery.IsTargetMolecule = res;
+                        }
+                    }
+
+                    #endregion
+
+                    textQueries.Add(textQuery);
+                }
+
+                if (textQueries.Count == 0) {
+                    errorMessage += "Error type 4: This library doesn't include suitable information.\r\n";
+                }
+            }
+
+            if (errorMessage != string.Empty) {
+                errorMessage += "\r\n";
+                errorMessage += "You should write the following information as the target standard library.\r\n";
+
+                errorMessage += "[0]Name\t[1]RetentionTime\t[2]RT tolerance\t[3]m/z\t[4]m/z tolerance\t[5]Min Height\t[6]Include\r\n";
+                errorMessage += "Name A\t2.0\t0.1\t100.000\t0.01\t1000\ttrue\r\n";
+                errorMessage += "Name B\t4.0\t0.1\t200.000\t0.01\t1000\ttrue\r\n";
+                errorMessage += "Name C\t6.0\t0.1\t300.000\t0.01\t1000\ttrue\r\n";
+                errorMessage += "Name D\t7.0\t0.1\t400.000\t0.01\t1000\ttrue\r\n";
+                errorMessage += "Name E\t10.0\t0.1\t500.000\t0.01\t1000\ttrue\r\n";
+
+                error = errorMessage;
+                //MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                return null;
+            }
+
+            return textQueries;
+        }
     }
 }

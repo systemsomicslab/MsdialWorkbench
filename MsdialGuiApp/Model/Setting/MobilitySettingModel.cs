@@ -17,8 +17,9 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly MsdialImmsParameter immsParameter;
         private readonly MsdialLcImMsParameter lcimmsParameter;
 
-        public MobilitySettingModel(MsdialImmsParameter parameter, List<AnalysisFileBean> files) {
+        public MobilitySettingModel(MsdialImmsParameter parameter, List<AnalysisFileBean> files, ProcessOption process) {
             immsParameter = parameter;
+            IsReadOnly = (process & ProcessOption.Alignment) == 0;
             IonMobilityType = parameter.IonMobilityType;
 
             if (parameter.FileID2CcsCoefficients is null) {
@@ -27,8 +28,9 @@ namespace CompMs.App.Msdial.Model.Setting
             CalibrationInfoCollection = InitializeCalibrationInfoCollection(files, parameter.FileID2CcsCoefficients);
         }
 
-        public MobilitySettingModel(MsdialLcImMsParameter parameter, List<AnalysisFileBean> files) {
+        public MobilitySettingModel(MsdialLcImMsParameter parameter, List<AnalysisFileBean> files, ProcessOption process) {
             lcimmsParameter = parameter;
+            IsReadOnly = (process & ProcessOption.Alignment) != 0;
             IonMobilityType = parameter.IonMobilityType;
 
             if (parameter.FileID2CcsCoefficients is null) {
@@ -36,6 +38,8 @@ namespace CompMs.App.Msdial.Model.Setting
             }
             CalibrationInfoCollection = InitializeCalibrationInfoCollection(files, parameter.FileID2CcsCoefficients);
         }
+
+        public bool IsReadOnly { get; }
 
         public IonMobilityType IonMobilityType {
             get => ionMobilityType;
@@ -46,6 +50,9 @@ namespace CompMs.App.Msdial.Model.Setting
         public ReadOnlyCollection<CcsCalibrationInfoVS> CalibrationInfoCollection { get; }
 
         public void Commit() {
+            if (IsReadOnly) {
+                return;
+            }
             if (immsParameter != null) {
                 immsParameter.IonMobilityType = IonMobilityType;
             }

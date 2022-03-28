@@ -1,11 +1,14 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Properties;
 using CompMs.App.Msdial.ViewModel.MsResult;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 
@@ -32,10 +35,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             SaveSpectraAsNistCommand = new ReactiveCommand()
                 .WithSubscribe(SaveSpectraAsNist)
                 .AddTo(Disposables);
-
-            MessageBroker.Default.ToObservable<SaveNistFileNameResponse>()
-                .Subscribe(response => Model.SaveSpectrumAsNist(response.FileName))
-                .AddTo(Disposables);
         }
 
         public ExperimentSpectrumModel Model { get; }
@@ -54,20 +53,19 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReactiveCommand SaveSpectraAsNistCommand { get; }
 
         private void SaveSpectraAsNist() {
-            MessageBroker.Default.Publish(new SaveNistFileNameRequest());
+            if (string.IsNullOrEmpty(Resources.EXPORT_DIR) || !Directory.Exists(Resources.EXPORT_DIR)) {
+                MessageBroker.Default.Publish(new SaveFileNameRequest(Model.SaveSpectrumAsNist)
+                {
+                    Title = "Save spectra",
+                    Filter = "NIST format(*.msp)|*.msp",
+                    RestoreDirectory = true,
+                    AddExtension = true,
+                });
+            }
+            else {
+                var fileName = Path.GetFileNameWithoutExtension(Model.AnalysisFile.AnalysisFileName);
+                Model.SaveSpectrumAsNist(Path.Combine(Resources.EXPORT_DIR, $"{fileName}.msp"));
+            }
         }
-    }
-
-    public class SaveNistFileNameRequest
-    {
-    }
-
-    public class SaveNistFileNameResponse
-    {
-        public SaveNistFileNameResponse(string fileName) {
-            FileName = fileName;
-        }
-
-        public string FileName { get; }
     }
 }

@@ -113,9 +113,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             BarChartViewModel = new Chart.BarChartViewModel(Model.BarChartModel, brushSource: Observable.Return(classBrush)).AddTo(Disposables);
             AlignmentSpotTableViewModel = new DimsAlignmentSpotTableViewModel(
                 Model.AlignmentSpotTableModel,
-                Observable.Return(Model.BarItemsLoader),
-                MassLower, MassUpper,
-                MetaboliteFilterKeyword,
+                MassLower,
+                MassUpper, MetaboliteFilterKeyword,
                 CommentFilterKeyword)
                 .AddTo(Disposables);
 

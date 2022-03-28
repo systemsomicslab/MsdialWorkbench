@@ -40,7 +40,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(1)]
         public MoleculeMsReference Reference { get; set; }
         [Key(2)]
-        public List<double[]> Chromatogram { get; set; }
+        public List<ChromatogramPeak> Chromatogram { get; set; }
 
         [IgnoreMember]
         public double RtDiff { get { return (SamplePeakAreaBean.ChromXsTop.Value - Reference.ChromXs.Value); } }
@@ -86,7 +86,7 @@ namespace CompMs.MsdialCore.DataObj {
     public class CommonStdData
     {
         public MoleculeMsReference Reference { get; set; }
-        public List<List<double[]>> Chromatograms { get; set; } = new List<List<double[]>>();
+        public List<List<ChromatogramPeak>> Chromatograms { get; set; } = new List<List<ChromatogramPeak>>();
         public List<double> PeakHeightList { get; set; } = new List<double>();
         public List<double> PeakAreaList { get; set; } = new List<double>();
         public List<double> PeakWidthList { get; set; } = new List<double>();

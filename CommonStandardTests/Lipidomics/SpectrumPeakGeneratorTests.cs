@@ -129,24 +129,24 @@ namespace CompMs.Common.Lipidomics.Tests
                     new SpectrumPeak(648.459881,  50d), // C8 -H
                     new SpectrumPeak(649.467706, 100d), // C8
                     new SpectrumPeak(650.475531,  50d), // C8 +H
-                    new SpectrumPeak(661.467706,  50d), // C9 -H
-                    new SpectrumPeak(662.475531, 100d), // C9
-                    new SpectrumPeak(663.483356,  50d), // C9 +H
+                    new SpectrumPeak(661.467706,  25d), // C9 -H
+                    new SpectrumPeak(662.475531,  50d), // C9
+                    new SpectrumPeak(663.483356,  25d), // C9 +H
                     new SpectrumPeak(674.475531,  50d), // C10 -H
                     new SpectrumPeak(675.483356, 100d), // C10
                     new SpectrumPeak(676.491181,  50d), // C10 +H
-                    new SpectrumPeak(688.491181,  50d), // C11 -H
-                    new SpectrumPeak(689.499006, 100d), // C11
-                    new SpectrumPeak(690.506831,  50d), // C11 +H
-                    new SpectrumPeak(701.499006,  50d), // C12 -H
-                    new SpectrumPeak(702.506831, 100d), // C12
-                    new SpectrumPeak(703.514656,  50d), // C12 +H
+                    new SpectrumPeak(688.491181, 150d), // C11 -H
+                    new SpectrumPeak(689.499006, 300d), // C11
+                    new SpectrumPeak(690.506831, 150d), // C11 +H
+                    new SpectrumPeak(701.499006,  25d), // C12 -H
+                    new SpectrumPeak(702.506831,  50d), // C12
+                    new SpectrumPeak(703.514656,  25d), // C12 +H
                     new SpectrumPeak(714.506831,  50d), // C13 -H
                     new SpectrumPeak(715.514656, 100d), // C13
                     new SpectrumPeak(716.522481,  50d), // C13 +H
-                    new SpectrumPeak(728.522481,  50d), // C14 -H
-                    new SpectrumPeak(729.530306, 100d), // C14
-                    new SpectrumPeak(730.538131,  50d), // C14 +H
+                    new SpectrumPeak(728.522481, 150d), // C14 -H
+                    new SpectrumPeak(729.530306, 300d), // C14
+                    new SpectrumPeak(730.538131, 150d), // C14 +H
                     new SpectrumPeak(742.538131,  50d), // C15 -H
                     new SpectrumPeak(743.545956, 100d), // C15
                     new SpectrumPeak(744.553781,  50d), // C15 +H
@@ -266,15 +266,15 @@ namespace CompMs.Common.Lipidomics.Tests
                 0d,
                 100d,
                 new SpectrumPeak[] {
-                    new SpectrumPeak(489.284991,  50d), // C1 -H
-                    new SpectrumPeak(490.292816, 100d), // C1
-                    new SpectrumPeak(491.300641,  50d), // C1 +H
+                    new SpectrumPeak(489.284991,  25d), // C1 -H
+                    new SpectrumPeak(490.292816,  50d), // C1
+                    new SpectrumPeak(491.300641,  25d), // C1 +H
                     new SpectrumPeak(502.292816,  50d), // C2 -H
                     new SpectrumPeak(503.300641, 100d), // C2
                     new SpectrumPeak(504.308466,  50d), // C2 +H
-                    new SpectrumPeak(516.308466,  50d), // C3 -H
-                    new SpectrumPeak(517.316291, 100d), // C3
-                    new SpectrumPeak(518.324116,  50d), // C3 +H
+                    new SpectrumPeak(516.308466, 150d), // C3 -H
+                    new SpectrumPeak(517.316291, 300d), // C3
+                    new SpectrumPeak(518.324116, 150d), // C3 +H
                     new SpectrumPeak(530.324116,  50d), // C4 -H
                     new SpectrumPeak(531.331941, 100d), // C4
                     new SpectrumPeak(532.339766,  50d), // C4 +H
@@ -353,15 +353,15 @@ namespace CompMs.Common.Lipidomics.Tests
                     new SpectrumPeak(588.402366,  50d), // C8 -H
                     new SpectrumPeak(589.410191, 100d), // C8
                     new SpectrumPeak(590.418016,  50d), // C8 +H
-                    new SpectrumPeak(601.410191,  50d), // C9 -H
-                    new SpectrumPeak(602.418016, 100d), // C9
-                    new SpectrumPeak(603.425841,  50d), // C9 +H
+                    new SpectrumPeak(601.410191,  25d), // C9 -H
+                    new SpectrumPeak(602.418016,  50d), // C9
+                    new SpectrumPeak(603.425841,  25d), // C9 +H
                     new SpectrumPeak(614.418016,  50d), // C10 -H
                     new SpectrumPeak(615.425841, 100d), // C10
                     new SpectrumPeak(616.433666,  50d), // C10 +H
-                    new SpectrumPeak(628.433666,  50d), // C11 -H
-                    new SpectrumPeak(629.441491, 100d), // C11
-                    new SpectrumPeak(630.449316,  50d), // C11 +H
+                    new SpectrumPeak(628.433666, 150d), // C11 -H
+                    new SpectrumPeak(629.441491, 300d), // C11
+                    new SpectrumPeak(630.449316, 150d), // C11 +H
                     new SpectrumPeak(642.449316,  50d), // C12 -H
                     new SpectrumPeak(643.457141, 100d), // C12
                     new SpectrumPeak(644.464966,  50d), // C12 +H

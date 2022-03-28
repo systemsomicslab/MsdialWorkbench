@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+        xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type={x:Type vm:ProcessSettingViewModel}}"
         Title="Setting project parameters" Height="450" Width="800">
@@ -95,46 +96,62 @@
                 <Button Content="Next" Command="{Binding ContinueCommand, Mode=OneTime}"/>
                 <Button Content="Run" Command="{Binding RunCommand, Mode=OneTime}"/>
             </StackPanel>
-            <ScrollViewer>
             <ContentControl Content="{Binding /, Source={StaticResource SettingViewModels}}"
                             IsTabStop="False">
                 <ContentControl.Resources>
                     <DataTemplate DataType="{x:Type vm:ProjectParameterSettingViewModel}">
-                        <local:ProjectParameterSettingView/>
+                        <ScrollViewer>
+                            <local:ProjectParameterSettingView/>
+                        </ScrollViewer>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:DatasetFileSettingViewModel}">
                         <local:DatasetFileSettingView IsEnabled="{Binding IsEnabled.Value}"/>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:DatasetParameterSettingViewModel}">
-                        <local:DatasetParameterSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        <ScrollViewer>
+                            <local:DatasetParameterSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        </ScrollViewer>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:DataCollectionSettingViewModel}">
-                        <local:DataCollectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                            <local:DataCollectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        </ScrollViewer>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:PeakDetectionSettingViewModel}">
-                        <local:PeakDetectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                            <local:PeakDetectionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        </ScrollViewer>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:DeconvolutionSettingViewModel}">
-                        <local:DeconvolutionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        <ScrollViewer IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                            <local:DeconvolutionSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        </ScrollViewer>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:IdentifySettingViewModel}">
-                        <local:IdentifySettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        <ContentControl IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                            <local:IdentifySettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        </ContentControl>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:AdductIonSettingViewModel}">
-                        <local:AdductIonSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        <ContentControl IsEnabled="{Binding IsReadOnly, Mode=OneTime, Converter={StaticResource NegativeConverter}}">
+                            <local:AdductIonSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        </ContentControl>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:AlignmentParameterSettingViewModel}">
-                        <local:AlignmentParameterSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        <ScrollViewer>
+                            <local:AlignmentParameterSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        </ScrollViewer>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:MobilitySettingViewModel}">
                         <local:MobilitySettingView IsEnabled="{Binding IsEnabled.Value}"/>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type vm:IsotopeTrackSettingViewModel}">
-                        <local:IsotopeTrackSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        <ScrollViewer>
+                            <local:IsotopeTrackSettingView IsEnabled="{Binding IsEnabled.Value}"/>
+                        </ScrollViewer>
                     </DataTemplate>
                 </ContentControl.Resources>
             </ContentControl>
-            </ScrollViewer>
         </DockPanel>
     </Grid>
 </Window>

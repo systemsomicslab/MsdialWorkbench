@@ -195,7 +195,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         }
     }
 
-    class AlignmentFileBeanViewModel : FileBeanViewModel<AlignmentFileBean>
+    public class AlignmentFileBeanViewModel : FileBeanViewModel<AlignmentFileBean>
     {
         public AlignmentFileBeanViewModel(AlignmentFileBean file) : base(file) {
         }

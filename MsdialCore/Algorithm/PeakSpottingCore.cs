@@ -211,11 +211,18 @@ namespace CompMs.MsdialCore.Algorithm {
             return massList;
         }
 
-        private List<ChromatogramPeakFeature> Execute3DFeatureDetectionTargetMode(IDataProvider provider, ParameterBase param,
+        public List<ChromatogramPeakFeature> Execute3DFeatureDetectionTargetMode(IDataProvider provider, ParameterBase param,
             float chromBegin, float chromEnd, ChromXType type, ChromXUnit unit,
             Action<int> reportAction) {
             var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
             var targetedScans = param.CompoundListInTargetMode;
+            return Execute3DFeatureDetectionTargetMode(provider, targetedScans, param, chromBegin, chromEnd, type, unit, reportAction);
+        }
+
+        public List<ChromatogramPeakFeature> Execute3DFeatureDetectionTargetMode(IDataProvider provider, List<MoleculeMsReference> targetedScans, ParameterBase param,
+            float chromBegin, float chromEnd, ChromXType type, ChromXUnit unit,
+            Action<int> reportAction) {
+            var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
             var spectrumList = provider.LoadMs1Spectrums();
             var id2ChromXs = DataAccess.GetID2ChromXs(spectrumList, param.IonMode, type, unit);
             if (targetedScans.IsEmptyOrNull()) return null;
@@ -228,10 +235,16 @@ namespace CompMs.MsdialCore.Algorithm {
             return GetCombinedChromPeakFeatures(chromPeakFeaturesList, provider, param, type, unit);
         }
 
-        private List<ChromatogramPeakFeature> Execute3DFeatureDetectionTargetModeByMultiThread(IDataProvider provider, ParameterBase param,
+        public List<ChromatogramPeakFeature> Execute3DFeatureDetectionTargetModeByMultiThread(IDataProvider provider, ParameterBase param,
             float chromBegin, float chromEnd, ChromXType type, ChromXUnit unit, int numThreads, CancellationToken token,
             Action<int> reportAction) {
             var targetedScans = param.CompoundListInTargetMode;
+            return Execute3DFeatureDetectionTargetModeByMultiThread(provider, targetedScans, param, chromBegin, chromEnd, type, unit, numThreads, token, reportAction);
+        }
+
+        public List<ChromatogramPeakFeature> Execute3DFeatureDetectionTargetModeByMultiThread(IDataProvider provider, List<MoleculeMsReference> targetedScans, ParameterBase param,
+            float chromBegin, float chromEnd, ChromXType type, ChromXUnit unit, int numThreads, CancellationToken token,
+            Action<int> reportAction) {
             var spectrumList = provider.LoadMs1Spectrums();
             var id2ChromXs = DataAccess.GetID2ChromXs(spectrumList, param.IonMode, type, unit);
             if (targetedScans.IsEmptyOrNull()) return null;
@@ -240,7 +253,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 .AsOrdered()
                 .WithCancellation(token)
                 .WithDegreeOfParallelism(numThreads)
-                .Select(targetedScan => GetChromatogramPeakFeatures(provider, id2ChromXs,(float)targetedScan.PrecursorMz, param, type, unit, chromBegin, chromEnd))
+                .Select(targetedScan => GetChromatogramPeakFeatures(provider, id2ChromXs, (float)targetedScan.PrecursorMz, param, type, unit, chromBegin, chromEnd))
                 .Where(features => !features.IsEmptyOrNull())
                 .ToList();
             return GetCombinedChromPeakFeatures(chromPeakFeaturesList, provider, param, type, unit);

@@ -92,16 +92,17 @@ namespace CompMs.App.Msdial.Model.Lcimms
             .AddTo(Disposables);
         }
 
-        protected override void LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
             }
-            AlignmentModel = new LcimmsAlignmentModel(
+            return AlignmentModel = new LcimmsAlignmentModel(
                 alignmentFile,
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
-                Storage.Parameter)
+                Storage.Parameter,
+                Storage.AnalysisFiles)
             .AddTo(Disposables);
         }
 
@@ -120,6 +121,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             if (processOption.HasFlag(ProcessOption.Alignment)) {
                 RunAlignmentProcess();
             }
+
+            LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
         }
 
         public void SetAnalysisParameter(LcimmsAnalysisParameterSetModel analysisParamSetModel) {

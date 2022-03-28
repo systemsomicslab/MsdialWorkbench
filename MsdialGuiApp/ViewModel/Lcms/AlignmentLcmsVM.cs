@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Normalize;
+using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
@@ -10,7 +11,6 @@ using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Parameter;
 using Microsoft.Win32;
 using Reactive.Bindings;
@@ -31,10 +31,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     {
         public AlignmentLcmsVM(
             LcmsAlignmentModel model,
-            IWindowService<ViewModel.CompoundSearchVM> compoundSearchService,
+            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService, 
-            IObservable<ParameterBase> parameter)
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
             : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -50,10 +49,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             if (proteomicsTableService is null) {
                 throw new ArgumentNullException(nameof(proteomicsTableService));
-            }
-
-            if (parameter is null) {
-                throw new ArgumentNullException(nameof(parameter));
             }
 
             this.model = model;
@@ -117,14 +112,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .Subscribe(_ => Ms1Spots?.Refresh())
             .AddTo(Disposables);
 
-            var classBrush = parameter.Select(p => new KeyBrushMapper<BarItem, string>(
-                p.ProjectParam.ClassnameToColorBytes
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-                ),
-                item => item.Class,
-                Colors.Blue));
+            var classBrush = model.ParameterAsObservable
+                .Select(p => new KeyBrushMapper<BarItem, string>(
+                    p.ProjectParam.ClassnameToColorBytes
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+                    ),
+                    item => item.Class,
+                    Colors.Blue));
 
             Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
 
@@ -168,9 +164,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
             BarChartViewModel = new BarChartViewModel(this.model.BarChartModel, brushSource: classBrush).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(this.model.AlignmentEicModel).AddTo(Disposables);
+            
+            
             AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(
                 this.model.AlignmentSpotTableModel,
-                Observable.Return(model.BarItemsLoader),
                 MassLower,
                 MassUpper,
                 RtLower,
@@ -180,7 +177,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .AddTo(Disposables);
             ProteomicsAlignmentTableViewModel = new LcmsProteomicsAlignmentTableViewModel(
                 this.model.AlignmentSpotTableModel,
-                Observable.Return(model.BarItemsLoader),
                 MassLower,
                 MassUpper,
                 RtLower,
@@ -226,6 +222,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public AlignmentEicViewModel AlignmentEicViewModel { get; }
         public LcmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
         public LcmsProteomicsAlignmentTableViewModel ProteomicsAlignmentTableViewModel { get; }
+        public AlignedChromatogramModificationViewModelLegacy AlignedChromatogramModificationViewModel { get; }
 
         public double MassMin { get; }
         public double MassMax { get; }
@@ -448,7 +445,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             return this.model.CanSaveSpectra();
         }
         public void SaveProject() {
-            model.SaveProject();
+            model.SaveAsync();
         }
 
         public DelegateCommand<Window> NormalizeCommand => normalizeCommand ?? (normalizeCommand = new DelegateCommand<Window>(Normalize));

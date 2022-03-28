@@ -1,11 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.MsdialLcMsApi.Algorithm.Alignment;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.MsdialCore.DataObj;
-using CompMs.Common.Components;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
@@ -81,7 +78,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             Debug.WriteLine($"PeakHeightRight: {spot.AlignedPeakProperties[0].PeakHeightRight}");
             Debug.WriteLine($"PeakAreaAboveZero: {spot.AlignedPeakProperties[0].PeakAreaAboveZero}");
 
-            Assert.AreEqual(99.999, spot.AlignedPeakProperties[0].Mass);
+            Assert.AreEqual(100d, spot.AlignedPeakProperties[0].Mass);
             Assert.AreEqual(0, spot.AlignedPeakProperties[0].ChromScanIdLeft);
             Assert.AreEqual(3, spot.AlignedPeakProperties[0].ChromScanIdTop);
             Assert.AreEqual(5, spot.AlignedPeakProperties[0].ChromScanIdRight);

@@ -85,6 +85,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }           
         }
 
+        public bool Run() {
+            return Model.Run();
+        }
+
         // TODO: delete method
         private static IAnnotatorSettingViewModelFactory CreateAnnotatorViewModelFactory(IMsdialDataStorage<ParameterBase> storage) {
             switch (storage) {

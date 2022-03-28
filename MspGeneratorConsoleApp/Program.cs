@@ -136,7 +136,7 @@ namespace CompMs.MspGenerator
             var faChain2 = new List<string>();
             var faChain3 = new List<string>();
 
-            var outputFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20211209_add_DGTS_Na";
+            var outputFolder = @"d:\mikikot\Desktop\Tsugawa-san_work\20220309_NAA\NAOrn_re";
 
             //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";
@@ -444,15 +444,15 @@ namespace CompMs.MspGenerator
             //    ////N - Acyl amine
             //    ///
             //    {
-            //faChain1 = Common.GenerateAcylChains(8, 0, 28, 6);
-            //faChain2 = Common.GenerateAcylChains(8, 0, 28, 6);
+            faChain1 = Common.GenerateAcylChains(8, 0, 28, 6);
+            faChain2 = Common.GenerateAcylChains(8, 0, 28, 6);
             //Common.switchingLipid(faChain1, faChain2, "NAGlySer_FAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
             //Common.switchingLipid(faChain1, faChain2, "NAGly_FAHFA", outputFolder);     // faChain1 = HFA, faChain2 = Extra FA
             //Common.switchingLipid(faChain1, faChain2, "NAOrn_FAHFA", outputFolder);     // faChain1 = HFA, faChain2 = Extra FA
 
             //Common.switchingLipid(faChain1, "NAGlySer_OxFA", outputFolder);  // faChain1 = HFA
             //Common.switchingLipid(faChain1, "NAGly_OxFA", outputFolder);     // faChain1 = HFA
-            //Common.switchingLipid(faChain1, "NAOrn_OxFA", outputFolder);     // faChain1 = HFA
+            Common.switchingLipid(faChain1, "NAOrn_OxFA", outputFolder);     // faChain1 = HFA
             //    }
 
             //    // no chain steroidal lipid
@@ -581,9 +581,9 @@ namespace CompMs.MspGenerator
                 //    (workingFolder + @"\master\masterCCS_20201221_chk.tsv",
                 //     workingFolder + @"\masterCCS_NCDK_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
 
-                qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
-                    (@"E:\6_Projects\2_metabolome_protocol\RIKEN_InchIKey_SMILES.txt",
-                     @"E:\6_Projects\2_metabolome_protocol\RIKEN_InchIKey_SMILES_output.txt");
+                //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
+                //    (@"E:\6_Projects\2_metabolome_protocol\RIKEN_InchIKey_SMILES.txt",
+                //     @"E:\6_Projects\2_metabolome_protocol\RIKEN_InchIKey_SMILES_output.txt");
 
 
                 ////モデル作成

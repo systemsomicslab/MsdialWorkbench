@@ -269,7 +269,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Process
                 }
 
                 var result = new FragmenterResult(mspRecord, metabolitename);
-                result.TotalScore = totalScore;
+                result.TotalScore = totalScore * 10.0;
 
                 if (param.IsUseExperimentalRtForSpectralSearching) {
                     if (param.RetentionType == RetentionType.RI)
@@ -338,8 +338,8 @@ namespace Riken.Metabolomics.MsfinderCommon.Process
                     if (libPrecursor < precursorMz - massTolerance) continue;
                     if (libPrecursor > precursorMz + massTolerance) break;
 
-                    if (isUseRtForFilter && mspDB[i].RetentionTime >= 0.0 && rawData.RetentionTime >= 0 && Math.Abs(mspDB[i].RetentionTime - rawData.RetentionTime) > rtTol) continue;
-                    if (isUseCcsForFilter && mspDB[i].CollisionCrossSection >= 0.0 && rawData.Ccs >= 0 && Math.Abs(mspDB[i].CollisionCrossSection - rawData.Ccs) > ccsTol) continue;
+                    if (isUseRtForFilter && mspDB[i].RetentionTime > 0.0 && rawData.RetentionTime > 0 && Math.Abs(mspDB[i].RetentionTime - rawData.RetentionTime) > rtTol) continue;
+                    if (isUseCcsForFilter && mspDB[i].CollisionCrossSection > 0.0 && rawData.Ccs > 0 && Math.Abs(mspDB[i].CollisionCrossSection - rawData.Ccs) > ccsTol) continue;
 
                     rMspDB.Add(mspDB[i]);
                 }

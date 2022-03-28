@@ -177,23 +177,27 @@ namespace CompMs.Common.Lipidomics.Tests
                 };
                 yield return new object[] {
                     new IChain[] {
-                        new SphingoChain(18, DoubleBond.CreateFromPosition(12, 15), new Oxidized(2, 1, 3)),
-                        new SphingoChain(18, DoubleBond.CreateFromPosition( 9, 12), new Oxidized(2, 1, 3)),
-                        new SphingoChain(18, DoubleBond.CreateFromPosition( 6,  9), new Oxidized(2, 1, 3)),
+                        new SphingoChain(18, DoubleBond.CreateFromPosition(4,  8), new Oxidized(2, 1, 3)),
+                        new SphingoChain(18, DoubleBond.CreateFromPosition(4, 14), new Oxidized(2, 1, 3)),
+                        new SphingoChain(18, DoubleBond.CreateFromPosition(8, 14), new Oxidized(2, 1, 3)),
                     },
                     new SphingoChain(18, new DoubleBond(2), new Oxidized(2, 1, 3)),
                 };
                 yield return new object[] {
                     new IChain[] {
-                        new SphingoChain(18, DoubleBond.CreateFromPosition(12, 15), new Oxidized(2, 1, 3)),
-                        new SphingoChain(18, DoubleBond.CreateFromPosition( 9, 12), new Oxidized(2, 1, 3)),
+                        new SphingoChain(18, DoubleBond.CreateFromPosition(4, 12), new Oxidized(2, 1, 3)),
+                        new SphingoChain(18, DoubleBond.CreateFromPosition(8, 12), new Oxidized(2, 1, 3)),
+                        new SphingoChain(18, DoubleBond.CreateFromPosition(12, 14), new Oxidized(2, 1, 3)),
                     },
                     new SphingoChain(18, new DoubleBond(2, DoubleBondInfo.Create(12)), new Oxidized(2, 1, 3)),
                 };
                 yield return new object[] {
                     new IChain[] {
-                        new SphingoChain(18, DoubleBond.CreateFromPosition(6, 12, 15), new Oxidized(2, 1, 3)),
-                        new SphingoChain(18, DoubleBond.CreateFromPosition(6, 9, 12), new Oxidized(2, 1, 3)),
+                        new SphingoChain(18, DoubleBond.CreateFromPosition(4, 6, 12), new Oxidized(2, 1, 3)),
+                        new SphingoChain(18, DoubleBond.CreateFromPosition(6, 8, 12), new Oxidized(2, 1, 3)),
+                        new SphingoChain(18, DoubleBond.CreateFromPosition(6, 12, 14), new Oxidized(2, 1, 3)),
+                        // new SphingoChain(18, DoubleBond.CreateFromPosition(6, 12, 15), new Oxidized(2, 1, 3)),
+                        // new SphingoChain(18, DoubleBond.CreateFromPosition(6, 9, 12), new Oxidized(2, 1, 3)),
                     },
                     new SphingoChain(18, new DoubleBond(3, DoubleBondInfo.Create(6), DoubleBondInfo.Create(12)), new Oxidized(2, 1, 3)),
                 };

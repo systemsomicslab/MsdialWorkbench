@@ -149,6 +149,9 @@
     <Compile Include="IO\SaveImageAsCommand.cs" />
     <Compile Include="IO\PngEncoder.cs" />
     <Compile Include="IO\StyleFormatter.cs" />
+    <Compile Include="Legacy\ChromatogramBean.cs" />
+    <Compile Include="Legacy\ChromatogramXicViewModel.cs" />
+    <Compile Include="Legacy\PlainChromatogramXicForTableViewerLegacy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Base\Utility.cs" />
     <Compile Include="Base\DataPoint.cs" />

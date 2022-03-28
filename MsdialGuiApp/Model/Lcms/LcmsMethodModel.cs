@@ -3,6 +3,7 @@ using CompMs.App.Msdial.LC;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Export;
@@ -30,7 +31,6 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
-using CompMs.MsdialLcMsApi.DataObj;
 using CompMs.MsdialLcMsApi.Export;
 using Reactive.Bindings.Extensions;
 using System;
@@ -51,7 +51,8 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public LcmsMethodModel(
             IMsdialDataStorage<MsdialLcmsParameter> storage,
-            IDataProviderFactory<AnalysisFileBean> providerFactory, 
+            IDataProviderFactory<AnalysisFileBean> providerFactory,
+            IObservable<ParameterBase> parameterAsObservable,
             IObservable<IBarItemsLoader> barItemsLoader)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             if (storage is null) {
@@ -64,6 +65,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Storage = storage;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             this.providerFactory = providerFactory;
+            this.parameterAsObservable = parameterAsObservable;
             this.barItemsLoader = barItemsLoader;
         }
 
@@ -85,6 +87,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
+        private readonly IObservable<ParameterBase> parameterAsObservable;
         private readonly IObservable<IBarItemsLoader> barItemsLoader;
         private IAnnotationProcess annotationProcess;
 
@@ -105,24 +108,27 @@ namespace CompMs.App.Msdial.Model.Lcms
             .AddTo(Disposables);
         }
 
-        protected override void LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
             }
-            AlignmentModel = new LcmsAlignmentModel(
+            return AlignmentModel = new LcmsAlignmentModel(
                 alignmentFile,
                 matchResultEvaluator,
                 Storage.DataBases,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
-                barItemsLoader)
+                parameterAsObservable,
+                barItemsLoader,
+                Storage.AnalysisFiles)
             .AddTo(Disposables);
         }
 
         public override void Run(ProcessOption option) {
             // Set analysis param
             var parameter = Storage.Parameter;
+            // matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 annotationProcess = BuildProteoMetabolomicsAnnotationProcess(Storage.DataBases, parameter);
             }
@@ -151,6 +157,12 @@ namespace CompMs.App.Msdial.Model.Lcms
                 if (!ProcessAlignment(null, Storage))
                     return;
             }
+
+            LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+
+#if DEBUG
+            Console.WriteLine(string.Join("\n", Storage.Parameter.ParametersAsText()));
+#endif
         }
 
         public bool ProcessSetAnalysisParameter(Window owner) {
@@ -421,15 +433,15 @@ namespace CompMs.App.Msdial.Model.Lcms
             var container = Storage;
             var spectraTypes = new List<Export.SpectraType>
             {
-                // new Export.SpectraType(
-                //     ExportspectraType.deconvoluted,
-                //     new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.deconvoluted)),
-                // new Export.SpectraType(
-                //     ExportspectraType.centroid,
-                //     new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.centroid)),
-                // new Export.SpectraType(
-                //     ExportspectraType.profile,
-                //     new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.ParameterBase, ExportspectraType.profile)),
+                new Export.SpectraType(
+                    ExportspectraType.deconvoluted,
+                    new LcmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.deconvoluted)),
+                new Export.SpectraType(
+                    ExportspectraType.centroid,
+                    new LcmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.centroid)),
+                new Export.SpectraType(
+                    ExportspectraType.profile,
+                    new LcmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.profile)),
             };
             var spectraFormats = new List<Export.SpectraFormat>
             {

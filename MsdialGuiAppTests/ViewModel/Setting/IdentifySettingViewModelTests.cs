@@ -1,9 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reactive.Bindings;
+using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 
@@ -117,7 +119,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
         }
 
         private IdentifySettingModel BuildModel() {
-            return new IdentifySettingModel(new ParameterBase(), new MockAnnotatorSettingModelFactory());
+            return new IdentifySettingModel(new ParameterBase(), new MockAnnotatorSettingModelFactory(), ProcessOption.All);
         }
 
         private IdentifySettingViewModel BuildViewModel(IdentifySettingModel model) {
@@ -160,6 +162,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
         public ReactiveProperty<string> AnnotatorID { get; }
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void Dispose() {
 

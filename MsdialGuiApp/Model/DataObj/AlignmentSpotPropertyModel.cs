@@ -1,4 +1,6 @@
-﻿using CompMs.Common.DataObj.Property;
+﻿using CompMs.App.Msdial.Model.Loader;
+using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
@@ -6,6 +8,8 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
@@ -13,10 +17,23 @@ namespace CompMs.App.Msdial.Model.DataObj
     {
         public int AlignmentID => innerModel.AlignmentID;
         public int MasterAlignmentID => innerModel.MasterAlignmentID;
-        public double TimesCenter => innerModel.TimesCenter.Value;
+
+        public ChromXType ChromXType => innerModel.TimesCenter.MainType;
+        public ChromXUnit ChromXUnit => innerModel.TimesCenter.Unit;
         public double MassCenter => innerModel.MassCenter;
         public double HeightAverage => innerModel.HeightAverage;
         public ReadOnlyCollection<AlignmentChromPeakFeature> AlignedPeakProperties => innerModel.AlignedPeakProperties.AsReadOnly();
+        public ReadOnlyCollection<AlignmentChromPeakFeatureModel> AlignedPeakPropertiesModel { get; }
+
+        public double TimesCenter {
+            get => innerModel.TimesCenter.Value;
+            set {
+                if (innerModel.TimesCenter.Value != value) {
+                    innerModel.TimesCenter = new ChromXs(value, ChromXType, ChromXUnit);
+                    OnPropertyChanged(nameof(TimesCenter));
+                }
+            }
+        }
 
         public string Name {
             get => ((IMoleculeProperty)innerModel).Name;
@@ -114,6 +131,17 @@ namespace CompMs.App.Msdial.Model.DataObj
         public bool IsBlankFiltered => innerModel.FeatureFilterStatus.IsBlankFiltered;
         public bool IsFragmentQueryExisted => innerModel.FeatureFilterStatus.IsFragmentExistFiltered;
 
+        public bool IsManuallyModifiedForQuant {
+            get => innerModel.IsManuallyModifiedForQuant;
+            set {
+                if (innerModel.IsManuallyModifiedForQuant != value) {
+                    innerModel.IsManuallyModifiedForQuant = value;
+                    OnPropertyChanged(nameof(IsManuallyModifiedForQuant));
+                }
+            }
+        }
+
+        public BarItemCollection BarItemCollection { get; }
 
         internal readonly AlignmentSpotProperty innerModel;
 
@@ -129,8 +157,15 @@ namespace CompMs.App.Msdial.Model.DataObj
             KMNominalUnit = Math.Round(KMIupacUnit);
         }
 
-        public AlignmentSpotPropertyModel(AlignmentSpotProperty innerModel) {
+        public AlignmentSpotPropertyModel(AlignmentSpotProperty innerModel) : this(innerModel, Observable.Return((IBarItemsLoader)null)) {
+
+        }
+
+        public AlignmentSpotPropertyModel(AlignmentSpotProperty innerModel, IObservable<IBarItemsLoader> barItemsLoader) {
             this.innerModel = innerModel;
+            this.AlignedPeakPropertiesModel = this.innerModel.AlignedPeakProperties.Select(n => new AlignmentChromPeakFeatureModel(n)).ToList().AsReadOnly();
+
+            BarItemCollection = new BarItemCollection(this, barItemsLoader);
         }
 
         public void RaisePropertyChanged() {

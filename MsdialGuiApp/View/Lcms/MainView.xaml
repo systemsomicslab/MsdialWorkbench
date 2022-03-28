@@ -186,7 +186,7 @@
                     <commonview:PeakSpotNavigator DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer}"
                                              Grid.Row="0" Grid.Column="0"/>
 
-                    <chart:SurveyScanView DataContext="{Binding AnalysisVM.SurveyScanViewModel}"
+                    <chart:SurveyScanView DataContext="{Binding AnalysisViewModel.Value.SurveyScanViewModel}"
                                           Grid.Row="1" Grid.Column="0">
                         <chart:SurveyScanView.ContextMenu>
                             <ContextMenu>
@@ -219,7 +219,7 @@
                         <TabItem Header="Peak spot viewer" 
                                  Name="TabItem_RtMzPairwisePlotPeakView" 
                                  Height="25"
-                                 DataContext="{Binding AnalysisVM}"
+                                 DataContext="{Binding AnalysisViewModel.Value}"
                                  Background="{StaticResource MainThemeColor}"
                                  DataContextChanged="TabItem_RtMzPairwisePlotPeakView_DataContextChanged">
                             <chart:PeakView x:Name="PeakView" DataContext="{Binding PlotViewModel}">
@@ -269,7 +269,7 @@
                         <TabItem Header="Alignment spot viewer" 
                                  Name="TabItem_RtMzPairwisePlotAlignmentView" 
                                  Height="25"
-                                 DataContext="{Binding AlignmentVM}"
+                                 DataContext="{Binding AlignmentViewModel.Value}"
                                  Background="{StaticResource MainThemeColor}"
                                  DataContextChanged="TabItem_RtMzPairwisePlotAlignmentView_DataContextChanged">
                             <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
@@ -324,7 +324,7 @@
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
                                  Name="TabItem_EicViewer" Background="{StaticResource MainThemeColor}">
-                            <chart:EicView DataContext="{Binding AnalysisVM.EicViewModel}">
+                            <chart:EicView DataContext="{Binding AnalysisViewModel.Value.EicViewModel}">
                                 <chart:EicView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Save image as...">
@@ -352,7 +352,7 @@
                                  Name="TabItem_BarChartViewer" 
                                  Height="26"
                                  Background="{StaticResource MainThemeColor}">
-                            <chart:BarChartView DataContext="{Binding AlignmentVM.BarChartViewModel}">
+                            <chart:BarChartView DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}">
                                 <chart:BarChartView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Save image as...">
@@ -379,7 +379,7 @@
                         <TabItem Name="TabItem_AlignedEic"
                                  Header="EIC of aligned spot"
                                  Background="{StaticResource MainThemeColor}">
-                            <chart:AlignmentEicView DataContext="{Binding AlignmentVM.AlignmentEicViewModel}">
+                            <chart:AlignmentEicView DataContext="{Binding AlignmentViewModel.Value.AlignmentEicViewModel}">
                                 <chart:AlignmentEicView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Save image as...">
@@ -475,7 +475,7 @@
                                 Grid.Row="1" >
                         <TabItem Name="TabItem_MeasurementVsReference" 
                                  Header="Exp. vs. Ref."
-                                 DataContext="{Binding AnalysisVM}"
+                                 DataContext="{Binding AnalysisViewModel.Value}"
                                  Background="{StaticResource MainThemeColor}"
                                  Height="25">
                             <chart:ExpRefView>
@@ -515,7 +515,7 @@
 
                         <TabItem Header="Raw vs. Purified" 
                                  Name="TabItem_RawVsDeconvolution" 
-                                 DataContext="{Binding AnalysisVM}"
+                                 DataContext="{Binding AnalysisViewModel.Value}"
                                  Height="25"
                                  IsEnabled="True"
                                  Background="{StaticResource MainThemeColor}">
@@ -524,7 +524,7 @@
 
                         <TabItem Name="TabItem_RepresentativeVsReference"
                                  Header="Rep. vs. Ref."
-                                 DataContext="{Binding AlignmentVM}"
+                                 DataContext="{Binding AlignmentViewModel.Value}"
                                  Background="{StaticResource MainThemeColor}" 
                                  Height="25">
                             <chart:RepRefView>

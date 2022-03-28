@@ -3,7 +3,6 @@ using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.DataObj;
 using Reactive.Bindings.Extensions;
 using System.ComponentModel;
@@ -171,10 +170,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             {
                 DisplayFilters = displayFilters
             }.AddTo(Disposables);
-        }
-
-        public override void SaveProject() {
-            AlignmentVM?.SaveProject();
         }
 
         public DelegateCommand<Window> ExportAnalysisResultCommand => exportAnalysisResultCommand ?? (exportAnalysisResultCommand = new DelegateCommand<Window>(model.ExportAnalysis));

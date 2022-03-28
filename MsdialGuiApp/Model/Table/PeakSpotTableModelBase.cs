@@ -6,14 +6,14 @@ using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.Table
 {
-    interface IPeakSpotTableModelBase
+    public interface IPeakSpotTableModelBase
     {
         IReadOnlyList<object> PeakSpots { get; }
 
         IReactiveProperty Target { get; }
     }
 
-    abstract class PeakSpotTableModelBase<T> : BindableBase, IPeakSpotTableModelBase where T: class
+    abstract class PeakSpotTableModelBase<T> : DisposableModelBase, IPeakSpotTableModelBase where T: class
     {
         public PeakSpotTableModelBase(ObservableCollection<T> peakSpots, IReactiveProperty<T> target) {
             if (peakSpots is null) {

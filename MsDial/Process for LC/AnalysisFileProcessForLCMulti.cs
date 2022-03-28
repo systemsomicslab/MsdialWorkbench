@@ -139,7 +139,10 @@ namespace Rfx.Riken.OsakaUniv
             }
 
             if (mainWindow.AnalysisParamForLC.ProcessOption == ProcessOption.All && mainWindow.AnalysisParamForLC.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection) {
-                mainWindow.AnalysisFiles = new ObservableCollection<AnalysisFileBean>(mainWindow.AnalysisFiles.OrderBy(x => x.AnalysisFilePropertyBean.AnalysisBatch).ThenBy(x => x.AnalysisFilePropertyBean.AnalysisFileAnalyticalOrder));
+                
+                mainWindow.AnalysisFiles = 
+                    new ObservableCollection<AnalysisFileBean>(mainWindow.AnalysisFiles.OrderBy(x => x.AnalysisFilePropertyBean.AnalysisBatch).
+                    ThenBy(x => x.AnalysisFilePropertyBean.AnalysisFileAnalyticalOrder));
                 var rtCorrectionWin = new RetentionTimeCorrection.RetentionTimeCorrectionWin(mainWindow);
                 rtCorrectionWin.Owner = mainWindow;
                 rtCorrectionWin.WindowStartupLocation = WindowStartupLocation.CenterOwner;

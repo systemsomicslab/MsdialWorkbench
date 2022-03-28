@@ -13,7 +13,6 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
-using CompMs.MsdialDimsCore.DataObj;
 using CompMs.MsdialDimsCore.Parameter;
 using Reactive.Bindings.Extensions;
 using System;
@@ -138,6 +137,8 @@ namespace CompMs.App.Msdial.Model.Dims
             if (processOption.HasFlag(ProcessOption.Alignment)) {
                 RunAlignmentProcess();
             }
+
+            LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
         }
 
         public async Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {
@@ -180,10 +181,6 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
-        public void SaveProject() {
-            AlignmentModel?.SaveProject();
-        }
-
         protected override void LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
@@ -198,18 +195,18 @@ namespace CompMs.App.Msdial.Model.Dims
                 Storage.Parameter).AddTo(Disposables);;
         }
 
-        protected override void LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
             }
-            AlignmentModel = new DimsAlignmentModel(
+            return AlignmentModel = new DimsAlignmentModel(
                 alignmentFile,
                 Storage.DataBaseMapper.MoleculeAnnotators,
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
-                Storage.Parameter).AddTo(Disposables);
+                Storage.Parameter,
+                Storage.AnalysisFiles).AddTo(Disposables);
         }
-
     }
 }

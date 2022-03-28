@@ -835,15 +835,15 @@ namespace CompMs.MspGenerator
                 //var fra04comment = "[HFA-OH-H2O+H]+";
                 //fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
 
-                //var fra05mass = 12 * 5 + MassDictionary.HydrogenMass * 12 + MassDictionary.NitrogenMass * 2 + MassDictionary.OxygenMass * 2 + MassDictionary.Proton;
+                var fra05mass = 12 * 5 + MassDictionary.HydrogenMass * 12 + MassDictionary.NitrogenMass * 2 + MassDictionary.OxygenMass * 2 + MassDictionary.Proton;
                 //var fra05int = 50;
                 //var fra05comment = "[Orn]+";
                 //fragmentList.Add(fra05mass + "\t" + fra05int + "\t" + fra05comment);
 
-                //var fra06mass = fra05mass - MassDictionary.H2OMass;
-                //var fra06int = 999;
-                //var fra06comment = "[C5H10N2O +H]+";
-                //fragmentList.Add(fra06mass + "\t" + fra06int + "\t" + fra06comment);
+                var fra06mass = fra05mass - MassDictionary.H2OMass;
+                var fra06int = 999;
+                var fra06comment = "[C5H10N2O +H]+";
+                fragmentList.Add(fra06mass + "\t" + fra06int + "\t" + fra06comment);
 
                 var fra07mass = 12 * 4 + MassDictionary.HydrogenMass * 7 + MassDictionary.NitrogenMass + MassDictionary.Proton;
                 var fra07int = 999;

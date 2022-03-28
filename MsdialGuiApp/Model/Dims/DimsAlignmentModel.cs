@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -40,24 +41,23 @@ namespace CompMs.App.Msdial.Model.Dims
             IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorCotnainers,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseMapper mapper,
-            ParameterBase param) {
+            ParameterBase param, 
+            List<AnalysisFileBean> files)
+            : base(alignmentFileBean.FilePath) {
 
             alignmentFile = alignmentFileBean;
             fileName = alignmentFileBean.FileName;
             resultFile = alignmentFileBean.FilePath;
             eicFile = alignmentFileBean.EicFilePath;
 
-            this.Parameter = param;
-            this.DataBaseMapper = mapper;
+            Parameter = param;
+            DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             AnnotatorContainers = annotatorCotnainers;
-            Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(resultFile);
-            if (Container == null) {
-                MessageBox.Show("No aligned spot information.");
-            }
 
-            Ms1Spots = Container == null ? new ObservableCollection<AlignmentSpotPropertyModel>() :
-                new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
+            BarItemsLoader = new HeightBarItemsLoader(Parameter.FileID_ClassName);
+            var observableBarItemsLoader = Observable.Return(BarItemsLoader);
+            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, observableBarItemsLoader)));
 
             MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
             MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
@@ -76,37 +76,65 @@ namespace CompMs.App.Msdial.Model.Dims
             var decLoader = new MSDecLoader(alignmentFileBean.SpectraFilePath).AddTo(Disposables);
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Spots);
             var refLoader = new MsRefSpectrumLoader(mapper);
+            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
+               Parameter.ProjectParam.SpectrumCommentToColorBytes
+               .ToDictionary(
+                   kvp => kvp.Key,
+                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+               ),
+               item => item.ToString(),
+               Colors.Blue);
+            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
+                comment =>
+                {
+                    var commentString = comment.ToString();
+                    var parameter = Parameter.ProjectParam;
+                    if (parameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
+                        return Color.FromRgb(color[0], color[1], color[2]);
+                    }
+                    else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
+                        && parameter.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
+                        return Color.FromRgb(color[0], color[1], color[2]);
+                    }
+                    else {
+                        return Colors.Red;
+                    }
+                },
+                true);
             Ms2SpectrumModel = MsSpectrumModel.Create(
                 Target, decSpecLoader, refLoader,
                 spot => spot.Mass,
-                spot => spot.Intensity);
-            Ms2SpectrumModel.GraphTitle = "Representation vs. Reference";
-            Ms2SpectrumModel.HorizontalTitle = "m/z";
-            Ms2SpectrumModel.VerticalTitle = "Abundance";
-            Ms2SpectrumModel.HorizontalProperty = nameof(SpectrumPeak.Mass);
-            Ms2SpectrumModel.VerticalProperty = nameof(SpectrumPeak.Intensity);
-            Ms2SpectrumModel.LabelProperty = nameof(SpectrumPeak.Mass);
-            Ms2SpectrumModel.OrderingProperty = nameof(SpectrumPeak.Intensity);
+                spot => spot.Intensity,
+                "Representation vs. Reference",
+                "m/z",
+                "Abundance",
+                nameof(SpectrumPeak.Mass),
+                nameof(SpectrumPeak.Intensity),
+                nameof(SpectrumPeak.Mass),
+                nameof(SpectrumPeak.Intensity),
+                nameof(SpectrumPeak.SpectrumComment),
+                Observable.Return(upperSpecBrush),
+                Observable.Return(lowerSpecBrush)).AddTo(Disposables);
 
-            BarItemsLoader = new HeightBarItemsLoader(Parameter.FileID_ClassName);
             BarChartModel = BarChartModel.Create(Target, BarItemsLoader);
             BarChartModel.Elements.HorizontalTitle = "Class";
             BarChartModel.Elements.VerticalTitle = "Height";
             BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);
             BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
 
-            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, Parameter.PeakPickBaseParam, Parameter.FileID_ClassName);
+            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, Parameter.FileID_ClassName);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader,
+                files, param,
                 spot => spot.Time,
-                spot => spot.Intensity);
+                spot => spot.Intensity).AddTo(Disposables);
             AlignmentEicModel.Elements.GraphTitle = "TIC, EIC or BPC chromatograms";
             AlignmentEicModel.Elements.HorizontalTitle = "m/z";
             AlignmentEicModel.Elements.VerticalTitle = "Abundance";
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, Target, MassMin, MassMax);
+            AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, Target, MassMin, MassMax).AddTo(Disposables);
 
             MsdecResult = Target.Where(t => t != null)
                 .Select(t => decLoader.LoadMSDecResult(t.MasterAlignmentID))

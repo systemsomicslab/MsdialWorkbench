@@ -14,7 +14,7 @@
         </Style>
     </d:DesignerProperties.DesignStyle>
     <d:DesignerProperties.DesignResources>
-        <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
     </d:DesignerProperties.DesignResources>
     <Ribbon>
 
@@ -94,18 +94,17 @@
         <RibbonTab Header="Processing" KeyTip="P">
             <RibbonGroup Header="Data">
                 <RibbonButton Label="All processing (from peak detection)" LargeImageSource="{StaticResource All_process_is}"
-                              Command="{Binding DataContext.RunProcessAllCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                              Command="{Binding DataContext.ExecuteAllMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                               KeyTip="A">
                     <RibbonButton.ToolTip>Reanalysis for all data processing.</RibbonButton.ToolTip>
                 </RibbonButton>
                 <RibbonButton Label="Identification" LargeImageSource="{StaticResource From_annotation_process_is}"
-                              IsEnabled="False"
+                              Command="{Binding DataContext.ExecuteIdentificationMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                               KeyTip="I">
                     <RibbonButton.ToolTip>Reanalysis for peak identification.</RibbonButton.ToolTip>
                 </RibbonButton>
                 <RibbonButton Label="Alignment" LargeImageSource="{StaticResource From_alignment_process_is}"
-                              IsEnabled="False"
+                              Command="{Binding DataContext.ExecuteAlignmentMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                               KeyTip="L">
                     <RibbonButton.ToolTip>Reanalysis for peak alignment.</RibbonButton.ToolTip>
                 </RibbonButton>
@@ -133,7 +132,7 @@
             <RibbonGroup>
                 <RibbonButton Label="Normalization" LargeImageSource="{StaticResource Data_normalization_is}"
                               IsEnabled="True"
-                              Command="{Binding AlignmentVM.NormalizeCommand}"
+                              Command="{Binding AlignmentViewModel.Value.NormalizeCommand}"
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                               KeyTip="N"/>
                 <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"
@@ -200,7 +199,7 @@
                 <RibbonButton Label="Show experiment spectrum"
                               IsEnabled="True"
                               Command="{Binding ShowExperimentSpectrumCommand, Mode=OneTime}"
-                              KeyTip="C"/>
+                              KeyTip="X"/>
                 <RibbonButton Label="Display retention time correction window"
                               IsEnabled="false"
                               KeyTip="R"/>
@@ -211,7 +210,7 @@
             <RibbonGroup>
                 <RibbonButton Label="File property setting" LargeImageSource="{StaticResource File_property_setting_is}"
                               IsEnabled="True"
-                              Command="{Binding DataContext.FilePropertyResetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                              Command="{Binding DataContext.DatasetViewModel.Value.FilePropertyResetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                               KeyTip="F">
                     <RibbonButton.ToolTip>
                         The file properties including type, analytical order, class, and included/not included can be modified here.
@@ -251,7 +250,8 @@
                    KeyTip="E">
             <RibbonGroup>
                 <RibbonButton Label="Peak list result" LargeImageSource="{StaticResource Peak_list_export_is}"
-                              IsEnabled="False"
+                              Command="{Binding ExportAnalysisResultCommand}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                               KeyTip="P"/>
                 <RibbonButton Label="Alignment result" LargeImageSource="{StaticResource Alignment_result_export_is}"
                               Command="{Binding ExportAlignmentResultCommand}"

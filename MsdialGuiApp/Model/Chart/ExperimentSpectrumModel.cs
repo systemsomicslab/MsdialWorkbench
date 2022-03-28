@@ -19,12 +19,14 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ExperimentSpectrumModel(
             RangeSelectableChromatogramModel model,
+            AnalysisFileBean analysisFile,
             IDataProvider provider,
             ChromatogramPeakFeature peak,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             ParameterBase parameter) {
 
             RangeSelectableChromatogramModel = model;
+            AnalysisFile = analysisFile;
             this.provider = provider;
             Ms2Spectrums = new ObservableCollection<SummarizedSpectrumModel>();
             Peak = peak;
@@ -33,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Chart
         }
 
         public RangeSelectableChromatogramModel RangeSelectableChromatogramModel { get; }
-
+        public AnalysisFileBean AnalysisFile { get; }
         public SummarizedSpectrumModel Ms1Spectrum {
             get => ms1Spectrum;
             set => SetProperty(ref ms1Spectrum, value);

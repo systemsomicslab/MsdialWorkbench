@@ -1,11 +1,44 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.Common.MessagePack;
+using CompMs.CommonMVVM;
+using CompMs.MsdialCore.DataObj;
 using System;
+using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Core
 {
-    internal class AlignmentModelBase : BindableBase, IDisposable
+    public class AlignmentModelBase : BindableBase, IDisposable
     {
+        public AlignmentModelBase(string resultFile) {
+            alignmentResultFile = resultFile;
+            Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(AlignmentResultFile);
+            if (Container == null) {
+                MessageBox.Show("No aligned spot information."); // TODO: Move to view.
+                Container = new AlignmentResultContainer
+                {
+                    AlignmentSpotProperties = new ObservableCollection<AlignmentSpotProperty>(),
+                };
+            }
+        }
+
+        public string AlignmentResultFile {
+            get => alignmentResultFile;
+            set => SetProperty(ref alignmentResultFile, value);
+        }
+        private string alignmentResultFile;
+
+        public AlignmentResultContainer Container {
+            get => container;
+            private set => SetProperty(ref container, value);
+        }
+        private AlignmentResultContainer container;
+
+        public virtual Task SaveAsync() {
+            return Task.Run(() => MessagePackHandler.SaveToFile(Container, AlignmentResultFile));
+        }
+
         public string DisplayLabel {
             get => displayLabel;
             set => SetProperty(ref displayLabel, value);

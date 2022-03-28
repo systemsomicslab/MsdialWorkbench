@@ -15,6 +15,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
     {
         public DatasetSettingViewModel(DatasetSettingModel model, IObservable<bool> isEnabled) {
             Model = model ?? throw new ArgumentNullException(nameof(model));
+            IsReadOnly = Model.IsReadOnlyDatasetParameter;
             SettingViewModels = new ObservableCollection<ISettingViewModel>(
                 new ISettingViewModel[]
                 {
@@ -52,7 +53,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ObservableCollection<ISettingViewModel> SettingViewModels { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
-        public bool IsReadOnlyDatasetParameter { get; }
+        public bool IsReadOnly { get; }
 
         public IObservable<Unit> ObserveChanges { get; }
 
@@ -64,6 +65,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             foreach (var vm in SettingViewModels) {
                 vm.Next();
             }
+        }
+
+        public void Run() {
+            Model.Run();
         }
     }
 }
