@@ -32,12 +32,15 @@
     <PackageReference Include="Accord.Statistics" Version="3.8.0" />
     <PackageReference Include="MessagePack" Version="1.7.3.7" />
     <PackageReference Include="MessagePackAnalyzer" Version="1.6.0" />
-    <PackageReference Include="NCDK" Version="1.6.1" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NCDK\NCDK.csproj" />
   </ItemGroup>
 
 </Project>

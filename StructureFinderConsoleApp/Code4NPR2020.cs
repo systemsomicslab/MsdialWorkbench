@@ -23,8 +23,8 @@ namespace StructureFinderConsoleApp {
             // input: @"E:\6_Projects\1_naturalproductprofiling_protocol\agc_compoundlist_formula.txt"
             // output: @"E:\6_Projects\1_naturalproductprofiling_protocol\agc_compoundlist_preMzList.txt"
 
-            input = @"E:\6_Projects\1_naturalproductprofiling_protocol\agc_compoundlist_formula.txt";
-            output = @"E:\6_Projects\1_naturalproductprofiling_protocol\agc_compoundlist_preMzList.txt";
+            input = @"C:\Users\Yoshimasa-Todoroki\Desktop\test\recalculation.txt";
+            output = @"C:\Users\Yoshimasa-Todoroki\Desktop\test\recalculation_MZ.txt";
             var formulaList = new List<string>();
             using (var sr = new StreamReader(input, true)) {
                 while (sr.Peek() > -1) {
@@ -38,9 +38,15 @@ namespace StructureFinderConsoleApp {
                     var mass = formulaObj.Mass;
 
                     var adductproton = AdductIonParser.GetAdductIonBean("[M+H]+");
+                    var protonMass = adductproton.AdductIonAccurateMass;
                     var mass_proton = adductproton.ConvertToMz(mass);
+                    var protonLossAdduct = AdductIonParser.GetAdductIonBean("[M-H]-");
+                    var mass_protonloss = protonLossAdduct.ConvertToMz(mass);
+                    var adductNa = AdductIonParser.GetAdductIonBean("[M+Na]+");
+                    var adductFA = AdductIonParser.GetAdductIonBean("[M+HCOO]-");
+                    var adductACN = AdductIonParser.GetAdductIonBean("[M+ACN+H]+");
 
-                    sw.WriteLine(formulaObj.FormulaString + "\t" + mass + "\t" + mass_proton);
+                    sw.WriteLine(formulaObj.FormulaString + "\t" + mass + "\t" + mass_proton+"\t"+mass_protonloss+"\t"+adductNa.ConvertToMz(mass)+"\t"+adductFA.ConvertToMz(mass)+"\t"+adductACN.ConvertToMz(mass));
 
 
                     //Console.WriteLine("Formula {0}, ExactMass {1}, [M+H]+ {2}", formulaObj.FormulaString, mass, mass + protonMass);
