@@ -61,6 +61,15 @@ namespace CompMs.App.Msdial.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string EXPORT_DIR {
+            get {
+                return ResourceManager.GetString("EXPORT_DIR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to http://prime.psc.riken.jp/compms/msdial/vdd.json.
         /// </summary>
         public static string VDD_URI {

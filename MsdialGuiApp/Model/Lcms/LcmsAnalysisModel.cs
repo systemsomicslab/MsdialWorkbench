@@ -97,7 +97,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     .Select(source => new DisplayChromatogram(source))
                     .Select(chromatogram => new ChromatogramsModel("Experiment chromatogram", chromatogram))
                     .Select(chromatogram => new RangeSelectableChromatogramModel(chromatogram))
-                    .Select(model => new ExperimentSpectrumModel(model, provider, t.InnerModel, DataBaseMapper, Parameter))
+                    .Select(model => new ExperimentSpectrumModel(model, AnalysisFile, provider, t.InnerModel, DataBaseMapper, Parameter))
                 ).Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
