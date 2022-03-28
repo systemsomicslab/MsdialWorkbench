@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.StartUp;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -15,6 +14,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -53,7 +53,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
             Model = new MainWindowModel();
 
             var projectViewModel = Model.ObserveProperty(m => m.CurrentProject)
-                .Select(m => m is null ? null : new ProjectViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService))
+                .Select(m => m is null ? null : new ProjectViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, analysisFilePropertyResetService))
                 .DisposePreviousValue();
             var datasetViewModel = projectViewModel
                 .Switch(project => project?.CurrentDatasetViewModel.StartWith(project.CurrentDatasetViewModel.Value));
@@ -211,11 +211,11 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private void FilePropertyResettingWindow() {
             var storage = DatasetViewModel.Value.Model.Storage;
             var files = storage.AnalysisFiles;
-            var analysisFilePropertySetModel = new AnalysisFilePropertySetModel(files);
+            var analysisFilePropertySetModel = new AnalysisFilePropertySetModel(files, Storage.Parameter, null);
             using (var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetViewModel(analysisFilePropertySetModel)) {
                 var afpsw_result = analysisFilePropertyResetService.ShowDialog(analysisFilePropertySetWindowVM);
                 if (afpsw_result == true) {
-                    ParameterFactory.SetParameterFromAnalysisFiles(storage.Parameter, files);
+                    analysisFilePropertySetModel.Update();
                     parameter.ForceNotify();
                 }
             }

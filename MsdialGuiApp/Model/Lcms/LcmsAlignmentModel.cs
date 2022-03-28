@@ -41,6 +41,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseStorage databases,
             DataBaseMapper mapper,
             MsdialLcmsParameter parameter,
+            IObservable<ParameterBase> parameterAsObservable,
             IObservable<IBarItemsLoader> barItemsLoader,
             List<AnalysisFileBean> files)
             : base(alignmentFileBean.FilePath) {
@@ -54,6 +55,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             AlignmentFile = alignmentFileBean;
             Parameter = parameter;
+            ParameterAsObservable = parameterAsObservable ?? throw new ArgumentNullException(nameof(parameterAsObservable));
             DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             CompoundSearchers = ConvertToCompoundSearchers(databases);
@@ -188,6 +190,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public AlignmentFileBean AlignmentFile { get; }
         public ParameterBase Parameter { get; }
+        public IObservable<ParameterBase> ParameterAsObservable { get; }
         public DataBaseMapper DataBaseMapper { get; }
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
 

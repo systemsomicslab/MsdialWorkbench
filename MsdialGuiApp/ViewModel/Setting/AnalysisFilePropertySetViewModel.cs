@@ -16,7 +16,7 @@ using Reactive.Bindings.Extensions;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    class AnalysisFilePropertySetViewModel : ViewModelBase
+    public class AnalysisFilePropertySetViewModel : ViewModelBase
     {
         public AnalysisFilePropertySetViewModel(AnalysisFilePropertySetModel model) {
             Model = model ?? throw new ArgumentNullException(nameof(model));

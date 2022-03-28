@@ -23,6 +23,7 @@ namespace CompMs.App.Msdial.Model.Core
         public DatasetModel(IMsdialDataStorage<ParameterBase> storage) {
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
             observeParameterChanged = new BehaviorSubject<Unit>(Unit.Default).AddTo(Disposables);
+            AnalysisFilePropertySetModel = new AnalysisFilePropertySetModel(Storage.AnalysisFiles, Storage.Parameter, observeParameterChanged);
 
             AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, Handler, ObserveParameterChanged);
             IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, Storage, Handler, ObserveParameterChanged);
@@ -74,6 +75,12 @@ namespace CompMs.App.Msdial.Model.Core
             IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, Storage, Handler, ObserveParameterChanged);
             AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, Storage, Handler, ObserveParameterChanged);
             Method.Run(setting.Option);
+        }
+
+        public AnalysisFilePropertySetModel AnalysisFilePropertySetModel { get; }
+
+        public void AnalysisFilePropertyUpdate() {
+            AnalysisFilePropertySetModel.Update();
         }
 
         public Task SaveAsync() {

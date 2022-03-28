@@ -11,7 +11,6 @@ using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Parameter;
 using Microsoft.Win32;
 using Reactive.Bindings;
@@ -32,10 +31,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     {
         public AlignmentLcmsVM(
             LcmsAlignmentModel model,
-            IWindowService<ViewModel.CompoundSearchVM> compoundSearchService,
+            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService, 
-            IObservable<ParameterBase> parameter)
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
             : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -51,10 +49,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             if (proteomicsTableService is null) {
                 throw new ArgumentNullException(nameof(proteomicsTableService));
-            }
-
-            if (parameter is null) {
-                throw new ArgumentNullException(nameof(parameter));
             }
 
             this.model = model;
@@ -118,14 +112,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .Subscribe(_ => Ms1Spots?.Refresh())
             .AddTo(Disposables);
 
-            var classBrush = parameter.Select(p => new KeyBrushMapper<BarItem, string>(
-                p.ProjectParam.ClassnameToColorBytes
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-                ),
-                item => item.Class,
-                Colors.Blue));
+            var classBrush = model.ParameterAsObservable
+                .Select(p => new KeyBrushMapper<BarItem, string>(
+                    p.ProjectParam.ClassnameToColorBytes
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+                    ),
+                    item => item.Class,
+                    Colors.Blue));
 
             Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
 

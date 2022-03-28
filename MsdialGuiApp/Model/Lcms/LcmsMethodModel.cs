@@ -51,7 +51,8 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public LcmsMethodModel(
             IMsdialDataStorage<MsdialLcmsParameter> storage,
-            IDataProviderFactory<AnalysisFileBean> providerFactory, 
+            IDataProviderFactory<AnalysisFileBean> providerFactory,
+            IObservable<ParameterBase> parameterAsObservable,
             IObservable<IBarItemsLoader> barItemsLoader)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             if (storage is null) {
@@ -64,6 +65,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Storage = storage;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             this.providerFactory = providerFactory;
+            this.parameterAsObservable = parameterAsObservable;
             this.barItemsLoader = barItemsLoader;
         }
 
@@ -85,6 +87,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
+        private readonly IObservable<ParameterBase> parameterAsObservable;
         private readonly IObservable<IBarItemsLoader> barItemsLoader;
         private IAnnotationProcess annotationProcess;
 
@@ -116,6 +119,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.DataBases,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
+                parameterAsObservable,
                 barItemsLoader,
                 Storage.AnalysisFiles)
             .AddTo(Disposables);

@@ -36,20 +36,23 @@ namespace CompMs.App.Msdial.Model.Setting
         MethodModelBase BuildMethod();
     }
 
-    public class MethodSettingModelFactory : IMethodSettingModelFactory
+    public sealed class MethodSettingModelFactory : IMethodSettingModelFactory
     {
         public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, IObservable<Unit> observeParameterChanged, ProcessOption process)
-            : this(storage, observeParameterChanged.Select(_ => new HeightBarItemsLoader(storage.Parameter.FileID_ClassName)), process) {
+            : this(storage,
+                  observeParameterChanged.Select(_ => storage.Parameter),
+                  observeParameterChanged.Select(_ => new HeightBarItemsLoader(storage.Parameter.FileID_ClassName)),
+                  process) {
 
         }
 
-        public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, IObservable<IBarItemsLoader> loader, ProcessOption process) {
+        public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, IObservable<ParameterBase> parameterAsObservable, IObservable<IBarItemsLoader> loader, ProcessOption process) {
             switch (storage) {
                 case IMsdialDataStorage<MsdialLcImMsParameter> lcimmsStorage:
                     factoryImpl = new LcimmsMethodSettingModelFactory(lcimmsStorage, process);
                     break;
                 case IMsdialDataStorage<MsdialLcmsParameter> lcmsStorage:
-                    factoryImpl = new LcmsMethodSettingModelFactory(lcmsStorage, loader, process);
+                    factoryImpl = new LcmsMethodSettingModelFactory(lcmsStorage, parameterAsObservable, loader, process);
                     break;
                 case IMsdialDataStorage<MsdialImmsParameter> immsStorage:
                     factoryImpl = new ImmsMethodSettingModelFactory(immsStorage, process);
@@ -76,7 +79,7 @@ namespace CompMs.App.Msdial.Model.Setting
     }
 
 
-    class DimsMethodSettingModelFactory : IMethodSettingModelFactory
+    sealed class DimsMethodSettingModelFactory : IMethodSettingModelFactory
     {
         private readonly IMsdialDataStorage<MsdialDimsParameter> storage;
         private readonly ProcessOption process;
@@ -149,14 +152,21 @@ namespace CompMs.App.Msdial.Model.Setting
         }
     }
 
-    class LcmsMethodSettingModelFactory : IMethodSettingModelFactory
+    sealed class LcmsMethodSettingModelFactory : IMethodSettingModelFactory
     {
         private readonly IMsdialDataStorage<MsdialLcmsParameter> storage;
+        private readonly IObservable<ParameterBase> parameterAsObservable;
         private readonly IObservable<IBarItemsLoader> loader;
         private readonly ProcessOption process;
 
-        public LcmsMethodSettingModelFactory(IMsdialDataStorage<MsdialLcmsParameter> storage, IObservable<IBarItemsLoader> observeBarItemsLoader, ProcessOption process) {
+        public LcmsMethodSettingModelFactory(
+            IMsdialDataStorage<MsdialLcmsParameter> storage, 
+            IObservable<ParameterBase> parameterAsObservable,
+            IObservable<IBarItemsLoader> observeBarItemsLoader,
+            ProcessOption process) {
+
             this.storage = storage;
+            this.parameterAsObservable = parameterAsObservable;
             loader = observeBarItemsLoader;
             this.process = process;
         }
@@ -219,11 +229,11 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public MethodModelBase BuildMethod() {
-            return new LcmsMethodModel(storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true), loader);
+            return new LcmsMethodModel(storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true), parameterAsObservable, loader);
         }
     }
 
-    class ImmsMethodSettingModelFactory : IMethodSettingModelFactory
+    sealed class ImmsMethodSettingModelFactory : IMethodSettingModelFactory
     {
         private readonly IMsdialDataStorage<MsdialImmsParameter> storage;
         private readonly ProcessOption process;
@@ -292,7 +302,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
     }
 
-    class LcimmsMethodSettingModelFactory : IMethodSettingModelFactory
+    sealed class LcimmsMethodSettingModelFactory : IMethodSettingModelFactory
     {
         private readonly IMsdialDataStorage<MsdialLcImMsParameter> storage;
         private readonly ProcessOption process;

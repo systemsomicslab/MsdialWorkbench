@@ -21,8 +21,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             LcmsMethodModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
-            IObservable<ParameterBase> parameter)
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
             : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -40,10 +39,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(proteomicsTableService));
             }
 
-            if (parameter is null) {
-                throw new ArgumentNullException(nameof(parameter));
-            }
-
             this.model = model;
 
             Storage = model.Storage;
@@ -56,7 +51,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .AddTo(Disposables);
             AlignmentViewModel = model.ObserveProperty(m => m.AlignmentModel)
                 .Where(m => m != null)
-                .Select(m => new AlignmentLcmsVM(m, compoundSearchService, peakSpotTableService, proteomicsTableService, parameter) { DisplayFilters = displayFilters, })
+                .Select(m => new AlignmentLcmsVM(m, compoundSearchService, peakSpotTableService, proteomicsTableService) { DisplayFilters = displayFilters, })
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
