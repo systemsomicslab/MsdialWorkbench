@@ -17,6 +17,9 @@ namespace CompMs.App.Msdial.Model.Setting
                 referenceParameter.SearchedAdductIons = AdductResourceParser.GetAdductIonInformationList(parameter.IonMode);
             }
             AdductIons = new ObservableCollection<AdductIon>(referenceParameter.SearchedAdductIons);
+            if (AdductIons.FirstOrDefault() is AdductIon firstAdduct) {
+                firstAdduct.IsIncluded = true;
+            }
             IsReadOnly = (process & ProcessOption.Identification) == 0;
         }
 
@@ -37,6 +40,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public void AddAdductIon() {
             var adduct = UserDefinedAdduct;
             if (adduct?.FormatCheck ?? false) {
+                adduct.IsIncluded = true;
                 AdductIons.Add(adduct);
             }
         }
