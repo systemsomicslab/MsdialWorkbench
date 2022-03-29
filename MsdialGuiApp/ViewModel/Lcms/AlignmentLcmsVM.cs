@@ -165,7 +165,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             BarChartViewModel = new BarChartViewModel(this.model.BarChartModel, brushSource: classBrush).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(this.model.AlignmentEicModel).AddTo(Disposables);
             
-            
             AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(
                 this.model.AlignmentSpotTableModel,
                 MassLower,
@@ -173,7 +172,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 RtLower,
                 RtUpper,
                 MetaboliteFilterKeyword,
-                CommentFilterKeyword)
+                CommentFilterKeyword,
+                classBrush)
                 .AddTo(Disposables);
             ProteomicsAlignmentTableViewModel = new LcmsProteomicsAlignmentTableViewModel(
                 this.model.AlignmentSpotTableModel,

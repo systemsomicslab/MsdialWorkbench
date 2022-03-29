@@ -167,7 +167,7 @@
                                         Width="150">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <chart:SmallClassBarChart DataContext="{Binding BarItemCollection}"/>
+                            <chart:SmallClassBarChart DataContext="{Binding BarItemCollection}" ClassBrush="{Binding DataContext.ClassBrush.Value, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

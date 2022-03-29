@@ -165,7 +165,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             this.innerModel = innerModel;
             this.AlignedPeakPropertiesModel = this.innerModel.AlignedPeakProperties.Select(n => new AlignmentChromPeakFeatureModel(n)).ToList().AsReadOnly();
 
-            BarItemCollection = new BarItemCollection(this, barItemsLoader);
+            BarItemCollection = BarItemCollection.Create(this, barItemsLoader);
         }
 
         public void RaisePropertyChanged() {

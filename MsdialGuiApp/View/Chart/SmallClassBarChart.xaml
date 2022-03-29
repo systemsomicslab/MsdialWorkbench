@@ -12,7 +12,8 @@
             BorderThickness="1,0,0,1">
         <bar:BarControl ItemsSource="{Binding}"
                         HorizontalPropertyName="Class"
-                        VerticalPropertyName="Height">
+                        VerticalPropertyName="Height"
+                        BrushMapper="{Binding ClassBrush, RelativeSource={RelativeSource AncestorType=UserControl}}">
             <bar:BarControl.HorizontalAxis>
                 <manager:CategoryAxisManager ItemsSource="{Binding}"
                                              IdentityPropertyName="Class"
