@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -14,6 +15,13 @@ namespace CompMs.App.Msdial.View.Chart
     {
         public SmallClassBarChart() {
             InitializeComponent();
+
+            Unloaded += SmallClassBarChart_Unloaded;
+        }
+
+        private void SmallClassBarChart_Unloaded(object sender, RoutedEventArgs e) {
+            (DataContext as IDisposable)?.Dispose();
+            Unloaded -= SmallClassBarChart_Unloaded;
         }
 
         public static readonly DependencyProperty ClassBrushProperty =

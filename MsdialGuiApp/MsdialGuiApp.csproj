@@ -289,9 +289,11 @@
     <Compile Include="ViewModel\AlignmentPeakPlotVM.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\Chart\SingleSpectrumViewModel.cs" />
+    <Compile Include="ViewModel\Chart\SmallClassBarChartViewModel.cs" />
     <Compile Include="ViewModel\Chart\SpectrumViewModel.cs" />
     <Compile Include="ViewModel\Chart\SurveyScanViewModel.cs" />
     <Compile Include="Model\Search\CompoundResult.cs" />
+    <Compile Include="ViewModel\Converter\BarItemCollectionToSmallClassBarChartViewModel.cs" />
     <Compile Include="ViewModel\Converter\PeakToChromatogramConverter.cs" />
     <Compile Include="ViewModel\Core\DatasetViewModel.cs" />
     <Compile Include="ViewModel\Core\ProjectViewModel.cs" />
