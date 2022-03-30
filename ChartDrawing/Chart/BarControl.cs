@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -177,7 +178,10 @@ namespace CompMs.Graphics.Chart
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
             var xs = visualChildren.OfType<AnnotatedDrawingVisual>().Select(v => HorizontalAxis.TranslateToAxisValue(hPropertyReflection.GetValue(v.Annotation)).Value).OrderBy(x => x).ToArray();
             var barwidth = 0d;
-            if (xs.Length == 1) {
+            if (xs.Length == 0) {
+                barwidth = actualWidth;   
+            }
+            else if (xs.Length == 1) {
                 barwidth = (RangeX?.Delta ?? 1d) * BarWidth;
             }
             else {
@@ -228,6 +232,12 @@ namespace CompMs.Graphics.Chart
             chart.cv = CollectionViewSource.GetDefaultView(chart.ItemsSource) as CollectionView;
 
             chart.SetDrawingVisuals();
+            if (e.OldValue is INotifyCollectionChanged oldCollection) {
+                oldCollection.CollectionChanged -= chart.OnItemsSourceCollectionChanged;
+            }
+            if (e.NewValue is INotifyCollectionChanged newCollection) {
+                newCollection.CollectionChanged += chart.OnItemsSourceCollectionChanged;
+            }
 
             if (chart.HorizontalPropertyName != null)
                 chart.hPropertyReflection = chart.dataType.GetProperty(chart.HorizontalPropertyName);
@@ -236,7 +246,14 @@ namespace CompMs.Graphics.Chart
             if (chart.SelectedItem != null)
                 chart.cv.MoveCurrentTo(chart.SelectedItem);
 
-            chart.Update();
+            chart.InvalidateVisual();
+        }
+
+        private void OnItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            SetDrawingVisuals();
+            if (SelectedItem != null && cv.Contains(SelectedItem))
+                cv.MoveCurrentTo(SelectedItem);
+            InvalidateVisual();
         }
 
         static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
@@ -246,7 +263,7 @@ namespace CompMs.Graphics.Chart
             if (chart.dataType != null)
                 chart.hPropertyReflection = chart.dataType.GetProperty((string)e.NewValue);
 
-            chart.Update();
+            chart.InvalidateVisual();
         }
 
         static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
@@ -256,7 +273,7 @@ namespace CompMs.Graphics.Chart
             if (chart.dataType != null)
                 chart.vPropertyReflection = chart.dataType.GetProperty((string)e.NewValue);
 
-            chart.Update();
+            chart.InvalidateVisual();
         }
 
         static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
