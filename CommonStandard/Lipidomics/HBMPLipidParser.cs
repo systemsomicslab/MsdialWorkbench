@@ -8,7 +8,7 @@ namespace CompMs.Common.Lipidomics
     public class HBMPLipidParser : ILipidParser {
         public string Target { get; } = "HBMP";
 
-        //HBMP explain rule -> HBMP 1 chain(sn1)/2 chain(sn2,sn3)
+        //HBMP explain rule -> HBMP (1 chain(sn1))/(2 chain(sn2,sn3))
         //HBMP sn1_sn2_sn3 (follow the rules of alignment) -- MolecularSpeciesLevelChains
         //HBMP sn1/sn2_sn3 -- MolecularSpeciesLevelChains <- now cannot generate
         //HBMP sn1/sn4(or sn4/sn1)/sn2/sn3 (sn4= 0:0)  -- PositionLevelChains

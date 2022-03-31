@@ -207,6 +207,15 @@ namespace CompMs.MspGenerator
                 {   "NAGlySer_OxFA" ,    new List<string>(){ "[M-H]-", "[M+H]+"  , }    },
                 {   "NAOrn_OxFA" ,    new List<string>(){ "[M+H]+"  }    },
 
+                {   "NATau_FA" ,    new List<string>(){ "[M-H]-", "[M+H]+", "[M+NH4]+" }    },
+                {   "NATau_OxFA" ,    new List<string>(){ "[M-H]-", "[M+H]+", "[M+NH4]+" }    },
+                {   "NAPhe_FA" ,    new List<string>(){ "[M-H]-", "[M+H]+" }    },
+                {   "NAPhe_OxFA" ,    new List<string>(){ "[M-H]-", "[M+H]+" }    },
+
+                {   "NAGly_FA" ,    new List<string>(){ "[M-H]-", "[M+H]+", "[M+NH4]+" }    },
+                {   "NAOrn_FA" ,    new List<string>(){ "[M+H]+"  }    },
+
+
 
             //steroidal
                 {   "CE" ,    new List<string>(){ "[M+Na]+", "[M+NH4]+"  , }    },

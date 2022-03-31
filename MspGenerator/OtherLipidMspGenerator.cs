@@ -423,7 +423,20 @@ namespace CompMs.MspGenerator
 
                         var exportLipidClassName = lipidClass;
                         var rawSmiles = headerSmiles + chain1Smiles + "%10";
-                        if (lipidClass.Contains("NA") && lipidClass != "NAE")
+                        if (lipidClass.Contains("NA")&&lipidClass.Contains("_FA"))
+                        {
+
+                            if (AcylChainDic.FattyAcylChainDictionary.ContainsKey(chain1String))
+                            {
+                                chain1Smiles = new List<string>(AcylChainDic.FattyAcylChainDictionary[chain1String])[3];
+                                rawSmiles = headerSmiles + chain1Smiles + "%20";
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                        if (lipidClass.Contains("NA") && lipidClass.Contains("_OxFA"))
                         {
 
                             if (AcylChainDic.AcylChainBetaOxDictionary.ContainsKey(chain1String))
@@ -436,6 +449,7 @@ namespace CompMs.MspGenerator
                                 continue;
                             }
                         }
+
                         var meta = Common.getMetaProperty(rawSmiles);
 
                         // fragment
@@ -473,6 +487,42 @@ namespace CompMs.MspGenerator
                                 exportLipidClassName = "NAOrn";
                                 name = exportLipidClassName + " " + chain1String + ";O";
                                 break;
+                            case "NATau_FA":
+                                OtherLipidFragmentation.FATauFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
+                                exportLipidClassName = "NATau";
+                                name = exportLipidClassName + " " + chain1String ;
+                                break;
+                            case "NATau_OxFA":
+                                OtherLipidFragmentation.oxFATauFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
+                                exportLipidClassName = "NATau";
+                                name = exportLipidClassName + " " + chain1String + ";O";
+                                break;
+
+                            case "NAPhe_FA":
+                                OtherLipidFragmentation.FAPheFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
+                                exportLipidClassName = "NAPhe";
+                                name = exportLipidClassName + " " + chain1String;
+                                break;
+
+                            case "NAPhe_OxFA":
+                                OtherLipidFragmentation.oxFAPheFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
+                                exportLipidClassName = "NAPhe";
+                                name = exportLipidClassName + " " + chain1String + ";O";
+                                break;
+
+                            case "NAGly_FA":
+                                OtherLipidFragmentation.FAGlyFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
+                                exportLipidClassName = "NAGly";
+                                name = exportLipidClassName + " " + chain1String;
+                                break;
+
+                            case "NAOrn_FA":
+                                OtherLipidFragmentation.FAOrnFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double);
+                                exportLipidClassName = "NAOrn";
+                                name = exportLipidClassName + " " + chain1String;
+                                break;
+
+
                         }
 
                         //

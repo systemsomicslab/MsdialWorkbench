@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;

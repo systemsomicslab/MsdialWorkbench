@@ -51,6 +51,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(GetSaveFilePath);
             broker.ToObservable<AlignedChromatogramModificationViewModelLegacy>()
                 .Subscribe(CreateAlignedChromatogramModificationDialog);
+            broker.ToObservable<SampleTableViewerInAlignmentViewModelLegacy>()
+                .Subscribe(CreateSampleTableViewerDialog);
         }
 
         private readonly IMessageBroker broker;
@@ -85,6 +87,16 @@ namespace CompMs.App.Msdial.View.Core
             {
                 var window = new AlignedPeakCorrectionWinLegacy(vm)
                 {
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                window.Show();
+            });
+        }
+
+        private void CreateSampleTableViewerDialog(SampleTableViewerInAlignmentViewModelLegacy vm) {
+            Dispatcher.Invoke(() => {
+                var window = new SampleTableViewerInAlignmentLegacy(vm) {
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 };

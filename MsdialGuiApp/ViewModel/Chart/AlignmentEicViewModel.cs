@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;
@@ -62,11 +63,20 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            var legacyvm = new AlignedChromatogramModificationViewModelLegacy(model.AlignedChromatogramModificationModel).AddTo(Disposables);
+            var alignedChromatogramModificationViewModelLegacy = 
+                new AlignedChromatogramModificationViewModelLegacy(model.AlignedChromatogramModificationModel).AddTo(Disposables);
 
             ShowPeakCurationWinByOverlayEICsCommand = new ReactiveCommand().AddTo(Disposables);
             ShowPeakCurationWinByOverlayEICsCommand
-                .Subscribe(_ => MessageBroker.Default.Publish(legacyvm))
+                .Subscribe(_ => MessageBroker.Default.Publish(alignedChromatogramModificationViewModelLegacy))
+                .AddTo(Disposables);
+
+            var sampleTableViewerInAlignmentViewModelLegacy =
+                new SampleTableViewerInAlignmentViewModelLegacy(model.SampleTableViewerInAlignmentModel).AddTo(Disposables);
+
+            ShowPeakCurationWinBySampleTableCommand = new ReactiveCommand().AddTo(Disposables);
+            ShowPeakCurationWinBySampleTableCommand
+                .Subscribe(_ => MessageBroker.Default.Publish(sampleTableViewerInAlignmentViewModelLegacy))
                 .AddTo(Disposables);
         }
 
@@ -89,5 +99,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
 
         public ReactiveCommand ShowPeakCurationWinByOverlayEICsCommand { get; }
+        public ReactiveCommand ShowPeakCurationWinBySampleTableCommand { get; }
     }
 }

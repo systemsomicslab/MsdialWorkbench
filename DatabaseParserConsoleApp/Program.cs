@@ -145,8 +145,8 @@ namespace DatabaseParserConsoleApp {
 
         private static void runLipidChalacterization() {
 
-            var testFolder = @"D:\takahashi\desktop\Tsugawa-san_work\20211209_add_DGTS_Na\check\";
-            var testFilename = @"\DGTS_160_183_Na.msp";
+            var testFolder = @"d:\mikikot\Desktop\Tsugawa-san_work\20220309_NAA\check\";
+            var testFilename = @"\NATau_18_1.msp";
             var querypath = testFolder + testFilename;
             var reffile = testFolder + @"\library.txt";
 

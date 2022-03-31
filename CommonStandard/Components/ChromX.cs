@@ -6,7 +6,7 @@ using System.Text;
 namespace CompMs.Common.Components
 {
     public enum ChromXType { RT, RI, Drift, Mz }
-    public enum ChromXUnit { Min, Sec, Msec, Mz, None }
+    public enum ChromXUnit { Min, Sec, Msec, Mz, None, K0, OneOverK0 }
 
     [Union(0, typeof(ChromXs))]
     [Union(1, typeof(RetentionTime))]

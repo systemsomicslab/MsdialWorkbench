@@ -17,7 +17,7 @@ namespace CompMs.App.Msdial.Model.DataObj
     {
         public int AlignmentID => innerModel.AlignmentID;
         public int MasterAlignmentID => innerModel.MasterAlignmentID;
-
+        public int RepresentativeFileID => innerModel.RepresentativeFileID;
         public ChromXType ChromXType => innerModel.TimesCenter.MainType;
         public ChromXUnit ChromXUnit => innerModel.TimesCenter.Unit;
         public double MassCenter => innerModel.MassCenter;
@@ -151,6 +151,8 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double NominalKM => Math.Round(KM);
         public double KMD => NominalKM - KM;
         public double KMR => NominalKM % KMNominalUnit;
+
+        public bool IsMultiLayeredData => innerModel.IsMultiLayeredData();
 
         static AlignmentSpotPropertyModel() {
             KMIupacUnit = AtomMass.hMass * 2 + AtomMass.cMass; // CH2
