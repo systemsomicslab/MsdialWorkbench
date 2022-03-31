@@ -15,6 +15,7 @@ using CompMs.Graphics.UI.Message;
 using Microsoft.Win32;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls.Ribbon;
@@ -110,6 +111,22 @@ namespace CompMs.App.Msdial.View.Core
             window.Close();
 
             Mouse.OverrideCursor = null;
+        }
+
+        protected override void OnClosing(CancelEventArgs e) {
+            base.OnClosing(e);
+
+            if (DataContext is MainWindowVM vm && vm.TaskProgressCollection.Any()) {
+                var result = MessageBox.Show(
+                    "A process is running in the background.\n" +
+                    "If the application is terminated, the project may be corrupted.\n" +
+                    "Do you want to close the application?",
+                    "Warning",
+                    MessageBoxButton.OKCancel);
+                if (result != MessageBoxResult.OK) {
+                    e.Cancel = true;
+                }
+            }
         }
     }
 }
