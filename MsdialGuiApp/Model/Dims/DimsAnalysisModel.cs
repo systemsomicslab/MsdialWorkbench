@@ -6,6 +6,7 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM.ChemView;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
@@ -44,13 +45,17 @@ namespace CompMs.App.Msdial.Model.Dims
             Parameter = parameter;
             AnnotatorContainers = annotatorContainers;
             var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, Target, labelSource)
+            var vAxis = Observable.Return(new Range(-0.5, 0.5))
+                .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
+                .AddTo(Disposables);
+
+            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, Target, labelSource, verticalAxis: vAxis)
             {
                 VerticalTitle = "Kendrick mass defect",
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.KMD),
                 HorizontalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
-            };
+            }.AddTo(Disposables);
             Target.Select(t => t is null ? string.Empty : $"Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}")
                 .Subscribe(title => PlotModel.GraphTitle = title);
 

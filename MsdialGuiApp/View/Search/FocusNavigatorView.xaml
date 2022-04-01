@@ -11,17 +11,39 @@
     <StackPanel Orientation="Horizontal"
                 HorizontalAlignment="Right">
         <ItemsControl ItemsSource="{Binding SpotFocuses}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type vm:SpotFocusViewModel}">
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="{Binding Label, Mode=OneTime}"
-                               Margin="4,0"/>
-                        <TextBox Text="{Binding Value.Value}"
+                        <TextBlock Text="{Binding Label, StringFormat={}{0}, Mode=OneTime}"
+                                   VerticalAlignment="Center"
+                                   Margin="4,0,0,0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontStyle" Value="Normal"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsItalic}" Value="true">
+                                            <Setter Property="FontStyle" Value="Italic"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Text=":"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,4,0"/>
+                        <TextBox Text="{Binding Value.Value, UpdateSourceTrigger=PropertyChanged}"
                                  VerticalAlignment="Center" HorizontalAlignment="Right"
+                                 HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
                                  ToolTip="Enter key is available for going to the target spot"
+                                 Width="64"
                                  Margin="4,0">
                             <TextBox.InputBindings>
-                                <KeyBinding Gesture="Enter" Command="{Binding FocusCommand, Mode=OneTime}"/>
+                                <KeyBinding Gesture="Enter" Command="{Binding FocusCommand}"/>
                             </TextBox.InputBindings>
                         </TextBox>
                         <Button Content=">"

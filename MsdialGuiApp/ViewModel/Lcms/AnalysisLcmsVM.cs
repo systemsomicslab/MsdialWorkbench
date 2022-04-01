@@ -1,11 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.Win32;
@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     {
         public AnalysisLcmsVM(
             LcmsAnalysisModel model,
-            IWindowService<ViewModel.CompoundSearchVM> compoundSearchService,
+            IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, 
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
             : base(model) {
@@ -48,8 +48,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
             this.proteomicsTableService = proteomicsTableService;
-
-            Target.Subscribe(OnTargetChanged).AddTo(Disposables);
 
             MassMin = this.model.MassMin;
             MassMax = this.model.MassMax;
@@ -91,23 +89,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .Subscribe(_ => Ms1PeaksView?.Refresh())
             .AddTo(Disposables);
 
-            var hAxis = this.model.PlotModel
-                .ObserveProperty(m => m.HorizontalRange)
-                .ToReactiveAxisManager<double>(new ChartMargin(0.05))
-                .AddTo(Disposables);
-            var vAxis = this.model.PlotModel
-                .ObserveProperty(m => m.VerticalRange)
-                .ToReactiveAxisManager<double>(new ChartMargin(0.05))
-                .AddTo(Disposables);
-
-            PlotViewModel = new AnalysisPeakPlotViewModel(
-                this.model.PlotModel,
-                brushSource: Observable.Return(this.model.Brush),
-                horizontalAxis: hAxis,
-                verticalAxis: vAxis).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(this.model.PlotModel, brushSource: Observable.Return(this.model.Brush)).AddTo(Disposables);
             EicViewModel = new EicViewModel(
                 this.model.EicModel,
-                horizontalAxis: hAxis).AddTo(Disposables);
+                horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
 
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
                 this.model.Parameter.ProjectParam.SpectrumCommentToColorBytes
@@ -147,7 +132,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             SurveyScanViewModel = new SurveyScanViewModel(
                 this.model.SurveyScanModel,
-                horizontalAxis: vAxis).AddTo(Disposables);
+                horizontalAxis: PlotViewModel.VerticalAxis).AddTo(Disposables);
 
             PeakTableViewModel = new LcmsAnalysisPeakTableViewModel(
                 this.model.PeakTableModel,
@@ -184,10 +169,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .Select(model_ => new ExperimentSpectrumViewModel(model_))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+
+            FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
         }
 
         private readonly LcmsAnalysisModel model;
-        private readonly IWindowService<ViewModel.CompoundSearchVM> compoundSearchService;
+        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
         private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
 
@@ -199,6 +186,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public LcmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
         public LcmsProteomicsPeakTableViewModel ProteomicsPeakTableViewModel { get; }
         public List<ChromatogramPeakFeature> Peaks { get; }
+
+        public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
 
         /*
         public string RawSplashKey {
@@ -297,61 +286,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         bool RtFilter(ChromatogramPeakFeatureModel peak) {
             return RtLower.Value <= peak.ChromXValue && peak.ChromXValue <= RtUpper.Value;
-        }
-
-        void OnTargetChanged(ChromatogramPeakFeatureModel target) {
-            if (!(target is null)) {
-                FocusID = target.InnerModel.MasterPeakID;
-                FocusRt = target.ChromXValue ?? 0;
-                FocusMz = target.Mass;
-            }
-        }
-
-        public int FocusID {
-            get => focusID;
-            set => SetProperty(ref focusID, value);
-        }
-        private int focusID;
-
-        public double FocusRt {
-            get => focusRt;
-            set => SetProperty(ref focusRt, value);
-        }
-        private double focusRt;
-
-        public double FocusMz {
-            get => focusMz;
-            set => SetProperty(ref focusMz, value);
-        }
-        private double focusMz;
-
-        public DelegateCommand FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand(FocusByID));
-        private DelegateCommand focusByIDCommand;
-
-        private void FocusByID() {
-            var focus = model.Ms1Peaks.FirstOrDefault(peak => peak.InnerModel.MasterPeakID == FocusID);
-            if (focus is null) {
-                return;
-            }
-            Ms1PeaksView.MoveCurrentTo(focus);
-            PlotViewModel?.HorizontalAxis?.Focus(focus.ChromXValue - RtTol, focus.ChromXValue + RtTol);
-            PlotViewModel?.VerticalAxis?.Focus(focus.Mass - MzTol, focus.Mass + MzTol);
-        }
-
-        public DelegateCommand FocusByRtCommand => focusByRtCommand ?? (focusByRtCommand = new DelegateCommand(FocusByRt));
-        private DelegateCommand focusByRtCommand;
-
-        private static readonly double RtTol = 0.5;
-        private void FocusByRt() {
-            PlotViewModel?.HorizontalAxis?.Focus(FocusRt - RtTol, FocusRt + RtTol);
-        }
-
-        public DelegateCommand FocusByMzCommand => focusByMzCommand ?? (focusByMzCommand = new DelegateCommand(FocusByMz));
-        private DelegateCommand focusByMzCommand;
-
-        private static readonly double MzTol = 20;
-        private void FocusByMz() {
-            PlotViewModel?.VerticalAxis?.Focus(FocusMz - MzTol, FocusMz + MzTol);
         }
 
         public ReactiveCommand SearchCompoundCommand { get; }

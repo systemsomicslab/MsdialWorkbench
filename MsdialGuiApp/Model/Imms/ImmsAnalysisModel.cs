@@ -56,7 +56,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakWrapper.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
-            };
+            }.AddTo(Disposables);
             Target.Select(
                 t => t is null
                     ? string.Empty

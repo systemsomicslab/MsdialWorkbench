@@ -55,7 +55,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 VerticalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
-            };
+            }.AddTo(Disposables);
             RtEicLoader = new EicLoader(accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
             RtEicModel = new EicModel(Target, RtEicLoader)
             {
@@ -63,13 +63,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 VerticalTitle = "Abundance",
             };
 
-            DtMzPlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource)
+            DtMzPlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource, verticalAxis: RtMzPlotModel.VerticalAxis)
             {
                 HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
-            };
+            }.AddTo(Disposables);
             Target.Select(
                 t => t is null
                     ? string.Empty

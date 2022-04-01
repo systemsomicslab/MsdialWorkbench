@@ -4,14 +4,13 @@ using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
-using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
-using CompMs.MsdialCore.Parameter;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -57,11 +56,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             this.proteomicsTableService = proteomicsTableService;
 
             Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            Target.Where(x => !(x is null)).Subscribe(t => {
-                FocusID = t.MasterAlignmentID;
-                FocusRt = t.TimesCenter;
-                FocusMz = t.MassCenter;
-            }).AddTo(Disposables);
             Brushes = this.model.Brushes.AsReadOnly();
             SelectedBrush = this.model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
 
@@ -190,10 +184,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .ToReactiveCommand()
                 .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
+
+            FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
         }
 
         private readonly LcmsAlignmentModel model;
-        private readonly IWindowService<ViewModel.CompoundSearchVM> compoundSearchService;
+        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
         private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
 
@@ -377,52 +373,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
-        public int FocusID {
-            get => focusID;
-            set => SetProperty(ref focusID, value);
-        }
-        private int focusID;
-
-        public double FocusRt {
-            get => focusRt;
-            set => SetProperty(ref focusRt, value);
-        }
-        private double focusRt;
-
-        public double FocusMz {
-            get => focusMz;
-            set => SetProperty(ref focusMz, value);
-        }
-        private double focusMz;
-
-        public DelegateCommand FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand(FocusByID));
-        private DelegateCommand focusByIDCommand;
-
-        private void FocusByID() {
-            var focus = model.Ms1Spots.FirstOrDefault(peak => peak.innerModel.MasterAlignmentID == FocusID);
-            if (focus is null) {
-                return;
-            }
-            Ms1Spots.MoveCurrentTo(focus);
-            PlotViewModel?.HorizontalAxis?.Focus(focus.TimesCenter - RtTol, focus.TimesCenter + RtTol);
-            PlotViewModel?.VerticalAxis?.Focus(focus.MassCenter - MzTol, focus.MassCenter + MzTol);
-        }
-
-        public DelegateCommand FocusByRtCommand => focusByRtCommand ?? (focusByRtCommand = new DelegateCommand(FocusByRt));
-        private DelegateCommand focusByRtCommand;
-
-        private static readonly double RtTol = 0.5;
-        private void FocusByRt() {
-            PlotViewModel?.HorizontalAxis?.Focus(FocusRt - RtTol, FocusRt + RtTol);
-        }
-
-        public DelegateCommand FocusByMzCommand => focusByMzCommand ?? (focusByMzCommand = new DelegateCommand(FocusByMz));
-        private DelegateCommand focusByMzCommand;
-
-        private static readonly double MzTol = 20;
-        private void FocusByMz() {
-            PlotViewModel?.VerticalAxis?.Focus(FocusMz - MzTol, FocusMz + MzTol);
-        }
+        public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
 
         public DelegateCommand<Window> SaveSpectraCommand => saveSpectraCommand ?? (saveSpectraCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
         private DelegateCommand<Window> saveSpectraCommand;
