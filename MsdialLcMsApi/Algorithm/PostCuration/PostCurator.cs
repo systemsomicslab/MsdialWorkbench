@@ -1,3 +1,5 @@
+using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
@@ -14,20 +16,34 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
             IReadOnlyList<AnalysisFileBean> files, 
             ParameterBase param) {
 
+            var isBlankFilter = true; // to be included in ParameterBase
+            var filterBlankThreshold = 0.8; // to be included in ParameterBase
+            var isMzFilter = true; //to be included in ParameterBase
+            //...
+
             // process
             foreach (var spot in spots) {
-
                 var frag = false;
 
-                double avgBlank = 0;
-                List<AlignmentChromPeakFeature> blankProps = spot.AlignedPeakProperties.Where(x => param.FileID_ClassName[x.FileID] == "Blank").ToList();
-                //Console.Write(blankProps.Average(x => x.PeakHeightTop));
-                avgBlank = blankProps.Average(x => x.PeakHeightTop);
+                var blankProps = spot.AlignedPeakProperties.Where(x => param.FileID_AnalysisFileType[x.FileID] == AnalysisFileType.Blank).ToList();
+                var isBlankDataAvailable = blankProps.IsEmptyOrNull() ? false : true;
+                var avgBlank = isBlankDataAvailable ? blankProps.Average(x => x.PeakHeightTop) : 0.0;
 
-                double avgQC = 0;
-                List<AlignmentChromPeakFeature> qcProps = spot.AlignedPeakProperties.Where(x => param.FileID_ClassName[x.FileID] == "QC").ToList();
-                //Console.Write(qcProps.Average(x => x.PeakHeightTop));
-                avgQC = qcProps.Average(x => x.PeakHeightTop);
+                var qcProps = spot.AlignedPeakProperties.Where(x => param.FileID_AnalysisFileType[x.FileID] == AnalysisFileType.QC).ToList();
+                var isQcDataAvailable = qcProps.IsEmptyOrNull() ? false : true;
+                var avgQC = isQcDataAvailable ? qcProps.Average(x => x.PeakHeightTop) : 0.0;
+
+                var sampleProps = spot.AlignedPeakProperties.Where(x => param.FileID_AnalysisFileType[x.FileID] == AnalysisFileType.Sample).ToList();
+                var isSampleDataAvailable = sampleProps.IsEmptyOrNull() ? false : true;
+                var avgSample = isSampleDataAvailable ? sampleProps.Average(x => x.PeakHeightTop) : 0.0;
+
+                if (isBlankFilter && isBlankDataAvailable && (isQcDataAvailable || isSampleDataAvailable)) {
+                    var ratioBlank = avgBlank / Math.Max(avgQC, avgSample);
+                    if (ratioBlank >= filterBlankThreshold) {
+                        spot.IsBlankFilteredByPostCurator = true;
+                    }
+                }
+
 
                 // filtering process
                 #region
@@ -50,11 +66,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
                 // }
                 #endregion
 
-                double filterBlankThreshold = 0.8;
-                double ratioBlank = avgBlank / avgQC;
-                if (ratioBlank >= filterBlankThreshold) {
-                    spot.IsFilteredByPostCurator = true;
-                }
+
+                
 
                 // if (frag == true) {
                 //     spot.IsFilteredByPostCurator = true;

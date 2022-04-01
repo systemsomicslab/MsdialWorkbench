@@ -27,7 +27,7 @@
                 </Style.Triggers>
             </Style>
             <Style TargetType="TextBox" BasedOn="{StaticResource ToolTipErrorStyle}"/>
-
+            
             <Style x:Key="GeneralToolTipErrorStyle" TargetType="{x:Type ContentControl}">
                 <Setter Property="Validation.ErrorTemplate" Value="{StaticResource InputErrorTemplate}"/>
                 <Style.Triggers>
@@ -38,7 +38,7 @@
                 </Style.Triggers>
             </Style>
             <Style TargetType="ContentControl" BasedOn="{StaticResource GeneralToolTipErrorStyle}"/>
-
+           
             <SolidColorBrush x:Key="MainThemeColor" Color="LightBlue" PresentationOptions:Freeze="True"/>
             <SolidColorBrush x:Key="SubThemeColor" Color="DarkGreen" PresentationOptions:Freeze="True"/>
             <SolidColorBrush x:Key="AccentColor" Color="DeepPink" PresentationOptions:Freeze="True"/>
