@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Search.FocusNavigatorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Search"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type={x:Type vm:FocusNavigatorViewModel}}"
+             d:Background="White"
+             d:DesignHeight="30" d:DesignWidth="1280">
+    <StackPanel Orientation="Horizontal"
+                HorizontalAlignment="Right">
+        <ItemsControl ItemsSource="{Binding SpotFocuses}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type vm:SpotFocusViewModel}">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="{Binding Label, Mode=OneTime}"
+                               Margin="4,0"/>
+                        <TextBox Text="{Binding Value.Value}"
+                                 VerticalAlignment="Center" HorizontalAlignment="Right"
+                                 ToolTip="Enter key is available for going to the target spot"
+                                 Margin="4,0">
+                            <TextBox.InputBindings>
+                                <KeyBinding Gesture="Enter" Command="{Binding FocusCommand, Mode=OneTime}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
+                        <Button Content=">"
+                                Command="{Binding FocusCommand, Mode=OneTime}"
+                                VerticalAlignment="Center" HorizontalAlignment="Right"
+                                ToolTip="go to the region"
+                                Width="16"
+                                Margin="4,0"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <TextBox x:Name="informationBox" 
+                 Text="Information box: Ctr+D, metabolite name to 'Unknown'" 
+                 BorderThickness="0"
+                 IsReadOnly="True" 
+                 Foreground="ForestGreen" 
+                 VerticalAlignment="Center" 
+                 HorizontalAlignment="Right"
+                 Margin="16,0"/>
+    </StackPanel>
+</UserControl>
