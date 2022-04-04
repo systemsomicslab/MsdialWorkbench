@@ -37,7 +37,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseStorage databases,
             DataBaseMapper mapper,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            ParameterBase parameter)
+            ParameterBase parameter,
+            PeakFilterModel peakFilterModel)
             : base(analysisFile) {
             if (analysisFile is null) {
                 throw new ArgumentNullException(nameof(analysisFile));
@@ -64,6 +65,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             MatchResultEvaluator = evaluator;
             Parameter = parameter;
             CompoundSearchers = ConvertToCompoundSearchers(databases);
+            PeakFilterModel = peakFilterModel ?? throw new ArgumentNullException(nameof(peakFilterModel));
 
             // Peak scatter plot
             var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -225,6 +227,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 (rtSpotFocus, peak => peak.ChromXValue ?? 0d),
                 (mzSpotFocus, peak => peak.Mass)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus);
+
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel);
         }
 
         private static readonly double RtTol = 0.5;
@@ -236,6 +240,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
 
+        public PeakFilterModel PeakFilterModel { get; }
         public EicLoader EicLoader { get; }
 
         public AnalysisPeakPlotModel PlotModel { get; }
@@ -255,6 +260,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
 
         public FocusNavigatorModel FocusNavigatorModel { get; }
+
+        public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
         public double ChromMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.ChromXValue) ?? 0d;
         public double ChromMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.ChromXValue) ?? 0d;

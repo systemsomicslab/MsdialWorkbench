@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Normalize;
@@ -26,9 +27,9 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    class AlignmentLcmsVM : AlignmentFileViewModel
+    class LcmsAlignmentViewModel : AlignmentFileViewModel
     {
-        public AlignmentLcmsVM(
+        public LcmsAlignmentViewModel(
             LcmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
@@ -86,9 +87,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             CommentFilterKeywords = CommentFilterKeyword.Select(w => w.Split())
                 .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            var DisplayFilters = this.ObserveProperty(m => m.DisplayFilters)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
+            var peakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
+            PeakFilterViewModel = peakSpotNavigatorViewModel.PeakFilterViewModel;
 
             new[]
             {
@@ -99,7 +99,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 ProteinFilterKeywords.ToUnit(),
                 MetaboliteFilterKeywords.ToUnit(),
                 CommentFilterKeywords.ToUnit(),
-                DisplayFilters.ToUnit(),
+                PeakFilterViewModel.PropertyChangedAsObservable().ToUnit(),
+                PeakFilterViewModel.CheckedFilter.ToUnit(),
             }.Merge()
             .Throttle(TimeSpan.FromMilliseconds(500))
             .ObserveOnDispatcher()
@@ -193,6 +194,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
         private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
 
+        public PeakFilterViewModel PeakFilterViewModel { get; }
+
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
         public ReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>> SelectedBrush { get; }
 
@@ -237,69 +240,43 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ReadOnlyReactivePropertySlim<string[]> CommentFilterKeywords { get; }
 
         public bool RefMatchedChecked {
-            get => ReadDisplayFilters(DisplayFilter.RefMatched);
-            set => SetDisplayFilters(DisplayFilter.RefMatched, value);
+            get => PeakFilterViewModel.RefMatched;
+            set => PeakFilterViewModel.RefMatched = value;
         }
 
         public bool SuggestedChecked {
-            get => ReadDisplayFilters(DisplayFilter.Suggested);
-            set => SetDisplayFilters(DisplayFilter.Suggested, value);
+            get => PeakFilterViewModel.Suggested;
+            set => PeakFilterViewModel.Suggested = value;
         }
 
         public bool UnknownChecked {
-            get => ReadDisplayFilters(DisplayFilter.Unknown);
-            set => SetDisplayFilters(DisplayFilter.Unknown, value);
+            get => PeakFilterViewModel.Unknown;
+            set => PeakFilterViewModel.Unknown = value;
         }
 
         public bool Ms2AcquiredChecked {
-            get => ReadDisplayFilters(DisplayFilter.Ms2Acquired);
-            set => SetDisplayFilters(DisplayFilter.Ms2Acquired, value);
+            get => PeakFilterViewModel.Ms2Acquired;
+            set => PeakFilterViewModel.Ms2Acquired = value;
         }
 
         public bool MolecularIonChecked {
-            get => ReadDisplayFilters(DisplayFilter.MolecularIon);
-            set => SetDisplayFilters(DisplayFilter.MolecularIon, value);
+            get => PeakFilterViewModel.MolecularIon;
+            set => PeakFilterViewModel.MolecularIon = value;
         }
 
         public bool UniquesIonsChecked {
-            get => ReadDisplayFilters(DisplayFilter.UniqueIons);
-            set => SetDisplayFilters(DisplayFilter.UniqueIons, value);
+            get => PeakFilterViewModel.UniqueIons;
+            set => PeakFilterViewModel.UniqueIons = value;
         }
 
         public bool BlankFilterChecked {
-            get => ReadDisplayFilters(DisplayFilter.Blank);
-            set => SetDisplayFilters(DisplayFilter.Blank, value);
+            get => PeakFilterViewModel.Blank;
+            set => PeakFilterViewModel.Blank = value;
         }
 
         public bool ManuallyModifiedChecked {
-            get => ReadDisplayFilters(DisplayFilter.ManuallyModified);
-            set => SetDisplayFilters(DisplayFilter.ManuallyModified, value);
-        }
-
-        public DisplayFilter DisplayFilters {
-            get => displayFilters;
-            internal set {
-                if (SetProperty(ref displayFilters, value))
-                    Ms1Spots?.Refresh();
-            }
-        }
-        private DisplayFilter displayFilters = DisplayFilter.Unset;
-
-        private bool ReadDisplayFilters(DisplayFilter flags) {
-            return (flags & DisplayFilters) != 0;
-        }
-
-        private void WriteDisplayFilters(DisplayFilter flags, bool value) {
-            displayFilters.Write(flags, value);
-        }
-
-        private bool SetDisplayFilters(DisplayFilter flags, bool value) {
-            if (ReadDisplayFilters(flags) != value) {
-                WriteDisplayFilters(flags, value);
-                OnPropertyChanged(nameof(DisplayFilters));
-                return true;
-            }
-            return false;
+            get => PeakFilterViewModel.ManuallyModified;
+            set => PeakFilterViewModel.ManuallyModified = value;
         }
 
         bool PeakFilter(object obj) {
@@ -320,7 +297,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         bool AnnotationFilter(AlignmentSpotPropertyModel spot) {
-            if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
+            if (!PeakFilterViewModel.CheckedFilter.Value.Any(DisplayFilter.Annotates)) return true;
             return RefMatchedChecked && spot.IsRefMatched(model.MatchResultEvaluator)
                 || SuggestedChecked && spot.IsSuggested(model.MatchResultEvaluator)
                 || UnknownChecked && spot.IsUnknown;

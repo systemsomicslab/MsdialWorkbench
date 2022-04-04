@@ -2,7 +2,6 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -27,6 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Media;
+using CompMs.App.Msdial.Model.Loader;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
@@ -40,6 +40,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentFileBean alignmentFileBean,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databases,
+            PeakFilterModel peakFilterModel,
             DataBaseMapper mapper,
             MsdialLcmsParameter parameter,
             IObservable<ParameterBase> parameterAsObservable,
@@ -57,6 +58,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentFile = alignmentFileBean;
             Parameter = parameter;
             ParameterAsObservable = parameterAsObservable ?? throw new ArgumentNullException(nameof(parameterAsObservable));
+            PeakFilterModel = peakFilterModel ?? throw new ArgumentNullException(nameof(peakFilterModel));
             DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             CompoundSearchers = ConvertToCompoundSearchers(databases);
@@ -73,6 +75,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
             RtMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.TimesCenter) ?? 0d;
             RtMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.TimesCenter) ?? 0d;
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel);
 
             // Peak scatter plot
             var labelSource = this.ObserveProperty(m => m.DisplayLabel);
@@ -212,6 +215,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private readonly List<CompoundSearcher> CompoundSearchers;
 
+        public PeakFilterModel PeakFilterModel { get; }
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
@@ -221,6 +225,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         public double MassMax { get; }
         public double RtMin { get; }
         public double RtMax { get; }
+
+        public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
         public Chart.AlignmentPeakPlotModel PlotModel { get; }
         public MsSpectrumModel Ms2SpectrumModel { get; }

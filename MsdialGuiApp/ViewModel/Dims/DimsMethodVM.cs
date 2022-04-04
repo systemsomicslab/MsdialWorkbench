@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Dims;
 using CompMs.App.Msdial.Model.Dims;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;

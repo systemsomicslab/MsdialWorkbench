@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Lcimms;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Lcimms;
 using CompMs.App.Msdial.ViewModel.DataObj;

@@ -157,6 +157,7 @@
     <Compile Include="External Applications\MsDialToExternalApps.cs" />
     <Compile Include="Model\Search\FocusNavigatorModel.cs" />
     <Compile Include="Model\Search\ISpotFocus.cs" />
+    <Compile Include="Model\Search\PeakSpotNavigatorModel.cs" />
     <Compile Include="Model\Search\SpotFocus.cs" />
     <Compile Include="Model\DataObj\AlignmentChromPeakFeatureModel.cs" />
     <Compile Include="Model\DataObj\BarItemCollection.cs" />
@@ -318,7 +319,10 @@
     <Compile Include="ViewModel\Lcimms\MsdialLcimmsParameterViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsCompoundSearchViewModel.cs" />
     <Compile Include="ViewModel\MsResult\SummarizedSpectrumViewModel.cs" />
+    <Compile Include="Model\Search\PeakFilterModel.cs" />
+    <Compile Include="ViewModel\Search\PeakFilterViewModel.cs" />
     <Compile Include="ViewModel\Search\FocusNavigatorViewModel.cs" />
+    <Compile Include="ViewModel\Search\PeakSpotNavigatorViewModel.cs" />
     <Compile Include="ViewModel\Search\SpotFocusViewModel.cs" />
     <Compile Include="ViewModel\Service\SaveFileNameRequest.cs" />
     <Compile Include="ViewModel\PeakCuration\AlignedChromatogramModificationViewModelLegacy.cs" />
@@ -553,6 +557,9 @@
     <Compile Include="View\Search\FocusNavigatorView.xaml.cs">
       <DependentUpon>FocusNavigatorView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Search\PeakSpotNavigatorView.xaml.cs">
+      <DependentUpon>PeakSpotNavigatorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Setting\AdductIonSettingView.xaml.cs">
       <DependentUpon>AdductIonSettingView.xaml</DependentUpon>
     </Compile>
@@ -575,7 +582,7 @@
     <Compile Include="ViewModel\Dims\AnalysisDimsVM.cs" />
     <Compile Include="ViewModel\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Dims\DimsMethodVM.cs" />
-    <Compile Include="ViewModel\DisplayFilter.cs" />
+    <Compile Include="Model\Search\DisplayFilter.cs" />
     <Compile Include="ViewModel\AdductIonVM.cs" />
     <Compile Include="ViewModel\Imms\AlignmentImmsVM.cs" />
     <Compile Include="ViewModel\Imms\AnalysisImmsVM.cs" />
@@ -583,7 +590,7 @@
     <Compile Include="ViewModel\MsdialProjectParameterFactory.cs" />
     <Compile Include="ViewModel\MzSearchQueryVM.cs" />
     <Compile Include="ViewModel\MsRefSearchParameterBaseVM.cs" />
-    <Compile Include="ViewModel\Lcms\AlignmentLcmsVM.cs" />
+    <Compile Include="ViewModel\Lcms\LcmsAlignmentViewModel.cs" />
     <Compile Include="ViewModel\AnalysisFileVM.cs" />
     <Compile Include="ViewModel\Lcms\AnalysisLcmsVM.cs" />
     <Compile Include="Model\DataObj\BarItem.cs" />
@@ -1029,6 +1036,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="View\Search\FocusNavigatorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Search\PeakSpotNavigatorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

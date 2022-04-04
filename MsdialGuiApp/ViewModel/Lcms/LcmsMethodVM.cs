@@ -5,6 +5,8 @@ using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
+using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialLcMsApi.DataObj;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
@@ -14,6 +16,7 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Reactive.Linq;
 using System.Windows;
+using CompMs.App.Msdial.ViewModel.Search;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
@@ -46,13 +49,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             AnalysisViewModel = model.ObserveProperty(m => m.AnalysisModel)
                 .Where(m => m != null)
-                .Select(m => new AnalysisLcmsVM(m, compoundSearchService, peakSpotTableService, proteomicsTableService) { DisplayFilters = displayFilters, })
+                .Select(m => new AnalysisLcmsVM(m, compoundSearchService, peakSpotTableService, proteomicsTableService))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             AlignmentViewModel = model.ObserveProperty(m => m.AlignmentModel)
                 .Where(m => m != null)
-                .Select(m => new AlignmentLcmsVM(m, compoundSearchService, peakSpotTableService, proteomicsTableService) { DisplayFilters = displayFilters, })
+                .Select(m => new LcmsAlignmentViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -65,9 +68,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .Switch()
                 .Subscribe(vm => MessageBroker.Default.Publish(vm))
                 .AddTo(Disposables);
+            PeakFilterViewModel = new PeakFilterViewModel(this.model.PeakFilterModel).AddTo(Disposables);
         }
 
         private readonly LcmsMethodModel model;
+        private readonly IWindowService<ViewModel.CompoundSearchVM> compoundSearchService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 
         public AnalysisLcmsVM AnalysisVM => AnalysisViewModel.Value;
         // {
@@ -78,14 +84,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public ReadOnlyReactivePropertySlim<AnalysisLcmsVM> AnalysisViewModel { get; }
 
-        public AlignmentLcmsVM AlignmentVM => AlignmentViewModel.Value;
+        public LcmsAlignmentViewModel AlignmentVM => AlignmentViewModel.Value;
         // {
         //     get => alignmentVM;
         //     set => SetProperty(ref alignmentVM, value);
         // }
         // private AlignmentLcmsVM alignmentVM;
 
-        public ReadOnlyReactivePropertySlim<AlignmentLcmsVM> AlignmentViewModel { get; }
+        public ReadOnlyReactivePropertySlim<LcmsAlignmentViewModel> AlignmentViewModel { get; }
 
         public IMsdialDataStorage<MsdialLcmsParameter> Storage {
             get => storage;
@@ -93,61 +99,40 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
         private IMsdialDataStorage<MsdialLcmsParameter> storage;
 
+        public PeakFilterViewModel PeakFilterViewModel { get; }
+
         public bool RefMatchedChecked {
-            get => ReadDisplayFilters(DisplayFilter.RefMatched);
-            set => SetDisplayFilters(DisplayFilter.RefMatched, value);
+            get => PeakFilterViewModel.RefMatched;
+            set => PeakFilterViewModel.RefMatched = value;
         }
         public bool SuggestedChecked {
-            get => ReadDisplayFilters(DisplayFilter.Suggested);
-            set => SetDisplayFilters(DisplayFilter.Suggested, value);
+            get => PeakFilterViewModel.Suggested;
+            set => PeakFilterViewModel.Suggested = value;
         }
         public bool UnknownChecked {
-            get => ReadDisplayFilters(DisplayFilter.Unknown);
-            set => SetDisplayFilters(DisplayFilter.Unknown, value);
+            get => PeakFilterViewModel.Unknown;
+            set => PeakFilterViewModel.Unknown = value;
         }
 
         public bool Ms2AcquiredChecked {
-            get => ReadDisplayFilters(DisplayFilter.Ms2Acquired);
-            set => SetDisplayFilters(DisplayFilter.Ms2Acquired, value);
+            get => PeakFilterViewModel.Ms2Acquired;
+            set => PeakFilterViewModel.Ms2Acquired = value;
         }
         public bool MolecularIonChecked {
-            get => ReadDisplayFilters(DisplayFilter.MolecularIon);
-            set => SetDisplayFilters(DisplayFilter.MolecularIon, value);
+            get => PeakFilterViewModel.MolecularIon;
+            set => PeakFilterViewModel.MolecularIon = value;
         }
         public bool BlankFilterChecked {
-            get => ReadDisplayFilters(DisplayFilter.Blank);
-            set => SetDisplayFilters(DisplayFilter.Blank, value);
+            get => PeakFilterViewModel.Blank;
+            set => PeakFilterViewModel.Blank = value;
         }
         public bool UniqueIonsChecked {
-            get => ReadDisplayFilters(DisplayFilter.UniqueIons);
-            set => SetDisplayFilters(DisplayFilter.UniqueIons, value);
+            get => PeakFilterViewModel.UniqueIons;
+            set => PeakFilterViewModel.UniqueIons = value;
         }
         public bool ManuallyModifiedChecked {
-            get => ReadDisplayFilters(DisplayFilter.ManuallyModified);
-            set => SetDisplayFilters(DisplayFilter.ManuallyModified, value);
-        }
-
-        public DisplayFilter DisplayFilters {
-            get => displayFilters;
-            set => SetProperty(ref displayFilters, value);
-        }
-        private DisplayFilter displayFilters = DisplayFilter.Unset;
-
-        private bool ReadDisplayFilters(DisplayFilter flags) {
-            return displayFilters.Read(flags);
-        }
-
-        private void WriteDisplayFilters(DisplayFilter flags, bool value) {
-            displayFilters.Write(flags, value);
-        }
-
-        private bool SetDisplayFilters(DisplayFilter flags, bool value) {
-            if (ReadDisplayFilters(flags) != value) {
-                WriteDisplayFilters(flags, value);
-                OnPropertyChanged(nameof(DisplayFilters));
-                return true;
-            }
-            return false;
+            get => PeakFilterViewModel.ManuallyModified;
+            set => PeakFilterViewModel.ManuallyModified = value;
         }
 
         public override int InitializeNewProject(Window window) {

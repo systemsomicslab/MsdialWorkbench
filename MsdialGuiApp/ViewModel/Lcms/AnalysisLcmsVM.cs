@@ -71,23 +71,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            new[]
-            {
-                MassLower.ToUnit(),
-                MassUpper.ToUnit(),
-                RtLower.ToUnit(),
-                RtUpper.ToUnit(),
-                CommentFilterKeyword.ToUnit(),
-                MetaboliteFilterKeyword.ToUnit(),
-                ProteinFilterKeyword.ToUnit(),
-                DisplayFilters.ToUnit(),
-                AmplitudeLowerValue.ToUnit(),
-                AmplitudeUpperValue.ToUnit(),
-            }.Merge()
-            .Throttle(TimeSpan.FromMilliseconds(500))
-            .ObserveOnDispatcher()
-            .Subscribe(_ => Ms1PeaksView?.Refresh())
-            .AddTo(Disposables);
 
             PlotViewModel = new AnalysisPeakPlotViewModel(this.model.PlotModel, brushSource: Observable.Return(this.model.Brush)).AddTo(Disposables);
             EicViewModel = new EicViewModel(
@@ -162,7 +145,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
 
-            Ms1PeaksView.Filter += PeakFilter;
 
             ExperimentSpectrumViewModel = model.ExperimentSpectrumModel
                 .Where(model_ => model_ != null)
@@ -171,12 +153,36 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .AddTo(Disposables);
 
             FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
+
+            PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
+            PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
+            Ms1PeaksView.Filter += PeakFilter;
+            new[]
+            {
+                MassLower.ToUnit(),
+                MassUpper.ToUnit(),
+                RtLower.ToUnit(),
+                RtUpper.ToUnit(),
+                CommentFilterKeyword.ToUnit(),
+                MetaboliteFilterKeyword.ToUnit(),
+                ProteinFilterKeyword.ToUnit(),
+                DisplayFilters.ToUnit(),
+                AmplitudeLowerValue.ToUnit(),
+                AmplitudeUpperValue.ToUnit(),
+                PeakFilterViewModel.CheckedFilter.ToUnit(),
+            }.Merge()
+            .Throttle(TimeSpan.FromMilliseconds(500))
+            .ObserveOnDispatcher()
+            .Subscribe(_ => Ms1PeaksView?.Refresh())
+            .AddTo(Disposables);
         }
 
         private readonly LcmsAnalysisModel model;
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
         private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
+
+        public PeakFilterViewModel PeakFilterViewModel { get; }
 
         public AnalysisPeakPlotViewModel PlotViewModel { get; }
         public EicViewModel EicViewModel { get; }
@@ -188,6 +194,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public List<ChromatogramPeakFeature> Peaks { get; }
 
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
+
+        public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
 
         /*
         public string RawSplashKey {
@@ -202,48 +210,48 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         */
 
         public bool RefMatchedChecked {
-            get => ReadDisplayFilters(DisplayFilter.RefMatched);
-            set => SetDisplayFilters(DisplayFilter.RefMatched, value);
+            get => PeakFilterViewModel.RefMatched;
+            set => PeakFilterViewModel.RefMatched = value;
         }
 
         public bool SuggestedChecked {
-            get => ReadDisplayFilters(DisplayFilter.Suggested);
-            set => SetDisplayFilters(DisplayFilter.Suggested, value);
+            get => PeakFilterViewModel.Suggested;
+            set => PeakFilterViewModel.Suggested = value;
         }
 
         public bool UnknownChecked {
-            get => ReadDisplayFilters(DisplayFilter.Unknown);
-            set => SetDisplayFilters(DisplayFilter.Unknown, value);
+            get => PeakFilterViewModel.Unknown;
+            set => PeakFilterViewModel.Unknown = value;
         }
 
         public bool CcsChecked {
-            get => ReadDisplayFilters(DisplayFilter.CcsMatched);
-            set => SetDisplayFilters(DisplayFilter.CcsMatched, value);
+            get => PeakFilterViewModel.CcsMatched;
+            set => PeakFilterViewModel.CcsMatched = value;
         }
 
         public bool Ms2AcquiredChecked {
-            get => ReadDisplayFilters(DisplayFilter.Ms2Acquired);
-            set => SetDisplayFilters(DisplayFilter.Ms2Acquired, value);
+            get => PeakFilterViewModel.Ms2Acquired;
+            set => PeakFilterViewModel.Ms2Acquired = value;
         }
 
         public bool MolecularIonChecked {
-            get => ReadDisplayFilters(DisplayFilter.MolecularIon);
-            set => SetDisplayFilters(DisplayFilter.MolecularIon, value);
+            get => PeakFilterViewModel.MolecularIon;
+            set => PeakFilterViewModel.MolecularIon = value;
         }
 
         public bool BlankFilterChecked {
-            get => ReadDisplayFilters(DisplayFilter.Blank);
-            set => SetDisplayFilters(DisplayFilter.Blank, value);
+            get => PeakFilterViewModel.Blank;
+            set => PeakFilterViewModel.Blank = value;
         }
 
         public bool UniqueIonsChecked {
-            get => ReadDisplayFilters(DisplayFilter.UniqueIons);
-            set => SetDisplayFilters(DisplayFilter.UniqueIons, value);
+            get => PeakFilterViewModel.UniqueIons;
+            set => PeakFilterViewModel.UniqueIons = value;
         }
 
         public bool ManuallyModifiedChecked {
-            get => ReadDisplayFilters(DisplayFilter.ManuallyModified);
-            set => SetDisplayFilters(DisplayFilter.ManuallyModified, value);
+            get => PeakFilterViewModel.ManuallyModified;
+            set => PeakFilterViewModel.ManuallyModified = value;
         }
 
         public double RtMin { get; }
@@ -273,7 +281,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         bool AnnotationFilter(ChromatogramPeakFeatureModel peak) {
-            if (!(RefMatchedChecked || SuggestedChecked || UnknownChecked || CcsChecked)) return true;
+            if (!(PeakFilterViewModel.RefMatched || PeakFilterViewModel.Suggested || PeakFilterViewModel.Unknown || PeakFilterViewModel.CcsMatched)) return true;
             return RefMatchedChecked && peak.IsRefMatched(model.MatchResultEvaluator)
                 || SuggestedChecked && peak.IsSuggested(model.MatchResultEvaluator)
                 || UnknownChecked && peak.IsUnknown
