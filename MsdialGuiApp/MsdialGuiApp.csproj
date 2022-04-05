@@ -156,6 +156,7 @@
     <Compile Include="External Applications\MsDialIniParcer.cs" />
     <Compile Include="External Applications\MsDialToExternalApps.cs" />
     <Compile Include="Model\Search\FocusNavigatorModel.cs" />
+    <Compile Include="Model\Search\IFilterable.cs" />
     <Compile Include="Model\Search\ISpotFocus.cs" />
     <Compile Include="Model\Search\PeakSpotNavigatorModel.cs" />
     <Compile Include="Model\Search\SpotFocus.cs" />

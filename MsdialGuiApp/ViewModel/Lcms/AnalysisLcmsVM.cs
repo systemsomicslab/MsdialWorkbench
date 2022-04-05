@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Lcms;
+﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -49,28 +48,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             this.peakSpotTableService = peakSpotTableService;
             this.proteomicsTableService = proteomicsTableService;
 
-            MassMin = this.model.MassMin;
-            MassMax = this.model.MassMax;
-            MassLower = new ReactiveProperty<double>(MassMin).AddTo(Disposables);
-            MassUpper = new ReactiveProperty<double>(MassMax).AddTo(Disposables);
-            MassLower.SetValidateNotifyError(v => v < MassMin ? "Too small" : null)
-                .SetValidateNotifyError(v => v > MassUpper.Value ? "Too large" : null);
-            MassUpper.SetValidateNotifyError(v => v < MassLower.Value ? "Too small" : null)
-                .SetValidateNotifyError(v => v > MassMax ? "Too large" : null);
-
-            RtMin = this.model.ChromMin;
-            RtMax = this.model.ChromMax;
-            RtLower = new ReactiveProperty<double>(RtMin).AddTo(Disposables);
-            RtUpper = new ReactiveProperty<double>(RtMax).AddTo(Disposables);
-            RtLower.SetValidateNotifyError(v => v < RtMin ? "Too small" : null)
-                .SetValidateNotifyError(v => v > RtUpper.Value ? "Too large" : null);
-            RtUpper.SetValidateNotifyError(v => v < RtLower.Value ? "Too small" : null)
-                .SetValidateNotifyError(v => v > RtMax ? "Too large" : null);
+            PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
+            PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
 
             var DisplayFilters = this.ObserveProperty(m => m.DisplayFilters)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-
 
             PlotViewModel = new AnalysisPeakPlotViewModel(this.model.PlotModel, brushSource: Observable.Return(this.model.Brush)).AddTo(Disposables);
             EicViewModel = new EicViewModel(
@@ -120,31 +103,30 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             PeakTableViewModel = new LcmsAnalysisPeakTableViewModel(
                 this.model.PeakTableModel,
                 Observable.Return(this.model.EicLoader),
-                MassLower,
-                MassUpper,
-                RtLower,
-                RtUpper,
-                MetaboliteFilterKeyword,
-                CommentFilterKeyword)
+                PeakSpotNavigatorViewModel.MzLowerValue,
+                PeakSpotNavigatorViewModel.MzUpperValue,
+                PeakSpotNavigatorViewModel.RtLowerValue,
+                PeakSpotNavigatorViewModel.RtUpperValue,
+                PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
+                PeakSpotNavigatorViewModel.CommentFilterKeyword)
             .AddTo(Disposables);
 
             ProteomicsPeakTableViewModel = new LcmsProteomicsPeakTableViewModel(
                 this.model.PeakTableModel,
                 Observable.Return(this.model.EicLoader),
-                MassLower,
-                MassUpper,
-                RtLower,
-                RtUpper,
-                ProteinFilterKeyword,
-                MetaboliteFilterKeyword,
-                CommentFilterKeyword)
+                PeakSpotNavigatorViewModel.MzLowerValue,
+                PeakSpotNavigatorViewModel.MzUpperValue,
+                PeakSpotNavigatorViewModel.RtLowerValue,
+                PeakSpotNavigatorViewModel.RtUpperValue,
+                PeakSpotNavigatorViewModel.ProteinFilterKeyword,
+                PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
+                PeakSpotNavigatorViewModel.CommentFilterKeyword)
             .AddTo(Disposables);
 
             SearchCompoundCommand = this.model.CanSearchCompound
                 .ToReactiveCommand()
                 .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
-
 
             ExperimentSpectrumViewModel = model.ExperimentSpectrumModel
                 .Where(model_ => model_ != null)
@@ -153,28 +135,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .AddTo(Disposables);
 
             FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
-
-            PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
-            PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
-            Ms1PeaksView.Filter += PeakFilter;
-            new[]
-            {
-                MassLower.ToUnit(),
-                MassUpper.ToUnit(),
-                RtLower.ToUnit(),
-                RtUpper.ToUnit(),
-                CommentFilterKeyword.ToUnit(),
-                MetaboliteFilterKeyword.ToUnit(),
-                ProteinFilterKeyword.ToUnit(),
-                DisplayFilters.ToUnit(),
-                AmplitudeLowerValue.ToUnit(),
-                AmplitudeUpperValue.ToUnit(),
-                PeakFilterViewModel.CheckedFilter.ToUnit(),
-            }.Merge()
-            .Throttle(TimeSpan.FromMilliseconds(500))
-            .ObserveOnDispatcher()
-            .Subscribe(_ => Ms1PeaksView?.Refresh())
-            .AddTo(Disposables);
         }
 
         private readonly LcmsAnalysisModel model;
@@ -196,105 +156,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
-
-        /*
-        public string RawSplashKey {
-            get => rawSplashKey;
-            set => SetProperty(ref rawSplashKey, value);
-        }
-
-        public string DeconvolutionSplashKey {
-            get => deconvolutionSplashKey;
-            set => SetProperty(ref deconvolutionSplashKey, value);
-        }
-        */
-
-        public bool RefMatchedChecked {
-            get => PeakFilterViewModel.RefMatched;
-            set => PeakFilterViewModel.RefMatched = value;
-        }
-
-        public bool SuggestedChecked {
-            get => PeakFilterViewModel.Suggested;
-            set => PeakFilterViewModel.Suggested = value;
-        }
-
-        public bool UnknownChecked {
-            get => PeakFilterViewModel.Unknown;
-            set => PeakFilterViewModel.Unknown = value;
-        }
-
-        public bool CcsChecked {
-            get => PeakFilterViewModel.CcsMatched;
-            set => PeakFilterViewModel.CcsMatched = value;
-        }
-
-        public bool Ms2AcquiredChecked {
-            get => PeakFilterViewModel.Ms2Acquired;
-            set => PeakFilterViewModel.Ms2Acquired = value;
-        }
-
-        public bool MolecularIonChecked {
-            get => PeakFilterViewModel.MolecularIon;
-            set => PeakFilterViewModel.MolecularIon = value;
-        }
-
-        public bool BlankFilterChecked {
-            get => PeakFilterViewModel.Blank;
-            set => PeakFilterViewModel.Blank = value;
-        }
-
-        public bool UniqueIonsChecked {
-            get => PeakFilterViewModel.UniqueIons;
-            set => PeakFilterViewModel.UniqueIons = value;
-        }
-
-        public bool ManuallyModifiedChecked {
-            get => PeakFilterViewModel.ManuallyModified;
-            set => PeakFilterViewModel.ManuallyModified = value;
-        }
-
-        public double RtMin { get; }
-        public double RtMax { get; }
-        public ReactiveProperty<double> RtLower { get; }
-        public ReactiveProperty<double> RtUpper { get; }
-        public double MassMin { get; }
-        public double MassMax { get; }
-        public ReactiveProperty<double> MassLower { get; }
-        public ReactiveProperty<double> MassUpper { get; }
-
-        protected bool PeakFilter(object obj) {
-            if (obj is ChromatogramPeakFeatureModel peak) {
-                return AnnotationFilter(peak)
-                    && MzFilter(peak)
-                    && RtFilter(peak)
-                    && AmplitudeFilter(peak)
-                    && (!Ms2AcquiredChecked || peak.IsMsmsContained)
-                    && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0)
-                    && (!UniqueIonsChecked || peak.IsFragmentQueryExisted)
-                    && (!ManuallyModifiedChecked || peak.InnerModel.IsManuallyModifiedForAnnotation)
-                    && ProteinFilter(peak, ProteinFilterKeywords.Value)
-                    && MetaboliteFilter(peak, MetaboliteFilterKeywords.Value)
-                    && CommentFilter(peak, CommentFilterKeywords.Value);
-            }
-            return false;
-        }
-
-        bool AnnotationFilter(ChromatogramPeakFeatureModel peak) {
-            if (!(PeakFilterViewModel.RefMatched || PeakFilterViewModel.Suggested || PeakFilterViewModel.Unknown || PeakFilterViewModel.CcsMatched)) return true;
-            return RefMatchedChecked && peak.IsRefMatched(model.MatchResultEvaluator)
-                || SuggestedChecked && peak.IsSuggested(model.MatchResultEvaluator)
-                || UnknownChecked && peak.IsUnknown
-                || CcsChecked && peak.IsCcsMatch;
-        }
-
-        bool MzFilter(ChromatogramPeakFeatureModel peak) {
-            return MassLower.Value <= peak.Mass && peak.Mass <= MassUpper.Value;
-        }
-
-        bool RtFilter(ChromatogramPeakFeatureModel peak) {
-            return RtLower.Value <= peak.ChromXValue && peak.ChromXValue <= RtUpper.Value;
-        }
 
         public ReactiveCommand SearchCompoundCommand { get; }
 

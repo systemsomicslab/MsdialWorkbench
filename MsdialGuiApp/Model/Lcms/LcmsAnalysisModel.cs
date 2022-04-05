@@ -62,13 +62,13 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             this.provider = provider;
             DataBaseMapper = mapper;
-            MatchResultEvaluator = evaluator;
             Parameter = parameter;
             CompoundSearchers = ConvertToCompoundSearchers(databases);
-            PeakFilterModel = peakFilterModel ?? throw new ArgumentNullException(nameof(peakFilterModel));
+
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator);
 
             // Peak scatter plot
-            var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelSource)
             {
                 HorizontalTitle = "Retention time [min]",
@@ -227,20 +227,16 @@ namespace CompMs.App.Msdial.Model.Lcms
                 (rtSpotFocus, peak => peak.ChromXValue ?? 0d),
                 (mzSpotFocus, peak => peak.Mass)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus);
-
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel);
         }
 
         private static readonly double RtTol = 0.5;
         private static readonly double MzTol = 20;
 
         public DataBaseMapper DataBaseMapper { get; }
-        public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
         public ParameterBase Parameter { get; }
 
         public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
 
-        public PeakFilterModel PeakFilterModel { get; }
         public EicLoader EicLoader { get; }
 
         public AnalysisPeakPlotModel PlotModel { get; }
@@ -248,7 +244,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public EicModel EicModel { get; }
         public ReadOnlyReactivePropertySlim<ExperimentSpectrumModel> ExperimentSpectrumModel { get; }
 
-        private MsRawSpectrumLoader rawSpectrumLoader;
+        private readonly MsRawSpectrumLoader rawSpectrumLoader;
 
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public RawPurifiedSpectrumsModel RawPurifiedSpectrumsModel { get; }
@@ -267,8 +263,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         public double ChromMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.ChromXValue) ?? 0d;
         public double MassMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d;
         public double MassMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d;
-        public double IntensityMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Intensity) ?? 0d;
-        public double IntensityMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Intensity) ?? 0d;
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 

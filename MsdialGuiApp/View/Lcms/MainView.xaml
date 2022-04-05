@@ -184,8 +184,12 @@
                         <RowDefinition Height="*" MinHeight="200"/>
                     </Grid.RowDefinitions>
 
+                    <!--
                     <commonview:PeakSpotNavigator DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer}"
                                              Grid.Row="0" Grid.Column="0"/>
+                                             -->
+                    <search:PeakSpotNavigatorView DataContext="{Binding SelectedItem.DataContext.PeakSpotNavigatorViewModel, ElementName=TabControl_PairwisePlotViewer}"
+                                                  Grid.Row="0" Grid.Column="0"/>
 
                     <chart:SurveyScanView DataContext="{Binding AnalysisViewModel.Value.SurveyScanViewModel}"
                                           Grid.Row="1" Grid.Column="0">

@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcms;
-using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Normalize;
@@ -16,7 +15,6 @@ using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -60,52 +58,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             Brushes = this.model.Brushes.AsReadOnly();
             SelectedBrush = this.model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
 
-            MassMin = this.model.MassMin;
-            MassMax = this.model.MassMax;
-            MassLower = new ReactiveProperty<double>(MassMin).AddTo(Disposables);
-            MassUpper = new ReactiveProperty<double>(MassMax).AddTo(Disposables);
-            MassLower.SetValidateNotifyError(v => v < MassMin ? "Too small" : null)
-                .SetValidateNotifyError(v => v > MassUpper.Value ? "Too large" : null);
-            MassUpper.SetValidateNotifyError(v => v < MassLower.Value ? "Too small" : null)
-                .SetValidateNotifyError(v => v > MassMax ? "Too large" : null);
-
-            RtMin = this.model.RtMin;
-            RtMax = this.model.RtMax;
-            RtLower = new ReactiveProperty<double>(RtMin).AddTo(Disposables);
-            RtUpper = new ReactiveProperty<double>(RtMax).AddTo(Disposables);
-            RtLower.SetValidateNotifyError(v => v < RtMin ? "Too small" : null)
-                .SetValidateNotifyError(v => v > RtUpper.Value ? "Too large" : null);
-            RtUpper.SetValidateNotifyError(v => v < RtLower.Value ? "Too small" : null)
-                .SetValidateNotifyError(v => v > RtMax ? "Too large" : null);
-            ProteinFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
-            ProteinFilterKeywords = ProteinFilterKeyword.Select(w => w.Split())
-                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            MetaboliteFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
-            MetaboliteFilterKeywords = MetaboliteFilterKeyword.Select(w => w.Split())
-                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            CommentFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
-            CommentFilterKeywords = CommentFilterKeyword.Select(w => w.Split())
-                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-
-            var peakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
-            PeakFilterViewModel = peakSpotNavigatorViewModel.PeakFilterViewModel;
-
-            new[]
-            {
-                MassLower.ToUnit(),
-                MassUpper.ToUnit(),
-                RtLower.ToUnit(),
-                RtUpper.ToUnit(),
-                ProteinFilterKeywords.ToUnit(),
-                MetaboliteFilterKeywords.ToUnit(),
-                CommentFilterKeywords.ToUnit(),
-                PeakFilterViewModel.PropertyChangedAsObservable().ToUnit(),
-                PeakFilterViewModel.CheckedFilter.ToUnit(),
-            }.Merge()
-            .Throttle(TimeSpan.FromMilliseconds(500))
-            .ObserveOnDispatcher()
-            .Subscribe(_ => Ms1Spots?.Refresh())
-            .AddTo(Disposables);
+            PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
+            PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
 
             var classBrush = model.ParameterAsObservable
                 .Select(p => new KeyBrushMapper<BarItem, string>(
@@ -130,14 +84,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                item => item.ToString(),
                Colors.Blue);
 
-            //var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-            //   model.Parameter.ProjectParam.SpectrumCommentToColorBytes
-            //   .ToDictionary(
-            //       kvp => kvp.Key,
-            //       kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-            //   ),
-            //   item => item.ToString(),
-            //   Colors.Red);
             var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
                 comment => {
                     var commentString = comment.ToString();
@@ -162,23 +108,23 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             
             AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(
                 this.model.AlignmentSpotTableModel,
-                MassLower,
-                MassUpper,
-                RtLower,
-                RtUpper,
-                MetaboliteFilterKeyword,
-                CommentFilterKeyword,
+                PeakSpotNavigatorViewModel.MzLowerValue,
+                PeakSpotNavigatorViewModel.MzUpperValue,
+                PeakSpotNavigatorViewModel.RtLowerValue,
+                PeakSpotNavigatorViewModel.RtUpperValue,
+                PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
+                PeakSpotNavigatorViewModel.CommentFilterKeyword,
                 classBrush)
                 .AddTo(Disposables);
             ProteomicsAlignmentTableViewModel = new LcmsProteomicsAlignmentTableViewModel(
                 this.model.AlignmentSpotTableModel,
-                MassLower,
-                MassUpper,
-                RtLower,
-                RtUpper,
-                ProteinFilterKeyword,
-                MetaboliteFilterKeyword,
-                CommentFilterKeyword)
+                PeakSpotNavigatorViewModel.MzLowerValue,
+                PeakSpotNavigatorViewModel.MzUpperValue,
+                PeakSpotNavigatorViewModel.RtLowerValue,
+                PeakSpotNavigatorViewModel.RtUpperValue,
+                PeakSpotNavigatorViewModel.ProteinFilterKeyword,
+                PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
+                PeakSpotNavigatorViewModel.CommentFilterKeyword)
                 .AddTo(Disposables);
 
             SearchCompoundCommand = this.model.CanSearchCompound
@@ -198,20 +144,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
         public ReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>> SelectedBrush { get; }
-
-        public ICollectionView Ms1Spots {
-            get => ms1Spots;
-            set {
-                var old = ms1Spots;
-                if (SetProperty(ref ms1Spots, value)) {
-                    if (old != null) old.Filter -= PeakFilter;
-                    if (ms1Spots != null) ms1Spots.Filter += PeakFilter;
-                }
-            }
-        }
-
-        private ICollectionView ms1Spots;
-        public override ICollectionView PeakSpotsView => ms1Spots;
+        public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
+        public ICollectionView Ms1Spots { get; }
+        public override ICollectionView PeakSpotsView => Ms1Spots;
 
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 
@@ -222,108 +157,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public LcmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
         public LcmsProteomicsAlignmentTableViewModel ProteomicsAlignmentTableViewModel { get; }
         public AlignedChromatogramModificationViewModelLegacy AlignedChromatogramModificationViewModel { get; }
-
-        public double MassMin { get; }
-        public double MassMax { get; }
-        public ReactiveProperty<double> MassLower { get; }
-        public ReactiveProperty<double> MassUpper { get; }
-
-        public double RtMin { get; }
-        public double RtMax { get; }
-        public ReactiveProperty<double> RtLower { get; }
-        public ReactiveProperty<double> RtUpper { get; }
-        public ReactivePropertySlim<string> ProteinFilterKeyword { get; }
-        public ReadOnlyReactivePropertySlim<string[]> ProteinFilterKeywords { get; }
-        public ReactivePropertySlim<string> MetaboliteFilterKeyword { get; }
-        public ReadOnlyReactivePropertySlim<string[]> MetaboliteFilterKeywords { get; }
-        public ReactivePropertySlim<string> CommentFilterKeyword { get; }
-        public ReadOnlyReactivePropertySlim<string[]> CommentFilterKeywords { get; }
-
-        public bool RefMatchedChecked {
-            get => PeakFilterViewModel.RefMatched;
-            set => PeakFilterViewModel.RefMatched = value;
-        }
-
-        public bool SuggestedChecked {
-            get => PeakFilterViewModel.Suggested;
-            set => PeakFilterViewModel.Suggested = value;
-        }
-
-        public bool UnknownChecked {
-            get => PeakFilterViewModel.Unknown;
-            set => PeakFilterViewModel.Unknown = value;
-        }
-
-        public bool Ms2AcquiredChecked {
-            get => PeakFilterViewModel.Ms2Acquired;
-            set => PeakFilterViewModel.Ms2Acquired = value;
-        }
-
-        public bool MolecularIonChecked {
-            get => PeakFilterViewModel.MolecularIon;
-            set => PeakFilterViewModel.MolecularIon = value;
-        }
-
-        public bool UniquesIonsChecked {
-            get => PeakFilterViewModel.UniqueIons;
-            set => PeakFilterViewModel.UniqueIons = value;
-        }
-
-        public bool BlankFilterChecked {
-            get => PeakFilterViewModel.Blank;
-            set => PeakFilterViewModel.Blank = value;
-        }
-
-        public bool ManuallyModifiedChecked {
-            get => PeakFilterViewModel.ManuallyModified;
-            set => PeakFilterViewModel.ManuallyModified = value;
-        }
-
-        bool PeakFilter(object obj) {
-            if (obj is AlignmentSpotPropertyModel spot) {
-                return AnnotationFilter(spot)
-                    && MzFilter(spot)
-                    && RtFilter(spot)
-                    && (!Ms2AcquiredChecked || spot.IsMsmsAssigned)
-                    && (!MolecularIonChecked || spot.IsBaseIsotopeIon)
-                    && (!BlankFilterChecked || !spot.IsBlankFiltered)
-                    && (!UniquesIonsChecked || spot.IsFragmentQueryExisted)
-                    && (!ManuallyModifiedChecked || spot.innerModel.IsManuallyModifiedForAnnotation)
-                    && ProteinFilter(spot, ProteinFilterKeywords.Value)
-                    && MetaboliteFilter(spot, MetaboliteFilterKeywords.Value)
-                    && CommentFilter(spot, CommentFilterKeywords.Value);
-            }
-            return false;
-        }
-
-        bool AnnotationFilter(AlignmentSpotPropertyModel spot) {
-            if (!PeakFilterViewModel.CheckedFilter.Value.Any(DisplayFilter.Annotates)) return true;
-            return RefMatchedChecked && spot.IsRefMatched(model.MatchResultEvaluator)
-                || SuggestedChecked && spot.IsSuggested(model.MatchResultEvaluator)
-                || UnknownChecked && spot.IsUnknown;
-        }
-
-        bool MzFilter(AlignmentSpotPropertyModel spot) {
-            return MassLower.Value <= spot.MassCenter
-                && spot.MassCenter <= MassUpper.Value;
-        }
-
-        bool RtFilter(AlignmentSpotPropertyModel spot) {
-            return RtLower.Value <= spot.TimesCenter
-                && spot.TimesCenter <= RtUpper.Value;
-        }
-
-        bool ProteinFilter(AlignmentSpotPropertyModel spot, IEnumerable<string> keywords) {
-            return keywords.All(keyword => spot.Protein?.Contains(keyword) ?? true);
-        }
-
-        bool MetaboliteFilter(AlignmentSpotPropertyModel spot, IEnumerable<string> keywords) {
-            return keywords.All(keyword => spot.Name.Contains(keyword));
-        }
-
-        bool CommentFilter(AlignmentSpotPropertyModel spot, IEnumerable<string> keywords) {
-            return keywords.All(keyword => spot.Comment.Contains(keyword));
-        }
 
         public ReactiveCommand SearchCompoundCommand { get; }
 

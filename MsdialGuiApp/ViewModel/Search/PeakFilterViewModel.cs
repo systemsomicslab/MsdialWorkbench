@@ -15,9 +15,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
             this.model = model;
             EnabledFilter = model.EnabledFilter;
             CheckedFilter = model.ObserveProperty(m => m.CheckedFilter).ToReactiveProperty().AddTo(Disposables);
-            CheckedFilter.Throttle(TimeSpan.FromMilliseconds(200))
-                .Subscribe(filter => this.model.CheckedFilter = filter)
-                .AddTo(Disposables);
+            CheckedFilter.Subscribe(filter => this.model.CheckedFilter = filter).AddTo(Disposables);
         }
 
         public DisplayFilter EnabledFilter { get; }

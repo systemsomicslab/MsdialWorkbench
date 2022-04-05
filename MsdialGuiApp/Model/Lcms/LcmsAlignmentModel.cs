@@ -58,7 +58,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentFile = alignmentFileBean;
             Parameter = parameter;
             ParameterAsObservable = parameterAsObservable ?? throw new ArgumentNullException(nameof(parameterAsObservable));
-            PeakFilterModel = peakFilterModel ?? throw new ArgumentNullException(nameof(peakFilterModel));
             DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             CompoundSearchers = ConvertToCompoundSearchers(databases);
@@ -75,10 +74,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
             RtMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.TimesCenter) ?? 0d;
             RtMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.TimesCenter) ?? 0d;
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator);
 
             // Peak scatter plot
-            var labelSource = this.ObserveProperty(m => m.DisplayLabel);
+            var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
             PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource)
             {
                 GraphTitle = AlignmentFile.FileName,
@@ -215,7 +214,6 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private readonly List<CompoundSearcher> CompoundSearchers;
 
-        public PeakFilterModel PeakFilterModel { get; }
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
@@ -227,6 +225,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         public double RtMax { get; }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
+
+        public FocusNavigatorModel FocusNavigatorModel { get; }
 
         public Chart.AlignmentPeakPlotModel PlotModel { get; }
         public MsSpectrumModel Ms2SpectrumModel { get; }
@@ -301,7 +301,5 @@ namespace CompMs.App.Msdial.Model.Lcms
                     pair.SerializableAnnotator));
             return metabolomicsSearchers.Concat(lipidomicsSearchers).ToList();
         }
-
-        public FocusNavigatorModel FocusNavigatorModel { get; }
     }
 }
