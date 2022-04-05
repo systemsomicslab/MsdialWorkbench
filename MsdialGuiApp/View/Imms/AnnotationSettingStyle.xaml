@@ -188,6 +188,90 @@
         </Grid>
     </DataTemplate>
 
+    <DataTemplate x:Key="ImmsAnnotatorTemplate">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ui:LabeledContent PrependLabel="Annotation method name"
+                               Grid.Row="0">
+                <TextBox Text="{Binding AnnotatorID.Value, UpdateSourceTrigger=PropertyChanged}"/>
+            </ui:LabeledContent>
+            <GroupBox BorderThickness="0" Grid.Row="1">
+                <GroupBox.Header>
+                    <TextBlock Text="MS/MS identification setting"
+                               FontStyle="Italic"
+                               VerticalAlignment="Center"/>
+                </GroupBox.Header>
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource ToleranceSettingWithMs2ForImms}"
+                                Margin="8"/>
+            </GroupBox>
+
+            <Expander Header="MS2 spectrum cut off" Margin="0,8"
+                      Grid.Row="2">
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource Ms2Setting}"
+                                Margin="8"/>
+            </Expander>
+
+            <Expander Header="Annotaion cut off" Margin="0,8"
+                      Grid.Row="3">
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource Ms2ScoreCutOffSetting}"
+                                Margin="8"/>
+            </Expander>
+
+            <Expander Header="Ccs setting" Margin="0,8"
+                      Grid.Row="4">
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource CcsSetting}"
+                                Margin="8"/>
+            </Expander>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type localVM:ImmsMspAnnotatorSettingViewModel}">
+        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ImmsAnnotatorTemplate}"/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type localVM:ImmsTextDBAnnotatorSettingViewModel}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ui:LabeledContent PrependLabel="Annotation method name"
+                               Grid.Row="0">
+                <TextBox Text="{Binding AnnotatorID.Value, UpdateSourceTrigger=PropertyChanged}"/>
+            </ui:LabeledContent>
+            <GroupBox BorderThickness="0" Grid.Row="1">
+                <GroupBox.Header>
+                    <TextBlock Text="Tolerance"/>
+                </GroupBox.Header>
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource ToleranceSettingForImms}"
+                                Margin="8"/>
+            </GroupBox>
+
+            <Expander Header="Retention time setting" Margin="0,8"
+                      Grid.Row="2">
+                <ContentControl Content="{Binding ParameterViewModel}"
+                                ContentTemplate="{StaticResource RetentionTimeSetting}"
+                                Margin="8"/>
+            </Expander>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type localVM:ImmsEadLipidAnnotatorSettingViewModel}">
+        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ImmsAnnotatorTemplate}"/>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type vm:CompoundSearchVM}"
                   x:Key="ImmsAnnotatorSetting">
         <ScrollViewer>
