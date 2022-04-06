@@ -3,26 +3,23 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.View.Chart;
-using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.View.Export;
-using CompMs.App.Msdial.View.Imms;
+using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
-using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.ViewModel.Imms;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.Algorithm.Alignment;
-using CompMs.MsdialImmsCore.DataObj;
 using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
@@ -34,7 +31,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using CompMs.MsdialCore.Algorithm.Annotation;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
@@ -85,70 +81,12 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; private set; }
 
-        public int InitializeNewProject(Window window) {
-            // Set analysis param
-            if (!ProcessSetAnalysisParameter(window))
-                return -1;
-
-            var processOption = Storage.Parameter.ProcessOption;
-            // Run Identification
-            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                if (!ProcessAnnotaion(window, Storage))
-                    return -1;
-            }
-
-            // Run Alignment
-            if (processOption.HasFlag(ProcessOption.Alignment)) {
-                if (!ProcessAlignment(window, Storage))
-                    return -1;
-            }
-
-            return 0;
-        }
-
         public void Load() {
             var parameter = Storage.Parameter;
             if (parameter.ProviderFactoryParameter is null) {
                 parameter.ProviderFactoryParameter = new ImmsAverageDataProviderFactoryParameter(0.01, 0.02, 0, 100);
             }
             ProviderFactory = parameter?.ProviderFactoryParameter.Create(5, true);
-        }
-
-        private bool ProcessSetAnalysisParameter(Window owner) {
-            var parameter = Storage.Parameter;
-            var analysisParameterSet = new ImmsAnalysisParameterSetModel(parameter, AnalysisFiles);
-            using (var analysisParamSetVM = new ImmsAnalysisParameterSetViewModel(analysisParameterSet)) {
-                var apsw = new AnalysisParamSetForImmsWindow
-                {
-                    DataContext = analysisParamSetVM,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-                var apsw_result = apsw.ShowDialog();
-                if (apsw_result != true) return false;
-
-                Storage.DataBaseMapper = analysisParameterSet.BuildAnnotator();
-                matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
-                ProviderFactory = analysisParameterSet.Parameter.ProviderFactoryParameter.Create(5, true);
-
-                if (parameter.TogetherWithAlignment) {
-                    var filename = analysisParamSetVM.AlignmentResultFileName;
-                        AlignmentFiles.Add(
-                            new AlignmentFileBean
-                            {
-                                FileID = AlignmentFiles.Count,
-                                FileName = filename,
-                                FilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
-                                EicFilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + ".EIC.aef"),
-                                SpectraFilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl),
-                                ProteinAssembledResultFilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.prf),
-                            }
-                        );
-                        Storage.AlignmentFiles = AlignmentFiles.ToList();
-                }
-
-                return true;
-            }
         }
 
         public override void Run(ProcessOption option) {

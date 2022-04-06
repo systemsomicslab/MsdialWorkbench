@@ -131,28 +131,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             }
         }
 
-        public override int InitializeNewProject(Window window) {
-            // Set analysis param
-            if (!ProcessSetAnalysisParameter(window))
-                return -1;
-
-            var processOption = model.Storage.Parameter.ProcessOption;
-            // Run Identification
-            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(CompMs.Common.Enum.ProcessOption.PeakSpotting)) {
-                if (!ProcessAnnotaion(window, model.Storage))
-                    return -1;
-            }
-
-            // Run Alignment
-            if (processOption.HasFlag(ProcessOption.Alignment)) {
-                if (!ProcessAlignment(window))
-                    return -1;
-            }
-
-            LoadAnalysisFileCommand.Execute();
-            return 0;
-        }
-
         private bool ProcessSetAnalysisParameter(Window owner) {
             var parameter = model.Storage.Parameter;
             var analysisParamSetModel = new LcimmsAnalysisParameterSetModel(parameter, model.Storage.AnalysisFiles, model.Storage.DataBases);
@@ -219,12 +197,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             pbw.Close();
 
             return true;
-        }
-
-        public override void LoadProject() {
-            AnalysisFilesView.MoveCurrentToFirst();
-            SelectedAnalysisFile.Value = AnalysisFilesView.CurrentItem as AnalysisFileBeanViewModel;
-            LoadAnalysisFileCommand.Execute();
         }
 
         protected override void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile) {

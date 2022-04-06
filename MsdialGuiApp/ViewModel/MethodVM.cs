@@ -6,7 +6,6 @@ using Reactive.Bindings.Extensions;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel
@@ -75,12 +74,6 @@ namespace CompMs.App.Msdial.ViewModel
 
         protected abstract void LoadAlignmentFileCore(AlignmentFileBeanViewModel alignmentFile);
 
-        public abstract int InitializeNewProject(Window window);
-        public abstract void LoadProject();
-        public virtual void SaveProject() {
-            Model.SaveAsync();
-        }
         public ReactivePropertySlim<ResultVM> SelectedViewModel { get; }
-        
     }
 }

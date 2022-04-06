@@ -105,23 +105,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             OnPropertyChanged(nameof(displayFilters));
         }
 
-        public override int InitializeNewProject(Window window) {
-            model.InitializeNewProject(window);
-
-            AnalysisFilesView.MoveCurrentToFirst();
-            SelectedAnalysisFile.Value = AnalysisFilesView.CurrentItem as AnalysisFileBeanViewModel;
-            LoadAnalysisFileCommand.Execute();
-
-            return 0;
-        }
-
-        public override void LoadProject() {
-            AnalysisFilesView.MoveCurrentToFirst();
-            model.Load();
-            SelectedAnalysisFile.Value = AnalysisFilesView.CurrentItem as AnalysisFileBeanViewModel;
-            LoadAnalysisFileCommand.Execute();
-        }
-
         protected override void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile) {
             if (analysisFile?.File == null || analysisFile.File == model.AnalysisFile) {
                 return;

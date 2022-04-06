@@ -118,30 +118,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }
         }
 
-        public override int InitializeNewProject(Window window) {
-            // Set analysis param
-            if (!ProcessSetAnalysisParameter(window))
-                return -1;
-
-            var processOption = Model.Storage.Parameter.ProcessOption;
-            // Run Identification
-            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                if (!ProcessAnnotaion(window, Model.Storage))
-                    return -1;
-            }
-
-            // Run Alignment
-            if (processOption.HasFlag(ProcessOption.Alignment)) {
-                if (!ProcessAlignment(window, Model.Storage))
-                    return -1;
-            }
-
-            AnalysisFilesView.MoveCurrentToFirst();
-            SelectedAnalysisFile.Value = AnalysisFilesView.CurrentItem as AnalysisFileBeanViewModel;
-            LoadAnalysisFileCommand.Execute();
-            return 0;
-        }
-
         private bool ProcessSetAnalysisParameter(Window owner) {
             var parameter = Model.Storage.Parameter;
             var analysisModel = new DimsAnalysisParameterSetModel(parameter, Model.AnalysisFiles);
@@ -210,13 +186,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             };
             pbw.ShowDialog();
             return true;
-        }
-
-        public override void LoadProject() {
-            Model.Load();
-            AnalysisFilesView.MoveCurrentToFirst();
-            SelectedAnalysisFile.Value = AnalysisFilesView.CurrentItem as AnalysisFileBeanViewModel;
-            LoadAnalysisFileCommand.Execute();
         }
 
         protected override void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile) {
