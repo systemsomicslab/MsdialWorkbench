@@ -327,6 +327,7 @@
     <Compile Include="ViewModel\Search\FocusNavigatorViewModel.cs" />
     <Compile Include="ViewModel\Search\PeakSpotNavigatorViewModel.cs" />
     <Compile Include="ViewModel\Search\SpotFocusViewModel.cs" />
+    <Compile Include="ViewModel\Service\ErrorMessageBoxRequest.cs" />
     <Compile Include="ViewModel\Service\SaveFileNameRequest.cs" />
     <Compile Include="ViewModel\PeakCuration\AlignedChromatogramModificationViewModelLegacy.cs" />
     <Compile Include="ViewModel\Setting\AdductIonSettingViewModel.cs" />

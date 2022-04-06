@@ -79,14 +79,16 @@ namespace CompMs.App.Msdial.Model.Setting
                 AdductIonSettingModel.Commit();
             }
             if (Option.HasFlag(ProcessOption.Alignment)) {
-                AlignmentParameterSettingModel.Commit();
-                if (AlignmentParameterSettingModel.ShouldRunAlignment) {
-                    MobilitySettingModel?.Commit();
-                    IsotopeTrackSettingModel.Commit();
+                if (!AlignmentParameterSettingModel.Commit()) {
+                    return false;
                 }
-                else {
+                if (!AlignmentParameterSettingModel.ShouldRunAlignment) {
                     Option &= ~ProcessOption.Alignment;
                 }
+            }
+            IsotopeTrackSettingModel.Commit();
+            if (!MobilitySettingModel.Commit()) {
+                return false;
             }
             var method = settingModelFactory.BuildMethod();
             handler?.Invoke(this, method);
