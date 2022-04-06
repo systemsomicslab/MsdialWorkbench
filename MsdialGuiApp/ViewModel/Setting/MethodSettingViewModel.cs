@@ -87,8 +87,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }           
         }
 
-        public bool Run() {
-            return Model.Run();
+        public bool TryRun() {
+            return Model.TryRun();
         }
 
         // TODO: delete method

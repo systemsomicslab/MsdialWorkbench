@@ -11,6 +11,7 @@ using CompMs.MsdialLcImMsApi.Parameter;
 using Reactive.Bindings.Notifiers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
@@ -57,7 +58,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public ReadOnlyCollection<CcsCalibrationInfoVS> CalibrationInfoCollection { get; }
 
-        public bool Commit() {
+        public bool TryCommit() {
             if (IsReadOnly) {
                 return true;
             }
@@ -93,10 +94,10 @@ namespace CompMs.App.Msdial.Model.Setting
                 {
                     Caption = "Error",
                     Content = string.Join(" ", errorMessages),
+                    ButtonType = MessageBoxButton.YesNo,
                 };
                 MessageBroker.Default.Publish(request);
-                var result = request.Result;
-                if (result) {
+                if (request.Result != MessageBoxResult.No) {
                     return false;
                 }
             }

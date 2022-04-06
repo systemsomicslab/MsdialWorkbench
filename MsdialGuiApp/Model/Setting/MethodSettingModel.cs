@@ -63,9 +63,9 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public bool IsReadOnlyAlignmentParameter { get; }
 
-        public bool Run() {
+        public bool TryRun() {
             if (Option.HasFlag(ProcessOption.PeakSpotting)) {
-                if (!DataCollectionSettingModel.Commit()) {
+                if (!DataCollectionSettingModel.TryCommit()) {
                     return false;
                 }
                 PeakDetectionSettingModel.Commit();
@@ -76,10 +76,12 @@ namespace CompMs.App.Msdial.Model.Setting
                     Storage.DataBases = IdentifySettingModel.Create();
                     Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
                 }
-                AdductIonSettingModel.Commit();
+                if (!AdductIonSettingModel.TryCommit()) {
+                    return false;
+                }
             }
             if (Option.HasFlag(ProcessOption.Alignment)) {
-                if (!AlignmentParameterSettingModel.Commit()) {
+                if (!AlignmentParameterSettingModel.TryCommit()) {
                     return false;
                 }
                 if (!AlignmentParameterSettingModel.ShouldRunAlignment) {
@@ -87,7 +89,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 }
             }
             IsotopeTrackSettingModel.Commit();
-            if (!MobilitySettingModel.Commit()) {
+            if (MobilitySettingModel != null && !MobilitySettingModel.TryCommit()) {
                 return false;
             }
             var method = settingModelFactory.BuildMethod();

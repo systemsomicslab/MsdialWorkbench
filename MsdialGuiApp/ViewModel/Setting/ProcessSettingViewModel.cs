@@ -376,7 +376,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
 
         private Task RunProcessAsync() {
-            if (!MethodSettingViewModel.Value.Run()) {
+            if (!MethodSettingViewModel.Value.TryRun()) {
                 return Task.CompletedTask;
             }
             DatasetSettingViewModel.Value.Run();

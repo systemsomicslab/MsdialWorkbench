@@ -87,7 +87,8 @@ namespace CompMs.App.Msdial.View.Core
         private void ShowErrorComfirmationMessage(ErrorMessageBoxRequest request) {
             Dispatcher.Invoke(() =>
             {
-                request.Result = MessageBox.Show(request.Content, request.Caption, MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.OK;
+                var result = MessageBox.Show(request.Content, request.Caption, request.ButtonType, MessageBoxImage.Error);
+                request.Result = result;
             });
         }
 

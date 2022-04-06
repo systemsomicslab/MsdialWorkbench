@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
@@ -128,7 +129,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool isCompleted;
 
-        public bool Commit() {
+        public bool TryCommit() {
             if (!ShouldRunAlignment) {
                 parameter.ProcessBaseParam.ProcessOption &= ~ProcessOption.Alignment;
                 return true;
@@ -140,9 +141,10 @@ namespace CompMs.App.Msdial.Model.Setting
                     Caption = "Message",
                     Content = "If you use blank sample filter, please set at least one file's type as Blank in file property setting."
                         + " Do you continue this analysis without the filter option?",
+                    ButtonType = MessageBoxButton.OKCancel,
                 };
                 MessageBroker.Default.Publish(request);
-                if (!request.Result) {
+                if (request.Result != MessageBoxResult.OK) {
                     return false;
                 }
                 IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = false;

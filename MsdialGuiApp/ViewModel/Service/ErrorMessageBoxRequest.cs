@@ -1,4 +1,6 @@
-﻿namespace CompMs.App.Msdial.ViewModel.Service
+﻿using System.Windows;
+
+namespace CompMs.App.Msdial.ViewModel.Service
 {
     public class ErrorMessageBoxRequest
     {
@@ -6,6 +8,8 @@
 
         public string Content { get; set; } = string.Empty;
 
-        public bool Result { get; set; }
+        public MessageBoxButton ButtonType { get; set; } = MessageBoxButton.OK;
+
+        public MessageBoxResult Result { get; set; } = MessageBoxResult.Cancel;
     }
 }
