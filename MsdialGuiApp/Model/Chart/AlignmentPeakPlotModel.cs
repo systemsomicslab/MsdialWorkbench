@@ -1,7 +1,9 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -49,6 +51,9 @@ namespace CompMs.App.Msdial.Model.Chart
             VerticalTitle = string.Empty;
             HorizontalProperty = string.Empty;
             VerticalProperty = string.Empty;
+
+            HorizontalAxis = this.ObserveProperty(m => m.HorizontalRange).ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05));
+            VerticalAxis = this.ObserveProperty(m => m.VerticalRange).ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05));
         }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
@@ -76,6 +81,9 @@ namespace CompMs.App.Msdial.Model.Chart
                 return new Range(minimum, maximum);
             }
         }
+
+        public IAxisManager<double> HorizontalAxis { get; }
+        public IAxisManager<double> VerticalAxis { get; }
 
         public Func<AlignmentSpotPropertyModel, double> HorizontalSelector {
             get => horizontalSelector;

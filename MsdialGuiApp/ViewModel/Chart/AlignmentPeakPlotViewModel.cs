@@ -13,25 +13,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 {
     class AlignmentPeakPlotViewModel : ViewModelBase
     {
-        public AlignmentPeakPlotViewModel(
-            AlignmentPeakPlotModel model,
-            IObservable<IBrushMapper<AlignmentSpotPropertyModel>> brushSource = null,
-            IAxisManager<double> horizontalAxis = null,
-            IAxisManager<double> verticalAxis = null) {
+        public AlignmentPeakPlotViewModel(AlignmentPeakPlotModel model, IObservable<IBrushMapper<AlignmentSpotPropertyModel>> brushSource) {
 
             Spots = model.Spots;
-
-            if (horizontalAxis == null) {
-                horizontalAxis = model.ObserveProperty(m => m.HorizontalRange)
-                    .ToReactiveAxisManager<double>(new ChartMargin(0.05));
-            }
-            HorizontalAxis = horizontalAxis;
-
-            if (verticalAxis == null) {
-                verticalAxis = model.ObserveProperty(m => m.VerticalRange)
-                    .ToReactiveAxisManager<double>(new ChartMargin(0.05));
-            }
-            VerticalAxis = verticalAxis;
+            HorizontalAxis = model.HorizontalAxis;
+            VerticalAxis = model.VerticalAxis;
 
             if (brushSource == null) {
                 brushSource = Observable.Return<IBrushMapper<AlignmentSpotPropertyModel>>(null);

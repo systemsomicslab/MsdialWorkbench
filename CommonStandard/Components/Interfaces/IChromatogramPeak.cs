@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 
 namespace CompMs.Common.Interfaces
 {

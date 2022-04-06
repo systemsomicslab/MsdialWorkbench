@@ -260,9 +260,8 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IdentifySettingModel CreateIdentifySetting() {
-            throw new NotImplementedException("ImmsAnnotatorSettingModelFactory is not implemented!");
             var parameter = storage.Parameter;
-            var model = new IdentifySettingModel(storage.Parameter, null, process, storage.DataBases);
+            var model = new IdentifySettingModel(storage.Parameter, new ImmsAnnotatorSettingModelFactory(), process, storage.DataBases);
 
             if (parameter.TargetOmics == TargetOmics.Lipidomics) {
                 if (model.DataBaseModels.Count == 0) {

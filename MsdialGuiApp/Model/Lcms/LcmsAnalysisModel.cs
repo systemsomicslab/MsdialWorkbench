@@ -7,6 +7,7 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
@@ -36,7 +37,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseStorage databases,
             DataBaseMapper mapper,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            ParameterBase parameter)
+            ParameterBase parameter,
+            PeakFilterModel peakFilterModel)
             : base(analysisFile) {
             if (analysisFile is null) {
                 throw new ArgumentNullException(nameof(analysisFile));
@@ -60,18 +62,20 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             this.provider = provider;
             DataBaseMapper = mapper;
-            MatchResultEvaluator = evaluator;
             Parameter = parameter;
             CompoundSearchers = ConvertToCompoundSearchers(databases);
 
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator);
+
             // Peak scatter plot
-            var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelSource) {
+            var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelSource)
+            {
                 HorizontalTitle = "Retention time [min]",
                 VerticalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
-            };
+            }.AddTo(Disposables);
             Target.Select(
                 t => t is null
                     ? string.Empty
@@ -212,9 +216,23 @@ namespace CompMs.App.Msdial.Model.Lcms
             }.CombineLatestValuesAreAllFalse()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
+
+            var rtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, RtTol, Target.Select(t => t?.ChromXValue ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
+            var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MzTol, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
+            var idSpotFocus = new IdSpotFocus<ChromatogramPeakFeatureModel>(
+                Target,
+                id => Ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id)),
+                Target.Select(t => t?.MasterPeakID ?? 0d),
+                "Region focus by ID",
+                (rtSpotFocus, peak => peak.ChromXValue ?? 0d),
+                (mzSpotFocus, peak => peak.Mass)).AddTo(Disposables);
+            FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus);
         }
+
+        private static readonly double RtTol = 0.5;
+        private static readonly double MzTol = 20;
+
         public DataBaseMapper DataBaseMapper { get; }
-        public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
         public ParameterBase Parameter { get; }
 
         public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
@@ -226,7 +244,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public EicModel EicModel { get; }
         public ReadOnlyReactivePropertySlim<ExperimentSpectrumModel> ExperimentSpectrumModel { get; }
 
-        private MsRawSpectrumLoader rawSpectrumLoader;
+        private readonly MsRawSpectrumLoader rawSpectrumLoader;
 
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public RawPurifiedSpectrumsModel RawPurifiedSpectrumsModel { get; }
@@ -237,12 +255,14 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
 
+        public FocusNavigatorModel FocusNavigatorModel { get; }
+
+        public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
+
         public double ChromMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.ChromXValue) ?? 0d;
         public double ChromMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.ChromXValue) ?? 0d;
         public double MassMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d;
         public double MassMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d;
-        public double IntensityMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Intensity) ?? 0d;
-        public double IntensityMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Intensity) ?? 0d;
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 

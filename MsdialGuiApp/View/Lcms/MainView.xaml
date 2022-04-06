@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Lcms"
              xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
+             xmlns:search="clr-namespace:CompMs.App.Msdial.View.Search"
              mc:Ignorable="d" 
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
@@ -183,8 +184,12 @@
                         <RowDefinition Height="*" MinHeight="200"/>
                     </Grid.RowDefinitions>
 
+                    <!--
                     <commonview:PeakSpotNavigator DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer}"
                                              Grid.Row="0" Grid.Column="0"/>
+                                             -->
+                    <search:PeakSpotNavigatorView DataContext="{Binding SelectedItem.DataContext.PeakSpotNavigatorViewModel, ElementName=TabControl_PairwisePlotViewer}"
+                                                  Grid.Row="0" Grid.Column="0"/>
 
                     <chart:SurveyScanView DataContext="{Binding AnalysisViewModel.Value.SurveyScanViewModel}"
                                           Grid.Row="1" Grid.Column="0">
@@ -570,9 +575,12 @@
 
             </Grid>
         </Grid>
+        <!--
         <commonview:Footer DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
                            ChromAxis="{Binding PlotViewModel.HorizontalAxis}" MassAxis="{Binding PlotViewModel.VerticalAxis}"
-                           Grid.Row="2" Grid.Column="1"/>
+                           Grid.Row="2" Grid.Column="1"/>-->
+        <search:FocusNavigatorView DataContext="{Binding SelectedItem.DataContext.FocusNavigatorViewModel, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
+                                   Grid.Row="2" Grid.Column="1"/>
 
         <GridSplitter Margin="0,0,0,0" 
                     Height="2" ResizeDirection="Rows" ResizeBehavior="CurrentAndNext" 
