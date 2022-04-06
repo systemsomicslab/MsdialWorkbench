@@ -143,14 +143,6 @@
                 </MenuItem>
             </ContextMenu>
             -->
-            <manager:ContinuousAxisManager x:Key="ChromAxis"
-                                           MinValue="{Binding DataContext.AnalysisVM.ChromMin, Source={x:Reference Name=MainControl}}"
-                                           MaxValue="{Binding DataContext.AnalysisVM.ChromMax, Source={x:Reference Name=MainControl}}"
-                                           ChartMargin="0.05" />
-            <manager:ContinuousAxisManager x:Key="MassAxis"
-                                           MinValue="{Binding DataContext.AnalysisVM.MassMin, Source={x:Reference Name=MainControl}}"
-                                           MaxValue="{Binding DataContext.AnalysisVM.MassMax, Source={x:Reference Name=MainControl}}"
-                                           ChartMargin="0.05" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -196,7 +188,7 @@
                     <commonview:PeakSpotNavigator DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
                                                   Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"/>
 
-                    <chart:SurveyScanView DataContext="{Binding AnalysisVM.SurveyScanViewModel}"
+                    <chart:SurveyScanView DataContext="{Binding AnalysisViewModel.Value.SurveyScanViewModel}"
                                           Grid.Row="2" Grid.Column="0"/>
 
                     <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="2" Grid.Column="1" 
@@ -205,7 +197,7 @@
                         <TabItem Header="Peak spot viewer" 
                                  Name="TabItem_RtMzPairwisePlotPeakView" 
                                  Height="25"
-                                 DataContext="{Binding AnalysisVM}"
+                                 DataContext="{Binding AnalysisViewModel.Value}"
                                  Background="{StaticResource MainThemeColor}">
                             <chart:PeakView DataContext="{Binding PlotViewModel}">
                                 <chart:PeakView.LabelTemplate>
@@ -230,7 +222,7 @@
                         <TabItem Header="Alignment spot viewer" 
                                  Name="TabItem_RtMzPairwisePlotAlignmentView" 
                                  Height="25"
-                                 DataContext="{Binding AlignmentVM}"
+                                 DataContext="{Binding AlignmentViewModel.Value}"
                                  Background="{StaticResource MainThemeColor}">
 
                             <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
@@ -261,20 +253,20 @@
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
                                  Name="TabItem_EicViewer" Background="{StaticResource MainThemeColor}">
-                            <chart:EicView DataContext="{Binding AnalysisVM.EicViewModel}"/>
+                            <chart:EicView DataContext="{Binding AnalysisViewModel.Value.EicViewModel}"/>
                         </TabItem>
 
                         <TabItem Header="Bar chart of aligned spot" 
                                  Name="TabItem_BarChartViewer" 
                                  Height="26"
                                  Background="{StaticResource MainThemeColor}">
-                            <chart:BarChartView DataContext="{Binding AlignmentVM.BarChartViewModel}"/>
+                            <chart:BarChartView DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"/>
                         </TabItem>
 
                         <TabItem Name="TabItem_AlignedEic"
                                  Header="EIC of aligned spot"
                                  Background="{StaticResource MainThemeColor}">
-                            <chart:AlignmentEicView DataContext="{Binding AlignmentVM.AlignmentEicViewModel}"/>
+                            <chart:AlignmentEicView DataContext="{Binding AlignmentViewModel.Value.AlignmentEicViewModel}"/>
                         </TabItem>
 
                     </TabControl>
@@ -351,7 +343,7 @@
 
                         <TabItem Name="TabItem_MeasurementVsReference" 
                                  Header="Exp. vs. Ref." 
-                                 DataContext="{Binding AnalysisVM}"
+                                 DataContext="{Binding AnalysisViewModel.Value}"
                                  Background="{StaticResource MainThemeColor}"
                                  Height="25">
                             <chart:ExpRefView>
@@ -380,13 +372,13 @@
                                  Background="{StaticResource MainThemeColor}">
 
 <!--
-                            <ms2:RawPurifiedView DataContext="{Binding AnalysisVM}"/>
+                            <ms2:RawPurifiedView DataContext="{Binding AnalysisViewModel.Value}"/>
                             -->
                         </TabItem>
 
                         <TabItem Name="TabItem_RepresentativeVsReference"
                                  Header="Rep. vs. Ref." 
-                                 DataContext="{Binding AlignmentVM}"
+                                 DataContext="{Binding AlignmentViewModel.Value}"
                                  Background="{StaticResource MainThemeColor}" 
                                  Height="25">
                             <chart:RepRefView>
@@ -416,7 +408,7 @@
             </Grid>
         </Grid>
         <!--
-        <local:Footer DataContext="{Binding AnalysisVM}"
+        <local:Footer DataContext="{Binding AnalysisViewModel.Value}"
                       ChromAxis="{StaticResource ChromAxis}" MassAxis="{StaticResource MassAxis}"
                       Grid.Row="2" Grid.Column="1"/>
                       -->

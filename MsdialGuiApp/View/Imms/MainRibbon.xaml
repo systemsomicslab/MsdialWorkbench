@@ -244,9 +244,9 @@
                 <RibbonComboBox Label="Alignment"
                                 SelectionBoxWidth="80"
                                 VerticalAlignment="Center">
-                    <RibbonGallery SelectedValue="{Binding AlignmentVM.SelectedBrush.Value}"
+                    <RibbonGallery SelectedValue="{Binding AlignmentViewModel.Value.SelectedBrush.Value}"
                                    SelectedValuePath="Mapper">
-                        <RibbonGalleryCategory ItemsSource="{Binding AlignmentVM.Brushes}"
+                        <RibbonGalleryCategory ItemsSource="{Binding AlignmentViewModel.Value.Brushes}"
                                                DisplayMemberPath="Label"/>
                     </RibbonGallery>
                 </RibbonComboBox>

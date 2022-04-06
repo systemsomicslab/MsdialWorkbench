@@ -4,9 +4,10 @@ using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.MsdialImmsCore.DataObj;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.ComponentModel;
+using System.Reactive.Linq;
 using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
@@ -26,41 +27,27 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
 
             this.model = model;
-            this.compoundSearchService = compoundSearchService;
-            this.peakSpotTableService = peakSpotTableService;
+
+            AnalysisViewModel = model.ObserveProperty(m => m.AnalysisModel)
+                .Where(m => m != null)
+                .Select(m => new AnalysisImmsVM(m, compoundSearchService, peakSpotTableService) { DisplayFilters = displayFilters })
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            AlignmentViewModel = model.ObserveProperty(m => m.AlignmentModel)
+                .Where(m => m != null)
+                .Select(m => new AlignmentImmsVM(m, compoundSearchService, peakSpotTableService) { DisplayFilters = displayFilters })
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
 
             PropertyChanged += OnDisplayFiltersChanged;
         }
 
-        public ImmsMethodVM(
-            MsdialImmsDataStorage storage,
-            IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
-            : this(
-                  new ImmsMethodModel(storage),
-                  compoundSearchService,
-                  peakSpotTableService) {
-
-        }
-            
-
         private readonly ImmsMethodModel model;
 
-        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
-        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
-
-        public AnalysisImmsVM AnalysisVM {
-            get => analysisVM;
-            set => SetProperty(ref analysisVM, value);
-
-        }
-        private AnalysisImmsVM analysisVM;
-
-        public AlignmentImmsVM AlignmentVM {
-            get => alignmentVM;
-            set => SetProperty(ref alignmentVM, value);
-        }
-        private AlignmentImmsVM alignmentVM;
+        public ReadOnlyReactivePropertySlim<AnalysisImmsVM> AnalysisViewModel { get; }
+        public ReadOnlyReactivePropertySlim<AlignmentImmsVM> AlignmentViewModel { get; }
 
         public bool RefMatchedChecked {
             get => ReadDisplayFilter(DisplayFilter.RefMatched);
@@ -102,10 +89,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         void OnDisplayFiltersChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName == nameof(displayFilters)) {
-                if (AnalysisVM != null)
-                    AnalysisVM.DisplayFilters = displayFilters;
-                if (AlignmentVM != null)
-                    AlignmentVM.DisplayFilters = displayFilters;
+                if (AnalysisViewModel.Value != null)
+                    AnalysisViewModel.Value.DisplayFilters = displayFilters;
+                if (AlignmentViewModel.Value != null)
+                    AlignmentViewModel.Value.DisplayFilters = displayFilters;
             }
         }
 
@@ -140,18 +127,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 return;
             }
             model.LoadAnalysisFile(analysisFile.File);
-
-            if (AnalysisVM != null) {
-                AnalysisVM.Dispose();
-                Disposables.Remove(AnalysisVM);
-            }
-            AnalysisVM = new AnalysisImmsVM(
-                model.AnalysisModel,
-                compoundSearchService,
-                peakSpotTableService)
-            {
-                DisplayFilters = displayFilters
-            }.AddTo(Disposables);
         }
 
         protected override void LoadAlignmentFileCore(AlignmentFileBeanViewModel alignmentFile) {
@@ -159,18 +134,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 return;
             }
             model.LoadAlignmentFile(alignmentFile.File);
-
-            if (AlignmentVM != null) {
-                AlignmentVM?.Dispose();
-                Disposables.Remove(AlignmentVM);
-            }
-            AlignmentVM = new AlignmentImmsVM(
-                model.AlignmentModel,
-                compoundSearchService,
-                peakSpotTableService)
-            {
-                DisplayFilters = displayFilters
-            }.AddTo(Disposables);
         }
 
         public DelegateCommand<Window> ExportAnalysisResultCommand => exportAnalysisResultCommand ?? (exportAnalysisResultCommand = new DelegateCommand<Window>(model.ExportAnalysis));

@@ -45,11 +45,16 @@ namespace CompMs.App.Msdial.Model.Imms
         }
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
 
-        public ImmsMethodModel(
-            IMsdialDataStorage<MsdialImmsParameter> storage)
+        public ImmsMethodModel(IMsdialDataStorage<MsdialImmsParameter> storage)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             Storage = storage;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
+
+            var parameter = Storage.Parameter;
+            if (parameter.ProviderFactoryParameter is null) {
+                parameter.ProviderFactoryParameter = new ImmsAverageDataProviderFactoryParameter(0.01, 0.02, 0, 100);
+            }
+            ProviderFactory = parameter?.ProviderFactoryParameter.Create(5, true);
         }
 
         private FacadeMatchResultEvaluator matchResultEvaluator;

@@ -259,10 +259,10 @@
                                 Margin="8"/>
             </GroupBox>
 
-            <Expander Header="Retention time setting" Margin="0,8"
+            <Expander Header="Ccs setting" Margin="0,8"
                       Grid.Row="2">
                 <ContentControl Content="{Binding ParameterViewModel}"
-                                ContentTemplate="{StaticResource RetentionTimeSetting}"
+                                ContentTemplate="{StaticResource CcsSetting}"
                                 Margin="8"/>
             </Expander>
         </Grid>
