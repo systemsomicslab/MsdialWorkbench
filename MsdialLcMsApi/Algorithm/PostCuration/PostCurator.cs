@@ -14,7 +14,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
             IReadOnlyList<AlignmentSpotProperty> spots,
             IReadOnlyList<MSDecResult> msdecResults,
             IReadOnlyList<AnalysisFileBean> files, 
-            ParameterBase param) {
+            ParameterBase param,
+            PostCuratorParameter postcurparam) {
 
             var isBlankFilter = true; // to be included in ParameterBase
             var filterBlankThreshold = 0.8; // to be included in ParameterBase
@@ -37,13 +38,12 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
                 var isSampleDataAvailable = sampleProps.IsEmptyOrNull() ? false : true;
                 var avgSample = isSampleDataAvailable ? sampleProps.Average(x => x.PeakHeightTop) : 0.0;
 
-                if (isBlankFilter && isBlankDataAvailable && (isQcDataAvailable || isSampleDataAvailable)) {
+                if (postcurparam.IsBlankFilter && isBlankDataAvailable && (isQcDataAvailable || isSampleDataAvailable)) {
                     var ratioBlank = avgBlank / Math.Max(avgQC, avgSample);
-                    if (ratioBlank >= filterBlankThreshold) {
+                    if (ratioBlank >= postcurparam.FilterBlankThreshold) {
                         spot.IsBlankFilteredByPostCurator = true;
                     }
                 }
-
 
                 // filtering process
                 #region

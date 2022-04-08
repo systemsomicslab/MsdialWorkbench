@@ -985,7 +985,17 @@ namespace CompMs.MsdialCore.Parameter {
 
     // MS-CleanR (post curator) parameters
 
-
+    [MessagePackObject]
+    public class PostCuratorParameter {
+        [Key(0)]
+        public double FilterBlankThreshold { get; set; } = 0.8;
+        [Key(1)]
+        public bool IsBlankFilter { get; set; } = true;
+        [Key(2)]
+        public bool IsMzFilter { get; set; } = true;
+        [Key(3)]
+        public bool IsBlankGhostFilter { get; set; } = true;
+    }
 
     [MessagePackObject]
     public class PeakPickBaseParameter {
