@@ -473,6 +473,8 @@ namespace CompMs.MsdialCore.Parameter {
         public float MinMS2RelativeIntensity { get => CorrDecParam.MinMS2RelativeIntensity; set => CorrDecParam.MinMS2RelativeIntensity = value; }
         [IgnoreMember]
         public bool CanExcute { get => CorrDecParam.CanExcute; set => CorrDecParam.CanExcute = value; }
+        [Key(17)]
+        public PostCuratorParameter PostCurationParameter { get; set; } = new PostCuratorParameter();
 
         public virtual List<string> ParametersAsText() {
             var pStrings = new List<string>();

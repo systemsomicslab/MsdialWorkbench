@@ -14,13 +14,15 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
             IReadOnlyList<AlignmentSpotProperty> spots,
             IReadOnlyList<MSDecResult> msdecResults,
             IReadOnlyList<AnalysisFileBean> files, 
-            ParameterBase param,
-            PostCuratorParameter postcurparam) {
+            ParameterBase param) {
 
             var isBlankFilter = true; // to be included in ParameterBase
             var filterBlankThreshold = 0.8; // to be included in ParameterBase
             var isMzFilter = true; //to be included in ParameterBase
             //...
+
+            var ghosts = new List<double>();
+            var postcurparam = param.PostCurationParameter;
 
             // process
             foreach (var spot in spots) {
@@ -42,6 +44,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
                     var ratioBlank = avgBlank / Math.Max(avgQC, avgSample);
                     if (ratioBlank >= postcurparam.FilterBlankThreshold) {
                         spot.IsBlankFilteredByPostCurator = true;
+                        ghosts.Add(Math.Round(spot.MassCenter, 3));
                     }
                 }
 
@@ -64,15 +67,20 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
                 //     }
 
                 // }
-                #endregion
-
-
-                
+                #endregion                
 
                 // if (frag == true) {
                 //     spot.IsFilteredByPostCurator = true;
                 // }
 
+            }
+
+            if (postcurparam.IsBlankGhostFilter) {
+                foreach (var spot in spots) {
+                    if (spot.IsBlankFilteredByPostCurator == false && ghosts.Contains(Math.Round(spot.MassCenter, 3))) {
+                        spot.IsBlankGhostFilteredByPostCurator = true;
+                    }
+                }
             }
 
             return spots;
