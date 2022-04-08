@@ -96,13 +96,13 @@ namespace CompMs.App.Msdial.Model.Lcms
         private IAnnotationProcess annotationProcess;
 
 
-        protected override void LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+        protected override AnalysisModelBase LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
             var provider = providerFactory.Create(analysisFile);
-            AnalysisModel = new LcmsAnalysisModel(
+            return AnalysisModel = new LcmsAnalysisModel(
                 analysisFile,
                 provider,
                 Storage.DataBases,

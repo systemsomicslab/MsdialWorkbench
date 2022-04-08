@@ -192,7 +192,7 @@ namespace CompMs.App.Msdial.Model.Imms
             }
         }
 
-        protected override void LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+        protected override AnalysisModelBase LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
@@ -207,6 +207,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 Storage.DataBaseMapper,
                 Storage.Parameter)
             .AddTo(Disposables);
+            return AnalysisModel;
         }
 
         protected override AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {

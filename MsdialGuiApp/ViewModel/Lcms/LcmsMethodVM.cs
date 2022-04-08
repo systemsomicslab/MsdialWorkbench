@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -9,7 +10,6 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Reactive.Linq;
 using System.Windows;
-using CompMs.App.Msdial.ViewModel.Search;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
@@ -19,7 +19,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
-            : base(model) {
+            : base(model,
+                  ConvertToAnalysisViewModelAsObservable(model, compoundSearchService, peakSpotTableService, proteomicsTableService),
+                  ConvertToAlignmentViewModelAsObservable(model, compoundSearchService, peakSpotTableService, proteomicsTableService)) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -38,22 +40,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             this.model = model;
 
-            AnalysisViewModel = model.ObserveProperty(m => m.AnalysisModel)
-                .Where(m => m != null)
-                .Select(m => new AnalysisLcmsVM(m, compoundSearchService, peakSpotTableService, proteomicsTableService))
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            AlignmentViewModel = model.ObserveProperty(m => m.AlignmentModel)
-                .Where(m => m != null)
-                .Select(m => new LcmsAlignmentViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService))
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
             ShowExperimentSpectrumCommand = new ReactiveCommand().AddTo(Disposables);
 
             AnalysisViewModel //this.ObserveProperty(m => m.AnalysisVM)
+                .OfType<AnalysisLcmsVM>()
                 .Where(vm => vm != null)
                 .Select(vm => ShowExperimentSpectrumCommand.WithLatestFrom(vm.ExperimentSpectrumViewModel, (a, b) => b))
                 .Switch()
@@ -63,9 +53,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         private readonly LcmsMethodModel model;
-
-        public ReadOnlyReactivePropertySlim<AnalysisLcmsVM> AnalysisViewModel { get; }
-        public ReadOnlyReactivePropertySlim<LcmsAlignmentViewModel> AlignmentViewModel { get; }
 
         public PeakFilterViewModel PeakFilterViewModel { get; }
 
@@ -126,6 +113,28 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             else {
                 model.GoToMsfinderMethod(false);
             }
+        }
+
+        private static IObservable<AnalysisLcmsVM> ConvertToAnalysisViewModelAsObservable(
+            LcmsMethodModel method,
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService) {
+            return method.ObserveProperty(m => m.AnalysisModel)
+                .Where(m => m != null)
+                .Select(m => new AnalysisLcmsVM(m, compoundSearchService, peakSpotTableService, proteomicsTableService))
+                .DisposePreviousValue();
+        }
+
+        private static IObservable<LcmsAlignmentViewModel> ConvertToAlignmentViewModelAsObservable(
+            LcmsMethodModel method,
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService) {
+            return method.ObserveProperty(m => m.AlignmentModel)
+                .Where(m => m != null)
+                .Select(m => new LcmsAlignmentViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService))
+                .DisposePreviousValue();
         }
     }
 }

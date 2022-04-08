@@ -4,8 +4,8 @@ using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System;
 using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Windows;
@@ -18,36 +18,15 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             ImmsMethodModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
-            : base(model) {
-            if (compoundSearchService is null) {
-                throw new System.ArgumentNullException(nameof(compoundSearchService));
-            }
-            if (peakSpotTableService is null) {
-                throw new System.ArgumentNullException(nameof(peakSpotTableService));
-            }
+            : base(model,
+                  ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService),
+                  ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService)) {
 
             this.model = model;
-
-            AnalysisViewModel = model.ObserveProperty(m => m.AnalysisModel)
-                .Where(m => m != null)
-                .Select(m => new AnalysisImmsVM(m, compoundSearchService, peakSpotTableService) { DisplayFilters = displayFilters })
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            AlignmentViewModel = model.ObserveProperty(m => m.AlignmentModel)
-                .Where(m => m != null)
-                .Select(m => new AlignmentImmsVM(m, compoundSearchService, peakSpotTableService) { DisplayFilters = displayFilters })
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
             PropertyChanged += OnDisplayFiltersChanged;
         }
 
         private readonly ImmsMethodModel model;
-
-        public ReadOnlyReactivePropertySlim<AnalysisImmsVM> AnalysisViewModel { get; }
-        public ReadOnlyReactivePropertySlim<AlignmentImmsVM> AlignmentViewModel { get; }
 
         public bool RefMatchedChecked {
             get => ReadDisplayFilter(DisplayFilter.RefMatched);
@@ -91,8 +70,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             if (e.PropertyName == nameof(displayFilters)) {
                 if (AnalysisViewModel.Value != null)
                     AnalysisViewModel.Value.DisplayFilters = displayFilters;
-                if (AlignmentViewModel.Value != null)
-                    AlignmentViewModel.Value.DisplayFilters = displayFilters;
+                // if (AlignmentViewModel.Value != null)
+                //     AlignmentViewModel.Value.DisplayFilters = displayFilters;
             }
         }
 
@@ -137,5 +116,38 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         public DelegateCommand<Window> ShowEicCommand => showEicCommand ?? (showEicCommand = new DelegateCommand<Window>(model.ShowEIC));
         private DelegateCommand<Window> showEicCommand;
+
+        private static IObservable<AnalysisImmsVM> ConvertToAnalysisViewModel(
+            ImmsMethodModel method,
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
+            if (compoundSearchService is null) {
+                throw new ArgumentNullException(nameof(compoundSearchService));
+            }
+            if (peakSpotTableService is null) {
+                throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
+            return method.ObserveProperty(m => m.AnalysisModel)
+                .Where(m => m != null)
+                .Select(m => new AnalysisImmsVM(m, compoundSearchService, peakSpotTableService))
+                .DisposePreviousValue();
+
+        }
+
+        private static IObservable<AlignmentImmsVM> ConvertToAlignmentViewModel(
+            ImmsMethodModel method,
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
+            if (compoundSearchService is null) {
+                throw new ArgumentNullException(nameof(compoundSearchService));
+            }
+            if (peakSpotTableService is null) {
+                throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
+            return method.ObserveProperty(m => m.AlignmentModel)
+                .Where(m => m != null)
+                .Select(m => new AlignmentImmsVM(m, compoundSearchService, peakSpotTableService))
+                .DisposePreviousValue();
+        }
     }
 }

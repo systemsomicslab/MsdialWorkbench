@@ -10,7 +10,7 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     public class MethodSettingModel : BindableBase
     {
-        public MethodSettingModel(ProcessOption option, IMsdialDataStorage<ParameterBase> storage, Action<MethodSettingModel, MethodModelBase> handler, IObservable<Unit> observeParameterChanged) {
+        public MethodSettingModel(ProcessOption option, IMsdialDataStorage<ParameterBase> storage, Action<MethodSettingModel, IMethodModel> handler, IObservable<Unit> observeParameterChanged) {
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
             this.handler = handler;
 
@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public IMsdialDataStorage<ParameterBase> Storage { get; }
 
-        private readonly Action<MethodSettingModel, MethodModelBase> handler;
+        private readonly Action<MethodSettingModel, IMethodModel> handler;
         private readonly IMethodSettingModelFactory settingModelFactory;
 
         public ProcessOption Option {
