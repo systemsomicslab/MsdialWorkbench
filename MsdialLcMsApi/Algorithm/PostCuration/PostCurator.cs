@@ -48,6 +48,12 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
                     }
                 }
 
+                if (postcurparam.IsMzFilter) {
+                    if (Math.Sign(spot.MassCenter) == 1 && spot.MassCenter - Math.Truncate(spot.MassCenter) >= 0.8) {
+                        spot.IsMzFilteredByPostCurator = true;
+                    }
+                }
+
                 // filtering process
                 #region
                 // var mz = spot.MassCenter;
