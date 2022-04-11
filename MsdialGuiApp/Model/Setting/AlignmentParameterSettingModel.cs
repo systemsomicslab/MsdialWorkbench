@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
@@ -8,11 +9,13 @@ using CompMs.MsdialGcMsApi.Parameter;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
@@ -126,10 +129,25 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool isCompleted;
 
-        public void Commit() {
+        public bool TryCommit() {
             if (!ShouldRunAlignment) {
                 parameter.ProcessBaseParam.ProcessOption &= ~ProcessOption.Alignment;
-                return;
+                return true;
+            }
+            if (IsRemoveFeatureBasedOnBlankPeakHeightFoldChange
+                && AnalysisFiles.All(file => file.AnalysisFileType != AnalysisFileType.Blank)) {
+                var request = new ErrorMessageBoxRequest()
+                {
+                    Caption = "Message",
+                    Content = "If you use blank sample filter, please set at least one file's type as Blank in file property setting."
+                        + " Do you continue this analysis without the filter option?",
+                    ButtonType = MessageBoxButton.OKCancel,
+                };
+                MessageBroker.Default.Publish(request);
+                if (request.Result != MessageBoxResult.OK) {
+                    return false;
+                }
+                IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = false;
             }
 
             parameter.ProcessBaseParam.ProcessOption |= ProcessOption.Alignment;
@@ -156,6 +174,7 @@ namespace CompMs.App.Msdial.Model.Setting
             postProcessParameter.IsForceInsertForGapFilling = IsForceInsertForGapFilling;
             EqualityParameterSettings.ForEach(s => s.Commit());
             IsCompleted = true;
+            return true;
         }
 
         private static List<IPeakEqualityParameterSetting> PrepareEqualityParameterSettings(ParameterBase parameter) {

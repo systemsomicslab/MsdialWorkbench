@@ -19,6 +19,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
@@ -86,8 +87,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }           
         }
 
-        public bool Run() {
-            return Model.Run();
+        public bool TryRun() {
+            return Model.TryRun();
         }
 
         // TODO: delete method

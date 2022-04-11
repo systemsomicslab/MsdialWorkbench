@@ -67,13 +67,13 @@
                     </Grid.RowDefinitions>
 
                     <!--
-                    <commonview:PeakSpotNavigator DataContext="{Binding AnalysisVM}"
+                    <commonview:PeakSpotNavigator DataContext="{Binding AnalysisViewModel.Value}"
                                                   IsEnabled="False"
                                                   Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"/>
                     -->
 
                     <!--
-                    <commonview:SurveyScanView DataContext="{Binding AnalysisVM}"
+                    <commonview:SurveyScanView DataContext="{Binding AnalysisViewModel.Value}"
                                                Spectrum="{Binding Ms1Spectrum}"
                                                SplashKey="{Binding Ms1SplashKey}"
                                                MaxIntensity="{Binding Ms1SpectrumMaxIntensity}"
@@ -87,7 +87,7 @@
                         <TabItem Header="Peak spot viewer" 
                                  Name="TabItem_RtMzPairwisePlotPeakView" 
                                  Height="25"
-                                 DataContext="{Binding AnalysisVM}"
+                                 DataContext="{Binding AnalysisViewModel.Value}"
                                  Background="{StaticResource MainThemeColor}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -138,7 +138,7 @@
                         <TabItem Header="Alignment spot viewer" 
                                  Name="TabItem_RtMzPairwisePlotAlignmentView" 
                                  Height="25"
-                                 DataContext="{Binding AlignmentVM}"
+                                 DataContext="{Binding AlignmentViewModel.Value}"
                                  Background="{StaticResource MainThemeColor}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -208,11 +208,11 @@
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <!--
-                                <commonview:EicView DataContext="{Binding AnalysisVM}"
+                                <commonview:EicView DataContext="{Binding AnalysisViewModel.Value}"
                                                     ChromAxis="{StaticResource ChromAxis}"
                                                     ChromTitle="Retention time [min]"
                                                     Grid.Column="0"/>
-                                <commonview:EicView DataContext="{Binding AnalysisVM}"
+                                <commonview:EicView DataContext="{Binding AnalysisViewModel.Value}"
                                                     ChromAxis="{StaticResource ChromAxis}"
                                                     ChromTitle="Drift time [1/k0]"
                                                     Grid.Column="1"/>
@@ -230,8 +230,8 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
                             <!--
-                                <eic:BarChartView DataContext="{Binding AlignmentVM}"/>
-                                <eic:BarChartView DataContext="{Binding AlignmentVM}"/>
+                                <eic:BarChartView DataContext="{Binding AlignmentViewModel.Value}"/>
+                                <eic:BarChartView DataContext="{Binding AlignmentViewModel.Value}"/>
                             -->
                             </Grid>
                         </TabItem>
@@ -243,8 +243,8 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
                             <!--
-                                <eic:AlignmentEicView DataContext="{Binding AlignmentVM}"/>
-                                <eic:AlignmentEicView DataContext="{Binding AlignmentVM}"/>
+                                <eic:AlignmentEicView DataContext="{Binding AlignmentViewModel.Value}"/>
+                                <eic:AlignmentEicView DataContext="{Binding AlignmentViewModel.Value}"/>
                             -->
                             </Grid>
                         </TabItem>
@@ -324,7 +324,7 @@
 
                         <TabItem Name="TabItem_MeasurementVsReference" 
                                  Header="Exp. vs. Ref." 
-                                 DataContext="{Binding AnalysisVM}"
+                                 DataContext="{Binding AnalysisViewModel.Value}"
                                  Background="{StaticResource MainThemeColor}"
                                  Height="25">
                                  <!--
@@ -356,13 +356,13 @@
                                  Background="{StaticResource MainThemeColor}">
 
 <!--
-                            <ms2:RawPurifiedView DataContext="{Binding AnalysisVM}"/>
+                            <ms2:RawPurifiedView DataContext="{Binding AnalysisViewModel.Value}"/>
                             -->
                         </TabItem>
 
                         <TabItem Name="TabItem_RepresentativeVsReference"
                                  Header="Rep. vs. Ref." 
-                                 DataContext="{Binding AlignmentVM}"
+                                 DataContext="{Binding AlignmentViewModel.Value}"
                                  Background="{StaticResource MainThemeColor}" 
                                  Height="25">
                                  <!--
@@ -396,7 +396,7 @@
             </Grid>
         </Grid>
         <!--
-        <local:Footer DataContext="{Binding AnalysisVM}"
+        <local:Footer DataContext="{Binding AnalysisViewModel.Value}"
                       ChromAxis="{StaticResource ChromAxis}" MassAxis="{StaticResource MassAxis}"
                       Grid.Row="2" Grid.Column="1"/>
                       -->

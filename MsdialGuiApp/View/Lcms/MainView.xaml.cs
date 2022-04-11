@@ -25,17 +25,17 @@ namespace CompMs.App.Msdial.View.Lcms
         }
 
         private void TabControl_PairwisePlotViewer_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (sender == TabControl_PairwisePlotViewer) {
-                if (e.AddedItems.Count >= 1) {
-                    var item = e.AddedItems[0];
-                    if (item == TabItem_RtMzPairwisePlotPeakView) {
-                        OnAnalysisViewSelected();
-                    }
-                    if (item == TabItem_RtMzPairwisePlotAlignmentView) {
-                        OnAlignmentViewSelected();
-                    }
-                }
-            }
+            // if (sender == TabControl_PairwisePlotViewer) {
+            //     if (e.AddedItems.Count >= 1) {
+            //         var item = e.AddedItems[0];
+            //         if (item == TabItem_RtMzPairwisePlotPeakView) {
+            //             OnAnalysisViewSelected();
+            //         }
+            //         if (item == TabItem_RtMzPairwisePlotAlignmentView) {
+            //             OnAlignmentViewSelected();
+            //         }
+            //     }
+            // }
         }
 
         private void TabItem_RtMzPairwisePlotPeakView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {

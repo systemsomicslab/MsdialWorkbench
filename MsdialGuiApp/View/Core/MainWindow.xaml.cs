@@ -49,6 +49,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(OpenExperimentSpectrumView);
             broker.ToObservable<SaveFileNameRequest>()
                 .Subscribe(GetSaveFilePath);
+            broker.ToObservable<ErrorMessageBoxRequest>()
+                .Subscribe(ShowErrorComfirmationMessage);
             broker.ToObservable<AlignedChromatogramModificationViewModelLegacy>()
                 .Subscribe(CreateAlignedChromatogramModificationDialog);
             broker.ToObservable<SampleTableViewerInAlignmentViewModelLegacy>()
@@ -80,6 +82,14 @@ namespace CompMs.App.Msdial.View.Core
             if (sfd.ShowDialog(this) == true) {
                 request.Run(sfd.FileName);
             }
+        }
+
+        private void ShowErrorComfirmationMessage(ErrorMessageBoxRequest request) {
+            Dispatcher.Invoke(() =>
+            {
+                var result = MessageBox.Show(request.Content, request.Caption, request.ButtonType, MessageBoxImage.Error);
+                request.Result = result;
+            });
         }
 
         private void CreateAlignedChromatogramModificationDialog(AlignedChromatogramModificationViewModelLegacy vm) {

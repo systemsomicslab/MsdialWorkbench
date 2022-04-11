@@ -14,7 +14,7 @@ using System.Reactive.Linq;
 using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Core {
-    internal class AnalysisModelBase : BindableBase, IDisposable
+    public class AnalysisModelBase : BindableBase, IDisposable
     {
         public AnalysisModelBase(AnalysisFileBean analysisFile) {
             if (analysisFile is null) {

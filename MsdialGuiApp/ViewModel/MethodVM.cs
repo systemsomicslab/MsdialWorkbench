@@ -3,17 +3,19 @@ using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel
 {
     public abstract class MethodViewModel : ViewModelBase
     {
-        public MethodViewModel(MethodModelBase model) {
+        public MethodViewModel(IMethodModel model, IObservable<AnalysisFileViewModel> analysisFileViewModel, IObservable<AlignmentFileViewModel> alignmentFileViewModel) {
             Model = model;
             var analysisFilesView = model.AnalysisFiles.ToReadOnlyReactiveCollection(file => new AnalysisFileBeanViewModel(file));
             AnalysisFilesView = CollectionViewSource.GetDefaultView(analysisFilesView);
@@ -36,10 +38,17 @@ namespace CompMs.App.Msdial.ViewModel
                 .ToReactiveCommand()
                 .WithSubscribe(LoadAlignmentFile)
                 .AddTo(Disposables);
-            SelectedViewModel = new ReactivePropertySlim<ResultVM>().AddTo(Disposables);
+
+            AnalysisViewModel = analysisFileViewModel.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            AlignmentViewModel = alignmentFileViewModel.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            resultViewModels = new List<IReadOnlyReactiveProperty<ResultVM>> { AnalysisViewModel, AlignmentViewModel, };
+            ResultViewModels = resultViewModels.AsReadOnly();
+
+            SelectedViewModel = AnalysisViewModel;
         }
 
-        public MethodModelBase Model { get; }
+        public IMethodModel Model { get; }
 
         public ReactivePropertySlim<AnalysisFileBeanViewModel> SelectedAnalysisFile { get; }
         public ReactivePropertySlim<AlignmentFileBeanViewModel> SelectedAlignmentFile { get; }
@@ -75,12 +84,17 @@ namespace CompMs.App.Msdial.ViewModel
 
         protected abstract void LoadAlignmentFileCore(AlignmentFileBeanViewModel alignmentFile);
 
-        public abstract int InitializeNewProject(Window window);
-        public abstract void LoadProject();
-        public virtual void SaveProject() {
-            Model.SaveAsync();
+        public ReadOnlyReactivePropertySlim<AnalysisFileViewModel> AnalysisViewModel { get; }
+
+        public ReadOnlyReactivePropertySlim<AlignmentFileViewModel> AlignmentViewModel { get; }
+
+        public ReadOnlyCollection<IReadOnlyReactiveProperty<ResultVM>> ResultViewModels { get; }
+        private List<IReadOnlyReactiveProperty<ResultVM>> resultViewModels { get; }
+
+        public IReadOnlyReactiveProperty<ResultVM> SelectedViewModel { 
+            get => selectedViewModel;
+            set => SetProperty(ref selectedViewModel, value);
         }
-        public ReactivePropertySlim<ResultVM> SelectedViewModel { get; }
-        
+        private IReadOnlyReactiveProperty<ResultVM> selectedViewModel;
     }
 }

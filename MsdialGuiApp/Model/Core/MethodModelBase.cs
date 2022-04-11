@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace CompMs.App.Msdial.Model.Core
 {
 
-    public abstract class MethodModelBase : BindableBase, IDisposable
+    public abstract class MethodModelBase : BindableBase, IMethodModel, IDisposable
     {
         public MethodModelBase(
             IEnumerable<AnalysisFileBean> analysisFiles,
@@ -27,15 +27,26 @@ namespace CompMs.App.Msdial.Model.Core
 
         public ObservableCollection<AnalysisFileBean> AnalysisFiles { get; }
 
+        public AnalysisModelBase AnalysisModelBase {
+            get => analysisModelBase;
+            private set => SetProperty(ref analysisModelBase, value);
+        }
+        private AnalysisModelBase analysisModelBase;
+
+        AnalysisModelBase IMethodModel.AnalysisModel {
+            get => analysisModelBase;
+            set => SetProperty(ref analysisModelBase, value);
+        }
+
         public void LoadAnalysisFile(AnalysisFileBean analysisFile) {
             if (AnalysisFile == analysisFile || analysisFile is null) {
                 return;
             }
             AnalysisFile = analysisFile;
-            LoadAnalysisFileCore(AnalysisFile);
+            AnalysisModelBase = LoadAnalysisFileCore(AnalysisFile);
         }
 
-        protected abstract void LoadAnalysisFileCore(AnalysisFileBean analysisFile);
+        protected abstract AnalysisModelBase LoadAnalysisFileCore(AnalysisFileBean analysisFile);
 
         public AlignmentFileBean AlignmentFile {
             get => alignmentFile;
@@ -45,18 +56,23 @@ namespace CompMs.App.Msdial.Model.Core
 
         public ObservableCollection<AlignmentFileBean> AlignmentFiles { get; }
 
-        public AlignmentModelBase AlignmentModel {
-            get => alignmentModel;
-            private set => SetProperty(ref alignmentModel, value);
+        public AlignmentModelBase AlignmentModelBase {
+            get => alignmentModelBase;
+            private set => SetProperty(ref alignmentModelBase, value);
         }
-        private AlignmentModelBase alignmentModel;
+        private AlignmentModelBase alignmentModelBase;
+
+        AlignmentModelBase IMethodModel.AlignmentModel {
+            get => alignmentModelBase;
+            set => SetProperty(ref alignmentModelBase, value);
+        }
 
         public void LoadAlignmentFile(AlignmentFileBean alignmentFile) {
             if (AlignmentFile == alignmentFile || alignmentFile is null) {
                 return;
             }
             AlignmentFile = alignmentFile;
-            AlignmentModel = LoadAlignmentFileCore(AlignmentFile);
+            AlignmentModelBase = LoadAlignmentFileCore(AlignmentFile);
         }
 
         protected abstract AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile);
@@ -64,10 +80,10 @@ namespace CompMs.App.Msdial.Model.Core
         public abstract void Run(ProcessOption option);
 
         public virtual async Task SaveAsync() {
-            if (AlignmentModel is null) {
+            if (AlignmentModelBase is null) {
                 return;
             }
-            await AlignmentModel.SaveAsync();
+            await AlignmentModelBase.SaveAsync();
         }
 
         private bool disposedValue;

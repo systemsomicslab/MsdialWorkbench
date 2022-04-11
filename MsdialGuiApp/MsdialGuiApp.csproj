@@ -155,6 +155,7 @@
     <Compile Include="External Applications\MsDialIniField.cs" />
     <Compile Include="External Applications\MsDialIniParcer.cs" />
     <Compile Include="External Applications\MsDialToExternalApps.cs" />
+    <Compile Include="Model\Core\IMethodModel.cs" />
     <Compile Include="Model\Imms\ImmsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Search\FocusNavigatorModel.cs" />
     <Compile Include="Model\Search\IFilterable.cs" />
@@ -327,6 +328,7 @@
     <Compile Include="ViewModel\Search\FocusNavigatorViewModel.cs" />
     <Compile Include="ViewModel\Search\PeakSpotNavigatorViewModel.cs" />
     <Compile Include="ViewModel\Search\SpotFocusViewModel.cs" />
+    <Compile Include="ViewModel\Service\ErrorMessageBoxRequest.cs" />
     <Compile Include="ViewModel\Service\SaveFileNameRequest.cs" />
     <Compile Include="ViewModel\PeakCuration\AlignedChromatogramModificationViewModelLegacy.cs" />
     <Compile Include="ViewModel\Setting\AdductIonSettingViewModel.cs" />

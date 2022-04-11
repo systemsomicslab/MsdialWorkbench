@@ -76,13 +76,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly IDataProviderFactory<RawMeasurement> providerFactory;
         private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
 
-        protected override void LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+        protected override AnalysisModelBase LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
             var rawObj = DataAccess.LoadMeasurement(analysisFile, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000);
-            AnalysisModel = new LcimmsAnalysisModel(
+            return AnalysisModel = new LcimmsAnalysisModel(
                 analysisFile,
                 providerFactory.Create(rawObj),
                 accProviderFactory.Create(rawObj),

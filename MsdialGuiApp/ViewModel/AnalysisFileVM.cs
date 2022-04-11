@@ -11,7 +11,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel
 {
-    abstract class AnalysisFileViewModel : ResultVM
+    public abstract class AnalysisFileViewModel : ResultVM
     {
         public AnalysisFileViewModel(AnalysisModelBase model) : base(model) {
             if (model is null) {

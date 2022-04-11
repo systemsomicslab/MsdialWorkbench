@@ -9,6 +9,7 @@
              mc:Ignorable="d" 
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
+             xmlns:vmcore="clr-namespace:CompMs.App.Msdial.ViewModel"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              Name="MainControl"
@@ -184,11 +185,7 @@
                         <RowDefinition Height="*" MinHeight="200"/>
                     </Grid.RowDefinitions>
 
-                    <!--
-                    <commonview:PeakSpotNavigator DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer}"
-                                             Grid.Row="0" Grid.Column="0"/>
-                                             -->
-                    <search:PeakSpotNavigatorView DataContext="{Binding SelectedItem.DataContext.PeakSpotNavigatorViewModel, ElementName=TabControl_PairwisePlotViewer}"
+                    <search:PeakSpotNavigatorView DataContext="{Binding SelectedViewModel.Value.PeakSpotNavigatorViewModel}"
                                                   Grid.Row="0" Grid.Column="0"/>
 
                     <chart:SurveyScanView DataContext="{Binding AnalysisViewModel.Value.SurveyScanViewModel}"
@@ -215,11 +212,11 @@
                         </chart:SurveyScanView.ContextMenu>
                     </chart:SurveyScanView>
 
+<!--
                     <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="1" Grid.Column="1" 
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                                 xmlns:pairplot="clr-namespace:CompMs.App.Msdial.View.PairwisePlot"
                                 SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged">
-                        <!--SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged"-->
 
                         <TabItem Header="Peak spot viewer" 
                                  Name="TabItem_RtMzPairwisePlotPeakView" 
@@ -231,21 +228,11 @@
                                 <chart:PeakView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Save image as...">
-                                            <!--
-                                            <MenuItem Header="Save as emf"
-                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
-                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                                      -->
                                             <MenuItem Header="Save as png"
                                                       Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
                                                       CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                         </MenuItem>
                                         <MenuItem Header="Copy image as...">
-                                            <!--
-                                            <MenuItem Header="Copy as emf"
-                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
-                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                                      -->
                                             <MenuItem Header="Copy as png"
                                                       Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
                                                       CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
@@ -296,21 +283,11 @@
                                 <chart:AlignmentPeakPlotView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Save image as...">
-                                            <!--
-                                            <MenuItem Header="Save as emf"
-                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
-                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                                      -->
                                             <MenuItem Header="Save as png"
                                                       Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
                                                       CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                         </MenuItem>
                                         <MenuItem Header="Copy image as...">
-                                            <!--
-                                            <MenuItem Header="Copy as emf"
-                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
-                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                                      -->
                                             <MenuItem Header="Copy as png"
                                                       Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
                                                       CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
@@ -320,6 +297,139 @@
                             </chart:AlignmentPeakPlotView>
                         </TabItem>
 
+                    </TabControl>
+                    -->
+
+                    <TabControl x:Name="TabControl_PairwisePlotViewer"
+                                ItemsSource="{Binding ResultViewModels}"
+                                SelectedItem="{Binding SelectedViewModel}"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                                SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged"
+                                Grid.Row="1" Grid.Column="1" >
+                        <TabControl.ItemContainerStyle>
+                            <Style TargetType="TabItem">
+                                <Setter Property="Background" Value="{StaticResource MainThemeColor}"/>
+                                <Setter Property="Height" Value="24"/>
+                                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="8,0"/>
+                            </Style>
+                        </TabControl.ItemContainerStyle>
+                        <TabControl.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl Content="{Binding Value}">
+                                    <ContentControl.Resources>
+                                        <DataTemplate DataType="{x:Type vmcore:AnalysisFileViewModel}">
+                                            <TextBlock Name="TabItem_RtMzPairwisePlotPeakView"
+                                                       Text="Peak spot viewer"
+                                                       VerticalAlignment="Stretch"
+                                                       DataContextChanged="TabItem_RtMzPairwisePlotPeakView_DataContextChanged"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type vmcore:AlignmentFileViewModel}">
+                                            <TextBlock Name="TabItem_RtMzPairwisePlotAlignmentView"
+                                                       Text="Alignment spot viewer"
+                                                       VerticalAlignment="Stretch"
+                                                       DataContextChanged="TabItem_RtMzPairwisePlotAlignmentView_DataContextChanged"/>
+                                        </DataTemplate>
+                                    </ContentControl.Resources>
+                                </ContentControl>
+                            </DataTemplate>
+                        </TabControl.ItemTemplate>
+                        <TabControl.ContentTemplate>
+                            <DataTemplate>
+                                <ContentControl Content="{Binding Value}">
+                                    <ContentControl.Resources>
+                                        <DataTemplate DataType="{x:Type vmcore:AnalysisFileViewModel}">
+                                            <chart:PeakView x:Name="PeakView" DataContext="{Binding PlotViewModel}">
+                                                <chart:PeakView.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Save image as...">
+                                                            <!--
+                                                            <MenuItem Header="Save as emf"
+                                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                                      -->
+                                                            <MenuItem Header="Save as png"
+                                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                        </MenuItem>
+                                                        <MenuItem Header="Copy image as...">
+                                                            <!--
+                                                            <MenuItem Header="Copy as emf"
+                                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                                      -->
+                                                            <MenuItem Header="Copy as png"
+                                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </chart:PeakView.ContextMenu>
+                                                <chart:PeakView.LabelTemplate>
+                                                    <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <StackPanel.Resources>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="FontSize" Value="9"/>
+                                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                                </Style>
+                                                            </StackPanel.Resources>
+                                                            <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime, StringFormat=Spot ID: {0}; }"/>
+                                                            <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime, StringFormat=Scan #: {0}; }"/>
+                                                            <TextBlock Text="{Binding InnerModel.ChromXs.Value, Mode=OneTime, StringFormat=RT[min]: {0:N3}; }"/>
+                                                            <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </chart:PeakView.LabelTemplate>
+                                            </chart:PeakView>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type vmcore:AlignmentFileViewModel}">
+                                        <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
+                                            <chart:AlignmentPeakPlotView.LabelTemplate>
+                                                <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <StackPanel.Resources>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="9"/>
+                                                                <Setter Property="Foreground" Value="Gray"/>
+                                                            </Style>
+                                                        </StackPanel.Resources>
+                                                        <TextBlock Text="{Binding AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
+                                                        <TextBlock Text="{Binding TimesCenter, Mode=OneTime, StringFormat=RT[min]: {0:N3}; }"/>
+                                                        <TextBlock Text="{Binding MassCenter, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </chart:AlignmentPeakPlotView.LabelTemplate>
+                                            <chart:AlignmentPeakPlotView.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="Save image as...">
+                                                        <!--
+                                                        <MenuItem Header="Save as emf"
+                                                                  Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                                  -->
+                                                        <MenuItem Header="Save as png"
+                                                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Copy image as...">
+                                                        <!--
+                                                        <MenuItem Header="Copy as emf"
+                                                                  Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                                  -->
+                                                        <MenuItem Header="Copy as png"
+                                                                  Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                    </MenuItem>
+                                                </ContextMenu>
+                                            </chart:AlignmentPeakPlotView.ContextMenu>
+                                        </chart:AlignmentPeakPlotView>
+                                            
+                                        </DataTemplate>
+                                    </ContentControl.Resources>
+                                </ContentControl>
+                            </DataTemplate>
+                        </TabControl.ContentTemplate>
                     </TabControl>
 
                     <TabControl Name="TabControl_EicViewAndBarChart"
@@ -413,7 +523,7 @@
                     <Grid Grid.Row="1" Grid.Column="1">
 
                         <Button Name="Button_TableViewer"
-                                DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
+                                DataContext="{Binding SelectedViewModel.Value, Mode=OneWay}"
                                 Command="{Binding ShowIonTableCommand, Mode=OneWay}"
                                 Background="AliceBlue"
                                 HorizontalContentAlignment="Right"
@@ -451,10 +561,9 @@
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0">
-
                         <TabControl Name="TabControl_PeakCharacter"
                                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                    DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
+                                    DataContext="{Binding SelectedViewModel.Value, Mode=OneWay}"
                                     Grid.Row="0">
 
                             <TabItem Header="Basic peak property" 
@@ -472,7 +581,6 @@
                             </TabItem>
                          
                         </TabControl>
-
                     </Grid>
 
                     <TabControl Name="TabControl_MS2Viewer"
@@ -575,11 +683,7 @@
 
             </Grid>
         </Grid>
-        <!--
-        <commonview:Footer DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
-                           ChromAxis="{Binding PlotViewModel.HorizontalAxis}" MassAxis="{Binding PlotViewModel.VerticalAxis}"
-                           Grid.Row="2" Grid.Column="1"/>-->
-        <search:FocusNavigatorView DataContext="{Binding SelectedItem.DataContext.FocusNavigatorViewModel, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
+        <search:FocusNavigatorView DataContext="{Binding SelectedViewModel.Value.FocusNavigatorViewModel, Mode=OneWay}"
                                    Grid.Row="2" Grid.Column="1"/>
 
         <GridSplitter Margin="0,0,0,0" 
