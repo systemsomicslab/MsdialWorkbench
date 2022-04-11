@@ -1,4 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -16,33 +18,18 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     class LcmsMethodVM : MethodViewModel {
         public LcmsMethodVM(
             LcmsMethodModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
-            : base(model,
-                  ConvertToAnalysisViewModelAsObservable(model, compoundSearchService, peakSpotTableService, proteomicsTableService),
-                  ConvertToAlignmentViewModelAsObservable(model, compoundSearchService, peakSpotTableService, proteomicsTableService)) {
-            if (model is null) {
-                throw new ArgumentNullException(nameof(model));
-            }
-
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
-
-            if (peakSpotTableService is null) {
-                throw new ArgumentNullException(nameof(peakSpotTableService));
-            }
-
-            if (proteomicsTableService is null) {
-                throw new ArgumentNullException(nameof(proteomicsTableService));
-            }
+            IObservable<AnalysisLcmsVM> analysisAsObservable,
+            IObservable<LcmsAlignmentViewModel> alignmentAsObservable)
+            : base(
+                  model, analysisAsObservable, alignmentAsObservable,
+                  PrepareChromatogramViewModels(analysisAsObservable, alignmentAsObservable),
+                  PrepareMassSpectrumViewModels(analysisAsObservable, alignmentAsObservable)) {
 
             this.model = model;
 
             ShowExperimentSpectrumCommand = new ReactiveCommand().AddTo(Disposables);
 
-            AnalysisViewModel //this.ObserveProperty(m => m.AnalysisVM)
+            AnalysisViewModel
                 .OfType<AnalysisLcmsVM>()
                 .Where(vm => vm != null)
                 .Select(vm => ShowExperimentSpectrumCommand.WithLatestFrom(vm.ExperimentSpectrumViewModel, (a, b) => b))
@@ -50,6 +37,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .Subscribe(vm => MessageBroker.Default.Publish(vm))
                 .AddTo(Disposables);
             PeakFilterViewModel = new PeakFilterViewModel(this.model.PeakFilterModel).AddTo(Disposables);
+        }
+
+        public LcmsMethodVM(
+            LcmsMethodModel model,
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
+            : this(model,
+                  ConvertToAnalysisViewModelAsObservable(model, compoundSearchService, peakSpotTableService, proteomicsTableService),
+                  ConvertToAlignmentViewModelAsObservable(model, compoundSearchService, peakSpotTableService, proteomicsTableService)) {
+            
         }
 
         private readonly LcmsMethodModel model;
@@ -120,7 +118,24 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService) {
+            if (method is null) {
+                throw new ArgumentNullException(nameof(method));
+            }
+
+            if (compoundSearchService is null) {
+                throw new ArgumentNullException(nameof(compoundSearchService));
+            }
+
+            if (peakSpotTableService is null) {
+                throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
+
+            if (proteomicsTableService is null) {
+                throw new ArgumentNullException(nameof(proteomicsTableService));
+            }
+
             return method.ObserveProperty(m => m.AnalysisModel)
+                .StartWith(method.AnalysisModel)
                 .Where(m => m != null)
                 .Select(m => new AnalysisLcmsVM(m, compoundSearchService, peakSpotTableService, proteomicsTableService))
                 .DisposePreviousValue();
@@ -131,10 +146,42 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService) {
+            if (method is null) {
+                throw new ArgumentNullException(nameof(method));
+            }
+
+            if (compoundSearchService is null) {
+                throw new ArgumentNullException(nameof(compoundSearchService));
+            }
+
+            if (peakSpotTableService is null) {
+                throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
+
+            if (proteomicsTableService is null) {
+                throw new ArgumentNullException(nameof(proteomicsTableService));
+            }
+
             return method.ObserveProperty(m => m.AlignmentModel)
+                .StartWith(method.AlignmentModel)
                 .Where(m => m != null)
                 .Select(m => new LcmsAlignmentViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService))
                 .DisposePreviousValue();
+        }
+
+        private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<AnalysisLcmsVM> analysisAsObservable, IObservable<LcmsAlignmentViewModel> alignmentAsObservable) {
+            var eic = analysisAsObservable.Select(vm => vm.EicViewModel).StartWith((EicViewModel)null);
+            var bar = alignmentAsObservable.Select(vm => vm.BarChartViewModel).StartWith((BarChartViewModel)null);
+            var alignmentEic = alignmentAsObservable.Select(vm => vm.AlignmentEicViewModel).StartWith((AlignmentEicViewModel)null);
+            return new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase>[] { eic, bar, alignmentEic});
+        }
+
+        private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<AnalysisLcmsVM> analysisAsObservable, IObservable<LcmsAlignmentViewModel> alignmentAsObservable) {
+            var rawdec = analysisAsObservable.Select(vm => vm.RawDecSpectrumsViewModel).StartWith((RawDecSpectrumsViewModel)null);
+            var rawpur = analysisAsObservable.Select(vm => vm.RawPurifiedSpectrumsViewModel).StartWith((RawPurifiedSpectrumsViewModel)null);
+            var ms2chrom = Observable.Return<ViewModelBase>(null).StartWith((ViewModelBase)null); // ms2 chrom
+            var repref = alignmentAsObservable.Select(vm => vm.Ms2SpectrumViewModel).StartWith((MsSpectrumViewModel)null);
+            return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase>[] { rawdec, ms2chrom, rawpur, repref});
         }
     }
 }
