@@ -1,8 +1,11 @@
-﻿using CompMs.MsdialCore.DataObj;
+using CompMs.Common.Enum;
+using CompMs.Common.Extension;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
@@ -13,35 +16,62 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
             IReadOnlyList<AnalysisFileBean> files, 
             ParameterBase param) {
 
+            var isBlankFilter = true; // to be included in ParameterBase
+            var filterBlankThreshold = 0.8; // to be included in ParameterBase
+            var isMzFilter = true; //to be included in ParameterBase
+            //...
+
             // process
             foreach (var spot in spots) {
-
                 var frag = false;
+
+                var blankProps = spot.AlignedPeakProperties.Where(x => param.FileID_AnalysisFileType[x.FileID] == AnalysisFileType.Blank).ToList();
+                var isBlankDataAvailable = blankProps.IsEmptyOrNull() ? false : true;
+                var avgBlank = isBlankDataAvailable ? blankProps.Average(x => x.PeakHeightTop) : 0.0;
+
+                var qcProps = spot.AlignedPeakProperties.Where(x => param.FileID_AnalysisFileType[x.FileID] == AnalysisFileType.QC).ToList();
+                var isQcDataAvailable = qcProps.IsEmptyOrNull() ? false : true;
+                var avgQC = isQcDataAvailable ? qcProps.Average(x => x.PeakHeightTop) : 0.0;
+
+                var sampleProps = spot.AlignedPeakProperties.Where(x => param.FileID_AnalysisFileType[x.FileID] == AnalysisFileType.Sample).ToList();
+                var isSampleDataAvailable = sampleProps.IsEmptyOrNull() ? false : true;
+                var avgSample = isSampleDataAvailable ? sampleProps.Average(x => x.PeakHeightTop) : 0.0;
+
+                if (isBlankFilter && isBlankDataAvailable && (isQcDataAvailable || isSampleDataAvailable)) {
+                    var ratioBlank = avgBlank / Math.Max(avgQC, avgSample);
+                    if (ratioBlank >= filterBlankThreshold) {
+                        spot.IsBlankFilteredByPostCurator = true;
+                    }
+                }
+
 
                 // filtering process
                 #region
-                var mz = spot.MassCenter;
-                var rt = spot.TimesCenter.RT.Value;
-                var alignedPeaks = spot.AlignedPeakProperties;
+                // var mz = spot.MassCenter;
+                // var rt = spot.TimesCenter.RT.Value;
+                // var alignedPeaks = spot.AlignedPeakProperties;
 
-                foreach (var peak in alignedPeaks) {
-                    var intensity = peak.PeakHeightTop;
-                    var area = peak.PeakAreaAboveZero;
-                    var mzOfPeak = peak.Mass;
-                    var fileID = peak.FileID;
+                // foreach (var peak in alignedPeaks) {
+                //     var intensity = peak.PeakHeightTop;
+                //     var area = peak.PeakAreaAboveZero;
+                //     var mzOfPeak = peak.Mass;
+                //     var fileID = peak.FileID;
 
-                    var fileObj = files[fileID];
-                    var fileType = fileObj.AnalysisFileType;
-                    if (fileType == Common.Enum.AnalysisFileType.Blank) {
+                //     var fileObj = files[fileID];
+                //     var fileType = fileObj.AnalysisFileType;
+                //     if (fileType == Common.Enum.AnalysisFileType.Blank) {
 
-                    }
+                //     }
 
-                }
+                // }
                 #endregion
 
-                if (frag == true) {
-                    spot.IsFilteredByPostCurator = true;
-                }
+
+                
+
+                // if (frag == true) {
+                //     spot.IsFilteredByPostCurator = true;
+                // }
 
             }
 
