@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace CompMs.Graphics.AxisManager.Generic
 {
-    public abstract class BaseAxisManager<T> : ViewModelBase, IAxisManager<T>
+    public abstract class BaseAxisManager<T> : DisposableModelBase, IAxisManager<T>
     {
         public BaseAxisManager(Range range, Range bounds) {
             InitialRangeCore = range;
