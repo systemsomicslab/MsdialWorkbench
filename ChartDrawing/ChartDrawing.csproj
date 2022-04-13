@@ -74,6 +74,7 @@
     <Compile Include="AxisManager\Generic\ReactiveAxisManager.cs" />
     <Compile Include="AxisManager\RelativeLabelGenerator.cs" />
     <Compile Include="AxisManager\StandardLabelGenerator.cs" />
+    <Compile Include="Base\DataPointCollection.cs" />
     <Compile Include="Base\RangeSelection.cs" />
     <Compile Include="Behavior\AreaSelectBehavior.cs" />
     <Compile Include="Chart\AreaChartControl.cs" />

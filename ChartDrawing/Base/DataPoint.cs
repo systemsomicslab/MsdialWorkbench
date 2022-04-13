@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace CompMs.Graphics.Core.Base
@@ -31,6 +30,15 @@ namespace CompMs.Graphics.Core.Base
         public DataPoint()
         {
             ID = member_id++;
+        }
+
+        public DataPoint Clone() {
+            return new DataPoint
+            {
+                X = X,
+                Y = Y,
+                Type = Type,
+            };
         }
 
         public override string ToString()
