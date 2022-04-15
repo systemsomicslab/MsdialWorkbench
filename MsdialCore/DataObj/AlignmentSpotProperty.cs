@@ -278,8 +278,12 @@ namespace CompMs.MsdialCore.DataObj {
         public List<AlignmentSpotVariableCorrelation> AlignmentSpotVariableCorrelations { get; set; } = new List<AlignmentSpotVariableCorrelation>();
 
         // Post curation result
+        [IgnoreMember]
+        public bool IsFilteredByPostCurator { get => IsBlankFilteredByPostCurator || IsMzFilteredByPostCurator; }
         [Key(58)]
-        public bool IsFilteredByPostCurator { get; set; } = false;
+        public bool IsBlankFilteredByPostCurator { get; set; } = false;
+        [Key(62)]
+        public bool IsMzFilteredByPostCurator { get; set; } = false;
         public bool IsMultiLayeredData() {
             if (AlignmentDriftSpotFeatures.IsEmptyOrNull()) return false;
             return true;

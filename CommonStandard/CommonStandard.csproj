@@ -40,6 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NCDK.Display\NCDK.Display.csproj" />
     <ProjectReference Include="..\NCDK\NCDK.csproj" />
   </ItemGroup>
 

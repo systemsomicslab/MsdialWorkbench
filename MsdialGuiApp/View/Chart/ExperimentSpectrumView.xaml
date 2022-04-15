@@ -61,7 +61,7 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
             <Button Content="Accumulate" Command="{Binding AccumulateSpectrumCommand, Mode=OneTime}" Margin="8"/>
-            <Button Content="Save ms2 spectrum" Command="{Binding SaveSpectraAsNistCommand, Mode=OneTime}" Margin="8"/>
+            <Button Content="Save MS/MS spectrum" Command="{Binding SaveSpectraAsNistCommand, Mode=OneTime}" Margin="8"/>
         </StackPanel>
         
         <chart:RangeSelectableChromatogramView DataContext="{Binding RangeSelectableChromatogramViewModel}"
@@ -111,7 +111,8 @@
                 <gchart:MultiChart.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Save spectra as nist format"
-                                  Command="{Binding SaveSpectraAsNistCommand, Mode=OneTime}"/>
+                                  Command="{Binding SaveSpectraAsNistCommand, Mode=OneTime}"
+                                  InputGestureText="Ctrl+S"/>
                         <MenuItem Header="Save image as...">
                             <MenuItem Header="Save as emf"
                                       Command="{x:Static io:SaveImageAsCommand.EmfInstance}"

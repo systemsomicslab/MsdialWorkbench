@@ -42,8 +42,8 @@ namespace CompMs.App.Msdial.View.PeakCuration {
             this.VM = new ChromatogramManualPeakPickViewModelLegacy(selectedData, param);
             this.DataContext = this.VM;
 
-            var isRI = selectedData.AlignmentProperty.TimesCenter.Type == CompMs.Common.Components.ChromXType.RI ? true : false;
-            var isDrift = selectedData.AlignmentProperty.TimesCenter.Type == CompMs.Common.Components.ChromXType.Drift ? true : false;
+            var isRI = selectedData.AlignmentProperty.ChromXType == CompMs.Common.Components.ChromXType.RI ? true : false;
+            var isDrift = selectedData.AlignmentProperty.ChromXType == CompMs.Common.Components.ChromXType.Drift ? true : false;
 
             if (isRI) {
                 this.Label_RtTop.Content = "Retention index";
@@ -176,14 +176,14 @@ namespace CompMs.App.Msdial.View.PeakCuration {
             var rtleft = this.SelectedData.AlignedPeakProperty.ChromXsLeft.Value;
             var rtRight = this.SelectedData.AlignedPeakProperty.ChromXsRight.Value;
 
-            var noise = this.SelectedData.AlignedPeakProperty.PeakShape.EstimatedNoise;
-            var sn = this.SelectedData.AlignedPeakProperty.PeakShape.SignalToNoise;
+            var noise = this.SelectedData.AlignedPeakProperty.EstimatedNoise;
+            var sn = this.SelectedData.AlignedPeakProperty.SignalToNoise;
             var areaFactore = 1.0;
 
-            if (this.SelectedData.AlignmentProperty.IsMultiLayeredData())
+            if (this.SelectedData.AlignmentProperty.IsMultiLayeredData)
                 this.IsIonMobility = true;
 
-            var isRI = this.SelectedData.AlignmentProperty.TimesCenter.Type == CompMs.Common.Components.ChromXType.RI ? true : false;
+            var isRI = this.SelectedData.AlignmentProperty.ChromXType == CompMs.Common.Components.ChromXType.RI ? true : false;
             this.IsRi = isRI;
             if (isRI) {
                 rttop = this.SelectedData.AlignedPeakProperty.ChromXsTop.RI.Value;
@@ -243,7 +243,7 @@ namespace CompMs.App.Msdial.View.PeakCuration {
             OnPropertyChanged("SignalToNoise");
         }
 
-        private DrawVisualManualPeakModification getChromatogramDrawingVisual(string filename, ObservableCollection<ChromatogramPeak> peaklist,
+        private DrawVisualManualPeakModification getChromatogramDrawingVisual(string filename, List<ChromatogramPeak> peaklist,
             double rtTop, double rtLeft, double rtRight, double estimatedNoise, double signalToNoise, double areaFactor) {
 
             var xTitle = "Retention time (min)";
@@ -280,32 +280,21 @@ namespace CompMs.App.Msdial.View.PeakCuration {
         public void UpdateAlignedProp() {
 
             var prop = this.ChromUC.drawing.ChromPeakProperty;
-            if (prop.RtTop <= 0) { // meaning not detected
+            var type = this.SelectedData.AlignedPeakProperty.ChromXsTop.Type;
+            var unit = this.SelectedData.AlignedPeakProperty.ChromXsTop.Unit;
+            var centralTime = this.SelectedData.AlignmentProperty.TimesCenter;
 
-                if (this.IsRi) {
-                    var centralRI = this.SelectedData.AlignmentProperty.TimesCenter.Value;
-                    this.SelectedData.AlignedPeakProperty.ChromXsTop.RI.Value = centralRI;
-                    this.SelectedData.AlignedPeakProperty.ChromXsLeft.RI.Value = centralRI;
-                    this.SelectedData.AlignedPeakProperty.ChromXsRight.RI.Value = centralRI;
-                }
-                else if (this.IsIonMobility) {
-                    var centralMobility = this.SelectedData.AlignmentProperty.TimesCenter.Value;
-                    this.SelectedData.AlignedPeakProperty.ChromXsTop.Drift.Value = centralMobility;
-                    this.SelectedData.AlignedPeakProperty.ChromXsLeft.Drift.Value = centralMobility;
-                    this.SelectedData.AlignedPeakProperty.ChromXsRight.Drift.Value = centralMobility;
-                }
-                else {
-                    var centralRT = this.SelectedData.AlignmentProperty.TimesCenter.Value;
-                    this.SelectedData.AlignedPeakProperty.ChromXsTop.RT.Value = centralRT;
-                    this.SelectedData.AlignedPeakProperty.ChromXsLeft.RT.Value = centralRT;
-                    this.SelectedData.AlignedPeakProperty.ChromXsRight.RT.Value = centralRT;
-                }
+            if (prop.RtTop <= 0) { // meaning not detected
+                this.SelectedData.AlignedPeakProperty.ChromXsTop = new ChromXs(centralTime, type, unit);
+                this.SelectedData.AlignedPeakProperty.ChromXsLeft = new ChromXs(centralTime, type, unit);
+                this.SelectedData.AlignedPeakProperty.ChromXsRight = new ChromXs(centralTime, type, unit);
             }
             else {
+                this.SelectedData.AlignedPeakProperty.ChromXsTop = new ChromXs(prop.RtTop, type, unit);
+                this.SelectedData.AlignedPeakProperty.ChromXsLeft = new ChromXs(prop.RtLeft, type, unit);
+                this.SelectedData.AlignedPeakProperty.ChromXsRight = new ChromXs(prop.RtRight, type, unit);
+
                 if (this.IsRi) {
-                    this.SelectedData.AlignedPeakProperty.ChromXsTop.RI.Value = prop.RtTop;
-                    this.SelectedData.AlignedPeakProperty.ChromXsLeft.RI.Value = prop.RtLeft;
-                    this.SelectedData.AlignedPeakProperty.ChromXsRight.RI.Value = prop.RtRight;
 
                     var rtTop = 0.0F;
                     var rtLeft = 0.0F;
@@ -327,24 +316,14 @@ namespace CompMs.App.Msdial.View.PeakCuration {
                     this.SelectedData.AlignedPeakProperty.ChromXsTop.RT.Value = rtTop;
                     this.SelectedData.AlignedPeakProperty.ChromXsLeft.RT.Value = rtLeft;
                     this.SelectedData.AlignedPeakProperty.ChromXsRight.RT.Value = rtRight;
-                }
-                else if (this.IsIonMobility) {
-                    this.SelectedData.AlignedPeakProperty.ChromXsTop.Drift.Value = prop.RtTop;
-                    this.SelectedData.AlignedPeakProperty.ChromXsLeft.Drift.Value = prop.RtLeft;
-                    this.SelectedData.AlignedPeakProperty.ChromXsRight.Drift.Value = prop.RtRight;
-                }
-                else {
-                    this.SelectedData.AlignedPeakProperty.ChromXsTop.RT.Value = prop.RtTop;
-                    this.SelectedData.AlignedPeakProperty.ChromXsLeft.RT.Value = prop.RtLeft;
-                    this.SelectedData.AlignedPeakProperty.ChromXsRight.RT.Value = prop.RtRight;
-                }
 
+                }
             }
 
             this.SelectedData.AlignedPeakProperty.PeakHeightTop = prop.HeightFromZero;
             this.SelectedData.AlignedPeakProperty.PeakAreaAboveZero = prop.AreaFromZero;
             this.SelectedData.AlignedPeakProperty.IsManuallyModifiedForQuant = true;
-            this.SelectedData.AlignedPeakProperty.PeakShape.SignalToNoise = prop.SignalToNoise;
+            this.SelectedData.AlignedPeakProperty.SignalToNoise = prop.SignalToNoise;
 
             this.SelectedData.ChromVM.TargetRt = prop.RtTop;
             this.SelectedData.ChromVM.TargetLeftRt = prop.RtLeft;

@@ -991,8 +991,13 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                 case LbmClass.SPE:
                     return LipidMsmsCharacterization.JudgeIfSpeSpecies(molecule.LipidName, molecule.LipidClass,
                         spectrum, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
-
-
+                //20220322
+                case LbmClass.NAPhe:
+                    return LipidMsmsCharacterization.JudgeIfNAcylPheFa(spectrum, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.NATau:
+                        return LipidMsmsCharacterization.JudgeIfNAcylTauFa(spectrum, ms2tol, refMz,
+                         totalCarbon, totalDbBond, totalOxidized, adduct);
                 default:
                     return null;
             }

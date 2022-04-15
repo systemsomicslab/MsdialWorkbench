@@ -8,7 +8,7 @@ namespace CompMs.App.Msdial.Model.Core
 {
     public interface IDatasetModel : INotifyPropertyChanged
     {
-        MethodModelBase Method { get; set; }
+        IMethodModel Method { get; set; }
 
         IMsdialDataStorage<ParameterBase> Storage { get; }
 

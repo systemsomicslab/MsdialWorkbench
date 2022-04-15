@@ -7,6 +7,7 @@ using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.UI.Message;
+using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using Microsoft.Win32;
@@ -14,7 +15,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -95,6 +95,9 @@ namespace CompMs.App.Msdial.ViewModel.Core
             OpenProjectCommand = new AsyncReactiveCommand()
                 .WithSubscribe(Model.LoadAsync)
                 .AddTo(Disposables);
+
+            TaskProgressCollection = new ReactiveCollection<ProgressBarVM>().AddTo(Disposables);
+            AddWhileSaving(Model.NowSaving, TaskProgressCollection).AddTo(Disposables);
         }
 
         private readonly IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService;
@@ -106,6 +109,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public ReadOnlyReactivePropertySlim<ProjectViewModel> ProjectViewModel { get; }
         public ReadOnlyReactivePropertySlim<DatasetViewModel> DatasetViewModel { get; }
         public ReadOnlyReactivePropertySlim<MethodViewModel> MethodViewModel { get; }
+
+        public ReactiveCollection<ProgressBarVM> TaskProgressCollection { get; }
 
         public IMsdialDataStorage<ParameterBase> Storage {
             get => storage;
@@ -226,6 +231,14 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         private void GoToTutorial() {
             System.Diagnostics.Process.Start("https://mtbinfo-team.github.io/mtbinfo.github.io/MS-DIAL/tutorial.html");
+        }
+
+        private IDisposable AddWhileSaving(IObservable<bool> saving, ReactiveCollection<ProgressBarVM> collection) {
+            return saving.Where(x => x)
+                .Select(_ => new ProgressBarVM { Label = "Saving...", IsIndeterminate = true, })
+                .Do(collection.AddOnScheduler)
+                .SelectMany(vm => saving.Where(x => !x).Take(1).Select(_ => vm))
+                .Subscribe(collection.RemoveOnScheduler);
         }
     }
 }

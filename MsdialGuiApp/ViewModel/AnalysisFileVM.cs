@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Search;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel
 {
-    abstract class AnalysisFileViewModel : ResultVM
+    public abstract class AnalysisFileViewModel : ResultVM
     {
         public AnalysisFileViewModel(AnalysisModelBase model) : base(model) {
             if (model is null) {

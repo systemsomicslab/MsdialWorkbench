@@ -1,11 +1,14 @@
-﻿using CompMs.Common.DataObj.Property;
+﻿using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Parser;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Parameter;
+using Reactive.Bindings.Notifiers;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
@@ -17,6 +20,9 @@ namespace CompMs.App.Msdial.Model.Setting
                 referenceParameter.SearchedAdductIons = AdductResourceParser.GetAdductIonInformationList(parameter.IonMode);
             }
             AdductIons = new ObservableCollection<AdductIon>(referenceParameter.SearchedAdductIons);
+            if (AdductIons.FirstOrDefault() is AdductIon firstAdduct) {
+                firstAdduct.IsIncluded = true;
+            }
             IsReadOnly = (process & ProcessOption.Identification) == 0;
         }
 
@@ -37,6 +43,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public void AddAdductIon() {
             var adduct = UserDefinedAdduct;
             if (adduct?.FormatCheck ?? false) {
+                adduct.IsIncluded = true;
                 AdductIons.Add(adduct);
             }
         }
@@ -47,11 +54,22 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
-        public void Commit() {
+        public bool TryCommit() {
             if (IsReadOnly) {
-                return;
+                return true;
+            }
+            if (AdductIons.All(ion => !ion.IsIncluded || (ion.AdductIonName != "[M+H]+" && ion.AdductIonName != "[M-H]-"))) {
+                var request = new ErrorMessageBoxRequest
+                {
+                    Caption = "Error",
+                    Content = "M + H or M - H must be included.",
+                    ButtonType = MessageBoxButton.OK,
+                };
+                MessageBroker.Default.Publish(request);
+                return false;
             }
             referenceParameter.SearchedAdductIons = AdductIons.ToList();
+            return true;
         }
     }
 }

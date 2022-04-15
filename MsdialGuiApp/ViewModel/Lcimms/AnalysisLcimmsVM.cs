@@ -8,7 +8,6 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -93,36 +92,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             .Subscribe(_ => Ms1PeaksView?.Refresh())
             .AddTo(Disposables);
 
-            var rtHAxis = this.model.RtMzPlotModel
-                .ObserveProperty(m => m.HorizontalRange)
-                .ToReactiveAxisManager<double>(new RelativeMargin(0.05))
-                .AddTo(Disposables);
-            var dtHAxis = this.model.DtMzPlotModel
-                .ObserveProperty(m => m.HorizontalRange)
-                .ToReactiveAxisManager<double>(new RelativeMargin(0.05))
-                .AddTo(Disposables);
-            var vAxis = this.model.RtMzPlotModel
-                .ObserveProperty(m => m.VerticalRange)
-                .ToReactiveAxisManager<double>(new RelativeMargin(0.05))
-                .AddTo(Disposables);
-
-            RtMzPlotViewModel = new AnalysisPeakPlotViewModel(
-                this.model.RtMzPlotModel,
-                brushSource: Observable.Return(this.model.Brush),
-                horizontalAxis: rtHAxis,
-                verticalAxis: vAxis).AddTo(Disposables);
+            var brush = Observable.Return(this.model.Brush);
+            RtMzPlotViewModel = new AnalysisPeakPlotViewModel(this.model.RtMzPlotModel, brushSource: brush).AddTo(Disposables);
             RtEicViewModel = new EicViewModel(
                 this.model.RtEicModel,
-                horizontalAxis: rtHAxis).AddTo(Disposables);
+                horizontalAxis: RtMzPlotViewModel.HorizontalAxis).AddTo(Disposables);
 
-            DtMzPlotViewModel = new AnalysisPeakPlotViewModel(
-                this.model.DtMzPlotModel,
-                brushSource: Observable.Return(this.model.Brush),
-                horizontalAxis: dtHAxis,
-                verticalAxis: vAxis).AddTo(Disposables);
+            DtMzPlotViewModel = new AnalysisPeakPlotViewModel(this.model.DtMzPlotModel, brushSource: brush).AddTo(Disposables);
             DtEicViewModel = new EicViewModel(
                 this.model.DtEicModel,
-                horizontalAxis: dtHAxis).AddTo(Disposables);
+                horizontalAxis: DtMzPlotViewModel.HorizontalAxis).AddTo(Disposables);
 
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
                 this.model.Parameter.ProjectParam.SpectrumCommentToColorBytes
@@ -147,7 +126,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
             SurveyScanViewModel = new SurveyScanViewModel(
                 this.model.SurveyScanModel,
-                horizontalAxis: vAxis).AddTo(Disposables);
+                horizontalAxis: RtMzPlotViewModel.VerticalAxis).AddTo(Disposables);
             // PeakSpotTableViewModelBase = new LcimmsAnalysisViewModel
 
             SearchCompoundCommand = new[]

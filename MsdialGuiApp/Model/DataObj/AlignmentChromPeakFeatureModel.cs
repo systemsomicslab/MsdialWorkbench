@@ -4,14 +4,20 @@ using CompMs.MsdialCore.DataObj;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class AlignmentChromPeakFeatureModel : BindableBase{
+    public class AlignmentChromPeakFeatureModel : BindableBase {
 
-        public AlignmentChromPeakFeature innerModel { get; }
+        private readonly AlignmentChromPeakFeature innerModel;
         public AlignmentChromPeakFeatureModel(AlignmentChromPeakFeature innerModel) {
             this.innerModel = innerModel;
         }
 
+        public string Name => innerModel.Name;
         public int FileID => innerModel.FileID;
+        public string FileName => innerModel.FileName;
+        public int PeakID => innerModel.PeakID;
+        public double TotalScore => innerModel.MatchResults.Representative.TotalScore;
+        public double Mass => innerModel.Mass;
+        public double Time => ChromXsTop.Value;
 
         public ChromXs ChromXsLeft { 
             get => this.innerModel.ChromXsLeft; 

@@ -155,6 +155,13 @@
     <Compile Include="External Applications\MsDialIniField.cs" />
     <Compile Include="External Applications\MsDialIniParcer.cs" />
     <Compile Include="External Applications\MsDialToExternalApps.cs" />
+    <Compile Include="Model\Core\IMethodModel.cs" />
+    <Compile Include="Model\Imms\ImmsAnnotatorSettingModel.cs" />
+    <Compile Include="Model\Search\FocusNavigatorModel.cs" />
+    <Compile Include="Model\Search\IFilterable.cs" />
+    <Compile Include="Model\Search\ISpotFocus.cs" />
+    <Compile Include="Model\Search\PeakSpotNavigatorModel.cs" />
+    <Compile Include="Model\Search\SpotFocus.cs" />
     <Compile Include="Model\DataObj\AlignmentChromPeakFeatureModel.cs" />
     <Compile Include="Model\DataObj\BarItemCollection.cs" />
     <Compile Include="Model\Loader\AlignmentEicLoader.cs" />
@@ -289,12 +296,15 @@
     <Compile Include="ViewModel\AlignmentPeakPlotVM.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\Chart\SingleSpectrumViewModel.cs" />
+    <Compile Include="ViewModel\Chart\SmallClassBarChartViewModel.cs" />
     <Compile Include="ViewModel\Chart\SpectrumViewModel.cs" />
     <Compile Include="ViewModel\Chart\SurveyScanViewModel.cs" />
     <Compile Include="Model\Search\CompoundResult.cs" />
+    <Compile Include="ViewModel\Converter\BarItemCollectionToSmallClassBarChartViewModel.cs" />
     <Compile Include="ViewModel\Converter\PeakToChromatogramConverter.cs" />
     <Compile Include="ViewModel\Core\DatasetViewModel.cs" />
     <Compile Include="ViewModel\Core\ProjectViewModel.cs" />
+    <Compile Include="ViewModel\Core\ViewModelSwitcher.cs" />
     <Compile Include="ViewModel\DataObj\AnalysisFileBeanViewModel.cs" />
     <Compile Include="ViewModel\DataObj\PeakPickBaseParameterViewModel.cs" />
     <Compile Include="ViewModel\DataObj\ProcessBaseParameterViewModel.cs" />
@@ -308,11 +318,18 @@
     <Compile Include="ViewModel\Dims\DimsMspAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsTextDBAnnotationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Imms\ImmsAnnotatorSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParameterSetViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsAnnotatorSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\MsdialLcimmsParameterViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsCompoundSearchViewModel.cs" />
     <Compile Include="ViewModel\MsResult\SummarizedSpectrumViewModel.cs" />
+    <Compile Include="Model\Search\PeakFilterModel.cs" />
+    <Compile Include="ViewModel\Search\PeakFilterViewModel.cs" />
+    <Compile Include="ViewModel\Search\FocusNavigatorViewModel.cs" />
+    <Compile Include="ViewModel\Search\PeakSpotNavigatorViewModel.cs" />
+    <Compile Include="ViewModel\Search\SpotFocusViewModel.cs" />
+    <Compile Include="ViewModel\Service\ErrorMessageBoxRequest.cs" />
     <Compile Include="ViewModel\Service\SaveFileNameRequest.cs" />
     <Compile Include="ViewModel\PeakCuration\AlignedChromatogramModificationViewModelLegacy.cs" />
     <Compile Include="ViewModel\Setting\AdductIonSettingViewModel.cs" />
@@ -543,6 +560,12 @@
     </Compile>
     <Compile Include="ViewModel\Core\MainWindowVM.cs" />
     <Compile Include="ViewModel\Setting\AnalysisFilePropertySetViewModel.cs" />
+    <Compile Include="View\Search\FocusNavigatorView.xaml.cs">
+      <DependentUpon>FocusNavigatorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Search\PeakSpotNavigatorView.xaml.cs">
+      <DependentUpon>PeakSpotNavigatorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Setting\AdductIonSettingView.xaml.cs">
       <DependentUpon>AdductIonSettingView.xaml</DependentUpon>
     </Compile>
@@ -565,7 +588,7 @@
     <Compile Include="ViewModel\Dims\AnalysisDimsVM.cs" />
     <Compile Include="ViewModel\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Dims\DimsMethodVM.cs" />
-    <Compile Include="ViewModel\DisplayFilter.cs" />
+    <Compile Include="Model\Search\DisplayFilter.cs" />
     <Compile Include="ViewModel\AdductIonVM.cs" />
     <Compile Include="ViewModel\Imms\AlignmentImmsVM.cs" />
     <Compile Include="ViewModel\Imms\AnalysisImmsVM.cs" />
@@ -573,7 +596,7 @@
     <Compile Include="ViewModel\MsdialProjectParameterFactory.cs" />
     <Compile Include="ViewModel\MzSearchQueryVM.cs" />
     <Compile Include="ViewModel\MsRefSearchParameterBaseVM.cs" />
-    <Compile Include="ViewModel\Lcms\AlignmentLcmsVM.cs" />
+    <Compile Include="ViewModel\Lcms\LcmsAlignmentViewModel.cs" />
     <Compile Include="ViewModel\AnalysisFileVM.cs" />
     <Compile Include="ViewModel\Lcms\AnalysisLcmsVM.cs" />
     <Compile Include="Model\DataObj\BarItem.cs" />
@@ -1018,6 +1041,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\Search\FocusNavigatorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Search\PeakSpotNavigatorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Setting\AdductIonSettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1348,7 +1379,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Property\" />
-    <Folder Include="ViewModel\Search\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

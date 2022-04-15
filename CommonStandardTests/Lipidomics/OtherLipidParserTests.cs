@@ -205,4 +205,20 @@ namespace CompMs.Common.Lipidomics.Tests
         }
     }
 
+    [TestClass()]
+    public class CARLipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new CARLipidParser();
+
+            var lipid = parser.Parse("CAR 18:1");
+            Assert.AreEqual(425.350509, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.CAR, lipid.LipidClass);
+        }
+    }
+
+
+
 }

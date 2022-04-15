@@ -66,16 +66,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             .Subscribe(_ => Ms1PeaksView.Refresh())
             .AddTo(Disposables);
 
-            var hAxis = Model.PlotModel
-                .ObserveProperty(m => m.HorizontalRange)
-                .ToReactiveAxisManager<double>(new ChartMargin(0.05))
-                .AddTo(Disposables);
-            var vAxis = Observable.Return(new Range(-0.5, 0.5))
-                .ToReactiveAxisManager<double>(new ChartMargin(0.05))
-                .AddTo(Disposables);
-
-            PlotViewModel = new AnalysisPeakPlotViewModel(Model.PlotModel, brushSource: Observable.Return(Model.Brush), horizontalAxis: hAxis, verticalAxis: vAxis).AddTo(Disposables);
-            EicViewModel = new EicViewModel(Model.EicModel, horizontalAxis: hAxis).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(Model.PlotModel, brushSource: Observable.Return(Model.Brush)).AddTo(Disposables);
+            EicViewModel = new EicViewModel(Model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
             
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
                 model.Parameter.ProjectParam.SpectrumCommentToColorBytes

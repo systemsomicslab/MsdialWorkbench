@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
+             xmlns:converter="clr-namespace:CompMs.App.Msdial.ViewModel.Converter"
              xmlns:rs="clr-namespace:CompMs.Graphics.UI.RangeSlider;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
@@ -20,6 +21,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <converter:BarItemCollectionToSmallClassBarChartViewModel x:Key="CollectionToViewModel"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -167,7 +169,8 @@
                                         Width="150">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <chart:SmallClassBarChart DataContext="{Binding BarItemCollection}"/>
+                            <chart:SmallClassBarChart DataContext="{Binding BarItemCollection, Converter={StaticResource CollectionToViewModel}}"
+                                                      ClassBrush="{Binding DataContext.ClassBrush.Value, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

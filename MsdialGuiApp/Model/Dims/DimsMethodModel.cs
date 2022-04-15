@@ -181,18 +181,18 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
-        protected override void LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+        protected override AnalysisModelBase LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
-            AnalysisModel = new DimsAnalysisModel(
+            return AnalysisModel = new DimsAnalysisModel(
                 analysisFile,
                 ProviderFactory.Create(analysisFile),
                 matchResultEvaluator,
                 Storage.DataBaseMapper.MoleculeAnnotators,
                 Storage.DataBaseMapper,
-                Storage.Parameter).AddTo(Disposables);;
+                Storage.Parameter).AddTo(Disposables);
         }
 
         protected override AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {

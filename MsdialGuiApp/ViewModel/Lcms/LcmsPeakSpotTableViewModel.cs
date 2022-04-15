@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -124,7 +125,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReactiveProperty<double> rtLower,
             IReactiveProperty<double> rtUpper,
             IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword)
+            IReactiveProperty<string> commentFilterKeyword,
+            IObservable<IBrushMapper<BarItem>> classBrush)
             : base(
                   model,
                   massLower,
@@ -133,7 +135,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   rtUpper,
                   metaboliteFilterKeyword,
                   commentFilterKeyword) {
+            ClassBrush = classBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
+
+        public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> ClassBrush { get; }
     }
 
     sealed class LcmsProteomicsAlignmentTableViewModel : LcmsPeakSpotTableViewModel {

@@ -83,7 +83,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public DimsDataCollectionSettingModel DimsProviderFactoryParameter { get; }
         public ImmsDataCollectionSettingModel ImmsProviderFactoryParameter { get; }
 
-        public bool Commit() {
+        public bool TryCommit() {
             if (IsReadOnly) {
                 return false;
             }

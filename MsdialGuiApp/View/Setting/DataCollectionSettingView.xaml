@@ -104,7 +104,7 @@
                         </StackPanel>
                     </ContentControl>
 
-                    <ContentControl Visibility="{Binding CanSetImmsDataCollectionSettingViewModel, Converter={StaticResource BooleanToVisibility}}">
+                    <ContentControl x:Name="ImmsMs1SelectionMethod" Visibility="{Binding CanSetImmsDataCollectionSettingViewModel, Converter={StaticResource BooleanToVisibility}}">
                         <StackPanel DataContext="{Binding ImmsDataCollectionSettingViewModel}">
                             <RadioButton Content="Average(average all ms1 spectrums)" IsChecked="{Binding UseAverageMs1.Value}"/>
                             <RadioButton Content="TIC(total ion current)" IsChecked="{Binding UseMs1WithHighestTic.Value}"/>
@@ -117,10 +117,10 @@
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <TextBox Text="{Binding TimeBegin.Value}" Grid.Column="0"
-                                             IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ContentControl}}"/>
+                                             IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, ElementName=ImmsMs1SelectionMethod}"/>
                                     <TextBlock Text="-" Margin="8,0" VerticalAlignment="Center" Grid.Column="1"/>
                                     <TextBox Text="{Binding TimeEnd.Value}" Grid.Column="2"
-                                             IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ContentControl}}"/>
+                                             IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, ElementName=ImmsMs1SelectionMethod}"/>
                                 </Grid>
                             </ui:LabeledContent>
 
@@ -128,14 +128,14 @@
                                                AppendLabel="Da"
                                                IsEnabled="{Binding UseAverageMs1.Value, Mode=OneWay}">
                                 <TextBox Text="{Binding MassTolerance.Value}"
-                                         IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ContentControl}}"/>
+                                         IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, ElementName=ImmsMs1SelectionMethod}"/>
                             </ui:LabeledContent>
 
                             <ui:LabeledContent PrependLabel="Width of drift time to average"
                                                AppendLabel="msec"
                                                IsEnabled="{Binding UseAverageMs1.Value, Mode=OneWay}">
                                 <TextBox Text="{Binding DriftTolerance.Value}"
-                                         IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, RelativeSource={RelativeSource AncestorType=ContentControl}}"/>
+                                         IsReadOnly="{Binding DataContext.IsReadOnly, Mode=OneTime, ElementName=ImmsMs1SelectionMethod}"/>
                             </ui:LabeledContent>
                         </StackPanel>
                     </ContentControl>

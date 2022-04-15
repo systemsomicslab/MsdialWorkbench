@@ -62,6 +62,7 @@ namespace CompMs.Common.Components
             MainType = chromX.Type;
         }
 
+   
         public ChromX GetRepresentativeXAxis()
         {
             switch (MainType)

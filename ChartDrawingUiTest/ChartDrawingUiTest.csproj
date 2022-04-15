@@ -73,6 +73,10 @@
     <Compile Include="Bar\Bar2.xaml.cs">
       <DependentUpon>Bar2.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Bar\Bar3.xaml.cs">
+      <DependentUpon>Bar3.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Bar\BarViewModel3.cs" />
     <Compile Include="Bar\BarVM1.cs" />
     <Compile Include="Behavior\AreaSelectBehaviorTest.xaml.cs">
       <DependentUpon>AreaSelectBehaviorTest.xaml</DependentUpon>
@@ -159,6 +163,9 @@
     <Compile Include="UI\DependencyPropertyTest.xaml.cs">
       <DependentUpon>DependencyPropertyTest.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\DoubleClickListBox.xaml.cs">
+      <DependentUpon>DoubleClickListBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\DPControl.cs" />
     <Compile Include="UI\RangeSlider.xaml.cs">
       <DependentUpon>RangeSlider.xaml</DependentUpon>
@@ -176,6 +183,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Bar\Bar2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Bar\Bar3.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -283,6 +294,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\DependencyPropertyTest.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\DoubleClickListBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -137,6 +137,40 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(667.6478602, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.Cer_HDS, lipid.LipidClass);
         }
+        [TestMethod()]
+        public void GM3ParseTest()
+        {
+            var parser = new GM3LipidParser();
 
+            var lipid = parser.Parse("GM3 36:2;2O");
+            Assert.AreEqual(1178.728808, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.GM3, lipid.LipidClass);
+
+            lipid = parser.Parse("GM3 18:1;2O/18:1"); // CCCCCCCCCCCC=CC(O)C(COC1OC(CO)C(OC2OC(CO)C(O)C(OC3(CC(O)C(N=C(C)O)C(O3)C(O)C(O)CO)C(O)=O)C2O)C(O)C1O)NC(=O)CCCCCCCCCC=CCCCCCCCC
+            Assert.AreEqual(1178.728808, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.GM3, lipid.LipidClass);
+
+            lipid = parser.Parse("GM3 18:1;1OH,3OH/18:1");
+            Assert.AreEqual(1178.728808, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.GM3, lipid.LipidClass);
+        }
+
+        [TestMethod()]
+        public void SHexCerParseTest()
+        {
+            var parser = new SHexCerLipidParser();
+
+            var lipid = parser.Parse("SHexCer 36:2;2O");
+            Assert.AreEqual(805.53738, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.SHexCer, lipid.LipidClass);
+
+            lipid = parser.Parse("SHexCer 18:1;2O/18:1"); // O=C(NC(COC1OC(CO)C(O)C(OS(=O)(=O)O)C1O)C(O)C=CCCCCCCC)CCCCCCCCCCCC=CCCCCCCCCCC
+            Assert.AreEqual(805.53738, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.SHexCer, lipid.LipidClass);
+
+            lipid = parser.Parse("SHexCer 18:1;1OH,3OH/18:1");
+            Assert.AreEqual(805.53738, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.SHexCer, lipid.LipidClass);
+        }
     }
 }

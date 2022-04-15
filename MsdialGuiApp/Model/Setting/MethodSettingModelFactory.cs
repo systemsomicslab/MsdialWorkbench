@@ -33,7 +33,7 @@ namespace CompMs.App.Msdial.Model.Setting
         AlignmentParameterSettingModel CreateAlignmentParameterSetting();
         MobilitySettingModel CreateMobilitySetting();
         IsotopeTrackSettingModel CreateIsotopeTrackSetting();
-        MethodModelBase BuildMethod();
+        IMethodModel BuildMethod();
     }
 
     public sealed class MethodSettingModelFactory : IMethodSettingModelFactory
@@ -67,7 +67,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         private readonly IMethodSettingModelFactory factoryImpl;
 
-        public MethodModelBase BuildMethod() => factoryImpl.BuildMethod();
+        public IMethodModel BuildMethod() => factoryImpl.BuildMethod();
         public AdductIonSettingModel CreateAdductIonSetting() => factoryImpl.CreateAdductIonSetting();
         public AlignmentParameterSettingModel CreateAlignmentParameterSetting() => factoryImpl.CreateAlignmentParameterSetting();
         public DataCollectionSettingModel CreateDataCollectionSetting() => factoryImpl.CreateDataCollectionSetting();
@@ -147,7 +147,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
-        public MethodModelBase BuildMethod() {
+        public IMethodModel BuildMethod() {
             return new DimsMethodModel(storage, storage.AnalysisFiles, storage.AlignmentFiles);
         }
     }
@@ -228,7 +228,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
-        public MethodModelBase BuildMethod() {
+        public IMethodModel BuildMethod() {
             return new LcmsMethodModel(storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true), parameterAsObservable, loader);
         }
     }
@@ -260,9 +260,8 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IdentifySettingModel CreateIdentifySetting() {
-            throw new NotImplementedException("ImmsAnnotatorSettingModelFactory is not implemented!");
             var parameter = storage.Parameter;
-            var model = new IdentifySettingModel(storage.Parameter, null, process, storage.DataBases);
+            var model = new IdentifySettingModel(storage.Parameter, new ImmsAnnotatorSettingModelFactory(), process, storage.DataBases);
 
             if (parameter.TargetOmics == TargetOmics.Lipidomics) {
                 if (model.DataBaseModels.Count == 0) {
@@ -297,7 +296,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
-        public MethodModelBase BuildMethod() {
+        public IMethodModel BuildMethod() {
             return new ImmsMethodModel(storage);
         }
     }
@@ -365,7 +364,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
-        public MethodModelBase BuildMethod() {
+        public IMethodModel BuildMethod() {
             return new LcimmsMethodModel(storage);
         }
     }

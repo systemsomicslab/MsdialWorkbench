@@ -46,7 +46,8 @@ namespace CompMs.Common.Enum
         GPNAE, DGMG, MGMG,
         GD1a, GD1b, GD2, GD3, GM1, GQ1b, GT1b, NGcGM3,
         ST,
-        DGTA, LDGTA
+        DGTA, LDGTA,
+        NATau, NAPhe,
 
     }
 

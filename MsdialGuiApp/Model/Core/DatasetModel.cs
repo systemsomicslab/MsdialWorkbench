@@ -30,7 +30,7 @@ namespace CompMs.App.Msdial.Model.Core
             AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, Storage, Handler, ObserveParameterChanged);
         }
 
-        public MethodModelBase Method {
+        public IMethodModel Method {
             get => method;
             private set {
                 var prev = method;
@@ -39,9 +39,9 @@ namespace CompMs.App.Msdial.Model.Core
                 }
             }
         }
-        private MethodModelBase method;
+        private IMethodModel method;
 
-        MethodModelBase IDatasetModel.Method {
+        IMethodModel IDatasetModel.Method {
             get => Method;
             set => Method = value;
         }
@@ -69,7 +69,7 @@ namespace CompMs.App.Msdial.Model.Core
         }
         private MethodSettingModel alignmentProcessMethodSettingModel;
 
-        private void Handler(MethodSettingModel setting, MethodModelBase model) {
+        private void Handler(MethodSettingModel setting, IMethodModel model) {
             Method = model;
             AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, Handler, ObserveParameterChanged);
             IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, Storage, Handler, ObserveParameterChanged);

@@ -90,6 +90,16 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.EtherPE:
                     return EtherPEEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
 
+                case LbmClass.SHexCer:
+                    return SHexCerEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.GM3:
+                    return GM3EadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+
+                case LbmClass.MG:
+                    return MGEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.CAR:
+                    return CAREadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+
                 default: return (null, new double[2] { 0.0, 0.0 });
             }
         }
@@ -1412,6 +1422,13 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.SPE:
                     return LipidMsmsCharacterization.JudgeIfSpeSpecies(molecule.LipidName, molecule.LipidClass,
                         msScanProp, ms2tol, refMz, totalCarbon, totalDbBond, adduct);
+                //20220322
+                case LbmClass.NAPhe:
+                    return LipidMsmsCharacterization.JudgeIfNAcylPheFa(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
+                case LbmClass.NATau:
+                    return LipidMsmsCharacterization.JudgeIfNAcylTauFa(msScanProp, ms2tol, refMz,
+                     totalCarbon, totalDbBond, totalOxidized, adduct);
 
                 default:
                     return null;

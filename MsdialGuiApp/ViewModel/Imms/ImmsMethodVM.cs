@@ -1,11 +1,13 @@
 ﻿using CompMs.App.Msdial.Model.Imms;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.MsdialImmsCore.DataObj;
 using Reactive.Bindings.Extensions;
+using System;
 using System.ComponentModel;
+using System.Reactive.Linq;
 using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
@@ -16,50 +18,15 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             ImmsMethodModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
-            : base(model) {
-            if (compoundSearchService is null) {
-                throw new System.ArgumentNullException(nameof(compoundSearchService));
-            }
-            if (peakSpotTableService is null) {
-                throw new System.ArgumentNullException(nameof(peakSpotTableService));
-            }
+            : base(model,
+                  ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService),
+                  ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService)) {
 
             this.model = model;
-            this.compoundSearchService = compoundSearchService;
-            this.peakSpotTableService = peakSpotTableService;
-
             PropertyChanged += OnDisplayFiltersChanged;
         }
 
-        public ImmsMethodVM(
-            MsdialImmsDataStorage storage,
-            IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
-            : this(
-                  new ImmsMethodModel(storage),
-                  compoundSearchService,
-                  peakSpotTableService) {
-
-        }
-            
-
         private readonly ImmsMethodModel model;
-
-        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
-        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
-
-        public AnalysisImmsVM AnalysisVM {
-            get => analysisVM;
-            set => SetProperty(ref analysisVM, value);
-
-        }
-        private AnalysisImmsVM analysisVM;
-
-        public AlignmentImmsVM AlignmentVM {
-            get => alignmentVM;
-            set => SetProperty(ref alignmentVM, value);
-        }
-        private AlignmentImmsVM alignmentVM;
 
         public bool RefMatchedChecked {
             get => ReadDisplayFilter(DisplayFilter.RefMatched);
@@ -101,10 +68,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         void OnDisplayFiltersChanged(object sender, PropertyChangedEventArgs e) {
             if (e.PropertyName == nameof(displayFilters)) {
-                if (AnalysisVM != null)
-                    AnalysisVM.DisplayFilters = displayFilters;
-                if (AlignmentVM != null)
-                    AlignmentVM.DisplayFilters = displayFilters;
+                if (AnalysisViewModel.Value != null)
+                    AnalysisViewModel.Value.DisplayFilters = displayFilters;
+                // if (AlignmentViewModel.Value != null)
+                //     AlignmentViewModel.Value.DisplayFilters = displayFilters;
             }
         }
 
@@ -117,40 +84,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             OnPropertyChanged(nameof(displayFilters));
         }
 
-        public override int InitializeNewProject(Window window) {
-            model.InitializeNewProject(window);
-
-            AnalysisFilesView.MoveCurrentToFirst();
-            SelectedAnalysisFile.Value = AnalysisFilesView.CurrentItem as AnalysisFileBeanViewModel;
-            LoadAnalysisFileCommand.Execute();
-
-            return 0;
-        }
-
-        public override void LoadProject() {
-            AnalysisFilesView.MoveCurrentToFirst();
-            model.Load();
-            SelectedAnalysisFile.Value = AnalysisFilesView.CurrentItem as AnalysisFileBeanViewModel;
-            LoadAnalysisFileCommand.Execute();
-        }
-
         protected override void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile) {
             if (analysisFile?.File == null || analysisFile.File == model.AnalysisFile) {
                 return;
             }
             model.LoadAnalysisFile(analysisFile.File);
-
-            if (AnalysisVM != null) {
-                AnalysisVM.Dispose();
-                Disposables.Remove(AnalysisVM);
-            }
-            AnalysisVM = new AnalysisImmsVM(
-                model.AnalysisModel,
-                compoundSearchService,
-                peakSpotTableService)
-            {
-                DisplayFilters = displayFilters
-            }.AddTo(Disposables);
         }
 
         protected override void LoadAlignmentFileCore(AlignmentFileBeanViewModel alignmentFile) {
@@ -158,18 +96,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 return;
             }
             model.LoadAlignmentFile(alignmentFile.File);
-
-            if (AlignmentVM != null) {
-                AlignmentVM?.Dispose();
-                Disposables.Remove(AlignmentVM);
-            }
-            AlignmentVM = new AlignmentImmsVM(
-                model.AlignmentModel,
-                compoundSearchService,
-                peakSpotTableService)
-            {
-                DisplayFilters = displayFilters
-            }.AddTo(Disposables);
         }
 
         public DelegateCommand<Window> ExportAnalysisResultCommand => exportAnalysisResultCommand ?? (exportAnalysisResultCommand = new DelegateCommand<Window>(model.ExportAnalysis));
@@ -190,5 +116,38 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         public DelegateCommand<Window> ShowEicCommand => showEicCommand ?? (showEicCommand = new DelegateCommand<Window>(model.ShowEIC));
         private DelegateCommand<Window> showEicCommand;
+
+        private static IObservable<AnalysisImmsVM> ConvertToAnalysisViewModel(
+            ImmsMethodModel method,
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
+            if (compoundSearchService is null) {
+                throw new ArgumentNullException(nameof(compoundSearchService));
+            }
+            if (peakSpotTableService is null) {
+                throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
+            return method.ObserveProperty(m => m.AnalysisModel)
+                .Where(m => m != null)
+                .Select(m => new AnalysisImmsVM(m, compoundSearchService, peakSpotTableService))
+                .DisposePreviousValue();
+
+        }
+
+        private static IObservable<AlignmentImmsVM> ConvertToAlignmentViewModel(
+            ImmsMethodModel method,
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
+            if (compoundSearchService is null) {
+                throw new ArgumentNullException(nameof(compoundSearchService));
+            }
+            if (peakSpotTableService is null) {
+                throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
+            return method.ObserveProperty(m => m.AlignmentModel)
+                .Where(m => m != null)
+                .Select(m => new AlignmentImmsVM(m, compoundSearchService, peakSpotTableService))
+                .DisposePreviousValue();
+        }
     }
 }

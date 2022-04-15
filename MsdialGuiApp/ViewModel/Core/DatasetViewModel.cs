@@ -13,7 +13,6 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Core
 {
@@ -60,7 +59,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
             }
         }
 
-        private MethodViewModel ConvertToViewModel(MethodModelBase model) {
+        private MethodViewModel ConvertToViewModel(IMethodModel model) {
             switch (model) {
                 case LcmsMethodModel lc:
                     return new LcmsMethodVM(lc, compoundSearchService, peakSpotTableService, proteomicsTableService);

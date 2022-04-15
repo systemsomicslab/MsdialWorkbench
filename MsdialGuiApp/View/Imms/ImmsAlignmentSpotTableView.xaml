@@ -7,6 +7,7 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
              xmlns:rs="clr-namespace:CompMs.Graphics.UI.RangeSlider;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
+             xmlns:converter="clr-namespace:CompMs.App.Msdial.ViewModel.Converter"
              d:DataContext="{d:DesignInstance Type=vm:ImmsAlignmentSpotTableViewModel}"
              d:DesignHeight="450" d:DesignWidth="1200">
     <d:DesignerProperties.DesignStyle>
@@ -19,6 +20,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <converter:BarItemCollectionToSmallClassBarChartViewModel x:Key="CollectionToViewModel"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -170,7 +172,7 @@
                                         Width="150">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <chart:SmallClassBarChart DataContext="{Binding BarItemCollection}"/>
+                            <chart:SmallClassBarChart DataContext="{Binding BarItemCollection, Converter={StaticResource CollectionToViewModel}}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

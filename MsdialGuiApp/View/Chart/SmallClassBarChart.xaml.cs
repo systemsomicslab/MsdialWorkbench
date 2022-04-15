@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Graphics.Base;
+using CompMs.Graphics.Design;
+using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CompMs.App.Msdial.View.Chart
 {
@@ -22,6 +15,24 @@ namespace CompMs.App.Msdial.View.Chart
     {
         public SmallClassBarChart() {
             InitializeComponent();
+
+            Unloaded += SmallClassBarChart_Unloaded;
+        }
+
+        private void SmallClassBarChart_Unloaded(object sender, RoutedEventArgs e) {
+            (DataContext as IDisposable)?.Dispose();
+            Unloaded -= SmallClassBarChart_Unloaded;
+        }
+
+        public static readonly DependencyProperty ClassBrushProperty =
+            DependencyProperty.Register(
+                nameof(ClassBrush), typeof(IBrushMapper<BarItem>), typeof(SmallClassBarChart),
+                new FrameworkPropertyMetadata(
+                    new ConstantBrushMapper<BarItem>(Brushes.Blue)));
+
+        public IBrushMapper<BarItem> ClassBrush {
+            get => (IBrushMapper<BarItem>)GetValue(ClassBrushProperty); 
+            set => SetValue(ClassBrushProperty, value);
         }
     }
 }

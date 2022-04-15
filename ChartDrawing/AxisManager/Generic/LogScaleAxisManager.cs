@@ -8,37 +8,63 @@ namespace CompMs.Graphics.AxisManager.Generic
     public class LogScaleAxisManager<T> : BaseAxisManager<T> where T : IConvertible
     {
         internal LogScaleAxisManager(Range range) : base(range) {
+            labelGenerator = new LogScaleLabelGenerator();
+            Base = 10;
+        }
+
+        internal LogScaleAxisManager(Range range, Range bounds) : base(range, bounds) {
+            labelGenerator = new LogScaleLabelGenerator();
+            Base = 10;
+        }
+
+        internal LogScaleAxisManager(Range range, IChartMargin margin) : base(range, margin) {
+            labelGenerator = new LogScaleLabelGenerator();
+            Base = 10;
+        }
+
+        internal LogScaleAxisManager(Range range, IChartMargin margin, int base_) : base(range, margin) {
+            labelGenerator = new BaseSelectableLogScaleLabelGenerator(base_);
+            Base = base_;
+        }
+
+        internal LogScaleAxisManager(Range range, IChartMargin margin, Range bounds) : base(range, margin, bounds) {
+            labelGenerator = new LogScaleLabelGenerator();
+            Base = 10;
+        }
+
+        internal LogScaleAxisManager(Range range, IChartMargin margin, T lowBound, T highBound) : this(range, margin, new Range(ConvertToAxisValue(lowBound, 10), ConvertToAxisValue(highBound, 10))) {
 
         }
 
-        internal LogScaleAxisManager(Range range, T lowBound, T highBound) : base(range, new Range(ConvertToAxisValue(lowBound), ConvertToAxisValue(highBound))) {
-
-        }
-
-        internal LogScaleAxisManager(Range range, IChartMargin margin, T lowBound, T highBound) : base(range, margin, new Range(ConvertToAxisValue(lowBound), ConvertToAxisValue(highBound))) {
+        internal LogScaleAxisManager(Range range, T lowBound, T highBound) : this(range, new Range(ConvertToAxisValue(lowBound, 10), ConvertToAxisValue(highBound, 10))) {
 
         }
 
         public LogScaleAxisManager(T low, T high)
-            : base(new Range(ConvertToAxisValue(low), ConvertToAxisValue(high))) {
+            : this(new Range(ConvertToAxisValue(low, 10), ConvertToAxisValue(high, 10))) {
 
         }
 
         public LogScaleAxisManager(T low, T high, IChartMargin margin)
-            : base(new Range(ConvertToAxisValue(low), ConvertToAxisValue(high)), margin) {
+            : this(new Range(ConvertToAxisValue(low, 10), ConvertToAxisValue(high, 10)), margin) {
+
+        }
+
+        public LogScaleAxisManager(T low, T high, IChartMargin margin, int base_)
+            : this(new Range(ConvertToAxisValue(low, base_), ConvertToAxisValue(high, base_)), margin, base_) {
 
         }
 
         public LogScaleAxisManager(T low, T high, T lowBound, T highBound)
-            : base(new Range(ConvertToAxisValue(low), ConvertToAxisValue(high)),
-                  new Range(ConvertToAxisValue(lowBound), ConvertToAxisValue(highBound))) {
+            : this(new Range(ConvertToAxisValue(low, 10), ConvertToAxisValue(high, 10)),
+                  new Range(ConvertToAxisValue(lowBound, 10), ConvertToAxisValue(highBound, 10))) {
 
         }
 
         public LogScaleAxisManager(T low, T high, IChartMargin margin, T lowBound, T highBound)
-            : base(new Range(ConvertToAxisValue(low), ConvertToAxisValue(high)),
+            : this(new Range(ConvertToAxisValue(low, 10), ConvertToAxisValue(high, 10)),
                   margin,
-                  new Range(ConvertToAxisValue(lowBound), ConvertToAxisValue(highBound))) {
+                  new Range(ConvertToAxisValue(lowBound, 10), ConvertToAxisValue(highBound, 10))) {
 
         }
 
@@ -50,6 +76,10 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         }
 
+        public LogScaleAxisManager(ICollection<T> source, IChartMargin margin, int base_) : this(source.DefaultIfEmpty().Min(), source.DefaultIfEmpty().Max(), margin, base_) {
+
+        }
+
         public LogScaleAxisManager(ICollection<T> source, T low, T high) : this(source.DefaultIfEmpty().Min(), source.DefaultIfEmpty().Max(), low, high) {
 
         }
@@ -58,12 +88,14 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         }
 
+        public int Base { get; }
+
         public void UpdateInitialRange(T low, T high) {
-            UpdateInitialRange(new Range(ConvertToAxisValue(low), ConvertToAxisValue(high)));
+            UpdateInitialRange(new Range(ConvertToAxisValue(low, Base), ConvertToAxisValue(high, Base)));
         }
 
         public void UpdateInitialRange(ICollection<T> source) {
-            UpdateInitialRange(new Range(ConvertToAxisValue(source.DefaultIfEmpty().Min()), ConvertToAxisValue(source.DefaultIfEmpty().Max())));
+            UpdateInitialRange(new Range(ConvertToAxisValue(source.DefaultIfEmpty().Min(), Base), ConvertToAxisValue(source.DefaultIfEmpty().Max(), Base)));
         }
 
         protected override void OnRangeChanged() {
@@ -80,11 +112,11 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         public override AxisValue TranslateToAxisValue(T value) {
-            return ConvertToAxisValue(value);
+            return ConvertToAxisValue(value, Base);
         }
 
-        private static AxisValue ConvertToAxisValue(T value) {
-            return new AxisValue(Math.Log10(Convert.ToDouble(value)));
+        private static AxisValue ConvertToAxisValue(T value, int base_) {
+            return new AxisValue(Math.Log(Convert.ToDouble(value), base_));
         }
 
         public static LogScaleAxisManager<T> Build<U>(IEnumerable<U> source, Func<U, T> map) {

@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
              mc:Ignorable="d" 
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
              d:DataContext="{d:DesignInstance Type={x:Type vm:DimsMethodVM}}"
@@ -107,7 +106,7 @@
                    KeyTip="D">
             <RibbonGroup>
                 <RibbonButton Label="Normalization" LargeImageSource="{StaticResource Data_normalization_is}"
-                              Command="{Binding AlignmentVM.NormalizeCommand}"
+                              Command="{Binding AlignmentViewModel.Value.NormalizeCommand}"
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                               KeyTip="N"/>
                 <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"
@@ -259,18 +258,18 @@
         <RibbonTab Header="Utility"
                    ContextualTabGroupHeader="Graph">
             <RibbonGroup Header="Focus">
-                <RibbonTextBox Label="Focused ID" Text="{Binding AnalysisVM.FocusID}"
+                <RibbonTextBox Label="Focused ID" Text="{Binding AnalysisViewModel.Value.FocusID}"
                                IsEnabled="False">
                     <RibbonTextBox.InputBindings>
                         <KeyBinding Gesture="Enter"
-                                    Command="{Binding AnalysisVM.FocusByIDCommand}"/>
+                                    Command="{Binding AnalysisViewModel.Value.FocusByIDCommand}"/>
                     </RibbonTextBox.InputBindings>
                 </RibbonTextBox>
-                <RibbonTextBox Label="Focused m/z" Text="{Binding AnalysisVM.FocusMz}"
+                <RibbonTextBox Label="Focused m/z" Text="{Binding AnalysisViewModel.Value.FocusMz}"
                                IsEnabled="False">
                     <RibbonTextBox.InputBindings>
                         <KeyBinding Gesture="Enter"
-                                    Command="{Binding AnalysisVM.FocusByMzCommand}"/>
+                                    Command="{Binding AnalysisViewModel.Value.FocusByMzCommand}"/>
                     </RibbonTextBox.InputBindings>
                 </RibbonTextBox>
             </RibbonGroup>
@@ -278,9 +277,9 @@
                 <RibbonComboBox Label="Alignment"
                                 SelectionBoxWidth="80"
                                 VerticalAlignment="Center">
-                    <RibbonGallery SelectedValue="{Binding AlignmentVM.SelectedBrush.Value}"
+                    <RibbonGallery SelectedValue="{Binding AlignmentViewModel.Value.SelectedBrush.Value}"
                                    SelectedValuePath="Mapper">
-                        <RibbonGalleryCategory ItemsSource="{Binding AlignmentVM.Brushes}"
+                        <RibbonGalleryCategory ItemsSource="{Binding AlignmentViewModel.Value.Brushes}"
                                                DisplayMemberPath="Label"/>
                     </RibbonGallery>
                 </RibbonComboBox>

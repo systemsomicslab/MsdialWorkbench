@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
@@ -13,11 +14,11 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class AlignmentSpotPropertyModel : BindableBase, IAnnotatedObject
+    public class AlignmentSpotPropertyModel : BindableBase, IFilterable
     {
         public int AlignmentID => innerModel.AlignmentID;
         public int MasterAlignmentID => innerModel.MasterAlignmentID;
-
+        public int RepresentativeFileID => innerModel.RepresentativeFileID;
         public ChromXType ChromXType => innerModel.TimesCenter.MainType;
         public ChromXUnit ChromXUnit => innerModel.TimesCenter.Unit;
         public double MassCenter => innerModel.MassCenter;
@@ -130,6 +131,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public bool IsBaseIsotopeIon => innerModel.PeakCharacter.IsotopeWeightNumber == 0;
         public bool IsBlankFiltered => innerModel.FeatureFilterStatus.IsBlankFiltered;
         public bool IsFragmentQueryExisted => innerModel.FeatureFilterStatus.IsFragmentExistFiltered;
+        public bool IsManuallyModifiedForAnnotation => innerModel.IsManuallyModifiedForAnnotation;
 
         public bool IsManuallyModifiedForQuant {
             get => innerModel.IsManuallyModifiedForQuant;
@@ -152,6 +154,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double KMD => NominalKM - KM;
         public double KMR => NominalKM % KMNominalUnit;
 
+        public bool IsMultiLayeredData => innerModel.IsMultiLayeredData();
         static AlignmentSpotPropertyModel() {
             KMIupacUnit = AtomMass.hMass * 2 + AtomMass.cMass; // CH2
             KMNominalUnit = Math.Round(KMIupacUnit);
@@ -165,11 +168,19 @@ namespace CompMs.App.Msdial.Model.DataObj
             this.innerModel = innerModel;
             this.AlignedPeakPropertiesModel = this.innerModel.AlignedPeakProperties.Select(n => new AlignmentChromPeakFeatureModel(n)).ToList().AsReadOnly();
 
-            BarItemCollection = new BarItemCollection(this, barItemsLoader);
+            BarItemCollection = BarItemCollection.Create(this, barItemsLoader);
         }
 
         public void RaisePropertyChanged() {
             OnPropertyChanged(string.Empty);
         }
+
+        // IChromatogramPeak
+        int IChromatogramPeak.ID { get => ((IChromatogramPeak)innerModel).ID; set => ((IChromatogramPeak)innerModel).ID = value; }
+        ChromXs IChromatogramPeak.ChromXs { get => ((IChromatogramPeak)innerModel).ChromXs; set => ((IChromatogramPeak)innerModel).ChromXs = value; }
+        double ISpectrumPeak.Mass { get => ((ISpectrumPeak)innerModel).Mass; set => ((ISpectrumPeak)innerModel).Mass = value; }
+        double ISpectrumPeak.Intensity { get => ((ISpectrumPeak)innerModel).Intensity; set => ((ISpectrumPeak)innerModel).Intensity = value; }
+
+        double IFilterable.RelativeAmplitudeValue => innerModel.RelativeAmplitudeValue;
     }
 }

@@ -63,6 +63,7 @@
     <Compile Include="Adorner\RangeSelectAdorner.cs" />
     <Compile Include="Adorner\ScatterFocusAdorner.cs" />
     <Compile Include="Adorner\ChartSelectionRubberAdorner.cs" />
+    <Compile Include="AxisManager\BaseSelectableLogScaleLabelGenerator.cs" />
     <Compile Include="AxisManager\ILabelGenerator.cs" />
     <Compile Include="AxisManager\LabelGeneratorBase.cs" />
     <Compile Include="AxisManager\LabelType.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="AxisManager\Generic\ReactiveAxisManager.cs" />
     <Compile Include="AxisManager\RelativeLabelGenerator.cs" />
     <Compile Include="AxisManager\StandardLabelGenerator.cs" />
+    <Compile Include="Base\DataPointCollection.cs" />
     <Compile Include="Base\RangeSelection.cs" />
     <Compile Include="Behavior\AreaSelectBehavior.cs" />
     <Compile Include="Chart\AreaChartControl.cs" />

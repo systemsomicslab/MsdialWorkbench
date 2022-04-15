@@ -1,5 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.CommonMVVM;
+using Reactive.Bindings.Notifiers;
+using System;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -9,7 +11,11 @@ namespace CompMs.App.Msdial.Model.Core
     {
         public MainWindowModel() {
             ProjectSetting = new ProjectSettingModel(SetNewProject);
+            nowSaving = new BusyNotifier();
         }
+
+        public IObservable<bool> NowSaving => nowSaving;
+        private readonly BusyNotifier nowSaving;
 
         public IProjectModel CurrentProject {
             get => currentProject;
@@ -29,12 +35,22 @@ namespace CompMs.App.Msdial.Model.Core
             return Task.CompletedTask;
         }
 
-        public Task SaveAsync() {
-            return CurrentProject?.SaveAsync();
+        public async Task SaveAsync() {
+            if (CurrentProject is null) {
+                return;
+            }
+            using (nowSaving.ProcessStart()) {
+                await CurrentProject.SaveAsync().ConfigureAwait(false);
+            }
         }
 
-        public Task SaveAsAsync() {
-            return CurrentProject?.SaveAsAsync();
+        public async Task SaveAsAsync() {
+            if (CurrentProject is null) {
+                return;
+            }
+            using (nowSaving.ProcessStart()) {
+                await CurrentProject.SaveAsAsync().ConfigureAwait(false);
+            }
         }
 
         public async Task LoadAsync() {
