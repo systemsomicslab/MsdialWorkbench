@@ -588,17 +588,16 @@ namespace CompMs.Graphics.Chart
 
         private static IOverlapMethod MapToMethod(string method) {
             switch (method.Trim()) {
-                case "":
-                case "Ignore":
-                    return IgnoreOverlap.Method;
                 case "Direct":
                     return DirectOverlap.Method;
                 case "Horizontal":
                     return HorizontalOverlap.Method;
                 case "Vertical":
                     return VerticalOverlap.Method;
+                case "":
+                case "Ignore":
                 default:
-                    throw new NotSupportedException(method);
+                    return IgnoreOverlap.Method;
             }
         }
 

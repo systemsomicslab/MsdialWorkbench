@@ -121,9 +121,9 @@
     <value />
   </data>
   <data name="VDD_URI" xml:space="preserve">
-    <value>http://prime.psc.riken.jp/compms/msdial/vdd.json</value>
+    <value>http://prime.psc.riken.jp/compms/msdial/vmsdial.json</value>
   </data>
   <data name="VERSION" xml:space="preserve">
-    <value>5.0.0</value>
+    <value>5.0.1</value>
   </data>
 </root>

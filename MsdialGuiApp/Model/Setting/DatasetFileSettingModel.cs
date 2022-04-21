@@ -45,7 +45,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
 
             Files.Clear();
-            foreach ((var file, var i) in files.WithIndex()) {
+            foreach ((var file, var i) in files.OrderBy(file => file).WithIndex()) {
                 var folder = Path.GetDirectoryName(file);
                 var name = Path.GetFileNameWithoutExtension(file);
                 var bean = new AnalysisFileBean

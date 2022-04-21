@@ -321,6 +321,9 @@ namespace CompMs.Graphics.Chart
             get {
                 if (selector is null) {
                     selector = new PenSelector();
+                    if (!(LineBrush is null)) {
+                        selector.Update(LineBrush, LineThickness);
+                    }
                 }
                 return selector;
             }
