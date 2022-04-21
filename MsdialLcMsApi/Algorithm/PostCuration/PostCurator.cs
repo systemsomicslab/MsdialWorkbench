@@ -49,7 +49,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
                 }
 
                 if (postcurparam.IsMzFilter) {
-                    if (Math.Sign(spot.MassCenter) == 1 && spot.MassCenter - Math.Truncate(spot.MassCenter) >= 0.8) {
+                    if (spot.MassCenter - Math.Truncate(spot.MassCenter) >= 0.8) {
                         spot.IsMzFilteredByPostCurator = true;
                     }
                 }
@@ -83,7 +83,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
 
             if (postcurparam.IsBlankGhostFilter) {
                 foreach (var spot in spots) {
-                    if (spot.IsBlankFilteredByPostCurator == false && ghosts.Contains(Math.Round(spot.MassCenter, 3))) {
+                    if (ghosts.Contains(Math.Round(spot.MassCenter, 3))) {
                         spot.IsBlankGhostFilteredByPostCurator = true;
                     }
                 }

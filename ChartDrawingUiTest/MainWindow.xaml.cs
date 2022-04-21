@@ -53,6 +53,7 @@ namespace ChartDrawingUiTest
                 typeof(AxisLabelTest),
                 typeof(BindingStaticResource),
                 typeof(DependencyPropertyTest),
+                typeof(DoubleClickListBox),
                 typeof(SimpleChart1),
                 typeof(MultiChart1),
                 typeof(ErrorBar1),

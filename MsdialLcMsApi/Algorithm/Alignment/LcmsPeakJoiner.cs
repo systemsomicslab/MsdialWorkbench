@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CompMs.Common.Components;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
@@ -165,6 +166,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
                     ParentAlignmentID = parentId,
                     TimesCenter = scanProp.ChromXs, // temporary, after alignment, set true center.
                     MassCenter = scanProp.PrecursorMz, // temporary, after alignment, set true center.
+                    IonMode = scanProp.IonMode,
                 };
                 spot.InternalStandardAlignmentID = spot.MasterAlignmentID;
 
@@ -176,6 +178,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
                         PeakID = -1,
                         FileID = file.AnalysisFileId,
                         FileName = file.AnalysisFileName,
+                        IonMode = scanProp.IonMode,
                     });
                 }
                 spot.AlignedPeakProperties = peaks;

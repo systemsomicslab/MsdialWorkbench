@@ -1,4 +1,6 @@
-﻿using CompMs.Common.DataObj.Property;
+﻿using CompMs.App.Msdial.Model.Search;
+using CompMs.Common.Components;
+using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
@@ -8,7 +10,7 @@ using System;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class ChromatogramPeakFeatureModel : BindableBase, IAnnotatedObject
+    public class ChromatogramPeakFeatureModel : BindableBase, IFilterable, IChromatogramPeak
     {
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;
@@ -109,6 +111,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public bool IsCcsMatch => ScanMatchResult?.IsCcsMatch ?? false;
         public bool IsMsmsContained => innerModel.IsMsmsContained;
         public bool IsFragmentQueryExisted => innerModel.FeatureFilterStatus.IsFragmentExistFiltered;
+
         public double AmplitudeScore => innerModel.PeakShape.AmplitudeScoreValue;
         public double AmplitudeOrderValue => innerModel.PeakShape.AmplitudeOrderValue;
 
@@ -127,6 +130,20 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         private readonly ChromatogramPeakFeature innerModel;
         #endregion
+
+        // IFilterable
+        bool IFilterable.IsMsmsAssigned => innerModel.IsMsmsContained;
+        bool IFilterable.IsBaseIsotopeIon => innerModel.PeakCharacter.IsotopeWeightNumber == 0;
+        bool IFilterable.IsBlankFiltered => innerModel.FeatureFilterStatus.IsBlankFiltered;
+        bool IFilterable.IsManuallyModifiedForAnnotation => innerModel.IsManuallyModifiedForAnnotation;
+
+        double IFilterable.RelativeAmplitudeValue => innerModel.PeakShape.AmplitudeScoreValue;
+
+        // IChromatogramPeak
+        int IChromatogramPeak.ID { get => ((IChromatogramPeak)innerModel).ID; set => ((IChromatogramPeak)innerModel).ID = value; }
+        ChromXs IChromatogramPeak.ChromXs { get => ((IChromatogramPeak)innerModel).ChromXs; set => ((IChromatogramPeak)innerModel).ChromXs = value; }
+        double ISpectrumPeak.Mass { get => ((ISpectrumPeak)innerModel).Mass; set => ((ISpectrumPeak)innerModel).Mass = value; }
+        double ISpectrumPeak.Intensity { get => ((ISpectrumPeak)innerModel).Intensity; set => ((ISpectrumPeak)innerModel).Intensity = value; }
 
         static ChromatogramPeakFeatureModel() {
             KMIupacUnit = AtomMass.hMass * 2 + AtomMass.cMass; // CH2

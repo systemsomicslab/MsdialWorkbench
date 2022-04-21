@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CompMs.App.Msdial.ViewModel
+namespace CompMs.App.Msdial.Model.Search
 {
     [Flags]
     public enum DisplayFilter : uint
@@ -21,12 +17,13 @@ namespace CompMs.App.Msdial.ViewModel
         ManuallyModified = 0x100,
 
         Annotates = RefMatched | Suggested | Unknown | CcsMatched | ManuallyModified,
+        All = RefMatched | Suggested | Unknown | Ms2Acquired | MolecularIon | Blank | UniqueIons | CcsMatched | ManuallyModified,
     }
 
     static class DisplayFilterExtention
     {
         public static bool Read(this DisplayFilter self, DisplayFilter flag) {
-            return Any(self, flag);
+            return self.Any(flag);
         }
 
         public static void Write(this ref DisplayFilter self, DisplayFilter flag, bool set) {

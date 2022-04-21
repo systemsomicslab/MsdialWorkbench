@@ -1,21 +1,25 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.AxisManager.Generic;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    class AnalysisPeakPlotModel : BindableBase
+    class AnalysisPeakPlotModel : DisposableModelBase
     {
         public AnalysisPeakPlotModel(
             ObservableCollection<ChromatogramPeakFeatureModel> spots,
             Func<ChromatogramPeakFeatureModel, double> horizontalSelector,
             Func<ChromatogramPeakFeatureModel, double> verticalSelector,
             IReactiveProperty<ChromatogramPeakFeatureModel> targetSource,
-            IObservable<string> labelSource) {
+            IObservable<string> labelSource,
+            IAxisManager<double> horizontalAxis = null,
+            IAxisManager<double> verticalAxis = null) {
             if (spots is null) {
                 throw new ArgumentNullException(nameof(spots));
             }
@@ -38,6 +42,13 @@ namespace CompMs.App.Msdial.Model.Chart
             VerticalTitle = string.Empty;
             HorizontalProperty = string.Empty;
             VerticalProperty = string.Empty;
+
+            HorizontalAxis = horizontalAxis ?? this.ObserveProperty(m => m.HorizontalRange)
+                .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
+                .AddTo(Disposables);
+            VerticalAxis = verticalAxis ?? this.ObserveProperty(m => m.VerticalRange)
+                .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
+                .AddTo(Disposables);
         }
 
         public ObservableCollection<ChromatogramPeakFeatureModel> Spots { get; }
@@ -63,6 +74,10 @@ namespace CompMs.App.Msdial.Model.Chart
                 return new Range(minimum, maximum);
             }
         }
+
+        public IAxisManager<double> HorizontalAxis { get; }
+
+        public IAxisManager<double> VerticalAxis { get; }
 
         public IReactiveProperty<ChromatogramPeakFeatureModel> TargetSource { get; }
 

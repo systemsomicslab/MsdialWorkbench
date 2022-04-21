@@ -7,6 +7,7 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
@@ -375,7 +376,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         }
 
         private Task RunProcessAsync() {
-            if (!MethodSettingViewModel.Value.Run()) {
+            if (!MethodSettingViewModel.Value.TryRun()) {
                 return Task.CompletedTask;
             }
             DatasetSettingViewModel.Value.Run();

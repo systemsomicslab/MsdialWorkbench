@@ -157,6 +157,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialIntegrateTests", "Msd
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpectrumViewer", "SpectrumViewer\SpectrumViewer.csproj", "{0780A32F-D596-447F-8E46-95E9491EE19F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RawDataViewer", "RawDataViewer\RawDataViewer.csproj", "{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -781,12 +783,20 @@ Global
 		{0780A32F-D596-447F-8E46-95E9491EE19F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0780A32F-D596-447F-8E46-95E9491EE19F}.Release|x64.ActiveCfg = Release|Any CPU
 		{0780A32F-D596-447F-8E46-95E9491EE19F}.Release|x64.Build.0 = Release|Any CPU
+		{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}.Debug|x64.Build.0 = Debug|Any CPU
+		{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}.Release|x64.ActiveCfg = Release|Any CPU
+		{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
+		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
 	EndGlobalSection
 EndGlobal

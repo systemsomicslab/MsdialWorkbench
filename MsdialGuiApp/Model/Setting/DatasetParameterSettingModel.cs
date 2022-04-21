@@ -33,7 +33,7 @@ namespace CompMs.App.Msdial.Model.Setting
             this.fileSettingModel = fileSettingModel;
             this.next = next;
             fileSettingModel.PropertyChanged += UpdateDatasetFolderPath;
-            DatasetFileName = $"AlignmentResult_{dt:yyyy_MM_dd_hh_mm_ss}";
+            DatasetFileName = $"Dataset_{dt:yyyy_MM_dd_hh_mm_ss}";
 
             IsReadOnly = false;
         }

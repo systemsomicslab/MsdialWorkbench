@@ -123,6 +123,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
                     ParentAlignmentID = parentId,
                     TimesCenter = scanProp.ChromXs,
                     MassCenter = scanProp.PrecursorMz,
+                    IonMode = scanProp.IonMode,
                 };
                 spot.InternalStandardAlignmentID = spot.MasterAlignmentID;
 
@@ -134,6 +135,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
                         PeakID = -1,
                         FileID = file.AnalysisFileId,
                         FileName = file.AnalysisFileName,
+                        IonMode = scanProp.IonMode,
                     });
                 }
                 spot.AlignedPeakProperties = peaks;

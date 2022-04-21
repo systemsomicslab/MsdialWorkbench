@@ -37,7 +37,7 @@
                                     VerticalPropertyName="{Binding VerticalProperty.Value, Mode=OneWay}"
                                     BrushMapper="{Binding Brush.Value, Mode=OneWay}"
                                     Radius="5.5"
-                                    SelectedItem="{Binding Target.Value, Mode=OneWayToSource}"
+                                    SelectedItem="{Binding Target.Value, Mode=TwoWay}"
                                     behavior:ScatterFocusBehavior.EnableOuter="True"
                                     behavior:ScatterFocusBehavior.OuterScale="1.3"
                                     behavior:ScatterFocusBehavior.InnerScale="1.2"

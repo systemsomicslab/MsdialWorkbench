@@ -10,7 +10,7 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     public class MethodSettingModel : BindableBase
     {
-        public MethodSettingModel(ProcessOption option, IMsdialDataStorage<ParameterBase> storage, Action<MethodSettingModel, MethodModelBase> handler, IObservable<Unit> observeParameterChanged) {
+        public MethodSettingModel(ProcessOption option, IMsdialDataStorage<ParameterBase> storage, Action<MethodSettingModel, IMethodModel> handler, IObservable<Unit> observeParameterChanged) {
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
             this.handler = handler;
 
@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public IMsdialDataStorage<ParameterBase> Storage { get; }
 
-        private readonly Action<MethodSettingModel, MethodModelBase> handler;
+        private readonly Action<MethodSettingModel, IMethodModel> handler;
         private readonly IMethodSettingModelFactory settingModelFactory;
 
         public ProcessOption Option {
@@ -63,9 +63,9 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public bool IsReadOnlyAlignmentParameter { get; }
 
-        public bool Run() {
+        public bool TryRun() {
             if (Option.HasFlag(ProcessOption.PeakSpotting)) {
-                if (!DataCollectionSettingModel.Commit()) {
+                if (!DataCollectionSettingModel.TryCommit()) {
                     return false;
                 }
                 PeakDetectionSettingModel.Commit();
@@ -76,17 +76,21 @@ namespace CompMs.App.Msdial.Model.Setting
                     Storage.DataBases = IdentifySettingModel.Create();
                     Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
                 }
-                AdductIonSettingModel.Commit();
+                if (!AdductIonSettingModel.TryCommit()) {
+                    return false;
+                }
             }
             if (Option.HasFlag(ProcessOption.Alignment)) {
-                AlignmentParameterSettingModel.Commit();
-                if (AlignmentParameterSettingModel.ShouldRunAlignment) {
-                    MobilitySettingModel?.Commit();
-                    IsotopeTrackSettingModel.Commit();
+                if (!AlignmentParameterSettingModel.TryCommit()) {
+                    return false;
                 }
-                else {
+                if (!AlignmentParameterSettingModel.ShouldRunAlignment) {
                     Option &= ~ProcessOption.Alignment;
                 }
+            }
+            IsotopeTrackSettingModel.Commit();
+            if (MobilitySettingModel != null && !MobilitySettingModel.TryCommit()) {
+                return false;
             }
             var method = settingModelFactory.BuildMethod();
             handler?.Invoke(this, method);

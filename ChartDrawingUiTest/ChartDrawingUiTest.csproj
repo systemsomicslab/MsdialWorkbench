@@ -163,6 +163,9 @@
     <Compile Include="UI\DependencyPropertyTest.xaml.cs">
       <DependentUpon>DependencyPropertyTest.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\DoubleClickListBox.xaml.cs">
+      <DependentUpon>DoubleClickListBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\DPControl.cs" />
     <Compile Include="UI\RangeSlider.xaml.cs">
       <DependentUpon>RangeSlider.xaml</DependentUpon>
@@ -291,6 +294,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\DependencyPropertyTest.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\DoubleClickListBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

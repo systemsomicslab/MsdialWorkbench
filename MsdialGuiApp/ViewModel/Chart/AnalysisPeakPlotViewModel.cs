@@ -13,26 +13,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 {
     class AnalysisPeakPlotViewModel : ViewModelBase
     {
-        public AnalysisPeakPlotViewModel(
-            AnalysisPeakPlotModel model,
-            IObservable<IBrushMapper<ChromatogramPeakFeatureModel>> brushSource = null,
-            IAxisManager<double> horizontalAxis = null,
-            IAxisManager<double> verticalAxis = null) {
+        public AnalysisPeakPlotViewModel(AnalysisPeakPlotModel model, IObservable<IBrushMapper<ChromatogramPeakFeatureModel>> brushSource) {
             Spots = model.Spots;
 
-            if (horizontalAxis == null) {
-                var hRange = model.ObserveProperty(m => m.HorizontalRange)
-                    .ToReadOnlyReactivePropertySlim();
-                horizontalAxis = new ReactiveAxisManager<double>(hRange);
-            }
-            HorizontalAxis = horizontalAxis;
-
-            if (verticalAxis == null) {
-                var vRange = model.ObserveProperty(m => m.VerticalRange)
-                    .ToReadOnlyReactivePropertySlim();
-                verticalAxis = new ReactiveAxisManager<double>(vRange);
-            }
-            VerticalAxis = verticalAxis;
+            HorizontalAxis = model.HorizontalAxis;
+            VerticalAxis = model.VerticalAxis;
 
             if (brushSource == null) {
                 brushSource = Observable.Return<IBrushMapper<ChromatogramPeakFeatureModel>>(null);

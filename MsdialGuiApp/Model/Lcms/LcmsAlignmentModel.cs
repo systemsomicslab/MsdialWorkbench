@@ -2,11 +2,11 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
@@ -26,6 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Media;
+using CompMs.App.Msdial.Model.Loader;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
@@ -39,6 +40,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentFileBean alignmentFileBean,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databases,
+            PeakFilterModel peakFilterModel,
             DataBaseMapper mapper,
             MsdialLcmsParameter parameter,
             IObservable<ParameterBase> parameterAsObservable,
@@ -72,9 +74,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
             RtMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.TimesCenter) ?? 0d;
             RtMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.TimesCenter) ?? 0d;
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator);
 
             // Peak scatter plot
-            var labelSource = this.ObserveProperty(m => m.DisplayLabel);
+            var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
             PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource)
             {
                 GraphTitle = AlignmentFile.FileName,
@@ -186,9 +189,22 @@ namespace CompMs.App.Msdial.Model.Lcms
             }.CombineLatestValuesAreAllFalse()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
+
+            var rtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, RtTol, Target.Select(t => t?.TimesCenter ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
+            var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MzTol, Target.Select(t => t?.MassCenter ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
+            var idSpotFocus = new IdSpotFocus<AlignmentSpotPropertyModel>(
+                Target,
+                id => Ms1Spots.Argmin(spot => Math.Abs(spot.MasterAlignmentID - id)),
+                Target.Select(t => t?.MasterAlignmentID ?? 0d),
+                "Region focus by ID",
+                (rtSpotFocus, spot => spot.TimesCenter),
+                (mzSpotFocus, spot => spot.MassCenter)).AddTo(Disposables);
+            FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus);
         }
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+        private static readonly double RtTol = 0.5;
+        private static readonly double MzTol = 20;
 
         public AlignmentFileBean AlignmentFile { get; }
         public ParameterBase Parameter { get; }
@@ -207,6 +223,10 @@ namespace CompMs.App.Msdial.Model.Lcms
         public double MassMax { get; }
         public double RtMin { get; }
         public double RtMax { get; }
+
+        public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
+
+        public FocusNavigatorModel FocusNavigatorModel { get; }
 
         public Chart.AlignmentPeakPlotModel PlotModel { get; }
         public MsSpectrumModel Ms2SpectrumModel { get; }
