@@ -49,7 +49,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
                 }
 
                 if (postcurparam.IsMzFilter) {
-                    if (spot.MassCenter - Math.Truncate(spot.MassCenter) >= 0.8) {
+                    if (spot.MassCenter - Math.Floor(spot.MassCenter) >= (spot.MassCenter * 0.00111 + 0.039)) {
                         spot.IsMzFilteredByPostCurator = true;
                     }
                 }
