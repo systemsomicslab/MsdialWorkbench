@@ -139,6 +139,10 @@
                                     Binding="{Binding Path=Comment}"
                                     IsReadOnly="False"
                                     Width="2*" />
+                <DataGridTextColumn Header="Match score"
+                                    Binding="{Binding Path=ScanMatchResult.TotalScore, StringFormat=F4}"
+                                    IsReadOnly="True"
+                                    Width="70" />
                 <DataGridTextColumn Header="S/N"
                                     Binding="{Binding Path=SignalToNoiseAve, StringFormat=F1}"
                                     IsReadOnly="True"

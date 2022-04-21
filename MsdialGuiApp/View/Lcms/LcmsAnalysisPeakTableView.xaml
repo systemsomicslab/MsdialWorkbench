@@ -157,6 +157,10 @@
                                     Binding="{Binding Path=PeakArea, StringFormat=F3}"
                                     IsReadOnly="True"
                                     Width="70" />
+                <DataGridTextColumn Header="Match score"
+                                    Binding="{Binding Path=ScanMatchResult.TotalScore, StringFormat=F4}"
+                                    IsReadOnly="True"
+                                    Width="70" />
                 <DataGridTextColumn Header="Gaussian"
                                     Binding="{Binding Path=InnerModel.PeakShape.GaussianSimilarityValue, StringFormat=F3}"
                                     IsReadOnly="True"
