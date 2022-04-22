@@ -16,17 +16,20 @@ namespace CompMs.App.Msdial.ViewModel.Core
             IObservable<ViewModelBase> whenAlignment,
             params IObservable<ViewModelBase>[] viewmodels) {
 
-            SelectedViewModel = new ReactivePropertySlim<ViewModelBase>().AddTo(Disposables);
+            SelectedIndex = new ReactivePropertySlim<int>().AddTo(Disposables);
+
+            whenAnalysisFileSelecting = Array.IndexOf(viewmodels, whenAnalysis);
+            whenAlignmentFileSelecting = Array.IndexOf(viewmodels, whenAlignment);
 
             ViewModels = viewmodels
                 .CombineLatest()
                 .StartWith(new ViewModelBase[0])
-                .Select(xs => new ReadOnlyCollection<ViewModelBase>(xs))
+                .Select(xs => new ObservableCollection<ViewModelBase>(xs))
+                .Select(xs => new ReadOnlyObservableCollection<ViewModelBase>(xs))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            whenAnalysisFileSelecting = Array.IndexOf(viewmodels, whenAnalysis);
-            whenAlignmentFileSelecting = Array.IndexOf(viewmodels, whenAlignment);
+            SelectedIndex.Value = whenAnalysisFileSelecting;
         }
 
         public ViewModelSwitcher(
@@ -37,20 +40,20 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         }
 
-        public ReactivePropertySlim<ViewModelBase> SelectedViewModel { get; }
+        public ReactivePropertySlim<int> SelectedIndex { get; }
 
-        public ReadOnlyReactivePropertySlim<ReadOnlyCollection<ViewModelBase>> ViewModels { get; }
+        public ReadOnlyReactivePropertySlim<ReadOnlyObservableCollection<ViewModelBase>> ViewModels { get; }
 
         public void SelectAnalysisFile() {
             if (whenAnalysisFileSelecting >= 0 && whenAnalysisFileSelecting < ViewModels.Value.Count) {
-                SelectedViewModel.Value = ViewModels.Value[whenAnalysisFileSelecting];
+                SelectedIndex.Value = whenAnalysisFileSelecting;
             }
         }
         private readonly int whenAnalysisFileSelecting;
 
         public void SelectAlignmentFile() {
             if (whenAlignmentFileSelecting >= 0 && whenAlignmentFileSelecting < ViewModels.Value.Count) {
-                SelectedViewModel.Value = ViewModels.Value[whenAlignmentFileSelecting];
+                SelectedIndex.Value = whenAlignmentFileSelecting;
             }
         }
         private readonly int whenAlignmentFileSelecting;

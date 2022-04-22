@@ -10,6 +10,7 @@ using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcImMsApi.Parameter;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
@@ -200,7 +201,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public DelegateCommand<Window> ShowEicCommand => showEicCommand ?? (showEicCommand = new DelegateCommand<Window>(model.ShowEIC));
         private DelegateCommand<Window> showEicCommand;
 
-        private static IObservable<AnalysisLcimmsVM> ConvertToAnalysisViewModel(
+        private static IReadOnlyReactiveProperty<AnalysisLcimmsVM> ConvertToAnalysisViewModel(
             LcimmsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
@@ -213,11 +214,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             return method.ObserveProperty(m => m.AnalysisModel)
                 .Where(m => m != null)
                 .Select(m => new AnalysisLcimmsVM(m, compoundSearchService, peakSpotTableService))
-                .DisposePreviousValue();
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim();
 
         }
 
-        private static IObservable<AlignmentLcimmsVM> ConvertToAlignmentViewModel(
+        private static IReadOnlyReactiveProperty<AlignmentLcimmsVM> ConvertToAlignmentViewModel(
             LcimmsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
@@ -230,7 +232,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             return method.ObserveProperty(m => m.AlignmentModel)
                 .Where(m => m != null)
                 .Select(m => new AlignmentLcimmsVM(m, compoundSearchService, peakSpotTableService))
-                .DisposePreviousValue();
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim();
         }
     }
 }

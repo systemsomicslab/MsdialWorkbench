@@ -14,6 +14,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialDimsCore.Export;
 using CompMs.MsdialDimsCore.Parameter;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
@@ -246,7 +247,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             OnPropertyChanged(nameof(displayFilters));
         }
 
-        private static IObservable<AnalysisDimsVM> ConvertToAnalysisViewModel(
+        private static IReadOnlyReactiveProperty<AnalysisDimsVM> ConvertToAnalysisViewModel(
             DimsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
@@ -259,11 +260,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             return method.ObserveProperty(m => m.AnalysisModel)
                 .Where(m => m != null)
                 .Select(m => new AnalysisDimsVM(m, compoundSearchService, peakSpotTableService))
-                .DisposePreviousValue();
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim();
 
         }
 
-        private static IObservable<AlignmentDimsVM> ConvertToAlignmentViewModel(
+        private static IReadOnlyReactiveProperty<AlignmentDimsVM> ConvertToAlignmentViewModel(
             DimsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
@@ -276,7 +278,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             return method.ObserveProperty(m => m.AlignmentModel)
                 .Where(m => m != null)
                 .Select(m => new AlignmentDimsVM(m, compoundSearchService, peakSpotTableService))
-                .DisposePreviousValue();
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim();
         }
     }
 }

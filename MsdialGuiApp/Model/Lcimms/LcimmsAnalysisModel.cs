@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             {
                 HorizontalTitle = RtMzPlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
-            };
+            }.AddTo(Disposables);
 
             DtMzPlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource, verticalAxis: RtMzPlotModel.VerticalAxis)
             {
@@ -81,7 +81,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             {
                 HorizontalTitle = DtMzPlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
-            };
+            }.AddTo(Disposables);
             Target.CombineLatest(
                 DtEicModel.MaxIntensitySource,
                 (t, i) => t is null

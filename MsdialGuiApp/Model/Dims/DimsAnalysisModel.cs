@@ -64,7 +64,7 @@ namespace CompMs.App.Msdial.Model.Dims
             {
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Abundance"
-            };
+            }.AddTo(Disposables);
             Target.CombineLatest(
                 EicModel.MaxIntensitySource,
                 (t, i) => t is null

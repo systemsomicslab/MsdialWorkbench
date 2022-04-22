@@ -4,6 +4,7 @@ using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.ComponentModel;
@@ -117,7 +118,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public DelegateCommand<Window> ShowEicCommand => showEicCommand ?? (showEicCommand = new DelegateCommand<Window>(model.ShowEIC));
         private DelegateCommand<Window> showEicCommand;
 
-        private static IObservable<AnalysisImmsVM> ConvertToAnalysisViewModel(
+        private static IReadOnlyReactiveProperty<AnalysisImmsVM> ConvertToAnalysisViewModel(
             ImmsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
@@ -130,11 +131,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             return method.ObserveProperty(m => m.AnalysisModel)
                 .Where(m => m != null)
                 .Select(m => new AnalysisImmsVM(m, compoundSearchService, peakSpotTableService))
-                .DisposePreviousValue();
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim();
 
         }
 
-        private static IObservable<AlignmentImmsVM> ConvertToAlignmentViewModel(
+        private static IReadOnlyReactiveProperty<AlignmentImmsVM> ConvertToAlignmentViewModel(
             ImmsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
@@ -147,7 +149,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             return method.ObserveProperty(m => m.AlignmentModel)
                 .Where(m => m != null)
                 .Select(m => new AlignmentImmsVM(m, compoundSearchService, peakSpotTableService))
-                .DisposePreviousValue();
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim();
         }
     }
 }

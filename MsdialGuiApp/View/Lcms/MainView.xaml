@@ -550,7 +550,7 @@
                         </TabControl.ItemContainerStyle>
                         <TabControl.ItemTemplate>
                             <DataTemplate>
-                                <ContentControl Content="{Binding}">
+                                <ContentControl Content="{Binding Mode=OneTime}">
                                     <ContentControl.Resources>
                                         <DataTemplate DataType="{x:Type vmchart:RawDecSpectrumsViewModel}">
                                             <TextBlock Text="Exp. vs.Rep."
@@ -574,7 +574,7 @@
                         </TabControl.ItemTemplate>
                         <TabControl.ContentTemplate>
                             <DataTemplate>
-                                <ContentControl Content="{Binding}">
+                                <ContentControl Content="{Binding Mode=OneTime}">
                                     <ContentControl.Resources>
                                         <DataTemplate DataType="{x:Type vmchart:RawDecSpectrumsViewModel}">
                                             <chart:ExpRefView DataContext="{Binding DataContext.AnalysisViewModel.Value, ElementName=TabControl_MS2Viewer}">

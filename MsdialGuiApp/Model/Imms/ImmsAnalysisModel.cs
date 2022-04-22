@@ -68,7 +68,7 @@ namespace CompMs.App.Msdial.Model.Imms
             {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
-            };
+            }.AddTo(Disposables);
             Target.CombineLatest(
                 EicModel.MaxIntensitySource,
                 (t, i) => t is null

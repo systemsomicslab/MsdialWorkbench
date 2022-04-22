@@ -2,6 +2,8 @@
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +11,9 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    public class EicModel : ValidatableBase
+    public class EicModel : DisposableModelBase
     {
         public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, EicLoader loader, string graphTitle, string horizontalTitle, string verticalTitle) {
-            Loader = loader;
 
             GraphTitle = graphTitle;
             HorizontalTitle = horizontalTitle;
@@ -21,23 +22,36 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalProperty = nameof(ChromatogramPeakWrapper.ChromXValue);
             VerticalProperty = nameof(ChromatogramPeakWrapper.Intensity);
 
-            var sources = targetSource.Select(t => loader.LoadEicAsync(t, default)).Switch();
+            var sources = targetSource.Select(t => Observable.FromAsync(token => loader.LoadEicAsync(t, token)))
+                .Switch()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
 
-            EicSource = sources.Select(src => src.Item1);
-            EicPeakSource = sources.Select(src => src.Item2);
-            EicFocusedSource = sources.Select(src => src.Item3);
+            EicSource = sources.Select(src => src.Item1)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            EicPeakSource = sources.Select(src => src.Item2)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            EicFocusedSource = sources.Select(src => src.Item3)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
 
-            MaxIntensitySource = EicPeakSource.Select(src => src.Any() ? src.Max(peak => peak.Intensity) : 0);
-            ChromRangeSource = EicSource.Select(src => src.Any() ? new Range(src.Min(peak => peak.ChromXValue) ?? 0, src.Max(peak => peak.ChromXValue) ?? 1) : new Range(0, 1));
-            AbundanceRangeSource = EicFocusedSource.Select(src => src.Any() ? new Range(0, src.Max(peak => peak.Intensity)) : new Range(0, 1));
+            MaxIntensitySource = EicPeakSource.Select(src => src.Any() ? src.Max(peak => peak.Intensity) : 0)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            ChromRangeSource = EicSource.Select(src => src.Any() ? new Range(src.Min(peak => peak.ChromXValue) ?? 0, src.Max(peak => peak.ChromXValue) ?? 1) : new Range(0, 1))
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            AbundanceRangeSource = EicFocusedSource.Select(src => src.Any() ? new Range(0, src.Max(peak => peak.Intensity)) : new Range(0, 1))
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
         }
 
         public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, EicLoader loader)
             : this(targetSource, loader, string.Empty, string.Empty, string.Empty) {
 
         }
-
-        public EicLoader Loader { get; }
 
         public IObservable<List<ChromatogramPeakWrapper>> EicSource { get; }
 

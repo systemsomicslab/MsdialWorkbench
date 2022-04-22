@@ -35,20 +35,15 @@ namespace CompMs.App.Msdial.Model {
         private readonly ParameterBase parameter;
 
         public List<SpectrumPeak> LoadSpectrum(ChromatogramPeakFeatureModel target) {
-            return target == null ? new List<SpectrumPeak>() : LoadSpectrumCore(target);
+            return target is null
+                ? new List<SpectrumPeak>()
+                : LoadSpectrumCore(target);
         }
 
         public async Task<List<SpectrumPeak>> LoadSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
-            var ms2Spectrum = new List<SpectrumPeak>(); 
-
-            if (target != null) {
-                await Task.Run(() =>
-                ms2Spectrum = LoadSpectrumCore(target),
-                token).ConfigureAwait(false);
-            }
-
-            token.ThrowIfCancellationRequested();
-            return ms2Spectrum;
+            return target is null
+                ? new List<SpectrumPeak>()
+                : await Task.Run(() => LoadSpectrumCore(target), token).ConfigureAwait(false);
         }
 
         private List<SpectrumPeak> LoadSpectrumCore(ChromatogramPeakFeatureModel target) {

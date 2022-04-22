@@ -48,7 +48,8 @@ namespace CompMs.App.Msdial.Model.Chart
             SaveAsObservable = save;
             CanSave = spectraExporter.CombineLatest(Spectrum)
                 .Select(p => p.First != null && p.Second != null)
-                .StartWith(false);
+                .ToReadOnlyReactivePropertySlim(false)
+                .AddTo(Disposables);
         }
 
         public IObservable<List<SpectrumPeak>> Spectrum { get; }
