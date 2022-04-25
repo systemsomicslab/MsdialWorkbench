@@ -116,32 +116,6 @@
                 <TextBox Text="{Binding FalseDiscoveryRateForProtein.Value}"/>
             </ui:LabeledContent>
 
-            <Grid Margin="8,5,0,5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Enzyme setting:" VerticalAlignment="Center" Grid.Column="0"/>
-                <Button Content="Browse"
-                                Command="{Binding EnzymeSetCommand, Mode=OneTime}"
-                                Width="64" Height="24" Grid.Column="1" Margin="5,5,0,0"/>
-                <TextBlock Text="{Binding SelectedEnzymes, Mode=OneWay}" VerticalAlignment="Center" Grid.Column="2"/>
-                
-            </Grid>
-
-            <Grid Margin="8,5,0,5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Modification setting:" VerticalAlignment="Center" Grid.Column="0"/>
-                <Button Content="Browse"
-                                Command="{Binding ModificationSetCommand, Mode=OneTime}"
-                                Width="64" Height="24" Grid.Column="1" Margin="5,5,0,0"/>
-                <TextBlock Text="{Binding SelectedModifications, Mode=OneWay}" VerticalAlignment="Center" Grid.Column="2"/>
-            </Grid>
         </StackPanel>
     </DataTemplate>
 
@@ -190,8 +164,32 @@
                                  HorizontalContentAlignment="Right"/>
                     </ui:LabeledContent>
 
-                    <ContentControl Content="{Binding ProteomicsParameterVM}"
-                                    ContentTemplate="{StaticResource ProteomicsParameterSetting}" />
+                    <Grid Margin="8,5,0,5" DataContext="{Binding ProteomicsParameterVM}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Enzyme setting:" VerticalAlignment="Center" Grid.Column="0"/>
+                        <Button Content="Browse"
+                                Command="{Binding EnzymeSetCommand, Mode=OneTime}"
+                                Width="64" Height="24" Grid.Column="1" Margin="5,5,0,0"/>
+                        <TextBlock Text="{Binding SelectedEnzymes, Mode=OneWay}" VerticalAlignment="Center" Grid.Column="2"/>
+
+                    </Grid>
+
+                    <Grid Margin="8,5,0,5" DataContext="{Binding ProteomicsParameterVM}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Modification setting:" VerticalAlignment="Center" Grid.Column="0"/>
+                        <Button Content="Browse"
+                                Command="{Binding ModificationSetCommand, Mode=OneTime}"
+                                Width="64" Height="24" Grid.Column="1" Margin="5,5,0,0"/>
+                        <TextBlock Text="{Binding SelectedModifications, Mode=OneWay}" VerticalAlignment="Center" Grid.Column="2"/>
+                    </Grid>
                 </StackPanel>
             </GroupBox>
         </StackPanel>

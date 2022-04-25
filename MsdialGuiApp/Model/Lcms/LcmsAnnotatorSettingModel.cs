@@ -7,6 +7,7 @@ using CompMs.Common.Proteomics.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Annotation;
 using System;
 using System.Collections.Generic;
@@ -101,6 +102,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 TotalScoreCutoff = 0.0F,
                 AndromedaScoreCutOff = 0.0F
             };
+            ProteomicsParameter = dataBaseSettingModel.ProteomicsParameter;
         }
 
         public DataBaseSettingModel DataBaseSettingModel { get; }
@@ -114,6 +116,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public SourceType AnnotationSource { get; } = SourceType.FastaDB;
 
         public MsRefSearchParameterBase SearchParameter { get; }
+        public ProteomicsParameter ProteomicsParameter { get; }
 
         public List<ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>> CreateAnnotator(ShotgunProteomicsDB db, int priority, TargetOmics omics) {
             return new List<ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB>>{
