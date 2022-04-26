@@ -46,6 +46,14 @@ namespace CompMs.App.Msdial.Model.Chart
             AbundanceRangeSource = EicFocusedSource.Select(src => src.Any() ? new Range(0, src.Max(peak => peak.Intensity)) : new Range(0, 1))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+
+            MaxIntensitySource.CombineLatest(
+                targetSource,
+                (i, t) => t is null
+                    ? string.Empty
+                    : $"EIC chromatogram of {t.Mass:N4} tolerance [Da]: {loader.MzTolerance:F} Max intensity: {i:F0}")
+                .Subscribe(title => GraphTitle = title)
+                .AddTo(Disposables);
         }
 
         public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, EicLoader loader)

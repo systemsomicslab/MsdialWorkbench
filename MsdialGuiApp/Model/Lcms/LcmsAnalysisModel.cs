@@ -89,13 +89,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
             }.AddTo(Disposables);
-            Target.CombineLatest(
-                EicModel.MaxIntensitySource,
-                (t, i) => t is null
-                    ? string.Empty
-                    : $"EIC chromatogram of {t.Mass:N4} tolerance [Da]: {Parameter.CentroidMs1Tolerance:F} Max intensity: {i:F0}")
-                .Subscribe(title => EicModel.GraphTitle = title)
-                .AddTo(Disposables);
 
             // ExperimentSpectrumModel = Target.Where(t => t != null)
             //     .Select(t => 

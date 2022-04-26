@@ -35,6 +35,8 @@ namespace CompMs.App.Msdial.Model.Loader
         protected readonly ChromXUnit chromXUnit;
         protected readonly double rangeBegin, rangeEnd;
 
+        public double MzTolerance => parameter.CentroidMs1Tolerance;
+
         internal async Task<(List<ChromatogramPeakWrapper>, List<ChromatogramPeakWrapper>, List<ChromatogramPeakWrapper>)>
             LoadEicAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
 

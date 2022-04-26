@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 namespace CompMs.App.Msdial.Model.Core
 {
     public interface IMethodModel : INotifyPropertyChanged, IDisposable {
-        AnalysisModelBase AnalysisModel { get; set; }
+        AnalysisModelBase AnalysisModelBase { get; }
 
-        AlignmentModelBase AlignmentModel { get; set; }
+        AlignmentModelBase AlignmentModelBase { get; }
 
         ObservableCollection<AnalysisFileBean> AnalysisFiles { get; }
 

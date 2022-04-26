@@ -10,6 +10,7 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
@@ -28,14 +29,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             ShowExperimentSpectrumCommand = new ReactiveCommand().AddTo(Disposables);
 
-            AnalysisViewModel
-                .OfType<AnalysisLcmsVM>()
+            analysisAsObservable
                 .Where(vm => vm != null)
                 .Select(vm => ShowExperimentSpectrumCommand.WithLatestFrom(vm.ExperimentSpectrumViewModel, (a, b) => b))
                 .Switch()
                 .Subscribe(vm => MessageBroker.Default.Publish(vm))
                 .AddTo(Disposables);
-            PeakFilterViewModel = new PeakFilterViewModel(this.model.PeakFilterModel).AddTo(Disposables);
+            PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilterModel).AddTo(Disposables);
         }
 
         public LcmsMethodVM(
@@ -133,12 +133,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(proteomicsTableService));
             }
 
-            return method.ObserveProperty(m => m.AnalysisModel)
-                // .StartWith(method.AnalysisModel)
-                .Where(m => m != null)
-                .Select(m => new AnalysisLcmsVM(m, compoundSearchService, peakSpotTableService, proteomicsTableService))
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim();
+            ReadOnlyReactivePropertySlim<AnalysisLcmsVM> result;
+            using (var subject = new Subject<LcmsAnalysisModel>()) {
+                result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
+                    .Select(m => m is null ? null : new AnalysisLcmsVM(m, compoundSearchService, peakSpotTableService, proteomicsTableService))
+                    .DisposePreviousValue()
+                    .ToReadOnlyReactivePropertySlim();
+                subject.OnNext(method.AnalysisModel);
+                subject.OnCompleted();
+            }
+            return result;
         }
 
         private static IReadOnlyReactiveProperty<LcmsAlignmentViewModel> ConvertToAlignmentViewModelAsObservable(
@@ -162,12 +166,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(proteomicsTableService));
             }
 
-            return method.ObserveProperty(m => m.AlignmentModel)
-                // .StartWith(method.AlignmentModel)
-                .Where(m => m != null)
-                .Select(m => new LcmsAlignmentViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService))
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim();
+            ReadOnlyReactivePropertySlim<LcmsAlignmentViewModel> result;
+            using (var subject = new Subject<LcmsAlignmentModel>()) {
+                result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
+                    .Select(m => m is null ? null : new LcmsAlignmentViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService))
+                    .DisposePreviousValue()
+                    .ToReadOnlyReactivePropertySlim();
+                subject.OnNext(method.AlignmentModel);
+                subject.OnCompleted();
+            }
+            return result;
         }
 
         private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<AnalysisLcmsVM> analysisAsObservable, IObservable<LcmsAlignmentViewModel> alignmentAsObservable) {

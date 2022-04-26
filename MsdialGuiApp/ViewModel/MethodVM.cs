@@ -76,14 +76,14 @@ namespace CompMs.App.Msdial.ViewModel
             MassSpectrumViewModels = massSpectrumViewModels.AddTo(Disposables);
 
             viewModelChanged
-                .Where(_ => SelectedViewModel == AnalysisViewModel)
+                .Where(_ => SelectedViewModel == analysisFileViewModel)
                 .Subscribe(_ =>
                 {
                     chromatogramViewModels.SelectAnalysisFile();
                     massSpectrumViewModels.SelectAnalysisFile();
                 }).AddTo(Disposables);
             viewModelChanged
-                .Where(_ => SelectedViewModel == AlignmentViewModel)
+                .Where(_ => SelectedViewModel == alignmentFileViewModel)
                 .Subscribe(_ =>
                 {
                     chromatogramViewModels.SelectAlignmentFile();

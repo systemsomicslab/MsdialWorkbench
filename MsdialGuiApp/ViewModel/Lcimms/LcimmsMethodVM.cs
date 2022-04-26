@@ -17,6 +17,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
@@ -211,12 +212,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
-            return method.ObserveProperty(m => m.AnalysisModel)
-                .Where(m => m != null)
-                .Select(m => new AnalysisLcimmsVM(m, compoundSearchService, peakSpotTableService))
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim();
-
+            ReadOnlyReactivePropertySlim<AnalysisLcimmsVM> result;
+            using (var subject = new Subject<LcimmsAnalysisModel>()) {
+                result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
+                    .Select(m => m is null ? null : new AnalysisLcimmsVM(m, compoundSearchService, peakSpotTableService))
+                    .DisposePreviousValue()
+                    .ToReadOnlyReactivePropertySlim();
+                subject.OnNext(method.AnalysisModel);
+                subject.OnCompleted();
+            }
+            return result;
         }
 
         private static IReadOnlyReactiveProperty<AlignmentLcimmsVM> ConvertToAlignmentViewModel(
@@ -229,11 +234,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
-            return method.ObserveProperty(m => m.AlignmentModel)
-                .Where(m => m != null)
-                .Select(m => new AlignmentLcimmsVM(m, compoundSearchService, peakSpotTableService))
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim();
+            ReadOnlyReactivePropertySlim<AlignmentLcimmsVM> result;
+            using (var subject = new Subject<LcimmsAlignmentModel>()) {
+                result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
+                    .Select(m => m is null ? null : new AlignmentLcimmsVM(m, compoundSearchService, peakSpotTableService))
+                    .DisposePreviousValue()
+                    .ToReadOnlyReactivePropertySlim();
+                subject.OnNext(method.AlignmentModel);
+                subject.OnCompleted();
+            }
+            return result;
         }
     }
 }

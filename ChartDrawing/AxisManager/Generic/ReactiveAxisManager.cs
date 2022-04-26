@@ -102,8 +102,8 @@ namespace CompMs.Graphics.AxisManager.Generic
 
             public void OnNext((T, T) value) {
                 _ = UpdateInitialRange(new Range(
-                        axis.TranslateToAxisValue(value.Item1),
-                        axis.TranslateToAxisValue(value.Item2)));
+                        axis?.TranslateToAxisValue(value.Item1) ?? 0d,
+                        axis?.TranslateToAxisValue(value.Item2) ?? 0d));
             }
 
             private async Task UpdateInitialRange(Range range) {

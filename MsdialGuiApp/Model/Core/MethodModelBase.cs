@@ -33,11 +33,6 @@ namespace CompMs.App.Msdial.Model.Core
         }
         private AnalysisModelBase analysisModelBase;
 
-        AnalysisModelBase IMethodModel.AnalysisModel {
-            get => analysisModelBase;
-            set => SetProperty(ref analysisModelBase, value);
-        }
-
         public void LoadAnalysisFile(AnalysisFileBean analysisFile) {
             if (AnalysisFile == analysisFile || analysisFile is null) {
                 return;
@@ -61,11 +56,6 @@ namespace CompMs.App.Msdial.Model.Core
             private set => SetProperty(ref alignmentModelBase, value);
         }
         private AlignmentModelBase alignmentModelBase;
-
-        AlignmentModelBase IMethodModel.AlignmentModel {
-            get => alignmentModelBase;
-            set => SetProperty(ref alignmentModelBase, value);
-        }
 
         public void LoadAlignmentFile(AlignmentFileBean alignmentFile) {
             if (AlignmentFile == alignmentFile || alignmentFile is null) {

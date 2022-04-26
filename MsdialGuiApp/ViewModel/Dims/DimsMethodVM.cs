@@ -22,6 +22,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -257,12 +258,16 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
-            return method.ObserveProperty(m => m.AnalysisModel)
-                .Where(m => m != null)
-                .Select(m => new AnalysisDimsVM(m, compoundSearchService, peakSpotTableService))
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim();
-
+            ReadOnlyReactivePropertySlim<AnalysisDimsVM> result;
+            using (var subject = new Subject<DimsAnalysisModel>()) {
+                result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
+                    .Select(m => m is null ? null : new AnalysisDimsVM(m, compoundSearchService, peakSpotTableService))
+                    .DisposePreviousValue()
+                    .ToReadOnlyReactivePropertySlim();
+                subject.OnNext(method.AnalysisModel);
+                subject.OnCompleted();
+            }
+            return result;
         }
 
         private static IReadOnlyReactiveProperty<AlignmentDimsVM> ConvertToAlignmentViewModel(
@@ -280,6 +285,16 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 .Select(m => new AlignmentDimsVM(m, compoundSearchService, peakSpotTableService))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim();
+            ReadOnlyReactivePropertySlim<AlignmentDimsVM> result;
+            using (var subject = new Subject<DimsAlignmentModel>()) {
+                result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
+                    .Select(m => m is null ? null : new AlignmentDimsVM(m, compoundSearchService, peakSpotTableService))
+                    .DisposePreviousValue()
+                    .ToReadOnlyReactivePropertySlim();
+                subject.OnNext(method.AlignmentModel);
+                subject.OnCompleted();
+            }
+            return result;
         }
     }
 }

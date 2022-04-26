@@ -41,11 +41,6 @@ namespace CompMs.App.Msdial.Model.Core
         }
         private IMethodModel method;
 
-        IMethodModel IDatasetModel.Method {
-            get => Method;
-            set => Method = value;
-        }
-
         public IMsdialDataStorage<ParameterBase> Storage { get; }
 
         public IObservable<Unit> ObserveParameterChanged => observeParameterChanged;
