@@ -473,6 +473,8 @@ namespace CompMs.MsdialCore.Parameter {
         public float MinMS2RelativeIntensity { get => CorrDecParam.MinMS2RelativeIntensity; set => CorrDecParam.MinMS2RelativeIntensity = value; }
         [IgnoreMember]
         public bool CanExcute { get => CorrDecParam.CanExcute; set => CorrDecParam.CanExcute = value; }
+        [Key(17)]
+        public PostCuratorParameter PostCurationParameter { get; set; } = new PostCuratorParameter();
 
         public virtual List<string> ParametersAsText() {
             var pStrings = new List<string>();
@@ -985,7 +987,17 @@ namespace CompMs.MsdialCore.Parameter {
 
     // MS-CleanR (post curator) parameters
 
-
+    [MessagePackObject]
+    public class PostCuratorParameter {
+        [Key(0)]
+        public double FilterBlankThreshold { get; set; } = 0.8;
+        [Key(1)]
+        public bool IsBlankFilter { get; set; } = true;
+        [Key(2)]
+        public bool IsMzFilter { get; set; } = true;
+        [Key(3)]
+        public bool IsBlankGhostFilter { get; set; } = true;
+    }
 
     [MessagePackObject]
     public class PeakPickBaseParameter {

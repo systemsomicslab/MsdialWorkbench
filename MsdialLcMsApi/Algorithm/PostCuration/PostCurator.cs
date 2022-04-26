@@ -21,6 +21,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
             var isMzFilter = true; //to be included in ParameterBase
             //...
 
+            var ghosts = new List<double>();
+            var postcurparam = param.PostCurationParameter;
+
             // process
             foreach (var spot in spots) {
                 var frag = false;
@@ -37,13 +40,19 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
                 var isSampleDataAvailable = sampleProps.IsEmptyOrNull() ? false : true;
                 var avgSample = isSampleDataAvailable ? sampleProps.Average(x => x.PeakHeightTop) : 0.0;
 
-                if (isBlankFilter && isBlankDataAvailable && (isQcDataAvailable || isSampleDataAvailable)) {
+                if (postcurparam.IsBlankFilter && isBlankDataAvailable && (isQcDataAvailable || isSampleDataAvailable)) {
                     var ratioBlank = avgBlank / Math.Max(avgQC, avgSample);
-                    if (ratioBlank >= filterBlankThreshold) {
+                    if (ratioBlank >= postcurparam.FilterBlankThreshold) {
                         spot.IsBlankFilteredByPostCurator = true;
+                        ghosts.Add(Math.Round(spot.MassCenter, 3));
                     }
                 }
 
+                if (postcurparam.IsMzFilter) {
+                    if (spot.MassCenter - Math.Truncate(spot.MassCenter) >= 0.8) {
+                        spot.IsMzFilteredByPostCurator = true;
+                    }
+                }
 
                 // filtering process
                 #region
@@ -64,15 +73,20 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
                 //     }
 
                 // }
-                #endregion
-
-
-                
+                #endregion                
 
                 // if (frag == true) {
                 //     spot.IsFilteredByPostCurator = true;
                 // }
 
+            }
+
+            if (postcurparam.IsBlankGhostFilter) {
+                foreach (var spot in spots) {
+                    if (ghosts.Contains(Math.Round(spot.MassCenter, 3))) {
+                        spot.IsBlankGhostFilteredByPostCurator = true;
+                    }
+                }
             }
 
             return spots;

@@ -169,6 +169,12 @@ namespace CompMs.App.Msdial.Model.Setting
             this.parameterAsObservable = parameterAsObservable;
             loader = observeBarItemsLoader;
             this.process = process;
+
+
+            if (this.storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
+                this.storage.Parameter.MaxChargeNumber = 8;
+                this.storage.Parameter.RemoveAfterPrecursor = false;
+            }
         }
 
         public AdductIonSettingModel CreateAdductIonSetting() {
@@ -209,10 +215,7 @@ namespace CompMs.App.Msdial.Model.Setting
                     }
                 }
             }
-            else if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                parameter.MaxChargeNumber = 8;
-                parameter.RemoveAfterPrecursor = false;
-            }
+            
             return model;
         }
 
