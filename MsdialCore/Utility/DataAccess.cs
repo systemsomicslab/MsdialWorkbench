@@ -856,7 +856,7 @@ namespace CompMs.MsdialCore.Utility {
             return peaks;
         }
 
-        public static List<List<ChromatogramPeak>> GetAccumulatedMs2PeakListList(List<RawSpectrum> spectrumList,
+        public static List<List<ChromatogramPeak>> GetAccumulatedMs2PeakListList(IReadOnlyList<RawSpectrum> spectrumList,
              ChromatogramPeakFeature rtChromPeakFeature, List<SpectrumPeak> curatedSpectrum, double minDriftTime, double maxDriftTime, IonMode ionMode) {
             var ms2peaklistlist = new List<List<ChromatogramPeak>>();
             var scanPolarity = ionMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
@@ -1110,7 +1110,7 @@ namespace CompMs.MsdialCore.Utility {
             return AccumulateMS1Spectrum(spectra, double.MinValue, double.MaxValue, bin);
         }
 
-        public static List<SpectrumPeak> GetAccumulatedMs2Spectra(List<RawSpectrum> spectrumList,
+        public static List<SpectrumPeak> GetAccumulatedMs2Spectra(IReadOnlyList<RawSpectrum> spectrumList,
            ChromatogramPeakFeature driftSpot, ChromatogramPeakFeature peakSpot, ParameterBase param) {
             var massSpectrum = CalcAccumulatedMs2Spectra(spectrumList, peakSpot, driftSpot, param.CentroidMs1Tolerance);
             if (param.MS2DataType == MSDataType.Profile && massSpectrum.Count > 0) {
@@ -1122,7 +1122,7 @@ namespace CompMs.MsdialCore.Utility {
             }
         }
 
-        public static List<SpectrumPeak> CalcAccumulatedMs2Spectra(List<RawSpectrum> spectrumList,
+        public static List<SpectrumPeak> CalcAccumulatedMs2Spectra(IReadOnlyList<RawSpectrum> spectrumList,
             ChromatogramPeakFeature rtChromFeature, ChromatogramPeakFeature dtChromFeature, double mzTol) {
             var rt = rtChromFeature.ChromXsTop.Value;
             var rtLeft = rtChromFeature.ChromXsLeft.Value;
