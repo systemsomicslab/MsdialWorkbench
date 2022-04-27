@@ -17,11 +17,6 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
             IReadOnlyList<AnalysisFileBean> files, 
             ParameterBase param) {
 
-            var isBlankFilter = true; // to be included in ParameterBase
-            var filterBlankThreshold = 0.8; // to be included in ParameterBase
-            var isMzFilter = true; //to be included in ParameterBase
-            //...
-
             var ghosts = new List<double>();
             var postcurparam = param.PostCurationParameter;
 
@@ -62,10 +57,12 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
                         classToHeights[class_] = new List<double>();
                     }
                     foreach (var props in spot.AlignedPeakProperties) {
-                        classToHeights[param.FileID_ClassName[props.FileID]].Add(props.PeakHeightTop);
+                        if (param.FileID_AnalysisFileType[props.FileID] != AnalysisFileType.Blank) {
+                            classToHeights[param.FileID_ClassName[props.FileID]].Add(props.PeakHeightTop);
+                        }
                     }
                     foreach (var class_ in classToHeights.Keys) {
-                        if (class_ != "Blank") {
+                        if (classToHeights[class_].Any()) {
                             var avg = BasicMathematics.Mean(classToHeights[class_]);
                             var sd = BasicMathematics.Stdev(classToHeights[class_]);
                             classToRsd[class_] = sd * 100 / avg;
