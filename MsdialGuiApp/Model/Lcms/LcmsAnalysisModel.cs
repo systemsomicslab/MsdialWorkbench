@@ -80,29 +80,34 @@ namespace CompMs.App.Msdial.Model.Lcms
                 t => t is null
                     ? string.Empty
                     : $"Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}")
-                .Subscribe(title => PlotModel.GraphTitle = title);
+                .Subscribe(title => PlotModel.GraphTitle = title)
+                .AddTo(Disposables);
 
             // Eic chart
             EicLoader = new EicLoader(this.provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
             EicModel = new EicModel(Target, EicLoader) {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
-            };
-            Target.CombineLatest(
-                EicModel.MaxIntensitySource,
-                (t, i) => t is null
-                    ? string.Empty
-                    : $"EIC chromatogram of {t.Mass:N4} tolerance [Da]: {Parameter.CentroidMs1Tolerance:F} Max intensity: {i:F0}")
-                .Subscribe(title => EicModel.GraphTitle = title);
+            }.AddTo(Disposables);
 
-            ExperimentSpectrumModel = Target.Where(t => t != null)
-                .Select(t => 
-                    EicModel.EicSource
-                    .Select(source => new DisplayChromatogram(source))
-                    .Select(chromatogram => new ChromatogramsModel("Experiment chromatogram", chromatogram))
-                    .Select(chromatogram => new RangeSelectableChromatogramModel(chromatogram))
-                    .Select(model => new ExperimentSpectrumModel(model, AnalysisFile, provider, t.InnerModel, DataBaseMapper, Parameter))
-                ).Switch()
+            // ExperimentSpectrumModel = Target.Where(t => t != null)
+            //     .Select(t => 
+            //         EicModel.EicSource
+            //         .Select(source => new DisplayChromatogram(source))
+            //         .Select(chromatogram => new ChromatogramsModel("Experiment chromatogram", chromatogram))
+            //         .Select(chromatogram => new RangeSelectableChromatogramModel(chromatogram))
+            //         .Select(model => new ExperimentSpectrumModel(model, AnalysisFile, provider, t.InnerModel, DataBaseMapper, Parameter))
+            //     ).Switch()
+            //     .ToReadOnlyReactivePropertySlim()
+            //     .AddTo(Disposables);
+
+            ExperimentSpectrumModel = EicModel.EicSource
+                .Select(source => new DisplayChromatogram(source))
+                .Select(chromatogram => new ChromatogramsModel("Experiment chromatogram", chromatogram))
+                .Select(chromatogram => new RangeSelectableChromatogramModel(chromatogram))
+                .CombineLatest(
+                    Target.Where(t => t != null),
+                    (model, t) => new ExperimentSpectrumModel(model, AnalysisFile, provider, t.InnerModel, DataBaseMapper, Parameter))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -118,11 +123,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                ),
                item => item.ToString(),
                Colors.Blue);
-            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
-                comment =>
-                {
+            // var projectParameter = Parameter.ProjectParam;
+            Func<SpectrumComment, Color> zzz(ProjectBaseParameter projectParameter)
+            {
+                Color f(SpectrumComment comment) {
                     var commentString = comment.ToString();
-                    var projectParameter = Parameter.ProjectParam;
                     if (projectParameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
                         return Color.FromRgb(color[0], color[1], color[2]);
                     }
@@ -133,8 +138,10 @@ namespace CompMs.App.Msdial.Model.Lcms
                     else {
                         return Colors.Red;
                     }
-                },
-                true);
+                }
+                return f;
+            };
+            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(zzz(Parameter.ProjectParam), true);
             var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, Parameter).AddTo(Disposables);
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
@@ -166,21 +173,25 @@ namespace CompMs.App.Msdial.Model.Lcms
                 VerticalProperty = nameof(SpectrumPeak.Intensity),
                 LabelProperty = nameof(SpectrumPeak.Mass),
                 OrderingProperty = nameof(SpectrumPeak.Intensity),
-            };
+            }.AddTo(Disposables);
 
 
             // SurveyScan
+            var msdataType = Parameter.MSDataType;
             SurveyScanModel = new SurveyScanModel(
-                Target.SelectMany(t =>
-                    Observable.Defer(() => {
-                        if (t is null) {
-                            return Observable.Return(new List<SpectrumPeakWrapper>());
-                        }
-                        var spectra = DataAccess.GetCentroidMassSpectra(
-                            this.provider.LoadMs1Spectrums()[t.MS1RawSpectrumIdTop],
-                            Parameter.MSDataType, 0, float.MinValue, float.MaxValue);
-                        return Observable.Return(spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList());
-                    })),
+                Target.CombineLatest(
+                    Observable.Return(provider),
+                    Observable.Return(msdataType),
+                    (t, p, dt) => 
+                {
+                    if (t is null) {
+                        return new List<SpectrumPeakWrapper>();
+                    }
+                    var spectra = DataAccess.GetCentroidMassSpectra(
+                        p.LoadMs1Spectrums()[t.MS1RawSpectrumIdTop],
+                        dt, 0, float.MinValue, float.MaxValue);
+                    return spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
+                }),
                 spec => spec.Mass,
                 spec => spec.Intensity).AddTo(Disposables);
             SurveyScanModel.Elements.VerticalTitle = "Abundance";
@@ -219,9 +230,12 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var rtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, RtTol, Target.Select(t => t?.ChromXValue ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MzTol, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
+            Func<double, ChromatogramPeakFeatureModel> yyy(IReadOnlyList<ChromatogramPeakFeatureModel> ms1Peaks) {
+                return id => ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id));
+            }
             var idSpotFocus = new IdSpotFocus<ChromatogramPeakFeatureModel>(
                 Target,
-                id => Ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id)),
+                yyy(Ms1Peaks),
                 Target.Select(t => t?.MasterPeakID ?? 0d),
                 "Region focus by ID",
                 (rtSpotFocus, peak => peak.ChromXValue ?? 0d),

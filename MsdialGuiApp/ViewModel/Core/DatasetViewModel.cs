@@ -13,6 +13,7 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Core
 {
@@ -34,11 +35,11 @@ namespace CompMs.App.Msdial.ViewModel.Core
             this.peakSpotTableService = peakSpotTableService;
             this.proteomicsTableService = proteomicsTableService;
             this.analysisFilePropertyResetService = analysisFilePropertyResetService;
-            MethodViewModel = model.ToReactivePropertySlimAsSynchronized(
-                m => m.Method,
-                m => ConvertToViewModel(m),
-                vm => vm?.Model)
-            .AddTo(Disposables);
+            MethodViewModel = model.ObserveProperty(m => m.Method)
+                .Select(ConvertToViewModel)
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
             FilePropertyResetCommand = new ReactiveCommand()
                 .WithSubscribe(FilePropertyResetting)
                 .AddTo(Disposables);
@@ -46,7 +47,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         public IDatasetModel Model { get; }
 
-        public ReactivePropertySlim<MethodViewModel> MethodViewModel { get; }
+        public ReadOnlyReactivePropertySlim<MethodViewModel> MethodViewModel { get; }
 
         public ReactiveCommand FilePropertyResetCommand { get; }
 

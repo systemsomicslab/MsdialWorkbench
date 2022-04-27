@@ -54,21 +54,29 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
             var projectViewModel = Model.ObserveProperty(m => m.CurrentProject)
                 .Select(m => m is null ? null : new ProjectViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, analysisFilePropertyResetService))
-                .DisposePreviousValue();
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
             var datasetViewModel = projectViewModel
-                .Switch(project => project?.CurrentDatasetViewModel.StartWith(project.CurrentDatasetViewModel.Value));
+                .Switch(project => project?.CurrentDatasetViewModel ?? Observable.Never<DatasetViewModel>())
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+                //.Switch(project => project?.CurrentDatasetViewModel.StartWith(project.CurrentDatasetViewModel.Value));
             var methodViewModel = datasetViewModel
-                .Switch(dataset => dataset?.MethodViewModel.StartWith(dataset.MethodViewModel.Value));
+                .Switch(dataset => dataset?.MethodViewModel ?? Observable.Never<MethodViewModel>())
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            //.Switch(dataset => dataset?.MethodViewModel.StartWith(dataset.MethodViewModel.Value));
 
-            ProjectViewModel = projectViewModel
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            DatasetViewModel = datasetViewModel
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            MethodViewModel = methodViewModel
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
+            ProjectViewModel = projectViewModel;
+            //.ToReadOnlyReactivePropertySlim()
+            //.AddTo(Disposables);
+            DatasetViewModel = datasetViewModel;
+            //.ToReadOnlyReactivePropertySlim()
+            //.AddTo(Disposables);
+            MethodViewModel = methodViewModel;
+                // .ToReadOnlyReactivePropertySlim()
+                // .AddTo(Disposables);
 
             var projectSaveEnableState = new ReactivePropertySlim<bool>(true);
             CreateNewProjectCommand = projectSaveEnableState.ToAsyncReactiveCommand()

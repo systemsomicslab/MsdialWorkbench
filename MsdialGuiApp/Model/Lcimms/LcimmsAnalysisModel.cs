@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             {
                 HorizontalTitle = RtMzPlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
-            };
+            }.AddTo(Disposables);
 
             DtMzPlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource, verticalAxis: RtMzPlotModel.VerticalAxis)
             {
@@ -81,13 +81,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             {
                 HorizontalTitle = DtMzPlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
-            };
-            Target.CombineLatest(
-                DtEicModel.MaxIntensitySource,
-                (t, i) => t is null
-                    ? string.Empty
-                    : $"EIC chromatogram of {t.Mass:N4} tolerance [Da]: {Parameter.CentroidMs1Tolerance:F} Max intensity: {i:F0}")
-                .Subscribe(title => DtEicModel.GraphTitle = title);
+            }.AddTo(Disposables);
 
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
                parameter.ProjectParam.SpectrumCommentToColorBytes

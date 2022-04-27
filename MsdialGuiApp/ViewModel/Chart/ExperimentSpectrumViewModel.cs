@@ -17,19 +17,19 @@ namespace CompMs.App.Msdial.ViewModel.Chart
     public class ExperimentSpectrumViewModel : ViewModelBase
     {
         public ExperimentSpectrumViewModel(ExperimentSpectrumModel model) {
-            Model = model;
-            RangeSelectableChromatogramViewModel = new RangeSelectableChromatogramViewModel(Model.RangeSelectableChromatogramModel);
-            Ms1Spectrum = Model.ObserveProperty(m => m.Ms1Spectrum)
+            this.model = model;
+            RangeSelectableChromatogramViewModel = new RangeSelectableChromatogramViewModel(model.RangeSelectableChromatogramModel);
+            Ms1Spectrum = model.ObserveProperty(m => m.Ms1Spectrum)
                 .Select(m => m is null ? null : new SummarizedSpectrumViewModel(m))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            Ms2Spectrums = Model.Ms2Spectrums.ToReadOnlyReactiveCollection(m => new SummarizedSpectrumViewModel(m)).AddTo(Disposables);
+            Ms2Spectrums = model.Ms2Spectrums.ToReadOnlyReactiveCollection(m => new SummarizedSpectrumViewModel(m)).AddTo(Disposables);
 
             AccumulateSpectrumCommand = new ReactiveCommand().AddTo(Disposables);
             AccumulateSpectrumCommand
-                .Where(_ => Model.CanSetExperimentSpectrum())
-                .Subscribe(_ => Model.SetExperimentSpectrum())
+                .Where(_ => CanAccumulateSpectrum())
+                .Subscribe(_ => AccumulateSpectrum())
                 .AddTo(Disposables);
 
             SaveSpectraAsNistCommand = new ReactiveCommand()
@@ -37,7 +37,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .AddTo(Disposables);
         }
 
-        public ExperimentSpectrumModel Model { get; }
+        private readonly ExperimentSpectrumModel model;
 
         public RangeSelectableChromatogramViewModel RangeSelectableChromatogramViewModel { get; }
 
@@ -50,11 +50,19 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReactiveCommand AccumulateSpectrumCommand { get; }
 
+        private bool CanAccumulateSpectrum() {
+            return model.CanSetExperimentSpectrum();
+        }
+
+        private void AccumulateSpectrum() {
+            model.SetExperimentSpectrum();
+        }
+
         public ReactiveCommand SaveSpectraAsNistCommand { get; }
 
         private void SaveSpectraAsNist() {
             if (string.IsNullOrEmpty(Resources.EXPORT_DIR) || !Directory.Exists(Resources.EXPORT_DIR)) {
-                MessageBroker.Default.Publish(new SaveFileNameRequest(Model.SaveSpectrumAsNist)
+                MessageBroker.Default.Publish(new SaveFileNameRequest(model.SaveSpectrumAsNist)
                 {
                     Title = "Save spectra",
                     Filter = "NIST format(*.msp)|*.msp",
@@ -63,8 +71,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 });
             }
             else {
-                var fileName = Path.GetFileNameWithoutExtension(Model.AnalysisFile.AnalysisFileName);
-                Model.SaveSpectrumAsNist(Path.Combine(Resources.EXPORT_DIR, $"{fileName}.msp"));
+                var fileName = Path.GetFileNameWithoutExtension(model.AnalysisFile.AnalysisFileName);
+                model.SaveSpectrumAsNist(Path.Combine(Resources.EXPORT_DIR, $"{fileName}.msp"));
             }
         }
     }

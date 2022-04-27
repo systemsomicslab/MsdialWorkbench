@@ -51,10 +51,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
             PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
 
-            var DisplayFilters = this.ObserveProperty(m => m.DisplayFilters)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
             PlotViewModel = new AnalysisPeakPlotViewModel(this.model.PlotModel, brushSource: Observable.Return(this.model.Brush)).AddTo(Disposables);
             EicViewModel = new EicViewModel(
                 this.model.EicModel,
@@ -69,16 +65,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 item => item.ToString(),
                 Colors.Blue);
 
+            var projectParameter = this.model.Parameter.ProjectParam;
             var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
                 comment =>
                 {
                     var commentString = comment.ToString();
-                    var parameter = this.model.Parameter.ProjectParam;
-                    if (parameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
+                    if (projectParameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
                         return Color.FromRgb(color[0], color[1], color[2]);
                     }
                     else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
-                        && parameter.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
+                        && projectParameter.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
                         return Color.FromRgb(color[0], color[1], color[2]);
                     }
                     else {
@@ -131,6 +127,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             ExperimentSpectrumViewModel = model.ExperimentSpectrumModel
                 .Where(model_ => model_ != null)
                 .Select(model_ => new ExperimentSpectrumViewModel(model_))
+                .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 

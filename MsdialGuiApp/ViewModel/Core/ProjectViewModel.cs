@@ -5,6 +5,7 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Core
 {
@@ -19,16 +20,16 @@ namespace CompMs.App.Msdial.ViewModel.Core
             CurrentDataset = model.ToReactivePropertySlimAsSynchronized(m => m.CurrentDataset).AddTo(Disposables);
             Datasets = model.Datasets.ToReadOnlyReactiveCollection().AddTo(Disposables);
 
-            CurrentDatasetViewModel = model.ToReactivePropertySlimAsSynchronized(
-                m => m.CurrentDataset,
-                m => m is null ? null : new DatasetViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, analysisFilePropertyResetService),
-                vm => vm?.Model
-            ).AddTo(Disposables);
+            CurrentDatasetViewModel = model.ObserveProperty(m => m.CurrentDataset)
+                .Select(m => m is null ? null : new DatasetViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, analysisFilePropertyResetService))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
         }
 
         public ReactivePropertySlim<IDatasetModel> CurrentDataset { get; }
         public ReadOnlyReactiveCollection<IDatasetModel> Datasets { get; }
 
-        public ReactivePropertySlim<DatasetViewModel> CurrentDatasetViewModel { get; }
+        public ReadOnlyReactivePropertySlim<DatasetViewModel> CurrentDatasetViewModel { get; }
     }
 }
