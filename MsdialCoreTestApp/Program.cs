@@ -125,12 +125,13 @@ namespace CompMs.App.MsdialConsole {
             //         .Cast<Common.Components.MoleculeMsReference>());
 
 #if DEBUG
-            //var projectPath = @"D:\msdial_test\Msdial\out\wine2\2022_01_05_13_17_26.mtd3";
+            var projectPath = @"C:\Users\lab\Desktop\dropmet\20140809_MSDIAL_DemoFiles_Swath\neg\hoge20220427.mtd3";
             //var output = new MemoryStream();
-            //// using var output = File.Open(@"D:\msdial_test\Msdial\out\wine2\output.tsv", FileMode.Create);
-            //var tester = new Export.ExporterTest();
-            var curator = (PostCurator)null; // new PostCurator();
-            //tester.Export(projectPath, output, curator);
+            using var output = File.Open(@"C:\Users\lab\Desktop\dropmet\output.tsv", FileMode.Create);
+            var tester = new Export.ExporterTest();
+            var curator = new PostCurator();
+            //var curator = (PostCurator)null; // new PostCurator();
+            tester.Export(projectPath, output, curator);
             //Console.WriteLine(Encoding.UTF8.GetString(output.ToArray()));
 #endif
 
