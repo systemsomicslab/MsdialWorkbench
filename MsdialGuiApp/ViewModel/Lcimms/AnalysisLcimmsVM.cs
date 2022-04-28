@@ -1,12 +1,11 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Lcimms;
+﻿using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
@@ -20,7 +19,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
     class AnalysisLcimmsVM : AnalysisFileViewModel
     {
-
         public AnalysisLcimmsVM(
             LcimmsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
@@ -42,55 +40,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
 
-            MassMin = this.model.MassMin;
-            MassMax = this.model.MassMax;
-            MassLower = new ReactiveProperty<double>(MassMin).AddTo(Disposables);
-            MassUpper = new ReactiveProperty<double>(MassMax).AddTo(Disposables);
-            MassLower.SetValidateNotifyError(v => v < MassMin ? "Too small" : null)
-                .SetValidateNotifyError(v => v > MassUpper.Value ? "Too large" : null);
-            MassUpper.SetValidateNotifyError(v => v < MassLower.Value ? "Too small" : null)
-                .SetValidateNotifyError(v => v > MassMax ? "Too large" : null);
-
-            RtMin = this.model.RtMin;
-            RtMax = this.model.RtMax;
-            RtLower = new ReactiveProperty<double>(RtMin).AddTo(Disposables);
-            RtUpper = new ReactiveProperty<double>(RtMax).AddTo(Disposables);
-            RtLower.SetValidateNotifyError(v => v < RtMin ? "Too small" : null)
-                .SetValidateNotifyError(v => v > RtUpper.Value ? "Too large" : null);
-            RtUpper.SetValidateNotifyError(v => v < RtLower.Value ? "Too small" : null)
-                .SetValidateNotifyError(v => v > RtMax ? "Too large" : null);
-
-            DriftMin = this.model.DriftMin;
-            DriftMax = this.model.DriftMax;
-            DriftLower = new ReactiveProperty<double>(DriftMin).AddTo(Disposables);
-            DriftUpper = new ReactiveProperty<double>(DriftMax).AddTo(Disposables);
-            DriftLower.SetValidateNotifyError(v => v < DriftMin ? "Too small" : null)
-                .SetValidateNotifyError(v => v > DriftUpper.Value ? "Too large" : null);
-            DriftUpper.SetValidateNotifyError(v => v < DriftLower.Value ? "Too small" : null)
-                .SetValidateNotifyError(v => v > DriftMax ? "Too large" : null);
-
-            var DisplayFilters = this.ObserveProperty(m => m.DisplayFilters)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            new[]
-            {
-                MassLower.ToUnit(),
-                MassUpper.ToUnit(),
-                RtLower.ToUnit(),
-                RtUpper.ToUnit(),
-                DriftLower.ToUnit(),
-                DriftUpper.ToUnit(),
-                CommentFilterKeyword.ToUnit(),
-                MetaboliteFilterKeyword.ToUnit(),
-                DisplayFilters.ToUnit(),
-                AmplitudeLowerValue.ToUnit(),
-                AmplitudeUpperValue.ToUnit(),
-            }.Merge()
-            .Throttle(TimeSpan.FromMilliseconds(500))
-            .ObserveOnDispatcher()
-            .Subscribe(_ => Ms1PeaksView?.Refresh())
-            .AddTo(Disposables);
+            PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
+            PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
 
             var brush = Observable.Return(this.model.Brush);
             RtMzPlotViewModel = new AnalysisPeakPlotViewModel(this.model.RtMzPlotModel, brushSource: brush).AddTo(Disposables);
@@ -137,8 +88,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             .ToReactiveCommand()
             .WithSubscribe(SearchCompound)
             .AddTo(Disposables);
-
-            Ms1PeaksView.Filter += PeakFilter;
         }
 
         private readonly LcimmsAnalysisModel model;
@@ -151,78 +100,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public EicViewModel DtEicViewModel { get; private set; }
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; private set; }
         public SurveyScanViewModel SurveyScanViewModel { get; private set; }
-
-        public bool RefMatchedChecked => ReadDisplayFilters(DisplayFilter.RefMatched);
-        public bool SuggestedChecked => ReadDisplayFilters(DisplayFilter.Suggested);
-        public bool UnknownChecked => ReadDisplayFilters(DisplayFilter.Unknown);
-        public bool Ms2AcquiredChecked => ReadDisplayFilters(DisplayFilter.Ms2Acquired);
-        public bool MolecularIonChecked => ReadDisplayFilters(DisplayFilter.MolecularIon);
-        public bool CcsChecked => ReadDisplayFilters(DisplayFilter.CcsMatched);
-        public bool BlankFilterChecked => ReadDisplayFilters(DisplayFilter.Blank);
-        public bool UniqueIonsChecked => ReadDisplayFilters(DisplayFilter.UniqueIons);
-        public bool ManuallyModifiedChecked => ReadDisplayFilters(DisplayFilter.ManuallyModified);
-
-        public double MassMin { get; }
-        public double MassMax { get; }
-        public ReactiveProperty<double> MassLower { get; }
-        public ReactiveProperty<double> MassUpper { get; }
-        public double RtMin { get; }
-        public double RtMax { get; }
-        public ReactiveProperty<double> RtLower { get; }
-        public ReactiveProperty<double> RtUpper { get; }
-        public double DriftMin { get; }
-        public double DriftMax { get; }
-        public ReactiveProperty<double> DriftLower { get; }
-        public ReactiveProperty<double> DriftUpper { get; }
-
-
-        bool PeakFilter(object obj) {
-            if (obj is ChromatogramPeakFeatureModel peak) {
-                return AnnotationFilter(peak)
-                    && AmplitudeFilter(peak)
-                    && MzFilter(peak)
-                    && RtFilter(peak)
-                    && DriftFilter(peak)
-                    && (!Ms2AcquiredChecked || peak.IsMsmsContained)
-                    && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0)
-                    && (!ManuallyModifiedChecked || peak.InnerModel.IsManuallyModifiedForAnnotation)
-                    && MetaboliteFilter(peak, MetaboliteFilterKeywords.Value)
-                    && CommentFilter(peak, CommentFilterKeywords.Value);
-            }
-            return false;
-        }
-
-        bool AnnotationFilter(ChromatogramPeakFeatureModel peak) {
-            if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
-            return RefMatchedChecked && peak.IsRefMatched(model.MatchResultEvaluator)
-                || SuggestedChecked && peak.IsSuggested(model.MatchResultEvaluator)
-                || UnknownChecked && peak.IsUnknown;
-        }
-
-        bool MzFilter(ChromatogramPeakFeatureModel peak) {
-            return MassLower.Value <= peak.Mass && peak.Mass <= MassUpper.Value;
-        }
-
-        bool RtFilter(ChromatogramPeakFeatureModel peak) {
-            return RtLower.Value <= peak.InnerModel.ChromXs.RT.Value && peak.InnerModel.ChromXs.RT.Value <= RtUpper.Value;
-        }
-
-        bool DriftFilter(ChromatogramPeakFeatureModel peak) {
-            return DriftLower.Value <= peak.InnerModel.ChromXs.Drift.Value && peak.InnerModel.ChromXs.Drift.Value <= DriftUpper.Value;
-        }
-
-        public DelegateCommand<IAxisManager> FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand<IAxisManager>(FocusByID));
-        private DelegateCommand<IAxisManager> focusByIDCommand;
-
-        private void FocusByID(IAxisManager axis) {
-            model.FocusByID(axis);
-        }
-
-        public DelegateCommand<IAxisManager> FocusByMzCommand => focusByMzCommand ?? (focusByMzCommand = new DelegateCommand<IAxisManager>(FocusByMz));
-        private DelegateCommand<IAxisManager> focusByMzCommand;
-        private void FocusByMz(IAxisManager axis) {
-            model.FocusByMz(axis);
-        }
+        public PeakFilterViewModel PeakFilterViewModel { get; }
+        public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
 
         public ReactiveCommand SearchCompoundCommand { get; }
 

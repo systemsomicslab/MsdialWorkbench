@@ -44,6 +44,14 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 .AddTo(Disposables);
             RtLowerValue.SetValidateNotifyError(v => RtUpperValue.Value >= v ? null : "Too large");
             RtUpperValue.SetValidateNotifyError(v => RtLowerValue.Value <= v ? null : "Too small");
+            DtLowerValue = model
+                .ToReactivePropertyAsSynchronized(m => m.DtLowerValue)
+                .AddTo(Disposables);
+            DtUpperValue = model
+                .ToReactivePropertyAsSynchronized(m => m.DtUpperValue)
+                .AddTo(Disposables);
+            DtLowerValue.SetValidateNotifyError(v => DtUpperValue.Value >= v ? null : "Too large");
+            DtUpperValue.SetValidateNotifyError(v => DtLowerValue.Value <= v ? null : "Too small");
 
             MetaboliteFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
             MetaboliteFilterKeyword
@@ -79,6 +87,8 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 MzUpperValue.ToUnit(),
                 RtLowerValue.ToUnit(),
                 RtUpperValue.ToUnit(),
+                DtLowerValue.ToUnit(),
+                DtUpperValue.ToUnit(),
                 MetaboliteFilterKeyword.ToUnit(),
                 ProteinFilterKeyword.ToUnit(),
                 CommentFilterKeyword.ToUnit(),
@@ -99,6 +109,8 @@ namespace CompMs.App.Msdial.ViewModel.Search
         public ReactiveProperty<double> MzUpperValue { get; }
         public ReactiveProperty<double> RtLowerValue { get; }
         public ReactiveProperty<double> RtUpperValue { get; }
+        public ReactiveProperty<double> DtLowerValue { get; }
+        public ReactiveProperty<double> DtUpperValue { get; }
 
         public ReactivePropertySlim<string> MetaboliteFilterKeyword { get; }
         public ReactivePropertySlim<string> ProteinFilterKeyword { get; }

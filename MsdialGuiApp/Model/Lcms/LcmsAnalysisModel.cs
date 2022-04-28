@@ -65,7 +65,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Parameter = parameter;
             CompoundSearchers = ConvertToCompoundSearchers(databases);
 
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, useRtFilter: true);
 
             // Peak scatter plot
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -90,17 +90,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 VerticalTitle = "Abundance",
             }.AddTo(Disposables);
 
-            // ExperimentSpectrumModel = Target.Where(t => t != null)
-            //     .Select(t => 
-            //         EicModel.EicSource
-            //         .Select(source => new DisplayChromatogram(source))
-            //         .Select(chromatogram => new ChromatogramsModel("Experiment chromatogram", chromatogram))
-            //         .Select(chromatogram => new RangeSelectableChromatogramModel(chromatogram))
-            //         .Select(model => new ExperimentSpectrumModel(model, AnalysisFile, provider, t.InnerModel, DataBaseMapper, Parameter))
-            //     ).Switch()
-            //     .ToReadOnlyReactivePropertySlim()
-            //     .AddTo(Disposables);
-
             ExperimentSpectrumModel = EicModel.EicSource
                 .Select(source => new DisplayChromatogram(source))
                 .Select(chromatogram => new ChromatogramsModel("Experiment chromatogram", chromatogram))
@@ -123,7 +112,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                ),
                item => item.ToString(),
                Colors.Blue);
-            // var projectParameter = Parameter.ProjectParam;
             Func<SpectrumComment, Color> zzz(ProjectBaseParameter projectParameter)
             {
                 Color f(SpectrumComment comment) {

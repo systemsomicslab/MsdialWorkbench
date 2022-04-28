@@ -2,12 +2,13 @@
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
-using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -35,8 +36,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
             IDataProvider accSpectrumProvider,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseMapper mapper,
-            ParameterBase parameter)
+            ParameterBase parameter,
+            PeakFilterModel peakFilterModel)
             : base(analysisFile) {
+            if (peakFilterModel is null) {
+                throw new ArgumentNullException(nameof(peakFilterModel));
+            }
 
             this.spectrumProvider = spectrumProvider;
             this.accSpectrumProvider = accSpectrumProvider;
@@ -45,11 +50,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             FileName = analysisFile.AnalysisFileName;
 
-            AmplitudeOrderMin = Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0;
-            AmplitudeOrderMax = Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0;
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, useRtFilter: true, useDtFilter: true);
 
-            var labelsource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            RtMzPlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource)
+            var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            RtMzPlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelSource)
             {
                 HorizontalTitle = "Retention time [min]",
                 VerticalTitle = "m/z",
@@ -63,7 +67,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 VerticalTitle = "Abundance",
             }.AddTo(Disposables);
 
-            DtMzPlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource, verticalAxis: RtMzPlotModel.VerticalAxis)
+            DtMzPlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelSource, verticalAxis: RtMzPlotModel.VerticalAxis)
             {
                 HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "m/z",
@@ -125,11 +129,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
             SurveyScanModel = new SurveyScanModel(
-                Target.SelectMany(t =>
-                    Observable.DeferAsync(async token => {
-                        var result = await LoadMs1SpectrumAsync(t, token);
-                        return Observable.Return(result);
-                    })),
+                Target
+                    .Select(t => Observable.FromAsync(token => LoadMs1SpectrumAsync(t, token)))
+                    .Switch(),
                 spec => spec.Mass,
                 spec => spec.Intensity
             ).AddTo(Disposables);
@@ -159,19 +161,28 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     Brush = new ConstantBrushMapper<ChromatogramPeakFeatureModel>(Brushes.Black);
                     break;
             }
-            Target.Subscribe(OnTargetChanged);
+
+            var mzSpotFocus = new ChromSpotFocus(RtMzPlotModel.VerticalAxis, MzTol, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
+            var rtSpotFocus = new ChromSpotFocus(RtMzPlotModel.HorizontalAxis, RtTol, Target.Select(t => t?.ChromXValue ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
+            var dtSpotFocus = new ChromSpotFocus(DtMzPlotModel.HorizontalAxis, DtTol, Target.Select(t => t?.ChromXValue ?? 0d), "F3", "Drift time(1/k0)", isItalic: false).AddTo(Disposables);
+            var idSpotFocus = new IdSpotFocus<ChromatogramPeakFeatureModel>(
+                Target,
+                id => Ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id)),
+                Target.Select(t => t?.MasterPeakID ?? 0d),
+                "Region focus by ID",
+                (mzSpotFocus, peak => peak.Mass),
+                (rtSpotFocus, peak => peak.ChromXValue ?? 0d),
+                (dtSpotFocus, peak => peak.ChromXValue ?? 0d)).AddTo(Disposables);
+            FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus, dtSpotFocus);
         }
+
+        private static readonly double RtTol = 0.5;
+        private static readonly double MzTol = 20;
+        private static readonly double DtTol = 0.01;
 
         public ParameterBase Parameter { get; }
 
-        public double RtMin => Ms1Peaks.Min(peak => peak.InnerModel?.ChromXs.RT.Value) ?? 0;
-        public double RtMax => Ms1Peaks.Max(peak => peak.InnerModel?.ChromXs.RT.Value) ?? 0;
-        public double DriftMin => Ms1Peaks.Min(peak => peak.InnerModel?.ChromXs.Drift.Value) ?? 0;
-        public double DriftMax => Ms1Peaks.Max(peak => peak.InnerModel?.ChromXs.Drift.Value) ?? 0;
-        public double MassMin => Ms1Peaks.Min(peak => peak.Mass);
-        public double MassMax => Ms1Peaks.Max(peak => peak.Mass);
-        public double IntensityMin => Ms1Peaks.Min(peak => peak.Intensity);
-        public double IntensityMax => Ms1Peaks.Max(peak => peak.Intensity);
+        public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
         public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
         public AnalysisPeakPlotModel RtMzPlotModel { get; }
@@ -182,9 +193,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public EicModel DtEicModel { get; }
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public SurveyScanModel SurveyScanModel { get; }
-
-        public double AmplitudeOrderMin { get; }
-        public double AmplitudeOrderMax { get; }
+        public FocusNavigatorModel FocusNavigatorModel { get; }
 
         private readonly IDataProvider spectrumProvider;
         private readonly IDataProvider accSpectrumProvider;
@@ -199,33 +208,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
         private string fileName;
 
-        public int FocusID {
-            get => focusID;
-            set => SetProperty(ref focusID, value);
-        }
-        private int focusID;
-
-        public double FocusDt {
-            get => focusDt;
-            set => SetProperty(ref focusDt, value);
-        }
-        private double focusDt;
-
-        public double FocusMz {
-            get => focusMz;
-            set => SetProperty(ref focusMz, value);
-        }
-        private double focusMz;
-
         public EicLoader EicLoader { get; } // TODO
-
-        void OnTargetChanged(ChromatogramPeakFeatureModel target) {
-            if (target != null) {
-                FocusID = target.InnerModel.MasterPeakID;
-                FocusDt = target.ChromXValue ?? 0;
-                FocusMz = target.Mass;
-            }
-        }
 
         async Task<List<SpectrumPeakWrapper>> LoadMs1SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var ms1Spectrum = new List<SpectrumPeakWrapper>();
@@ -241,17 +224,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }, token);
             }
             return ms1Spectrum;
-        }
-
-        public void FocusByID(IAxisManager axis) {
-            var focus = Ms1Peaks.FirstOrDefault(peak => peak.InnerModel.MasterPeakID == FocusID);
-            Target.Value = focus;
-            axis?.Focus(focus.Mass - MzTol, focus.Mass + MzTol);
-        }
-
-        private static readonly double MzTol = 20;
-        public void FocusByMz(IAxisManager axis) {
-            axis?.Focus(FocusMz - MzTol, FocusMz + MzTol);
         }
     }
 }
