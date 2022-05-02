@@ -38,16 +38,16 @@ namespace CompMs.MsdialCore.Algorithm {
             IDataProvider provider,
             ParameterBase param, List<MoleculeMsReference> iStdLib) {
             var targetList = new List<StandardPair>();
-            var spectrumList = provider.LoadMs1Spectrums();
-            var id2ChromXs = DataAccess.GetID2ChromXs(spectrumList, param.IonMode, ChromXType.RT, ChromXUnit.Min);
+            var ms1Spectra = provider.LoadMs1Spectrums();
+            var ms2Spectra = provider.LoadMsNSpectrums(level: 2);
+            var id2ChromXs = DataAccess.GetID2ChromXs(ms1Spectra, param.IonMode, ChromXType.RT, ChromXUnit.Min);
             if (iStdLib.IsEmptyOrNull()) return new List<StandardPair>();
 
             var peakpickCore = new PeakSpottingCore();
             foreach (var i in iStdLib) {
                 var startMass = i.PrecursorMz;
                 var endMass = i.PrecursorMz + i.MassTolerance;
-                var pabCollection = peakpickCore.GetChromatogramPeakFeatures(provider, id2ChromXs, (float)startMass, param,
-                    ChromXType.RT, ChromXUnit.Min, param.RetentionTimeBegin, param.RetentionTimeEnd);
+                var pabCollection = peakpickCore.GetChromatogramPeakFeatures(ms1Spectra, ms2Spectra, id2ChromXs, (float)startMass, param, ChromXType.RT, ChromXUnit.Min, param.RetentionTimeBegin, param.RetentionTimeEnd);
                 
                 ChromatogramPeakFeature pab = null;
                 if (pabCollection != null) {
@@ -62,7 +62,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 }
                 if (pab == null) pab = new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
                 var peaklist = DataAccess.GetMs1Peaklist(
-                    spectrumList, startMass, i.MassTolerance, param.IonMode, 
+                    ms1Spectra, startMass, i.MassTolerance, param.IonMode,
                     ChromXType.RT, ChromXUnit.Min, param.RetentionTimeBegin, param.RetentionTimeEnd);
                 targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist });
             }

@@ -35,7 +35,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
 
     public static class PeakDetection {
         // below is a global peak detection method for gcms/lcms data preprocessing
-        public static List<PeakDetectionResult> PeakDetectionVS1(List<ChromatogramPeak> peaklist, double minimumDatapointCriteria, double minimumAmplitudeCriteria) {
+        public static List<PeakDetectionResult> PeakDetectionVS1(IReadOnlyList<ChromatogramPeak> peaklist, double minimumDatapointCriteria, double minimumAmplitudeCriteria) {
             var results = new List<PeakDetectionResult>();
             #region
             // global parameter
@@ -160,7 +160,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
             }
         }
 
-        private static int searchRealRightEdge(int i, List<double[]> datapoints, List<ChromatogramPeak> peaklist, List<ChromatogramPeak> ssPeaklist,
+        private static int searchRealRightEdge(int i, List<double[]> datapoints, IReadOnlyList<ChromatogramPeak> peaklist, List<ChromatogramPeak> ssPeaklist,
             List<double> firstDiffPeaklist, List<double> secondDiffPeaklist, ref bool infinitLoopCheck, ref int infinitLoopID, out bool isBreak) {
             //Search real right edge within 5 data points
             var rightCheck = false;
@@ -205,7 +205,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
             return i;
         }
         private static int searchRightEdgeCandidate(int i, List<double[]> datapoints,
-            List<ChromatogramPeak> peaklist, List<ChromatogramPeak> ssPeaklist, List<double> firstDiffPeaklist, List<double> secondDiffPeaklist,
+            IReadOnlyList<ChromatogramPeak> peaklist, List<ChromatogramPeak> ssPeaklist, List<double> firstDiffPeaklist, List<double> secondDiffPeaklist,
             double slopeNoise, double slopeNoiseFoldCriteria, double amplitudeNoise, double peaktopNoise, double minimumDatapointCriteria) {
             var peaktopCheck = false;
             var peaktopCheckPoint = i;
@@ -270,7 +270,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
         }
 
         private static void searchRealLeftEdge(int i, List<double[]> datapoints, 
-            List<ChromatogramPeak> peaklist, List<ChromatogramPeak> ssPeaklist, List<double> firstDiffPeaklist, List<double> secondDiffPeaklist) {
+            IReadOnlyList<ChromatogramPeak> peaklist, List<ChromatogramPeak> ssPeaklist, List<double> firstDiffPeaklist, List<double> secondDiffPeaklist) {
             //search real left edge within 5 data points
             for (int j = 0; j <= 5; j++) {
                 if (i - j - 1 < 0) break;
@@ -351,7 +351,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
             }
         }
 
-        private static ChromatogramGlobalProperty FindChromatogramGlobalProperties(List<ChromatogramPeak> peaklist, int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor)
+        private static ChromatogramGlobalProperty FindChromatogramGlobalProperties(IReadOnlyList<ChromatogramPeak> peaklist, int noiseEstimateBin, int minNoiseWindowSize, double minNoiseLevel, double noiseFactor)
         {
             // checking chromatogram properties
             var baseIntensites = peaklist.Select(peak => peak.Intensity).ToList();

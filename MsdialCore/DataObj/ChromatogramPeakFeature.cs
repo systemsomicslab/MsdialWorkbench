@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.Common.Algorithm.PeakPick;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -349,6 +350,59 @@ namespace CompMs.MsdialCore.DataObj {
         ChromXs IChromatogramPeak.ChromXs {
             get => ChromXsTop;
             set => ChromXsTop = value;
+        }
+
+        public static ChromatogramPeakFeature FromPeakDetectionResult(PeakDetectionResult peakDetectionResult, ChromXType type, ChromXUnit unit, double mass, IonMode ionMode) {
+            if (peakDetectionResult == null) return null;
+
+            var peakFeature = new ChromatogramPeakFeature {
+
+                MasterPeakID = peakDetectionResult.PeakID,
+                PeakID = peakDetectionResult.PeakID,
+
+                ChromScanIdLeft = peakDetectionResult.ScanNumAtLeftPeakEdge,
+                ChromScanIdTop = peakDetectionResult.ScanNumAtPeakTop,
+                ChromScanIdRight = peakDetectionResult.ScanNumAtRightPeakEdge,
+
+                ChromXsLeft = new ChromXs(peakDetectionResult.ChromXAxisAtLeftPeakEdge, type, unit),
+                ChromXsTop = new ChromXs(peakDetectionResult.ChromXAxisAtPeakTop, type, unit),
+                ChromXsRight = new ChromXs(peakDetectionResult.ChromXAxisAtRightPeakEdge, type, unit),
+
+                ChromXs = new ChromXs(peakDetectionResult.ChromXAxisAtPeakTop, type, unit),
+
+                PeakHeightLeft = peakDetectionResult.IntensityAtLeftPeakEdge,
+                PeakHeightTop = peakDetectionResult.IntensityAtPeakTop,
+                PeakHeightRight = peakDetectionResult.IntensityAtRightPeakEdge,
+
+                PeakAreaAboveZero = peakDetectionResult.AreaAboveZero,
+                PeakAreaAboveBaseline = peakDetectionResult.AreaAboveBaseline,
+
+                Mass = mass,
+
+                IonMode = ionMode,
+
+                PeakShape = new ChromatogramPeakShape() {
+                    SignalToNoise = peakDetectionResult.SignalToNoise,
+                    EstimatedNoise = peakDetectionResult.EstimatedNoise,
+                    BasePeakValue = peakDetectionResult.BasePeakValue,
+                    GaussianSimilarityValue = peakDetectionResult.GaussianSimilarityValue,
+                    IdealSlopeValue = peakDetectionResult.IdealSlopeValue,
+                    PeakPureValue = peakDetectionResult.PeakPureValue,
+                    ShapenessValue = peakDetectionResult.ShapnessValue,
+                    SymmetryValue = peakDetectionResult.SymmetryValue,
+                    AmplitudeOrderValue = peakDetectionResult.AmplitudeOrderValue,
+                    AmplitudeScoreValue = peakDetectionResult.AmplitudeScoreValue
+                }
+            };
+
+            if (type != ChromXType.Mz) {
+                peakFeature.ChromXs.Mz = new MzValue(mass);
+                peakFeature.ChromXsLeft.Mz = new MzValue(mass);
+                peakFeature.ChromXsTop.Mz = new MzValue(mass);
+                peakFeature.ChromXsRight.Mz = new MzValue(mass);
+            }
+
+            return peakFeature;
         }
     }
 
