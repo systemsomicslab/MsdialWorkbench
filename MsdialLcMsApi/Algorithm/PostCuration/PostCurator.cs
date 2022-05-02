@@ -1,5 +1,6 @@
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Mathematics.Basic;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
@@ -15,11 +16,6 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
             IReadOnlyList<MSDecResult> msdecResults,
             IReadOnlyList<AnalysisFileBean> files, 
             ParameterBase param) {
-
-            var isBlankFilter = true; // to be included in ParameterBase
-            var filterBlankThreshold = 0.8; // to be included in ParameterBase
-            var isMzFilter = true; //to be included in ParameterBase
-            //...
 
             var ghosts = new List<double>();
             var postcurparam = param.PostCurationParameter;
@@ -53,6 +49,40 @@ namespace CompMs.MsdialLcMsApi.Algorithm.PostCuration {
                         spot.IsMzFilteredByPostCurator = true;
                     }
                 }
+
+                if (postcurparam.IsRsdFilter) {
+                    var classToHeights = new Dictionary<string, List<double>>();
+                    var classToRsd = new Dictionary<string, double>();
+                    foreach (var class_ in param.FileID_ClassName.Values.Distinct()) {
+                        classToHeights[class_] = new List<double>();
+                    }
+                    foreach (var props in spot.AlignedPeakProperties) {
+                        if (param.FileID_AnalysisFileType[props.FileID] != AnalysisFileType.Blank) {
+                            classToHeights[param.FileID_ClassName[props.FileID]].Add(props.PeakHeightTop);
+                        }
+                    }
+                    foreach (var class_ in classToHeights.Keys) {
+                        if (classToHeights[class_].Any()) {
+                            var avg = BasicMathematics.Mean(classToHeights[class_]);
+                            var sd = BasicMathematics.Stdev(classToHeights[class_]);
+                            classToRsd[class_] = sd * 100 / avg;
+                        }
+                    }
+                    if (BasicMathematics.Min(classToRsd.Values.ToArray()) >= postcurparam.FilterRsdThreshold) {
+                        spot.IsRsdFilteredByPostCurator = true;
+                    }
+                }
+
+                if (postcurparam.IsRmdFilter) {
+                    var rmd = (spot.MassCenter - Math.Floor(spot.MassCenter)) / spot.MassCenter * 1000000;
+                    if (rmd < postcurparam.FilterMinRmdThreshold | rmd > postcurparam.FilterMaxRmdThreshold) {
+                        spot.IsRmdFilteredByPostCurator = true;
+                    }
+                }
+
+                //if (postcurparam.IsRsdFilter) {
+                //    foreach (scriptclass in param.FileID_ClassName)
+                //}
 
                 // filtering process
                 #region

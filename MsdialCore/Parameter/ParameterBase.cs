@@ -997,6 +997,16 @@ namespace CompMs.MsdialCore.Parameter {
         public bool IsMzFilter { get; set; } = true;
         [Key(3)]
         public bool IsBlankGhostFilter { get; set; } = true;
+        [Key(4)]
+        public bool IsRsdFilter { get; set; } = true;
+        [Key(5)]
+        public double FilterRsdThreshold { get; set; } = 30.0;
+        [Key(6)]
+        public bool IsRmdFilter { get; set; } = true;
+        [Key(7)]
+        public double FilterMinRmdThreshold { get; set; } = 50.0;
+        [Key(8)]
+        public double FilterMaxRmdThreshold { get; set; } = 3000.0;
     }
 
     [MessagePackObject]

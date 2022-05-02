@@ -282,6 +282,10 @@ namespace CompMs.MsdialCore.DataObj {
         public bool IsFilteredByPostCurator { get => IsBlankFilteredByPostCurator || IsBlankGhostFilteredByPostCurator || IsMzFilteredByPostCurator; }
         [Key(58)]
         public bool IsBlankFilteredByPostCurator { get; set; } = false;
+        [Key(65)]
+        public bool IsRmdFilteredByPostCurator { get; set; } = false;
+        [Key(64)]
+        public bool IsRsdFilteredByPostCurator { get; set; } = false;
         [Key(63)]
         public bool IsBlankGhostFilteredByPostCurator { get; set; } = false;
         [Key(62)]
