@@ -1,4 +1,5 @@
-﻿using CompMs.App.MsdialConsole.MspCuration;
+﻿using CompMs.App.MsdialConsole.DataObjTest;
+using CompMs.App.MsdialConsole.MspCuration;
 using CompMs.App.MsdialConsole.Parser;
 using CompMs.App.MsdialConsole.Process;
 using CompMs.App.MsdialConsole.ProteomicsTest;
@@ -127,12 +128,19 @@ namespace CompMs.App.MsdialConsole {
 #if DEBUG
             var projectPath = @"C:\Users\lab\Desktop\dropmet\20140809_MSDIAL_DemoFiles_Swath\neg\hoge20220427.mtd3";
             //var output = new MemoryStream();
-            using var output = File.Open(@"C:\Users\lab\Desktop\dropmet\output.tsv", FileMode.Create);
+           // using var output = File.Open(@"C:\Users\lab\Desktop\dropmet\output.tsv", FileMode.Create);
             var tester = new Export.ExporterTest();
             var curator = new PostCurator();
             //var curator = (PostCurator)null; // new PostCurator();
-            tester.Export(projectPath, output, curator);
+            //tester.Export(projectPath, output, curator);
             //Console.WriteLine(Encoding.UTF8.GetString(output.ToArray()));
+
+
+            var massqlTester = new MassQLTest();
+            massqlTester.Run();
+
+
+
 #endif
 
             //MspCurator.WriteRtMzInChIKey(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Neg-VS15_PfppRT.msp");
