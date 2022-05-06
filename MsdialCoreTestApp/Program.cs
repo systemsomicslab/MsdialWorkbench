@@ -126,7 +126,7 @@ namespace CompMs.App.MsdialConsole {
             //         .Cast<Common.Components.MoleculeMsReference>());
 
 #if DEBUG
-            var projectPath = @"C:\Users\lab\Desktop\dropmet\20140809_MSDIAL_DemoFiles_Swath\neg\hoge20220427.mtd3";
+            //var projectPath = @"C:\Users\lab\Desktop\dropmet\20140809_MSDIAL_DemoFiles_Swath\neg\hoge20220427.mtd3";
             //var output = new MemoryStream();
            // using var output = File.Open(@"C:\Users\lab\Desktop\dropmet\output.tsv", FileMode.Create);
             var tester = new Export.ExporterTest();
