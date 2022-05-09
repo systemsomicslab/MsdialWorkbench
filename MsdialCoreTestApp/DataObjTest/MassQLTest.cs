@@ -20,24 +20,29 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
         public async void Run() {
 
             //var testfile = @"E:\0_SourceCode\MsdialWorkbenchDemo\massql_demofiles\2022_05_02_05_47_01.mdproject";
-            var testfile = @"Z:\Workspaces\Nishida\massql\2022_05_06_01_30_07.mdproject";
+            var testfile = @"E:\0_SourceCode\MsdialWorkbenchDemo\massql_demofiles\2022_05_02_05_47_01.mdproject";
             var exporter = new ExporterTest();
             var storage = await exporter.LoadProjectFromPathAsync(testfile);
 
             var analysisFile = storage.AnalysisFiles[0];
-            //var alignmentFile = storage.AlignmentFiles.Last();
+            var alignmentFile = storage.AlignmentFiles.Last();
 
             // test for single analysis file
             var chromPeakFeatures = MessagePackHandler.LoadFromFile<List<ChromatogramPeakFeature>>(analysisFile.PeakAreaBeanInformationFilePath);
-            var chromDecResults = MsdecResultsReader.ReadMSDecResults(analysisFile.DeconvolutionFilePath, out _, out _);
 
+            // test for alignment result file
+            var alignContainer = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(alignmentFile.FilePath);
+            var alignSpotFeatures = alignContainer.AlignmentSpotProperties;
 
             //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2PROD=226.18:TOLERANCEPPM=5";
+            //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2PROD=226.18%20AND%20MS2PROD=240.18:TOLERANCEPPM=5";
             //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2PROD=660.2:TOLERANCEMZ=0.1";
-            var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2NL=163";
+            var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20RTMIN=10%20AND%20MS2PROD=660.2:TOLERANCEMZ=0.1";
+            //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2NL=163";
             var req = WebRequest.Create(query);
             var res = req.GetResponse();
             var resStream = res.GetResponseStream();
+            var isAlignmentResultTargeted = true;
 
             MassQL result = null;
             using (var sr = new StreamReader(resStream)) {
@@ -48,25 +53,14 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
             var param = storage.Parameter;
             //param.FragmentSearchSettingValues = result.Conditions[0].value;
 
-            var features = new List<ChromatogramPeakFeature>();
             var massQLParams = new List<PeakFeatureSearchValue>();
             if (result.querytype.function == "functionscaninfo") {
-                if (result.querytype.datatype == "datams2data") {
-                    foreach (var feature in chromPeakFeatures) {
-                        if (feature.PrecursorMz != null) {
-                            features.Add(feature);
-                        }
-                    }
-                }
+                var searchLevel = PeakFeatureQueryLevel.MS2;
                 if (result.querytype.datatype == "datams1data") {
-                    foreach (var feature in chromPeakFeatures) {
-                        if (feature.PrecursorMz == null) {
-                            features.Add(feature);
-                        }
-                    }
+                    searchLevel = PeakFeatureQueryLevel.MS1;
                 }
                 foreach (var condition in result.conditions) {
-                    var searchValue = new PeakFeatureSearchValue();
+                    var searchValue = new PeakFeatureSearchValue() { PeakFeatureQueryLevel = searchLevel };
                     searchValue.Mass = condition.value[0];
                     if (condition.qualifiers != null) {
                         if (condition.qualifiers.qualifierppmtolerance != null)
@@ -75,7 +69,7 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
                         }
                         if (condition.qualifiers.qualifiermztolerance != null)
                         {
-                            searchValue.TimeTolerance = condition.qualifiers.qualifiermztolerance.value;
+                            searchValue.MassTolerance = condition.qualifiers.qualifiermztolerance.value;
                         }
                     }
                     if (condition.type == "ms2neutrallosscondition") {
@@ -86,19 +80,15 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
             }
 
             param.FragmentSearchSettingValues = massQLParams;
-
-            //FragmentSearcher.Search(chromPeakFeatures, new MsdialCore.MSDec.MSDecLoader(analysisFile.DeconvolutionFilePath), param);
-            FragmentSearcher.Search(features, new MsdialCore.MSDec.MSDecLoader(analysisFile.DeconvolutionFilePath), param);
-
-            //foreach (var peak in chromPeakFeatures) {
-            //    var msdecID = peak.MSDecResultIdUsed6;
-            //}
-
-            // test for alignment result file
-            //var alignContainer = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(alignmentFile.FilePath);
-            //var alignSpotFeatures = alignContainer.AlignmentSpotProperties;
-            //var alignDecResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
-
+            if (massQLParams.Count > 1) {
+                param.AndOrAtFragmentSearch = Common.Enum.AndOr.AND;
+            }
+            if (isAlignmentResultTargeted) {
+                FragmentSearcher.Search(alignSpotFeatures.ToList(), new MsdialCore.MSDec.MSDecLoader(alignmentFile.SpectraFilePath), param);
+            }
+            else {
+                FragmentSearcher.Search(chromPeakFeatures, new MsdialCore.MSDec.MSDecLoader(analysisFile.DeconvolutionFilePath), param);
+            }
         }
 
         [DataContract]
