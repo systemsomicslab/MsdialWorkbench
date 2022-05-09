@@ -471,9 +471,9 @@ namespace CompMs.MsdialCore.Algorithm {
         }
 
         private static (int left, int top, int right) SearchMs2CandidatesRange(IReadOnlyList<RawSpectrum> ms1Spectra, IReadOnlyList<RawSpectrum> ms2Spectra, int scanBegin, int scanTop, int scanEnd) {
-            var ms1Begin = SearchCollection.LowerBound(ms2Spectra, ms1Spectra[Math.Max(scanBegin, 0)], (a, b) => a.ScanNumber.CompareTo(b.ScanNumber));
-            var ms1End = SearchCollection.UpperBound(ms2Spectra, ms1Spectra[scanEnd], (a, b) => a.ScanNumber.CompareTo(b.ScanNumber));
-            var ms1TopScanNumber = ms1Spectra[scanTop].ScanNumber;
+            var ms1Begin = SearchCollection.LowerBound(ms2Spectra, ms1Spectra[Math.Max(0, ms1Spectra.LowerBound(scanBegin, (a, b) => a.ScanNumber.CompareTo(b)))], (a, b) => a.ScanNumber.CompareTo(b.ScanNumber));
+            var ms1End = SearchCollection.UpperBound(ms2Spectra, ms1Spectra[Math.Min(ms1Spectra.Count - 1, ms1Spectra.UpperBound(scanEnd, (a, b) => a.ScanNumber.CompareTo(b)))], (a, b) => a.ScanNumber.CompareTo(b.ScanNumber));
+            var ms1TopScanNumber = ms1Spectra[ms1Spectra.LowerBound(scanTop, (a, b) => a.ScanNumber.CompareTo(b))].ScanNumber;
             return (ms1Begin, ms1TopScanNumber, ms1End);
         }
 
