@@ -77,9 +77,10 @@ namespace CompMs.App.Msdial.Model.Lcms
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             }.AddTo(Disposables);
             Target.Select(
-                t => t is null
-                    ? string.Empty
-                    : $"Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}")
+                t =>  $"File: {analysisFile.AnalysisFileName}" +
+                    (t is null
+                        ? string.Empty
+                        : $" Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}"))
                 .Subscribe(title => PlotModel.GraphTitle = title)
                 .AddTo(Disposables);
 

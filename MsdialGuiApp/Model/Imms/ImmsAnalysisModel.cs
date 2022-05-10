@@ -58,9 +58,10 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             }.AddTo(Disposables);
             Target.Select(
-                t => t is null
-                    ? string.Empty
-                    : $"Spot ID: {t.InnerModel.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.InnerModel.Mass:N5}")
+                t => $"File: {analysisFile.AnalysisFileName}" +
+                    (t is null
+                        ? string.Empty
+                        : $"Spot ID: {t.InnerModel.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.InnerModel.Mass:N5}"))
                 .Subscribe(title => PlotModel.GraphTitle = title);
 
             EicLoader = new EicLoader(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd);
