@@ -3,11 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CompMs.App.Msdial.View"
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              mc:Ignorable="d" 
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:design="clr-namespace:CompMs.Graphics.Design;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              d:DataContext="{d:DesignInstance Type=vm:SurveyScanViewModel}"
              d:DesignHeight="400" d:DesignWidth="200">
     <d:DesignerProperties.DesignStyle>
@@ -45,13 +46,15 @@
                     <Binding Path="VerticalAxis.UnitLabel"/>
                 </MultiBinding>
             </chart:MultiChart.VerticalTitle>
-            <chart:LineSpectrumControl ItemsSource="{Binding Spectrum.Value}"
-                                          HorizontalPropertyName="{Binding HorizontalProperty.Value}"
-                                          VerticalPropertyName="{Binding VerticalProperty.Value}">
-                <chart:LineSpectrumControl.LinePen>
-                    <Pen Brush="Blue" Thickness="1" PresentationOptions:Freeze="True"/>
-                </chart:LineSpectrumControl.LinePen>
-            </chart:LineSpectrumControl>
+            <chart:LineSpectrumControlSlim ItemsSource="{Binding Spectrum.Value, Mode=OneWay}"
+                                           DataType="{x:Type do:SpectrumPeakWrapper}"
+                                           HorizontalProperty="{Binding HorizontalProperty.Value}"
+                                           VerticalProperty="{Binding VerticalProperty.Value}"
+                                           LineThickness="1">
+                <chart:LineSpectrumControlSlim.LineBrush>
+                    <design:ConstantBrushMapper Brush="Blue"/>
+                </chart:LineSpectrumControlSlim.LineBrush>
+            </chart:LineSpectrumControlSlim>
             <chart:Annotator ItemsSource="{Binding Spectrum.Value}"
                              HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                              VerticalPropertyName="{Binding VerticalProperty.Value}"
