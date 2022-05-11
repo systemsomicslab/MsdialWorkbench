@@ -8,7 +8,7 @@ namespace CompMs.App.Msdial.Model.Core
 {
     public interface IDatasetModel : INotifyPropertyChanged
     {
-        MethodModelBase Method { get; set; }
+        IMethodModel Method { get; }
 
         IMsdialDataStorage<ParameterBase> Storage { get; }
 
@@ -17,6 +17,10 @@ namespace CompMs.App.Msdial.Model.Core
         MethodSettingModel IdentificationProcessMethodSettingModel { get; }
 
         MethodSettingModel AlignmentProcessMethodSettingModel { get; }
+
+        AnalysisFilePropertySetModel AnalysisFilePropertySetModel { get; }
+
+        void AnalysisFilePropertyUpdate();
 
         Task SaveAsync();
 

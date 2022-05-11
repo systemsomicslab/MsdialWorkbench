@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
@@ -122,10 +123,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             AlignmentEicViewModel = new Chart.AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
             AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(
                 model.AlignmentSpotTableModel,
-                Observable.Return(model.BarItemsLoader),
-                MassLower, MassUpper,
-                DriftLower, DriftUpper,
-                MetaboliteFilterKeyword,
+                MassLower,
+                MassUpper, DriftLower,
+                DriftUpper, MetaboliteFilterKeyword,
                 CommentFilterKeyword)
                 .AddTo(Disposables);
 

@@ -9,6 +9,7 @@ using CompMs.MsdialLcMsApi.Export;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.App.MsdialConsole.Export
 {
@@ -17,6 +18,7 @@ namespace CompMs.App.MsdialConsole.Export
         public void Export(string projectfile, Stream output, PostCurator curator) {
             var storage = LoadProjectFromPath(projectfile);
             var alignmentFile = storage.AlignmentFiles.Last();
+
             var container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(alignmentFile.FilePath);
             var decResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
 
@@ -29,7 +31,50 @@ namespace CompMs.App.MsdialConsole.Export
             exporter.Export(output, curatedSpots, decResults, storage.AnalysisFiles, metadataAccessor, quantAccessor, new[] { StatsValue.Average, StatsValue.Stdev });
         }
 
-        private static IMsdialDataStorage<ParameterBase> LoadProjectFromPath(string projectfile) {
+        public async Task<IMsdialDataStorage<ParameterBase>> LoadProjectFromPathAsync(string projectfile) {
+
+            var projectDir = Path.GetDirectoryName(projectfile);
+            using (var fs = File.Open(projectfile, FileMode.Open))
+            using (var streamManager = ZipStreamManager.OpenGet(fs)) {
+                var deserializer = new MsdialIntegrateSerializer();
+                var projectDataStorage = await ProjectDataStorage.LoadAsync(
+                    streamManager,
+                    deserializer,
+                    path => new DirectoryTreeStreamManager(path),
+                    async parameter => {
+                        string result = null;
+                        //await Application.Current.Dispatcher.InvokeAsync(() => {
+                        //    var newofd = new OpenFileDialog {
+                        //        Filter = "MTD3 file(.mtd3)|*.mtd3|All(*)|*",
+                        //        Title = "Import a project file",
+                        //        RestoreDirectory = true
+                        //    };
+                        //    if (newofd.ShowDialog() == true) {
+                        //        result = newofd.FileName;
+                        //    }
+                        //});
+                        return result;
+                    },
+                    null);
+                
+                projectDataStorage.FixProjectFolder(projectDir);
+                return projectDataStorage.Storages.FirstOrDefault();
+            }
+
+
+
+
+
+            //var projectFolder = Path.GetDirectoryName(projectfile);
+            //var projectFileName = Path.GetFileName(projectfile);
+            //var serializer = new MsdialIntegrateSerializer();
+            //var streamManager = new DirectoryTreeStreamManager(projectFolder);
+            //var storage = await serializer.LoadAsync(streamManager, projectFileName, projectFolder, string.Empty);
+            //storage.FixDatasetFolder(projectFolder);
+            //return storage;
+        }
+
+        public IMsdialDataStorage<ParameterBase> LoadProjectFromPath(string projectfile) {
             var projectFolder = Path.GetDirectoryName(projectfile);
 
             var serializer = new MsdialIntegrateSerializer();
@@ -64,7 +109,7 @@ namespace CompMs.App.MsdialConsole.Export
             return storage;
         }
 
-        private static string ReplaceFolderPath(string path, string previous, string current) {
+        private string ReplaceFolderPath(string path, string previous, string current) {
             if (string.IsNullOrEmpty(path))
                 return path;
             if (path.StartsWith(previous))

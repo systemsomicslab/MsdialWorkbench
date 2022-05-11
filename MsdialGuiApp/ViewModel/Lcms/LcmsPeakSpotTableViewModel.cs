@@ -1,6 +1,8 @@
-﻿using CompMs.App.Msdial.Model.Lcms;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -117,14 +119,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
     sealed class LcmsAlignmentSpotTableViewModel : LcmsPeakSpotTableViewModel
     {
         public LcmsAlignmentSpotTableViewModel(
-            ILcmsPeakSpotTableModel model,
-            IObservable<IBarItemsLoader> barItemsLoader,
+            LcmsAlignmentSpotTableModel model,
             IReactiveProperty<double> massLower,
             IReactiveProperty<double> massUpper,
             IReactiveProperty<double> rtLower,
             IReactiveProperty<double> rtUpper,
             IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword)
+            IReactiveProperty<string> commentFilterKeyword,
+            IObservable<IBrushMapper<BarItem>> classBrush)
             : base(
                   model,
                   massLower,
@@ -133,19 +135,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   rtUpper,
                   metaboliteFilterKeyword,
                   commentFilterKeyword) {
-            if (barItemsLoader is null) {
-                throw new ArgumentNullException(nameof(barItemsLoader));
-            }
-            BarItemsLoader = barItemsLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            ClassBrush = classBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
-        public ReadOnlyReactivePropertySlim<IBarItemsLoader> BarItemsLoader { get; }
+        public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> ClassBrush { get; }
     }
 
     sealed class LcmsProteomicsAlignmentTableViewModel : LcmsPeakSpotTableViewModel {
         public LcmsProteomicsAlignmentTableViewModel(
-            ILcmsPeakSpotTableModel model,
-            IObservable<IBarItemsLoader> barItemsLoader,
+            LcmsAlignmentSpotTableModel model,
             IReactiveProperty<double> massLower,
             IReactiveProperty<double> massUpper,
             IReactiveProperty<double> rtLower,
@@ -161,14 +159,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   rtUpper,
                   peptideFilterKeyword,
                   commentFilterKeyword) {
-            if (barItemsLoader is null) {
-                throw new ArgumentNullException(nameof(barItemsLoader));
-            }
             ProteinFilterKeyword = proteinFilterKeyword;
-            BarItemsLoader = barItemsLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
         public IReactiveProperty<string> PeptideFilterKeyword { get => this.MetaboliteFilterKeyword; }
         public IReactiveProperty<string> ProteinFilterKeyword { get; }
-        public ReadOnlyReactivePropertySlim<IBarItemsLoader> BarItemsLoader { get; }
     }
 }

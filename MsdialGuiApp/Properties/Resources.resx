@@ -117,10 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="EXPORT_DIR" xml:space="preserve">
+    <value />
+  </data>
   <data name="VDD_URI" xml:space="preserve">
-    <value>http://prime.psc.riken.jp/compms/msdial/vdd.json</value>
+    <value>http://prime.psc.riken.jp/compms/msdial/vmsdial.json</value>
   </data>
   <data name="VERSION" xml:space="preserve">
-    <value>5.0.0</value>
+    <value>5.0.1</value>
   </data>
 </root>

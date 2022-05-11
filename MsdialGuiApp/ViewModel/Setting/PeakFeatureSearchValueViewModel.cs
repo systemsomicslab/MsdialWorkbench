@@ -69,20 +69,20 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                 .Subscribe(x => PeakFeatureSearchValue.MassTolerance = double.Parse(x))
                 .AddTo(Disposables);
 
-            Time = new ReactiveProperty<string>(PeakFeatureSearchValue.Time.ToString())
+            Time = new ReactiveProperty<string>(PeakFeatureSearchValue.TimeMin.ToString())
                 .SetValidateAttribute(() => Time)
                 .AddTo(Disposables);
             CommitAsObservable
                 .WithLatestFrom(Time, (_, x) => x)
-                .Subscribe(x => PeakFeatureSearchValue.Time = double.Parse(x))
+                .Subscribe(x => PeakFeatureSearchValue.TimeMin = double.Parse(x))
                 .AddTo(Disposables);
 
-            TimeTolerance = new ReactiveProperty<string>(PeakFeatureSearchValue.TimeTolerance.ToString())
+            TimeTolerance = new ReactiveProperty<string>(PeakFeatureSearchValue.TimeMax.ToString())
                 .SetValidateAttribute(() => TimeTolerance)
                 .AddTo(Disposables);
             CommitAsObservable
                 .WithLatestFrom(TimeTolerance, (_, x) => x)
-                .Subscribe(x => PeakFeatureSearchValue.TimeTolerance = double.Parse(x))
+                .Subscribe(x => PeakFeatureSearchValue.TimeMax = double.Parse(x))
                 .AddTo(Disposables);
 
             AbsoluteIntensityCutoff = new ReactiveProperty<string>(PeakFeatureSearchValue.AbsoluteIntensityCutoff.ToString())

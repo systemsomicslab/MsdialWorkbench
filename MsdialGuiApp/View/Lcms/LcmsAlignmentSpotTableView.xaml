@@ -3,12 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Lcms"
              mc:Ignorable="d" 
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
+             xmlns:converter="clr-namespace:CompMs.App.Msdial.ViewModel.Converter"
              xmlns:rs="clr-namespace:CompMs.Graphics.UI.RangeSlider;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
-             xmlns:converter="clr-namespace:CompMs.App.Msdial.ViewModel.Converter"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              d:DataContext="{d:DesignInstance Type=vm:LcmsAlignmentSpotTableViewModel}"
              d:DesignHeight="450" d:DesignWidth="1200">
@@ -20,9 +19,9 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <converter:SpotToBarItemConverter x:Key="spot2baritems"/>
+            <converter:BarItemCollectionToSmallClassBarChartViewModel x:Key="CollectionToViewModel"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -154,6 +153,10 @@
                                     Binding="{Binding Path=Comment}"
                                     IsReadOnly="False"
                                     Width="2*" />
+                <DataGridTextColumn Header="Match score"
+                                    Binding="{Binding Path=ScanMatchResult.TotalScore, StringFormat=F4}"
+                                    IsReadOnly="True"
+                                    Width="70" />
                 <DataGridTextColumn Header="S/N"
                                     Binding="{Binding Path=SignalToNoiseAve, StringFormat=F1}"
                                     IsReadOnly="True"
@@ -170,15 +173,8 @@
                                         Width="150">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <chart:SmallClassBarChart>
-                                <chart:SmallClassBarChart.DataContext>
-                                    <MultiBinding Converter="{StaticResource spot2baritems}">
-                                        <Binding />
-                                        <Binding Path="DataContext.BarItemsLoader.Value"
-                                                 RelativeSource="{RelativeSource AncestorType=DataGrid}"/>
-                                    </MultiBinding>
-                                </chart:SmallClassBarChart.DataContext>
-                            </chart:SmallClassBarChart> 
+                            <chart:SmallClassBarChart DataContext="{Binding BarItemCollection, Converter={StaticResource CollectionToViewModel}}"
+                                                      ClassBrush="{Binding DataContext.ClassBrush.Value, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

@@ -14,6 +14,10 @@
         d:DataContext="{d:DesignInstance Type={x:Type vm:ExperimentSpectrumViewModel}}"
         behavior:SuppressContextMenuBehavior.IsEnabled="True"
         Title="ExperimentSpectrum" Height="800" Width="800">
+    <Window.InputBindings>
+        <KeyBinding Gesture="Ctrl+A" Command="{Binding AccumulateSpectrumCommand, Mode=OneTime}"/>
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveSpectraAsNistCommand, Mode=OneTime}"/>
+    </Window.InputBindings>
     <Window.Resources>
         <ResourceDictionary>
             <Style TargetType="{x:Type gchart:MultiChart}" x:Key="SpectrumStyle">
@@ -56,7 +60,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <Button Content="acc" Command="{Binding AccumulateSpectrumCommand, Mode=OneTime}"/>
+            <Button Content="Accumulate" Command="{Binding AccumulateSpectrumCommand, Mode=OneTime}" Margin="8"/>
+            <Button Content="Save MS/MS spectrum" Command="{Binding SaveSpectraAsNistCommand, Mode=OneTime}" Margin="8"/>
         </StackPanel>
         
         <chart:RangeSelectableChromatogramView DataContext="{Binding RangeSelectableChromatogramViewModel}"
@@ -106,7 +111,8 @@
                 <gchart:MultiChart.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Save spectra as nist format"
-                                  Command="{Binding SaveSpectraAsNistCommand, Mode=OneTime}"/>
+                                  Command="{Binding SaveSpectraAsNistCommand, Mode=OneTime}"
+                                  InputGestureText="Ctrl+S"/>
                         <MenuItem Header="Save image as...">
                             <MenuItem Header="Save as emf"
                                       Command="{x:Static io:SaveImageAsCommand.EmfInstance}"

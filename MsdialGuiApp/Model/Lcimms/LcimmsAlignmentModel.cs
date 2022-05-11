@@ -39,7 +39,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             ResultFile = alignmentFileBean.FilePath;
 
-            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
+            BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
+            var observableBarItemsLoader = Observable.Return(BarItemsLoader);
+            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, observableBarItemsLoader)));
 
             MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
             MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
@@ -103,7 +105,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Observable.Return(upperSpecBrush),
                 Observable.Return(lowerSpecBrush)).AddTo(Disposables);
 
-            BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
             BarChartModel = BarChartModel.Create(Target, BarItemsLoader);
             BarChartModel.Elements.HorizontalTitle = "Class";
             BarChartModel.Elements.VerticalTitle = "Height";
@@ -111,7 +112,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
             BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
 
             var eicFile = alignmentFileBean.EicFilePath;
-            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, parameter.FileID_ClassName);
+            var classToColor = parameter.ClassnameToColorBytes
+                .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
+            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor));
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader, files, parameter,
                 peak => peak.Time,

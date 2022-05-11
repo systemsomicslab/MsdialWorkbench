@@ -56,7 +56,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakWrapper.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
-            };
+            }.AddTo(Disposables);
             Target.Select(
                 t => t is null
                     ? string.Empty
@@ -68,13 +68,7 @@ namespace CompMs.App.Msdial.Model.Imms
             {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
-            };
-            Target.CombineLatest(
-                EicModel.MaxIntensitySource,
-                (t, i) => t is null
-                    ? string.Empty
-                    : $"EIC chromatogram of {t.Mass:N4} tolerance [Da]: {this.parameter.CentroidMs1Tolerance:F} Max intensity: {i:F0}")
-                .Subscribe(title => EicModel.GraphTitle = title);
+            }.AddTo(Disposables);
 
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
                parameter.ProjectParam.SpectrumCommentToColorBytes
@@ -130,7 +124,7 @@ namespace CompMs.App.Msdial.Model.Imms
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
-            PeakTableModel = new ImmsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax, ChromMin, ChromMax);
+            PeakTableModel = new ImmsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax, ChromMin, ChromMax).AddTo(Disposables);
 
             CanSearchCompound = new[]
             {

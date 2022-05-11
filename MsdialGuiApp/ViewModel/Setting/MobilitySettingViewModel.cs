@@ -31,41 +31,39 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             {
                 IsDtims,
                 CalibrationInfoCollection
-                    .Select(info => info.ObserveProperty(i => i.AgilentBeta).Select(b => b > -1))
-                    .CombineLatestValuesAreAllFalse(),
+                    .Select(info => info.ObserveProperty(i => i.AgilentBeta).Select(b => b > -1).StartWith(info.AgilentBeta > -1))
+                    .CombineLatestValuesAreAllTrue(),
                 CalibrationInfoCollection
-                    .Select(info => info.ObserveProperty(i => i.AgilentTFix).Select(t => t > -1))
-                    .CombineLatestValuesAreAllFalse(),
+                    .Select(info => info.ObserveProperty(i => i.AgilentTFix).Select(t => t > -1).StartWith(info.AgilentTFix > -1))
+                    .CombineLatestValuesAreAllTrue(),
             }.CombineLatestValuesAreAllTrue();
             var TwimsInfoImported = new[]
             {
                 IsTwims,
                 CalibrationInfoCollection
-                    .Select(info => info.ObserveProperty(i => i.WatersCoefficient).Select(c => c > -1))
-                    .CombineLatestValuesAreAllFalse(),
+                    .Select(info => info.ObserveProperty(i => i.WatersCoefficient).Select(c => c > -1).StartWith(info.WatersCoefficient > -1))
+                    .CombineLatestValuesAreAllTrue(),
                 CalibrationInfoCollection
-                    .Select(info => info.ObserveProperty(i => i.WatersT0).Select(t => t > -1))
-                    .CombineLatestValuesAreAllFalse(),
+                    .Select(info => info.ObserveProperty(i => i.WatersT0).Select(t => t > -1).StartWith(info.WatersT0 > -1))
+                    .CombineLatestValuesAreAllTrue(),
                 CalibrationInfoCollection
-                    .Select(info => info.ObserveProperty(i => i.WatersExponent).Select(e => e > -1))
-                    .CombineLatestValuesAreAllFalse(),
+                    .Select(info => info.ObserveProperty(i => i.WatersExponent).Select(e => e > -1).StartWith(info.WatersExponent > -1))
+                    .CombineLatestValuesAreAllTrue(),
             }.CombineLatestValuesAreAllTrue();
 
             IsEnabled = isEnabled.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            ObserveHasErrors = new[]
+            IsAllCalibrantDataImported = new[]
             {
                 TimsInfoImported,
                 DtimsInfoImported,
                 TwimsInfoImported,
-            }.CombineLatestValuesAreAllFalse()
+            }.CombineLatestValuesAreAnyTrue()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
+            IsAllCalibrantDataImported.Subscribe(x => model.IsAllCalibrantDataImported = x).AddTo(Disposables);
 
-            IsAllCalibrantDataImported = ObserveHasErrors
-                .Inverse()
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
+            ObserveHasErrors = Observable.Return(false).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             ObserveChanges = new[]
             {

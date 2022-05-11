@@ -61,18 +61,11 @@ namespace CompMs.App.Msdial.ViewModel.Dims
     {
         public DimsAlignmentSpotTableViewModel(
             DimsPeakSpotTableModel<AlignmentSpotPropertyModel> model,
-            IObservable<IBarItemsLoader> barItemsLoader,
-            IReactiveProperty<double> massLower, IReactiveProperty<double> massUpper,
-            IReactiveProperty<string> metaboliteFilterKeyword,
+            IReactiveProperty<double> massLower,
+            IReactiveProperty<double> massUpper, IReactiveProperty<string> metaboliteFilterKeyword,
             IReactiveProperty<string> commentFilterKeyword)
             : base(model, massLower, massUpper, metaboliteFilterKeyword, commentFilterKeyword) {
-            if (barItemsLoader is null) {
-                throw new ArgumentNullException(nameof(barItemsLoader));
-            }
 
-            BarItemsLoader = barItemsLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
-
-        public ReadOnlyReactivePropertySlim<IBarItemsLoader> BarItemsLoader { get; }
     }
 }

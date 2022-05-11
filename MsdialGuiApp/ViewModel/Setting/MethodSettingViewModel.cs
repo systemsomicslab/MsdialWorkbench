@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Dims;
+using CompMs.App.Msdial.ViewModel.Imms;
 using CompMs.App.Msdial.ViewModel.Lcimms;
 using CompMs.App.Msdial.ViewModel.Lcms;
 using CompMs.Common.Enum;
@@ -18,6 +19,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
@@ -85,8 +87,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }           
         }
 
-        public bool Run() {
-            return Model.Run();
+        public bool TryRun() {
+            return Model.TryRun();
         }
 
         // TODO: delete method
@@ -99,8 +101,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 case IMsdialDataStorage<MsdialDimsParameter> _:
                     return new DimsAnnotatorSettingViewModelFactory();
                 case IMsdialDataStorage<MsdialImmsParameter> _:
-                    throw new NotImplementedException("ImmsAnnotatorSettingViewModelFactory is not implemented");
-                    // return new ImmsAnnotatorSettingViewModelFactory();
+                    return new ImmsAnnotatorSettingViewModelFactory();
             }
             throw new NotImplementedException("unknown method acquired.");
         }

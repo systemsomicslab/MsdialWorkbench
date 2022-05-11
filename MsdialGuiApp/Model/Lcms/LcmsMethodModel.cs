@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Export;
@@ -46,12 +47,13 @@ namespace CompMs.App.Msdial.Model.Lcms
     sealed class LcmsMethodModel : MethodModelBase
     {
         static LcmsMethodModel() {
-            chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", CompMs.Common.Components.ChromXType.RT);
+            chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
         }
 
         public LcmsMethodModel(
             IMsdialDataStorage<MsdialLcmsParameter> storage,
-            IDataProviderFactory<AnalysisFileBean> providerFactory, 
+            IDataProviderFactory<AnalysisFileBean> providerFactory,
+            IObservable<ParameterBase> parameterAsObservable,
             IObservable<IBarItemsLoader> barItemsLoader)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             if (storage is null) {
@@ -64,12 +66,16 @@ namespace CompMs.App.Msdial.Model.Lcms
             Storage = storage;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             this.providerFactory = providerFactory;
+            this.parameterAsObservable = parameterAsObservable;
             this.barItemsLoader = barItemsLoader;
+            PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
         }
 
         public IMsdialDataStorage<MsdialLcmsParameter> Storage { get; }
 
         private FacadeMatchResultEvaluator matchResultEvaluator;
+
+        public PeakFilterModel PeakFilterModel { get; }
 
         public LcmsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -85,23 +91,25 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
+        private readonly IObservable<ParameterBase> parameterAsObservable;
         private readonly IObservable<IBarItemsLoader> barItemsLoader;
         private IAnnotationProcess annotationProcess;
 
 
-        protected override void LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+        protected override AnalysisModelBase LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
             var provider = providerFactory.Create(analysisFile);
-            AnalysisModel = new LcmsAnalysisModel(
+            return AnalysisModel = new LcmsAnalysisModel(
                 analysisFile,
                 provider,
                 Storage.DataBases,
                 Storage.DataBaseMapper,
                 matchResultEvaluator,
-                Storage.Parameter)
+                Storage.Parameter,
+                PeakFilterModel)
             .AddTo(Disposables);
         }
 
@@ -114,8 +122,10 @@ namespace CompMs.App.Msdial.Model.Lcms
                 alignmentFile,
                 matchResultEvaluator,
                 Storage.DataBases,
+                PeakFilterModel,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
+                parameterAsObservable,
                 barItemsLoader,
                 Storage.AnalysisFiles)
             .AddTo(Disposables);

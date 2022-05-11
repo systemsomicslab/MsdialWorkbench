@@ -31,6 +31,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 case ShotgunProteomicsDB pdb:
                     proteomicsDB = pdb;
                     DBSource = pdb.DataBaseSource;
+                    ProteomicsParameter = pdb.ProteomicsParameter;
                     break;
                 case EadLipidDatabase ldb:
                     this.eadLipidDatabase = ldb;

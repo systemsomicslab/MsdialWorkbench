@@ -50,11 +50,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             }
             LowerVerticalAxis = lowerVerticalAxis;
 
-            UpperSpectrum = this.model.ObserveProperty(m => m.UpperSpectrum)
+            UpperSpectrum = this.model.UpperSpectrumSource
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            LowerSpectrum = this.model.ObserveProperty(m => m.LowerSpectrum)
+            LowerSpectrum = this.model.LowerSpectrumSource
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 

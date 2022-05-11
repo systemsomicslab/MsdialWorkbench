@@ -55,21 +55,21 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 VerticalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
-            };
+            }.AddTo(Disposables);
             RtEicLoader = new EicLoader(accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
             RtEicModel = new EicModel(Target, RtEicLoader)
             {
                 HorizontalTitle = RtMzPlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
-            };
+            }.AddTo(Disposables);
 
-            DtMzPlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource)
+            DtMzPlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource, verticalAxis: RtMzPlotModel.VerticalAxis)
             {
                 HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
-            };
+            }.AddTo(Disposables);
             Target.Select(
                 t => t is null
                     ? string.Empty
@@ -81,13 +81,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             {
                 HorizontalTitle = DtMzPlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
-            };
-            Target.CombineLatest(
-                DtEicModel.MaxIntensitySource,
-                (t, i) => t is null
-                    ? string.Empty
-                    : $"EIC chromatogram of {t.Mass:N4} tolerance [Da]: {Parameter.CentroidMs1Tolerance:F} Max intensity: {i:F0}")
-                .Subscribe(title => DtEicModel.GraphTitle = title);
+            }.AddTo(Disposables);
 
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
                parameter.ProjectParam.SpectrumCommentToColorBytes

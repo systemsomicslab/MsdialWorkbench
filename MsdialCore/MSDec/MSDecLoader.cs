@@ -2,10 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace CompMs.MsdialCore.MSDec {
-    public class MSDecLoader : IDisposable {
+    public sealed class MSDecLoader : IDisposable {
         public MSDecLoader(Stream fs) {
             if (fs is null || !fs.CanSeek) {
                 throw new ArgumentException(nameof(fs));
@@ -45,7 +44,7 @@ namespace CompMs.MsdialCore.MSDec {
 
         private bool disposedValue;
 
-        protected virtual void Dispose(bool disposing) {
+        private void Dispose(bool disposing) {
             if (!disposedValue) {
                 if (disposing) {
                     deconvolutionStream.Close();

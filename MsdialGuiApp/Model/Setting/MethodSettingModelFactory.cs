@@ -33,23 +33,26 @@ namespace CompMs.App.Msdial.Model.Setting
         AlignmentParameterSettingModel CreateAlignmentParameterSetting();
         MobilitySettingModel CreateMobilitySetting();
         IsotopeTrackSettingModel CreateIsotopeTrackSetting();
-        MethodModelBase BuildMethod();
+        IMethodModel BuildMethod();
     }
 
-    public class MethodSettingModelFactory : IMethodSettingModelFactory
+    public sealed class MethodSettingModelFactory : IMethodSettingModelFactory
     {
         public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, IObservable<Unit> observeParameterChanged, ProcessOption process)
-            : this(storage, observeParameterChanged.Select(_ => new HeightBarItemsLoader(storage.Parameter.FileID_ClassName)), process) {
+            : this(storage,
+                  observeParameterChanged.Select(_ => storage.Parameter),
+                  observeParameterChanged.Select(_ => new HeightBarItemsLoader(storage.Parameter.FileID_ClassName)),
+                  process) {
 
         }
 
-        public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, IObservable<IBarItemsLoader> loader, ProcessOption process) {
+        public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, IObservable<ParameterBase> parameterAsObservable, IObservable<IBarItemsLoader> loader, ProcessOption process) {
             switch (storage) {
                 case IMsdialDataStorage<MsdialLcImMsParameter> lcimmsStorage:
                     factoryImpl = new LcimmsMethodSettingModelFactory(lcimmsStorage, process);
                     break;
                 case IMsdialDataStorage<MsdialLcmsParameter> lcmsStorage:
-                    factoryImpl = new LcmsMethodSettingModelFactory(lcmsStorage, loader, process);
+                    factoryImpl = new LcmsMethodSettingModelFactory(lcmsStorage, parameterAsObservable, loader, process);
                     break;
                 case IMsdialDataStorage<MsdialImmsParameter> immsStorage:
                     factoryImpl = new ImmsMethodSettingModelFactory(immsStorage, process);
@@ -64,7 +67,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         private readonly IMethodSettingModelFactory factoryImpl;
 
-        public MethodModelBase BuildMethod() => factoryImpl.BuildMethod();
+        public IMethodModel BuildMethod() => factoryImpl.BuildMethod();
         public AdductIonSettingModel CreateAdductIonSetting() => factoryImpl.CreateAdductIonSetting();
         public AlignmentParameterSettingModel CreateAlignmentParameterSetting() => factoryImpl.CreateAlignmentParameterSetting();
         public DataCollectionSettingModel CreateDataCollectionSetting() => factoryImpl.CreateDataCollectionSetting();
@@ -76,7 +79,7 @@ namespace CompMs.App.Msdial.Model.Setting
     }
 
 
-    class DimsMethodSettingModelFactory : IMethodSettingModelFactory
+    sealed class DimsMethodSettingModelFactory : IMethodSettingModelFactory
     {
         private readonly IMsdialDataStorage<MsdialDimsParameter> storage;
         private readonly ProcessOption process;
@@ -144,21 +147,34 @@ namespace CompMs.App.Msdial.Model.Setting
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
-        public MethodModelBase BuildMethod() {
+        public IMethodModel BuildMethod() {
             return new DimsMethodModel(storage, storage.AnalysisFiles, storage.AlignmentFiles);
         }
     }
 
-    class LcmsMethodSettingModelFactory : IMethodSettingModelFactory
+    sealed class LcmsMethodSettingModelFactory : IMethodSettingModelFactory
     {
         private readonly IMsdialDataStorage<MsdialLcmsParameter> storage;
+        private readonly IObservable<ParameterBase> parameterAsObservable;
         private readonly IObservable<IBarItemsLoader> loader;
         private readonly ProcessOption process;
 
-        public LcmsMethodSettingModelFactory(IMsdialDataStorage<MsdialLcmsParameter> storage, IObservable<IBarItemsLoader> observeBarItemsLoader, ProcessOption process) {
+        public LcmsMethodSettingModelFactory(
+            IMsdialDataStorage<MsdialLcmsParameter> storage, 
+            IObservable<ParameterBase> parameterAsObservable,
+            IObservable<IBarItemsLoader> observeBarItemsLoader,
+            ProcessOption process) {
+
             this.storage = storage;
+            this.parameterAsObservable = parameterAsObservable;
             loader = observeBarItemsLoader;
             this.process = process;
+
+
+            if (this.storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
+                this.storage.Parameter.MaxChargeNumber = 8;
+                this.storage.Parameter.RemoveAfterPrecursor = false;
+            }
         }
 
         public AdductIonSettingModel CreateAdductIonSetting() {
@@ -199,10 +215,7 @@ namespace CompMs.App.Msdial.Model.Setting
                     }
                 }
             }
-            else if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                parameter.MaxChargeNumber = 8;
-                parameter.RemoveAfterPrecursor = false;
-            }
+            
             return model;
         }
 
@@ -218,12 +231,12 @@ namespace CompMs.App.Msdial.Model.Setting
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
-        public MethodModelBase BuildMethod() {
-            return new LcmsMethodModel(storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true), loader);
+        public IMethodModel BuildMethod() {
+            return new LcmsMethodModel(storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true), parameterAsObservable, loader);
         }
     }
 
-    class ImmsMethodSettingModelFactory : IMethodSettingModelFactory
+    sealed class ImmsMethodSettingModelFactory : IMethodSettingModelFactory
     {
         private readonly IMsdialDataStorage<MsdialImmsParameter> storage;
         private readonly ProcessOption process;
@@ -250,9 +263,8 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IdentifySettingModel CreateIdentifySetting() {
-            throw new NotImplementedException("ImmsAnnotatorSettingModelFactory is not implemented!");
             var parameter = storage.Parameter;
-            var model = new IdentifySettingModel(storage.Parameter, null, process, storage.DataBases);
+            var model = new IdentifySettingModel(storage.Parameter, new ImmsAnnotatorSettingModelFactory(), process, storage.DataBases);
 
             if (parameter.TargetOmics == TargetOmics.Lipidomics) {
                 if (model.DataBaseModels.Count == 0) {
@@ -287,12 +299,12 @@ namespace CompMs.App.Msdial.Model.Setting
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
-        public MethodModelBase BuildMethod() {
+        public IMethodModel BuildMethod() {
             return new ImmsMethodModel(storage);
         }
     }
 
-    class LcimmsMethodSettingModelFactory : IMethodSettingModelFactory
+    sealed class LcimmsMethodSettingModelFactory : IMethodSettingModelFactory
     {
         private readonly IMsdialDataStorage<MsdialLcImMsParameter> storage;
         private readonly ProcessOption process;
@@ -355,7 +367,7 @@ namespace CompMs.App.Msdial.Model.Setting
             return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
         }
 
-        public MethodModelBase BuildMethod() {
+        public IMethodModel BuildMethod() {
             return new LcimmsMethodModel(storage);
         }
     }

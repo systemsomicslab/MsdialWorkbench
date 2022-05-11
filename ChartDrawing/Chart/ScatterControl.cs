@@ -37,6 +37,9 @@ namespace CompMs.Graphics.Chart
             if (chart == null) return;
 
             chart.dataType = null;
+            chart.hPropertyReflection = null;
+            chart.vPropertyReflection = null;
+            chart.pPropertyReflection = null;
 
             if (chart.cv != null) {
                 chart.cv.CurrentChanged -= chart.OnCurrentChanged;
@@ -49,9 +52,10 @@ namespace CompMs.Graphics.Chart
             if (chart.cv == null) {
                 return;
             }
-
-            var cv = chart.cv as CollectionView;
-
+            chart.cv.CurrentChanged += chart.OnCurrentChanged;
+            if (chart.cv is INotifyCollectionChanged collectionNew) {
+                collectionNew.CollectionChanged += chart.ItemsSourceCollectionChanged;
+            }
             if (chart.cv.IsEmpty) {
                 chart.cv.Refresh();
                 if (chart.cv.IsEmpty) {
@@ -60,19 +64,14 @@ namespace CompMs.Graphics.Chart
                     return;
                 }
             }
-            chart.dataType = cv.GetItemAt(0).GetType();
 
-            chart.cv.CurrentChanged += chart.OnCurrentChanged;
-            if (chart.cv is INotifyCollectionChanged collectionNew) {
-                collectionNew.CollectionChanged += chart.ItemsSourceCollectionChanged;
+            var cv = chart.cv as CollectionView;
+            if (cv is null) {
+                return;
             }
 
-            if (chart.HorizontalPropertyName != null)
-                chart.hPropertyReflection = chart.dataType.GetProperty(chart.HorizontalPropertyName);
-            if (chart.VerticalPropertyName != null)
-                chart.vPropertyReflection = chart.dataType.GetProperty(chart.VerticalPropertyName);
-            if (chart.EachPlotBrushName != null)
-                chart.pPropertyReflection = chart.dataType.GetProperty(chart.EachPlotBrushName);
+            chart.ItemsSourceFirstItemAdded(cv.GetItemAt(0));
+
             if (chart.SelectedItem != null)
                 chart.cv.MoveCurrentTo(chart.SelectedItem);
 
@@ -81,8 +80,23 @@ namespace CompMs.Graphics.Chart
         }
 
         private void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            if (dataType is null && cv is CollectionView cv_ && !cv_.IsEmpty) {
+                ItemsSourceFirstItemAdded(cv_.GetItemAt(0));
+            }
             SetDrawingVisuals();
             Update();
+        }
+
+        private void ItemsSourceFirstItemAdded(object newItem) {
+            if ((dataType = newItem.GetType()) is null) {
+                return;
+            }
+            if (HorizontalPropertyName != null)
+                hPropertyReflection = dataType.GetProperty(HorizontalPropertyName);
+            if (VerticalPropertyName != null)
+                vPropertyReflection = dataType.GetProperty(VerticalPropertyName);
+            if (EachPlotBrushName != null)
+                pPropertyReflection = dataType.GetProperty(EachPlotBrushName);
         }
 
         void OnCurrentChanged(object obj, EventArgs e) {

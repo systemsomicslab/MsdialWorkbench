@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Components;
@@ -76,17 +77,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             .Subscribe(_ => Ms1PeaksView.Refresh())
             .AddTo(Disposables);
 
-            var hAxis = this.model.PlotModel
-                .ObserveProperty(m => m.HorizontalRange)
-                .ToReactiveAxisManager<double>(new ChartMargin(0.05))
-                .AddTo(Disposables);
-            var vAxis = this.model.PlotModel
-                .ObserveProperty(m => m.VerticalRange)
-                .ToReactiveAxisManager<double>(new ChartMargin(0.05))
-                .AddTo(Disposables);
-
-            PlotViewModel = new AnalysisPeakPlotViewModel(this.model.PlotModel, brushSource: Observable.Return(this.model.Brush), horizontalAxis: hAxis, verticalAxis: vAxis).AddTo(Disposables);
-            EicViewModel = new EicViewModel(this.model.EicModel, horizontalAxis: hAxis).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(this.model.PlotModel, brushSource: Observable.Return(this.model.Brush)).AddTo(Disposables);
+            EicViewModel = new EicViewModel(this.model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
 
 
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
@@ -110,7 +102,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel,
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
                 lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
-            SurveyScanViewModel = new SurveyScanViewModel(this.model.SurveyScanModel, horizontalAxis: vAxis).AddTo(Disposables);
+            SurveyScanViewModel = new SurveyScanViewModel(this.model.SurveyScanModel, horizontalAxis: PlotViewModel.VerticalAxis).AddTo(Disposables);
             PeakTableViewModel = new ImmsAnalysisPeakTableViewModel(
                 this.model.PeakTableModel,
                 Observable.Return(this.model.EicLoader),

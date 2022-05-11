@@ -6,11 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    class BarChartModel : BindableBase {
+    sealed class BarChartModel : BindableBase {
         public BarChartModel(
             IObservable<List<BarItem>> barItems) {
 

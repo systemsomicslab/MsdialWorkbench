@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.ViewModel;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
@@ -7,8 +8,10 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
+using Reactive.Bindings.Notifiers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
@@ -47,11 +50,20 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private IonMobilityType ionMobilityType;
 
+        public bool IsAllCalibrantDataImported {
+            get => isAllCalibrantDataImported;
+            set => SetProperty(ref isAllCalibrantDataImported, value);
+        }
+        private bool isAllCalibrantDataImported;
+
         public ReadOnlyCollection<CcsCalibrationInfoVS> CalibrationInfoCollection { get; }
 
-        public void Commit() {
+        public bool TryCommit() {
             if (IsReadOnly) {
-                return;
+                return true;
+            }
+            if (!ShowMessageIfHasError()) {
+                return false;
             }
             if (immsParameter != null) {
                 immsParameter.IonMobilityType = IonMobilityType;
@@ -59,6 +71,37 @@ namespace CompMs.App.Msdial.Model.Setting
             else if (lcimmsParameter != null) {
                 lcimmsParameter.IonMobilityType = IonMobilityType;
             }
+            return true;
+        }
+
+        private bool ShowMessageIfHasError() {
+            if (!IsAllCalibrantDataImported) {
+                var errorMessages = new List<string>();
+                errorMessages.Add("You have to set the coefficients for all files.");
+
+                switch (IonMobilityType) {
+                    case IonMobilityType.Dtims:
+                        errorMessages.Add("For Agilent single fieled-based CCS calculation, you have to set the coefficients for all files.");
+                        break;
+                    case IonMobilityType.Twims:
+                        errorMessages.Add("For Waters CCS calculation, you have to set the coefficients for all files.");
+                        break;
+                }
+
+                errorMessages.Add("Otherwise, the Mason–Schamp equation using gasweight=28.0134 and temperature=305.0 is used for CCS calculation for all data.");
+                errorMessages.Add("Do you continue the CCS parameter setting?");
+                var request = new ErrorMessageBoxRequest()
+                {
+                    Caption = "Error",
+                    Content = string.Join(" ", errorMessages),
+                    ButtonType = MessageBoxButton.YesNo,
+                };
+                MessageBroker.Default.Publish(request);
+                if (request.Result != MessageBoxResult.No) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private static ReadOnlyCollection<CcsCalibrationInfoVS> InitializeCalibrationInfoCollection(List<AnalysisFileBean> files, Dictionary<int, CoefficientsForCcsCalculation> fileID2CcsCoefficients) {

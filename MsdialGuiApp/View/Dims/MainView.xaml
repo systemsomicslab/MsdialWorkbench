@@ -8,7 +8,6 @@
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              mc:Ignorable="d" 
-             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
              Name="MainControl"
              MouseRightButtonDown="MainControl_MouseRightButtonDown"
@@ -196,7 +195,7 @@
 
                         <TabItem Name="TabItem_RtMzPairwisePlotPeakView"
                                  Header="Peak spot viewer" 
-                                 DataContext="{Binding AnalysisVM}"
+                                 DataContext="{Binding AnalysisViewModel.Value}"
                                  DataContextChanged="TabItem_RtMzPairwisePlotPeakView_DataContextChanged">
                             <chart:PeakView DataContext="{Binding PlotViewModel}">
                                 <chart:PeakView.LabelTemplate>
@@ -219,7 +218,7 @@
 
                         <TabItem Name="TabItem_RtMzPairwisePlotAlignmentView"
                                  Header="Alignment spot viewer" 
-                                 DataContext="{Binding AlignmentVM}" DataContextChanged="TabItem_RtMzPairwisePlotAlignmentView_DataContextChanged">
+                                 DataContext="{Binding AlignmentViewModel.Value}" DataContextChanged="TabItem_RtMzPairwisePlotAlignmentView_DataContextChanged">
 
                             <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
                                 <chart:AlignmentPeakPlotView.LabelTemplate>
@@ -252,19 +251,19 @@
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
                                  Name="TabItem_EicViewer" Background="{StaticResource MainThemeColor}">
-                            <chart:EicView DataContext="{Binding AnalysisVM.EicViewModel}"/>
+                            <chart:EicView DataContext="{Binding AnalysisViewModel.Value.EicViewModel}"/>
                         </TabItem>
 
                         <TabItem Header="Bar chart of aligned spot" 
                                  Name="TabItem_BarChartViewer" 
                                  Height="26"
                                  Background="{StaticResource MainThemeColor}">
-                            <chart:BarChartView DataContext="{Binding AlignmentVM.BarChartViewModel}"/>
+                            <chart:BarChartView DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"/>
                         </TabItem>
 
 
                         <TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="{StaticResource MainThemeColor}">
-                            <chart:AlignmentEicView DataContext="{Binding AlignmentVM.AlignmentEicViewModel}"/>
+                            <chart:AlignmentEicView DataContext="{Binding AlignmentViewModel.Value.AlignmentEicViewModel}"/>
                         </TabItem>
 
                     </TabControl>
@@ -336,7 +335,7 @@
 
                         <TabItem Name="TabItem_MeasurementVsReference" 
                                  Header="Exp. vs. Ref." 
-                                 DataContext="{Binding AnalysisVM}"
+                                 DataContext="{Binding AnalysisViewModel.Value}"
                                  Background="{StaticResource MainThemeColor}"
                                  Height="25">
                             <chart:ExpRefView>
@@ -353,7 +352,7 @@
 
                         <TabItem Name="TabItem_RepresentativeVsReference"
                                  Header="Rep. vs. Ref." 
-                                 DataContext="{Binding AlignmentVM}"
+                                 DataContext="{Binding AlignmentViewModel.Value}"
                                  Background="{StaticResource MainThemeColor}" 
                                  Height="25">
                             <chart:RepRefView>
@@ -386,7 +385,7 @@
 
             </Grid>
         </Grid>
-        <local:Footer DataContext="{Binding AnalysisVM}"
+        <local:Footer DataContext="{Binding AnalysisViewModel.Value}"
                       IsEnabled="False"
                       Grid.Row="2" Grid.Column="1"/>
 
