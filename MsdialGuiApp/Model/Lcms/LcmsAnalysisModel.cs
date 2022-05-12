@@ -171,15 +171,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             SurveyScanModel = new SurveyScanModel(
                 Target.CombineLatest(
                     Observable.FromAsync(provider.LoadMs1SpectrumsAsync),
-                    Observable.Return(msdataType),
-                    (t, spectrums, dt) => 
+                    (t, spectrums) => 
                 {
                     if (t is null) {
                         return new List<SpectrumPeakWrapper>();
                     }
                     var spectra = DataAccess.GetCentroidMassSpectra(
                         spectrums[t.MS1RawSpectrumIdTop],
-                        dt, 0, float.MinValue, float.MaxValue);
+                        msdataType, 0, float.MinValue, float.MaxValue);
                     return spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
                 }),
                 spec => spec.Mass,

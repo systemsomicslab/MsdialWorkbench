@@ -22,18 +22,26 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalProperty = nameof(ChromatogramPeakWrapper.ChromXValue);
             VerticalProperty = nameof(ChromatogramPeakWrapper.Intensity);
 
-            var sources = targetSource.Select(t => Observable.FromAsync(token => loader.LoadEicAsync(t, token)))
-                .Switch()
+            var sources = targetSource.Select(t => Observable.FromAsync(token => loader.LoadEicAsync(t, token))).Switch();
+            var sourcesProperty = sources
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            ItemLoaded = new[]
+                {
+                    targetSource.Select(_ => false),
+                    sources.Select(_ => true),
+                }.Merge()
+                .Throttle(TimeSpan.FromMilliseconds(100))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            EicSource = sources.Select(src => src.Item1)
+            EicSource = sourcesProperty.Select(src => src.Item1)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            EicPeakSource = sources.Select(src => src.Item2)
+            EicPeakSource = sourcesProperty.Select(src => src.Item2)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            EicFocusedSource = sources.Select(src => src.Item3)
+            EicFocusedSource = sourcesProperty.Select(src => src.Item3)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -60,6 +68,8 @@ namespace CompMs.App.Msdial.Model.Chart
             : this(targetSource, loader, string.Empty, string.Empty, string.Empty) {
 
         }
+
+        public ReadOnlyReactivePropertySlim<bool> ItemLoaded { get; }
 
         public IObservable<List<ChromatogramPeakWrapper>> EicSource { get; }
 
