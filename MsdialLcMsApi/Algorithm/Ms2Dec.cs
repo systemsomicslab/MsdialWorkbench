@@ -22,12 +22,12 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
         }
        
         public List<MSDecResult> GetMS2DecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
-            MsdialLcmsParameter param, ChromatogramPeaksDataSummary chromatogramSummary, ChromatogramPeaksDataSummaryDto summary,
-            IupacDatabase iupac, Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
+            MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary, IupacDatabase iupac,
+            Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
 
             var msdecResults = new List<MSDecResult>();
             foreach (var spot in chromPeakFeatures) {
-                var result = GetMS2DecResult(spectrumList, spot, param, chromatogramSummary, summary, iupac, targetCE);
+                var result = GetMS2DecResult(spectrumList, spot, param, summary, iupac, targetCE);
                 result.ScanID = spot.PeakID;
                 msdecResults.Add(result);
                 ReportProgress.Show(InitialProgress, ProgressMax, result.ScanID, chromPeakFeatures.Count(), reportAction);
@@ -37,8 +37,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
 
         public MSDecResult GetMS2DecResult(IReadOnlyList<RawSpectrum> spectrumList,
             ChromatogramPeakFeature chromPeakFeature, MsdialLcmsParameter param,
-            ChromatogramPeaksDataSummary chromatogramSummary, ChromatogramPeaksDataSummaryDto summary,
-            IupacDatabase iupac, double targetCE = -1) { // targetCE is used in multiple CEs option
+            ChromatogramPeaksDataSummary summary, IupacDatabase iupac,
+            double targetCE = -1) { // targetCE is used in multiple CEs option
 
             // check target CE ID
             var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
@@ -69,7 +69,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             //}
 
             //check the RT range to be considered for chromatogram deconvolution
-            var (startRt, endRt)= chromatogramSummary.GetPeakRange(chromPeakFeature);
+            var (startRt, endRt)= summary.GetPeakRange(chromPeakFeature);
 
             //preparing MS1 and MS/MS chromatograms
             //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram

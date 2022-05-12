@@ -645,7 +645,7 @@ namespace CompMs.MsdialCore.MSDec {
                 foreach (var result in results) {
 
                     var mass = (float)peaks[result.ScanNumAtPeakTop].Mass;
-                    var chromPeakFeature = ChromatogramPeakFeature.FromPeakDetectionResult(result, type, unit, mass, param.IonMode);
+                    var chromPeakFeature = DataAccess.GetChromatogramPeakFeature(result, type, unit, mass);
                     chromPeakFeature.PeakID = index; // this information is needed in the later process.
                     peakSpots.Add(chromPeakFeature);
                 }
