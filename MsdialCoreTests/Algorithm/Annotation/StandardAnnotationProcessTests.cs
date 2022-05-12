@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
@@ -131,12 +132,24 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 return new List<RawSpectrum> { new RawSpectrum() }.AsReadOnly();
             }
 
+            public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) {
+                return Task.FromResult(LoadMs1Spectrums());
+            }
+
             public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
                 return new List<RawSpectrum>().AsReadOnly();
             }
 
+            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) {
+                return Task.FromResult(LoadMsNSpectrums(level));
+            }
+
             public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
                 return new List<RawSpectrum> { new RawSpectrum() }.AsReadOnly();
+            }
+
+            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
+                return Task.FromResult(LoadMsSpectrums());
             }
         }
 

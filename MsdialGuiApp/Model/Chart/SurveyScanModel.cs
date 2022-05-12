@@ -17,7 +17,7 @@ namespace CompMs.App.Msdial.Model.Chart
             Func<SpectrumPeakWrapper, double> horizontalSelector,
             Func<SpectrumPeakWrapper, double> verticalSelector) {
 
-            SpectrumSource = spectrumSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            SpectrumSource = spectrumSource.ToReadOnlyReactivePropertySlim(initialValue: new List<SpectrumPeakWrapper>(0)).AddTo(Disposables);
 
             HorizontalSelector = horizontalSelector;
             VerticalSelector = verticalSelector;

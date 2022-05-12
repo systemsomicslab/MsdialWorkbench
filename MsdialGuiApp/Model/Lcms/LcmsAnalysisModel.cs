@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
@@ -169,15 +170,15 @@ namespace CompMs.App.Msdial.Model.Lcms
             var msdataType = Parameter.MSDataType;
             SurveyScanModel = new SurveyScanModel(
                 Target.CombineLatest(
-                    Observable.Return(provider),
+                    Observable.FromAsync(provider.LoadMs1SpectrumsAsync),
                     Observable.Return(msdataType),
-                    (t, p, dt) => 
+                    (t, spectrums, dt) => 
                 {
                     if (t is null) {
                         return new List<SpectrumPeakWrapper>();
                     }
                     var spectra = DataAccess.GetCentroidMassSpectra(
-                        p.LoadMs1Spectrums()[t.MS1RawSpectrumIdTop],
+                        spectrums[t.MS1RawSpectrumIdTop],
                         dt, 0, float.MinValue, float.MaxValue);
                     return spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
                 }),
@@ -230,6 +231,10 @@ namespace CompMs.App.Msdial.Model.Lcms
                 (rtSpotFocus, peak => peak.ChromXValue ?? 0d),
                 (mzSpotFocus, peak => peak.Mass)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus);
+
+            CanSaveRawSpectra = Target.Select(t => t?.InnerModel != null)
+                .ToReadOnlyReactivePropertySlim(initialValue: false)
+                .AddTo(Disposables);
         }
 
         private static readonly double RtTol = 0.5;
@@ -301,21 +306,22 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
 
-        public void SaveRawSpectra(string filename) {
+        public async Task SaveRawSpectra(string filename) {
             using (var file = File.Open(filename, FileMode.Create)) {
                 var target = Target.Value;
+                var spectrum = await rawSpectrumLoader.LoadSpectrumAsync(target, default).ConfigureAwait(false);
                 SpectraExport.SaveSpectraTable(
                     (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
                     file,
                     target.InnerModel,
-                    new MSScanProperty() { Spectrum = rawSpectrumLoader.LoadSpectrum(target) },
+                    new MSScanProperty() { Spectrum = spectrum },
                     provider.LoadMs1Spectrums(),
                     DataBaseMapper,
                     Parameter);
             }
         }
 
-        public bool CanSaveRawSpectra() => Target.Value.InnerModel != null;
+        public ReadOnlyReactivePropertySlim<bool> CanSaveRawSpectra { get; }
 
         public void GoToMsfinderMethod() {
             MsDialToExternalApps.SendToMsFinderProgram(

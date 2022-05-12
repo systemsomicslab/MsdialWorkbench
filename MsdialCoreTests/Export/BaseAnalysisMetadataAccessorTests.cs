@@ -13,6 +13,8 @@ using CompMs.MsdialCore.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Export.Tests
 {
@@ -159,11 +161,23 @@ namespace CompMs.MsdialCore.Export.Tests
                 }.AsReadOnly();
             }
 
+            public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token) {
+                return Task.FromResult(LoadMs1Spectrums());
+            }
+
             public ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
                 throw new System.NotImplementedException();
             }
 
+            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token) {
+                throw new System.NotImplementedException();
+            }
+
             public ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
+                throw new System.NotImplementedException();
+            }
+
+            public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
                 throw new System.NotImplementedException();
             }
         }

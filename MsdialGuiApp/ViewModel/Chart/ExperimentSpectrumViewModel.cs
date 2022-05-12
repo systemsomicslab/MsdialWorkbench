@@ -7,10 +7,10 @@ using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
-using System;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
@@ -26,12 +26,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .AddTo(Disposables);
             Ms2Spectrums = model.Ms2Spectrums.ToReadOnlyReactiveCollection(m => new SummarizedSpectrumViewModel(m)).AddTo(Disposables);
 
-            AccumulateSpectrumCommand = new ReactiveCommand().AddTo(Disposables);
-            AccumulateSpectrumCommand
-                .Where(_ => CanAccumulateSpectrum())
-                .Subscribe(_ => AccumulateSpectrum())
+            AccumulateSpectrumCommand = new AsyncReactiveCommand()
+                .WithSubscribe(AccumulateSpectrumAsync)
                 .AddTo(Disposables);
-
             SaveSpectraAsNistCommand = new ReactiveCommand()
                 .WithSubscribe(SaveSpectraAsNist)
                 .AddTo(Disposables);
@@ -48,14 +45,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public IAxisManager HorizontalAxis { get; }
         public IAxisManager VerticalAxis { get; }
 
-        public ReactiveCommand AccumulateSpectrumCommand { get; }
+        public AsyncReactiveCommand AccumulateSpectrumCommand { get; }
 
-        private bool CanAccumulateSpectrum() {
-            return model.CanSetExperimentSpectrum();
-        }
-
-        private void AccumulateSpectrum() {
-            model.SetExperimentSpectrum();
+        private Task AccumulateSpectrumAsync() {
+            if (model.CanSetExperimentSpectrum()) {
+                return model.SetExperimentSpectrumAsync(default);
+            }
+            return Task.CompletedTask;
         }
 
         public ReactiveCommand SaveSpectraAsNistCommand { get; }
