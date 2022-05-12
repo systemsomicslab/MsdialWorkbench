@@ -24,8 +24,12 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             IObservable<IAxisManager<double>> lowerVerticalAxisSource = null,
             IObservable<IBrushMapper<SpectrumComment>> upperSpectrumBrushSource = null,
             IObservable<IBrushMapper<SpectrumComment>> lowerSpectrumBrushSource = null) {
+            if (model is null) {
+                throw new ArgumentNullException(nameof(model));
+            }
 
-            this.model = model ?? throw new ArgumentNullException(nameof(model));
+            SpectrumLoaded = model.SpectrumLoaded;
+            ReferenceHasSpectrumInfomation = model.ReferenceHasSpectrumInfomation;
 
             HorizontalAxis = (horizontalAxisSource ?? model.UpperSpectrumModel.HorizontalAxis)
                 .ToReadOnlyReactivePropertySlim()
@@ -90,12 +94,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .AddTo(Disposables);
         }
 
-        private readonly MsSpectrumModel model;
-
         public ReadOnlyReactivePropertySlim<List<SpectrumPeak>> UpperSpectrum { get; }
 
         public ReadOnlyReactivePropertySlim<List<SpectrumPeak>> LowerSpectrum { get; }
-
+        public ReadOnlyReactivePropertySlim<bool> SpectrumLoaded { get; }
+        public ReadOnlyReactivePropertySlim<bool> ReferenceHasSpectrumInfomation { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> HorizontalAxis { get; }
 
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> UpperVerticalAxis { get; }

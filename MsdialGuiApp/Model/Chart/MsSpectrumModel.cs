@@ -43,7 +43,8 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<IBrushMapper> upperSpectrumBrush,
             IObservable<IBrushMapper> lowerSpectrumBrush,
             IObservable<ISpectraExporter> upperSpectraExporter,
-            IObservable<ISpectraExporter> lowerSpectraExporter) {
+            IObservable<ISpectraExporter> lowerSpectraExporter,
+            ReadOnlyReactivePropertySlim<bool> spectrumLoaded) {
 
             if (upperSpectrum is null) {
                 throw new ArgumentNullException(nameof(upperSpectrum));
@@ -105,7 +106,8 @@ namespace CompMs.App.Msdial.Model.Chart
             VerticalPropertySelector = verticalPropertySelector;
             HorizontalPropertySelector = horizontalPropertySelector;
             GraphLabels = graphLabels;
-
+            SpectrumLoaded = spectrumLoaded ?? new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true));
+            ReferenceHasSpectrumInfomation = lowerSpectrum.Select(spectrum => spectrum.Any()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             UpperSpectrumModel = new SingleSpectrumModel(
                 upperSpectrum,
                 horizontalAxisObservable, horizontalPropertySelector,
@@ -133,6 +135,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public ObservableCollection<AxisItemModel> UpperVerticalAxisItemCollection { get; }
 
         public GraphLabels GraphLabels { get; }
+        public ReadOnlyReactivePropertySlim<bool> SpectrumLoaded { get; }
+        public ReadOnlyReactivePropertySlim<bool> ReferenceHasSpectrumInfomation { get; }
         public PropertySelector<SpectrumPeak, double> HorizontalPropertySelector { get; }
         public PropertySelector<SpectrumPeak, double> VerticalPropertySelector { get; }
 
@@ -178,7 +182,8 @@ namespace CompMs.App.Msdial.Model.Chart
                 upperBrush,
                 lowerBrush,
                 Observable.Return((ISpectraExporter)null),
-                Observable.Return((ISpectraExporter)null));
+                Observable.Return((ISpectraExporter)null),
+                null);
         }
 
         public static IBrushMapper<SpectrumComment> GetBrush(Brush defaultBrush) {

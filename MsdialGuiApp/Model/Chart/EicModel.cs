@@ -29,9 +29,9 @@ namespace CompMs.App.Msdial.Model.Chart
             ItemLoaded = new[]
                 {
                     targetSource.Select(_ => false),
-                    sources.Select(_ => true),
+                    sources.Delay(TimeSpan.FromSeconds(.05d)).Select(_ => true),
                 }.Merge()
-                .Throttle(TimeSpan.FromMilliseconds(100))
+                .Throttle(TimeSpan.FromSeconds(.1d))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 

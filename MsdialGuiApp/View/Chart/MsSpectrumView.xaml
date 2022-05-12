@@ -53,6 +53,20 @@
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
             <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis.Value}">
+                <StackPanel VerticalAlignment="Center">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SpectrumLoaded.Value, Mode=OneWay}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
+                    <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
+                </StackPanel>
                 <chart:LineSpectrumControlSlim x:Name="MS2Line"
                                                ItemsSource="{Binding UpperSpectrum.Value}"
                                                DataType="{x:Type components:SpectrumPeak}"
@@ -83,6 +97,20 @@
             </Grid>
 
             <Grid core:ChartBaseControl.FlippedY="False" core:ChartBaseControl.VerticalAxis="{Binding LowerVerticalAxis.Value}">
+                <TextBlock Text="No information" FontSize="24"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ReferenceHasSpectrumInfomation.Value, Mode=OneWay}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
                 <chart:LineSpectrumControlSlim x:Name="MS2Ref"
                                                ItemsSource="{Binding LowerSpectrum.Value}"
                                                DataType="{x:Type components:SpectrumPeak}"

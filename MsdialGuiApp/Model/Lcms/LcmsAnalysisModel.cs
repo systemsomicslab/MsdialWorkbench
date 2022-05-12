@@ -168,19 +168,22 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             // SurveyScan
             var msdataType = Parameter.MSDataType;
+            var surveyScanSpectrum = new SurveyScanSpectrum(Target, t =>
+            {
+                if (t is null) {
+                    return Observable.Return(new List<SpectrumPeakWrapper>());
+                }
+                return Observable.FromAsync(provider.LoadMs1SpectrumsAsync)
+                    .Select(spectrums =>
+                        {
+                            var spectra = DataAccess.GetCentroidMassSpectra(
+                                spectrums[t.MS1RawSpectrumIdTop],
+                                msdataType, 0, float.MinValue, float.MaxValue);
+                            return spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
+                        });
+            }).AddTo(Disposables);
             SurveyScanModel = new SurveyScanModel(
-                Target.CombineLatest(
-                    Observable.FromAsync(provider.LoadMs1SpectrumsAsync),
-                    (t, spectrums) => 
-                {
-                    if (t is null) {
-                        return new List<SpectrumPeakWrapper>();
-                    }
-                    var spectra = DataAccess.GetCentroidMassSpectra(
-                        spectrums[t.MS1RawSpectrumIdTop],
-                        msdataType, 0, float.MinValue, float.MaxValue);
-                    return spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
-                }),
+                surveyScanSpectrum,
                 spec => spec.Mass,
                 spec => spec.Intensity).AddTo(Disposables);
             SurveyScanModel.Elements.VerticalTitle = "Abundance";

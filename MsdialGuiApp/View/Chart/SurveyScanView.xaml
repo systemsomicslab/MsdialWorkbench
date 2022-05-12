@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              mc:Ignorable="d" 
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:design="clr-namespace:CompMs.Graphics.Design;assembly=ChartDrawing"
@@ -46,6 +45,20 @@
                     <Binding Path="VerticalAxis.UnitLabel"/>
                 </MultiBinding>
             </chart:MultiChart.VerticalTitle>
+            <StackPanel VerticalAlignment="Center">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SurveyScanLoaded.Value, Mode=OneWay}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
+                <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
+            </StackPanel>
             <chart:LineSpectrumControlSlim ItemsSource="{Binding Spectrum.Value, Mode=OneWay}"
                                            DataType="{x:Type do:SpectrumPeakWrapper}"
                                            HorizontalProperty="{Binding HorizontalProperty.Value}"
