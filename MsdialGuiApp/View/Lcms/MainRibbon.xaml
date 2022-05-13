@@ -171,6 +171,9 @@
                               Command="{Binding GoToMsfinderCommand}"
                               IsEnabled="True"
                               KeyTip="M"/>
+                <RibbonButton Label="MassQL search" LargeImageSource="{StaticResource Msfinder_is}"
+                              IsEnabled="False"
+                              KeyTip="T"/>
             </RibbonGroup>
         </RibbonTab>
         <RibbonTab Header="View"
@@ -285,7 +288,7 @@
                               KeyTip="L"/>
                 <RibbonButton Label="Tutorial" LargeImageSource="{StaticResource Tutorial_is}"
                               IsEnabled="False"
-                              KeyTip="T"/>
+                              KeyTip="T"/>                
             </RibbonGroup>
         </RibbonTab>
     </Ribbon>
