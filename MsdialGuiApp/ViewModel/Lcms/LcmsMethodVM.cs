@@ -105,7 +105,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         private void MassqlSearchSettingMethod(Window obj) {
-            model.ShowShowMassqlSearchSettingView(obj);
+            if (SelectedViewModel.Value is AlignmentFileViewModel) {
+                model.ShowShowMassqlSearchSettingView(obj, true);
+            }
+            else {
+                model.ShowShowMassqlSearchSettingView(obj, false);
+            }
         }
 
         public DelegateCommand GoToMsfinderCommand => goToMsfinderCommand ??  (goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));

@@ -21,5 +21,10 @@ namespace CompMs.App.Msdial.View.Setting {
         {
             InitializeComponent();
         }
+
+        private void Button_Send_MassQL_Click(object sender, RoutedEventArgs e) {
+            DialogResult = true;
+            Close();
+        }
     }
 }

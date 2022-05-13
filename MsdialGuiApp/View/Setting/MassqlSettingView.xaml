@@ -7,8 +7,18 @@
         mc:Ignorable="d"
         Title="MassqlSettingView" Height="450" Width="800">
     <Grid>
-            <StackPanel>
-                <TextBox Width="200" MaxLength="100" />
-            </StackPanel>
+        <StackPanel>
+            <TextBox x:Name="Massql_input"
+                     Width="400"
+                     Text="{Binding Massql, UpdateSourceTrigger=PropertyChanged}"
+                     AcceptsReturn="False"
+                     TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Visible" />
+            <Button x:Name="Button_Send_MassQL" 
+                        Content="Send MassQL"
+                        Click="Button_Send_MassQL_Click"
+                        Height="25" Width="100"
+                        />
+        </StackPanel>
     </Grid>
 </Window>

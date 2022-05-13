@@ -600,9 +600,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
         }
 
-        public void ShowShowMassqlSearchSettingView(Window owner) {
+        public void ShowShowMassqlSearchSettingView(Window owner, bool isAlignmentViewSelected) {
             var container = Storage;
             var analysisModel = AnalysisModel;
+            if (analysisModel is null) return;
             var alignmentModel = AlignmentModel;
             var param = container.Parameter;
 
@@ -615,9 +616,16 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
 
             if (dialog.ShowDialog() == true) {
-                //param.FragmentSearchSettingValues = model.FragmentQuerySettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();
-                //param.AndOrAtFragmentSearch = model.SearchOption.Value;
-                analysisModel.FragmentSearcher();
+                param.FragmentSearchSettingValues = model.SendMassql();
+                if (param.FragmentSearchSettingValues.Count > 1) {
+                    param.AndOrAtFragmentSearch = AndOr.AND;
+                }
+                if (isAlignmentViewSelected) {
+                    alignmentModel.FragmentSearcher();
+                }
+                else {
+                    analysisModel.FragmentSearcher();
+                }
             }
 
             //param.FragmentSearchSettingValues = model.FragmentQuerySettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();

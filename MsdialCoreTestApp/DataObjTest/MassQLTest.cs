@@ -23,6 +23,7 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
             var testfile = @"Z:\Workspaces\Nishida\massqltest\2022_05_11_06_06_41.mdproject";
             var exporter = new ExporterTest();
             var storage = await exporter.LoadProjectFromPathAsync(testfile);
+            var param = storage.Parameter;
 
             var analysisFile = storage.AnalysisFiles[0];
             var alignmentFile = storage.AlignmentFiles.Last();
@@ -53,7 +54,7 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
             }
             //Console.WriteLine(result.Conditions[0].qualifiers.type);
             //Console.WriteLine();
-            var param = storage.Parameter;            
+      
 
             var massQLParams = new List<PeakFeatureSearchValue>();
             if (result.querytype.function == "functionscaninfo") {
@@ -82,6 +83,7 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
             }
 
             param.FragmentSearchSettingValues = massQLParams;
+
             if (massQLParams.Count > 1) {
                 param.AndOrAtFragmentSearch = Common.Enum.AndOr.AND;
             }
@@ -91,6 +93,7 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
             else {
                 FragmentSearcher.Search(chromPeakFeatures, new MsdialCore.MSDec.MSDecLoader(analysisFile.DeconvolutionFilePath), param);
             }
+
         }
 
         [DataContract]
