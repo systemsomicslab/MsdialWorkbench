@@ -172,7 +172,8 @@
                               IsEnabled="True"
                               KeyTip="M"/>
                 <RibbonButton Label="MassQL search" LargeImageSource="{StaticResource Msfinder_is}"
-                              IsEnabled="False"
+                              IsEnabled="True"
+                              Command="{Binding ShowMassqlSearchSettingCommand}"
                               KeyTip="T"/>
             </RibbonGroup>
         </RibbonTab>

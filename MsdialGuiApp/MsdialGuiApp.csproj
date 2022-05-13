@@ -196,6 +196,7 @@
     <Compile Include="Model\Notification\VersionUpdateNotificationService.cs" />
     <Compile Include="Model\Setting\AdductIonSettingModel.cs" />
     <Compile Include="Model\Setting\AlignmentParameterSettingModel.cs" />
+    <Compile Include="Model\Setting\MassqlSettingModel.cs" />
     <Compile Include="Model\Setting\DatasetSettingModel.cs" />
     <Compile Include="Model\Setting\IDataCollectionRangeSetting.cs" />
     <Compile Include="Model\Setting\DataCollectionSettingModel.cs" />
@@ -334,6 +335,7 @@
     <Compile Include="ViewModel\PeakCuration\AlignedChromatogramModificationViewModelLegacy.cs" />
     <Compile Include="ViewModel\Setting\AdductIonSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\AlignmentParameterSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\MassqlSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\DataCollectionRangeSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\DataCollectionSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\DatasetFileSettingViewModel.cs" />
@@ -693,6 +695,9 @@
       <DependentUpon>IsotopeTrackSettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\Setting\MethodSettingViewModel.cs" />
+    <Compile Include="View\Setting\MassqlSettingView.xaml.cs">
+      <DependentUpon>MassqlSettingView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Setting\MobilitySettingView.xaml.cs">
       <DependentUpon>MobilitySettingView.xaml</DependentUpon>
     </Compile>
@@ -774,6 +779,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Icons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewModel\Lcms\Dictionary1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1174,6 +1183,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\IsotopeTrackSettingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\MassqlSettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

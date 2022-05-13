@@ -91,6 +91,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             (fragmentSearchSettingCommand = new DelegateCommand<Window>(FragmentSearchSettingMethod));
         private DelegateCommand<Window> fragmentSearchSettingCommand;
 
+        public DelegateCommand<Window> ShowMassqlSearchSettingCommand => massqlSearchSettingCommand ??
+            (massqlSearchSettingCommand= new DelegateCommand<Window>(MassqlSearchSettingMethod));
+        private DelegateCommand<Window> massqlSearchSettingCommand;
+
         private void FragmentSearchSettingMethod(Window obj) {
             if (SelectedViewModel.Value is AlignmentFileViewModel) {
                 model.ShowShowFragmentSearchSettingView(obj, true);
@@ -98,6 +102,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             else {
                 model.ShowShowFragmentSearchSettingView(obj, false);
             }
+        }
+
+        private void MassqlSearchSettingMethod(Window obj) {
+            model.ShowShowMassqlSearchSettingView(obj);
         }
 
         public DelegateCommand GoToMsfinderCommand => goToMsfinderCommand ??  (goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
