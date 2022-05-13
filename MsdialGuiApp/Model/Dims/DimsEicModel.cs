@@ -7,6 +7,8 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
@@ -21,15 +23,19 @@ namespace CompMs.App.Msdial.Model.Dims
 
         }
 
-        protected override List<ChromatogramPeakWrapper> LoadEicCore(ChromatogramPeakFeatureModel target) {
+        protected override Task<List<ChromatogramPeakWrapper>> LoadEicCoreAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var leftMz = target.ChromXValue - 10 ?? 0;
             var rightMz = target.ChromXValue + 10 ?? 0;
-            return DataAccess.GetSmoothedPeaklist(
-                DataAccess.ConvertRawPeakElementToChromatogramPeakList(
-                    provider.LoadMs1Spectrums().Argmax(spectrum => spectrum.Spectrum.Length).Spectrum, leftMz, rightMz),
-                parameter.SmoothingMethod, parameter.SmoothingLevel)
-                .Select(peak => new ChromatogramPeakWrapper(peak))
-                .ToList();
+            return Task.Run(async () =>
+            {
+                var spectra = await provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
+                return DataAccess.GetSmoothedPeaklist(
+                    DataAccess.ConvertRawPeakElementToChromatogramPeakList(
+                        spectra.Argmax(spectrum => spectrum.Spectrum.Length).Spectrum, leftMz, rightMz),
+                    parameter.SmoothingMethod, parameter.SmoothingLevel)
+                    .Select(peak => new ChromatogramPeakWrapper(peak))
+                    .ToList();
+            });
         }
     }
 }

@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
              mc:Ignorable="d" 
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
@@ -55,6 +54,20 @@
                     <Pen Brush="Red" Thickness="1.5" LineJoin="Miter" PresentationOptions:Freeze="True"/>
                 </chart:LineSpectrumControl.LinePen>
             </chart:LineSpectrumControl>
+            <StackPanel VerticalAlignment="Center">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ItemLoaded.Value, Mode=OneWay}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <TextBlock Text="Now loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
+                <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
+            </StackPanel>
             <chart:MultiChart.VerticalTitle>
                 <MultiBinding StringFormat="{}{0}({1})">
                     <MultiBinding.Bindings>

@@ -63,6 +63,21 @@
             <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis}">
                 <!--<TextBlock Text="Raw spectrum" FontStyle="Italic" FontFamily="Calibri"
                    VerticalAlignment="Top" HorizontalAlignment="Left" />-->
+                <StackPanel VerticalAlignment="Center">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding UpperSpectrumLoaded.Value, Mode=OneWay}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
+                    <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
+                </StackPanel>
+
                 <chart:LineSpectrumControl x:Name="MS2Line"
                                            ItemsSource="{Binding UpperSpectrum.Value}"
                                            HorizontalPropertyName="{Binding HorizontalProperty.Value}"
@@ -94,7 +109,21 @@
             <Grid core:ChartBaseControl.VerticalAxis="{Binding LowerVerticalAxis}">
                 <!--<TextBlock Text="Purified spectrum" FontStyle="Italic" FontFamily="Calibri"
                    VerticalAlignment="Top" HorizontalAlignment="Left" />-->
-                <chart:LineSpectrumControl x:Name="MS2Ref"
+                <StackPanel VerticalAlignment="Center">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding LowerSpectrumLoaded.Value, Mode=OneWay}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
+                    <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
+                </StackPanel>
+                <chart:LineSpectrumControl x:Name="MS2Dec"
                                            ItemsSource="{Binding LowerSpectrum.Value}"
                                            HorizontalPropertyName="{Binding HorizontalProperty.Value}"
                                            VerticalPropertyName="{Binding VerticalProperty.Value}"

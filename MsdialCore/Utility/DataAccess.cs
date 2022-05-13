@@ -120,58 +120,6 @@ namespace CompMs.MsdialCore.Utility {
             return smoothedPeaklist;
         }
 
-        // converter
-        public static ChromatogramPeakFeature GetChromatogramPeakFeature(PeakDetectionResult result, ChromXType type, ChromXUnit unit, double mass) {
-            if (result == null) return null;
-
-            var peakFeature = new ChromatogramPeakFeature() {
-
-                MasterPeakID = result.PeakID,
-                PeakID = result.PeakID,
-
-                ChromScanIdLeft = result.ScanNumAtLeftPeakEdge,
-                ChromScanIdTop = result.ScanNumAtPeakTop,
-                ChromScanIdRight = result.ScanNumAtRightPeakEdge,
-
-                ChromXsLeft = new ChromXs(result.ChromXAxisAtLeftPeakEdge, type, unit),
-                ChromXsTop = new ChromXs(result.ChromXAxisAtPeakTop, type, unit),
-                ChromXsRight = new ChromXs(result.ChromXAxisAtRightPeakEdge, type, unit),
-
-                ChromXs = new ChromXs(result.ChromXAxisAtPeakTop, type, unit),
-
-                PeakHeightLeft = result.IntensityAtLeftPeakEdge,
-                PeakHeightTop = result.IntensityAtPeakTop,
-                PeakHeightRight = result.IntensityAtRightPeakEdge,
-
-                PeakAreaAboveZero = result.AreaAboveZero,
-                PeakAreaAboveBaseline = result.AreaAboveBaseline,
-
-                Mass = mass,
-
-                PeakShape = new ChromatogramPeakShape() {
-                    SignalToNoise = result.SignalToNoise,
-                    EstimatedNoise = result.EstimatedNoise,
-                    BasePeakValue = result.BasePeakValue,
-                    GaussianSimilarityValue = result.GaussianSimilarityValue,
-                    IdealSlopeValue = result.IdealSlopeValue,
-                    PeakPureValue = result.PeakPureValue,
-                    ShapenessValue = result.ShapnessValue,
-                    SymmetryValue = result.SymmetryValue,
-                    AmplitudeOrderValue = result.AmplitudeOrderValue,
-                    AmplitudeScoreValue = result.AmplitudeScoreValue
-                }
-            };
-
-            if (type != ChromXType.Mz) {
-                peakFeature.ChromXs.Mz = new MzValue(mass);
-                peakFeature.ChromXsLeft.Mz = new MzValue(mass);
-                peakFeature.ChromXsTop.Mz = new MzValue(mass);
-                peakFeature.ChromXsRight.Mz = new MzValue(mass);
-            }
-
-            return peakFeature;
-        }
-
         public static List<IsotopicPeak> GetIsotopicPeaks(IReadOnlyList<RawSpectrum> rawSpectrumList, int scanID, float targetedMz, float massTolerance, int maxIsotopes = 2) {
             if (scanID < 0 || rawSpectrumList == null || scanID > rawSpectrumList.Count - 1) return null;
             var spectrum = rawSpectrumList[scanID].Spectrum;
@@ -328,9 +276,9 @@ namespace CompMs.MsdialCore.Utility {
             var dict = new Dictionary<int, ChromXs>();
             if (spectrumList == null || spectrumList.Count == 0) return null;
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
-            foreach (var (spectrum, index) in spectrumList.WithIndex().Where(n => n.Item1.ScanPolarity == scanPolarity && n.Item1.MsLevel <= 1)) {
+            foreach (var spectrum in spectrumList.Where(spectrum => spectrum.ScanPolarity == scanPolarity && spectrum.MsLevel <= 1)) {
                 var chromX = type == ChromXType.Drift ? spectrum.DriftTime : spectrum.ScanStartTime;
-                dict[index] = new ChromXs(chromX, type, unit);
+                dict[spectrum.Index] = new ChromXs(chromX, type, unit);
             }
             return dict;
         }
@@ -342,15 +290,15 @@ namespace CompMs.MsdialCore.Utility {
             var peaklist = new List<ChromatogramPeak>();
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
-            foreach (var (spectrum, index) in spectrumList.WithIndex().Where(n => n.Item1.ScanPolarity == scanPolarity && n.Item1.MsLevel <= 1)) {
+            foreach (var spectrum in spectrumList.Where(spectrum => spectrum.ScanPolarity == scanPolarity && spectrum.MsLevel <= 1)) {
                 var chromX = type == ChromXType.Drift ? spectrum.DriftTime : spectrum.ScanStartTime;
                 if (chromX < chromBegin) continue;
-                if (chromX > chromEnd) break;
+                if (chromX > chromEnd) break; // spectrumList sorted by chromX(ScanStartTime or Drifttime)?
                 var massSpectra = spectrum.Spectrum;
                 //var startIndex = GetMs1StartIndex(targetMass, ms1Tolerance, massSpectra);
                 //bin intensities for focused MZ +- ms1Tolerance
                 RetrieveBinnedMzIntensity(massSpectra, targetMass, ms1Tolerance, out double basepeakMz, out double basepeakIntensity, out double summedIntensity);
-                peaklist.Add(new ChromatogramPeak() { ID = index, ChromXs = id2ChromXs[index], Mass = basepeakMz, Intensity = summedIntensity });
+                peaklist.Add(new ChromatogramPeak() { ID = spectrum.Index, ChromXs = id2ChromXs[spectrum.Index], Mass = basepeakMz, Intensity = summedIntensity });
             }
 
             return peaklist;
@@ -856,7 +804,7 @@ namespace CompMs.MsdialCore.Utility {
             return peaks;
         }
 
-        public static List<List<ChromatogramPeak>> GetAccumulatedMs2PeakListList(List<RawSpectrum> spectrumList,
+        public static List<List<ChromatogramPeak>> GetAccumulatedMs2PeakListList(IReadOnlyList<RawSpectrum> spectrumList,
              ChromatogramPeakFeature rtChromPeakFeature, List<SpectrumPeak> curatedSpectrum, double minDriftTime, double maxDriftTime, IonMode ionMode) {
             var ms2peaklistlist = new List<List<ChromatogramPeak>>();
             var scanPolarity = ionMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
@@ -1110,7 +1058,7 @@ namespace CompMs.MsdialCore.Utility {
             return AccumulateMS1Spectrum(spectra, double.MinValue, double.MaxValue, bin);
         }
 
-        public static List<SpectrumPeak> GetAccumulatedMs2Spectra(List<RawSpectrum> spectrumList,
+        public static List<SpectrumPeak> GetAccumulatedMs2Spectra(IReadOnlyList<RawSpectrum> spectrumList,
            ChromatogramPeakFeature driftSpot, ChromatogramPeakFeature peakSpot, ParameterBase param) {
             var massSpectrum = CalcAccumulatedMs2Spectra(spectrumList, peakSpot, driftSpot, param.CentroidMs1Tolerance);
             if (param.MS2DataType == MSDataType.Profile && massSpectrum.Count > 0) {
@@ -1122,7 +1070,7 @@ namespace CompMs.MsdialCore.Utility {
             }
         }
 
-        public static List<SpectrumPeak> CalcAccumulatedMs2Spectra(List<RawSpectrum> spectrumList,
+        public static List<SpectrumPeak> CalcAccumulatedMs2Spectra(IReadOnlyList<RawSpectrum> spectrumList,
             ChromatogramPeakFeature rtChromFeature, ChromatogramPeakFeature dtChromFeature, double mzTol) {
             var rt = rtChromFeature.ChromXsTop.Value;
             var rtLeft = rtChromFeature.ChromXsLeft.Value;

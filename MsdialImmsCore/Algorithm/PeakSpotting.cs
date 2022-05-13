@@ -142,8 +142,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                     continue;
                 }
 
-                var chromPeakFeature = DataAccess.GetChromatogramPeakFeature(result, ChromXType.Drift, ChromXUnit.Msec, mass);
-                chromPeakFeature.IonMode = param.IonMode;
+                var chromPeakFeature = ChromatogramPeakFeature.FromPeakDetectionResult(result, ChromXType.Drift, ChromXUnit.Msec, mass, param.IonMode);
                 chromPeakFeatures.Add(chromPeakFeature);
             }
             return chromPeakFeatures;

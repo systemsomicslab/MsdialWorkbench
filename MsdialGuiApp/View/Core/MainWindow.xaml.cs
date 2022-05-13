@@ -60,8 +60,10 @@ namespace CompMs.App.Msdial.View.Core
         private readonly IMessageBroker broker;
 
         public void CloseOwnedWindows() {
-            foreach (var child in OwnedWindows.Cast<Window>()) {
-                child.Close();
+            foreach (var child in OwnedWindows.OfType<Window>()) {
+                if (child.IsLoaded) {
+                    child.Close();
+                }
             }
         }
 

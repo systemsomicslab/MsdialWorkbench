@@ -156,7 +156,8 @@ namespace CompMs.App.Msdial.Model.Search
                 Observable.Return(MsSpectrumModel.GetBrush(Brushes.Blue)),
                 Observable.Return(MsSpectrumModel.GetBrush(Brushes.Red)),
                 Observable.Return((ISpectraExporter)null),
-                Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
+                Observable.Return((ISpectraExporter)null),
+                null).AddTo(Disposables);
         }
 
         [Obsolete]

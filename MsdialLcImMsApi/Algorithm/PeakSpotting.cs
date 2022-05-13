@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
@@ -74,7 +73,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
 
                 chromPeakFeaturesList.Add(chromPeakFeatures);
             }
-            return PeakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider, param, ChromXType.RT, ChromXUnit.Min);
+            return PeakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider.LoadMs1Spectrums(), accSpectrumProvider.LoadMsNSpectrums(level: 2), param, ChromXType.RT, ChromXUnit.Min);
         }
 
         private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalModeByMultiThread(
@@ -105,7 +104,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 .ToArray();
 
             // finalization
-            return PeakSpottingCore.FinalizePeakSpottingResult(chromPeakFeaturesArray, massStep, accSpectrumProvider, param, ChromXType.RT, ChromXUnit.Min);
+            return PeakSpottingCore.FinalizePeakSpottingResult(chromPeakFeaturesArray, massStep, accSpectrumProvider.LoadMs1Spectrums(), accSpectrumProvider.LoadMsNSpectrums(level: 2), param, ChromXType.RT, ChromXUnit.Min);
         }
 
         private async Task<List<ChromatogramPeakFeature>> Execute4DFeatureDetectionNormalModeByMultiThreadAsync(
@@ -144,7 +143,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 }
                 await Task.WhenAll(tasks);
             }
-            return PeakSpottingCore.FinalizePeakSpottingResult(chromPeakFeaturesArray, massStep, accSpectrumProvider, param, ChromXType.RT, ChromXUnit.Min);
+            return PeakSpottingCore.FinalizePeakSpottingResult(chromPeakFeaturesArray, massStep, accSpectrumProvider.LoadMs1Spectrums(), accSpectrumProvider.LoadMsNSpectrums(level: 2), param, ChromXType.RT, ChromXUnit.Min);
         }
 
 
@@ -153,7 +152,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                     .Select(targetComp => GetChromatogramPeakFeatures(spectrumProvider, accSpectrumProvider, (float)targetComp.PrecursorMz, param))
                     .Where(chromPeakFeatures => !chromPeakFeatures.IsEmptyOrNull())
                     .ToList();
-            return PeakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider, param, ChromXType.RT, ChromXUnit.Min);
+            return PeakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider.LoadMs1Spectrums(), accSpectrumProvider.LoadMsNSpectrums(level: 2), param, ChromXType.RT, ChromXUnit.Min);
         }
 
         private List<ChromatogramPeakFeature> Execute4DFeatureDetectionTargetModeByMultiThread(
@@ -169,7 +168,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 .Select(targetedScan => GetChromatogramPeakFeatures(spectrumProvider, accSpectrumProvider, (float)targetedScan.PrecursorMz, param))
                 .Where(features => !features.IsEmptyOrNull())
                 .ToList();
-            return PeakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider, param, ChromXType.RT, ChromXUnit.Min);
+            return PeakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider.LoadMs1Spectrums(), accSpectrumProvider.LoadMsNSpectrums(level: 2), param, ChromXType.RT, ChromXUnit.Min);
         }
 
         private async Task<List<ChromatogramPeakFeature>> Execute4DFeatureDetectionTargetModeByMultiThreadAsync(
@@ -201,28 +200,28 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 }
                 await Task.WhenAll(tasks);
             }
-            return PeakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider, param, ChromXType.RT, ChromXUnit.Min);
+            return PeakSpottingCore.GetCombinedChromPeakFeatures(chromPeakFeaturesList, accSpectrumProvider.LoadMs1Spectrums(), accSpectrumProvider.LoadMsNSpectrums(level: 2), param, ChromXType.RT, ChromXUnit.Min);
         }
 
         public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, float focusedMass, MsdialLcImMsParameter param) {
-
+            var spectra = accSpectrumProvider.LoadMsSpectrums();
 
             //get EIC chromatogram
-            var peaklist = DataAccess.GetMs1Peaklist(accSpectrumProvider.LoadMsSpectrums(), focusedMass, param.MassSliceWidth, param.IonMode, ChromXType.RT, ChromXUnit.Min, param.RetentionTimeBegin, param.RetentionTimeEnd);
-            if (peaklist.Count == 0) return null;
+            var peaklist = new ChromatogramPeakCollection(DataAccess.GetMs1Peaklist(spectra, focusedMass, param.MassSliceWidth, param.IonMode, ChromXType.RT, ChromXUnit.Min, param.RetentionTimeBegin, param.RetentionTimeEnd));
+            if (peaklist.IsEmpty) return null;
 
             //get peak detection result
-            var chromPeakFeatures = PeakSpottingCore.GetChromatogramPeakFeatures(peaklist, param, ChromXType.RT, ChromXUnit.Min);
-            if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
-            PeakSpottingCore.SetRawDataAccessID2ChromatogramPeakFeaturesFor4DChromData(chromPeakFeatures, accSpectrumProvider.LoadMsSpectrums(), peaklist, param);
+            var chromPeakFeatures = PeakSpottingCore.DetectChromatogramPeakFeatures(peaklist, param, ChromXType.RT, ChromXUnit.Min);
+            if (chromPeakFeatures.IsEmpty) return null;
+            PeakSpottingCore.SetRawDataAccessID2ChromatogramPeakFeaturesFor4DChromData(chromPeakFeatures, spectra, peaklist, param);
 
             //filtering out noise peaks considering smoothing effects and baseline effects
-            chromPeakFeatures = PeakSpottingCore.GetBackgroundSubtractedPeaks(chromPeakFeatures, peaklist);
-            if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
+            var backgroundSubtracted = PeakSpottingCore.GetBackgroundSubtractedPeaks(chromPeakFeatures, peaklist);
+            if (backgroundSubtracted == null || backgroundSubtracted.Count == 0) return null;
 
-            chromPeakFeatures = PeakSpottingCore.ExecutePeakDetectionOnDriftTimeAxis(chromPeakFeatures, spectrumProvider.LoadMsSpectrums(), param, param.AccumulatedRtRange);
-            if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
-            return chromPeakFeatures;
+            var driftTimeAxisPeakDetected = PeakSpottingCore.ExecutePeakDetectionOnDriftTimeAxis(backgroundSubtracted, spectrumProvider.LoadMsSpectrums(), param, param.AccumulatedRtRange);
+            if (driftTimeAxisPeakDetected == null || driftTimeAxisPeakDetected.Count == 0) return null;
+            return driftTimeAxisPeakDetected;
         }
     }
 }

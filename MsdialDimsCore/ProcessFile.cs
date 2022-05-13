@@ -43,7 +43,7 @@ namespace CompMs.MsdialDimsCore
 
             var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
             if (peakPickResults.IsEmptyOrNull()) return;
-            var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, spectrumList, param.AcquisitionType);
+            var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, spectrumList, param.AcquisitionType, param.IonMode);
 
             if (peakFeatures.Count == 0) return;
             // IsotopeEstimator.Process(peakFeatures, param, iupacDB); // in dims, skip the isotope estimation process.
@@ -71,14 +71,14 @@ namespace CompMs.MsdialDimsCore
             reportAction?.Invoke(100);
         }
 
-        private static List<ChromatogramPeakFeature> ConvertPeaksToPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, IReadOnlyList<RawSpectrum> allSpectra, AcquisitionType type) {
+        private static List<ChromatogramPeakFeature> ConvertPeaksToPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, IReadOnlyList<RawSpectrum> allSpectra, AcquisitionType type, IonMode ionMode) {
             var peakFeatures = new List<ChromatogramPeakFeature>();
             var ms2SpecObjects = allSpectra
                 .Where(spectra => spectra.MsLevel == 2 && spectra.Precursor != null)
                 .OrderBy(spectra => spectra.Precursor.SelectedIonMz).ToList();
 
             foreach (var result in peakPickResults) {
-                var peakFeature = DataAccess.GetChromatogramPeakFeature(result, ChromXType.Mz, ChromXUnit.Mz, ms1Spectrum.Spectrum[result.ScanNumAtPeakTop].Mz);
+                var peakFeature = ChromatogramPeakFeature.FromPeakDetectionResult(result, ChromXType.Mz, ChromXUnit.Mz, ms1Spectrum.Spectrum[result.ScanNumAtPeakTop].Mz, ionMode);
                 var chromScanID = peakFeature.ChromScanIdTop;
                 peakFeature.IonMode = ms1Spectrum.ScanPolarity == ScanPolarity.Positive ? IonMode.Positive : IonMode.Negative;
                 peakFeature.PrecursorMz = ms1Spectrum.Spectrum[chromScanID].Mz;

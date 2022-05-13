@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
@@ -23,7 +24,6 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Algorithm;
 using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
-using CompMs.MsdialLcImMsApi.DataObj;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Process;
 using Reactive.Bindings.Extensions;
@@ -53,6 +53,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             providerFactory = new StandardDataProviderFactory();
             accProviderFactory = new LcimmsAccumulateDataProviderFactory();
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
+            PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
         }
 
         private FacadeMatchResultEvaluator matchResultEvaluator;
@@ -76,6 +77,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly IDataProviderFactory<RawMeasurement> providerFactory;
         private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
 
+        public PeakFilterModel PeakFilterModel { get; }
+
         protected override AnalysisModelBase LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
@@ -88,7 +91,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 accProviderFactory.Create(rawObj),
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
-                Storage.Parameter)
+                Storage.Parameter,
+                PeakFilterModel)
             .AddTo(Disposables);
         }
 
@@ -102,7 +106,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
-                Storage.AnalysisFiles)
+                Storage.AnalysisFiles,
+                PeakFilterModel)
             .AddTo(Disposables);
         }
 
@@ -159,7 +164,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public async Task RunAnnotationProcess(AnalysisFileBean analysisfile, Action<int> action) {
-            await Task.Run(() => FileProcess.Run(analysisfile, providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true, reportAction: action));
+            await Task.Run(() => FileProcess.Run(analysisfile, providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true, reportAction: action)).ConfigureAwait(false);
         }
 
         public void RunAlignmentProcess() {

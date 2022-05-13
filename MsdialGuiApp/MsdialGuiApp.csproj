@@ -156,6 +156,7 @@
     <Compile Include="External Applications\MsDialIniParcer.cs" />
     <Compile Include="External Applications\MsDialToExternalApps.cs" />
     <Compile Include="Model\Core\IMethodModel.cs" />
+    <Compile Include="Model\DataObj\SurveyScanSpectrum.cs" />
     <Compile Include="Model\Imms\ImmsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Search\FocusNavigatorModel.cs" />
     <Compile Include="Model\Search\IFilterable.cs" />

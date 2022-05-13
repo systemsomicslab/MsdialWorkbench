@@ -43,18 +43,13 @@ namespace CompMs.Graphics.Chart
         }
 
         private void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue) {
-            if (oldValue is INotifyCollectionChanged oldCollection) {
-                oldCollection.CollectionChanged -= OnItemsSourceCollectionChanged;
-            }
-            if (newValue is INotifyCollectionChanged newCollection) {
-                newCollection.CollectionChanged += OnItemsSourceCollectionChanged;
-            }
-
             if (collectionView != null) {
+                collectionView.CollectionChanged -= OnItemsSourceCollectionChanged;
                 collectionView.CurrentChanged -= OnItemsSourceCurrentChanged;
             }
             collectionView = newValue as ICollectionView ?? CollectionViewSource.GetDefaultView(newValue);
             if (collectionView != null) {
+                collectionView.CollectionChanged += OnItemsSourceCollectionChanged;
                 collectionView.CurrentChanged += OnItemsSourceCurrentChanged;
             }
 
@@ -108,7 +103,8 @@ namespace CompMs.Graphics.Chart
                 typeof(ScatterControlSlim),
                 new FrameworkPropertyMetadata(
                     null,
-                    FrameworkPropertyMetadataOptions.AffectsRender));
+                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    OnHorizontalPropertyChanged));
 
         private static void OnHorizontalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var scatter = (ScatterControlSlim)d;
@@ -158,7 +154,7 @@ namespace CompMs.Graphics.Chart
         private Lazy<KdTree<ScatterControlSlimItem>> tree;
 
         private void CoerceTree() {
-            if (!(ItemsSource is IEnumerable source)
+            if (!(collectionView is IEnumerable source)
                 || xLambda == null
                 || yLambda == null
                 || !(HorizontalAxis is IAxisManager haxis)

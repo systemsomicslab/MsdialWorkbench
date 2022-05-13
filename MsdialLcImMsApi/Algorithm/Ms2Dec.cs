@@ -22,7 +22,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             this.ProgressMax = ProgressMax;
         }
 
-        public List<MSDecResult> GetMS2DecResults(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
+        public List<MSDecResult> GetMS2DecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialLcImMsParameter param, ChromatogramPeaksDataSummary summary, IupacDatabase iupac,
             Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
 
@@ -43,7 +43,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             return msdecResults;
         }
 
-        public MSDecResult GetMS2DecResult(List<RawSpectrum> spectrumList, ChromatogramPeakFeature rtChromPeak, ChromatogramPeakFeature dtChromPeak,
+        public MSDecResult GetMS2DecResult(IReadOnlyList<RawSpectrum> spectrumList, ChromatogramPeakFeature rtChromPeak, ChromatogramPeakFeature dtChromPeak,
             MsdialLcImMsParameter param, ChromatogramPeaksDataSummary summary, IupacDatabase iupac, double targetCE) {
             if (dtChromPeak.MS2RawSpectrumID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(dtChromPeak);
 

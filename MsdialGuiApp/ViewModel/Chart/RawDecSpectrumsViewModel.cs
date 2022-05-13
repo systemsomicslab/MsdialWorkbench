@@ -27,12 +27,12 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             if (upperVerticalAxisSource is null) {
                 var upperVerticalAxis = this.model
-                    .RawRefSpectrumModels
+                    .DecRefSpectrumModels
                     .UpperVerticalRangeSource
                     .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
                     .AddTo(Disposables);
                 var upperLogVerticalAxis = this.model
-                    .RawRefSpectrumModels
+                    .DecRefSpectrumModels
                     .UpperVerticalRangeSource
                     .Select(range => (range.Minimum.Value, range.Maximum.Value))
                     .ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d)

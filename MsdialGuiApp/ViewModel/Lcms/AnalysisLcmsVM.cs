@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
@@ -132,6 +133,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .AddTo(Disposables);
 
             FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
+
+            SaveMs2RawSpectrumCommand = model.CanSaveRawSpectra
+                .ToAsyncReactiveCommand<Window>()
+                .WithSubscribe(SaveRawSpectraAsync)
+                .AddTo(Disposables);
         }
 
         private readonly LcmsAnalysisModel model;
@@ -182,8 +188,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
         private DelegateCommand<Window> saveMs2SpectrumCommand;
 
-        public DelegateCommand<Window> SaveMs2RawSpectrumCommand => saveMs2RawSpectrumCommand ?? (saveMs2RawSpectrumCommand = new DelegateCommand<Window>(SaveRawSpectra, CanSaveRawSpectra));
-        private DelegateCommand<Window> saveMs2RawSpectrumCommand;
+        public AsyncReactiveCommand<Window> SaveMs2RawSpectrumCommand { get; }
 
         public ReadOnlyReactivePropertySlim<ExperimentSpectrumViewModel> ExperimentSpectrumViewModel { get; }
 
@@ -205,7 +210,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             return this.model.CanSaveSpectra();
         }
 
-        private void SaveRawSpectra(Window owner) {
+        private async Task SaveRawSpectraAsync(Window owner) {
             var sfd = new SaveFileDialog {
                 Title = "Save raw spectra",
                 Filter = "NIST format(*.msp)|*.msp", // MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf;
@@ -215,12 +220,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             if (sfd.ShowDialog(owner) == true) {
                 var filename = sfd.FileName;
-                this.model.SaveRawSpectra(filename);
+                await model.SaveRawSpectra(filename).ConfigureAwait(false);
             }
         }
 
         private bool CanSaveRawSpectra(Window owner) {
-            return this.model.CanSaveRawSpectra();
+            return this.model.CanSaveRawSpectra.Value;
         }
     }
 

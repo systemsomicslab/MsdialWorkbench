@@ -1,8 +1,7 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.MsdialCore.DataObj;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+using System.Threading;
 
 namespace CompMs.MsdialCore.Algorithm
 {
@@ -16,8 +15,8 @@ namespace CompMs.MsdialCore.Algorithm
 
         }
 
-        public StandardDataProvider(AnalysisFileBean file, bool isGuiProcess, int retry)
-            : this(LoadMeasurement(file, false, isGuiProcess, retry)) {
+        public StandardDataProvider(AnalysisFileBean file, bool isGuiProcess, int retry, CancellationToken token = default)
+            : base(LoadMeasurementAsync(file, false, isGuiProcess, retry, token)) {
 
         }
     }

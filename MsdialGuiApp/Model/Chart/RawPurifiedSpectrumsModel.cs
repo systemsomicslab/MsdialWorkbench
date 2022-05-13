@@ -46,6 +46,24 @@ namespace CompMs.App.Msdial.Model.Chart
 
             UpperSpectrumSource = upperSpectrum;
             LowerSpectrumSource = lowerSpectrum;
+
+            UpperSpectrumLoaded = new[]
+            {
+                targetSource.Select(_ => false),
+                UpperSpectrumSource.Delay(TimeSpan.FromSeconds(.05d)).Select(_ => true),
+            }.Merge()
+            .Throttle(TimeSpan.FromSeconds(.1d))
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
+            LowerSpectrumLoaded = new[]
+            {
+                targetSource.Select(_ => false),
+                LowerSpectrumSource.Delay(TimeSpan.FromSeconds(.05d)).Select(_ => true),
+            }.Merge()
+            .Throttle(TimeSpan.FromSeconds(.1d))
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
+
             HorizontalSelector = horizontalSelector ?? throw new ArgumentNullException(nameof(horizontalSelector));
             VerticalSelector = verticalSelector ?? throw new ArgumentNullException(nameof(verticalSelector));
 
@@ -74,7 +92,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public IObservable<List<SpectrumPeak>> UpperSpectrumSource { get; }
 
         public IObservable<List<SpectrumPeak>> LowerSpectrumSource { get; }
-
+        public ReadOnlyReactivePropertySlim<bool> UpperSpectrumLoaded { get; }
+        public ReadOnlyReactivePropertySlim<bool> LowerSpectrumLoaded { get; }
         public string GraphTitle {
             get => graphTitle;
             set => SetProperty(ref graphTitle, value);

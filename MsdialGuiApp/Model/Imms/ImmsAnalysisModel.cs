@@ -58,9 +58,10 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             }.AddTo(Disposables);
             Target.Select(
-                t => t is null
-                    ? string.Empty
-                    : $"Spot ID: {t.InnerModel.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.InnerModel.Mass:N5}")
+                t => $"File: {analysisFile.AnalysisFileName}" +
+                    (t is null
+                        ? string.Empty
+                        : $"Spot ID: {t.InnerModel.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.InnerModel.Mass:N5}"))
                 .Subscribe(title => PlotModel.GraphTitle = title);
 
             EicLoader = new EicLoader(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd);
@@ -111,12 +112,10 @@ namespace CompMs.App.Msdial.Model.Imms
                 Observable.Return(spectraExporter),
                 Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
+            var surveyScanSpectrum = new SurveyScanSpectrum(Target, target => Observable.FromAsync(token => LoadMs1SpectrumAsync(target, token)))
+                .AddTo(Disposables);
             SurveyScanModel = new SurveyScanModel(
-                Target.SelectMany(t =>
-                    Observable.DeferAsync(async token => {
-                        var result = await LoadMs1SpectrumAsync(t, token);
-                        return Observable.Return(result);
-                    })),
+                surveyScanSpectrum,
                 spec => spec.Mass,
                 spec => spec.Intensity
             ).AddTo(Disposables);
@@ -223,20 +222,19 @@ namespace CompMs.App.Msdial.Model.Imms
             }
         }
 
-        async Task<List<SpectrumPeakWrapper>> LoadMs1SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
-            var ms1Spectrum = new List<SpectrumPeakWrapper>();
-
-            if (target != null) {
-                await Task.Run(() => {
-                    if (target.MS1RawSpectrumIdTop < 0) {
-                        return;
-                    }
-                    var spectra = DataAccess.GetCentroidMassSpectra(provider.LoadMs1Spectrums()[target.MS1RawSpectrumIdTop], parameter.MSDataType, 0, float.MinValue, float.MaxValue);
-                    token.ThrowIfCancellationRequested();
-                    ms1Spectrum = spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
-                }, token);
+        private Task<List<SpectrumPeakWrapper>> LoadMs1SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+            if (target is null || target.MS1RawSpectrumIdTop < 0) {
+                return Task.FromResult(new List<SpectrumPeakWrapper>(0));
             }
-            return ms1Spectrum;
+
+            return Task.Run(async () =>
+            {
+                var ms1Spectra = await provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
+                token.ThrowIfCancellationRequested();
+                var spectra = DataAccess.GetCentroidMassSpectra(ms1Spectra[target.MS1RawSpectrumIdTop], parameter.MSDataType, 0, float.MinValue, float.MaxValue);
+                token.ThrowIfCancellationRequested();
+                return spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
+            }, token);
         }
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }

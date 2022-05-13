@@ -5,7 +5,6 @@ using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System;
 using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
@@ -16,6 +15,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             EicModel model,
             IAxisManager<double> horizontalAxis = null,
             IAxisManager<double> verticalAxis = null) {
+
+            ItemLoaded = model.ItemLoaded;
 
             Eic = model.EicSource
                 .ToReadOnlyReactivePropertySlim()
@@ -58,6 +59,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
         }
+
+        public ReadOnlyReactivePropertySlim<bool> ItemLoaded { get; }
 
         public ReadOnlyReactivePropertySlim<List<ChromatogramPeakWrapper>> Eic { get; }
 
