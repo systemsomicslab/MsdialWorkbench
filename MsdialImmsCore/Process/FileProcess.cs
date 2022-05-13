@@ -108,7 +108,7 @@ namespace CompMs.MsdialImmsCore.Process
             RawMeasurement rawObj,
             IDataProvider provider,
             List<ChromatogramPeakFeature> chromPeakFeatures,
-            ChromatogramPeaksDataSummary summary,
+            ChromatogramPeaksDataSummaryDto summary,
             MsdialImmsParameter parameter,
             IupacDatabase iupac,
             Action<int> reportAction,

@@ -135,7 +135,7 @@ namespace CompMs.MsdialLcImMsApi.Process
         private static Dictionary<double, List<MSDecResult>> SpectrumDeconvolution(
             IReadOnlyList<RawSpectrum> spectrumList,
             List<ChromatogramPeakFeature> chromPeakFeatures,
-            ChromatogramPeaksDataSummary summary,
+            ChromatogramPeaksDataSummaryDto summary,
             MsdialLcImMsParameter parameter,
             IupacDatabase iupac,
             Action<int> reportAction,

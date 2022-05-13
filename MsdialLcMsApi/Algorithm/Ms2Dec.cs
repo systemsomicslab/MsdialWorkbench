@@ -10,7 +10,6 @@ using CompMs.MsdialLcmsApi.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.MsdialLcMsApi.Algorithm {
     public class Ms2Dec {
@@ -23,12 +22,12 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
         }
        
         public List<MSDecResult> GetMS2DecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
-            MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary, IupacDatabase iupac,
-            Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
+            MsdialLcmsParameter param, ChromatogramPeaksDataSummary chromatogramSummary, ChromatogramPeaksDataSummaryDto summary,
+            IupacDatabase iupac, Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
 
             var msdecResults = new List<MSDecResult>();
             foreach (var spot in chromPeakFeatures) {
-                var result = GetMS2DecResult(spectrumList, spot, param, summary, iupac, targetCE);
+                var result = GetMS2DecResult(spectrumList, spot, param, chromatogramSummary, summary, iupac, targetCE);
                 result.ScanID = spot.PeakID;
                 msdecResults.Add(result);
                 ReportProgress.Show(InitialProgress, ProgressMax, result.ScanID, chromPeakFeatures.Count(), reportAction);
@@ -37,8 +36,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
         }
 
         public MSDecResult GetMS2DecResult(IReadOnlyList<RawSpectrum> spectrumList,
-            ChromatogramPeakFeature chromPeakFeature, MsdialLcmsParameter param, 
-            ChromatogramPeaksDataSummary summary, IupacDatabase iupac, double targetCE = -1) { // targetCE is used in multiple CEs option
+            ChromatogramPeakFeature chromPeakFeature, MsdialLcmsParameter param,
+            ChromatogramPeaksDataSummary chromatogramSummary, ChromatogramPeaksDataSummaryDto summary,
+            IupacDatabase iupac, double targetCE = -1) { // targetCE is used in multiple CEs option
 
             // check target CE ID
             var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
@@ -69,9 +69,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             //}
 
             //check the RT range to be considered for chromatogram deconvolution
-            var peakWidth = chromPeakFeature.PeakWidth();
-            if (peakWidth >= summary.AveragePeakWidthOnRtAxis + summary.StdevPeakWidthOnRtAxis * 3) peakWidth = summary.AveragePeakWidthOnRtAxis + summary.StdevPeakWidthOnRtAxis * 3; // width should be less than mean + 3*sigma for excluding redundant peak feature
-            if (peakWidth <= summary.MedianPeakWidthOnRtAxis) peakWidth = summary.MedianPeakWidthOnRtAxis; // currently, the median peak width is used for very narrow peak feature
+            var peakWidth = chromatogramSummary.CoerceRtPeakWidth(chromPeakFeature.PeakWidth());
 
             var startRt = (float)(chromPeakFeature.ChromXsTop.Value - peakWidth * 1.5F);
             var endRt = (float)(chromPeakFeature.ChromXsTop.Value + peakWidth * 1.5F);

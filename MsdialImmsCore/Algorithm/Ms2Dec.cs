@@ -30,7 +30,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             IReadOnlyList<RawSpectrum> spectrumList,
             List<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialImmsParameter parameter,
-            ChromatogramPeaksDataSummary summary,
+            ChromatogramPeaksDataSummaryDto summary,
             IupacDatabase iupac,
             double targetCE,
             Action<int> reportAction) {
@@ -47,7 +47,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             IReadOnlyList<RawSpectrum> spectrumList,
             List<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialImmsParameter parameter,
-            ChromatogramPeaksDataSummary summary,
+            ChromatogramPeaksDataSummaryDto summary,
             IupacDatabase iupac,
             double targetCE,
             Action<int> reportAction,
@@ -68,7 +68,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
         public MSDecResult GetMS2DecResult(
             IReadOnlyList<RawSpectrum> spectrumList,
             ChromatogramPeakFeature chromPeakFeature,
-            MsdialImmsParameter parameter, ChromatogramPeaksDataSummary summary, IupacDatabase iupac,
+            MsdialImmsParameter parameter, ChromatogramPeaksDataSummaryDto summary, IupacDatabase iupac,
             double targetCE = -1) {
 
             var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
@@ -163,7 +163,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         private static List<ChromatogramPeak> GetMs1Peaklist(
             IReadOnlyList<RawSpectrum> spectrumList, ChromatogramPeakFeature chromPeakFeature,
-            double centroidMs1Tolerance, ChromatogramPeaksDataSummary summary, IonMode ionMode) {
+            double centroidMs1Tolerance, ChromatogramPeaksDataSummaryDto summary, IonMode ionMode) {
 
             //check the Drift time range to be considered for chromatogram deconvolution
             var peakWidth = chromPeakFeature.PeakWidth();

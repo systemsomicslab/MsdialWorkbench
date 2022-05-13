@@ -32,20 +32,16 @@ namespace CompMs.MsdialLcMsApi.Process
         }
     
         public async Task RunAsync(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction = null, CancellationToken token = default) {
-
-            var param = _storage.Parameter;
-            var iupacDB = _storage.IupacDatabase;
-
-            // Loading spectrum.
-            var spectrumList = provider.LoadMsSpectrums();
-
             // feature detections
             Console.WriteLine("Peak picking started");
-            var spotting = new Spotting(param, iupacDB);
+            var spotting = new Spotting(_storage.Parameter, _storage.IupacDatabase);
             var chromPeakFeatures = await spotting.RunAsync(provider, 0, 30, reportAction, token).ConfigureAwait(false);
 
-            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures, param);
-            file.ChromPeakFeaturesSummary = summary;
+            // Loading spectrum.
+            var spectrumList = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
+            var summary = chromPeakFeatures is null ? null : ChromatogramPeaksDataSummary.Summarize(spectrumList, chromPeakFeatures);
+            var summaryDto = summary?.ConvertToDto();
+            file.ChromPeakFeaturesSummary = summaryDto;
 
             // chrom deconvolutions
             Console.WriteLine("Deconvolution started");
@@ -53,7 +49,7 @@ namespace CompMs.MsdialLcMsApi.Process
             var initial_msdec = 30.0;
             var max_msdec = 30.0;
             var ceList = SpectrumParser.LoadCollisionEnergyTargets(spectrumList);
-            if (param.AcquisitionType == Common.Enum.AcquisitionType.AIF) {
+            if (_storage.Parameter.AcquisitionType == Common.Enum.AcquisitionType.AIF) {
                 for (int i = 0; i < ceList.Count; i++) {
                     var targetCE = Math.Round(ceList[i], 2); // must be rounded by 2 decimal points
                     if (targetCE <= 0) {
@@ -63,13 +59,13 @@ namespace CompMs.MsdialLcMsApi.Process
                     var max_msdec_aif = max_msdec / ceList.Count;
                     var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
                     targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
-                        spectrumList, chromPeakFeatures, param, summary, iupacDB, reportAction, token, targetCE);
+                        spectrumList, chromPeakFeatures, _storage.Parameter, summary, summaryDto, _storage.IupacDatabase, reportAction, token, targetCE);
                 }
             }
             else {
                 var targetCE = ceList.IsEmptyOrNull() ? -1 : ceList[0];
                 targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
-                        spectrumList, chromPeakFeatures, param, summary, iupacDB, reportAction, token);
+                        spectrumList, chromPeakFeatures, _storage.Parameter, summary, summaryDto, _storage.IupacDatabase, reportAction, token);
             }
 
             // annotations
@@ -85,7 +81,7 @@ namespace CompMs.MsdialLcMsApi.Process
                     chromPeakFeatures,
                     msdecResults,
                     provider,
-                    param.NumThreads,
+                    _storage.Parameter.NumThreads,
                     token,
                     v => reportAction?.Invoke((int)(initial_annotation_local + v * max_annotation_local)));
             }
@@ -93,12 +89,11 @@ namespace CompMs.MsdialLcMsApi.Process
             // characterizatin
             new PeakCharacterEstimator(90, 10).Process(spectrumList, chromPeakFeatures,
                 targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
-                _evaluator, param, reportAction);
+                _evaluator, _storage.Parameter, reportAction);
 
             // file save
             var paifile = file.PeakAreaBeanInformationFilePath;
             MsdialPeakSerializer.SaveChromatogramPeakFeatures(paifile, chromPeakFeatures);
-
 
             var dclfile = file.DeconvolutionFilePath;
             var dclfiles = new List<string>();
