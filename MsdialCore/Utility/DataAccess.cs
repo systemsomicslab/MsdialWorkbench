@@ -72,12 +72,6 @@ namespace CompMs.MsdialCore.Utility {
             }
         }
 
-        public static List<RawSpectrum> GetAllSpectra(RawDataAccess rawDataAccess) {
-            var mes = rawDataAccess.GetMeasurement();
-            if (mes == null) return null;
-            return mes.SpectrumList;
-        }
-
         public static RawCalibrationInfo ReadIonMobilityCalibrationInfo(string filepath) {
             using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false)) {
                 return rawDataAccess.ReadIonmobilityCalibrationInfo();
