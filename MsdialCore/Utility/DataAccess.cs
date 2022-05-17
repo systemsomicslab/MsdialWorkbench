@@ -44,7 +44,7 @@ namespace CompMs.MsdialCore.Utility {
         public static List<RawSpectrum> GetAllSpectra(string filepath) {
             List<RawSpectrum> rawSpectra = null;
             using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false)) {
-                var measurment = GetRawDataMeasurement(rawDataAccess);
+                var measurment = rawDataAccess.GetMeasurement();
                 rawSpectra = measurment.SpectrumList;
             }
             return rawSpectra;
@@ -54,7 +54,7 @@ namespace CompMs.MsdialCore.Utility {
             allSpectrumList = new List<RawSpectrum>();
             accumulatedSpectrumList = new List<RawSpectrum>();
             using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false)) {
-                var measurment = GetRawDataMeasurement(rawDataAccess);
+                var measurment = rawDataAccess.GetMeasurement();
                 allSpectrumList = measurment.SpectrumList;
                 accumulatedSpectrumList = measurment.AccumulatedSpectrumList;
             }
@@ -63,18 +63,13 @@ namespace CompMs.MsdialCore.Utility {
         public static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isGuiProcess, int retry, int sleepMilliSeconds) {
             using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, isGuiProcess)) {
                 for (var i = 0; i < retry; i++) {
-                    var rawObj = GetRawDataMeasurement(access);
+                    var rawObj = access.GetMeasurement();
                     if (rawObj != null)
                         return rawObj;
                     Thread.Sleep(sleepMilliSeconds);
                 }
                 throw new FileLoadException($"Loading {file.AnalysisFilePath} failed.");
             }
-        }
-
-        public static RawMeasurement GetRawDataMeasurement(RawDataAccess rawDataAccess) {
-            var mes = rawDataAccess.GetMeasurement();
-            return mes;
         }
 
         public static List<RawSpectrum> GetAllSpectra(RawDataAccess rawDataAccess) {

@@ -44,7 +44,7 @@ namespace CompMs.MsdialCore.Algorithm
         protected static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isProfile, bool isGuiProcess, int retry) {
             using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isProfile, isGuiProcess)) {
                 for (var i = 0; i < retry; i++) {
-                    var rawObj = DataAccess.GetRawDataMeasurement(access);
+                    var rawObj = access.GetMeasurement();
                     if (rawObj != null) {
                         return rawObj;
                     }
