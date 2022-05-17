@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Spectrum
 {
-    internal class Spectrum
+    public class Spectrum
     {
         private readonly List<RawPeakElement> _elements;
 
@@ -13,7 +13,7 @@ namespace CompMs.MsdialCore.Spectrum
             _elements = elements.OrderBy(element => element.Mz).ToList();
         }
 
-        public (double, double, double) RetrieveBin(double mz, double tolerance) {
+        public (double BasePeakMz, double BasePeakIntensity, double SummedIntensity) RetrieveBin(double mz, double tolerance) {
             var start = _elements.LowerBound(mz - tolerance, (elem, target) => elem.Mz.CompareTo(target));
             var end = _elements.UpperBound(mz + tolerance, (elem, target) => elem.Mz.CompareTo(target));
             var summedIntensity = 0d;
