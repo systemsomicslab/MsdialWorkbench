@@ -1,7 +1,7 @@
 ﻿using CompMs.Common.DataObj;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CompMs.MsdialCore.Spectrum.Tests
+namespace CompMs.MsdialCore.DataObj.Tests
 {
     [TestClass]
     public class SpectrumTests

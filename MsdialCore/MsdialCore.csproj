@@ -39,7 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	<InternalsVisibleTo Include="MsdialCoreTests"/>
+	<InternalsVisibleTo Include="MsdialCoreTests" />
   </ItemGroup>
 
 </Project>

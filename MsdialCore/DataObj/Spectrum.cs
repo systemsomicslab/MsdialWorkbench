@@ -3,7 +3,7 @@ using CompMs.Common.Utility;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CompMs.MsdialCore.Spectrum
+namespace CompMs.MsdialCore.DataObj
 {
     public class Spectrum
     {

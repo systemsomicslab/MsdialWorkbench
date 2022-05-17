@@ -241,7 +241,7 @@ namespace CompMs.MsdialCore.Utility {
                 var massSpectra = spectrum.Spectrum;
                 //var startIndex = GetMs1StartIndex(targetMass, ms1Tolerance, massSpectra);
                 //bin intensities for focused MZ +- ms1Tolerance
-                (double basepeakMz, double basepeakIntensity, double summedIntensity) = new Spectrum.Spectrum(massSpectra).RetrieveBin(targetMass, ms1Tolerance);
+                (double basepeakMz, double basepeakIntensity, double summedIntensity) = new Spectrum(massSpectra).RetrieveBin(targetMass, ms1Tolerance);
                 peaklist.Add(new ChromatogramPeak() { ID = index, ChromXs = new ChromXs(chromX, type, unit), Mass = basepeakMz, Intensity = summedIntensity });
             }
 
@@ -274,7 +274,7 @@ namespace CompMs.MsdialCore.Utility {
                 var massSpectra = spectrum.Spectrum;
                 //var startIndex = GetMs1StartIndex(targetMass, ms1Tolerance, massSpectra);
                 //bin intensities for focused MZ +- ms1Tolerance
-                (double basepeakMz, double basepeakIntensity, double summedIntensity) = new Spectrum.Spectrum(massSpectra).RetrieveBin(targetMass, ms1Tolerance);
+                (double basepeakMz, double basepeakIntensity, double summedIntensity) = new Spectrum(massSpectra).RetrieveBin(targetMass, ms1Tolerance);
                 peaklist.Add(new ChromatogramPeak() { ID = index, ChromXs = id2ChromXs[index], Mass = basepeakMz, Intensity = summedIntensity });
             }
 
@@ -390,7 +390,7 @@ namespace CompMs.MsdialCore.Utility {
                     if (targetCE >= 0 && spec.CollisionEnergy >= 0 && Math.Abs(targetCE - spec.CollisionEnergy) > 1) continue; // for AIF mode
 
                     if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, param.AcquisitionType)) {
-                        (double basepeakMz, _, double summedIntensity) = new Spectrum.Spectrum(spec.Spectrum).RetrieveBin(productMz, param.CentroidMs2Tolerance);
+                        (double basepeakMz, _, double summedIntensity) = new Spectrum(spec.Spectrum).RetrieveBin(productMz, param.CentroidMs2Tolerance);
                         var chromX = type == ChromXType.Drift ? new ChromXs(spec.DriftTime, type, unit) : new ChromXs(spec.ScanStartTime, type, unit);
                         var id = type == ChromXType.Drift ? spec.OriginalIndex : spec.ScanNumber;
                         chromPeaks.Add(new ChromatogramPeak() { ID = id, ChromXs = chromX, Mass = basepeakMz, Intensity = summedIntensity });
