@@ -1,4 +1,5 @@
-﻿using CompMs.Common.DataObj;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
 using CompMs.Common.Mathematics.Basic;
 using MessagePack;
@@ -110,12 +111,13 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         public static RawSpectraSummary Summarize(IReadOnlyList<RawSpectrum> spectra) {
+            spectra = spectra.DefaultIfEmpty().ToList();
             return new RawSpectraSummary(
-                new ScanNumberSummary(spectra[0].ScanNumber, spectra[spectra.Count - 1].ScanNumber),
-                new RetentionTimeSummary((float)spectra[0].ScanStartTime, (float)spectra[spectra.Count - 1].ScanStartTime),
-                new MassSummary((float)spectra.Min(spectrum => spectrum.LowestObservedMz), (float)spectra.Max(spectrum => spectrum.HighestObservedMz)),
-                new IntensitySummary((float)spectra.Min(spectrum => spectrum.MinIntensity), (float)spectra.Max(spectrum => spectrum.BasePeakIntensity)),
-                new DriftTimeSummary((float)spectra.Min(spectrum => spectrum.DriftTime), (float)spectra.Max(spectrum => spectrum.DriftTime)));
+                new ScanNumberSummary(spectra.FirstOrDefault()?.ScanNumber ?? 0, spectra.LastOrDefault()?.ScanNumber ?? 0),
+                new RetentionTimeSummary((float)(spectra.FirstOrDefault()?.ScanStartTime ?? 0d), (float)(spectra.LastOrDefault()?.ScanStartTime ?? 0d)),
+                new MassSummary((float)(spectra.Min(spectrum => spectrum?.LowestObservedMz) ?? 0d), (float)(spectra.Max(spectrum => spectrum?.HighestObservedMz) ?? 0d)),
+                new IntensitySummary((float)(spectra.Min(spectrum => spectrum?.MinIntensity) ?? 0d), (float)(spectra.Max(spectrum => spectrum?.BasePeakIntensity) ?? 0d)),
+                new DriftTimeSummary((float)(spectra.Min(spectrum => spectrum?.DriftTime) ?? 0d), (float)(spectra.Max(spectrum => spectrum?.DriftTime) ?? 0d)));
         }
     }
 
@@ -152,6 +154,10 @@ namespace CompMs.MsdialCore.DataObj {
             _medianminPeakTopRT = medianminPeakTop;
             _maxPeakTopRT = maxPeakTop;
             _stdevPeakTopRT = stdevPeakTop;
+        }
+
+        private RtChromatogramPeakSummary() {
+
         }
 
         private readonly float _minPeakWidthOnRtAxis;
@@ -199,6 +205,10 @@ namespace CompMs.MsdialCore.DataObj {
         }
 
         public static RtChromatogramPeakSummary Summarize(IReadOnlyList<ChromatogramPeakFeature> chromatogramPeakFeatures) {
+            if (!chromatogramPeakFeatures.Any()) {
+                return new RtChromatogramPeakSummary();
+            }
+
             var peakWidthArray = chromatogramPeakFeatures.Select(chromatogramPeakFeature => chromatogramPeakFeature.PeakWidth()).ToArray();
             var minPeakWidthOnRtAxis = (float)peakWidthArray.Min();
             var averagePeakWidthOnRtAxis = (float)peakWidthArray.Average();
@@ -274,6 +284,10 @@ namespace CompMs.MsdialCore.DataObj {
             _stdevPeakTopDT = stdevPeakTop;
         }
 
+        private DtChromatogramPeakSummary() {
+
+        }
+
         private readonly float _minPeakWidthOnDtAxis;
         private readonly float _averagePeakWidthOnDtAxis;
         private readonly float _medianPeakWidthOnDtAxis;
@@ -310,6 +324,9 @@ namespace CompMs.MsdialCore.DataObj {
 
         public static DtChromatogramPeakSummary Summarize(IReadOnlyList<ChromatogramPeakFeature> chromatogramPeakFeatures) {
             var dtChromatogramPeakFeatures = chromatogramPeakFeatures.SelectMany(rtChromatogramPeakFeature => rtChromatogramPeakFeature.DriftChromFeatures.OrEmptyIfNull()).ToArray();
+            if (!dtChromatogramPeakFeatures.Any()) {
+                return new DtChromatogramPeakSummary();
+            }
 
             var dtPeakWidths = dtChromatogramPeakFeatures.Select(dtChromatogramPeakFeature => dtChromatogramPeakFeature.PeakWidth()).ToArray();
             var minPeakWidthOnDtAxis = (float)dtPeakWidths.Min();
@@ -363,8 +380,12 @@ namespace CompMs.MsdialCore.DataObj {
             _dtChromatogramPeakSummary = dtChromatogramPeakSummary;
         }
 
-        public double CoerceRtPeakWidth(double peakWidth) {
-            return _rtChromatogramPeakSummary.CoercePeakWidth(peakWidth);
+        public (double start, double end) GetPeakRange(ChromatogramPeakFeature chromatogramPeakFeature) {
+            var peakWidth = _rtChromatogramPeakSummary.CoercePeakWidth(chromatogramPeakFeature.PeakWidth(ChromXType.RT));
+            var topRt = chromatogramPeakFeature.ChromXsTop.RT.Value;
+            var startRt = topRt - peakWidth * 1.5d;
+            var endRt = topRt + peakWidth * 1.5d;
+            return (startRt, endRt);
         }
 
         public static ChromatogramPeaksDataSummary Summarize(IReadOnlyList<RawSpectrum> spectrumList, IReadOnlyList<ChromatogramPeakFeature> chromatogramPeakFeatures) {

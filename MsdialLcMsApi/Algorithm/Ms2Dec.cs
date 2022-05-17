@@ -69,10 +69,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             //}
 
             //check the RT range to be considered for chromatogram deconvolution
-            var peakWidth = chromatogramSummary.CoerceRtPeakWidth(chromPeakFeature.PeakWidth());
-
-            var startRt = (float)(chromPeakFeature.ChromXsTop.Value - peakWidth * 1.5F);
-            var endRt = (float)(chromPeakFeature.ChromXsTop.Value + peakWidth * 1.5F);
+            var (startRt, endRt)= chromatogramSummary.GetPeakRange(chromPeakFeature);
 
             //preparing MS1 and MS/MS chromatograms
             //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
