@@ -282,22 +282,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         public static void RetrieveBinnedMzIntensity(RawPeakElement[] peaks, double targetMz, double mzTol, out double basepeakMz, out double basepeakIntensity, out double summedIntensity) {
-            var startIndex = SearchCollection.LowerBound(peaks, new RawPeakElement() { Mz = targetMz - mzTol }, (a, b) => a.Mz.CompareTo(b.Mz));
-            summedIntensity = 0; basepeakIntensity = 0; basepeakMz = 0;
-            for (int i = startIndex; i < peaks.Length; i++) {
-                var peak = peaks[i];
-                if (peak.Mz < targetMz - mzTol) continue;
-                else if (Math.Abs(peak.Mz - targetMz) < mzTol) {
-                    summedIntensity += peak.Intensity;
-                    if (basepeakIntensity < peak.Intensity) {
-                        basepeakIntensity = peak.Intensity;
-                        basepeakMz = peak.Mz;
-                    }
-                }
-                else if (peak.Mz > targetMz + mzTol) {
-                    break;
-                }
-            }
+            (basepeakMz, basepeakIntensity, summedIntensity) = new Spectrum.Spectrum(peaks).RetrieveBin(targetMz, mzTol);
         }
 
         public static List<ChromatogramPeak> GetEicPeaklistByHighestBasePeakMz(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> features, double mzTol, IonMode ionmode,
