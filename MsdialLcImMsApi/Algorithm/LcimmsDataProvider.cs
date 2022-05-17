@@ -1,16 +1,11 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
-using System.Collections.Generic;
 
 namespace CompMs.MsdialLcImMsApi.Algorithm
 {
     public class LcimmsAccumulateDataProvider : BaseDataProvider
     {
-        public LcimmsAccumulateDataProvider(IEnumerable<RawSpectrum> spectrums) : base(spectrums) {
-
-        }
-
         public LcimmsAccumulateDataProvider(AnalysisFileBean file, bool isGuiProcess = false, int retry = 5) : base(LoadMeasurement(file, false, isGuiProcess, retry).AccumulatedSpectrumList) {
             
         }
