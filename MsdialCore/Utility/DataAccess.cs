@@ -80,33 +80,22 @@ namespace CompMs.MsdialCore.Utility {
 
         // smoother
         public static List<ChromatogramPeak> GetSmoothedPeaklist(IReadOnlyList<IChromatogramPeak> peaklist, SmoothingMethod smoothingMethod, int smoothingLevel) {
-            var smoothedPeaklist = new List<ChromatogramPeak>();
-
             switch (smoothingMethod) {
                 case SmoothingMethod.SimpleMovingAverage:
-                    smoothedPeaklist = Smoothing.SimpleMovingAverage(peaklist, smoothingLevel);
-                    break;
+                    return Smoothing.SimpleMovingAverage(peaklist, smoothingLevel);
                 case SmoothingMethod.LinearWeightedMovingAverage:
-                    smoothedPeaklist = Smoothing.LinearWeightedMovingAverage(peaklist, smoothingLevel);
-                    break;
+                    return Smoothing.LinearWeightedMovingAverage(peaklist, smoothingLevel);
                 case SmoothingMethod.SavitzkyGolayFilter:
-                    smoothedPeaklist = Smoothing.SavitxkyGolayFilter(peaklist, smoothingLevel);
-                    break;
+                    return Smoothing.SavitxkyGolayFilter(peaklist, smoothingLevel);
                 case SmoothingMethod.BinomialFilter:
-                    smoothedPeaklist = Smoothing.BinomialFilter(peaklist, smoothingLevel);
-                    break;
+                    return Smoothing.BinomialFilter(peaklist, smoothingLevel);
                 case SmoothingMethod.LowessFilter:
-                    smoothedPeaklist = Smoothing.LowessFilter(peaklist, smoothingLevel);
-                    break;
+                    return Smoothing.LowessFilter(peaklist, smoothingLevel);
                 case SmoothingMethod.LoessFilter:
-                    smoothedPeaklist = Smoothing.LoessFilter(peaklist, smoothingLevel);
-                    break;
+                    return Smoothing.LoessFilter(peaklist, smoothingLevel);
                 default:
-                    smoothedPeaklist = Smoothing.LinearWeightedMovingAverage(peaklist, smoothingLevel);
-                    break;
+                    return Smoothing.LinearWeightedMovingAverage(peaklist, smoothingLevel);
             }
-
-            return smoothedPeaklist;
         }
 
         // converter
@@ -203,59 +192,6 @@ namespace CompMs.MsdialCore.Utility {
 
 
         // index access
-        public static int GetScanStartIndexByMz(float targetMass, List<ChromatogramPeakFeature> features) {
-            int startIndex = 0, endIndex = features.Count - 1;
-
-            int counter = 0;
-            while (counter < 5) {
-                if (features[startIndex].PrecursorMz <= targetMass &&
-                    targetMass < features[(startIndex + endIndex) / 2].PrecursorMz) {
-                    endIndex = (startIndex + endIndex) / 2;
-                }
-                else if (features[(startIndex + endIndex) / 2].PrecursorMz <= targetMass &&
-                    targetMass < features[endIndex].PrecursorMz) {
-                    startIndex = (startIndex + endIndex) / 2;
-                }
-                counter++;
-            }
-            return startIndex;
-        }
-
-        public static int GetDatabaseStartIndex(double precursorMz, double ms1Tolerance, List<MoleculeMsReference> mspDB) {
-            double targetMass = precursorMz - ms1Tolerance;
-            int startIndex = 0, endIndex = mspDB.Count - 1;
-            if (targetMass > mspDB[endIndex].PrecursorMz) return endIndex;
-
-            int counter = 0;
-            while (counter < 10) {
-                if (mspDB[startIndex].PrecursorMz <= targetMass && targetMass < mspDB[(startIndex + endIndex) / 2].PrecursorMz) {
-                    endIndex = (startIndex + endIndex) / 2;
-                }
-                else if (mspDB[(startIndex + endIndex) / 2].PrecursorMz <= targetMass && targetMass < mspDB[endIndex].PrecursorMz) {
-                    startIndex = (startIndex + endIndex) / 2;
-                }
-                counter++;
-            }
-            return startIndex;
-        }
-
-        public static int GetMs1StartIndex(float focusedMass, float ms1Tolerance, RawPeakElement[] massSpectra) {
-            if (massSpectra == null || massSpectra.Length == 0) return 0;
-            float targetMass = focusedMass - ms1Tolerance;
-            int startIndex = 0, endIndex = massSpectra.Length - 1;
-            int counter = 0;
-            while (counter < 10) {
-                if (massSpectra[startIndex].Mz <= targetMass && targetMass < massSpectra[(startIndex + endIndex) / 2].Mz) {
-                    endIndex = (startIndex + endIndex) / 2;
-                }
-                else if (massSpectra[(startIndex + endIndex) / 2].Mz <= targetMass && targetMass < massSpectra[endIndex].Mz) {
-                    startIndex = (startIndex + endIndex) / 2;
-                }
-                counter++;
-            }
-            return startIndex;
-        }
-
         public static int GetScanStartIndexByRt(float focusedRt, float rtTol, IReadOnlyList<RawSpectrum> spectrumList) {
 
             var targetRt = focusedRt - rtTol;
@@ -358,7 +294,9 @@ namespace CompMs.MsdialCore.Utility {
                         basepeakMz = peak.Mz;
                     }
                 }
-                else if (peak.Mz > targetMz + mzTol) break;
+                else if (peak.Mz > targetMz + mzTol) {
+                    break;
+                }
             }
         }
 
@@ -674,10 +612,6 @@ namespace CompMs.MsdialCore.Utility {
                 var driftTime = spectrum.DriftTime;
                 var driftScan = spectrum.DriftScanNumber;
                 var driftBin = (int)(driftTime * 1000);
-
-                //if (i > 1213450) {
-                //    Debug.WriteLine("id {0} rt {1}", i, spectrum.ScanStartTime);
-                //}
 
                 if (retention < rt - rtWidth * 0.5) continue;
                 if (driftTime < minDt || driftTime > maxDt) continue;
