@@ -148,12 +148,8 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         protected virtual List<ChromatogramPeakWrapper> LoadBpcCore() {
-            var chromatogram = DataAccess.GetBpcPeaklist(
-                        provider.LoadMs1Spectrums(),
-                        parameter.IonMode,
-                        chromXType, chromXUnit,
-                        rangeBegin, rangeEnd);
-            return new CompMs.Common.Components.Chromatogram(chromatogram)
+            return new RawSpectra(provider.LoadMs1Spectrums(), chromXType, chromXUnit, parameter.IonMode)
+                .GetMs1BasePeakChromatogram(rangeBegin, rangeEnd)
                 .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new ChromatogramPeakWrapper(peak))
