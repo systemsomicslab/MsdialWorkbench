@@ -29,5 +29,19 @@ namespace CompMs.MsdialCore.DataObj
             }
             return (basepeakMz, basepeakIntensity, summedIntensity);
         }
+
+        public (double BasePeakMz, double BasePeakIntensity, double SummedIntensity) RetrieveTotalIntensity() {
+            var summedIntensity = 0d;
+            var basepeakIntensity = 0d;
+            var basepeakMz = 0d;
+            foreach (var peak in _elements) {
+                summedIntensity += peak.Intensity;
+                if (basepeakIntensity < peak.Intensity) {
+                    basepeakIntensity = peak.Intensity;
+                    basepeakMz = peak.Mz;
+                }
+            }
+            return (basepeakMz, basepeakIntensity, summedIntensity);
+        }
     }
 }

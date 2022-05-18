@@ -248,7 +248,7 @@ namespace CompMs.MsdialCore.Utility {
                 if (chromX < chromBegin) continue;
                 if (chromX > chromEnd) break;
                 var massSpectra = spectrum.Spectrum;
-                RetrieveTotalIntensity(massSpectra, out double basepeakMz, out double basepeakIntensity, out double summedIntensity);
+                var (basepeakMz, _, summedIntensity) = new Spectrum(massSpectra).RetrieveTotalIntensity();
                 peaklist.Add(new ChromatogramPeak() { ID = index, ChromXs = new ChromXs(chromX, type, unit), Mass = basepeakMz, Intensity = summedIntensity });
             }
 
@@ -266,25 +266,12 @@ namespace CompMs.MsdialCore.Utility {
                 if (chromX < chromBegin) continue;
                 if (chromX > chromEnd) break;
                 var massSpectra = spectrum.Spectrum;
-                RetrieveTotalIntensity(massSpectra, out double basepeakMz, out double basepeakIntensity, out double summedIntensity);
+                var (basepeakMz, basepeakIntensity, _) = new Spectrum(massSpectra).RetrieveTotalIntensity();
                 peaklist.Add(new ChromatogramPeak() { ID = index, ChromXs = new ChromXs(chromX, type, unit), Mass = basepeakMz, Intensity = basepeakIntensity });
             }
 
             return peaklist;
         }
-
-        public static void RetrieveTotalIntensity(RawPeakElement[] peaks, out double basepeakMz, out double basepeakIntensity, out double summedIntensity) {
-            summedIntensity = 0; basepeakIntensity = 0; basepeakMz = 0;
-            for (int i = 0; i < peaks.Length; i++) {
-                var peak = peaks[i];
-                summedIntensity += peak.Intensity;
-                if (basepeakIntensity < peak.Intensity) {
-                    basepeakIntensity = peak.Intensity;
-                    basepeakMz = peak.Mz;
-                }
-            }
-        }
-
 
         /// <summary>
         /// from the list of m/z and intensity
