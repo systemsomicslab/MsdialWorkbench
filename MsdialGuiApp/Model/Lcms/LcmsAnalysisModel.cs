@@ -291,6 +291,14 @@ namespace CompMs.App.Msdial.Model.Lcms
         public void FragmentSearcher() {
             var features = this.Ms1Peaks;
             MsdialCore.Algorithm.FragmentSearcher.Search(features.Select(n => n.InnerModel).ToList(), this.decLoader, Parameter);
+
+            //foreach (var feature in features) {
+            //    var featureStatus = feature.InnerModel.FeatureFilterStatus;
+            //    if (featureStatus.IsFragmentExistFiltered) {
+            //        Console.WriteLine("A fragment is found by MassQL not in alignment !!!");
+            //    }
+            //}
+
         }
 
         public void SaveSpectra(string filename) {

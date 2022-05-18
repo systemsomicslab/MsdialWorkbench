@@ -593,8 +593,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 }
                 if (model.IsAlignSpotViewSelected.Value) {
                     alignmentModel.FragmentSearcher();
-                }
-                else {
+                } else {
                     analysisModel.FragmentSearcher();
                 }
             }
@@ -622,8 +621,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 }
                 if (isAlignmentViewSelected) {
                     alignmentModel.FragmentSearcher();
-                }
-                else {
+                } else {
                     analysisModel.FragmentSearcher();
                 }
             }
