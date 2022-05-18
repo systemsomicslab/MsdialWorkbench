@@ -50,7 +50,7 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
-        public List<ChromatogramPeak> GetMs1Chromatogram(double mz, double tolerance, double start, double end) {
+        public Chromatogram GetMs1Chromatogram(double mz, double tolerance, double start, double end) {
             int startIndex, endIndex;
             var results = new List<ChromatogramPeak>();
             switch (_type) {
@@ -64,7 +64,7 @@ namespace CompMs.MsdialCore.DataObj
                         var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveBin(mz, tolerance);
                         results.Add(new ChromatogramPeak(i, basePeakMz, summedIntensity, _idToChromX[i]));
                     }
-                    return results;
+                    return new Chromatogram(results);
                 case ChromXType.Drift:
                     startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.DriftTime.CompareTo(target));
                     endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.DriftTime.CompareTo(target));
@@ -75,7 +75,7 @@ namespace CompMs.MsdialCore.DataObj
                         var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveBin(mz, tolerance);
                         results.Add(new ChromatogramPeak(i, basePeakMz, summedIntensity, _idToChromX[i]));
                     }
-                    return results;
+                    return new Chromatogram(results);
                 default:
                     throw new NotSupportedException($"{nameof(_type)} {_type} is not supported");
             }

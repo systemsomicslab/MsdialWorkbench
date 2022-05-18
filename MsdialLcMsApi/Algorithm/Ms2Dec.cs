@@ -74,7 +74,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             //preparing MS1 and MS/MS chromatograms
             //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
             var rawSpectrum = new RawSpectra(spectrumList, ChromXType.RT, ChromXUnit.Min, param.IonMode);
-            var ms1Peaklist = rawSpectrum.GetMs1Chromatogram(precursorMz, param.CentroidMs1Tolerance, startRt, endRt);
+            var ms1Peaklist = rawSpectrum.GetMs1Chromatogram(precursorMz, param.CentroidMs1Tolerance, startRt, endRt).Peaks;
 
             var startScanNum = ms1Peaklist[0].ID;
             var endScanNum = ms1Peaklist[ms1Peaklist.Count - 1].ID;

@@ -54,7 +54,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
 
             var rawSpectra = new RawSpectra(spectrum, ChromXType.RT, ChromXUnit.Min, param.IonMode);
             var peaklist = rawSpectra.GetMs1Chromatogram(center.Mz.Value, mzTol, center.RT.Value - peakWidth * 1.5, center.RT.Value + peakWidth * 1.5);
-            return new Chromatogram(peaklist).Smoothing(smoothingMethod, smoothingLevel);
+            return peaklist.Smoothing(smoothingMethod, smoothingLevel);
         }
 
         protected override List<ChromatogramPeak> GetPeaksSecond(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {

@@ -77,8 +77,7 @@ namespace CompMs.App.Msdial.Model.Loader
                         parameter.IonMode,
                         chromXType, chromXUnit,
                         rangeBegin, rangeEnd);
-            return new CompMs.Common.Components.Chromatogram(chromatogram)
-                .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
+            return chromatogram.Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new ChromatogramPeakWrapper(peak))
                 .ToList();
@@ -90,8 +89,7 @@ namespace CompMs.App.Msdial.Model.Loader
                 var spectra = await provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
                 var rawSpectra = new RawSpectra(spectra, chromXType, chromXUnit, parameter.IonMode);
                 var ms1Peaks = rawSpectra.GetMs1Chromatogram(target.Mass, parameter.CentroidMs1Tolerance, rangeBegin, rangeEnd);
-                return new CompMs.Common.Components.Chromatogram(ms1Peaks)
-                    .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
+                return ms1Peaks.Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                     .Where(peak => peak != null)
                     .Select(peak => new ChromatogramPeakWrapper(peak))
                     .ToList();
@@ -101,8 +99,7 @@ namespace CompMs.App.Msdial.Model.Loader
         protected virtual List<ChromatogramPeakWrapper> LoadEicCore(double mass, double massTolerance) {
             var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), chromXType, chromXUnit, parameter.IonMode);
             var chromatogram = rawSpectra.GetMs1Chromatogram(mass, parameter.CentroidMs1Tolerance, rangeBegin, rangeEnd);
-            return new CompMs.Common.Components.Chromatogram(chromatogram)
-                .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
+            return chromatogram.Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new ChromatogramPeakWrapper(peak))
                 .ToList();

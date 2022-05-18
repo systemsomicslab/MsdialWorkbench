@@ -9,8 +9,12 @@ namespace CompMs.Common.Components
         private readonly IReadOnlyList<IChromatogramPeak> _peaks;
 
         public Chromatogram(IReadOnlyList<IChromatogramPeak> peaks) {
-            _peaks = peaks;
+            _peaks = peaks ?? throw new System.ArgumentNullException(nameof(peaks));
         }
+
+        public IReadOnlyList<IChromatogramPeak> Peaks => _peaks;
+
+        public bool IsEmpty => _peaks.Count == 0;
 
         public List<ChromatogramPeak> Smoothing(SmoothingMethod method, int level) {
             switch (method) {

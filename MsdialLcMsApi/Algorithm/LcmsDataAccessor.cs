@@ -38,7 +38,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             var rawSpectra = new RawSpectra(spectrum, ChromXType.RT, ChromXUnit.Min, peak.IonMode);
             var peaklist = rawSpectra.GetMs1Chromatogram(peak.Mass, ms1MassTolerance, tLeftRt, tRightRt);
             return new ChromatogramPeakInfo(
-                peak.FileID, peaklist,
+                peak.FileID, peaklist.Peaks,
                 (float)peak.ChromXsTop.RT.Value, (float)peak.ChromXsLeft.RT.Value, (float)peak.ChromXsRight.RT.Value);
         }
 

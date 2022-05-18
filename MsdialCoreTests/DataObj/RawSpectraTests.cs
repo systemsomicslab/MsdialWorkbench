@@ -23,7 +23,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             ChromXType.RT,
             ChromXUnit.Min,
             IonMode.Positive);
-            var chromatogram = spectra.GetMs1Chromatogram(102, 2d, 2d, 4d);
+            var chromatogram = spectra.GetMs1Chromatogram(102, 2d, 2d, 4d).Peaks;
             Assert.AreEqual(3, chromatogram.Count);
             Assert.AreEqual(1, chromatogram[0].ID);
             Assert.AreEqual(101d, chromatogram[0].Mass);
@@ -52,7 +52,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             ChromXType.Drift,
             ChromXUnit.Msec,
             IonMode.Negative);
-            var chromatogram = spectra.GetMs1Chromatogram(102, 2d, 2d, 4d);
+            var chromatogram = spectra.GetMs1Chromatogram(102, 2d, 2d, 4d).Peaks;
             Assert.AreEqual(3, chromatogram.Count);
             Assert.AreEqual(1, chromatogram[0].ID);
             Assert.AreEqual(101d, chromatogram[0].Mass);

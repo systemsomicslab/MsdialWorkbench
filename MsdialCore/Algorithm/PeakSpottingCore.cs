@@ -4,6 +4,7 @@ using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -298,16 +299,16 @@ namespace CompMs.MsdialCore.Algorithm {
 
             var spectrumList = provider.LoadMs1Spectrums();
             //get EIC chromatogram
-            var peaklist = new RawSpectra(spectrumList, type, unit, param.IonMode).GetMs1Chromatogram(focusedMass, param.MassSliceWidth, chromBegin, chromEnd);
-            if (peaklist.Count == 0) return null;
+            var chromatogram = new RawSpectra(spectrumList, type, unit, param.IonMode).GetMs1Chromatogram(focusedMass, param.MassSliceWidth, chromBegin, chromEnd);
+            if (chromatogram.IsEmpty) return null;
 
             //get peak detection result
-            var chromPeakFeatures = GetChromatogramPeakFeatures(peaklist, param, type, unit);
+            var chromPeakFeatures = GetChromatogramPeakFeatures(chromatogram, param, type, unit);
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
-            SetRawDataAccessID2ChromatogramPeakFeatures(chromPeakFeatures, provider, peaklist, param);
+            SetRawDataAccessID2ChromatogramPeakFeatures(chromPeakFeatures, provider, chromatogram.Peaks, param);
 
             //filtering out noise peaks considering smoothing effects and baseline effects
-            chromPeakFeatures = GetBackgroundSubtractedPeaks(chromPeakFeatures, peaklist);
+            chromPeakFeatures = GetBackgroundSubtractedPeaks(chromPeakFeatures, chromatogram.Peaks);
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
 
             return chromPeakFeatures;
@@ -420,9 +421,9 @@ namespace CompMs.MsdialCore.Algorithm {
         #endregion
 
         #region peak detection utilities
-        public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(List<ChromatogramPeak> peaklist, ParameterBase param,
+        public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(Chromatogram chromatogram, ParameterBase param,
             ChromXType type, ChromXUnit unit) {
-            var smoothedPeaklist = new Chromatogram(peaklist).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+            var smoothedPeaklist = chromatogram.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
             //var detectedPeaks = PeakDetection.GetDetectedPeakInformationCollectionFromDifferentialBasedPeakDetectionAlgorithm(analysisParametersBean.MinimumDatapoints, analysisParametersBean.MinimumAmplitude, analysisParametersBean.AmplitudeNoiseFactor, analysisParametersBean.SlopeNoiseFactor, analysisParametersBean.PeaktopNoiseFactor, smoothedPeaklist);
             var minDatapoints = param.MinimumDatapoints;
             var minAmps = param.MinimumAmplitude;
@@ -433,7 +434,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
             foreach (var result in detectedPeaks) {
                 if (result.IntensityAtPeakTop <= 0) continue;
-                var mass = peaklist[result.ScanNumAtPeakTop].Mass;
+                var mass = chromatogram.Peaks[result.ScanNumAtPeakTop].Mass;
 
                 //option
                 //this method is currently used in LC/MS project.
@@ -461,14 +462,14 @@ namespace CompMs.MsdialCore.Algorithm {
         /// <param name="peaklist"></param>
         /// <param name="param"></param>
         public void SetRawDataAccessID2ChromatogramPeakFeaturesFor4DChromData(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<RawSpectrum> accSpecList,
-            List<ChromatogramPeak> peaklist, ParameterBase param) {
+            IReadOnlyList<IChromatogramPeak> peaklist, ParameterBase param) {
             foreach (var feature in chromPeakFeatures) {
                 SetRawDataAccessID2ChromatogramPeakFeatureFor4DChromData(feature, accSpecList, peaklist, param);
             }
         }
 
         private void SetRawDataAccessID2ChromatogramPeakFeatureFor4DChromData(ChromatogramPeakFeature feature, IReadOnlyList<RawSpectrum> accSpecList, 
-            List<ChromatogramPeak> peaklist, ParameterBase param) {
+            IReadOnlyList<IChromatogramPeak> peaklist, ParameterBase param) {
 
             var chromLeftID = feature.ChromScanIdLeft;
             var chromTopID = feature.ChromScanIdTop;
@@ -494,13 +495,13 @@ namespace CompMs.MsdialCore.Algorithm {
         /// <param name="peaklist"></param>
         /// <param name="param"></param>
         public void SetRawDataAccessID2ChromatogramPeakFeatures(List<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider,
-            List<ChromatogramPeak> peaklist, ParameterBase param) {
+            IReadOnlyList<IChromatogramPeak> peaklist, ParameterBase param) {
             foreach (var feature in chromPeakFeatures) {
                 SetRawDataAccessID2ChromatogramPeakFeature(feature, provider, peaklist, param);
             }
         }
 
-        public void SetRawDataAccessID2ChromatogramPeakFeature(ChromatogramPeakFeature feature, IDataProvider provider, List<ChromatogramPeak> peaklist, ParameterBase param) {
+        public void SetRawDataAccessID2ChromatogramPeakFeature(ChromatogramPeakFeature feature, IDataProvider provider, IReadOnlyList<IChromatogramPeak> peaklist, ParameterBase param) {
             var chromLeftID = feature.ChromScanIdLeft;
             var chromTopID = feature.ChromScanIdTop;
             var chromRightID = feature.ChromScanIdRight;
@@ -561,7 +562,7 @@ namespace CompMs.MsdialCore.Algorithm {
             }
         }
 
-        public List<ChromatogramPeakFeature> GetBackgroundSubtractedPeaks(List<ChromatogramPeakFeature> chromPeakFeatures, List<ChromatogramPeak> peaklist) {
+        public List<ChromatogramPeakFeature> GetBackgroundSubtractedPeaks(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<IChromatogramPeak> peaklist) {
             var counterThreshold = 4;
             var sPeakAreaList = new List<ChromatogramPeakFeature>();
 
@@ -721,9 +722,9 @@ namespace CompMs.MsdialCore.Algorithm {
                 //get EIC chromatogram
                 var peakWidth = spot.PeakWidth();
                 var peakWidthMargin = spot.PeakWidth() * 0.5;
-                var peaklist = rawSpectra.GetMs1Chromatogram(spot.Mass, param.CentroidMs1Tolerance, spot.ChromXsLeft.Value - peakWidthMargin, spot.ChromXsRight.Value + peakWidthMargin);
+                var chromatogram = rawSpectra.GetMs1Chromatogram(spot.Mass, param.CentroidMs1Tolerance, spot.ChromXsLeft.Value - peakWidthMargin, spot.ChromXsRight.Value + peakWidthMargin);
 
-                var sPeaklist = new Chromatogram(peaklist).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+                var sPeaklist = chromatogram.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
                 var maxID = -1;
                 var maxInt = double.MinValue;
                 var minRtId = -1;
@@ -862,9 +863,9 @@ namespace CompMs.MsdialCore.Algorithm {
                 spot.ChromScanIdLeft = sPeaklist[minLeftId].ID;
                 spot.ChromScanIdRight = sPeaklist[minRightId].ID;
 
-                spot.MS1RawSpectrumIdTop = peaklist[maxID].ID;
-                spot.MS1RawSpectrumIdLeft = peaklist[minLeftId].ID;
-                spot.MS1RawSpectrumIdRight = peaklist[minRightId].ID;
+                spot.MS1RawSpectrumIdTop = chromatogram.Peaks[maxID].ID;
+                spot.MS1RawSpectrumIdLeft = chromatogram.Peaks[minLeftId].ID;
+                spot.MS1RawSpectrumIdRight = chromatogram.Peaks[minRightId].ID;
 
                 var peakHeightFromBaseline = Math.Max(sPeaklist[maxID].Intensity - sPeaklist[minLeftId].Intensity, sPeaklist[maxID].Intensity - sPeaklist[minRightId].Intensity);
                 spot.PeakShape.SignalToNoise = (float)(peakHeightFromBaseline / spot.PeakShape.EstimatedNoise);

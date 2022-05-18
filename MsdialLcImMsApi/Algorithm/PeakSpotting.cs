@@ -135,16 +135,16 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
 
             //get EIC chromatogram
             var rawSpectra = new RawSpectra(accSpectrumProvider.LoadMsSpectrums(), ChromXType.RT, ChromXUnit.Min, param.IonMode);
-            var peaklist = rawSpectra.GetMs1Chromatogram(focusedMass, param.MassSliceWidth, param.RetentionTimeBegin, param.RetentionTimeEnd);
-            if (peaklist.Count == 0) return null;
+            var chromatogram = rawSpectra.GetMs1Chromatogram(focusedMass, param.MassSliceWidth, param.RetentionTimeBegin, param.RetentionTimeEnd);
+            if (chromatogram.IsEmpty) return null;
 
             //get peak detection result
-            var chromPeakFeatures = PeakSpottingCore.GetChromatogramPeakFeatures(peaklist, param, ChromXType.RT, ChromXUnit.Min);
+            var chromPeakFeatures = PeakSpottingCore.GetChromatogramPeakFeatures(chromatogram, param, ChromXType.RT, ChromXUnit.Min);
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
-            PeakSpottingCore.SetRawDataAccessID2ChromatogramPeakFeaturesFor4DChromData(chromPeakFeatures, accSpectrumProvider.LoadMsSpectrums(), peaklist, param);
+            PeakSpottingCore.SetRawDataAccessID2ChromatogramPeakFeaturesFor4DChromData(chromPeakFeatures, accSpectrumProvider.LoadMsSpectrums(), chromatogram.Peaks, param);
 
             //filtering out noise peaks considering smoothing effects and baseline effects
-            chromPeakFeatures = PeakSpottingCore.GetBackgroundSubtractedPeaks(chromPeakFeatures, peaklist);
+            chromPeakFeatures = PeakSpottingCore.GetBackgroundSubtractedPeaks(chromPeakFeatures, chromatogram.Peaks);
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
 
             chromPeakFeatures = PeakSpottingCore.ExecutePeakDetectionOnDriftTimeAxis(chromPeakFeatures, spectrumProvider.LoadMsSpectrums(), param, param.AccumulatedRtRange);

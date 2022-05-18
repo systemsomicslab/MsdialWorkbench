@@ -38,7 +38,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
 
             var rawSpectra = new RawSpectra(spectrum, ChromXType.Drift, ChromXUnit.Msec, ionMode);
             var peaklist = rawSpectra.GetMs1Chromatogram(center.Mz.Value, mzTol, center.Drift.Value - peakWidth * 1.5, center.Drift.Value + peakWidth * 1.5);
-            return new Chromatogram(peaklist).Smoothing(smoothingMethod, smoothingLevel);
+            return peaklist.Smoothing(smoothingMethod, smoothingLevel);
         }
 
         protected override double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {

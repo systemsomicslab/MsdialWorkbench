@@ -220,7 +220,7 @@ namespace CompMs.MsdialCore.Utility {
             return dict;
         }
 
-        public static List<ChromatogramPeak> GetEicPeaklistByHighestBasePeakMz(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> features, double mzTol, IonMode ionmode,
+        public static Chromatogram GetEicPeaklistByHighestBasePeakMz(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> features, double mzTol, IonMode ionmode,
             ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, double chromBegin = double.MinValue, double chromEnd = double.MaxValue) {
             if (spectrumList.IsEmptyOrNull()) return null;
             if (features.IsEmptyOrNull()) return null;

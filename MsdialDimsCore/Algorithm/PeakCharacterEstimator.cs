@@ -329,13 +329,13 @@ namespace CompMs.MsdialDimsCore.Algorithm
                 var tLeftRt = peak.ChromXsLeft.RT.Value;
                 var tRightRt = peak.ChromXsRight.RT.Value;
                 var tPeaklist = rawSpectra.GetMs1Chromatogram(peak.Mass, param.CentroidMs1Tolerance, tLeftRt, tRightRt);
-                var tChrom = new Chromatogram(tPeaklist).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+                var tChrom = tPeaklist.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
 
                 foreach (var cPeak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 
                 && !n.PeakCharacter.IsLinked && n.PeakID != peak.PeakID && n.PeakShape.PeakPureValue >= 0.9)) {
 
                     var cPeaklist = rawSpectra.GetMs1Chromatogram(cPeak.Mass, param.CentroidMs1Tolerance, tLeftRt, tRightRt);
-                    var cChrom = new Chromatogram(cPeaklist).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+                    var cChrom = cPeaklist.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
 
                     var col = BasicMathematics.Coefficient(cChrom.Select(chrom => chrom.Intensity).ToArray(), tChrom.Select(chrom => chrom.Intensity).ToArray());
                     if (col > 0.95) {

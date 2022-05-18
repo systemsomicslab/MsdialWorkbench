@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Components;
+using CompMs.Common.Interfaces;
 using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
@@ -346,7 +347,7 @@ namespace CompMs.App.Msdial.Model.Chart {
 
         #region Overlayed EIC, get smoothed peak list
 
-        private static List<ChromatogramPeak> GetSmoothedRetentionTime(RetentionTimeCorrectionBean bean, ParameterBase param, List<ChromatogramPeak> peaks) {
+        private static List<ChromatogramPeak> GetSmoothedRetentionTime(RetentionTimeCorrectionBean bean, ParameterBase param, IReadOnlyList<IChromatogramPeak> peaks) {
             var correctedPeakList = new List<ChromatogramPeak>();
             for (var i = 0; i < peaks.Count; i++) {
                 correctedPeakList.Add(new ChromatogramPeak(i, peaks[i].Mass, peaks[i].Intensity, new RetentionTime(bean.PredictedRt[peaks[i].ID])));
