@@ -52,7 +52,7 @@ namespace CompMs.App.Msdial.Model.Loader {
                         parameter.IonMode,
                         chromXType, chromXUnit,
                         rangeBegin, rangeEnd);
-            return new CompMs.Common.Components.Chromatogram(chromatogram)
+            return chromatogram
                 .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new ChromatogramPeakWrapper(peak))

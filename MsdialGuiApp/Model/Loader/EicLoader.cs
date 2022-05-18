@@ -128,13 +128,12 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         protected virtual List<ChromatogramPeakWrapper> LoadTicCore() {
-            var peaklist = DataAccess.GetTicPeaklist(
+            var chromatogram = DataAccess.GetTicPeaklist(
                         provider.LoadMs1Spectrums(),
                         parameter.IonMode,
                         chromXType, chromXUnit,
                         rangeBegin, rangeEnd);
-            return new CompMs.Common.Components.Chromatogram(peaklist)
-                .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
+            return chromatogram.Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new ChromatogramPeakWrapper(peak))
                 .ToList();

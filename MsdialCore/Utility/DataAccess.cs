@@ -1,5 +1,4 @@
-﻿using CompMs.Common.Algorithm.ChromSmoothing;
-using CompMs.Common.Algorithm.PeakPick;
+﻿using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
@@ -238,7 +237,7 @@ namespace CompMs.MsdialCore.Utility {
             return rawSpectrum.GetMs1Chromatogram(hSpot.PrecursorMz, mzTol, chromBegin, chromEnd);
         }
 
-        public static List<ChromatogramPeak> GetTicPeaklist(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionmode,
+        public static Chromatogram GetTicPeaklist(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionmode,
             ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, double chromBegin = double.MinValue, double chromEnd = double.MaxValue) {
             if (spectrumList == null || spectrumList.Count == 0) return null;
             var peaklist = new List<ChromatogramPeak>();
@@ -253,7 +252,7 @@ namespace CompMs.MsdialCore.Utility {
                 peaklist.Add(new ChromatogramPeak() { ID = index, ChromXs = new ChromXs(chromX, type, unit), Mass = basepeakMz, Intensity = summedIntensity });
             }
 
-            return peaklist;
+            return new Chromatogram(peaklist);
         }
 
         public static List<ChromatogramPeak> GetBpcPeaklist(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionmode,
