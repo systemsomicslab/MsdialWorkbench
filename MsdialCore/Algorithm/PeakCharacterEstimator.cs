@@ -380,13 +380,13 @@ namespace CompMs.MsdialCore.Algorithm
                 var tTopRt = peak.ChromXsTop.RT.Value;
                 var tLeftRt = peak.ChromXsLeft.RT.Value;
                 var tRightRt = peak.ChromXsRight.RT.Value;
-                var tPeaklist = rawSpectra.GetMs1Chromatogram(peak.Mass, param.CentroidMs1Tolerance, tLeftRt, tRightRt);
+                var tPeaklist = rawSpectra.GetMs1ExtractedChromatogram(peak.Mass, param.CentroidMs1Tolerance, tLeftRt, tRightRt);
                 var tChrom = tPeaklist.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
 
                 foreach (var cPeak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 
                 && !n.PeakCharacter.IsLinked && n.PeakID != peak.PeakID && n.PeakShape.PeakPureValue >= 0.9)) {
 
-                    var cPeaklist = rawSpectra.GetMs1Chromatogram(cPeak.Mass, param.CentroidMs1Tolerance, tLeftRt, tRightRt);
+                    var cPeaklist = rawSpectra.GetMs1ExtractedChromatogram(cPeak.Mass, param.CentroidMs1Tolerance, tLeftRt, tRightRt);
                     var cChrom = cPeaklist.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
 
                     //Debug.WriteLine("tChrom count {0}, cChrom count {1}", tChrom.Count, cChrom.Count);

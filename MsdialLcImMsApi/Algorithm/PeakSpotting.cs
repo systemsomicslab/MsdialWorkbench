@@ -135,7 +135,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
 
             //get EIC chromatogram
             var rawSpectra = new RawSpectra(accSpectrumProvider.LoadMsSpectrums(), ChromXType.RT, ChromXUnit.Min, param.IonMode);
-            var chromatogram = rawSpectra.GetMs1Chromatogram(focusedMass, param.MassSliceWidth, param.RetentionTimeBegin, param.RetentionTimeEnd);
+            var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(focusedMass, param.MassSliceWidth, param.RetentionTimeBegin, param.RetentionTimeEnd);
             if (chromatogram.IsEmpty) return null;
 
             //get peak detection result

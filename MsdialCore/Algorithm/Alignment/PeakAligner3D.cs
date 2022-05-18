@@ -38,7 +38,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 // UNDONE: retrieve spectrum data
                 var detected = spot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
                 var rawSpectra = new RawSpectra(spectra, ChromXType.RT, ChromXUnit.Min, peak.IonMode);
-                var chromatogram = rawSpectra.GetMs1Chromatogram(peak.Mass, (detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f, double.MinValue, double.MaxValue);
+                var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(peak.Mass, (detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f, double.MinValue, double.MaxValue);
                 var peakInfo = new ChromatogramPeakInfo(
                     peak.FileID, chromatogram.Peaks,
                     (float)peak.ChromXsTop.Value,
@@ -56,7 +56,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     // UNDONE: retrieve spectrum data
                     var ddetected = dspot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
                     var dRawSpectra = new RawSpectra(spectra, ChromXType.Drift, ChromXUnit.Msec, peak.IonMode);
-                    var dChromatogram = dRawSpectra.GetMs1Chromatogram(peak.Mass, (detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f, double.MinValue, double.MaxValue);
+                    var dChromatogram = dRawSpectra.GetMs1ExtractedChromatogram(peak.Mass, (detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f, double.MinValue, double.MaxValue);
                     var dpeakInfo = new ChromatogramPeakInfo(
                         peak.FileID, dChromatogram.Peaks,
                         (float)peak.ChromXsTop.Value,

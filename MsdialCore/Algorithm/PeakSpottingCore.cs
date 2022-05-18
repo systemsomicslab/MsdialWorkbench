@@ -299,7 +299,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
             var spectrumList = provider.LoadMs1Spectrums();
             //get EIC chromatogram
-            var chromatogram = new RawSpectra(spectrumList, type, unit, param.IonMode).GetMs1Chromatogram(focusedMass, param.MassSliceWidth, chromBegin, chromEnd);
+            var chromatogram = new RawSpectra(spectrumList, type, unit, param.IonMode).GetMs1ExtractedChromatogram(focusedMass, param.MassSliceWidth, chromBegin, chromEnd);
             if (chromatogram.IsEmpty) return null;
 
             //get peak detection result
@@ -722,7 +722,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 //get EIC chromatogram
                 var peakWidth = spot.PeakWidth();
                 var peakWidthMargin = spot.PeakWidth() * 0.5;
-                var chromatogram = rawSpectra.GetMs1Chromatogram(spot.Mass, param.CentroidMs1Tolerance, spot.ChromXsLeft.Value - peakWidthMargin, spot.ChromXsRight.Value + peakWidthMargin);
+                var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(spot.Mass, param.CentroidMs1Tolerance, spot.ChromXsLeft.Value - peakWidthMargin, spot.ChromXsRight.Value + peakWidthMargin);
 
                 var sPeaklist = chromatogram.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
                 var maxID = -1;

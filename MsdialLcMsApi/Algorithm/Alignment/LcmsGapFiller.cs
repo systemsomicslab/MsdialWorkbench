@@ -45,7 +45,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
             peakWidth = Math.Max(peakWidth, 0.2f);
 
             var rawSpectra = new RawSpectra(spectrum, ChromXType.RT, ChromXUnit.Min, ionMode);
-            var peaklist = rawSpectra.GetMs1Chromatogram(center.Mz.Value, mzTol, center.RT.Value - peakWidth * 1.5, center.RT.Value + peakWidth * 1.5);
+            var peaklist = rawSpectra.GetMs1ExtractedChromatogram(center.Mz.Value, mzTol, center.RT.Value - peakWidth * 1.5, center.RT.Value + peakWidth * 1.5);
             return peaklist.Smoothing(smoothingMethod, smoothingLevel);
         }
     }

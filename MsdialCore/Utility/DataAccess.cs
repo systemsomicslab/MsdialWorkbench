@@ -234,25 +234,7 @@ namespace CompMs.MsdialCore.Utility {
             }
             var hSpot = features[maxSpotID];
             var rawSpectrum = new RawSpectra(spectrumList, type, unit, ionmode);
-            return rawSpectrum.GetMs1Chromatogram(hSpot.PrecursorMz, mzTol, chromBegin, chromEnd);
-        }
-
-        public static Chromatogram GetTicPeaklist(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionmode,
-            ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, double chromBegin = double.MinValue, double chromEnd = double.MaxValue) {
-            if (spectrumList == null || spectrumList.Count == 0) return null;
-            var peaklist = new List<ChromatogramPeak>();
-            var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
-
-            foreach (var (spectrum, index) in spectrumList.WithIndex().Where(n => n.Item1.ScanPolarity == scanPolarity && n.Item1.MsLevel <= 1)) {
-                var chromX = type == ChromXType.Drift ? spectrum.DriftTime : spectrum.ScanStartTime;
-                if (chromX < chromBegin) continue;
-                if (chromX > chromEnd) break;
-                var massSpectra = spectrum.Spectrum;
-                var (basepeakMz, _, summedIntensity) = new Spectrum(massSpectra).RetrieveTotalIntensity();
-                peaklist.Add(new ChromatogramPeak() { ID = index, ChromXs = new ChromXs(chromX, type, unit), Mass = basepeakMz, Intensity = summedIntensity });
-            }
-
-            return new Chromatogram(peaklist);
+            return rawSpectrum.GetMs1ExtractedChromatogram(hSpot.PrecursorMz, mzTol, chromBegin, chromEnd);
         }
 
         public static List<ChromatogramPeak> GetBpcPeaklist(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionmode,

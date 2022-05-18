@@ -88,7 +88,7 @@ namespace CompMs.App.Msdial.Model.Loader
             {
                 var spectra = await provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
                 var rawSpectra = new RawSpectra(spectra, chromXType, chromXUnit, parameter.IonMode);
-                var ms1Peaks = rawSpectra.GetMs1Chromatogram(target.Mass, parameter.CentroidMs1Tolerance, rangeBegin, rangeEnd);
+                var ms1Peaks = rawSpectra.GetMs1ExtractedChromatogram(target.Mass, parameter.CentroidMs1Tolerance, rangeBegin, rangeEnd);
                 return ms1Peaks.Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                     .Where(peak => peak != null)
                     .Select(peak => new ChromatogramPeakWrapper(peak))
@@ -98,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Loader
 
         protected virtual List<ChromatogramPeakWrapper> LoadEicCore(double mass, double massTolerance) {
             var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), chromXType, chromXUnit, parameter.IonMode);
-            var chromatogram = rawSpectra.GetMs1Chromatogram(mass, parameter.CentroidMs1Tolerance, rangeBegin, rangeEnd);
+            var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(mass, parameter.CentroidMs1Tolerance, rangeBegin, rangeEnd);
             return chromatogram.Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new ChromatogramPeakWrapper(peak))
@@ -128,11 +128,8 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         protected virtual List<ChromatogramPeakWrapper> LoadTicCore() {
-            var chromatogram = DataAccess.GetTicPeaklist(
-                        provider.LoadMs1Spectrums(),
-                        parameter.IonMode,
-                        chromXType, chromXUnit,
-                        rangeBegin, rangeEnd);
+            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), chromXType, chromXUnit, parameter.IonMode);
+            var chromatogram = rawSpectra.GetMs1TotalIonChromatogram(rangeBegin, rangeEnd);
             return chromatogram.Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new ChromatogramPeakWrapper(peak))

@@ -37,7 +37,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
             var mzTol = this.mzTol;
 
             var rawSpectra = new RawSpectra(spectrum, ChromXType.Drift, ChromXUnit.Msec, ionMode);
-            var peaklist = rawSpectra.GetMs1Chromatogram(center.Mz.Value, mzTol, center.Drift.Value - peakWidth * 1.5, center.Drift.Value + peakWidth * 1.5);
+            var peaklist = rawSpectra.GetMs1ExtractedChromatogram(center.Mz.Value, mzTol, center.Drift.Value - peakWidth * 1.5, center.Drift.Value + peakWidth * 1.5);
             return peaklist.Smoothing(smoothingMethod, smoothingLevel);
         }
 

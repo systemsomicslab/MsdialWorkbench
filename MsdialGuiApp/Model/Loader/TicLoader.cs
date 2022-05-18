@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using System;
@@ -47,11 +48,8 @@ namespace CompMs.App.Msdial.Model.Loader {
         }
 
         protected virtual List<ChromatogramPeakWrapper> LoadTicCore() {
-            var chromatogram = DataAccess.GetTicPeaklist(
-                        provider.LoadMs1Spectrums(),
-                        parameter.IonMode,
-                        chromXType, chromXUnit,
-                        rangeBegin, rangeEnd);
+            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), chromXType, chromXUnit, parameter.IonMode);
+            var chromatogram = rawSpectra.GetMs1TotalIonChromatogram(rangeBegin, rangeEnd);
             return chromatogram
                 .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)

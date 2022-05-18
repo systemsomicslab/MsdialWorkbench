@@ -110,7 +110,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             float chromBegin, float chromEnd) {
 
             var rawSpectra = new RawSpectra(spectrum, ChromXType.Drift, ChromXUnit.Msec, param.IonMode);
-            var chromatogram = rawSpectra.GetMs1Chromatogram(focusedMass, param.MassSliceWidth, chromBegin, chromEnd);
+            var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(focusedMass, param.MassSliceWidth, chromBegin, chromEnd);
             if (chromatogram.IsEmpty)
                 return new List<ChromatogramPeakFeature>();
 
@@ -391,7 +391,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 var peakWidth = spot.PeakWidth();
                 var peakWidthMargin = peakWidth * 0.5;
 
-                var chromatogram = rawSpectra.GetMs1Chromatogram(spot.Mass, param.CentroidMs1Tolerance, spot.ChromXsLeft.Value - peakWidthMargin, spot.ChromXsRight.Value + peakWidthMargin);
+                var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(spot.Mass, param.CentroidMs1Tolerance, spot.ChromXsLeft.Value - peakWidthMargin, spot.ChromXsRight.Value + peakWidthMargin);
                 var sPeaklist = chromatogram.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
 
                 var minRtId = SearchNearestPoint(spot.ChromXs, sPeaklist);
