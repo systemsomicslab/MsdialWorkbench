@@ -176,11 +176,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             //preparing MS1 and MS/MS chromatograms
             //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
-            return DataAccess.GetMs1Peaklist(
-                spectrumList,
-                (float)chromPeakFeature.Mass, centroidMs1Tolerance, ionMode,
-                ChromXType.Drift, ChromXUnit.Msec,
-                startDt, endDt);
+            var rawSpectra = new RawSpectra(spectrumList, ChromXType.Drift, ChromXUnit.Msec, ionMode);
+            return rawSpectra.GetMs1Chromatogram(chromPeakFeature.Mass, centroidMs1Tolerance, startDt, endDt);
         }
 
         private static List<List<ChromatogramPeak>> GetMs2PeaksList(

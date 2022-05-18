@@ -134,7 +134,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
 
 
             //get EIC chromatogram
-            var peaklist = DataAccess.GetMs1Peaklist(accSpectrumProvider.LoadMsSpectrums(), focusedMass, param.MassSliceWidth, param.IonMode, ChromXType.RT, ChromXUnit.Min, param.RetentionTimeBegin, param.RetentionTimeEnd);
+            var rawSpectra = new RawSpectra(accSpectrumProvider.LoadMsSpectrums(), ChromXType.RT, ChromXUnit.Min, param.IonMode);
+            var peaklist = rawSpectra.GetMs1Chromatogram(focusedMass, param.MassSliceWidth, param.RetentionTimeBegin, param.RetentionTimeEnd);
             if (peaklist.Count == 0) return null;
 
             //get peak detection result

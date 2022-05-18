@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Database;
+using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
@@ -36,10 +37,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
                 // UNDONE: retrieve spectrum data
                 var detected = spot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
-                var peaklist = DataAccess.GetMs1Peaklist(
-                    spectra, (float)peak.Mass,
-                    (float)(detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f,
-                    peak.IonMode);
+                var rawSpectra = new RawSpectra(spectra, ChromXType.RT, ChromXUnit.Min, peak.IonMode);
+                var peaklist = rawSpectra.GetMs1Chromatogram(peak.Mass, (detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f, double.MinValue, double.MaxValue);
                 var peakInfo = new ChromatogramPeakInfo(
                     peak.FileID, peaklist,
                     (float)peak.ChromXsTop.Value,
@@ -56,10 +55,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
                     // UNDONE: retrieve spectrum data
                     var ddetected = dspot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
-                    var dpeaklist = DataAccess.GetMs1Peaklist(
-                        spectra, (float)peak.Mass,
-                        (float)(detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f,
-                        peak.IonMode);
+                    var dRawSpectra = new RawSpectra(spectra, ChromXType.Drift, ChromXUnit.Msec, peak.IonMode);
+                    var dpeaklist = dRawSpectra.GetMs1Chromatogram(peak.Mass, (detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f, double.MinValue, double.MaxValue);
                     var dpeakInfo = new ChromatogramPeakInfo(
                         peak.FileID, peaklist,
                         (float)peak.ChromXsTop.Value,

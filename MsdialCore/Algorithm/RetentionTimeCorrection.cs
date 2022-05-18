@@ -43,6 +43,7 @@ namespace CompMs.MsdialCore.Algorithm {
             if (iStdLib.IsEmptyOrNull()) return new List<StandardPair>();
 
             var peakpickCore = new PeakSpottingCore();
+            var rawSpectra = new RawSpectra(spectrumList, ChromXType.RT, ChromXUnit.Min, param.IonMode);
             foreach (var i in iStdLib) {
                 var startMass = i.PrecursorMz;
                 var endMass = i.PrecursorMz + i.MassTolerance;
@@ -61,9 +62,7 @@ namespace CompMs.MsdialCore.Algorithm {
                     }
                 }
                 if (pab == null) pab = new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
-                var peaklist = DataAccess.GetMs1Peaklist(
-                    spectrumList, startMass, i.MassTolerance, param.IonMode, 
-                    ChromXType.RT, ChromXUnit.Min, param.RetentionTimeBegin, param.RetentionTimeEnd);
+                var peaklist = rawSpectra.GetMs1Chromatogram(startMass, i.MassTolerance, param.RetentionTimeBegin, param.RetentionTimeEnd);
                 targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist });
             }
             /*   foreach(var t in targetList) {

@@ -298,7 +298,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
             var spectrumList = provider.LoadMs1Spectrums();
             //get EIC chromatogram
-            var peaklist = DataAccess.GetMs1Peaklist(spectrumList, id2ChromXs, focusedMass, param.MassSliceWidth, param.IonMode, type, unit, chromBegin, chromEnd);
+            var peaklist = new RawSpectra(spectrumList, type, unit, param.IonMode).GetMs1Chromatogram(focusedMass, param.MassSliceWidth, chromBegin, chromEnd);
             if (peaklist.Count == 0) return null;
 
             //get peak detection result
@@ -716,12 +716,12 @@ namespace CompMs.MsdialCore.Algorithm {
             var recalculatedPeakspots = new List<ChromatogramPeakFeature>();
             var minDatapoint = 3;
             // var counter = 0;
+            var rawSpectra = new RawSpectra(spectrumList, type, unit, param.IonMode);
             foreach (var spot in chromPeakFeatures) {
                 //get EIC chromatogram
                 var peakWidth = spot.PeakWidth();
                 var peakWidthMargin = spot.PeakWidth() * 0.5;
-                var peaklist = DataAccess.GetMs1Peaklist(spectrumList, (float)spot.Mass, param.CentroidMs1Tolerance, param.IonMode, type, unit,
-                    (float)(spot.ChromXsLeft.Value - peakWidthMargin), (float)(spot.ChromXsRight.Value + peakWidthMargin));
+                var peaklist = rawSpectra.GetMs1Chromatogram(spot.Mass, param.CentroidMs1Tolerance, spot.ChromXsLeft.Value - peakWidthMargin, spot.ChromXsRight.Value + peakWidthMargin);
 
                 var sPeaklist = DataAccess.GetSmoothedPeaklist(peaklist, param.SmoothingMethod, param.SmoothingLevel);
                 var maxID = -1;

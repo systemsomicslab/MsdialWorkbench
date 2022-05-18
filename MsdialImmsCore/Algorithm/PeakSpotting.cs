@@ -108,7 +108,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
             MsdialImmsParameter param,
             float chromBegin, float chromEnd) {
 
-            var peaklist = DataAccess.GetMs1Peaklist(spectrum, focusedMass, param.MassSliceWidth, param.IonMode, ChromXType.Drift, ChromXUnit.Msec, chromBegin, chromEnd);
+            var rawSpectra = new RawSpectra(spectrum, ChromXType.Drift, ChromXUnit.Msec, param.IonMode);
+            var peaklist = rawSpectra.GetMs1Chromatogram(focusedMass, param.MassSliceWidth, chromBegin, chromEnd);
             if (peaklist.IsEmptyOrNull())
                 return new List<ChromatogramPeakFeature>();
 
@@ -383,14 +384,14 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var recalculatedPeakspots = new List<ChromatogramPeakFeature>();
 
             var minDatapoint = 3;
+            var rawSpectra = new RawSpectra(spectrumList, type, unit, param.IonMode);
             foreach (var spot in chromPeakFeatures) {
                 //get EIC chromatogram
 
                 var peakWidth = spot.PeakWidth();
                 var peakWidthMargin = peakWidth * 0.5;
 
-                var peaklist = DataAccess.GetMs1Peaklist(spectrumList, (float)spot.Mass, param.CentroidMs1Tolerance, param.IonMode, type, unit,
-                    (float)(spot.ChromXsLeft.Value - peakWidthMargin), (float)(spot.ChromXsRight.Value + peakWidthMargin));
+                var peaklist = rawSpectra.GetMs1Chromatogram(spot.Mass, param.CentroidMs1Tolerance, spot.ChromXsLeft.Value - peakWidthMargin, spot.ChromXsRight.Value + peakWidthMargin);
                 var sPeaklist = DataAccess.GetSmoothedPeaklist(peaklist, param.SmoothingMethod, param.SmoothingLevel);
 
                 var minRtId = SearchNearestPoint(spot.ChromXs, sPeaklist);

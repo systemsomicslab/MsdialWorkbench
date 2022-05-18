@@ -44,8 +44,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
             var mzTol = Math.Max(this.mzTol, 0.005f);
             peakWidth = Math.Max(peakWidth, 0.2f);
 
-            var peaklist = DataAccess.GetMs1Peaklist(spectrum, center.Mz.Value, mzTol, ionMode, 
-                ChromXType.RT, ChromXUnit.Min, center.RT.Value - peakWidth * 1.5, center.RT.Value + peakWidth * 1.5);
+            var rawSpectra = new RawSpectra(spectrum, ChromXType.RT, ChromXUnit.Min, ionMode);
+            var peaklist = rawSpectra.GetMs1Chromatogram(center.Mz.Value, mzTol, center.RT.Value - peakWidth * 1.5, center.RT.Value + peakWidth * 1.5);
             return DataAccess.GetSmoothedPeaklist(peaklist, smoothingMethod, smoothingLevel);
         }
     }

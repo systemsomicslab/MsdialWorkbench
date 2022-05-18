@@ -44,4 +44,8 @@
     <ProjectReference Include="..\NCDK\NCDK.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+	<InternalsVisibleTo Include="CommonStandardTests"/>
+  </ItemGroup>
+
 </Project>

@@ -228,26 +228,6 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         // get chromatograms
-        public static List<ChromatogramPeak> GetMs1Peaklist(IReadOnlyList<RawSpectrum> spectrumList, double targetMass, double ms1Tolerance, IonMode ionmode,
-            ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, double chromBegin = double.MinValue, double chromEnd = double.MaxValue) {
-            if (spectrumList == null || spectrumList.Count == 0) return null;
-            var peaklist = new List<ChromatogramPeak>();
-            var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
-
-            foreach (var (spectrum, index) in spectrumList.WithIndex().Where(n => n.Item1.ScanPolarity == scanPolarity && n.Item1.MsLevel <= 1)) {
-                var chromX = type == ChromXType.Drift ? spectrum.DriftTime : spectrum.ScanStartTime;
-                if (chromX < chromBegin) continue;
-                if (chromX > chromEnd) break;
-                var massSpectra = spectrum.Spectrum;
-                //var startIndex = GetMs1StartIndex(targetMass, ms1Tolerance, massSpectra);
-                //bin intensities for focused MZ +- ms1Tolerance
-                (double basepeakMz, double basepeakIntensity, double summedIntensity) = new Spectrum(massSpectra).RetrieveBin(targetMass, ms1Tolerance);
-                peaklist.Add(new ChromatogramPeak() { ID = index, ChromXs = new ChromXs(chromX, type, unit), Mass = basepeakMz, Intensity = summedIntensity });
-            }
-
-            return peaklist;
-        }
-
         public static Dictionary<int, ChromXs> GetID2ChromXs(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionmode,
             ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
             var dict = new Dictionary<int, ChromXs>();
@@ -258,27 +238,6 @@ namespace CompMs.MsdialCore.Utility {
                 dict[index] = new ChromXs(chromX, type, unit);
             }
             return dict;
-        }
-
-        public static List<ChromatogramPeak> GetMs1Peaklist(IReadOnlyList<RawSpectrum> spectrumList, Dictionary<int, ChromXs> id2ChromXs,
-            double targetMass, double ms1Tolerance, IonMode ionmode,
-            ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, double chromBegin = double.MinValue, double chromEnd = double.MaxValue) {
-            if (spectrumList == null || spectrumList.Count == 0) return null;
-            var peaklist = new List<ChromatogramPeak>();
-            var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
-
-            foreach (var (spectrum, index) in spectrumList.WithIndex().Where(n => n.Item1.ScanPolarity == scanPolarity && n.Item1.MsLevel <= 1)) {
-                var chromX = type == ChromXType.Drift ? spectrum.DriftTime : spectrum.ScanStartTime;
-                if (chromX < chromBegin) continue;
-                if (chromX > chromEnd) break;
-                var massSpectra = spectrum.Spectrum;
-                //var startIndex = GetMs1StartIndex(targetMass, ms1Tolerance, massSpectra);
-                //bin intensities for focused MZ +- ms1Tolerance
-                (double basepeakMz, double basepeakIntensity, double summedIntensity) = new Spectrum(massSpectra).RetrieveBin(targetMass, ms1Tolerance);
-                peaklist.Add(new ChromatogramPeak() { ID = index, ChromXs = id2ChromXs[index], Mass = basepeakMz, Intensity = summedIntensity });
-            }
-
-            return peaklist;
         }
 
         public static List<ChromatogramPeak> GetEicPeaklistByHighestBasePeakMz(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> features, double mzTol, IonMode ionmode,
@@ -295,7 +254,8 @@ namespace CompMs.MsdialCore.Utility {
                 }
             }
             var hSpot = features[maxSpotID];
-            return GetMs1Peaklist(spectrumList, hSpot.PrecursorMz, mzTol, ionmode, type, unit, chromBegin, chromEnd);
+            var rawSpectrum = new RawSpectra(spectrumList, type, unit, ionmode);
+            return rawSpectrum.GetMs1Chromatogram(hSpot.PrecursorMz, mzTol, chromBegin, chromEnd);
         }
 
         public static List<ChromatogramPeak> GetTicPeaklist(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionmode,
