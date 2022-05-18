@@ -94,7 +94,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                 curatedSpectra.Select(x => x.Mass).ToList(), param, targetCE);
 
             foreach (var chromPeaks in ms2ChromPeaksList) {
-                var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
+                var sChromPeaks = new Chromatogram(chromPeaks).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
                 smoothedMs2ChromPeaksList.Add(sChromPeaks);
             }
 

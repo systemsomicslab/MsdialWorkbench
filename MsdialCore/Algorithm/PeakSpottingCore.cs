@@ -340,7 +340,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
         private static List<ChromatogramPeakFeature> GetPeakAreaBeanListOnDriftTimeAxis(List<ChromatogramPeak> peaklist, ChromatogramPeakFeature rtPeakFeature, IReadOnlyList<RawSpectrum> spectrumList, ParameterBase param) {
 
-            var smoothedPeaklist = DataAccess.GetSmoothedPeaklist(peaklist, param.SmoothingMethod, param.SmoothingLevel);
+            var smoothedPeaklist = new Chromatogram(peaklist).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
             var minDatapoints = param.MinimumDatapoints;
             var minAmps = param.MinimumAmplitude * 0.25;
             var detectedPeaks = PeakDetection.PeakDetectionVS1(smoothedPeaklist, minDatapoints, minAmps);
@@ -422,7 +422,7 @@ namespace CompMs.MsdialCore.Algorithm {
         #region peak detection utilities
         public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(List<ChromatogramPeak> peaklist, ParameterBase param,
             ChromXType type, ChromXUnit unit) {
-            var smoothedPeaklist = DataAccess.GetSmoothedPeaklist(peaklist, param.SmoothingMethod, param.SmoothingLevel);
+            var smoothedPeaklist = new Chromatogram(peaklist).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
             //var detectedPeaks = PeakDetection.GetDetectedPeakInformationCollectionFromDifferentialBasedPeakDetectionAlgorithm(analysisParametersBean.MinimumDatapoints, analysisParametersBean.MinimumAmplitude, analysisParametersBean.AmplitudeNoiseFactor, analysisParametersBean.SlopeNoiseFactor, analysisParametersBean.PeaktopNoiseFactor, smoothedPeaklist);
             var minDatapoints = param.MinimumDatapoints;
             var minAmps = param.MinimumAmplitude;
@@ -723,7 +723,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 var peakWidthMargin = spot.PeakWidth() * 0.5;
                 var peaklist = rawSpectra.GetMs1Chromatogram(spot.Mass, param.CentroidMs1Tolerance, spot.ChromXsLeft.Value - peakWidthMargin, spot.ChromXsRight.Value + peakWidthMargin);
 
-                var sPeaklist = DataAccess.GetSmoothedPeaklist(peaklist, param.SmoothingMethod, param.SmoothingLevel);
+                var sPeaklist = new Chromatogram(peaklist).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
                 var maxID = -1;
                 var maxInt = double.MinValue;
                 var minRtId = -1;

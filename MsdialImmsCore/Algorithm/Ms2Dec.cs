@@ -193,7 +193,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             var smoothedMs2ChromPeaksList = new List<List<ChromatogramPeak>>(ms2ChromPeaksList.Count);
             foreach (var chromPeaks in ms2ChromPeaksList) {
-                var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, parameter.SmoothingMethod, parameter.SmoothingLevel);
+                var sChromPeaks = new Chromatogram(chromPeaks).Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
                 smoothedMs2ChromPeaksList.Add(sChromPeaks);
             }
             return smoothedMs2ChromPeaksList;

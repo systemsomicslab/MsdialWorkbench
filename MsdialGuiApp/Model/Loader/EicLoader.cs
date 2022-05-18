@@ -71,17 +71,17 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         internal List<ChromatogramPeakWrapper> LoadHighestEicTrace(List<ChromatogramPeakFeatureModel> targets) {
-            return DataAccess.GetSmoothedPeaklist(
-                DataAccess.GetEicPeaklistByHighestBasePeakMz(
+            var chromatogram = DataAccess.GetEicPeaklistByHighestBasePeakMz(
                         provider.LoadMs1Spectrums(),
                         targets.Select(n => n.InnerModel).ToList(), parameter.CentroidMs1Tolerance,
                         parameter.IonMode,
                         chromXType, chromXUnit,
-                        rangeBegin, rangeEnd),
-                    parameter.SmoothingMethod, parameter.SmoothingLevel)
-            .Where(peak => peak != null)
-            .Select(peak => new ChromatogramPeakWrapper(peak))
-            .ToList();
+                        rangeBegin, rangeEnd);
+            return new CompMs.Common.Components.Chromatogram(chromatogram)
+                .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
+                .Where(peak => peak != null)
+                .Select(peak => new ChromatogramPeakWrapper(peak))
+                .ToList();
         }
 
         protected virtual Task<List<ChromatogramPeakWrapper>> LoadEicCoreAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
@@ -90,7 +90,8 @@ namespace CompMs.App.Msdial.Model.Loader
                 var spectra = await provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
                 var rawSpectra = new RawSpectra(spectra, chromXType, chromXUnit, parameter.IonMode);
                 var ms1Peaks = rawSpectra.GetMs1Chromatogram(target.Mass, parameter.CentroidMs1Tolerance, rangeBegin, rangeEnd);
-                return DataAccess.GetSmoothedPeaklist(ms1Peaks, parameter.SmoothingMethod, parameter.SmoothingLevel)
+                return new CompMs.Common.Components.Chromatogram(ms1Peaks)
+                    .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                     .Where(peak => peak != null)
                     .Select(peak => new ChromatogramPeakWrapper(peak))
                     .ToList();
@@ -100,7 +101,8 @@ namespace CompMs.App.Msdial.Model.Loader
         protected virtual List<ChromatogramPeakWrapper> LoadEicCore(double mass, double massTolerance) {
             var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), chromXType, chromXUnit, parameter.IonMode);
             var chromatogram = rawSpectra.GetMs1Chromatogram(mass, parameter.CentroidMs1Tolerance, rangeBegin, rangeEnd);
-            return DataAccess.GetSmoothedPeaklist(chromatogram, parameter.SmoothingMethod, parameter.SmoothingLevel)
+            return new CompMs.Common.Components.Chromatogram(chromatogram)
+                .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new ChromatogramPeakWrapper(peak))
                 .ToList();
@@ -129,16 +131,16 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         protected virtual List<ChromatogramPeakWrapper> LoadTicCore() {
-            return DataAccess.GetSmoothedPeaklist(
-                DataAccess.GetTicPeaklist(
+            var peaklist = DataAccess.GetTicPeaklist(
                         provider.LoadMs1Spectrums(),
                         parameter.IonMode,
                         chromXType, chromXUnit,
-                        rangeBegin, rangeEnd),
-                    parameter.SmoothingMethod, parameter.SmoothingLevel)
-            .Where(peak => peak != null)
-            .Select(peak => new ChromatogramPeakWrapper(peak))
-            .ToList();
+                        rangeBegin, rangeEnd);
+            return new CompMs.Common.Components.Chromatogram(peaklist)
+                .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
+                .Where(peak => peak != null)
+                .Select(peak => new ChromatogramPeakWrapper(peak))
+                .ToList();
         }
 
         internal List<ChromatogramPeakWrapper>
@@ -153,16 +155,16 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         protected virtual List<ChromatogramPeakWrapper> LoadBpcCore() {
-            return DataAccess.GetSmoothedPeaklist(
-                DataAccess.GetBpcPeaklist(
+            var chromatogram = DataAccess.GetBpcPeaklist(
                         provider.LoadMs1Spectrums(),
                         parameter.IonMode,
                         chromXType, chromXUnit,
-                        rangeBegin, rangeEnd),
-                    parameter.SmoothingMethod, parameter.SmoothingLevel)
-            .Where(peak => peak != null)
-            .Select(peak => new ChromatogramPeakWrapper(peak))
-            .ToList();
+                        rangeBegin, rangeEnd);
+            return new CompMs.Common.Components.Chromatogram(chromatogram)
+                .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
+                .Where(peak => peak != null)
+                .Select(peak => new ChromatogramPeakWrapper(peak))
+                .ToList();
         }
     }
 }

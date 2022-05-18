@@ -127,7 +127,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         private static List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(List<ChromatogramPeak> peaklist, MsdialImmsParameter param) {
 
-            var smoothedPeaklist = DataAccess.GetSmoothedPeaklist(peaklist, param.SmoothingMethod, param.SmoothingLevel);
+            var smoothedPeaklist = new Chromatogram(peaklist).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
             var detectedPeaks = PeakDetection.PeakDetectionVS1(smoothedPeaklist, param.MinimumDatapoints, param.MinimumAmplitude);
             if (detectedPeaks.IsEmptyOrNull())
                 return new List<ChromatogramPeakFeature>();
@@ -392,7 +392,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 var peakWidthMargin = peakWidth * 0.5;
 
                 var peaklist = rawSpectra.GetMs1Chromatogram(spot.Mass, param.CentroidMs1Tolerance, spot.ChromXsLeft.Value - peakWidthMargin, spot.ChromXsRight.Value + peakWidthMargin);
-                var sPeaklist = DataAccess.GetSmoothedPeaklist(peaklist, param.SmoothingMethod, param.SmoothingLevel);
+                var sPeaklist = new Chromatogram(peaklist).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
 
                 var minRtId = SearchNearestPoint(spot.ChromXs, sPeaklist);
 

@@ -170,7 +170,7 @@ namespace CompMs.MsdialCore.Algorithm {
             for (var i = 0; i < x.Count; i++) {
                 peaks.Add(new ChromatogramPeak(i, 0, y[i], new RetentionTime(x[i])));
             }
-            var speaklist = DataAccess.GetSmoothedPeaklist(peaks, SmoothingMethod.SimpleMovingAverage, 50);
+            var speaklist = new Chromatogram(peaks).Smoothing(SmoothingMethod.SimpleMovingAverage, 50);
             return speaklist.Select(z => z.Intensity).ToList();
         }
 

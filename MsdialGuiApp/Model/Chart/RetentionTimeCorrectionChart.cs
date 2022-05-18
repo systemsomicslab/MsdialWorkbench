@@ -284,7 +284,7 @@ namespace CompMs.App.Msdial.Model.Chart {
                     MarkerType = MarkerType.None,
                     Pen = new Pen(brush, 1.0),
                 };
-                var smoothedChromatogram = DataAccess.GetSmoothedPeaklist(commonStd.Chromatograms[i], param.SmoothingMethod, param.SmoothingLevel);
+                var smoothedChromatogram = new Chromatogram(commonStd.Chromatograms[i]).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
                 foreach (var peak in smoothedChromatogram) {
                     if (peak.ChromXs.RT.Value < minRTrange) continue;
                     if (peak.ChromXs.RT.Value > maxRT + rtTol) break;
@@ -351,7 +351,7 @@ namespace CompMs.App.Msdial.Model.Chart {
             for (var i = 0; i < peaks.Count; i++) {
                 correctedPeakList.Add(new ChromatogramPeak(i, peaks[i].Mass, peaks[i].Intensity, new RetentionTime(bean.PredictedRt[peaks[i].ID])));
             }
-            return DataAccess.GetSmoothedPeaklist(correctedPeakList, param.SmoothingMethod, param.SmoothingLevel);
+            return new Chromatogram(correctedPeakList).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
         }
         #endregion
 

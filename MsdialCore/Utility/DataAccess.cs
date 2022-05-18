@@ -78,26 +78,6 @@ namespace CompMs.MsdialCore.Utility {
             }
         }
 
-        // smoother
-        public static List<ChromatogramPeak> GetSmoothedPeaklist(IReadOnlyList<IChromatogramPeak> peaklist, SmoothingMethod smoothingMethod, int smoothingLevel) {
-            switch (smoothingMethod) {
-                case SmoothingMethod.SimpleMovingAverage:
-                    return Smoothing.SimpleMovingAverage(peaklist, smoothingLevel);
-                case SmoothingMethod.LinearWeightedMovingAverage:
-                    return Smoothing.LinearWeightedMovingAverage(peaklist, smoothingLevel);
-                case SmoothingMethod.SavitzkyGolayFilter:
-                    return Smoothing.SavitxkyGolayFilter(peaklist, smoothingLevel);
-                case SmoothingMethod.BinomialFilter:
-                    return Smoothing.BinomialFilter(peaklist, smoothingLevel);
-                case SmoothingMethod.LowessFilter:
-                    return Smoothing.LowessFilter(peaklist, smoothingLevel);
-                case SmoothingMethod.LoessFilter:
-                    return Smoothing.LoessFilter(peaklist, smoothingLevel);
-                default:
-                    return Smoothing.LinearWeightedMovingAverage(peaklist, smoothingLevel);
-            }
-        }
-
         // converter
         public static ChromatogramPeakFeature GetChromatogramPeakFeature(PeakDetectionResult result, ChromXType type, ChromXUnit unit, double mass) {
             if (result == null) return null;
