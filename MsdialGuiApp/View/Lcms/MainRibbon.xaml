@@ -171,7 +171,7 @@
                               Command="{Binding GoToMsfinderCommand}"
                               IsEnabled="True"
                               KeyTip="M"/>
-                <RibbonButton Label="MassQL search" LargeImageSource="{StaticResource Msfinder_is}"
+                <RibbonButton Label="MassQL search" LargeImageSource="{StaticResource MassQL_icon_is}"
                               IsEnabled="True"
                               Command="{Binding ShowMassqlSearchSettingCommand}"
                               KeyTip="T"/>
