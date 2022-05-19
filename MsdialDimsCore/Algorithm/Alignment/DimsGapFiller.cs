@@ -42,7 +42,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             }
             var peakElements = peakElementsMemo[fileID];
             var peaklist = DataAccess.ConvertRawPeakElementToChromatogramPeakList(peakElements, center.Mz.Value - peakWidth * 2.0, center.Mz.Value + peakWidth * 2.0);
-            return DataAccess.GetSmoothedPeaklist(peaklist, smoothingMethod, smoothingLevel);
+            return new Chromatogram(peaklist).Smoothing(smoothingMethod, smoothingLevel);
         }
     }
 }

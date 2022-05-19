@@ -132,7 +132,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
                spectrum, centralRT,
                centralRT - rtTol * 3.0F,
                centralRT + rtTol * 3.0F, centralMz, param);
-            return DataAccess.GetSmoothedPeaklist(peaklist, smoothingMethod, smoothingLevel);
+            return new Chromatogram(peaklist).Smoothing(smoothingMethod, smoothingLevel);
         }
     }
 
@@ -216,7 +216,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
                spectrum, centralRT,
                centralRT - rtTol * 3.0F,
                centralRT + rtTol * 3.0F, centralMz, param);
-            return DataAccess.GetSmoothedPeaklist(peaklist, smoothingMethod, smoothingLevel);
+            return new Chromatogram(peaklist).Smoothing(smoothingMethod, smoothingLevel);
         }
     }
 }

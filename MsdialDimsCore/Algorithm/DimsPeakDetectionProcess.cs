@@ -28,23 +28,23 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
             var ms1Spectrum = provider.LoadMs1Spectrums().Argmax(spec => spec.Spectrum.Length);
             var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
-            var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, peakPickParameter.SmoothingMethod, peakPickParameter.SmoothingLevel);
+            var sChromPeaks = new Chromatogram(chromPeaks).Smoothing(peakPickParameter.SmoothingMethod, peakPickParameter.SmoothingLevel);
 
             var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, peakPickParameter.MinimumDatapoints, peakPickParameter.MinimumAmplitude);
             if (peakPickResults.IsEmptyOrNull()) {
                 return new List<ChromatogramPeakFeature>();
             }
-            return ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, provider.LoadMsSpectrums(), projectParameter.AcquisitionType, projectParameter.IonMode);
+            return ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, provider.LoadMsSpectrums(), projectParameter.AcquisitionType);
         }
 
-        private static List<ChromatogramPeakFeature> ConvertPeaksToPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, IReadOnlyList<RawSpectrum> allSpectra, AcquisitionType type, IonMode ionMode) {
+        private static List<ChromatogramPeakFeature> ConvertPeaksToPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, IReadOnlyList<RawSpectrum> allSpectra, AcquisitionType type) {
             var peakFeatures = new List<ChromatogramPeakFeature>();
             var ms2SpecObjects = allSpectra
                 .Where(spectra => spectra.MsLevel == 2 && spectra.Precursor != null)
                 .OrderBy(spectra => spectra.Precursor.SelectedIonMz).ToList();
 
             foreach (var result in peakPickResults) {
-                var peakFeature = ChromatogramPeakFeature.FromPeakDetectionResult(result, ChromXType.Mz, ChromXUnit.Mz, ms1Spectrum.Spectrum[result.ScanNumAtPeakTop].Mz, ionMode);
+                var peakFeature = DataAccess.GetChromatogramPeakFeature(result, ChromXType.Mz, ChromXUnit.Mz, ms1Spectrum.Spectrum[result.ScanNumAtPeakTop].Mz);
                 var chromScanID = peakFeature.ChromScanIdTop;
                 peakFeature.IonMode = ms1Spectrum.ScanPolarity == ScanPolarity.Positive ? IonMode.Positive : IonMode.Negative;
                 peakFeature.PrecursorMz = ms1Spectrum.Spectrum[chromScanID].Mz;

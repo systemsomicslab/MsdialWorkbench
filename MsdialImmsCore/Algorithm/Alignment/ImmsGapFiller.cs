@@ -36,10 +36,9 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
         protected override List<ChromatogramPeak> GetPeaks(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
             var mzTol = this.mzTol;
 
-            var peaklist = DataAccess.GetMs1Peaklist(
-                spectrum, center.Mz.Value, mzTol, ionMode,
-                ChromXType.Drift, ChromXUnit.Msec, center.Drift.Value - peakWidth * 1.5, center.Drift.Value + peakWidth * 1.5);
-            return DataAccess.GetSmoothedPeaklist(peaklist, smoothingMethod, smoothingLevel);
+            var rawSpectra = new RawSpectra(spectrum, ChromXType.Drift, ChromXUnit.Msec, ionMode);
+            var peaklist = rawSpectra.GetMs1ExtractedChromatogram(center.Mz.Value, mzTol, center.Drift.Value - peakWidth * 1.5, center.Drift.Value + peakWidth * 1.5);
+            return peaklist.Smoothing(smoothingMethod, smoothingLevel);
         }
 
         protected override double GetPeakWidth(IEnumerable<AlignmentChromPeakFeature> peaks) {

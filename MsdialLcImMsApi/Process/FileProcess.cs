@@ -103,7 +103,7 @@ namespace CompMs.MsdialLcImMsApi.Process
         private static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isGuiProcess) {
             using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, isGuiProcess)) {
                 for (var i = 0; i < 5; i++) {
-                    var rawObj = DataAccess.GetRawDataMeasurement(access);
+                    var rawObj = access.GetMeasurement();
                     if (rawObj != null)
                         return rawObj;
                     Thread.Sleep(5000);
@@ -135,7 +135,7 @@ namespace CompMs.MsdialLcImMsApi.Process
         private static Dictionary<double, List<MSDecResult>> SpectrumDeconvolution(
             IReadOnlyList<RawSpectrum> spectrumList,
             List<ChromatogramPeakFeature> chromPeakFeatures,
-            ChromatogramPeaksDataSummary summary,
+            ChromatogramPeaksDataSummaryDto summary,
             MsdialLcImMsParameter parameter,
             IupacDatabase iupac,
             Action<int> reportAction,

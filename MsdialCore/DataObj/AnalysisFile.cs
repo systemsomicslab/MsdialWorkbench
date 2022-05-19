@@ -40,7 +40,7 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(15)]
         public RetentionTimeCorrectionBean RetentionTimeCorrectionBean { get; set; } = new RetentionTimeCorrectionBean();
         [Key(16)]
-        public ChromatogramPeaksDataSummary ChromPeakFeaturesSummary { get; set; } = new ChromatogramPeaksDataSummary();
+        public ChromatogramPeaksDataSummaryDto ChromPeakFeaturesSummary { get; set; } = new ChromatogramPeaksDataSummaryDto();
         [Key(17)]
         public string ProteinAssembledResultFilePath { get; set; } // *.prf
 

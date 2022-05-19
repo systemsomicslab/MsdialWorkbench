@@ -16,7 +16,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
         }
 
         public List<MSDecResult> GetMSDecResults(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
-            MsdialGcmsParameter param, ChromatogramPeaksDataSummary summary, Action<int> reportAction, System.Threading.CancellationToken token) {
+            MsdialGcmsParameter param, ChromatogramPeaksDataSummaryDto summary, Action<int> reportAction, System.Threading.CancellationToken token) {
             return MSDecHandler.GetMSDecResults(spectrumList, chromPeakFeatures, param, reportAction, InitialProgress, ProgressMax);
         }
     }

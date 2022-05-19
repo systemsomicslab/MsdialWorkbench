@@ -23,7 +23,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
         public List<MSDecResult> GetMS2DecResults(
             IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
-            MsdialDimsParameter param, ChromatogramPeaksDataSummary summary,
+            MsdialDimsParameter param, ChromatogramPeaksDataSummaryDto summary,
             double targetCE = -1,
             Action<int> reportAction = null, System.Threading.CancellationToken token = default) {
 
@@ -39,7 +39,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
         private static MSDecResult GetMS2DecResult(
             IReadOnlyList<RawSpectrum> spectrumList, ChromatogramPeakFeature chromPeakFeature,
-            MsdialDimsParameter param, ChromatogramPeaksDataSummary summary,
+            MsdialDimsParameter param, ChromatogramPeaksDataSummaryDto summary,
             double targetCE = -1) {
 
             var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);

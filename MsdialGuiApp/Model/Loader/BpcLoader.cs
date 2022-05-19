@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
 using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using System;
@@ -45,16 +46,12 @@ namespace CompMs.App.Msdial.Model.Loader {
         }
 
         protected virtual List<ChromatogramPeakWrapper> LoadBpcCore() {
-            return DataAccess.GetSmoothedPeaklist(
-                DataAccess.GetBpcPeaklist(
-                        provider.LoadMs1Spectrums(),
-                        parameter.IonMode,
-                        chromXType, chromXUnit,
-                        rangeBegin, rangeEnd),
-                    parameter.SmoothingMethod, parameter.SmoothingLevel)
-            .Where(peak => peak != null)
-            .Select(peak => new ChromatogramPeakWrapper(peak))
-            .ToList();
+            return new RawSpectra(provider.LoadMs1Spectrums(), chromXType, chromXUnit, parameter.IonMode)
+                .GetMs1BasePeakChromatogram(rangeBegin, rangeEnd)
+                .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
+                .Where(peak => peak != null)
+                .Select(peak => new ChromatogramPeakWrapper(peak))
+                .ToList();
         }
     }
 }

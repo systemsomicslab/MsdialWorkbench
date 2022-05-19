@@ -5,7 +5,6 @@ using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,7 +73,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 if (chromX > chromEnd) break;
                 var massSpectra = spectrum.Spectrum;
                 //bin intensities for focused MZ +- ms1Tolerance
-                DataAccess.RetrieveBinnedMzIntensity(massSpectra, targetMass, ms1Tolerance, out double basepeakMz, out double basepeakIntensity, out double summedIntensity);
+                (double basepeakMz, double basepeakIntensity, double summedIntensity) = new Spectrum(massSpectra).RetrieveBin(targetMass, ms1Tolerance);
                 peaklist.Add(new ChromatogramPeak() { ID = spectrum.Index, ChromXs = new ChromXs(chromX, ChromXType.Drift, ChromXUnit.Msec), Mass = basepeakMz, Intensity = summedIntensity });
             }
 

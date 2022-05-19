@@ -38,4 +38,8 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+	<InternalsVisibleTo Include="MsdialCoreTests" />
+  </ItemGroup>
+
 </Project>

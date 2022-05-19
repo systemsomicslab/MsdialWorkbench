@@ -3,6 +3,7 @@ using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
@@ -30,7 +31,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             IReadOnlyList<RawSpectrum> spectrumList,
             List<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialImmsParameter parameter,
-            ChromatogramPeaksDataSummary summary,
+            ChromatogramPeaksDataSummaryDto summary,
             IupacDatabase iupac,
             double targetCE,
             Action<int> reportAction) {
@@ -47,7 +48,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             IReadOnlyList<RawSpectrum> spectrumList,
             List<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialImmsParameter parameter,
-            ChromatogramPeaksDataSummary summary,
+            ChromatogramPeaksDataSummaryDto summary,
             IupacDatabase iupac,
             double targetCE,
             Action<int> reportAction,
@@ -68,7 +69,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
         public MSDecResult GetMS2DecResult(
             IReadOnlyList<RawSpectrum> spectrumList,
             ChromatogramPeakFeature chromPeakFeature,
-            MsdialImmsParameter parameter, ChromatogramPeaksDataSummary summary, IupacDatabase iupac,
+            MsdialImmsParameter parameter, ChromatogramPeaksDataSummaryDto summary, IupacDatabase iupac,
             double targetCE = -1) {
 
             var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
@@ -103,7 +104,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 }
             }
 
-            var ms1Peaklist = GetMs1Peaklist(
+            var ms1Chromatogram = GetMs1Peaklist(
                 spectrumList,
                 chromPeakFeature,
                 parameter.CentroidMs1Tolerance,
@@ -113,7 +114,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var ms2ChromPeaksList = GetMs2PeaksList(
                 spectrumList,
                 precursorMz, curatedSpectra.Select(x => x.Mass).ToList(),
-                ms1Peaklist.First().ID, ms1Peaklist.Last().ID,
+                ms1Chromatogram.Peaks.First().ID, ms1Chromatogram.Peaks.Last().ID,
                 parameter, targetCE);
 
             if (ms2ChromPeaksList.IsEmptyOrNull()) {
@@ -121,7 +122,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             }
 
             //Do MS2Dec deconvolution
-            var msdecResult = RunDeconvolution(chromPeakFeature, ms1Peaklist, ms2ChromPeaksList, parameter);
+            var msdecResult = RunDeconvolution(chromPeakFeature, ms1Chromatogram.Peaks, ms2ChromPeaksList, parameter);
             if (msdecResult == null) { //if null (any pure chromatogram is not found.)
                 if (parameter.IsDoAndromedaMs2Deconvolution)
                     return MSDecObjectHandler.GetAndromedaSpectrum(chromPeakFeature, curatedSpectra, parameter, iupac, Math.Abs(chromPeakFeature.PeakCharacter.Charge));
@@ -161,9 +162,9 @@ namespace CompMs.MsdialImmsCore.Algorithm
             return curatedSpectra.ToList();
         }
 
-        private static List<ChromatogramPeak> GetMs1Peaklist(
+        private static Chromatogram GetMs1Peaklist(
             IReadOnlyList<RawSpectrum> spectrumList, ChromatogramPeakFeature chromPeakFeature,
-            double centroidMs1Tolerance, ChromatogramPeaksDataSummary summary, IonMode ionMode) {
+            double centroidMs1Tolerance, ChromatogramPeaksDataSummaryDto summary, IonMode ionMode) {
 
             //check the Drift time range to be considered for chromatogram deconvolution
             var peakWidth = chromPeakFeature.PeakWidth();
@@ -176,11 +177,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             //preparing MS1 and MS/MS chromatograms
             //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
-            return DataAccess.GetMs1Peaklist(
-                spectrumList,
-                (float)chromPeakFeature.Mass, centroidMs1Tolerance, ionMode,
-                ChromXType.Drift, ChromXUnit.Msec,
-                startDt, endDt);
+            var rawSpectra = new RawSpectra(spectrumList, ChromXType.Drift, ChromXUnit.Msec, ionMode);
+            return rawSpectra.GetMs1ExtractedChromatogram(chromPeakFeature.Mass, centroidMs1Tolerance, startDt, endDt);
         }
 
         private static List<List<ChromatogramPeak>> GetMs2PeaksList(
@@ -196,7 +194,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             var smoothedMs2ChromPeaksList = new List<List<ChromatogramPeak>>(ms2ChromPeaksList.Count);
             foreach (var chromPeaks in ms2ChromPeaksList) {
-                var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, parameter.SmoothingMethod, parameter.SmoothingLevel);
+                var sChromPeaks = new Chromatogram(chromPeaks).Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
                 smoothedMs2ChromPeaksList.Add(sChromPeaks);
             }
             return smoothedMs2ChromPeaksList;
@@ -204,7 +202,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         private static MSDecResult RunDeconvolution(
             ChromatogramPeakFeature chromPeakFeature,
-            List<ChromatogramPeak> ms1PeakList,
+            IReadOnlyList<IChromatogramPeak> ms1PeakList,
             List<List<ChromatogramPeak>> ms2PeaksList,
             MsdialImmsParameter parameter) {
 
@@ -212,7 +210,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             return MSDecHandler.GetMSDecResult(ms2PeaksList, parameter, topScanNum);
         }
 
-        private static int SearchSpectrumIndex(ChromatogramPeakFeature chromPeakFeature, List<ChromatogramPeak> ms1Peaklist) {
+        private static int SearchSpectrumIndex(ChromatogramPeakFeature chromPeakFeature, IReadOnlyList<IChromatogramPeak> ms1Peaklist) {
             var minimumDiff = double.MaxValue;
             var minimumID = ms1Peaklist.Count / 2;
             // Define the scan number of peak top in the array of MS1 chromatogram restricted by the retention time range
