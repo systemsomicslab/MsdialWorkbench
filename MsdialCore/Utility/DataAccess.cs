@@ -219,24 +219,6 @@ namespace CompMs.MsdialCore.Utility {
             return dict;
         }
 
-        public static Chromatogram GetEicPeaklistByHighestBasePeakMz(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> features, double mzTol, IonMode ionmode,
-            ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min, double chromBegin = double.MinValue, double chromEnd = double.MaxValue) {
-            if (spectrumList.IsEmptyOrNull()) return null;
-            if (features.IsEmptyOrNull()) return null;
-
-            var maxSpotID = 0;
-            var maxIntensity = double.MinValue;
-            for (int i = 0; i < features.Count; i++) {
-                if (features[i].PeakHeightTop > maxIntensity) {
-                    maxIntensity = features[i].PeakHeightTop;
-                    maxSpotID = i;
-                }
-            }
-            var hSpot = features[maxSpotID];
-            var rawSpectrum = new RawSpectra(spectrumList, type, unit, ionmode);
-            return rawSpectrum.GetMs1ExtractedChromatogram(hSpot.PrecursorMz, mzTol, chromBegin, chromEnd);
-        }
-
         /// <summary>
         /// from the list of m/z and intensity
         /// the list of scan (auto), times (by m/z), m/z, and intensity is created
