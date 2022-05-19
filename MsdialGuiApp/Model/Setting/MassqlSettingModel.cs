@@ -53,7 +53,7 @@ namespace CompMs.App.Msdial.Model.Setting {
         }
 
         public List<PeakFeatureSearchValue> SendMassql() {
-            var massql = Massql;
+            var massql = "https://msql.ucsd.edu/parse?query=" + Massql;
             var req = WebRequest.Create(massql);
             var res = req.GetResponse();
             var resStream = res.GetResponseStream();
