@@ -1932,6 +1932,16 @@
             </Canvas>
         </Canvas>
     </Viewbox>
+    <Viewbox x:Key="MassQL_icon" Width="220" Height="220">
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="4*"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="7*"/>
+            </Grid.RowDefinitions>
+            <TextBlock HorizontalAlignment="Center" Height="16" TextWrapping="Wrap" VerticalAlignment="Center" Width="45" Grid.Row="1" Foreground="Red"><Run Language="ja-jp" Text="Mass"/><Run Text="QL"/></TextBlock>
+        </Grid>
+    </Viewbox>
 
     <DrawingImage x:Key="Alignment_result_export_is">
         <DrawingImage.Drawing>
@@ -2373,6 +2383,18 @@
                 </GeometryDrawing.Geometry>
                 <GeometryDrawing.Brush>
                     <VisualBrush Stretch="Uniform" Visual="{StaticResource Version}"/>
+                </GeometryDrawing.Brush>
+            </GeometryDrawing>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="MassQL_icon_is">
+        <DrawingImage.Drawing>
+            <GeometryDrawing>
+                <GeometryDrawing.Geometry>
+                    <RectangleGeometry Rect="0,0,255,255"/>
+                </GeometryDrawing.Geometry>
+                <GeometryDrawing.Brush>
+                    <VisualBrush Stretch="Uniform" Visual="{StaticResource MassQL_icon}"/>
                 </GeometryDrawing.Brush>
             </GeometryDrawing>
         </DrawingImage.Drawing>
