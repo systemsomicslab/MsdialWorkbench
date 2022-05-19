@@ -16,7 +16,7 @@
                      TextWrapping="Wrap"
                      VerticalScrollBarVisibility="Visible" />
             <Button x:Name="Button_Send_MassQL" 
-                        Content="Search with MassQL"
+                        Content="Search by MassQL"
                         Click="Button_Send_MassQL_Click"
                         Margin="1"
                         Height="25" Width="140" 
