@@ -14,6 +14,7 @@ using CompMs.Graphics.Design;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -31,7 +32,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             LcmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
+            IMessageBroker broker)
             : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -53,7 +55,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
             this.proteomicsTableService = proteomicsTableService;
-
+            _broker = broker;
             Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Brushes = this.model.Brushes.AsReadOnly();
             SelectedBrush = this.model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
@@ -139,6 +141,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
         private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
+        private readonly IMessageBroker _broker;
 
         public PeakFilterViewModel PeakFilterViewModel { get; }
 
@@ -215,7 +218,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private void Normalize(Window owner) {
             var parameter = model.Parameter;
-            using (var vm = new NormalizationSetViewModel(model.Container, model.DataBaseMapper, model.MatchResultEvaluator, parameter)) {
+            using (var vm = new NormalizationSetViewModel(model.Container, model.DataBaseMapper, model.MatchResultEvaluator, parameter, _broker)) {
                 var view = new NormalizationSetView {
                     DataContext = vm,
                     Owner = owner,

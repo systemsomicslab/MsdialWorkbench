@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Lipidomics;
@@ -7,6 +8,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Normalize;
 using CompMs.MsdialCore.Parameter;
+using Reactive.Bindings.Notifiers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -18,12 +20,13 @@ namespace CompMs.App.Msdial.Model.Normalize
 {
     class SplashSetModel : BindableBase
     {
-        public SplashSetModel(AlignmentResultContainer container, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+        public SplashSetModel(AlignmentResultContainer container, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker broker) {
             this.container = container;
             spots = container.AlignmentSpotProperties;
             this.refer = refer;
             this.parameter = parameter;
             this.evaluator = evaluator;
+            _broker = broker ?? MessageBroker.Default;
             var targetMetabolites = LipidomicsConverter.GetLipidClasses();
             targetMetabolites.Add("Any others");
             TargetMetabolites = targetMetabolites.AsReadOnly();
@@ -60,6 +63,7 @@ namespace CompMs.App.Msdial.Model.Normalize
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
         private readonly ParameterBase parameter;
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
+        private readonly IMessageBroker _broker;
 
         public ObservableCollection<StandardCompound> StandardCompounds => SplashProduct.Lipids;
 
@@ -96,15 +100,19 @@ namespace CompMs.App.Msdial.Model.Normalize
 
         public void Normalize() {
             // TODO: For ion mobility, it need to flatten spots and check compound PeakID.
+            var task = TaskNotification.Start("Normalize..");
+            _broker.Publish(task);
             var compounds = StandardCompounds.Where(IsRequiredFieldFilled).ToList();
             if (compounds.Count == 0) {
                 MessageBox.Show("Please fill the required fields for normalization", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _broker.Publish(TaskNotification.End(task));
                 return;
             }
             parameter.StandardCompounds = compounds;
             var unit = OutputUnit.Unit;
             Normalization.SplashNormalize(spots, refer, compounds, unit, evaluator);
             container.IsNormalized = true;
+            _broker.Publish(TaskNotification.End(task));
         }
 
         public bool CanNormalize() {

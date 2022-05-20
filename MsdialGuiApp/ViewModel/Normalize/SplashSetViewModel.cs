@@ -7,6 +7,7 @@ using CompMs.CommonMVVM.Common;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using Reactive.Bindings.Notifiers;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -14,8 +15,8 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
 {
     class SplashSetViewModel : ViewModelBase
     {
-        public SplashSetViewModel(AlignmentResultContainer container, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase parameter) {
-            Model = new SplashSetModel(container, refer, parameter, evaluator);
+        public SplashSetViewModel(AlignmentResultContainer container, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase parameter, IMessageBroker broker) {
+            Model = new SplashSetModel(container, refer, parameter, evaluator, broker);
 
             TargetMetabolites = Model.TargetMetabolites;
 
@@ -80,7 +81,6 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
         }
 
         public DelegateCommand NormalizeCommand => normalizeCommand ?? (normalizeCommand = new DelegateCommand(Model.Normalize));//, Model.CanNormalize));
-
         private DelegateCommand normalizeCommand;
     }
 

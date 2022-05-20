@@ -13,6 +13,7 @@ using CompMs.MsdialCore.DataObj;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -30,7 +31,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public AlignmentDimsVM(
             DimsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IMessageBroker broker)
             : base(model) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
@@ -42,7 +44,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             Model = model;
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
-
+            _broker = broker;
             MassMin = Model.MassMin;
             MassMax = Model.MassMax;
             MassLower = new ReactiveProperty<double>(MassMin).AddTo(Disposables);
@@ -129,6 +131,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
+        private readonly IMessageBroker _broker;
 
         public DimsAlignmentModel Model { get; }
 
@@ -373,7 +376,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         private void Normalize(Window owner) {
             var parameter = Model.Parameter;
-            using (var vm = new NormalizationSetViewModel(Model.Container, Model.DataBaseMapper, Model.MatchResultEvaluator, parameter)) {
+            using (var vm = new NormalizationSetViewModel(Model.Container, Model.DataBaseMapper, Model.MatchResultEvaluator, parameter, _broker)) {
                 var view = new NormalizationSetView
                 {
                     DataContext = vm,

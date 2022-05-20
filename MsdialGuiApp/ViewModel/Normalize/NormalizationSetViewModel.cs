@@ -5,6 +5,7 @@ using CompMs.CommonMVVM.Common;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using Reactive.Bindings.Notifiers;
 using System.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Normalize
@@ -15,11 +16,13 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
             AlignmentResultContainer container,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            ParameterBase parameter) {
+            ParameterBase parameter,
+            IMessageBroker broker) {
 
             this.container = container;
             this.refer = refer;
             this.parameter = parameter;
+            _broker = broker;
             this.evaluator = evaluator;
             Parameter = new ParameterBaseVM(parameter);
             var notifier = new PropertyChangedNotifier(Parameter);
@@ -40,11 +43,12 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
         private readonly ParameterBase parameter;
+        private readonly IMessageBroker _broker;
 
         public SplashSetViewModel SplashVM {
             get {
                 if (splashVM is null) {
-                    splashVM = new SplashSetViewModel(container, refer, evaluator, parameter);
+                    splashVM = new SplashSetViewModel(container, refer, evaluator, parameter, _broker);
                     Disposables.Add(splashVM);
                 }
                 return splashVM;

@@ -37,7 +37,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             IMessageBroker broker)
             : base(model,
                   ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService),
-                  ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService)) {
+                  ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, broker)) {
 
             Model = model;
             _broker = broker;
@@ -277,7 +277,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private static IReadOnlyReactiveProperty<AlignmentDimsVM> ConvertToAlignmentViewModel(
             DimsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IMessageBroker broker) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
@@ -286,13 +287,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }
             return method.ObserveProperty(m => m.AlignmentModel)
                 .Where(m => m != null)
-                .Select(m => new AlignmentDimsVM(m, compoundSearchService, peakSpotTableService))
+                .Select(m => new AlignmentDimsVM(m, compoundSearchService, peakSpotTableService, broker))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim();
             ReadOnlyReactivePropertySlim<AlignmentDimsVM> result;
             using (var subject = new Subject<DimsAlignmentModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new AlignmentDimsVM(m, compoundSearchService, peakSpotTableService))
+                    .Select(m => m is null ? null : new AlignmentDimsVM(m, compoundSearchService, peakSpotTableService, broker))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AlignmentModel);
