@@ -34,6 +34,7 @@ using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcMsApi.Export;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -54,7 +55,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             IMsdialDataStorage<MsdialLcmsParameter> storage,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
             IObservable<ParameterBase> parameterAsObservable,
-            IObservable<IBarItemsLoader> barItemsLoader)
+            IObservable<IBarItemsLoader> barItemsLoader,
+            IMessageBroker broker)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
@@ -68,6 +70,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             this.providerFactory = providerFactory;
             this.parameterAsObservable = parameterAsObservable;
             this.barItemsLoader = barItemsLoader;
+            _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
         }
 
@@ -93,6 +96,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
         private readonly IObservable<ParameterBase> parameterAsObservable;
         private readonly IObservable<IBarItemsLoader> barItemsLoader;
+        private readonly IMessageBroker _broker;
         private IAnnotationProcess annotationProcess;
 
 
@@ -389,7 +393,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public void ExportAlignment(Window owner) {
             var container = Storage;
-            var vm = new AlignmentResultExport2VM(AlignmentFile, container.AlignmentFiles, container);
+            var vm = new AlignmentResultExport2VM(AlignmentFile, container.AlignmentFiles, container, _broker);
 
             if (container.Parameter.TargetOmics == TargetOmics.Proteomics) {
                 var metadataAccessor = new LcmsProteomicsMetadataAccessor(container.DataBaseMapper, container.Parameter);

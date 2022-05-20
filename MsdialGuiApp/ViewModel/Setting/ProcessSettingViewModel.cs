@@ -4,10 +4,10 @@ using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
@@ -80,8 +80,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             SelectedSettingViewModel.Value = ProjectSettingViewModel.Value.SettingViewModels.FirstOrDefault();
         }
 
-        public ProcessSettingViewModel(IProjectModel projectModel) {
-            var projectSettingModel = new ProjectSettingModel(projectModel);
+        public ProcessSettingViewModel(IProjectModel projectModel, IMessageBroker broker) {
+            var projectSettingModel = new ProjectSettingModel(projectModel, broker);
             var project = Observable.Return(new ProjectSettingViewModel(projectSettingModel).AddTo(Disposables));
             ProjectSettingViewModel = project
                 .ToReadOnlyReactivePropertySlim()
@@ -148,13 +148,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             SelectedSettingViewModel.Value = DatasetSettingViewModel.Value.SettingViewModels.FirstOrDefault();
         }
 
-        public ProcessSettingViewModel(IProjectModel projectModel, IDatasetModel datasetModel) {
-            var projectSettingModel = new ProjectSettingModel(projectModel);
+        public ProcessSettingViewModel(IProjectModel projectModel, IDatasetModel datasetModel, IMessageBroker broker) {
+            var projectSettingModel = new ProjectSettingModel(projectModel, broker);
             var project = Observable.Return(new ProjectSettingViewModel(projectSettingModel).AddTo(Disposables));
             ProjectSettingViewModel = project
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            var datasetSettingModel = new DatasetSettingModel(datasetModel);
+            var datasetSettingModel = new DatasetSettingModel(datasetModel, broker);
             var dataset = Observable.Return(new DatasetSettingViewModel(datasetSettingModel, Observable.Return(true)).AddTo(Disposables));
             DatasetSettingViewModel = dataset
                 .ToReadOnlyReactivePropertySlim()
@@ -215,13 +215,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             SelectedSettingViewModel.Value = DatasetSettingViewModel.Value.SettingViewModels.FirstOrDefault();
         }
 
-        public ProcessSettingViewModel(IProjectModel projectModel, IDatasetModel datasetModel, MethodSettingModel methodSettingModel) {
-            var projectSettingModel = new ProjectSettingModel(projectModel);
+        public ProcessSettingViewModel(IProjectModel projectModel, IDatasetModel datasetModel, MethodSettingModel methodSettingModel, IMessageBroker broker) {
+            var projectSettingModel = new ProjectSettingModel(projectModel, broker);
             var project = Observable.Return(new ProjectSettingViewModel(projectSettingModel).AddTo(Disposables));
             ProjectSettingViewModel = project
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            var datasetSettingModel = new DatasetSettingModel(datasetModel);
+            var datasetSettingModel = new DatasetSettingModel(datasetModel, broker);
             var dataset = Observable.Return(new DatasetSettingViewModel(datasetSettingModel, Observable.Return(true)).AddTo(Disposables));
             DatasetSettingViewModel = dataset
                 .ToReadOnlyReactivePropertySlim()

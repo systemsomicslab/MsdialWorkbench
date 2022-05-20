@@ -13,6 +13,7 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Core
@@ -23,18 +24,21 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
         private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
         private readonly IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService;
+        private readonly IMessageBroker _broker;
 
         public DatasetViewModel(
             IDatasetModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
-            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService) {
+            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService,
+            IMessageBroker broker) {
             Model = model;
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
             this.proteomicsTableService = proteomicsTableService;
             this.analysisFilePropertyResetService = analysisFilePropertyResetService;
+            _broker = broker;
             MethodViewModel = model.ObserveProperty(m => m.Method)
                 .Select(ConvertToViewModel)
                 .DisposePreviousValue()
@@ -67,7 +71,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 case ImmsMethodModel im:
                     return new ImmsMethodVM(im, compoundSearchService, peakSpotTableService);
                 case DimsMethodModel di:
-                    return new DimsMethodVM(di, compoundSearchService, peakSpotTableService);
+                    return new DimsMethodVM(di, compoundSearchService, peakSpotTableService, _broker);
                 case LcimmsMethodModel lcim:
                     return new LcimmsMethodVM(lcim, compoundSearchService, peakSpotTableService);
                 // case GcmsMethodModel _:

@@ -15,6 +15,7 @@ using CompMs.MsdialLcImMsApi.DataObj;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.DataObj;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -28,18 +29,21 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         private readonly DatasetFileSettingModel fileSettingModel;
         private readonly Action<DatasetModel> next;
+        private readonly IMessageBroker _broker;
 
-        public DatasetParameterSettingModel(DateTime dt, DatasetFileSettingModel fileSettingModel, Action<DatasetModel> next) {
+        public DatasetParameterSettingModel(DateTime dt, DatasetFileSettingModel fileSettingModel, Action<DatasetModel> next, IMessageBroker broker) {
             this.fileSettingModel = fileSettingModel;
             this.next = next;
+            _broker = broker;
             fileSettingModel.PropertyChanged += UpdateDatasetFolderPath;
             DatasetFileName = $"Dataset_{dt:yyyy_MM_dd_hh_mm_ss}";
 
             IsReadOnly = false;
         }
 
-        public DatasetParameterSettingModel(ParameterBase parameter, DatasetFileSettingModel fileSettingModel) {
+        public DatasetParameterSettingModel(ParameterBase parameter, DatasetFileSettingModel fileSettingModel, IMessageBroker broker) {
             this.fileSettingModel = fileSettingModel;
+            _broker = broker;
             fileSettingModel.PropertyChanged += UpdateDatasetFolderPath;
             this.next = null;
 
@@ -214,7 +218,7 @@ namespace CompMs.App.Msdial.Model.Setting
             storage.DataBaseMapper = new DataBaseMapper();
             storage.DataBases = DataBaseStorage.CreateEmpty();
 
-            var dataset = new DatasetModel(storage);
+            var dataset = new DatasetModel(storage, _broker);
             next?.Invoke(dataset);
         }
 

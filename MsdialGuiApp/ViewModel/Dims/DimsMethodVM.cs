@@ -16,6 +16,7 @@ using CompMs.MsdialDimsCore.Export;
 using CompMs.MsdialDimsCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -32,12 +33,14 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public DimsMethodVM(
             DimsMethodModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IMessageBroker broker)
             : base(model,
                   ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService),
                   ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService)) {
 
             Model = model;
+            _broker = broker;
             PropertyChanged += OnDisplayFiltersChanged;
         }
 
@@ -207,11 +210,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(ExportAlignment));
         private DelegateCommand<Window> exportAlignmentResultCommand;
+        private readonly IMessageBroker _broker;
 
         private void ExportAlignment(Window owner) {
             var container = Model.Storage;
             var metadataAccessor = new DimsMetadataAccessor(container.DataBaseMapper, container.Parameter);
-            var vm = new AlignmentResultExport2VM(Model.AlignmentFile, Model.AlignmentFiles, container);
+            var vm = new AlignmentResultExport2VM(Model.AlignmentFile, Model.AlignmentFiles, container, _broker);
             vm.ExportTypes.AddRange(
                 new List<ExportType2>
                 {

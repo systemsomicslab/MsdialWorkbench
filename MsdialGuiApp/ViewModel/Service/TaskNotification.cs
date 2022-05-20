@@ -20,11 +20,20 @@ namespace CompMs.App.Msdial.ViewModel.Service
     public static class TaskNotification {
         public static ITaskNotification Start() {
             object identifier = new object();
-            return new TaskStartNotification(identifier);
+            return new TaskStartNotification(identifier, null);
+        }
+
+        public static ITaskNotification Start(string label) {
+            object identifier = new object();
+            return new TaskStartNotification(identifier, label);
         }
 
         public static ITaskNotification Progress(ITaskNotification task, double progressionRate) {
-            return new TaskProgressionNotification(task.Identifier, progressionRate);
+            return new TaskProgressionNotification(task.Identifier, progressionRate, null);
+        }
+
+        public static ITaskNotification Progress(ITaskNotification task, double progressionRate, string label) {
+            return new TaskProgressionNotification(task.Identifier, progressionRate, label);
         }
 
         public static ITaskNotification End(ITaskNotification task) {
@@ -35,15 +44,20 @@ namespace CompMs.App.Msdial.ViewModel.Service
     internal class TaskProgressionNotification : ITaskNotification
     {
         private readonly double _progressRate;
+        private readonly string _label;
 
-        public TaskProgressionNotification(object identifier, double progressionRate) {
+        public TaskProgressionNotification(object identifier, double progressionRate, string label) {
             Identifier = identifier;
             _progressRate = progressionRate;
+            _label = label;
         }
 
         public void Update(ProgressBarVM progressBar) {
             progressBar.IsIndeterminate = false;
             progressBar.CurrentValue = (int)(_progressRate * 100);
+            if (!(_label is null)) {
+                progressBar.Label = _label;
+            }
         }
 
         public object Identifier { get; }
@@ -53,12 +67,18 @@ namespace CompMs.App.Msdial.ViewModel.Service
 
     internal class TaskStartNotification : ITaskNotification
     {
-        public TaskStartNotification(object identifier) {
+        private readonly string _label;
+
+        public TaskStartNotification(object identifier, string label) {
             Identifier = identifier;
+            _label = label;
         }
 
         public void Update(ProgressBarVM progressBar) {
             progressBar.IsIndeterminate = true;
+            if (!(_label is null)) {
+                progressBar.Label = _label;
+            }
         }
 
         public object Identifier { get; }

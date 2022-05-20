@@ -2,8 +2,10 @@
 using CompMs.Graphics.UI.ProgressBar;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Service
 {
@@ -27,6 +29,14 @@ namespace CompMs.App.Msdial.ViewModel.Service
 
         public void Update(ITaskNotification taskNotification) {
             _taskProcess?.Update(taskNotification);
+        }
+
+        public IDisposable ShowWhileSwitchOn(IObservable<bool> observableSwitch, string label) {
+            return observableSwitch.Where(x => x)
+                .Select(_ => TaskNotification.Start(label))
+                .Do(Update)
+                .SelectMany(task => observableSwitch.Where(x => !x).Take(1).Select(_ => TaskNotification.End(task)))
+                .Subscribe(Update);
         }
 
         interface ITaskProcess {

@@ -31,6 +31,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Reactive.Bindings.Notifiers;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
@@ -40,10 +41,12 @@ namespace CompMs.App.Msdial.Model.Imms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+        private readonly IMessageBroker _broker;
 
-        public ImmsMethodModel(IMsdialDataStorage<MsdialImmsParameter> storage)
+        public ImmsMethodModel(IMsdialDataStorage<MsdialImmsParameter> storage, IMessageBroker broker)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             Storage = storage;
+            _broker = broker;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
 
             var parameter = Storage.Parameter;
@@ -229,7 +232,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public void ExportAlignment(Window owner) {
             var container = Storage;
             var metadataAccessor = new ImmsMetadataAccessor(container.DataBaseMapper, container.Parameter);
-            var vm = new AlignmentResultExport2VM(AlignmentFile, container.AlignmentFiles, container);
+            var vm = new AlignmentResultExport2VM(AlignmentFile, container.AlignmentFiles, container, _broker);
             vm.ExportTypes.AddRange(
                 new List<ExportType2>
                 {
