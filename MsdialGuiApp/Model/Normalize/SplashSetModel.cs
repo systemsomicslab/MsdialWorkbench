@@ -31,7 +31,11 @@ namespace CompMs.App.Msdial.Model.Normalize
             targetMetabolites.Add("Any others");
             TargetMetabolites = targetMetabolites.AsReadOnly();
 
-            SplashProducts = new ObservableCollection<SplashProduct>(GetSplashResource());
+            var isPrivate = Properties.Resources.VERSION.EndsWith("-tada")
+                || Properties.Resources.VERSION.EndsWith("-alpha")
+                || Properties.Resources.VERSION.EndsWith("-beta")
+                || Properties.Resources.VERSION.EndsWith("-dev");
+            SplashProducts = new ObservableCollection<SplashProduct>(isPrivate ? GetPrivateSplashResource() : GetPublicSplashResource());
             if (parameter.AdvancedProcessOptionBaseParam.StandardCompounds != null) {
                 var product = new SplashProduct
                 {
@@ -131,23 +135,47 @@ namespace CompMs.App.Msdial.Model.Normalize
             return true;
         }
 
-        private static List<SplashProduct> GetSplashResource() {
+        private static List<SplashProduct> GetPublicSplashResource() {
             var assembly = Assembly.GetExecutingAssembly();
             using (var stream = assembly.GetManifestResourceStream("CompMs.App.Msdial.Resources.SplashLipids.xml")) {
                 var data = XElement.Load(stream);
-                return data.Elements("Product").Select(ToProduct).ToList();
+                return data.Elements("Product").Select(rawProduct => ToProduct(rawProduct, false)).Where(product => !(product is null)).ToList();
             }
         }
 
-        private static SplashProduct ToProduct(XElement element) {
+        private static List<SplashProduct> GetPrivateSplashResource() {
+            var assembly = Assembly.GetExecutingAssembly();
+            using (var stream = assembly.GetManifestResourceStream("CompMs.App.Msdial.Resources.SplashLipids.xml")) {
+                var data = XElement.Load(stream);
+                return data.Elements("Product").Select(rawProduct => ToProduct(rawProduct, true)).Where(product => !(product is null)).ToList();
+            }
+        }
+
+        private static SplashProduct ToProduct(XElement element, bool isPrivate = false) {
+            if (!isPrivate && element.Element("IsLabPrivateVersion")?.Value == "true") {
+                return null;
+            }
+            if (isPrivate && element.Element("IsPublicVersion")?.Value == "true") {
+                return null;
+            }
+            var rawLipids = element.Element("Lipids").Elements("Lipid");
+            var lipids = rawLipids
+                .Select(compound => ToCompound(compound, isPrivate))
+                .Where(compound => !(compound is null));
             return new SplashProduct
             {
                 Label = element.Element("Label").Value,
-                Lipids = new ObservableCollection<StandardCompound>(element.Element("Lipids").Elements("Lipid").Select(ToCompound)),
+                Lipids = new ObservableCollection<StandardCompound>(lipids),
             };
         }
 
-        private static StandardCompound ToCompound(XElement element) {
+        private static StandardCompound ToCompound(XElement element, bool isPrivate = false) {
+            if (!isPrivate && element.Element("IsLabPrivateVersion")?.Value == "true") {
+                return null;
+            }
+            if (isPrivate && element.Element("IsPublicVersion")?.Value == "true") {
+                return null;
+            }
             return new StandardCompound
             {
                 StandardName = element.Element("StandardName").Value,
