@@ -26,7 +26,7 @@ namespace CompMs.App.Msdial.Model.Normalize
             this.refer = refer;
             this.parameter = parameter;
             this.evaluator = evaluator;
-            _broker = broker ?? MessageBroker.Default;
+            _broker = broker;
             var targetMetabolites = LipidomicsConverter.GetLipidClasses();
             targetMetabolites.Add("Any others");
             TargetMetabolites = targetMetabolites.AsReadOnly();
@@ -101,18 +101,18 @@ namespace CompMs.App.Msdial.Model.Normalize
         public void Normalize() {
             // TODO: For ion mobility, it need to flatten spots and check compound PeakID.
             var task = TaskNotification.Start("Normalize..");
-            _broker.Publish(task);
-            var compounds = StandardCompounds.Where(IsRequiredFieldFilled).ToList();
-            if (compounds.Count == 0) {
-                MessageBox.Show("Please fill the required fields for normalization", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                _broker.Publish(TaskNotification.End(task));
-                return;
+            var publisher = new TaskProgressPublisher(_broker, task);
+            using (publisher.Start()) {
+                var compounds = StandardCompounds.Where(IsRequiredFieldFilled).ToList();
+                if (compounds.Count == 0) {
+                    MessageBox.Show("Please fill the required fields for normalization", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                parameter.StandardCompounds = compounds;
+                var unit = OutputUnit.Unit;
+                Normalization.SplashNormalize(spots, refer, compounds, unit, evaluator);
+                container.IsNormalized = true;
             }
-            parameter.StandardCompounds = compounds;
-            var unit = OutputUnit.Unit;
-            Normalization.SplashNormalize(spots, refer, compounds, unit, evaluator);
-            container.IsNormalized = true;
-            _broker.Publish(TaskNotification.End(task));
         }
 
         public bool CanNormalize() {

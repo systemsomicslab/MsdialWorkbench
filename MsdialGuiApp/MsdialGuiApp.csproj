@@ -335,6 +335,7 @@
     <Compile Include="ViewModel\PeakCuration\AlignedChromatogramModificationViewModelLegacy.cs" />
     <Compile Include="ViewModel\Service\TaskNotification.cs" />
     <Compile Include="ViewModel\Service\TaskProgressCollection.cs" />
+    <Compile Include="ViewModel\Service\TaskProgressPublisher.cs" />
     <Compile Include="ViewModel\Setting\AdductIonSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\AlignmentParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\DataCollectionRangeSettingViewModel.cs" />
