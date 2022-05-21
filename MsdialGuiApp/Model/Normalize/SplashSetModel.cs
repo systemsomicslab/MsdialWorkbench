@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.ViewModel.Service;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -18,14 +19,14 @@ using System.Xml.Linq;
 
 namespace CompMs.App.Msdial.Model.Normalize
 {
-    class SplashSetModel : BindableBase
+    class SplashSetModel : DisposableModelBase
     {
         public SplashSetModel(AlignmentResultContainer container, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker broker) {
-            this.container = container;
-            spots = container.AlignmentSpotProperties;
-            this.refer = refer;
-            this.parameter = parameter;
-            this.evaluator = evaluator;
+            _container = container;
+            _spots = container.AlignmentSpotProperties;
+            _refer = refer;
+            _parameter = parameter;
+            _evaluator = evaluator;
             _broker = broker;
             var targetMetabolites = LipidomicsConverter.GetLipidClasses();
             targetMetabolites.Add("Any others");
@@ -37,11 +38,7 @@ namespace CompMs.App.Msdial.Model.Normalize
                 || Properties.Resources.VERSION.EndsWith("-dev");
             SplashProducts = new ObservableCollection<SplashProduct>(isPrivate ? GetPrivateSplashResource() : GetPublicSplashResource());
             if (parameter.AdvancedProcessOptionBaseParam.StandardCompounds != null) {
-                var product = new SplashProduct
-                {
-                    Label = "Previous compounds",
-                    Lipids = new ObservableCollection<StandardCompound>(parameter.AdvancedProcessOptionBaseParam.StandardCompounds),
-                };
+                var product = new SplashProduct("Previous compounds", parameter.AdvancedProcessOptionBaseParam.StandardCompounds.Select(lipid => new StandardCompoundModel(lipid)));
                 SplashProducts.Add(product);
                 SplashProduct = product;
             }
@@ -62,40 +59,35 @@ namespace CompMs.App.Msdial.Model.Normalize
             OutputUnit = OutputUnits.FirstOrDefault();
         }
 
-        private readonly AlignmentResultContainer container;
-        private readonly IReadOnlyList<AlignmentSpotProperty> spots;
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
-        private readonly ParameterBase parameter;
-        private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
+        private readonly AlignmentResultContainer _container;
+        private readonly IReadOnlyList<AlignmentSpotProperty> _spots;
+        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly ParameterBase _parameter;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly IMessageBroker _broker;
-
-        public ObservableCollection<StandardCompound> StandardCompounds => SplashProduct.Lipids;
 
         public ObservableCollection<SplashProduct> SplashProducts { get; }
 
         public SplashProduct SplashProduct {
-            get => splashProduct;
-            set => SetProperty(ref splashProduct, value);
+            get => _splashProduct;
+            set => SetProperty(ref _splashProduct, value);
         }
-
-        private SplashProduct splashProduct;
+        private SplashProduct _splashProduct;
 
         public ObservableCollection<IonAbundance> OutputUnits { get; }
 
         public IonAbundance OutputUnit {
-            get => outputUnit;
-            set => SetProperty(ref outputUnit, value);
+            get => _outputUnit;
+            set => SetProperty(ref _outputUnit, value);
         }
-
-        private IonAbundance outputUnit;
+        private IonAbundance _outputUnit;
 
         public ReadOnlyCollection<string> TargetMetabolites { get; }
 
         public void Find() {
-            foreach (var compound in StandardCompounds) {
-                foreach (var spot in spots) {
-                    if (!string.IsNullOrEmpty(spot?.Name) && spot.Name.Contains(compound.StandardName)) {
-                        compound.PeakID = spot.MasterAlignmentID;
+            foreach (var lipid in SplashProduct.Lipids) {
+                foreach (var spot in _spots) {
+                    if (lipid.TrySetIdIfMatch(spot)) {
                         break;
                     }
                 }
@@ -107,101 +99,42 @@ namespace CompMs.App.Msdial.Model.Normalize
             var task = TaskNotification.Start("Normalize..");
             var publisher = new TaskProgressPublisher(_broker, task);
             using (publisher.Start()) {
-                var compounds = StandardCompounds.Where(IsRequiredFieldFilled).ToList();
-                if (compounds.Count == 0) {
+                var compoundsZZZ = SplashProduct.Lipids.Where(lipid => lipid.IsRequiredFieldFilled(_spots)).ToList();
+                if (compoundsZZZ.Count == 0) {
                     MessageBox.Show("Please fill the required fields for normalization", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-                parameter.StandardCompounds = compounds;
-                var unit = OutputUnit.Unit;
-                Normalization.SplashNormalize(spots, refer, compounds, unit, evaluator);
-                container.IsNormalized = true;
+                foreach (var compound in compoundsZZZ) {
+                    compound.Commit();
+                }
+                var compounds = compoundsZZZ.Select(lipid => lipid.Compound).ToList();
+                Normalization.SplashNormalize(_spots, _refer, compounds, OutputUnit.Unit, _evaluator);
+                _parameter.StandardCompounds = compounds;
+                foreach (var compound in compoundsZZZ) {
+                    compound.Refresh();
+                }
+                _container.IsNormalized = true;
             }
         }
 
         public bool CanNormalize() {
-            foreach (var compound in StandardCompounds) {
-                if (IsRequiredFieldFilled(compound)) {
-                    return true;
-                }
-            }
-            return false;
+            return SplashProduct.Lipids.Any(lipid => lipid.IsRequiredFieldFilled(_spots));
         }
 
-        private bool IsRequiredFieldFilled(StandardCompound compound) {
-            if (compound.Concentration <= 0) return false;
-            if (string.IsNullOrEmpty(compound.TargetClass)) return false;
-            if (compound.PeakID < 0 || compound.PeakID >= spots.Count) return false;
-            return true;
-        }
-
-        private static List<SplashProduct> GetPublicSplashResource() {
+        public static List<SplashProduct> GetPublicSplashResource() {
             var assembly = Assembly.GetExecutingAssembly();
             using (var stream = assembly.GetManifestResourceStream("CompMs.App.Msdial.Resources.SplashLipids.xml")) {
                 var data = XElement.Load(stream);
-                return data.Elements("Product").Select(rawProduct => ToProduct(rawProduct, false)).Where(product => !(product is null)).ToList();
+                return data.Elements("Product").Select(SplashProduct.BuildPublicProduct).Where(product => !(product is null)).ToList();
             }
         }
 
-        private static List<SplashProduct> GetPrivateSplashResource() {
+        public static List<SplashProduct> GetPrivateSplashResource() {
             var assembly = Assembly.GetExecutingAssembly();
             using (var stream = assembly.GetManifestResourceStream("CompMs.App.Msdial.Resources.SplashLipids.xml")) {
                 var data = XElement.Load(stream);
-                return data.Elements("Product").Select(rawProduct => ToProduct(rawProduct, true)).Where(product => !(product is null)).ToList();
+                return data.Elements("Product").Select(SplashProduct.BuildPrivateProduct).Where(product => !(product is null)).ToList();
             }
         }
-
-        private static SplashProduct ToProduct(XElement element, bool isPrivate = false) {
-            if (!isPrivate && element.Element("IsLabPrivateVersion")?.Value == "true") {
-                return null;
-            }
-            if (isPrivate && element.Element("IsPublicVersion")?.Value == "true") {
-                return null;
-            }
-            var rawLipids = element.Element("Lipids").Elements("Lipid");
-            var lipids = rawLipids
-                .Select(compound => ToCompound(compound, isPrivate))
-                .Where(compound => !(compound is null));
-            return new SplashProduct
-            {
-                Label = element.Element("Label").Value,
-                Lipids = new ObservableCollection<StandardCompound>(lipids),
-            };
-        }
-
-        private static StandardCompound ToCompound(XElement element, bool isPrivate = false) {
-            if (!isPrivate && element.Element("IsLabPrivateVersion")?.Value == "true") {
-                return null;
-            }
-            if (isPrivate && element.Element("IsPublicVersion")?.Value == "true") {
-                return null;
-            }
-            return new StandardCompound
-            {
-                StandardName = element.Element("StandardName").Value,
-                Concentration = double.TryParse(element.Element("Concentration").Value, out var conc) ? conc : 0d,
-				DilutionRate = double.TryParse(element.Element("DilutionRate").Value, out var rate) ? rate : 0d,
-				MolecularWeight = double.TryParse(element.Element("MolecularWeight").Value, out var weight) ? weight : 0d,
-				PeakID = int.TryParse(element.Element("PeakID").Value, out var id) ? id : -1,
-				TargetClass = element.Element("TargetClass").Value,
-            };
-        }
-    }
-
-    class IonAbundance
-    {
-        public IonAbundance(IonAbundanceUnit unit, string label) {
-            Unit = unit;
-            Label = label;
-        }
-
-        public IonAbundanceUnit Unit { get; set; }
-        public string Label { get; set; }
-    }
-
-    class SplashProduct
-    {
-        public string Label { get; set; }
-        public ObservableCollection<StandardCompound> Lipids { get; set; }
     }
 }

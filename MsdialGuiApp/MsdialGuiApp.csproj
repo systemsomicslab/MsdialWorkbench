@@ -157,8 +157,12 @@
     <Compile Include="External Applications\MsDialIniParcer.cs" />
     <Compile Include="External Applications\MsDialToExternalApps.cs" />
     <Compile Include="Model\Core\IMethodModel.cs" />
+    <Compile Include="Model\DataObj\StandardCompoundModel.cs" />
     <Compile Include="Model\DataObj\SurveyScanSpectrum.cs" />
     <Compile Include="Model\Imms\ImmsAnnotatorSettingModel.cs" />
+    <Compile Include="Model\Normalize\IonAbundance.cs" />
+    <Compile Include="Model\Normalize\NormalizationSetModel.cs" />
+    <Compile Include="Model\Normalize\SplashProduct.cs" />
     <Compile Include="Model\Search\FocusNavigatorModel.cs" />
     <Compile Include="Model\Search\IFilterable.cs" />
     <Compile Include="Model\Search\ISpotFocus.cs" />
@@ -327,6 +331,7 @@
     <Compile Include="ViewModel\Lcms\LcmsCompoundSearchViewModel.cs" />
     <Compile Include="ViewModel\MsResult\SummarizedSpectrumViewModel.cs" />
     <Compile Include="Model\Search\PeakFilterModel.cs" />
+    <Compile Include="ViewModel\Normalize\SplashProductViewModel.cs" />
     <Compile Include="ViewModel\Search\PeakFilterViewModel.cs" />
     <Compile Include="ViewModel\Search\FocusNavigatorViewModel.cs" />
     <Compile Include="ViewModel\Search\PeakSpotNavigatorViewModel.cs" />
@@ -1286,6 +1291,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <None Include="Normalizations.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

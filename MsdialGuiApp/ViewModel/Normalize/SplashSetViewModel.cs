@@ -1,103 +1,61 @@
 ﻿using CompMs.App.Msdial.Model.Normalize;
 using CompMs.App.Msdial.ViewModel.DataObj;
-using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
-using CompMs.CommonMVVM.Common;
-using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parameter;
-using Reactive.Bindings.Notifiers;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Normalize
 {
-    class SplashSetViewModel : ViewModelBase
+    internal class SplashSetViewModel : ViewModelBase
     {
-        public SplashSetViewModel(AlignmentResultContainer container, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase parameter, IMessageBroker broker) {
-            Model = new SplashSetModel(container, refer, parameter, evaluator, broker);
+        private readonly SplashSetModel _model;
 
-            TargetMetabolites = Model.TargetMetabolites;
+        public SplashSetViewModel(SplashSetModel model) {
+            _model = model;
 
-            var splashProducts = Model.SplashProducts.ToMappedReadOnlyObservableCollection(product => new SplashProductViewModel(product));
-            SplashProducts = splashProducts;
-            Disposables.Add(splashProducts);
-            SplashProduct = SplashProducts.FirstOrDefault();
+            TargetMetabolites = _model.TargetMetabolites;
+            SplashProducts = _model.SplashProducts
+                .ToReadOnlyReactiveCollection(product => new SplashProductViewModel(product))
+                .AddTo(Disposables);
+            SplashProduct = model.ToReactivePropertyAsSynchronized(
+                m => m.SplashProduct,
+                m => SplashProducts.FirstOrDefault(vm => vm.Model == m),
+                vm => vm.Model,
+                ignoreValidationErrorValue: true)
+                .AddTo(Disposables);
 
-            OutputUnits = new ReadOnlyObservableCollection<IonAbundance>(Model.OutputUnits);
-            outputUnit = OutputUnits.FirstOrDefault();
+            OutputUnits = new ReadOnlyObservableCollection<IonAbundance>(_model.OutputUnits);
+            OutputUnit = _model
+                .ToReactivePropertyAsSynchronized(m => m.OutputUnit, ignoreValidationErrorValue: true)
+                .AddTo(Disposables);
         }
-
-        public SplashSetModel Model { get; }
 
         public ReadOnlyCollection<string> TargetMetabolites { get; }
 
-        public ObservableCollection<StandardCompoundViewModel> StandardCompounds => SplashProduct.Lipids;
+        public ReadOnlyObservableCollection<StandardCompoundViewModel> StandardCompounds => SplashProduct.Value?.Lipids;
 
         public ReadOnlyObservableCollection<SplashProductViewModel> SplashProducts { get; }
 
-        public SplashProductViewModel SplashProduct {
-            get {
-                return splashProduct;
-            }
-            set {
-                if (SetProperty(ref splashProduct, value)) {
-                    if (!ContainsError(nameof(SplashProduct))) {
-                        Model.SplashProduct = splashProduct.Model;
-                    }
-                }
-            }
-        }
-
-        private SplashProductViewModel splashProduct;
+        public ReactiveProperty<SplashProductViewModel> SplashProduct { get; }
 
         public ReadOnlyObservableCollection<IonAbundance> OutputUnits { get; }
 
-        public IonAbundance OutputUnit {
-            get {
-                return outputUnit;
-            }
-            set {
-                if (SetProperty(ref outputUnit, value)) {
-                    if (!ContainsError(nameof(OutputUnit))) {
-                        Model.OutputUnit = outputUnit;
-                    }
-                }
-            }
-        }
-
-        private IonAbundance outputUnit;
+        public ReactiveProperty<IonAbundance> OutputUnit { get; }
 
         public DelegateCommand FindCommand => findCommand ?? (findCommand = new DelegateCommand(Find));
 
         private DelegateCommand findCommand;
 
         private void Find() {
-            Model.Find();
+            _model.Find();
             foreach (var compound in StandardCompounds) {
                 compound.Refresh();
             }
         }
 
-        public DelegateCommand NormalizeCommand => normalizeCommand ?? (normalizeCommand = new DelegateCommand(Model.Normalize));//, Model.CanNormalize));
+        public DelegateCommand NormalizeCommand => normalizeCommand ?? (normalizeCommand = new DelegateCommand(_model.Normalize));//, Model.CanNormalize));
         private DelegateCommand normalizeCommand;
-    }
-
-    class SplashProductViewModel : ViewModelBase {
-        public SplashProductViewModel(SplashProduct product) {
-            Model = product;
-            var lipids = Model.Lipids.ToMappedObservableCollection(
-                lipid => new StandardCompoundViewModel(lipid),
-                lipidvm => lipidvm.Compound);
-            Disposables.Add(lipids);
-            Lipids = lipids;
-        }
-
-        public SplashProduct Model { get; }
-
-        public string Label => Model.Label;
-
-        public ObservableCollection<StandardCompoundViewModel> Lipids { get; }
     }
 }

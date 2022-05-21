@@ -284,6 +284,10 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Parameter);
         }
 
+        public void Normalize() {
+            
+        }
+
         private List<CompoundSearcher> ConvertToCompoundSearchers(DataBaseStorage databases) {
             var metabolomicsSearchers = databases
                 .MetabolomicsDataBases
