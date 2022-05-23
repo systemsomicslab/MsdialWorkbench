@@ -154,54 +154,6 @@
                              HorizontalContentAlignment="Right"/>
                 </ui:LabeledContent>
 
-                <ui:LabeledContent PrependLabel="Blank ratio filter:"
-                                   AppendLabel="%">
-                    <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                             Text="{Binding PeakCountFilter.Value}"
-                             d:Text="1"
-                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
-                             ToolTip="Aligned peaks which are less than this parameter will be removed from the final result."
-                             Height="24"
-                             VerticalContentAlignment="Center"
-                             HorizontalContentAlignment="Right"/>
-                </ui:LabeledContent>
-
-                <ui:LabeledContent PrependLabel="Incorrect mass filter:"
-                                   AppendLabel="%">
-                    <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                             Text="{Binding PeakCountFilter.Value}"
-                             d:Text="1"
-                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
-                             ToolTip="Aligned peaks which are less than this parameter will be removed from the final result."
-                             Height="24"
-                             VerticalContentAlignment="Center"
-                             HorizontalContentAlignment="Right"/>
-                </ui:LabeledContent>
-
-                <ui:LabeledContent PrependLabel="Relative standard deviation (RSD) filter:"
-                                   AppendLabel="%">
-                    <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                             Text="{Binding PeakCountFilter.Value}"
-                             d:Text="1"
-                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
-                             ToolTip="Aligned peaks which are less than this parameter will be removed from the final result."
-                             Height="24"
-                             VerticalContentAlignment="Center"
-                             HorizontalContentAlignment="Right"/>
-                </ui:LabeledContent>
-
-                <ui:LabeledContent PrependLabel="Relative mass defect (RMD) filter:"
-                                   AppendLabel="%">
-                    <TextBox Style="{StaticResource ResourceKey=ToolTipErrorStyle}"
-                             Text="{Binding PeakCountFilter.Value}"
-                             d:Text="1"
-                             IsReadOnly="{Binding IsReadOnly, Mode=OneTime}"
-                             ToolTip="Aligned peaks which are less than this parameter will be removed from the final result."
-                             Height="24"
-                             VerticalContentAlignment="Center"
-                             HorizontalContentAlignment="Right"/>
-                </ui:LabeledContent>
-
                 <ui:LabeledContent PrependLabel="N% detected in at least one group:"
                                    AppendLabel="%">
                     <TextBox Name="TextBox_NpercentDetectedInOneGroup" 
