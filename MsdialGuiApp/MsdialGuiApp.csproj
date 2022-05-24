@@ -1390,9 +1390,6 @@
   <ItemGroup>
     <Folder Include="Property\" />
   </ItemGroup>
-  <ItemGroup>
-    <InternalsVisibleTo Include="MsdialGuiAppTests" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>copy "$(SolutionDir)\Assemblies\timsdata.dll" "$(TargetDir)"

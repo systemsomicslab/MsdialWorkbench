@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj
 {
-    public class AnalysisFileCollection
+    public sealed class AnalysisFileCollection
     {
         private readonly IList<AnalysisFileBean> _items;
 

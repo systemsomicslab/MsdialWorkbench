@@ -148,7 +148,7 @@ namespace CompMs.MsdialCore.MSDec {
         private MSDecHandler() { }
 
         #region gcms
-        public static List<MSDecResult> GetMSDecResults(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, 
+        public static List<MSDecResult> GetMSDecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, 
             ParameterBase param, Action<int> reportAction, double initialProgress = 30, double progressMax = 30) {
             chromPeakFeatures = chromPeakFeatures.OrderBy(n => n.ChromScanIdTop).ThenBy(n => n.Mass).ToList();
 
@@ -208,7 +208,7 @@ namespace CompMs.MsdialCore.MSDec {
                 //calculating purity
                 //Debug.WriteLine("tic count: " + spectrumList.FindAll(sp => sp.ScanNum == ms1DecResult.ScanNumber).Count);
                 //Debug.WriteLine("deconv count: " + ms1DecResult.Spectrum.Count);
-                var tic = spectrumList.Find(sp => sp.ScanNumber == ms1DecResult.ScanID).TotalIonCurrent;
+                var tic = spectrumList.FirstOrDefault(sp => sp.ScanNumber == ms1DecResult.ScanID)?.TotalIonCurrent ?? 1d;
                 //Debug.WriteLine("TIC: " + tic + " -- RT: " + spectrumList.Find(sp => sp.ScanNum == ms1DecResult.ScanNumber).RTmin);
 
                 var eic = ms1DecResult.Spectrum.Sum(s => s.Intensity);
@@ -220,7 +220,7 @@ namespace CompMs.MsdialCore.MSDec {
             return msdecResults;
         }
 
-        private static MsDecBin[] getMsdecBinArray(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, Dictionary<int, int> rdamScanDict, IonMode ionMode) {
+        private static MsDecBin[] getMsdecBinArray(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, Dictionary<int, int> rdamScanDict, IonMode ionMode) {
             var ms1SpectrumList = getMs1SpectrumList(spectrumList, ionMode);
             var msdecBins = new MsDecBin[ms1SpectrumList.Count];
             for (int i = 0; i < msdecBins.Length; i++) {
@@ -253,7 +253,7 @@ namespace CompMs.MsdialCore.MSDec {
             return msdecBins;
         }
 
-        private static List<ModelChromatogram> getModelChromatograms(List<RawSpectrum> spectrumList,
+        private static List<ModelChromatogram> getModelChromatograms(IReadOnlyList<RawSpectrum> spectrumList,
             List<ChromatogramPeakFeature> chromPeakFeatures, MsDecBin[] msdecBinArray, double[] matchedFilterArray, Dictionary<int, int> rdamToChromDict, ParameterBase param) {
             var regionMarkers = getRegionMarkers(matchedFilterArray);
             var modelChromatograms = new List<ModelChromatogram>();
@@ -284,7 +284,7 @@ namespace CompMs.MsdialCore.MSDec {
         /// 1. This source code is for making a 'model (artificial)' chromatogram which will be used as a 'template' for a least square method in chromatogram deconvolution.
         /// 2. This idea is very similar to the original method of AMDIS: Stein, S. E. Journal of the American Society for Mass Spectrometry, 1999, 10, 770-781. 
         /// </summary>
-        private static ModelChromatogram getModelChromatogram(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> peakAreas,
+        private static ModelChromatogram getModelChromatogram(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> peakAreas,
             MsDecBin[] msdecBins, Dictionary<int, int> rdamToChromDict, ParameterBase param) {
             if (peakAreas == null || peakAreas.Count == 0) return null;
             var maxSharpnessValue = peakAreas.Max(n => n.PeakShape.ShapenessValue * n.PeakHeightTop);
@@ -538,7 +538,7 @@ namespace CompMs.MsdialCore.MSDec {
             }
         }
 
-        private static List<List<ChromatogramPeak>> getMs1Chromatograms(List<RawSpectrum> spectrumList, ModelChromVector modelChromVector,
+        private static List<List<ChromatogramPeak>> getMs1Chromatograms(IReadOnlyList<RawSpectrum> spectrumList, ModelChromVector modelChromVector,
            MsDecBin[] msdecBins, int chromScanOfPeakTop, ParameterBase param) {
             var rdamScan = msdecBins[chromScanOfPeakTop].RdamScanNumber;
             var massBin = param.CentroidMs1Tolerance; if (param.AccuracyType == AccuracyType.IsNominal) massBin = 0.5F;
@@ -763,7 +763,7 @@ namespace CompMs.MsdialCore.MSDec {
             return modelChrom;
         }
 
-        private static List<ChromatogramPeak> getTrimedAndSmoothedPeaklist(List<ChromatogramPeak> peaklist, int chromScanOfPeakLeft, int chromScanOfPeakRight) {
+        private static List<ChromatogramPeak> getTrimedAndSmoothedPeaklist(IReadOnlyList<ChromatogramPeak> peaklist, int chromScanOfPeakLeft, int chromScanOfPeakRight) {
             var mPeaklist = new List<ChromatogramPeak>();
 
             for (int i = chromScanOfPeakLeft; i <= chromScanOfPeakRight; i++) {
@@ -946,7 +946,7 @@ namespace CompMs.MsdialCore.MSDec {
             return modelChrom;
         }
 
-        private static List<ChromatogramPeak> getTrimedAndSmoothedPeaklist(List<RawSpectrum> spectrumList,
+        private static List<ChromatogramPeak> getTrimedAndSmoothedPeaklist(IReadOnlyList<RawSpectrum> spectrumList,
             int chromScanOfPeakLeft, int chromScanOfPeakRight, int smoothedMargin, MsDecBin[] msdecBins, float focusedMass, ParameterBase param) {
             var peaklist = new List<ChromatogramPeak>();
 
@@ -1057,7 +1057,7 @@ namespace CompMs.MsdialCore.MSDec {
             return regionMarkers;
         }
 
-        private static Dictionary<int, int> getRdamAndMs1chromatogramScanDictionary(List<RawSpectrum> spectrumList, IonMode ionmode) {
+        private static Dictionary<int, int> getRdamAndMs1chromatogramScanDictionary(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionmode) {
             var rdamToChromDictionary = new Dictionary<int, int>();
             var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 
@@ -1096,7 +1096,7 @@ namespace CompMs.MsdialCore.MSDec {
         }
 
         
-        private static List<RawSpectrum> getMs1SpectrumList(List<RawSpectrum> spectrumList, IonMode ionMode) {
+        private static List<RawSpectrum> getMs1SpectrumList(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionMode) {
             var ms1SpectrumList = new List<RawSpectrum>();
             var scanPolarity = ionMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
 

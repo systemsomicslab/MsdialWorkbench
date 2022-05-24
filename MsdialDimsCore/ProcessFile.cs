@@ -52,7 +52,7 @@ namespace CompMs.MsdialDimsCore
 
             // chrom deconvolutions
             Console.WriteLine("Deconvolution started");
-            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, peakFeatures, param);
+            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, peakFeatures);
             var initial_msdec = 30.0;
             var max_msdec = 30.0;
             var msdecProcess = new Algorithm.Ms2Dec(initial_msdec, max_msdec);

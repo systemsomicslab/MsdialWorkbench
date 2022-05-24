@@ -60,7 +60,7 @@ namespace CompMs.MsdialImmsCore.Process
             var chromPeakFeatures = PeakSpotting(provider, parameter, iupacDB, coeff, reportAction);
 
             var spectrumList = rawObj.SpectrumList;
-            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures, parameter);
+            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures);
             file.ChromPeakFeaturesSummary = summary;
 
             Console.WriteLine("Deconvolution started");
