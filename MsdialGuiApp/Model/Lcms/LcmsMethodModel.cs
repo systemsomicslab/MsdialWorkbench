@@ -630,6 +630,34 @@ namespace CompMs.App.Msdial.Model.Lcms
             //param.AndOrAtFragmentSearch = model.SearchOption.Value;
         }
 
+        public void ShowShowMscleanrFilterSettingView(Window owner) {
+            var container = Storage;
+            var analysisModel = AnalysisModel;
+            if (analysisModel is null) return;
+            var alignmentModel = AlignmentModel;
+            var param = container.Parameter;
+
+            var model = new MassqlSettingModel(container.Parameter);
+            var vm = new MassqlSettingViewModel(model);
+            var dialog = new MassqlSettingView()
+            {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+
+            if (dialog.ShowDialog() == true) {
+                param.FragmentSearchSettingValues = model.SendMassql();
+                if (param.FragmentSearchSettingValues.Count > 1) {
+                    param.AndOrAtFragmentSearch = AndOr.AND;
+                }
+            }
+
+            //param.FragmentSearchSettingValues = model.FragmentQuerySettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();
+            //param.AndOrAtFragmentSearch = model.SearchOption.Value;
+        }
+
+
         public void GoToMsfinderMethod(bool isAlignmentView) {
             if (isAlignmentView) {
                 AlignmentModel.GoToMsfinderMethod();
