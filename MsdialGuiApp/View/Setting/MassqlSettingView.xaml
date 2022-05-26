@@ -1,0 +1,26 @@
+﻿<Window x:Class="CompMs.App.Msdial.View.Setting.MassqlSettingView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
+        mc:Ignorable="d"
+        Title="MassQL search window" Height="200" Width="800">
+    <Grid>
+        <StackPanel Orientation="Horizontal">
+            <TextBox x:Name="Massql_input"
+                     Height="100" Width="550"
+                     Text="{Binding Massql, UpdateSourceTrigger=PropertyChanged}"
+                     AcceptsReturn="False"
+                     Margin="20"
+                     TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Visible" />
+            <Button x:Name="Button_Send_MassQL" 
+                        Content="Search by MassQL"
+                        Click="Button_Send_MassQL_Click"
+                        Margin="1"
+                        Height="25" Width="140" 
+                        />
+        </StackPanel>
+    </Grid>
+</Window>

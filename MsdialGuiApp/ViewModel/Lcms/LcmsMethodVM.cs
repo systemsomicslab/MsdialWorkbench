@@ -95,12 +95,38 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             (fragmentSearchSettingCommand = new DelegateCommand<Window>(FragmentSearchSettingMethod));
         private DelegateCommand<Window> fragmentSearchSettingCommand;
 
+        public DelegateCommand<Window> ShowMassqlSearchSettingCommand => massqlSearchSettingCommand ??
+            (massqlSearchSettingCommand= new DelegateCommand<Window>(MassqlSearchSettingMethod));
+        private DelegateCommand<Window> massqlSearchSettingCommand;
+
+        public DelegateCommand<Window> ShowMscleanrFilterSettingCommand => mscleanrFilterSettingCommand ??
+            (mscleanrFilterSettingCommand = new DelegateCommand<Window>(MscleanrFilterSettingMethod));
+        private DelegateCommand<Window> mscleanrFilterSettingCommand;
+
         private void FragmentSearchSettingMethod(Window obj) {
             if (SelectedViewModel.Value is AlignmentFileViewModel) {
                 model.ShowShowFragmentSearchSettingView(obj, true);
             }
             else {
                 model.ShowShowFragmentSearchSettingView(obj, false);
+            }
+        }
+
+        private void MassqlSearchSettingMethod(Window obj) {
+            if (SelectedViewModel.Value is AlignmentFileViewModel) {
+                model.ShowShowMassqlSearchSettingView(obj, true);
+            }
+            else {
+                model.ShowShowMassqlSearchSettingView(obj, false);
+            }
+        }
+
+        private void MscleanrFilterSettingMethod(Window obj) {
+            if (SelectedViewModel.Value is AlignmentFileViewModel) {
+                model.ShowShowMscleanrFilterSettingView(obj);
+            }
+            else {
+                Console.WriteLine("Please select an item in Alignment navigator!!");
             }
         }
 

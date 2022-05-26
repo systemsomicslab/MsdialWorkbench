@@ -135,6 +135,10 @@
                               Command="{Binding AlignmentViewModel.Value.NormalizeCommand}"
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                               KeyTip="N"/>
+                <RibbonButton Label="MS-CleanR peak filtering" LargeImageSource="{StaticResource MsCleanR_icon_is}"
+                              IsEnabled="True"
+                              Command="{Binding ShowMscleanrFilterSettingCommand}"
+                              KeyTip="T"/>
                 <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"
                               IsEnabled="False"
                               KeyTip="P"/>
@@ -171,6 +175,10 @@
                               Command="{Binding GoToMsfinderCommand}"
                               IsEnabled="True"
                               KeyTip="M"/>
+                <RibbonButton Label="MassQL search" LargeImageSource="{StaticResource MassQL_icon_is}"
+                              IsEnabled="True"
+                              Command="{Binding ShowMassqlSearchSettingCommand}"
+                              KeyTip="T"/>
             </RibbonGroup>
         </RibbonTab>
         <RibbonTab Header="View"
@@ -285,7 +293,7 @@
                               KeyTip="L"/>
                 <RibbonButton Label="Tutorial" LargeImageSource="{StaticResource Tutorial_is}"
                               IsEnabled="False"
-                              KeyTip="T"/>
+                              KeyTip="T"/>                
             </RibbonGroup>
         </RibbonTab>
     </Ribbon>

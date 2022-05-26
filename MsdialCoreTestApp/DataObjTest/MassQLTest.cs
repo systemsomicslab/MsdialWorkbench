@@ -20,9 +20,10 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
         public async void Run() {
 
             //var testfile = @"E:\0_SourceCode\MsdialWorkbenchDemo\massql_demofiles\2022_05_02_05_47_01.mdproject";
-            var testfile = @"E:\0_SourceCode\MsdialWorkbenchDemo\massql_demofiles\2022_05_02_05_47_01.mdproject";
+            var testfile = @"Z:\Workspaces\Nishida\massqltest\2022_05_11_06_06_41.mdproject";
             var exporter = new ExporterTest();
             var storage = await exporter.LoadProjectFromPathAsync(testfile);
+            var param = storage.Parameter;
 
             var analysisFile = storage.AnalysisFiles[0];
             var alignmentFile = storage.AlignmentFiles.Last();
@@ -35,10 +36,13 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
             var alignSpotFeatures = alignContainer.AlignmentSpotProperties;
 
             //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2PROD=226.18:TOLERANCEPPM=5";
+            var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2PROD=(100%20OR%20104):TOLERANCEPPM=5";
             //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2PROD=226.18%20AND%20MS2PROD=240.18:TOLERANCEPPM=5";
             //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2PROD=660.2:TOLERANCEMZ=0.1";
-            var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20RTMIN=10%20AND%20MS2PROD=660.2:TOLERANCEMZ=0.1";
+            //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20RTMIN=10%20AND%20MS2PROD=660.2:TOLERANCEMZ=0.1";
             //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2NL=163";
+            //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2PROD=660.2:TOLERANCEMZ=0.1%20AND%20MS2PROD=468.2:TOLERANCEMZ=0.1";
+            
             var req = WebRequest.Create(query);
             var res = req.GetResponse();
             var resStream = res.GetResponseStream();
@@ -50,8 +54,7 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
             }
             //Console.WriteLine(result.Conditions[0].qualifiers.type);
             //Console.WriteLine();
-            var param = storage.Parameter;
-            //param.FragmentSearchSettingValues = result.Conditions[0].value;
+      
 
             var massQLParams = new List<PeakFeatureSearchValue>();
             if (result.querytype.function == "functionscaninfo") {
@@ -59,27 +62,28 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
                 if (result.querytype.datatype == "datams1data") {
                     searchLevel = PeakFeatureQueryLevel.MS1;
                 }
-                foreach (var condition in result.conditions) {
-                    var searchValue = new PeakFeatureSearchValue() { PeakFeatureQueryLevel = searchLevel };
-                    searchValue.Mass = condition.value[0];
-                    if (condition.qualifiers != null) {
-                        if (condition.qualifiers.qualifierppmtolerance != null)
-                        {
-                            searchValue.MassTolerance = MolecularFormulaUtility.ConvertPpmToMassAccuracy(condition.value[0], condition.qualifiers.qualifierppmtolerance.value);
+                foreach (var condition in result.conditions) {                    
+                    foreach (var mass in condition.value) {
+                        var searchValue = new PeakFeatureSearchValue() { PeakFeatureQueryLevel = searchLevel };
+                        searchValue.Mass = mass;
+                        if (condition.qualifiers != null) {
+                            if (condition.qualifiers.qualifierppmtolerance != null) {
+                                searchValue.MassTolerance = MolecularFormulaUtility.ConvertPpmToMassAccuracy(condition.value[0], condition.qualifiers.qualifierppmtolerance.value);
+                            }
+                            if (condition.qualifiers.qualifiermztolerance != null) {
+                                searchValue.MassTolerance = condition.qualifiers.qualifiermztolerance.value;
+                            }
                         }
-                        if (condition.qualifiers.qualifiermztolerance != null)
-                        {
-                            searchValue.MassTolerance = condition.qualifiers.qualifiermztolerance.value;
+                        if (condition.type == "ms2neutrallosscondition") {
+                            searchValue.PeakFeatureSearchType = PeakFeatureSearchType.NeutralLoss;
                         }
-                    }
-                    if (condition.type == "ms2neutrallosscondition") {
-                        searchValue.PeakFeatureSearchType = PeakFeatureSearchType.NeutralLoss;
-                    }
-                    massQLParams.Add(searchValue);
+                        massQLParams.Add(searchValue);
+                    }                    
                 }
             }
 
             param.FragmentSearchSettingValues = massQLParams;
+
             if (massQLParams.Count > 1) {
                 param.AndOrAtFragmentSearch = Common.Enum.AndOr.AND;
             }
@@ -89,6 +93,7 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
             else {
                 FragmentSearcher.Search(chromPeakFeatures, new MsdialCore.MSDec.MSDecLoader(analysisFile.DeconvolutionFilePath), param);
             }
+
         }
 
         [DataContract]
