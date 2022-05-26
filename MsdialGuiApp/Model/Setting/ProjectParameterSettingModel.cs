@@ -11,7 +11,7 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         public ProjectParameterSettingModel(Action<ProjectModel> next, IMessageBroker broker) {
             var dt = DateTime.Now;
-            ProjectTitle = $"{dt:yyyy_MM_dd_hh_mm_ss}.mdproject";
+            ProjectTitle = $"{dt:yyyy_MM_dd_HH_mm_ss}.mdproject";
             this.next = next;
             _broker = broker;
             IsReadOnly = false;

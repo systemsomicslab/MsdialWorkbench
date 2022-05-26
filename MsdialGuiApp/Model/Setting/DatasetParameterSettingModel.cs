@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.Model.Setting
             this.next = next;
             _broker = broker;
             fileSettingModel.PropertyChanged += UpdateDatasetFolderPath;
-            DatasetFileName = $"Dataset_{dt:yyyy_MM_dd_hh_mm_ss}";
+            DatasetFileName = $"Dataset_{dt:yyyy_MM_dd_HH_mm_ss}.mddata";
 
             IsReadOnly = false;
         }
@@ -187,6 +187,10 @@ namespace CompMs.App.Msdial.Model.Setting
 
             if (!string.IsNullOrEmpty(Comment))
                 Comment = Comment.Replace("\r", "").Replace("\n", " ");
+
+            if (!DatasetFileName.EndsWith(".mddata")) {
+                DatasetFileName += ".mddata";
+            }
 
             var parameter = ParameterFactory.CreateParameter(Ionization, SeparationType);
             var projectParameter = parameter.ProjectParam;

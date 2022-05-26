@@ -104,7 +104,7 @@ namespace CompMs.App.Msdial.ViewModel
             TextDbSearchParam = new MsRefSearchParameterBaseVM(parameter.TextDbSearchParam);
 
             var dt = DateTime.Now;
-            AlignmentResultFileName = "AlignmentResult" + dt.ToString("_yyyy_MM_dd_hh_mm_ss");
+            AlignmentResultFileName = "AlignmentResult" + dt.ToString("_yyyy_MM_dd_HH_mm_ss");
 
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(files);
 
