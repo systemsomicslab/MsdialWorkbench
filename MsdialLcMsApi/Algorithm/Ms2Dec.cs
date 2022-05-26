@@ -73,8 +73,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
 
             //preparing MS1 and MS/MS chromatograms
             //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
-            var rawSpectrum = new RawSpectra(spectrumList, ChromXType.RT, ChromXUnit.Min, param.IonMode);
-            var ms1Peaklist = rawSpectrum.GetMs1ExtractedChromatogram(precursorMz, param.CentroidMs1Tolerance, startRt, endRt).Peaks;
+            var rawSpectrum = new RawSpectra(spectrumList, param.IonMode, param.AcquisitionType);
+            var chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min);
+            var ms1Peaklist = rawSpectrum.GetMs1ExtractedChromatogram(precursorMz, param.CentroidMs1Tolerance, chromatogramRange).Peaks;
 
             var startScanNum = ms1Peaklist[0].ID;
             var endScanNum = ms1Peaklist[ms1Peaklist.Count - 1].ID;
@@ -94,7 +95,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                 curatedSpectra.Select(x => x.Mass).ToList(), param, targetCE);
 
             foreach (var chromPeaks in ms2ChromPeaksList) {
-                var sChromPeaks = new Chromatogram(chromPeaks).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+                var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
                 smoothedMs2ChromPeaksList.Add(sChromPeaks);
             }
 

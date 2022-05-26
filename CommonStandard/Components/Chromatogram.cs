@@ -7,12 +7,24 @@ namespace CompMs.Common.Components
     public class Chromatogram
     {
         private readonly IReadOnlyList<IChromatogramPeak> _peaks;
+        private readonly ChromXType _type;
+        private readonly ChromXUnit _unit;
 
-        public Chromatogram(IReadOnlyList<IChromatogramPeak> peaks) {
+        public Chromatogram(IReadOnlyList<IChromatogramPeak> peaks, ChromXType type, ChromXUnit unit) {
             _peaks = peaks ?? throw new System.ArgumentNullException(nameof(peaks));
+            _type = type;
+            _unit = unit;
         }
 
         public IReadOnlyList<IChromatogramPeak> Peaks => _peaks;
+
+        public ChromXs PeakChromXs(double chromValue, double mz) {
+            var result = new ChromXs(chromValue, _type, _unit);
+            if (_type != ChromXType.Mz) {
+                result.Mz = new MzValue(mz);
+            }
+            return result;
+        }
 
         public bool IsEmpty => _peaks.Count == 0;
 

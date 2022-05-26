@@ -48,8 +48,9 @@ namespace CompMs.App.Msdial.Model.Loader {
         }
 
         protected virtual List<ChromatogramPeakWrapper> LoadTicCore() {
-            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), chromXType, chromXUnit, parameter.IonMode);
-            var chromatogram = rawSpectra.GetMs1TotalIonChromatogram(rangeBegin, rangeEnd);
+            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), parameter.IonMode, parameter.AcquisitionType);
+            var chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
+            var chromatogram = rawSpectra.GetMs1TotalIonChromatogram(chromatogramRange);
             return chromatogram
                 .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)

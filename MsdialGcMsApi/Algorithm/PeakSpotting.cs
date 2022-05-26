@@ -19,8 +19,9 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
         }
 
         public List<ChromatogramPeakFeature> Run(IDataProvider provider, ReportProgress reporter, CancellationToken token) {
-            var coreProcess = new PeakSpottingCore() { InitialProgress = reporter.InitialProgress, ProgressMax = reporter.ProgressMax, };
-            var chromPeakFeatures = coreProcess.Execute3DFeatureDetection(provider, _parameter, _parameter.RetentionTimeBegin, _parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min, _parameter.NumThreads, token, reporter.ReportAction);
+            var coreProcess = new PeakSpottingCore(_parameter);
+            var chromatogramRange = new ChromatogramRange(_parameter.RetentionTimeBegin, _parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
+            var chromPeakFeatures = coreProcess.Execute3DFeatureDetection(provider, _parameter.NumThreads, token, reporter, chromatogramRange);
             IsotopeEstimator.Process(chromPeakFeatures, _parameter, _iupacDB);
             return chromPeakFeatures;
         }

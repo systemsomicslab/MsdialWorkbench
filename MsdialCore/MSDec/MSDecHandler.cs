@@ -432,8 +432,7 @@ namespace CompMs.MsdialCore.MSDec {
         }
 
         // for gcms only
-        public static void RecalculateMs1decResultByDefinedQuantmass(MSDecResult msDecResult, List<RawSpectrum> spectrumList,
-            float quantMass, ParameterBase param) {
+        public static void RecalculateMs1decResultByDefinedQuantmass(MSDecResult msDecResult, List<RawSpectrum> spectrumList, float quantMass, ParameterBase param) {
 
             msDecResult.ModelPeakMz = quantMass;
             msDecResult.ModelPeakHeight = 1;
@@ -450,10 +449,9 @@ namespace CompMs.MsdialCore.MSDec {
             if (peakWidth < 0.02) peakWidth = 0.02;
             var rtTol = peakWidth * 0.5;
 
-            var peaklist = DataAccess.GetBaselineCorrectedPeaklistByMassAccuracy(
-                spectrumList, (float)peaktopRt, (float)rtBegin, (float)rtEnd, quantMass, param);
+            var peaklist = DataAccess.GetBaselineCorrectedPeaklistByMassAccuracy(spectrumList, (float)peaktopRt, (float)rtBegin, (float)rtEnd, quantMass, param);
 
-            var sPeaklist = new Chromatogram(peaklist).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+            var sPeaklist = peaklist.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
             if (sPeaklist.Count != 0) {
 
                 var maxID = -1;
@@ -985,7 +983,7 @@ namespace CompMs.MsdialCore.MSDec {
                 peaklist.Add(new ChromatogramPeak() { ID = spectrum.ScanNumber, ChromXs = new ChromXs(spectrum.ScanStartTime), Mass = maxMass, Intensity = sum });
             }
 
-            var smoothedPeaklist = new Chromatogram(peaklist).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+            var smoothedPeaklist = new Chromatogram(peaklist, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
             for (int i = 0; i < smoothedMargin - leftRemainder; i++) smoothedPeaklist.RemoveAt(0);
             for (int i = 0; i < smoothedMargin - rightRemainder; i++) smoothedPeaklist.RemoveAt(smoothedPeaklist.Count - 1);
 

@@ -264,7 +264,7 @@ namespace CompMs.MsdialCore.Utility {
                     if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, param.AcquisitionType)) {
                         (double basepeakMz, _, double summedIntensity) = new Spectrum(spec.Spectrum).RetrieveBin(productMz, param.CentroidMs2Tolerance);
                         var chromX = type == ChromXType.Drift ? new ChromXs(spec.DriftTime, type, unit) : new ChromXs(spec.ScanStartTime, type, unit);
-                        var id = type == ChromXType.Drift ? spec.OriginalIndex : spec.ScanNumber;
+                        var id = type == ChromXType.Drift ? spec.OriginalIndex : spec.Index;
                         chromPeaks.Add(new ChromatogramPeak() { ID = id, ChromXs = chromX, Mass = basepeakMz, Intensity = summedIntensity });
                     }
                 }
@@ -287,7 +287,7 @@ namespace CompMs.MsdialCore.Utility {
             }
         }
 
-        public static List<ChromatogramPeak> GetBaselineCorrectedPeaklistByMassAccuracy(IReadOnlyList<RawSpectrum> spectrumList, double centralRt, double rtBegin, double rtEnd,
+        public static Chromatogram GetBaselineCorrectedPeaklistByMassAccuracy(IReadOnlyList<RawSpectrum> spectrumList, double centralRt, double rtBegin, double rtEnd,
             double quantMass, ParameterBase param) {
             var peaklist = new List<ChromatogramPeak>();
             var scanPolarity = param.IonMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
@@ -354,7 +354,7 @@ namespace CompMs.MsdialCore.Utility {
 
             var baselineCorrectedPeaklist = GetBaselineCorrectedPeaklist(peaklist, minLeftID, minRightID);
 
-            return baselineCorrectedPeaklist;
+            return new Chromatogram(baselineCorrectedPeaklist, ChromXType.RT, ChromXUnit.Min);
         }
 
         public static List<ChromatogramPeak> GetBaselineCorrectedPeaklist(List<ChromatogramPeak> peaklist, int minLeftID, int minRightID) {
@@ -391,8 +391,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         // get chromatogram (ion mobility data)
-        public static List<ChromatogramPeak> GetDriftChromatogramByScanRtMz(IReadOnlyList<RawSpectrum> spectrumList, int scanID, float rt, float rtWidth, float mz, float mztol) {
-
+        public static Chromatogram GetDriftChromatogramByScanRtMz(IReadOnlyList<RawSpectrum> spectrumList, int scanID, float rt, float rtWidth, float mz, float mztol) {
             var driftBinToChromPeak = new Dictionary<int, ChromatogramPeak>();
             var driftBinToBasePeakIntensity = new Dictionary<int, double>();
 
@@ -423,7 +422,7 @@ namespace CompMs.MsdialCore.Utility {
             //accumulating peaks from peak top to peak left
             for (int i = scanID + 1; i >= 0; i--) {
                 var spectrum = spectrumList[i];
-                if (spectrum.MsLevel > 1) continue;
+                if (spectrum.MsLevel != 1) continue;
                 if (spectrum.ScanStartTime < rt - rtWidth * 0.5) break;
                 SetChromatogramPeak(spectrum);
             }
@@ -431,12 +430,12 @@ namespace CompMs.MsdialCore.Utility {
             //accumulating peaks from peak top to peak right
             for (int i = scanID + 2; i < spectrumList.Count; i++) {
                 var spectrum = spectrumList[i];
-                if (spectrum.MsLevel > 1) continue;
+                if (spectrum.MsLevel != 1) continue;
                 if (spectrum.ScanStartTime > rt + rtWidth * 0.5) break;
                 SetChromatogramPeak(spectrum);
             }
 
-            return driftBinToChromPeak.Values.OrderBy(n => n.ChromXs.Value).ToList();
+            return new Chromatogram(driftBinToChromPeak.Values.OrderBy(n => n.ChromXs.Value).ToList(), ChromXType.Drift, ChromXUnit.Msec);
         }
 
         public static List<ChromatogramPeak> GetDriftChromatogramByRtRange(IReadOnlyList<RawSpectrum> spectrumList,

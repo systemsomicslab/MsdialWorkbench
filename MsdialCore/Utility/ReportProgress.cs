@@ -5,11 +5,13 @@ namespace CompMs.MsdialCore.Utility {
         private readonly double _initialProgress;
         private readonly double _progressMax;
         private readonly Action<int> _reportAction;
+        private readonly object _syncObject;
 
         public ReportProgress(double initialProgress, double progressMax, Action<int> reportAction) {
             _initialProgress = initialProgress;
             _progressMax = progressMax;
             _reportAction = reportAction;
+            _syncObject = new object();
         }
 
         public double InitialProgress => _initialProgress;
@@ -17,7 +19,9 @@ namespace CompMs.MsdialCore.Utility {
         public Action<int> ReportAction => _reportAction;
 
         public void Show(double current, double localMax) {
-            Show(_initialProgress, _progressMax, current, localMax, _reportAction);
+            lock (_syncObject) {
+                Show(_initialProgress, _progressMax, current, localMax, _reportAction);
+            }
         }
 
         public static void Show(double initial, double totalMax, double current, double localMax, Action<int> reportAction) {
