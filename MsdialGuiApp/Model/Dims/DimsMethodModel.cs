@@ -115,7 +115,7 @@ namespace CompMs.App.Msdial.Model.Dims
             return new StandardAnnotationProcess<IAnnotationQuery>(
                 containers.Select(container => (
                     new AnnotationQueryWithoutIsotopeFactory(container.Annotator) as IAnnotationQueryFactory<IAnnotationQuery>,
-                    container.Annotator as IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
+                    container
                 )).ToList());
         }
 
@@ -141,8 +141,8 @@ namespace CompMs.App.Msdial.Model.Dims
             LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
         }
 
-        public async Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {
-            await Task.Run(() => ProcessFile.Run(analysisfile, ProviderFactory, Storage, annotationProcess, matchResultEvaluator, reportAction: action));
+        public Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {
+            return Task.Run(() => ProcessFile.Run(analysisfile, ProviderFactory, Storage, annotationProcess, matchResultEvaluator, reportAction: action));
         }
 
         public void RunAlignmentProcess() {

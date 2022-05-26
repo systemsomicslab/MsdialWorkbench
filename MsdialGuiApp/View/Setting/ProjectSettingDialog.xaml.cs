@@ -20,5 +20,10 @@ namespace CompMs.App.Msdial.View.Setting
         private void Close_Executed(object sender, ExecutedRoutedEventArgs e) {
             Close();
         }
+
+        private void RunButton_Click(object sender, RoutedEventArgs e) {
+            DialogResult = true;
+            Close();
+        }
     }
 }

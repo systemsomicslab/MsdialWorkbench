@@ -149,7 +149,9 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new DimsMethodModel(storage, storage.AnalysisFiles, storage.AlignmentFiles);
+            var method = new DimsMethodModel(storage, storage.AnalysisFiles, storage.AlignmentFiles);
+            method.Load();
+            return method;
         }
     }
 
@@ -304,7 +306,9 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new ImmsMethodModel(storage, _broker);
+            var method = new ImmsMethodModel(storage, _broker);
+            method.Load();
+            return method;
         }
     }
 

@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Export;
+using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -32,12 +33,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
     class DimsMethodVM : MethodViewModel {
         public DimsMethodVM(
             DimsMethodModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IMessageBroker broker)
-            : base(model,
-                  ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService),
-                  ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, broker)) {
+            IMessageBroker broker,
+            IReadOnlyReactiveProperty<AnalysisDimsVM> analysisVM,
+            IReadOnlyReactiveProperty<AlignmentDimsVM> alignmentVM,
+            ViewModelSwitcher chromatogramViewModels,
+            ViewModelSwitcher massSpectrumViewModels)
+            : base(model, analysisVM, alignmentVM, chromatogramViewModels, massSpectrumViewModels) {
 
             Model = model;
             _broker = broker;
@@ -84,8 +85,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (e.PropertyName == nameof(displayFilters)) {
                 if (AnalysisViewModel.Value != null)
                     AnalysisViewModel.Value.DisplayFilters = displayFilters;
-                // if (AlignmentViewModel.Value != null)
-                //     AlignmentViewModel.Value.DisplayFilters = displayFilters;
             }
         }
 
@@ -290,16 +289,33 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 .Select(m => new AlignmentDimsVM(m, compoundSearchService, peakSpotTableService, broker))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim();
-            ReadOnlyReactivePropertySlim<AlignmentDimsVM> result;
-            using (var subject = new Subject<DimsAlignmentModel>()) {
-                result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new AlignmentDimsVM(m, compoundSearchService, peakSpotTableService, broker))
-                    .DisposePreviousValue()
-                    .ToReadOnlyReactivePropertySlim();
-                subject.OnNext(method.AlignmentModel);
-                subject.OnCompleted();
-            }
-            return result;
+        }
+
+        public static DimsMethodVM Create(
+            DimsMethodModel model,
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IMessageBroker broker) {
+            var analysisVM = ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService);
+            var alignmentVM = ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, broker);
+            var chromvms = PrepareChromatogramViewModels(analysisVM, alignmentVM);
+            var msvms = PrepareMassSpectrumViewModels(analysisVM, alignmentVM);
+            return new DimsMethodVM(model, broker, analysisVM, alignmentVM, chromvms, msvms);
+        }
+
+        private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<AnalysisDimsVM> analysisAsObservable, IObservable<AlignmentDimsVM> alignmentAsObservable) {
+            var eic = analysisAsObservable.Select(vm => vm?.EicViewModel);
+            var bar = alignmentAsObservable.Select(vm => vm?.BarChartViewModel);
+            var alignmentEic = alignmentAsObservable.Select(vm => vm?.AlignmentEicViewModel);
+            return new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase>[] { eic, bar, alignmentEic});
+        }
+
+        private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<AnalysisDimsVM> analysisAsObservable, IObservable<AlignmentDimsVM> alignmentAsObservable) {
+            var rawdec = analysisAsObservable.Select(vm => vm?.RawDecSpectrumsViewModel);
+            var rawpur = Observable.Return<ViewModelBase>(null); // analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
+            var ms2chrom = Observable.Return<ViewModelBase>(null); // ms2 chrom
+            var repref = alignmentAsObservable.Select(vm => vm?.Ms2SpectrumViewModel);
+            return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase>[] { rawdec, ms2chrom, rawpur, repref});
         }
     }
 }

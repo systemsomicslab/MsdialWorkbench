@@ -172,12 +172,6 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
-        public AlignmentResultContainer Container {
-            get => container;
-            set => SetProperty(ref container, value);
-        }
-        private AlignmentResultContainer container;
-
         public string FileName {
             get => fileName;
             set => SetProperty(ref fileName, value);

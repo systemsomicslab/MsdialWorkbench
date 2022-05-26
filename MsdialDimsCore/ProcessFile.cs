@@ -60,7 +60,7 @@ namespace CompMs.MsdialDimsCore
             var msdecResults = msdecProcess.GetMS2DecResults(spectrumList, peakFeatures, param, summary, targetCE, reportAction, token);
 
             Console.WriteLine("Annotation started");
-            annotationProcess.RunAnnotation(peakFeatures, msdecResults, provider, param.NumThreads, token, v => reportAction((int)v));
+            annotationProcess.RunAnnotation(peakFeatures, msdecResults, provider, param.NumThreads, token, v => reportAction?.Invoke((int)v));
 
             var characterEstimator = new Algorithm.PeakCharacterEstimator(90, 10);
             characterEstimator.Process(spectrumList, peakFeatures, msdecResults, evaluator, param, reportAction);

@@ -159,7 +159,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             return new StandardAnnotationProcess<IAnnotationQuery>(
                 containers.Select(container => (
                     new AnnotationQueryFactory(container.Annotator, parameter) as IAnnotationQueryFactory<IAnnotationQuery>,
-                    container as IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
+                    container
                 )).ToList());
         }
 
