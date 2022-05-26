@@ -8,7 +8,6 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore;
@@ -71,30 +70,6 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public void Load() {
             ProviderFactory = Storage.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
-        }
-
-        public void AnalysisParamSetProcess(DimsAnalysisParameterSetModel parameterSetModel) {
-            Storage.DataBases = parameterSetModel.IdentifySettingModel.Create();
-            if (parameterSetModel.TogetherWithAlignment) {
-                var alignmentResultFileName = parameterSetModel.AlignmentResultFileName;
-                AlignmentFiles.Add(
-                    new AlignmentFileBean
-                    {
-                        FileID = AlignmentFiles.Count,
-                        FileName = alignmentResultFileName,
-                        FilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
-                        EicFilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, alignmentResultFileName + ".EIC.aef"),
-                        SpectraFilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl),
-                        ProteinAssembledResultFilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.prf)
-                    }
-                );
-                Storage.AlignmentFiles = AlignmentFiles.ToList();
-            }
-
-            Storage.DataBaseMapper = BuildDataBaseMapper(Storage.DataBases);
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
-            annotationProcess = BuildAnnotationProcess(Storage.DataBases);
-            ProviderFactory = parameterSetModel.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
         }
 
         private DataBaseMapper BuildDataBaseMapper(DataBaseStorage storage) {

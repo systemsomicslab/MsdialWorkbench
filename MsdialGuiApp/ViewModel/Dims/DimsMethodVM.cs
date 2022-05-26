@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Dims;
-using CompMs.App.Msdial.Model.Dims;
+﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Core;
@@ -7,25 +6,19 @@ using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.UI.ProgressBar;
-using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialDimsCore.Export;
-using CompMs.MsdialDimsCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
@@ -86,76 +79,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 if (AnalysisViewModel.Value != null)
                     AnalysisViewModel.Value.DisplayFilters = displayFilters;
             }
-        }
-
-        private bool ProcessSetAnalysisParameter(Window owner) {
-            var parameter = Model.Storage.Parameter;
-            var analysisModel = new DimsAnalysisParameterSetModel(parameter, Model.AnalysisFiles);
-            using (var analysisParamSetVM = new DimsAnalysisParameterSetViewModel(analysisModel)) {
-
-                // var analysisParamSetVM = new AnalysisParamSetVM<MsdialDimsParameter>((MsdialDimsParameter)Model.Storage.ParameterBase, Model.AnalysisFiles);
-                var apsw = new AnalysisParamSetForDimsWindow
-                {
-                    DataContext = analysisParamSetVM,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-                if (apsw.ShowDialog() != true)
-                    return false;
-            }
-            parameter.ProviderFactoryParameter = analysisModel.DataCollectionSettingModel.CreateDataProviderFactoryParameter();
-            Model.AnalysisParamSetProcess(analysisModel);
-            
-            return true;
-        }
-
-        private bool ProcessAnnotaion(Window owner, IMsdialDataStorage<MsdialDimsParameter> storage) {
-            var vm = new ProgressBarMultiContainerVM
-            {
-                MaxValue = storage.AnalysisFiles.Count,
-                CurrentValue = 0,
-                ProgressBarVMs = new ObservableCollection<ProgressBarVM>(
-                        storage.AnalysisFiles.Select(file => new ProgressBarVM { Label = file.AnalysisFileName })
-                    ),
-            };
-            var pbmcw = new ProgressBarMultiContainerWindow
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-
-            pbmcw.Loaded += async (s, e) => {
-                foreach (((var analysisfile, var pbvm), var idx) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs).WithIndex()) {
-                    await Model.RunAnnotationProcessAsync(analysisfile, v => pbvm.CurrentValue = v);
-                    vm.CurrentValue++;
-                }
-                pbmcw.Close();
-            };
-
-            pbmcw.ShowDialog();
-
-            return true;
-        }
-
-        private bool ProcessAlignment(Window owner, IMsdialDataStorage<MsdialDimsParameter> storage) {
-            var vm = new ProgressBarVM
-            {
-                IsIndeterminate = true,
-                Label = "Alignment process..",
-            };
-            var pbw = new ProgressBarWindow
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            pbw.Loaded += async (s, e) => {
-                await Task.Run(() => Model.RunAlignmentProcess());
-                pbw.Close();
-            };
-            pbw.ShowDialog();
-            return true;
         }
 
         protected override void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile) {

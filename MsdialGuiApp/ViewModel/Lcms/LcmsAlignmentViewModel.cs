@@ -208,9 +208,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private bool CanSaveSpectra(Window owner) {
             return this.model.CanSaveSpectra();
         }
-        public void SaveProject() {
-            model.SaveAsync();
-        }
 
         public DelegateCommand<Window> NormalizeCommand => normalizeCommand ?? (normalizeCommand = new DelegateCommand<Window>(Normalize));
 
