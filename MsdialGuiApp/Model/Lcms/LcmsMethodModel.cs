@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.LC;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
@@ -173,60 +172,6 @@ namespace CompMs.App.Msdial.Model.Lcms
 #if DEBUG
             Console.WriteLine(string.Join("\n", Storage.Parameter.ParametersAsText()));
 #endif
-        }
-
-        public bool ProcessSetAnalysisParameter(Window owner) {
-            var parameter = Storage.Parameter;
-            var analysisParamSetModel = new LcmsAnalysisParameterSetModel(parameter, AnalysisFiles, Storage.DataBases);
-            using (var analysisParamSetVM = new LcmsAnalysisParameterSetViewModel(analysisParamSetModel)) {
-                var apsw = new AnalysisParamSetForLcWindow
-                {
-                    DataContext = analysisParamSetVM,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-                if (apsw.ShowDialog() != true) {
-                    return false;
-                }
-            }
-
-            var message = new ShortMessageWindow() {
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Text = "Loading library files..",
-            };
-            message.Show();
-            Storage.DataBases = analysisParamSetModel.IdentitySettingModel.Create();
-            message.Close();
-
-            if (parameter.TogetherWithAlignment) {
-                var filename = analysisParamSetModel.AlignmentResultFileName;
-                AlignmentFiles.Add(
-                    new AlignmentFileBean
-                    {
-                        FileID = AlignmentFiles.Count,
-                        FileName = filename,
-                        FilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
-                        EicFilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + ".EIC.aef"),
-                        SpectraFilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl),
-                        ProteinAssembledResultFilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.prf),
-                    }
-                );
-                Storage.AlignmentFiles = AlignmentFiles.ToList();
-            }
-
-            Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
-            if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                annotationProcess = BuildProteoMetabolomicsAnnotationProcess(Storage.DataBases, parameter);
-            }
-            else if(parameter.TargetOmics == TargetOmics.Lipidomics && parameter.CollistionType == CollisionType.EIEIO) {
-                annotationProcess = BuildEadLipidomicsAnnotationProcess(Storage.DataBases, Storage.DataBaseMapper, parameter);
-            }
-            else {
-                annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
-            }
-            return true;
         }
 
         private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {

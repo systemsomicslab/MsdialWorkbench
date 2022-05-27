@@ -141,18 +141,6 @@
     </ApplicationDefinition>
     <Compile Include="Common\ChartBrushes.cs" />
     <Compile Include="Common\CommonEnums.cs" />
-    <Compile Include="Dims\AlignmentView.xaml.cs">
-      <DependentUpon>AlignmentView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dims\DataCollectionView.xaml.cs">
-      <DependentUpon>DataCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dims\IdentificationView.xaml.cs">
-      <DependentUpon>IdentificationView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dims\IsotopeTrackView.xaml.cs">
-      <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="External Applications\MsDialIniField.cs" />
     <Compile Include="External Applications\MsDialIniParcer.cs" />
     <Compile Include="External Applications\MsDialToExternalApps.cs" />
@@ -217,15 +205,11 @@
     <Compile Include="Model\Setting\PeakDetectionSettingModel.cs" />
     <Compile Include="Model\Setting\ProjectParameterSettingModel.cs" />
     <Compile Include="Model\DataObj\DisplayChromatogram.cs" />
-    <Compile Include="Model\Dims\DimsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Dims\DimsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Dims\DimsDataCollectionSettingModel.cs" />
-    <Compile Include="Model\Dims\DimsLbmAnnotationSettingModel.cs" />
-    <Compile Include="Model\Dims\DimsMspAnnotationSettingModel.cs" />
     <Compile Include="Model\Dims\DimsPeakSpotTableModel.cs" />
     <Compile Include="Model\Core\AnalysisModelBase.cs" />
     <Compile Include="Model\Core\AlignmentModelBase.cs" />
-    <Compile Include="Model\Dims\DimsTextDBAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsCompoundSearchModel.cs" />
     <Compile Include="Model\Loader\BpcLoader.cs" />
@@ -236,23 +220,17 @@
     <Compile Include="Model\Setting\IdentifySettingModel.cs" />
     <Compile Include="Model\Imms\ImmsAlignmentModel.cs" />
     <Compile Include="Model\Chart\AlignmentEicModel.cs" />
-    <Compile Include="Model\Imms\ImmsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Imms\ImmsCompoundSearchModel.cs" />
     <Compile Include="Model\Imms\ImmsDataCollectionSettingModel.cs" />
-    <Compile Include="Model\Imms\ImmsLbmAnnotationSettingModel.cs" />
     <Compile Include="Model\Imms\ImmsMethodModel.cs" />
-    <Compile Include="Model\Imms\ImmsMspAnnotationSettingModel.cs" />
     <Compile Include="Model\Imms\ImmsPeakSpotTableModel.cs" />
     <Compile Include="Model\Core\MethodModelBase.cs" />
-    <Compile Include="Model\Imms\ImmsTextDBAnnotationSettingModel.cs" />
-    <Compile Include="Model\Lcimms\LcimmsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Core\AnalysisParameterSetModelBase.cs" />
     <Compile Include="Model\Setting\IAnnotatorSettingModel.cs" />
     <Compile Include="Model\Setting\AnalysisFilePropertySetModel.cs" />
     <Compile Include="Model\Setting\DataBaseSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsAlignmentModel.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisModel.cs" />
-    <Compile Include="Model\Lcms\LcmsAnalysisParameterSetModel.cs" />
     <Compile Include="Model\Lcms\LcmsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Setting\DelegateDataBaseAnnotationSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsMethodModel.cs" />
@@ -316,17 +294,11 @@
     <Compile Include="ViewModel\DataObj\PeakPickBaseParameterViewModel.cs" />
     <Compile Include="ViewModel\DataObj\ProcessBaseParameterViewModel.cs" />
     <Compile Include="ViewModel\DataObj\StandardCompoundViewModel.cs" />
-    <Compile Include="ViewModel\Dims\DimsAnalysisParameterSetViewModel.cs" />
-    <Compile Include="ViewModel\Dims\DimsAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsAnnotatorSettingViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsCompoundSearchViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsDataCollectionSettingViewModel.cs" />
-    <Compile Include="ViewModel\Dims\DimsLbmAnnotationSettingViewModel.cs" />
-    <Compile Include="ViewModel\Dims\DimsMspAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsPeakSpotTableViewModel.cs" />
-    <Compile Include="ViewModel\Dims\DimsTextDBAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnnotatorSettingViewModel.cs" />
-    <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParameterSetViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsAnnotatorSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\MsdialLcimmsParameterViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsCompoundSearchViewModel.cs" />
@@ -356,21 +328,13 @@
     <Compile Include="ViewModel\Setting\IdentifySettingViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
-    <Compile Include="ViewModel\Imms\ImmsAnalysisParameterSetViewModel.cs" />
-    <Compile Include="ViewModel\Imms\ImmsAnalysisParamSetVM.cs" />
-    <Compile Include="ViewModel\Imms\ImmsAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsCompoundSearchVM.cs" />
     <Compile Include="ViewModel\Imms\ImmsDataCollectionSettingViewModel.cs" />
-    <Compile Include="ViewModel\Imms\ImmsLbmAnnotationSettingViewModel.cs" />
-    <Compile Include="ViewModel\Imms\ImmsMspAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsPeakSpotTableViewModel.cs" />
-    <Compile Include="ViewModel\Imms\ImmsTextDBAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Imms\MsdialImmsParameterViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\AlignmentLcimmsVM.cs" />
     <Compile Include="ViewModel\Lcimms\AnalysisLcimmsVM.cs" />
-    <Compile Include="ViewModel\Lcimms\LcimmsAnalysisParamSetVM.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsMethodVM.cs" />
-    <Compile Include="ViewModel\Lcms\LcmsAnalysisParameterSetViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsAnnotatorSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Normalize\NormalizationSetViewModel.cs" />
@@ -397,15 +361,6 @@
     <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
     <Compile Include="View\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LC\AlignmentView.xaml.cs">
-      <DependentUpon>AlignmentView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LC\AnalysisParamSetForLcWindow.xaml.cs">
-      <DependentUpon>AnalysisParamSetForLcWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LC\DataCollectionView.xaml.cs">
-      <DependentUpon>DataCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\AlignmentEicView.xaml.cs">
       <DependentUpon>AlignmentEicView.xaml</DependentUpon>
@@ -452,18 +407,6 @@
     <Compile Include="View\Chart\SurveyScanView.xaml.cs">
       <DependentUpon>SurveyScanView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\DeconvolutionView.xaml.cs">
-      <DependentUpon>DeconvolutionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LC\IdentificationView.xaml.cs">
-      <DependentUpon>IdentificationView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LC\IsotopeTrackView.xaml.cs">
-      <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LC\MobilityView.xaml.cs">
-      <DependentUpon>MobilityView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Dims\DimsAlignmentSpotTableView.xaml.cs">
       <DependentUpon>DimsAlignmentSpotTableView.xaml</DependentUpon>
     </Compile>
@@ -472,9 +415,6 @@
     </Compile>
     <Compile Include="View\Dims\DimsCompoundSearchView.xaml.cs">
       <DependentUpon>DimsCompoundSearchView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Dims\DimsDataCollectionView.xaml.cs">
-      <DependentUpon>DimsDataCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\ExperimentSpectrumView.xaml.cs">
       <DependentUpon>ExperimentSpectrumView.xaml</DependentUpon>
@@ -511,15 +451,6 @@
     </Compile>
     <Compile Include="View\Lcimms\AlignmentParameterView.xaml.cs">
       <DependentUpon>AlignmentParameterView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Lcimms\AnalysisParamSetForLcimmsWindow.xaml.cs">
-      <DependentUpon>AnalysisParamSetForLcimmsWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Lcimms\DataCollectionView.xaml.cs">
-      <DependentUpon>DataCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Lcimms\IdentificationView.xaml.cs">
-      <DependentUpon>IdentificationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcimms\MainRibbon.xaml.cs">
       <DependentUpon>MainRibbon.xaml</DependentUpon>
@@ -563,9 +494,6 @@
     <Compile Include="View\PeakCuration\SampleTableViewerInAlignmentLegacy.xaml.cs">
       <DependentUpon>SampleTableViewerInAlignmentLegacy.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\PeakDetectionView.xaml.cs">
-      <DependentUpon>PeakDetectionView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Lipidomics\LipidDbSetVM.cs" />
     <Compile Include="Lipidomics\LipidDbSetWindow.xaml.cs">
       <DependentUpon>LipidDbSetWindow.xaml</DependentUpon>
@@ -590,10 +518,6 @@
     <Compile Include="View\Setting\AnalysisFilePropertySetWindow.xaml.cs">
       <DependentUpon>AnalysisFilePropertySetWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="StartUp\StartUpWindow.xaml.cs">
-      <DependentUpon>StartUpWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="StartUp\StartUpWindowVM.cs" />
     <Compile Include="Utility\ParameterFactory.cs" />
     <Compile Include="ViewModel\AlignmentFileVM.cs" />
     <Compile Include="ViewModel\Dims\AlignmentDimsVM.cs" />
@@ -652,22 +576,6 @@
     <Compile Include="View\Imms\AlignmentParameterView.xaml.cs">
       <DependentUpon>AlignmentParameterView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\AnalysisParamSetVM.cs" />
-    <Compile Include="View\Imms\AnalysisParamSetForImmsWindow.xaml.cs">
-      <DependentUpon>AnalysisParamSetForImmsWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Imms\DataCollectionView.xaml.cs">
-      <DependentUpon>DataCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Imms\IdentificationView.xaml.cs">
-      <DependentUpon>IdentificationView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\IsotopeTrackView.xaml.cs">
-      <DependentUpon>IsotopeTrackView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\MobilityView.xaml.cs">
-      <DependentUpon>MobilityView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ViewModel\UserDefinedAdductSetVM.cs" />
     <Compile Include="View\Setting\AnnotationProcessSettingView.xaml.cs">
       <DependentUpon>AnnotationProcessSettingView.xaml</DependentUpon>
@@ -723,17 +631,11 @@
     <Compile Include="View\Setting\RetentionTimeCorrectionWinLegacy.xaml.cs">
       <DependentUpon>RetentionTimeCorrectionWinLegacy.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ShortMessageView.xaml.cs">
-      <DependentUpon>ShortMessageView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Table\AlignmentSpotTable.xaml.cs">
       <DependentUpon>AlignmentSpotTable.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Table\ProteomicsSpotTable.xaml.cs">
       <DependentUpon>ProteomicsSpotTable.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\UserDefinedAdductSetWindow.xaml.cs">
-      <DependentUpon>UserDefinedAdductSetWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
@@ -765,39 +667,11 @@
     <Compile Include="View\PeakSpotNavigator.xaml.cs">
       <DependentUpon>PeakSpotNavigator.xaml</DependentUpon>
     </Compile>
-    <Page Include="Dims\AlignmentView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Dims\DataCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Dims\IdentificationView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Dims\IsotopeTrackView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Icons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\AdductView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LC\AlignmentView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LC\AnalysisParamSetForLcWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LC\DataCollectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -865,22 +739,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\DeconvolutionView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LC\IdentificationView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LC\IsotopeTrackView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LC\MobilityView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\Dims\AnnotationSettingStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -894,10 +752,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dims\DimsCompoundSearchView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Dims\DimsDataCollectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -953,19 +807,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Lcimms\AnalysisParamSetForLcimmsWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\Lcimms\AnnotationSettingStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Lcimms\DataCollectionView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Lcimms\IdentificationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1029,10 +871,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\PeakDetectionView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Lipidomics\LipidDbSetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1073,10 +911,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="StartUp\StartUpWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\Dims\AlignmentClassBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1114,26 +948,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Imms\AlignmentParameterView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Imms\AnalysisParamSetForImmsWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Imms\DataCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Imms\IdentificationView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\IsotopeTrackView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\MobilityView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1209,10 +1023,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\ShortMessageView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\Table\AlignmentSpotTable.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1220,10 +1030,6 @@
     <Page Include="View\Table\ProteomicsSpotTable.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\UserDefinedAdductSetWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Lcms\CompoundDetailView.xaml">
       <SubType>Designer</SubType>
@@ -1385,9 +1191,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\SplashLipids.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Property\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>copy "$(SolutionDir)\Assemblies\timsdata.dll" "$(TargetDir)"

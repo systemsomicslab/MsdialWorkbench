@@ -78,9 +78,6 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Model\Imms\ImmsAnalysisParameterSetModelTests.cs" />
-    <Compile Include="Model\Lcimms\LcimmsAnalysisParameterSetModelTests.cs" />
-    <Compile Include="Model\Lcms\LcmsAnalysisParameterSetModelTests.cs" />
     <Compile Include="Model\Loader\MSDecLoaderTests.cs" />
     <Compile Include="Model\Core\MainWindowModelTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -133,6 +130,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\Dims\" />
+    <Folder Include="Model\Imms\" />
+    <Folder Include="Model\Lcimms\" />
+    <Folder Include="Model\Lcms\" />
     <Folder Include="ViewModel\Dims\" />
   </ItemGroup>
   <Choose>
