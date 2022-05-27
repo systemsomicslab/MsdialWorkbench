@@ -56,7 +56,8 @@
                             HorizontalProperty="{Binding HorizontalProperty.Value}"
                             VerticalProperty="{Binding VerticalProperty.Value}"
                             VerticalErrors="{Binding Errors.Value}"
-                            ErrorCap="{Binding ActualBarWidth, ElementName=bar, Converter={StaticResource ByHalf}, Mode=OneWay}"/>
+                            ErrorCap="{Binding ActualBarWidth, ElementName=bar, Converter={StaticResource ByHalf}, Mode=OneWay}"
+                            ClipToBounds="True"/>
         </chart:MultiChart>
     </Grid>
 </UserControl>

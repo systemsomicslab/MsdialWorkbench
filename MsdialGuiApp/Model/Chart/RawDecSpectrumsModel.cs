@@ -58,15 +58,6 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            var upperSpectrumBrushProperty = upperSpectrumBrush
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            var lowerSpectrumBrushProperty = lowerSpectrumBrush
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            var referenceSpectraExporterProperty = referenceSpectraExporter
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
 
             RawRefSpectrumModels = new MsSpectrumModel(
                 rawSource, refSource,
@@ -74,10 +65,10 @@ namespace CompMs.App.Msdial.Model.Chart
                 verticalPropertySelector,
                 graphLabels,
                 hueProperty,
-                upperSpectrumBrushProperty,
-                lowerSpectrumBrushProperty,
+                upperSpectrumBrush,
+                lowerSpectrumBrush,
                 rawSpectraExporeter,
-                referenceSpectraExporterProperty,
+                referenceSpectraExporter,
                 rawSpectrumLoaded).AddTo(Disposables);
             DecRefSpectrumModels = new MsSpectrumModel(
                 decSource, refSource,
@@ -85,10 +76,10 @@ namespace CompMs.App.Msdial.Model.Chart
                 verticalPropertySelector,
                 graphLabels,
                 hueProperty,
-                upperSpectrumBrushProperty,
-                lowerSpectrumBrushProperty,
+                upperSpectrumBrush,
+                lowerSpectrumBrush,
                 deconvolutedSpectraExporter,
-                referenceSpectraExporterProperty,
+                referenceSpectraExporter,
                 decSpectrumLoaded).AddTo(Disposables);
         }
 

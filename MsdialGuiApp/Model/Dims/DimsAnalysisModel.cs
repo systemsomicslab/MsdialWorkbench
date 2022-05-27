@@ -28,35 +28,47 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
-    class DimsAnalysisModel : AnalysisModelBase
-    {
+    internal sealed class DimsAnalysisModel : AnalysisModelBase {
+        private readonly CompoundSearcherCollection _compoundSearchers;
+        private readonly DataBaseMapper _dataBaseMapper;
+        private readonly IDataProvider _provider;
+        private readonly ParameterBase _parameter;
+
         public DimsAnalysisModel(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            DataBaseStorage databaseStorage,
             IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
             DataBaseMapper mapper,
             ParameterBase parameter,
             PeakFilterModel peakFilterModel)
             : base(analysisFile) {
+            if (analysisFile is null) {
+                throw new ArgumentNullException(nameof(analysisFile));
+            }
+
+            if (evaluator is null) {
+                throw new ArgumentNullException(nameof(evaluator));
+            }
+
             if (peakFilterModel is null) {
                 throw new ArgumentNullException(nameof(peakFilterModel));
             }
 
-            FileName = analysisFile.AnalysisFileName;
-            DataBaseMapper = mapper;
-            MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
-            Provider = provider;
-            Parameter = parameter;
+            _dataBaseMapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
+
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper, parameter.PeakPickBaseParam);
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator);
+            AnnotatorContainers = annotatorContainers ?? throw new ArgumentNullException(nameof(annotatorContainers));
 
-            AnnotatorContainers = annotatorContainers;
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var vAxis = Observable.Return(new Range(-0.5, 0.5))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
-
             PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.Mass, peak => peak.KMD, Target, labelSource, verticalAxis: vAxis)
             {
                 VerticalTitle = "Kendrick mass defect",
@@ -75,7 +87,7 @@ namespace CompMs.App.Msdial.Model.Dims
             }.AddTo(Disposables);
 
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-               Parameter.ProjectParam.SpectrumCommentToColorBytes
+               _parameter.ProjectParam.SpectrumCommentToColorBytes
                .ToDictionary(
                    kvp => kvp.Key,
                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
@@ -86,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 comment =>
                 {
                     var commentString = comment.ToString();
-                    var projectParameter = Parameter.ProjectParam;
+                    var projectParameter = _parameter.ProjectParam;
                     if (projectParameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
                         return Color.FromRgb(color[0], color[1], color[2]);
                     }
@@ -102,7 +114,7 @@ namespace CompMs.App.Msdial.Model.Dims
             var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
-                new MsRawSpectrumLoader(provider, Parameter),
+                new MsRawSpectrumLoader(provider, _parameter),
                 new MsDecSpectrumLoader(decLoader, Ms1Peaks),
                 new MsRefSpectrumLoader(mapper),
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
@@ -115,7 +127,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 Observable.Return(spectraExporter),
                 Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
-            PeakTableModel = new DimsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax).AddTo(Disposables);
+            PeakTableModel = new DimsAnalysisPeakTableModel(Ms1Peaks, Target, Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d, Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d).AddTo(Disposables);
 
             switch (parameter.TargetOmics) {
                 case TargetOmics.Lipidomics:
@@ -136,22 +148,8 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
-        public DataBaseMapper DataBaseMapper { get; }
-        public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
-        public ParameterBase Parameter { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
-
-        public string FileName {
-            get => fileName;
-            set => SetProperty(ref fileName, value);
-        }
-        private string fileName;
-
-        public double MassMin => Ms1Peaks.Min(peak => peak.Mass);
-        public double MassMax => Ms1Peaks.Max(peak => peak.Mass);
-
-        public IDataProvider Provider { get; }
 
         public AnalysisPeakPlotModel PlotModel { get; }
 
@@ -165,21 +163,9 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public EicLoader EicLoader { get; }
 
-        public string RawSplashKey {
-            get => rawSplashKey;
-            set => SetProperty(ref rawSplashKey, value);
-        }
-        private string rawSplashKey = string.Empty;
-
-        public string DeconvolutionSplashKey {
-            get => deconvolutionSplashKey;
-            set => SetProperty(ref deconvolutionSplashKey, value);
-        }
-        private string deconvolutionSplashKey = string.Empty;
-
-        private static readonly double MzTol = 20;
+        private static readonly double MZ_TOLERANCE = 20;
         public void FocusByMz(IAxisManager axis, double mz) {
-            axis?.Focus(mz - MzTol, mz + MzTol);
+            axis?.Focus(mz - MZ_TOLERANCE, mz + MZ_TOLERANCE);
         }       
 
         public void FocusById(IAxisManager mzAxis, int id) {
@@ -190,15 +176,19 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
 
+        public CompoundSearchModel<ChromatogramPeakFeature> BuildCompoundSearchModel() {
+            return new CompoundSearchModel<ChromatogramPeakFeature>(AnalysisFile, Target.Value.InnerModel, MsdecResult.Value, _compoundSearchers.Items);
+        }
+
         public void SaveSpectra(Stream stream, ExportSpectraFileFormat format) {
             SpectraExport.SaveSpectraTable(
                 format,
                 stream,
                 Target.Value.InnerModel,
                 MsdecResult.Value,
-                Provider.LoadMs1Spectrums(),
-                DataBaseMapper,
-                Parameter);
+                _provider.LoadMs1Spectrums(),
+                _dataBaseMapper,
+                _parameter);
         }
 
         public void SaveSpectra(string filename) {

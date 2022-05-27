@@ -153,6 +153,8 @@
     <Compile Include="Model\Normalize\IonAbundance.cs" />
     <Compile Include="Model\Normalize\NormalizationSetModel.cs" />
     <Compile Include="Model\Normalize\SplashProduct.cs" />
+    <Compile Include="Model\Search\CompoundSearcher.cs" />
+    <Compile Include="Model\Search\CompoundSearcherCollection.cs" />
     <Compile Include="Model\Search\FocusNavigatorModel.cs" />
     <Compile Include="Model\Search\IFilterable.cs" />
     <Compile Include="Model\Search\ISpotFocus.cs" />

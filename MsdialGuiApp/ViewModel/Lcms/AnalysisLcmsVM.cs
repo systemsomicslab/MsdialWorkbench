@@ -84,9 +84,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 },
                 true);
 
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel,
-                upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
-                lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
 
             RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(this.model.RawPurifiedSpectrumsModel,
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),

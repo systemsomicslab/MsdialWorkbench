@@ -168,6 +168,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 analysisFile,
                 ProviderFactory.Create(analysisFile),
                 matchResultEvaluator,
+                Storage.DataBases,
                 Storage.DataBaseMapper.MoleculeAnnotators,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
