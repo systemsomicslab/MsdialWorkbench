@@ -174,7 +174,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 PeakFilterModel).AddTo(Disposables);
         }
 
-        protected override AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);

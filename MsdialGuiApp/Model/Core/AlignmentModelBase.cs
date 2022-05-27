@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Core
 {
-    public class AlignmentModelBase : BindableBase, IDisposable
+    public class AlignmentModelBase : BindableBase, IAlignmentModel, IDisposable
     {
         public AlignmentModelBase(string resultFile) {
             alignmentResultFile = resultFile;

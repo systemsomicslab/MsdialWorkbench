@@ -10,7 +10,7 @@ namespace CompMs.App.Msdial.Model.Core
     public interface IMethodModel : INotifyPropertyChanged, IDisposable {
         IAnalysisModel AnalysisModelBase { get; }
 
-        AlignmentModelBase AlignmentModelBase { get; }
+        IAlignmentModel AlignmentModelBase { get; }
 
         ObservableCollection<AnalysisFileBean> AnalysisFiles { get; }
 

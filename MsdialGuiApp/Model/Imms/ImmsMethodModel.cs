@@ -213,7 +213,7 @@ namespace CompMs.App.Msdial.Model.Imms
             return AnalysisModel;
         }
 
-        protected override AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);

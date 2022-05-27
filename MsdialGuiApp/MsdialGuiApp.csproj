@@ -144,6 +144,7 @@
     <Compile Include="External Applications\MsDialIniField.cs" />
     <Compile Include="External Applications\MsDialIniParcer.cs" />
     <Compile Include="External Applications\MsDialToExternalApps.cs" />
+    <Compile Include="Model\Core\IAlignmentModel.cs" />
     <Compile Include="Model\Core\IAnalysisModel.cs" />
     <Compile Include="Model\Core\IMethodModel.cs" />
     <Compile Include="Model\DataObj\StandardCompoundModel.cs" />
