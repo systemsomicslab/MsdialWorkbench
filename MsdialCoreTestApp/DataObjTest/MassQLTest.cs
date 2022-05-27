@@ -36,13 +36,14 @@ namespace CompMs.App.MsdialConsole.DataObjTest {
             var alignSpotFeatures = alignContainer.AlignmentSpotProperties;
 
             //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2PROD=226.18:TOLERANCEPPM=5";
-            var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2PROD=(100%20OR%20104):TOLERANCEPPM=5";
+            //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2PROD=(100%20OR%20104):TOLERANCEPPM=5";
             //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2PROD=226.18%20AND%20MS2PROD=240.18:TOLERANCEPPM=5";
+            var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2PROD=660.2:TOLERANCEMZ=0.1%20AND%20MS2PROD=468.2:TOLERANCEMZ=0.1";
             //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2PROD=660.2:TOLERANCEMZ=0.1";
             //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20RTMIN=10%20AND%20MS2PROD=660.2:TOLERANCEMZ=0.1";
             //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2NL=163";
             //var query = @"https://msql.ucsd.edu/parse?query=QUERY%20scaninfo(MS2DATA)%20WHERE%20MS2PROD=660.2:TOLERANCEMZ=0.1%20AND%20MS2PROD=468.2:TOLERANCEMZ=0.1";
-            
+
             var req = WebRequest.Create(query);
             var res = req.GetResponse();
             var resStream = res.GetResponseStream();

@@ -1,35 +1,12 @@
-﻿using CompMs.Common.Enum;
-using CompMs.CommonMVVM;
-using CompMs.MsdialCore.DataObj;
+﻿using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using Reactive.Bindings;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Linq;
-using CompMs.Common.MessagePack;
-using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parser;
-using CompMs.MsdialCore.Algorithm;
 using CompMs.Common.FormulaGenerator.Function;
-using CompMs.MsdialCore.MSDec;
+using CompMs.CommonMVVM;
 
 namespace CompMs.App.Msdial.Model.Setting {
     public class MassqlSettingModel : BindableBase {
