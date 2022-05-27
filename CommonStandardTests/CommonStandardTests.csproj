@@ -6,8 +6,6 @@
     <IsPackable>false</IsPackable>
 
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-
-    <RootNamespace>CompMs.Common</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -46,7 +46,6 @@
 
   <ItemGroup>
 	<InternalsVisibleTo Include="CommonStandardTests"/>
-	<InternalsVisibleToSuffix Include="Tests"/>
   </ItemGroup>
 
 </Project>

@@ -453,7 +453,7 @@ namespace CompMs.MsdialCore.MSDec {
             var peaklist = DataAccess.GetBaselineCorrectedPeaklistByMassAccuracy(
                 spectrumList, (float)peaktopRt, (float)rtBegin, (float)rtEnd, quantMass, param);
 
-            var sPeaklist = DataAccess.GetSmoothedPeaklist(peaklist, param.SmoothingMethod, param.SmoothingLevel);
+            var sPeaklist = new Chromatogram(peaklist).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
             if (sPeaklist.Count != 0) {
 
                 var maxID = -1;
@@ -645,7 +645,7 @@ namespace CompMs.MsdialCore.MSDec {
                 foreach (var result in results) {
 
                     var mass = (float)peaks[result.ScanNumAtPeakTop].Mass;
-                    var chromPeakFeature = ChromatogramPeakFeature.FromPeakDetectionResult(result, type, unit, mass, param.IonMode);
+                    var chromPeakFeature = DataAccess.GetChromatogramPeakFeature(result, type, unit, mass);
                     chromPeakFeature.PeakID = index; // this information is needed in the later process.
                     peakSpots.Add(chromPeakFeature);
                 }
@@ -985,7 +985,7 @@ namespace CompMs.MsdialCore.MSDec {
                 peaklist.Add(new ChromatogramPeak() { ID = spectrum.ScanNumber, ChromXs = new ChromXs(spectrum.ScanStartTime), Mass = maxMass, Intensity = sum });
             }
 
-            var smoothedPeaklist = DataAccess.GetSmoothedPeaklist(peaklist, param.SmoothingMethod, param.SmoothingLevel);
+            var smoothedPeaklist = new Chromatogram(peaklist).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
             for (int i = 0; i < smoothedMargin - leftRemainder; i++) smoothedPeaklist.RemoveAt(0);
             for (int i = 0; i < smoothedMargin - rightRemainder; i++) smoothedPeaklist.RemoveAt(smoothedPeaklist.Count - 1);
 

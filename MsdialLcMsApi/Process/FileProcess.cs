@@ -7,45 +7,44 @@ using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm;
-using CompMs.MsdialLcMsApi.Algorithm.Peaks;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace CompMs.MsdialLcMsApi.Process
 {
-    public sealed class FileProcess {
-        private readonly IMsdialDataStorage<MsdialLcmsParameter> _storage;
-        private readonly IAnnotationProcess _annotationProcess;
-        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
-
-        public FileProcess(IMsdialDataStorage<MsdialLcmsParameter> storage,
+    public static class FileProcess {
+        public static void Run(
+            AnalysisFileBean file,
+            IDataProvider provider,
+            IMsdialDataStorage<MsdialLcmsParameter> storage,
             IAnnotationProcess annotationProcess,
-            IMatchResultEvaluator<MsScanMatchResult> evaluator) {
-            _storage = storage;
-            _annotationProcess = annotationProcess;
-            _evaluator = evaluator;
-        }
-    
-        public async Task RunAsync(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction = null, CancellationToken token = default) {
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            bool isGuiProcess = false,
+            Action<int> reportAction = null,
+            CancellationToken token = default) {
+            var param = storage.Parameter;
+            var mspDB = storage.MspDB;
+            var textDB = storage.TextDB;
+            var annotatorContainers = storage.DataBaseMapper.MoleculeAnnotators;
+            var isotopeTextDB = storage.IsotopeTextDB;
+            var iupacDB = storage.IupacDatabase;
+            var filepath = file.AnalysisFilePath;
+            var fileID = file.AnalysisFileId;
 
-            var param = _storage.Parameter;
-            var iupacDB = _storage.IupacDatabase;
 
-            // Loading spectrum.
             var spectrumList = provider.LoadMsSpectrums();
 
             // feature detections
             Console.WriteLine("Peak picking started");
-            var spotting = new Spotting(param, iupacDB);
-            var chromPeakFeatures = await spotting.RunAsync(provider, 0, 30, reportAction, token).ConfigureAwait(false);
-
-            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures, param);
-            file.ChromPeakFeaturesSummary = summary;
+            var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, param, token, reportAction);
+            IsotopeEstimator.Process(chromPeakFeatures, param, iupacDB);
+            var summaryDto = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures, param);
+            var summary = ChromatogramPeaksDataSummary.ConvertFromDto(summaryDto);
+            file.ChromPeakFeaturesSummary = summaryDto;
 
             // chrom deconvolutions
             Console.WriteLine("Deconvolution started");
@@ -53,7 +52,7 @@ namespace CompMs.MsdialLcMsApi.Process
             var initial_msdec = 30.0;
             var max_msdec = 30.0;
             var ceList = SpectrumParser.LoadCollisionEnergyTargets(spectrumList);
-            if (param.AcquisitionType == Common.Enum.AcquisitionType.AIF) {
+            if (storage.Parameter.AcquisitionType == Common.Enum.AcquisitionType.AIF) {
                 for (int i = 0; i < ceList.Count; i++) {
                     var targetCE = Math.Round(ceList[i], 2); // must be rounded by 2 decimal points
                     if (targetCE <= 0) {
@@ -63,42 +62,41 @@ namespace CompMs.MsdialLcMsApi.Process
                     var max_msdec_aif = max_msdec / ceList.Count;
                     var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
                     targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
-                        spectrumList, chromPeakFeatures, param, summary, iupacDB, reportAction, token, targetCE);
+                        spectrumList, chromPeakFeatures, storage.Parameter, summary, storage.IupacDatabase, reportAction, token, targetCE);
                 }
             }
             else {
                 var targetCE = ceList.IsEmptyOrNull() ? -1 : ceList[0];
                 targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
-                        spectrumList, chromPeakFeatures, param, summary, iupacDB, reportAction, token);
+                        spectrumList, chromPeakFeatures, storage.Parameter, summary, storage.IupacDatabase, reportAction, token);
             }
 
-            // annotations
-            Console.WriteLine("Annotation started");
-            var initial_annotation = 60.0;
-            var max_annotation = 30.0;
-            foreach (var (ce2msdecs, index) in targetCE2MSDecResults.WithIndex()) {
-                var targetCE = ce2msdecs.Key;
-                var msdecResults = ce2msdecs.Value;
-                var max_annotation_local = max_annotation / targetCE2MSDecResults.Count;
-                var initial_annotation_local = initial_annotation + max_annotation_local * index;
-                _annotationProcess.RunAnnotation(
-                    chromPeakFeatures,
-                    msdecResults,
-                    provider,
-                    param.NumThreads,
-                    token,
-                    v => reportAction?.Invoke((int)(initial_annotation_local + v * max_annotation_local)));
-            }
+                // annotations
+                Console.WriteLine("Annotation started");
+                var initial_annotation = 60.0;
+                var max_annotation = 30.0;
+                foreach (var (ce2msdecs, index) in targetCE2MSDecResults.WithIndex()) {
+                    var targetCE = ce2msdecs.Key;
+                    var msdecResults = ce2msdecs.Value;
+                    var max_annotation_local = max_annotation / targetCE2MSDecResults.Count;
+                    var initial_annotation_local = initial_annotation + max_annotation_local * index;
+                    annotationProcess.RunAnnotation(
+                        chromPeakFeatures,
+                        msdecResults,
+                        provider,
+                        param.NumThreads,
+                        token,
+                        v => reportAction?.Invoke((int)(initial_annotation_local + v * max_annotation_local)));
+                }
 
-            // characterizatin
-            new PeakCharacterEstimator(90, 10).Process(spectrumList, chromPeakFeatures,
-                targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
-                _evaluator, param, reportAction);
+                // characterizatin
+                new PeakCharacterEstimator(90, 10).Process(spectrumList, chromPeakFeatures,
+                    targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
+                    evaluator, param, reportAction);
 
             // file save
             var paifile = file.PeakAreaBeanInformationFilePath;
             MsdialPeakSerializer.SaveChromatogramPeakFeatures(paifile, chromPeakFeatures);
-
 
             var dclfile = file.DeconvolutionFilePath;
             var dclfiles = new List<string>();
@@ -115,19 +113,6 @@ namespace CompMs.MsdialLcMsApi.Process
                 }
             }
             reportAction?.Invoke(100);
-        }
-
-        public static void Run(
-            AnalysisFileBean file,
-            IDataProvider provider,
-            IMsdialDataStorage<MsdialLcmsParameter> storage,
-            IAnnotationProcess annotationProcess,
-            IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            bool isGuiProcess = false,
-            Action<int> reportAction = null,
-            CancellationToken token = default) {
-
-            new FileProcess(storage, annotationProcess, evaluator).RunAsync(file, provider, reportAction, token).Wait();
         }
     }
 }

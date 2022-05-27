@@ -120,6 +120,7 @@ namespace CompMs.App.Msdial.View.Core
             base.OnContentRendered(e);
 
             if (Properties.Resources.VERSION.Contains("-tada")
+                || Properties.Resources.VERSION.Contains("-alpha")
                 || Properties.Resources.VERSION.Contains("-beta")
                 || Properties.Resources.VERSION.Contains("-dev")) {
                 return;

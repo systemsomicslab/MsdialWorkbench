@@ -38,16 +38,17 @@ namespace CompMs.MsdialCore.Algorithm {
             IDataProvider provider,
             ParameterBase param, List<MoleculeMsReference> iStdLib) {
             var targetList = new List<StandardPair>();
-            var ms1Spectra = provider.LoadMs1Spectrums();
-            var ms2Spectra = provider.LoadMsNSpectrums(level: 2);
-            var id2ChromXs = DataAccess.GetID2ChromXs(ms1Spectra, param.IonMode, ChromXType.RT, ChromXUnit.Min);
+            var spectrumList = provider.LoadMs1Spectrums();
+            var id2ChromXs = DataAccess.GetID2ChromXs(spectrumList, param.IonMode, ChromXType.RT, ChromXUnit.Min);
             if (iStdLib.IsEmptyOrNull()) return new List<StandardPair>();
 
             var peakpickCore = new PeakSpottingCore();
+            var rawSpectra = new RawSpectra(spectrumList, ChromXType.RT, ChromXUnit.Min, param.IonMode);
             foreach (var i in iStdLib) {
                 var startMass = i.PrecursorMz;
                 var endMass = i.PrecursorMz + i.MassTolerance;
-                var pabCollection = peakpickCore.GetChromatogramPeakFeatures(ms1Spectra, ms2Spectra, id2ChromXs, (float)startMass, param, ChromXType.RT, ChromXUnit.Min, param.RetentionTimeBegin, param.RetentionTimeEnd);
+                var pabCollection = peakpickCore.GetChromatogramPeakFeatures(provider, id2ChromXs, (float)startMass, param,
+                    ChromXType.RT, ChromXUnit.Min, param.RetentionTimeBegin, param.RetentionTimeEnd);
                 
                 ChromatogramPeakFeature pab = null;
                 if (pabCollection != null) {
@@ -61,9 +62,8 @@ namespace CompMs.MsdialCore.Algorithm {
                     }
                 }
                 if (pab == null) pab = new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
-                var peaklist = DataAccess.GetMs1Peaklist(
-                    ms1Spectra, startMass, i.MassTolerance, param.IonMode,
-                    ChromXType.RT, ChromXUnit.Min, param.RetentionTimeBegin, param.RetentionTimeEnd);
+                var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(startMass, i.MassTolerance, param.RetentionTimeBegin, param.RetentionTimeEnd);
+                var peaklist = chromatogram.Peaks.Select(peak => new ChromatogramPeak(peak.ID, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
                 targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist });
             }
             /*   foreach(var t in targetList) {
@@ -171,7 +171,7 @@ namespace CompMs.MsdialCore.Algorithm {
             for (var i = 0; i < x.Count; i++) {
                 peaks.Add(new ChromatogramPeak(i, 0, y[i], new RetentionTime(x[i])));
             }
-            var speaklist = DataAccess.GetSmoothedPeaklist(peaks, SmoothingMethod.SimpleMovingAverage, 50);
+            var speaklist = new Chromatogram(peaks).Smoothing(SmoothingMethod.SimpleMovingAverage, 50);
             return speaklist.Select(z => z.Intensity).ToList();
         }
 

@@ -29,10 +29,8 @@ namespace CompMs.App.Msdial.Model.Dims
             return Task.Run(async () =>
             {
                 var spectra = await provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
-                return DataAccess.GetSmoothedPeaklist(
-                    DataAccess.ConvertRawPeakElementToChromatogramPeakList(
-                        spectra.Argmax(spectrum => spectrum.Spectrum.Length).Spectrum, leftMz, rightMz),
-                    parameter.SmoothingMethod, parameter.SmoothingLevel)
+                return new CompMs.Common.Components.Chromatogram(DataAccess.ConvertRawPeakElementToChromatogramPeakList(spectra.Argmax(spectrum => spectrum.Spectrum.Length).Spectrum, leftMz, rightMz))
+                    .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                     .Select(peak => new ChromatogramPeakWrapper(peak))
                     .ToList();
             });

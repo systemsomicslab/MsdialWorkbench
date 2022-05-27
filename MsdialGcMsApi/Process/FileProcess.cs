@@ -28,7 +28,7 @@ namespace CompMs.MsdialGcMsApi.Process {
 
                 // parse raw data
                 Console.WriteLine("Loading spectral information");
-                var rawObj = DataAccess.GetRawDataMeasurement(access);
+                var rawObj = access.GetMeasurement();
                 var spectrumList = rawObj.SpectrumList;
 
                 // feature detections
