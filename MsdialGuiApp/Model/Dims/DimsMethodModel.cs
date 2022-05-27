@@ -159,7 +159,7 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
-        protected override AnalysisModelBase LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);

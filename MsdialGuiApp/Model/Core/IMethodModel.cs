@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace CompMs.App.Msdial.Model.Core
 {
     public interface IMethodModel : INotifyPropertyChanged, IDisposable {
-        AnalysisModelBase AnalysisModelBase { get; }
+        IAnalysisModel AnalysisModelBase { get; }
 
         AlignmentModelBase AlignmentModelBase { get; }
 
