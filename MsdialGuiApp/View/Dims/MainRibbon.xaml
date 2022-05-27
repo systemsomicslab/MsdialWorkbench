@@ -244,15 +244,15 @@
         </RibbonTab>
         <RibbonTab Header="Spot filtering"
                    ContextualTabGroupHeader="Tool">
-            <RibbonGroup Header="Display filter">
-                <RibbonCheckBox Label="Ref. matched" IsChecked="{Binding RefMatchedChecked}"/>
-                <RibbonCheckBox Label="Suggested" IsChecked="{Binding SuggestedChecked}"/>
-                <RibbonCheckBox Label="Unknown" IsChecked="{Binding UnknownChecked}"/>
-                <RibbonCheckBox Label="MS2 acquired" IsChecked="{Binding Ms2AcquiredChecked}"/>
-                <RibbonCheckBox Label="Molecular ion" IsChecked="{Binding MolecularIonChecked}" IsEnabled="False"/>
-                <RibbonCheckBox Label="Blank filter" IsChecked="{Binding BlankFilterChecked}" IsEnabled="False"/>
-                <RibbonCheckBox Label="Unique ions" IsChecked="{Binding UniqueIonsChecked}" IsEnabled="False"/>
-                <RibbonCheckBox Label="Manually modified" IsChecked="{Binding ManuallyModifiedChecked}"/>
+            <RibbonGroup Header="Display filter" DataContext="{Binding PeakFilterViewModel}">
+                <RibbonCheckBox Label="Ref. matched" IsChecked="{Binding RefMatched}"/>
+                <RibbonCheckBox Label="Suggested" IsChecked="{Binding Suggested}"/>
+                <RibbonCheckBox Label="Unknown" IsChecked="{Binding Unknown}"/>
+                <RibbonCheckBox Label="MS2 acquired" IsChecked="{Binding Ms2Acquired}"/>
+                <RibbonCheckBox Label="Molecular ion" IsChecked="{Binding MolecularIon}" IsEnabled="False"/>
+                <RibbonCheckBox Label="Blank filter" IsChecked="{Binding Blank}" IsEnabled="False"/>
+                <RibbonCheckBox Label="Unique ions" IsChecked="{Binding UniqueIons}" IsEnabled="False"/>
+                <RibbonCheckBox Label="Manually modified" IsChecked="{Binding ManuallyModified}"/>
             </RibbonGroup>
         </RibbonTab>
         <RibbonTab Header="Utility"

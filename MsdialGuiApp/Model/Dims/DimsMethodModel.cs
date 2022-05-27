@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -37,11 +38,13 @@ namespace CompMs.App.Msdial.Model.Dims
             : base(analysisFiles, alignmentFiles) {
             Storage = storage;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
+            PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
         }
 
         private IAnnotationProcess annotationProcess;
         private FacadeMatchResultEvaluator matchResultEvaluator;
 
+        public PeakFilterModel PeakFilterModel { get; }
         public IMsdialDataStorage<MsdialDimsParameter> Storage { get; }
 
         public DimsAnalysisModel AnalysisModel {
@@ -167,7 +170,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 matchResultEvaluator,
                 Storage.DataBaseMapper.MoleculeAnnotators,
                 Storage.DataBaseMapper,
-                Storage.Parameter).AddTo(Disposables);
+                Storage.Parameter,
+                PeakFilterModel).AddTo(Disposables);
         }
 
         protected override AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
@@ -181,7 +185,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
-                Storage.AnalysisFiles).AddTo(Disposables);
+                Storage.AnalysisFiles,
+                PeakFilterModel).AddTo(Disposables);
         }
     }
 }

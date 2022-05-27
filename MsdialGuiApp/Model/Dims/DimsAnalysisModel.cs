@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -35,16 +36,23 @@ namespace CompMs.App.Msdial.Model.Dims
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
             DataBaseMapper mapper,
-            ParameterBase parameter)
+            ParameterBase parameter,
+            PeakFilterModel peakFilterModel)
             : base(analysisFile) {
+            if (peakFilterModel is null) {
+                throw new ArgumentNullException(nameof(peakFilterModel));
+            }
 
             FileName = analysisFile.AnalysisFileName;
             DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             Provider = provider;
             Parameter = parameter;
+
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator);
+
             AnnotatorContainers = annotatorContainers;
-            var labelSource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var vAxis = Observable.Return(new Range(-0.5, 0.5))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
@@ -131,6 +139,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public DataBaseMapper DataBaseMapper { get; }
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
         public ParameterBase Parameter { get; }
+        public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
 
         public string FileName {

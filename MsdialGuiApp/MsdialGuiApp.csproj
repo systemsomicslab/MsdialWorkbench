@@ -144,9 +144,6 @@
     <Compile Include="Dims\AlignmentView.xaml.cs">
       <DependentUpon>AlignmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dims\AnalysisParamSetForDimsWindow.xaml.cs">
-      <DependentUpon>AnalysisParamSetForDimsWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Dims\DataCollectionView.xaml.cs">
       <DependentUpon>DataCollectionView.xaml</DependentUpon>
     </Compile>
@@ -640,9 +637,6 @@
     <Compile Include="View\Dims\Footer.xaml.cs">
       <DependentUpon>Footer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\IonTableViewer.xaml.cs">
-      <DependentUpon>IonTableViewer.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Dims\MainRibbon.xaml.cs">
       <DependentUpon>MainRibbon.xaml</DependentUpon>
     </Compile>
@@ -772,10 +766,6 @@
       <DependentUpon>PeakSpotNavigator.xaml</DependentUpon>
     </Compile>
     <Page Include="Dims\AlignmentView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Dims\AnalysisParamSetForDimsWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1106,10 +1096,6 @@
     <Page Include="View\Dims\Footer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Dims\IonTableViewer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dims\MainRibbon.xaml">
       <Generator>MSBuild:Compile</Generator>

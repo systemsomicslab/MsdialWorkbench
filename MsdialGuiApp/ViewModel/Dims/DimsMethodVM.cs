@@ -4,6 +4,7 @@ using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
@@ -15,7 +16,6 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -35,7 +35,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             Model = model;
             _broker = broker;
-            PropertyChanged += OnDisplayFiltersChanged;
+
+            PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilterModel).AddTo(Disposables);
         }
 
         internal DimsMethodModel Model { get; }
@@ -73,13 +74,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             set => WriteDisplayFilter(DisplayFilter.ManuallyModified, value);
         }
         private DisplayFilter displayFilters = 0;
-
-        void OnDisplayFiltersChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(displayFilters)) {
-                if (AnalysisViewModel.Value != null)
-                    AnalysisViewModel.Value.DisplayFilters = displayFilters;
-            }
-        }
 
         protected override void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile) {
             if (analysisFile?.File == null || Model.AnalysisFile == analysisFile.File) {
@@ -131,6 +125,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(ExportAlignment));
+
+        public PeakFilterViewModel PeakFilterViewModel { get; }
+
         private DelegateCommand<Window> exportAlignmentResultCommand;
         private readonly IMessageBroker _broker;
 

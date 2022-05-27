@@ -2,10 +2,10 @@
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
@@ -41,13 +41,13 @@ namespace CompMs.App.Msdial.Model.Dims
             IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorCotnainers,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseMapper mapper,
-            ParameterBase param, 
-            List<AnalysisFileBean> files)
+            ParameterBase param,
+            List<AnalysisFileBean> files,
+            PeakFilterModel peakFilterModel)
             : base(alignmentFileBean.FilePath) {
 
             alignmentFile = alignmentFileBean;
             fileName = alignmentFileBean.FileName;
-            resultFile = alignmentFileBean.FilePath;
             eicFile = alignmentFileBean.EicFilePath;
 
             Parameter = param;
@@ -61,9 +61,12 @@ namespace CompMs.App.Msdial.Model.Dims
 
             MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
             MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator);
 
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
-            var labelSource = this.ObserveProperty(m => m.DisplayLabel);
+            var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
             PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.MassCenter, spot => spot.KMD, Target, labelSource)
             {
                 GraphTitle = FileName,
@@ -188,7 +191,6 @@ namespace CompMs.App.Msdial.Model.Dims
         public DataBaseMapper DataBaseMapper { get; }
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
 
-        private readonly string resultFile = string.Empty;
         private readonly string eicFile = string.Empty;
 
         public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
@@ -210,7 +212,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public double MassMin { get; }
         public double MassMax { get; }
-
+        public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public Chart.AlignmentPeakPlotModel PlotModel { get; }
 
         public MsSpectrumModel Ms2SpectrumModel { get; }
