@@ -212,6 +212,7 @@
     <Compile Include="Model\Setting\MethodSettingModel.cs" />
     <Compile Include="Model\Setting\MethodSettingModelFactory.cs" />
     <Compile Include="Model\Setting\MobilitySettingModel.cs" />
+    <Compile Include="Model\Setting\MscleanrSettingModel.cs" />
     <Compile Include="Model\Setting\PeakDetectionSettingModel.cs" />
     <Compile Include="Model\Setting\ProjectParameterSettingModel.cs" />
     <Compile Include="Model\DataObj\DisplayChromatogram.cs" />
@@ -380,6 +381,7 @@
     <Compile Include="ViewModel\Setting\MassAnnotationSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\MobilitySettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\ModificationSettingViewModel.cs" />
+    <Compile Include="ViewModel\Setting\MscleanrSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\MzSearchQueryViewModel.cs" />
     <Compile Include="ViewModel\Setting\PeakDetectionSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\PeakEqualityParameterSettingViewModel.cs" />
@@ -707,6 +709,9 @@
     </Compile>
     <Compile Include="View\Setting\ModificationSettingWin.xaml.cs">
       <DependentUpon>ModificationSettingWin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Setting\MscleanrSettingView.xaml.cs">
+      <DependentUpon>MscleanrSettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Setting\PeakDetectionSettingView.xaml.cs">
       <DependentUpon>PeakDetectionSettingView.xaml</DependentUpon>
@@ -1195,6 +1200,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\ModificationSettingWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\MscleanrSettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

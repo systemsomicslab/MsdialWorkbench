@@ -274,12 +274,12 @@ namespace CompMs.App.Msdial.Model.Lcms
             var features = this.Ms1Spots;
             MsdialCore.Algorithm.FragmentSearcher.Search(features.Select(n => n.innerModel).ToList(), this.decLoader, Parameter);
 
-            //foreach (var feature in features) {
-            //    var featureStatus = feature.innerModel.FeatureFilterStatus;
-            //    if (featureStatus.IsFragmentExistFiltered) {
-            //        Console.WriteLine("A fragment is found in alignment !!!");
-            //    }
-            //}
+            foreach (var feature in features) {
+                var featureStatus = feature.innerModel.FeatureFilterStatus;
+                if (featureStatus.IsFragmentExistFiltered) {
+                    Console.WriteLine("A fragment is found in alignment !!!");
+                }
+            }
 
         }
 

@@ -2399,6 +2399,22 @@
             </GeometryDrawing>
         </DrawingImage.Drawing>
     </DrawingImage>
+    <DrawingImage x:Key="MsCleanR_icon_is">
+        <DrawingImage.Drawing>
+            <GeometryDrawing>
+                <GeometryDrawing.Geometry>
+                <GeometryGroup>
+                    <LineGeometry StartPoint="0, 0" EndPoint="200,0"/>
+                    <RectangleGeometry Rect="0,200,200,300"/>
+                </GeometryGroup>
+            </GeometryDrawing.Geometry>
+                <GeometryDrawing.Brush>
+                    <SolidColorBrush Color="Red"></SolidColorBrush>
+                </GeometryDrawing.Brush>
+            </GeometryDrawing>
+            
+        </DrawingImage.Drawing>
+    </DrawingImage>
 
 
     <DrawingImage x:Key="Alignment_result_export_di">

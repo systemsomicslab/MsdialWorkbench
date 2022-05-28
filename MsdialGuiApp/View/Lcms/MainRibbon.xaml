@@ -135,6 +135,10 @@
                               Command="{Binding AlignmentViewModel.Value.NormalizeCommand}"
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                               KeyTip="N"/>
+                <RibbonButton Label="MS-CleanR peak filtering" LargeImageSource="{StaticResource MsCleanR_icon_is}"
+                              IsEnabled="True"
+                              Command="{Binding ShowMscleanrFilterSettingCommand}"
+                              KeyTip="T"/>
                 <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"
                               IsEnabled="False"
                               KeyTip="P"/>
