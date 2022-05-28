@@ -1,23 +1,20 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Utility;
 using CompMs.MsdialGcMsApi.Parameter;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CompMs.MsdialGcMsApi.Algorithm {
-    public class Ms1Dec {
-        public double InitialProgress { get; set; } = 30.0;
-        public double ProgressMax { get; set; } = 30.0;
-        public Ms1Dec(double InitialProgress, double ProgressMax) {
-            this.InitialProgress = InitialProgress;
-            this.ProgressMax = ProgressMax;
+    public sealed class Ms1Dec {
+        private readonly MsdialGcmsParameter _parameter;
+
+        public Ms1Dec(MsdialGcmsParameter parameter) {
+            _parameter = parameter;
         }
 
-        public List<MSDecResult> GetMSDecResults(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
-            MsdialGcmsParameter param, ChromatogramPeaksDataSummaryDto summary, Action<int> reportAction, System.Threading.CancellationToken token) {
-            return MSDecHandler.GetMSDecResults(spectrumList, chromPeakFeatures, param, reportAction, InitialProgress, ProgressMax);
+        public List<MSDecResult> GetMSDecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures, ReportProgress reporter) {
+            return MSDecHandler.GetMSDecResults(spectrumList, chromPeakFeatures, _parameter, reporter.ReportAction, reporter.InitialProgress, reporter.ProgressMax);
         }
     }
 }

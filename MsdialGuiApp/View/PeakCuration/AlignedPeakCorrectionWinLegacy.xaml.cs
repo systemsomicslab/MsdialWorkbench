@@ -86,8 +86,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
 
             Parallel.For(0, chromatoramSource.Count, (i) => {
                 var brush = classnameToBrushes[files[i].AnalysisFileClass];
-                var peaks = chromatoramSource[i].Peaks.Select(n => n.Chrom).ToList();
-                var chromatogram = new CompMs.Common.Components.Chromatogram(peaks);
+                var chromatogram = chromatoramSource[i].Convert();
                 var speaks = chromatogram.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
                 var peakProp = new PeakPropertyLegacy(model.AlignedPeakPropertiesModel[i], brush, speaks);
                 var offset = model.AlignedPeakProperties[i].ChromXsTop.Value - model.TimesCenter;

@@ -107,7 +107,7 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalPropertySelector = horizontalPropertySelector;
             GraphLabels = graphLabels;
             SpectrumLoaded = spectrumLoaded ?? new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true));
-            ReferenceHasSpectrumInfomation = lowerSpectrum.Select(spectrum => spectrum.Any()).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            ReferenceHasSpectrumInfomation = lowerSpectrum.Select(spectrum => spectrum?.Any() ?? false).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             UpperSpectrumModel = new SingleSpectrumModel(
                 upperSpectrum,
                 horizontalAxisObservable, horizontalPropertySelector,

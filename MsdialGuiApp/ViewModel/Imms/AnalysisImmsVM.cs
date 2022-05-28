@@ -80,28 +80,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             PlotViewModel = new AnalysisPeakPlotViewModel(this.model.PlotModel, brushSource: Observable.Return(this.model.Brush)).AddTo(Disposables);
             EicViewModel = new EicViewModel(this.model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
 
-
-            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-                this.model.parameter.ProjectParam.SpectrumCommentToColorBytes
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-                ),
-                item => item.ToString(),
-                Colors.Blue);
-
-            var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-               this.model.parameter.ProjectParam.SpectrumCommentToColorBytes
-               .ToDictionary(
-                   kvp => kvp.Key,
-                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-               ),
-               item => item.ToString(),
-               Colors.Red);
-
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel,
-                upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
-                lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
             SurveyScanViewModel = new SurveyScanViewModel(this.model.SurveyScanModel, horizontalAxis: PlotViewModel.VerticalAxis).AddTo(Disposables);
             PeakTableViewModel = new ImmsAnalysisPeakTableViewModel(
                 this.model.PeakTableModel,

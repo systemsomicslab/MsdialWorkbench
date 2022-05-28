@@ -31,6 +31,13 @@ namespace CompMs.Common.Algorithm.PeakPick {
         public float AreaAboveZero { get; set; } = -1.0F;
         public float EstimatedNoise { get; set; } = -1.0F;
         public float SignalToNoise { get; set; } = -1.0F;
+
+        private static readonly double INTENSITY_FOLDCHANGE_THREASHOLD = .1d;
+        public bool IsWeakCompareTo(double maxIntensityAtPeaks) {
+            var edgeIntensity = (IntensityAtLeftPeakEdge + IntensityAtRightPeakEdge) * 0.5;
+            var peakheightFromEdge = IntensityAtPeakTop - edgeIntensity;
+            return IntensityAtPeakTop <= 0 || peakheightFromEdge < maxIntensityAtPeaks * INTENSITY_FOLDCHANGE_THREASHOLD;
+        }
     }
 
     public static class PeakDetection {

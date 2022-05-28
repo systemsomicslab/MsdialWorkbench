@@ -27,11 +27,11 @@ namespace CompMs.App.Msdial.Model.Core
 
         public ObservableCollection<AnalysisFileBean> AnalysisFiles { get; }
 
-        public AnalysisModelBase AnalysisModelBase {
+        public IAnalysisModel AnalysisModelBase {
             get => analysisModelBase;
             private set => SetProperty(ref analysisModelBase, value);
         }
-        private AnalysisModelBase analysisModelBase;
+        private IAnalysisModel analysisModelBase;
 
         public void LoadAnalysisFile(AnalysisFileBean analysisFile) {
             if (AnalysisFile == analysisFile || analysisFile is null) {
@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Core
             AnalysisModelBase = LoadAnalysisFileCore(AnalysisFile);
         }
 
-        protected abstract AnalysisModelBase LoadAnalysisFileCore(AnalysisFileBean analysisFile);
+        protected abstract IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile);
 
         public AlignmentFileBean AlignmentFile {
             get => alignmentFile;
@@ -51,11 +51,11 @@ namespace CompMs.App.Msdial.Model.Core
 
         public ObservableCollection<AlignmentFileBean> AlignmentFiles { get; }
 
-        public AlignmentModelBase AlignmentModelBase {
+        public IAlignmentModel AlignmentModelBase {
             get => alignmentModelBase;
             private set => SetProperty(ref alignmentModelBase, value);
         }
-        private AlignmentModelBase alignmentModelBase;
+        private IAlignmentModel alignmentModelBase;
 
         public void LoadAlignmentFile(AlignmentFileBean alignmentFile) {
             if (AlignmentFile == alignmentFile || alignmentFile is null) {
@@ -65,7 +65,7 @@ namespace CompMs.App.Msdial.Model.Core
             AlignmentModelBase = LoadAlignmentFileCore(AlignmentFile);
         }
 
-        protected abstract AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile);
+        protected abstract IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile);
 
         public abstract void Run(ProcessOption option);
 

@@ -1,6 +1,5 @@
 ﻿using CompMs.Common.Enum;
 using MessagePack;
-using System;
 using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.DataObj {
@@ -46,27 +45,6 @@ namespace CompMs.MsdialCore.DataObj {
 
         public AnalysisFileBean() {
 
-        }
-
-        public AnalysisFileBean(AnalysisFileBean other) {
-            AnalysisFilePath = other.AnalysisFilePath;
-            AnalysisFileName = other.AnalysisFileName;
-            AnalysisFileType = other.AnalysisFileType;
-            AnalysisFileClass = other.AnalysisFileClass;
-            AnalysisFileAnalyticalOrder = other.AnalysisFileAnalyticalOrder;
-            AnalysisFileId = other.AnalysisFileId;
-            AnalysisFileIncluded = other.AnalysisFileIncluded;
-            DeconvolutionFilePath = other.DeconvolutionFilePath;
-            DeconvolutionFilePathList = other.DeconvolutionFilePathList;
-            PeakAreaBeanInformationFilePath = other.PeakAreaBeanInformationFilePath;
-            RiDictionaryFilePath = other.RiDictionaryFilePath;
-            AnalysisBatch = other.AnalysisBatch;
-            ResponseVariable = other.ResponseVariable;
-            DilutionFactor = other.DilutionFactor;
-            AnalysisFileSuperClass = other.AnalysisFileSuperClass;
-            RetentionTimeCorrectionBean = other.RetentionTimeCorrectionBean;
-            ChromPeakFeaturesSummary = other.ChromPeakFeaturesSummary;
-            ProteinAssembledResultFilePath = other.ProteinAssembledResultFilePath;
         }
 
         int IFileBean.FileID => AnalysisFileId;

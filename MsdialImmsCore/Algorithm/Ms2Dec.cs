@@ -4,6 +4,7 @@ using CompMs.Common.DataObj.Database;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
@@ -29,6 +30,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         public List<MSDecResult> GetMS2DecResults(
             IReadOnlyList<RawSpectrum> spectrumList,
+            IDataProvider provider,
             List<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialImmsParameter parameter,
             ChromatogramPeaksDataSummaryDto summary,
@@ -38,7 +40,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             return chromPeakFeatures
                 .Select(spot => {
-                    var result = GetMS2DecResult(spectrumList, spot, parameter, summary, iupac, targetCE);
+                    var result = GetMS2DecResult(spectrumList, provider, spot, parameter, summary, iupac, targetCE);
                     ReportProgress.Show(InitialProgress, ProgressMax, spot.MasterPeakID, chromPeakFeatures.Count, reportAction);
                     return result;
                 }).ToList();
@@ -46,13 +48,14 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         public List<MSDecResult> GetMS2DecResults(
             IReadOnlyList<RawSpectrum> spectrumList,
+            IDataProvider provider,
             List<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialImmsParameter parameter,
             ChromatogramPeaksDataSummaryDto summary,
             IupacDatabase iupac,
             double targetCE,
-            Action<int> reportAction,
-            int numThread, System.Threading.CancellationToken token) {
+            Action<int> reportAction, int numThread,
+            System.Threading.CancellationToken token) {
 
             return chromPeakFeatures
                 .AsParallel()
@@ -60,7 +63,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 .WithCancellation(token)
                 .WithDegreeOfParallelism(numThread)
                 .Select(spot => {
-                    var result = GetMS2DecResult(spectrumList, spot, parameter, summary, iupac, targetCE);
+                    var result = GetMS2DecResult(spectrumList, provider, spot, parameter, summary, iupac, targetCE);
                     ReportProgress.Show(InitialProgress, ProgressMax, spot.MasterPeakID, chromPeakFeatures.Count, reportAction);
                     return result;
                 }).ToList();
@@ -68,9 +71,9 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         public MSDecResult GetMS2DecResult(
             IReadOnlyList<RawSpectrum> spectrumList,
-            ChromatogramPeakFeature chromPeakFeature,
-            MsdialImmsParameter parameter, ChromatogramPeaksDataSummaryDto summary, IupacDatabase iupac,
-            double targetCE = -1) {
+            IDataProvider provider,
+            ChromatogramPeakFeature chromPeakFeature, MsdialImmsParameter parameter, ChromatogramPeaksDataSummaryDto summary,
+            IupacDatabase iupac, double targetCE = -1) {
 
             var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
             var precursorMz = chromPeakFeature.Mass;
@@ -114,8 +117,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var ms2ChromPeaksList = GetMs2PeaksList(
                 spectrumList,
                 precursorMz, curatedSpectra.Select(x => x.Mass).ToList(),
-                ms1Chromatogram.Peaks.First().ID, ms1Chromatogram.Peaks.Last().ID,
-                parameter, targetCE);
+                ms1Chromatogram, parameter, targetCE);
 
             if (ms2ChromPeaksList.IsEmptyOrNull()) {
                 return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
@@ -177,24 +179,26 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             //preparing MS1 and MS/MS chromatograms
             //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
-            var rawSpectra = new RawSpectra(spectrumList, ChromXType.Drift, ChromXUnit.Msec, ionMode);
-            return rawSpectra.GetMs1ExtractedChromatogram(chromPeakFeature.Mass, centroidMs1Tolerance, startDt, endDt);
+            var rawSpectra = new RawSpectra(spectrumList, ionMode);
+            var chromatogramRange = new ChromatogramRange(startDt, endDt, ChromXType.Drift, ChromXUnit.Msec);
+            return rawSpectra.GetMs1ExtractedChromatogram(chromPeakFeature.Mass, centroidMs1Tolerance, chromatogramRange);
         }
 
         private static List<List<ChromatogramPeak>> GetMs2PeaksList(
             IReadOnlyList<RawSpectrum> spectrumList,
             double precursorMz, List<double> productMz,
-            int startScanNum, int endScanNum,
+            Chromatogram ms1Chromatogram,
             MsdialImmsParameter parameter, double targetCE) {
 
             var ms2ChromPeaksList = DataAccess.GetMs2Peaklistlist(
                 spectrumList, precursorMz,
-                startScanNum, endScanNum,
-                productMz, parameter, targetCE);
+                ms1Chromatogram.Peaks.First().ID, ms1Chromatogram.Peaks.Last().ID,
+                productMz, parameter, targetCE,
+                ChromXType.Drift, ChromXUnit.Msec);
 
             var smoothedMs2ChromPeaksList = new List<List<ChromatogramPeak>>(ms2ChromPeaksList.Count);
             foreach (var chromPeaks in ms2ChromPeaksList) {
-                var sChromPeaks = new Chromatogram(chromPeaks).Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
+                var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.Drift, ChromXUnit.Msec).Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
                 smoothedMs2ChromPeaksList.Add(sChromPeaks);
             }
             return smoothedMs2ChromPeaksList;

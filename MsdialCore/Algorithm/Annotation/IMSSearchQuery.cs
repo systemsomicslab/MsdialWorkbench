@@ -92,8 +92,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 {
                     RT = new RetentionTime(center.ChromXs.RT.Value + rtTolerance, center.ChromXs.RT.Unit),
                     RI = new RetentionIndex(center.ChromXs.RI.Value + riTolerance, center.ChromXs.RI.Unit),
-                    Drift = new RetentionTime(center.ChromXs.Drift.Value + driftTolerance, center.ChromXs.Drift.Unit),
-                    Mz = new RetentionTime(center.ChromXs.Mz.Value + massTolerance, center.ChromXs.Mz.Unit),
+                    Drift = new DriftTime(center.ChromXs.Drift.Value + driftTolerance, center.ChromXs.Drift.Unit),
+                    Mz = new MzValue(center.ChromXs.Mz.Value + massTolerance, center.ChromXs.Mz.Unit),
                 },
                 center.IonMode);
         }

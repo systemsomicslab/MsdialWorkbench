@@ -79,7 +79,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public PeakFilterModel PeakFilterModel { get; }
 
-        protected override AnalysisModelBase LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
@@ -96,7 +96,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             .AddTo(Disposables);
         }
 
-        protected override AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
@@ -130,27 +130,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
             LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
         }
 
-        public void SetAnalysisParameter(LcimmsAnalysisParameterSetModel analysisParamSetModel) {
-            if (Storage.Parameter.ProcessOption.HasFlag(ProcessOption.Alignment)) {
-                var filename = analysisParamSetModel.AlignmentResultFileName;
-                AlignmentFiles.Add(
-                    new AlignmentFileBean
-                    {
-                        FileID = AlignmentFiles.Count,
-                        FileName = filename,
-                        FilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.arf}"),
-                        EicFilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, $"{filename}.EIC.aef"),
-                        SpectraFilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.dcl}"),
-                        ProteinAssembledResultFilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.prf}"),
-                    });
-                Storage.AlignmentFiles = AlignmentFiles.ToList();
-            }
-
-            annotationProcess = BuildAnnotationProcess(Storage.DataBases, Storage.Parameter.PeakPickBaseParam);
-            Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
-        }
-
         private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
             var containers = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
             foreach (var annotators in storage.MetabolomicsDataBases) {
@@ -159,7 +138,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             return new StandardAnnotationProcess<IAnnotationQuery>(
                 containers.Select(container => (
                     new AnnotationQueryFactory(container.Annotator, parameter) as IAnnotationQueryFactory<IAnnotationQuery>,
-                    container as IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
+                    container
                 )).ToList());
         }
 

@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Algorithm\PeakSpot\**" />
+    <EmbeddedResource Remove="Algorithm\PeakSpot\**" />
+    <None Remove="Algorithm\PeakSpot\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
     <ProjectReference Include="..\MsdialCore\MsdialCore.csproj" />
     <ProjectReference Include="..\MsdialLcMsApi\MsdialLcMsApi.csproj" />
@@ -13,7 +19,6 @@
 
   <ItemGroup>
     <Folder Include="Algorithm\Alignment\" />
-    <Folder Include="Algorithm\PeakSpot\" />
     <Folder Include="Parser\" />
   </ItemGroup>
 

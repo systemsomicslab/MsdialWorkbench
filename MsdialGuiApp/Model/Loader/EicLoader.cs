@@ -28,7 +28,8 @@ namespace CompMs.App.Msdial.Model.Loader
             this.rangeBegin = rangeBegin;
             this.rangeEnd = rangeEnd;
 
-            _rawSpectraTask = Task.Run(async () => new RawSpectra(await provider.LoadMs1SpectrumsAsync(default).ConfigureAwait(false), chromXType, chromXUnit, parameter.IonMode));
+            _rawSpectraTask = Task.Run(async () => new RawSpectra(await provider.LoadMs1SpectrumsAsync(default).ConfigureAwait(false), parameter.IonMode, parameter.AcquisitionType));
+            _chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
         }
 
         protected readonly IDataProvider provider;
@@ -37,6 +38,8 @@ namespace CompMs.App.Msdial.Model.Loader
         protected readonly ChromXUnit chromXUnit;
         protected readonly double rangeBegin, rangeEnd;
         private readonly Task<RawSpectra> _rawSpectraTask;
+        private readonly ChromatogramRange _chromatogramRange;
+
         private RawSpectra _rawSpectra => _rawSpectraTask.Result;
 
         public double MzTolerance => parameter.CentroidMs1Tolerance;
@@ -75,7 +78,7 @@ namespace CompMs.App.Msdial.Model.Loader
 
         internal List<ChromatogramPeakWrapper> LoadHighestEicTrace(List<ChromatogramPeakFeatureModel> targets) {
             return _rawSpectra
-                .GetMs1ExtractedChromatogramByHighestBasePeakMz(targets, parameter.CentroidMs1Tolerance, rangeBegin, rangeEnd)
+                .GetMs1ExtractedChromatogramByHighestBasePeakMz(targets, parameter.CentroidMs1Tolerance, _chromatogramRange)
                 .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new ChromatogramPeakWrapper(peak))
@@ -86,7 +89,7 @@ namespace CompMs.App.Msdial.Model.Loader
             return Task.Run(async () =>
             {
                 var rawSpectra = await _rawSpectraTask.ConfigureAwait(false);
-                var ms1Peaks = rawSpectra.GetMs1ExtractedChromatogram(target.Mass, parameter.CentroidMs1Tolerance, rangeBegin, rangeEnd);
+                var ms1Peaks = rawSpectra.GetMs1ExtractedChromatogram(target.Mass, parameter.CentroidMs1Tolerance, _chromatogramRange);
                 return ms1Peaks.Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                     .Where(peak => peak != null)
                     .Select(peak => new ChromatogramPeakWrapper(peak))
@@ -95,7 +98,8 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         protected virtual List<ChromatogramPeakWrapper> LoadEicCore(double mass, double massTolerance) {
-            return _rawSpectra.GetMs1ExtractedChromatogram(mass, parameter.CentroidMs1Tolerance, rangeBegin, rangeEnd)
+            return _rawSpectra
+                .GetMs1ExtractedChromatogram(mass, parameter.CentroidMs1Tolerance, _chromatogramRange)
                 .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new ChromatogramPeakWrapper(peak))
@@ -125,7 +129,7 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         protected virtual List<ChromatogramPeakWrapper> LoadTicCore() {
-            var chromatogram = _rawSpectra.GetMs1TotalIonChromatogram(rangeBegin, rangeEnd);
+            var chromatogram = _rawSpectra.GetMs1TotalIonChromatogram(_chromatogramRange);
             return chromatogram.Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new ChromatogramPeakWrapper(peak))
@@ -144,7 +148,7 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         protected virtual List<ChromatogramPeakWrapper> LoadBpcCore() {
-            return _rawSpectra.GetMs1BasePeakChromatogram(rangeBegin, rangeEnd)
+            return _rawSpectra.GetMs1BasePeakChromatogram(_chromatogramRange)
                 .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)
                 .Select(peak => new ChromatogramPeakWrapper(peak))

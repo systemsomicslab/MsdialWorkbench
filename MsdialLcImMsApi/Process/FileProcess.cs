@@ -58,7 +58,7 @@ namespace CompMs.MsdialLcImMsApi.Process
             var chromPeakFeatures = PeakSpotting(file, spectrumProvider, accSpectrumProvider, token, reportAction);
 
             var spectrumList = spectrumProvider.LoadMsSpectrums();
-            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures, parameter);
+            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures);
             file.ChromPeakFeaturesSummary = summary;
 
             Console.WriteLine("Deconvolution started");
@@ -124,7 +124,7 @@ namespace CompMs.MsdialLcImMsApi.Process
                 coeff = null;
             }
 
-            var chromPeakFeatures = new PeakSpotting(0, 30).Execute4DFeatureDetection(spectrumProvider, accSpectrumProvider, 
+            var chromPeakFeatures = new PeakSpotting(0, 30, parameter).Execute4DFeatureDetection(spectrumProvider, accSpectrumProvider, 
                 parameter, parameter.NumThreads, token, reportAction);
             var iupacDB = storage.IupacDatabase;
             IsotopeEstimator.Process(chromPeakFeatures, parameter, iupacDB);

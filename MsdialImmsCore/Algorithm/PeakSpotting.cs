@@ -109,8 +109,9 @@ namespace CompMs.MsdialImmsCore.Algorithm
             MsdialImmsParameter param,
             float chromBegin, float chromEnd) {
 
-            var rawSpectra = new RawSpectra(spectrum, ChromXType.Drift, ChromXUnit.Msec, param.IonMode);
-            var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(focusedMass, param.MassSliceWidth, chromBegin, chromEnd);
+            var rawSpectra = new RawSpectra(spectrum, param.IonMode, param.AcquisitionType);
+            var chromatogramRange = new ChromatogramRange(chromBegin, chromEnd, ChromXType.Drift, ChromXUnit.Msec);
+            var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(focusedMass, param.MassSliceWidth, chromatogramRange);
             if (chromatogram.IsEmpty)
                 return new List<ChromatogramPeakFeature>();
 
@@ -384,14 +385,14 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var recalculatedPeakspots = new List<ChromatogramPeakFeature>();
 
             var minDatapoint = 3;
-            var rawSpectra = new RawSpectra(spectrumList, type, unit, param.IonMode);
+            var rawSpectra = new RawSpectra(spectrumList, param.IonMode, param.AcquisitionType);
             foreach (var spot in chromPeakFeatures) {
                 //get EIC chromatogram
 
                 var peakWidth = spot.PeakWidth();
                 var peakWidthMargin = peakWidth * 0.5;
-
-                var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(spot.Mass, param.CentroidMs1Tolerance, spot.ChromXsLeft.Value - peakWidthMargin, spot.ChromXsRight.Value + peakWidthMargin);
+                var chromatogramRange = new ChromatogramRange(spot.ChromXsLeft.Value - peakWidthMargin, spot.ChromXsRight.Value + peakWidthMargin, type, unit);
+                var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(spot.Mass, param.CentroidMs1Tolerance, chromatogramRange);
                 var sPeaklist = chromatogram.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
 
                 var minRtId = SearchNearestPoint(spot.ChromXs, sPeaklist);
