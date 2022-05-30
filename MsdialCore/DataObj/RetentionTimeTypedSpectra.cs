@@ -48,7 +48,7 @@ namespace CompMs.MsdialCore.DataObj
                 var (basePeakMz, basePeakIntensity, _) = new Spectrum(_spectra[i].Spectrum).RetrieveTotalIntensity();
                 results.Add(new ChromatogramPeak(i, basePeakMz, basePeakIntensity, _idToRetentionTime[i]));
             }
-            return new Chromatogram(results);
+            return new Chromatogram(results, ChromXType.RT, _unit);
         }
 
         public Chromatogram GetMs1ExtractedChromatogram(double mz, double tolerance, double start, double end) {
@@ -63,7 +63,7 @@ namespace CompMs.MsdialCore.DataObj
                 var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveBin(mz, tolerance);
                 results.Add(new ChromatogramPeak(i, basePeakMz, summedIntensity, _idToRetentionTime[i]));
             }
-            return new Chromatogram(results);
+            return new Chromatogram(results, ChromXType.RT, _unit);
         }
 
         public Chromatogram GetMs1TotalIonChromatogram(double start, double end) {
@@ -78,7 +78,7 @@ namespace CompMs.MsdialCore.DataObj
                 var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveTotalIntensity();
                 results.Add(new ChromatogramPeak(i, basePeakMz, summedIntensity, _idToRetentionTime[i]));
             }
-            return new Chromatogram(results);
+            return new Chromatogram(results, ChromXType.RT, _unit);
         }
     }
 }

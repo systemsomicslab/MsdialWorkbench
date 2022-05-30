@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.LC;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
@@ -34,6 +33,7 @@ using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcMsApi.Export;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -54,7 +54,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             IMsdialDataStorage<MsdialLcmsParameter> storage,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
             IObservable<ParameterBase> parameterAsObservable,
-            IObservable<IBarItemsLoader> barItemsLoader)
+            IObservable<IBarItemsLoader> barItemsLoader,
+            IMessageBroker broker)
             : base(storage.AnalysisFiles, storage.AlignmentFiles) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
@@ -68,6 +69,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             this.providerFactory = providerFactory;
             this.parameterAsObservable = parameterAsObservable;
             this.barItemsLoader = barItemsLoader;
+            _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
         }
 
@@ -93,10 +95,11 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
         private readonly IObservable<ParameterBase> parameterAsObservable;
         private readonly IObservable<IBarItemsLoader> barItemsLoader;
+        private readonly IMessageBroker _broker;
         private IAnnotationProcess annotationProcess;
 
 
-        protected override AnalysisModelBase LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
@@ -113,7 +116,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             .AddTo(Disposables);
         }
 
-        protected override AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
@@ -169,60 +172,6 @@ namespace CompMs.App.Msdial.Model.Lcms
 #if DEBUG
             Console.WriteLine(string.Join("\n", Storage.Parameter.ParametersAsText()));
 #endif
-        }
-
-        public bool ProcessSetAnalysisParameter(Window owner) {
-            var parameter = Storage.Parameter;
-            var analysisParamSetModel = new LcmsAnalysisParameterSetModel(parameter, AnalysisFiles, Storage.DataBases);
-            using (var analysisParamSetVM = new LcmsAnalysisParameterSetViewModel(analysisParamSetModel)) {
-                var apsw = new AnalysisParamSetForLcWindow
-                {
-                    DataContext = analysisParamSetVM,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-                if (apsw.ShowDialog() != true) {
-                    return false;
-                }
-            }
-
-            var message = new ShortMessageWindow() {
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Text = "Loading library files..",
-            };
-            message.Show();
-            Storage.DataBases = analysisParamSetModel.IdentitySettingModel.Create();
-            message.Close();
-
-            if (parameter.TogetherWithAlignment) {
-                var filename = analysisParamSetModel.AlignmentResultFileName;
-                AlignmentFiles.Add(
-                    new AlignmentFileBean
-                    {
-                        FileID = AlignmentFiles.Count,
-                        FileName = filename,
-                        FilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
-                        EicFilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + ".EIC.aef"),
-                        SpectraFilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl),
-                        ProteinAssembledResultFilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.prf),
-                    }
-                );
-                Storage.AlignmentFiles = AlignmentFiles.ToList();
-            }
-
-            Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
-            if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                annotationProcess = BuildProteoMetabolomicsAnnotationProcess(Storage.DataBases, parameter);
-            }
-            else if(parameter.TargetOmics == TargetOmics.Lipidomics && parameter.CollistionType == CollisionType.EIEIO) {
-                annotationProcess = BuildEadLipidomicsAnnotationProcess(Storage.DataBases, Storage.DataBaseMapper, parameter);
-            }
-            else {
-                annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
-            }
-            return true;
         }
 
         private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
@@ -389,7 +338,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public void ExportAlignment(Window owner) {
             var container = Storage;
-            var vm = new AlignmentResultExport2VM(AlignmentFile, container.AlignmentFiles, container);
+            var vm = new AlignmentResultExport2VM(AlignmentFile, container.AlignmentFiles, container, _broker);
 
             if (container.Parameter.TargetOmics == TargetOmics.Proteomics) {
                 var metadataAccessor = new LcmsProteomicsMetadataAccessor(container.DataBaseMapper, container.Parameter);

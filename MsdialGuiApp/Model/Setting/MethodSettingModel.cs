@@ -3,6 +3,7 @@ using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Reactive;
 
@@ -10,11 +11,11 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     public class MethodSettingModel : BindableBase
     {
-        public MethodSettingModel(ProcessOption option, IMsdialDataStorage<ParameterBase> storage, Action<MethodSettingModel, IMethodModel> handler, IObservable<Unit> observeParameterChanged) {
+        public MethodSettingModel(ProcessOption option, IMsdialDataStorage<ParameterBase> storage, Action<MethodSettingModel, IMethodModel> handler, IObservable<Unit> observeParameterChanged, IMessageBroker broker) {
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
             this.handler = handler;
 
-            settingModelFactory = new MethodSettingModelFactory(Storage, observeParameterChanged, option);
+            settingModelFactory = new MethodSettingModelFactory(Storage, observeParameterChanged, option, broker);
             DataCollectionSettingModel = settingModelFactory.CreateDataCollectionSetting();
             PeakDetectionSettingModel = settingModelFactory.CreatePeakDetectionSetting();
             DeconvolutionSettingModel = settingModelFactory.CreateDeconvolutionSetting();

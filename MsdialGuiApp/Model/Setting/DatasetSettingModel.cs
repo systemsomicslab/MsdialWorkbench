@@ -1,26 +1,27 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.CommonMVVM;
+using Reactive.Bindings.Notifiers;
 using System;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
     public class DatasetSettingModel : BindableBase
     {
-        public DatasetSettingModel(bool isReadOnly, Action<IDatasetModel> handler) {
+        public DatasetSettingModel(bool isReadOnly, Action<IDatasetModel> handler, IMessageBroker broker) {
             IsReadOnlyDatasetParameter = isReadOnly;
             this.handler = handler;
 
             var dt = DateTime.Now;
             DatasetFileSettingModel = new DatasetFileSettingModel(dt);
-            DatasetParameterSettingModel = new DatasetParameterSettingModel(dt, DatasetFileSettingModel, PrepareMethodSetting);
+            DatasetParameterSettingModel = new DatasetParameterSettingModel(dt, DatasetFileSettingModel, PrepareMethodSetting, broker);
         }
 
-        public DatasetSettingModel(IDatasetModel model) {
+        public DatasetSettingModel(IDatasetModel model, IMessageBroker broker) {
             IsReadOnlyDatasetParameter = true;
             handler = null;
 
             DatasetFileSettingModel = new DatasetFileSettingModel(model.Storage.AnalysisFiles);
-            DatasetParameterSettingModel = new DatasetParameterSettingModel(model.Storage.Parameter, DatasetFileSettingModel);
+            DatasetParameterSettingModel = new DatasetParameterSettingModel(model.Storage.Parameter, DatasetFileSettingModel, broker);
         }
 
         public MethodSettingModel MethodSettingModel {

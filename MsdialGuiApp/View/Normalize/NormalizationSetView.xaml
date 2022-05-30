@@ -10,7 +10,7 @@
         Width="800" Height="540"
         Title="Normalization setting">
     <Window.Resources>
-        <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -40,16 +40,8 @@
             </Border>
         </StackPanel>
 
-        <local:SplashSetView DataContext="{Binding SplashVM, Mode=OneTime}"
+        <local:SplashSetView DataContext="{Binding SplashViewModel, Mode=OneTime}"
                              Visibility="{Binding DataContext.Parameter.IsNormalizeSplash, Converter={StaticResource boolean2visibility}, RelativeSource={RelativeSource AncestorType=Grid}}"
                              Margin="8" Grid.Row="1"/>
-        <!--
-        <Button Content="Done"
-                Command="{x:Static local:NormalizationSetView.DoneCommand}"
-                IsEnabled="{Binding CanExecute, Mode=OneWay}"
-                HorizontalAlignment="Right"
-                Width="80" Height="24"
-                Margin="8"/>
-                -->
     </Grid>
 </Window>

@@ -64,7 +64,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             this.provider = provider;
             DataBaseMapper = mapper;
             Parameter = parameter;
-            CompoundSearchers = ConvertToCompoundSearchers(databases);
+            CompoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper, parameter.PeakPickBaseParam).Items;
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, useRtFilter: true);
 
@@ -342,24 +342,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 DataBaseMapper,
                 Parameter
                 );
-        }
-
-        private List<CompoundSearcher> ConvertToCompoundSearchers(DataBaseStorage databases) {
-            var metabolomicsSearchers = databases
-                .MetabolomicsDataBases
-                .SelectMany(db => db.Pairs)
-                .Select(pair => new CompoundSearcher(
-                    new AnnotationQueryWithoutIsotopeFactory(pair.SerializableAnnotator),
-                    pair.SearchParameter,
-                    pair.SerializableAnnotator));
-            var lipidomicsSearchers = databases
-                .EadLipidomicsDatabases
-                .SelectMany(db => db.Pairs)
-                .Select(pair => new CompoundSearcher(
-                    new AnnotationQueryWithReferenceFactory(DataBaseMapper, pair.SerializableAnnotator, Parameter.PeakPickBaseParam),
-                    pair.SearchParameter,
-                    pair.SerializableAnnotator));
-            return metabolomicsSearchers.Concat(lipidomicsSearchers).ToList();
         }
     }
 }

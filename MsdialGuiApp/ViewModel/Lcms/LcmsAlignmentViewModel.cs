@@ -6,7 +6,6 @@ using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Base;
@@ -14,6 +13,7 @@ using CompMs.Graphics.Design;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -31,7 +31,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             LcmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
+            IMessageBroker broker)
             : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -53,7 +54,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
             this.proteomicsTableService = proteomicsTableService;
-
+            _broker = broker;
             Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Brushes = this.model.Brushes.AsReadOnly();
             SelectedBrush = this.model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
@@ -75,34 +76,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             PlotViewModel = new AlignmentPeakPlotViewModel(this.model.PlotModel, SelectedBrush).AddTo(Disposables);
 
-            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-               model.Parameter.ProjectParam.SpectrumCommentToColorBytes
-               .ToDictionary(
-                   kvp => kvp.Key,
-                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-               ),
-               item => item.ToString(),
-               Colors.Blue);
-
-            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
-                comment => {
-                    var commentString = comment.ToString();
-                    if (model.Parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
-                        return Color.FromRgb(color[0], color[1], color[2]);
-                    }
-                    else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
-                        && model.Parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
-                        return Color.FromRgb(color[0], color[1], color[2]);
-                    }
-                    else {
-                        return Colors.Red;
-                    }
-                },
-                true);
-
-            Ms2SpectrumViewModel = new MsSpectrumViewModel(this.model.Ms2SpectrumModel,
-                upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
-                lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
+            Ms2SpectrumViewModel = new MsSpectrumViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
             BarChartViewModel = new BarChartViewModel(this.model.BarChartModel, brushSource: classBrush).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(this.model.AlignmentEicModel).AddTo(Disposables);
             
@@ -139,6 +113,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
         private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
+        private readonly IMessageBroker _broker;
 
         public PeakFilterViewModel PeakFilterViewModel { get; }
 
@@ -205,9 +180,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private bool CanSaveSpectra(Window owner) {
             return this.model.CanSaveSpectra();
         }
-        public void SaveProject() {
-            model.SaveAsync();
-        }
 
         public DelegateCommand<Window> NormalizeCommand => normalizeCommand ?? (normalizeCommand = new DelegateCommand<Window>(Normalize));
 
@@ -215,7 +187,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private void Normalize(Window owner) {
             var parameter = model.Parameter;
-            using (var vm = new NormalizationSetViewModel(model.Container, model.DataBaseMapper, model.MatchResultEvaluator, parameter)) {
+            using (var vm = new NormalizationSetViewModel(model.Container, model.DataBaseMapper, model.MatchResultEvaluator, parameter, _broker)) {
                 var view = new NormalizationSetView {
                     DataContext = vm,
                     Owner = owner,

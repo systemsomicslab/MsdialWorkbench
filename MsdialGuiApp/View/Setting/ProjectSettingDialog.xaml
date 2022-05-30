@@ -94,7 +94,7 @@
                 </StackPanel.Resources>
                 <Button Content="Cancel" Command="ApplicationCommands.Close"/>
                 <Button Content="Next" Command="{Binding ContinueCommand, Mode=OneTime}"/>
-                <Button Content="Run" Command="{Binding RunCommand, Mode=OneTime}"/>
+                <Button Content="Run" Command="{Binding RunCommand, Mode=OneTime}" Click="RunButton_Click"/>
             </StackPanel>
             <ContentControl Content="{Binding /, Source={StaticResource SettingViewModels}}"
                             IsTabStop="False">

@@ -29,7 +29,7 @@ namespace CompMs.App.Msdial.Model.Core
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(files);
 
             var dt = DateTime.Now;
-            AlignmentResultFileName = $"AlignmentResult_{dt:yyyy_MM_dd_hh_mm_ss}";
+            AlignmentResultFileName = $"AlignmentResult_{dt:yyyy_MM_dd_HH_mm_ss}";
 
             ExcludedMassList = new ObservableCollection<MzSearchQuery>(parameter.ExcludedMassList);
 

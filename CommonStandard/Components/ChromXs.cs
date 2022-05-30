@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using CompMs.Common.Interfaces;
+﻿using CompMs.Common.Interfaces;
 using MessagePack;
 
 namespace CompMs.Common.Components
@@ -10,13 +7,35 @@ namespace CompMs.Common.Components
     public class ChromXs: IChromXs
     {
         [Key(0)]
-        public ChromX RT { get; set; } = new RetentionTime(-1);
+        public ChromX InnerRT { get; set; } = new RetentionTime(-1);
         [Key(1)]
-        public ChromX RI { get; set; } = new RetentionIndex(-1);
+        public ChromX InnerRI { get; set; } = new RetentionIndex(-1);
         [Key(2)]
-        public ChromX Drift { get; set; } = new DriftTime(-1);
+        public ChromX InnerDrift { get; set; } = new DriftTime(-1);
         [Key(3)]
-        public ChromX Mz { get; set; } = new MzValue(-1);
+        public ChromX InnerMz { get; set; } = new MzValue(-1);
+
+        [IgnoreMember]
+        public RetentionTime RT {
+            get => (RetentionTime)InnerRT;
+            set => InnerRT = value;
+        }
+        [IgnoreMember]
+        public RetentionIndex RI {
+            get => (RetentionIndex)InnerRI;
+            set => InnerRI = value;
+        }
+        [IgnoreMember]
+        public DriftTime Drift {
+            get => (DriftTime)InnerDrift;
+            set => InnerDrift = value;
+        }
+        [IgnoreMember]
+        public MzValue Mz {
+            get => (MzValue)InnerMz;
+            set => InnerMz = value;
+        }
+
         [Key(4)]
         public ChromXType MainType { get; set; } = ChromXType.RT;
         public ChromXs () { }
@@ -42,26 +61,24 @@ namespace CompMs.Common.Components
 
         public ChromXs(ChromX chromX)
         {
-            switch (chromX.Type)
-            {
-                case ChromXType.RT:
-                    RT = chromX;
+            switch (chromX) {
+                case RetentionTime rt:
+                    RT = rt;
                     break;
-                case ChromXType.RI:
-                    RI = chromX;
+                case RetentionIndex ri:
+                    RI = ri;
                     break;
-                case ChromXType.Drift:
-                    Drift = chromX;
+                case DriftTime dt:
+                    Drift = dt;
                     break;
-                case ChromXType.Mz:
-                    Mz = chromX;
+                case MzValue mz:
+                    Mz = mz;
                     break;
                 default:
                     break;
             }
             MainType = chromX.Type;
         }
-
    
         public ChromX GetRepresentativeXAxis()
         {

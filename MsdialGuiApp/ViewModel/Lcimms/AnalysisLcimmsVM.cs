@@ -54,27 +54,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 this.model.DtEicModel,
                 horizontalAxis: DtMzPlotViewModel.HorizontalAxis).AddTo(Disposables);
 
-            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-                this.model.Parameter.ProjectParam.SpectrumCommentToColorBytes
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-                ),
-                item => item.ToString(),
-                Colors.Blue);
-
-            var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-               this.model.Parameter.ProjectParam.SpectrumCommentToColorBytes
-               .ToDictionary(
-                   kvp => kvp.Key,
-                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-               ),
-               item => item.ToString(),
-               Colors.Red);
-
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel,
-                upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
-                lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
             SurveyScanViewModel = new SurveyScanViewModel(
                 this.model.SurveyScanModel,
                 horizontalAxis: RtMzPlotViewModel.VerticalAxis).AddTo(Disposables);

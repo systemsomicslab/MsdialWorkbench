@@ -77,7 +77,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, useRtFilter: true);
 
             // Peak scatter plot
-            var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
+            var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
             PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource)
             {
                 GraphTitle = AlignmentFile.FileName,
@@ -290,6 +292,10 @@ namespace CompMs.App.Msdial.Model.Lcms
                 MsdecResult.Value,
                 DataBaseMapper,
                 Parameter);
+        }
+
+        public void Normalize() {
+            
         }
 
         private List<CompoundSearcher> ConvertToCompoundSearchers(DataBaseStorage databases) {

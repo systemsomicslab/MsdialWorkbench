@@ -5,6 +5,7 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Core
@@ -16,12 +17,13 @@ namespace CompMs.App.Msdial.ViewModel.Core
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
-            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService) {
+            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService,
+            IMessageBroker broker) {
             CurrentDataset = model.ToReactivePropertySlimAsSynchronized(m => m.CurrentDataset).AddTo(Disposables);
             Datasets = model.Datasets.ToReadOnlyReactiveCollection().AddTo(Disposables);
 
             CurrentDatasetViewModel = model.ObserveProperty(m => m.CurrentDataset)
-                .Select(m => m is null ? null : new DatasetViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, analysisFilePropertyResetService))
+                .Select(m => m is null ? null : new DatasetViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, analysisFilePropertyResetService, broker))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
