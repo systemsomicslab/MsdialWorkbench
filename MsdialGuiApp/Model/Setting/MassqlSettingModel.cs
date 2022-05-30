@@ -1,12 +1,14 @@
-﻿using CompMs.MsdialCore.DataObj;
+﻿using CompMs.Common.Enum;
+using CompMs.Common.FormulaGenerator.Function;
+using CompMs.CommonMVVM;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using System.Collections.Generic;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Runtime.Serialization;
-using CompMs.Common.FormulaGenerator.Function;
-using CompMs.CommonMVVM;
 
 namespace CompMs.App.Msdial.Model.Setting {
     public class MassqlSettingModel : BindableBase {
@@ -16,20 +18,24 @@ namespace CompMs.App.Msdial.Model.Setting {
         //private readonly List<AlignmentSpotProperty> _alignmentSpotProperties;
         //private readonly MSDecLoader _mSDecLoader;
 
-        private string massql;
-
-        public MassqlSettingModel(ParameterBase param) {
-            if (param.FragmentSearchSettingValues is null) {
-                param.FragmentSearchSettingValues = new List<PeakFeatureSearchValue>();
-            }
-        }
-
         public string Massql {
             get => massql;
             set => SetProperty(ref massql, value);
         }
+        private string massql;
 
-        public List<PeakFeatureSearchValue> SendMassql() {
+        private readonly ParameterBase _parameter;
+        private readonly Action _fragmentSearchAction;
+
+        public MassqlSettingModel(ParameterBase parameter, Action fragmentSearchAction) {
+            if (parameter.FragmentSearchSettingValues is null) {
+                parameter.FragmentSearchSettingValues = new List<PeakFeatureSearchValue>();
+            }
+            _parameter = parameter;
+            _fragmentSearchAction = fragmentSearchAction;
+        }
+
+        public void SendMassql() {
             var massql = "https://msql.ucsd.edu/parse?query=" + Massql;
             var req = WebRequest.Create(massql);
             var res = req.GetResponse();
@@ -66,7 +72,13 @@ namespace CompMs.App.Msdial.Model.Setting {
                     }
                 }
             }
-            return massQLParams;        
+            //return massQLParams;
+
+            _parameter.FragmentSearchSettingValues = massQLParams;
+            if (_parameter.FragmentSearchSettingValues.Count > 1) {
+                _parameter.AndOrAtFragmentSearch = AndOr.AND;
+            }
+            _fragmentSearchAction?.Invoke();
         }
     }
 

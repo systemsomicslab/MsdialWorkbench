@@ -119,7 +119,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private void MscleanrFilterSettingMethod(Window obj) {
             if (SelectedViewModel.Value is AlignmentFileViewModel) {
-                model.ShowShowMscleanrFilterSettingView(obj);
+                model.ShowShowMscleanrFilterSettingView(obj, true);
             }
             else {
                 Console.WriteLine("Please select an item in Alignment navigator!!");
