@@ -5,6 +5,7 @@ using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Search;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -62,6 +63,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
             PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
 
+            Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
+
+            PlotViewModel = new AlignmentPeakPlotViewModel(this.model.PlotModel, null, Observable.Never<bool>()).AddTo(Disposables);
+
+            Ms2SpectrumViewModel = new MsSpectrumViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
+            BarChartViewModel = new BarChartViewModel(this.model.BarChartModel).AddTo(Disposables);
+            AlignmentEicViewModel = new AlignmentEicViewModel(this.model.AlignmentEicModel).AddTo(Disposables);
+            
             var classBrush = model.ParameterAsObservable
                 .Select(p => new KeyBrushMapper<BarItem, string>(
                     p.ProjectParam.ClassnameToColorBytes
@@ -71,15 +80,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     ),
                     item => item.Class,
                     Colors.Blue));
-
-            Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
-
-            PlotViewModel = new AlignmentPeakPlotViewModel(this.model.PlotModel, SelectedBrush).AddTo(Disposables);
-
-            Ms2SpectrumViewModel = new MsSpectrumViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
-            BarChartViewModel = new BarChartViewModel(this.model.BarChartModel, brushSource: classBrush).AddTo(Disposables);
-            AlignmentEicViewModel = new AlignmentEicViewModel(this.model.AlignmentEicModel).AddTo(Disposables);
-            
             AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(
                 this.model.AlignmentSpotTableModel,
                 PeakSpotNavigatorViewModel.MzLowerValue,
@@ -118,7 +118,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public PeakFilterViewModel PeakFilterViewModel { get; }
 
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
-        public ReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>> SelectedBrush { get; }
+        public ReactivePropertySlim<BrushMapData<AlignmentSpotPropertyModel>> SelectedBrush { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public ICollectionView Ms1Spots { get; }
         public override ICollectionView PeakSpotsView => Ms1Spots;
@@ -164,17 +164,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand<Window> saveSpectraCommand;
 
         private void SaveSpectra(Window owner) {
-            var sfd = new SaveFileDialog {
+            var request = new SaveFileNameRequest(model.SaveSpectra)
+            {
                 Title = "Save spectra",
                 Filter = "NIST format(*.msp)|*.msp|MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf|MSFINDER format(*.mat)|*.mat;|SIRIUS format(*.ms)|*.ms",
                 RestoreDirectory = true,
                 AddExtension = true,
             };
-
-            if (sfd.ShowDialog(owner) == true) {
-                var filename = sfd.FileName;
-                this.model.SaveSpectra(filename);
-            }
+            _broker.Publish(request);
         }
 
         private bool CanSaveSpectra(Window owner) {

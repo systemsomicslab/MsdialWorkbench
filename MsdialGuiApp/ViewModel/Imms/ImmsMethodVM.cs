@@ -6,6 +6,7 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.ComponentModel;
 using System.Reactive.Linq;
@@ -19,10 +20,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ImmsMethodVM(
             ImmsMethodModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IMessageBroker messageBroker)
             : base(model,
                   ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService),
-                  ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService)) {
+                  ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, messageBroker)) {
 
             this.model = model;
             PropertyChanged += OnDisplayFiltersChanged;
@@ -144,7 +146,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private static IReadOnlyReactiveProperty<AlignmentImmsVM> ConvertToAlignmentViewModel(
             ImmsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IMessageBroker messageBroker) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
@@ -154,7 +157,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             ReadOnlyReactivePropertySlim<AlignmentImmsVM> result;
             using (var subject = new Subject<ImmsAlignmentModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new AlignmentImmsVM(m, compoundSearchService, peakSpotTableService))
+                    .Select(m => m is null ? null : new AlignmentImmsVM(m, compoundSearchService, peakSpotTableService, messageBroker))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AlignmentModel);

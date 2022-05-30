@@ -6,7 +6,6 @@ using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.Base;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -46,10 +45,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
             Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
 
-            PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, SelectedBrush).AddTo(Disposables);
+            PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, null, Observable.Never<bool>()).AddTo(Disposables);
 
             Ms2SpectrumViewModel = new MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
-            BarChartViewModel = new BarChartViewModel(model.BarChartModel, brushSource: null).AddTo(Disposables);
+            BarChartViewModel = new BarChartViewModel(model.BarChartModel).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
             /*
             AlignmentSpotTableViewModel = new LcimmsAlignmentSpotTableViewModel(
@@ -113,7 +112,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 
-        public ReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>> SelectedBrush { get; }
+        public ReactivePropertySlim<BrushMapData<AlignmentSpotPropertyModel>> SelectedBrush { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public PeakFilterViewModel PeakFilterViewModel { get; }
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }

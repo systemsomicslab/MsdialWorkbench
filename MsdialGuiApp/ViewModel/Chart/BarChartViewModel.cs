@@ -18,11 +18,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 {
     class BarChartViewModel : ViewModelBase
     {
-        public BarChartViewModel(
-            BarChartModel model,
-            IAxisManager<string> horizontalAxis = null,
-            IAxisManager<double> verticalAxis = null,
-            IObservable<IBrushMapper<BarItem>> brushSource = null) {
+        public BarChartViewModel(BarChartModel model, IAxisManager<string> horizontalAxis = null, IAxisManager<double> verticalAxis = null) {
 
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -42,12 +38,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             HorizontalAxis = horizontalAxis;
 
             if (verticalAxis is null) {
-                verticalAxis = this.model.ObserveProperty(m => m.VerticalRange)
+                verticalAxis = this.model.VerticalRangeAsObservable
                     .ToReactiveAxisManager<double>(new RelativeMargin(0, 0.05), new Range(0, 0), LabelType.Order)
                     .AddTo(Disposables);
             }
             VerticalAxis = verticalAxis;
 
+            var brushSource = model.ClassBrush;
             if (brushSource is null) {
                 brushSource = BarItems.Select(
                     items => new KeyBrushMapper<BarItem>(

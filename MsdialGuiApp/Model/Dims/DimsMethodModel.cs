@@ -15,6 +15,7 @@ using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
 using CompMs.MsdialDimsCore.Parameter;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,13 +31,16 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+        private readonly IMessageBroker _broker;
 
         public DimsMethodModel(
             IMsdialDataStorage<MsdialDimsParameter> storage,
             List<AnalysisFileBean> analysisFiles,
-            List<AlignmentFileBean> alignmentFiles)
+            List<AlignmentFileBean> alignmentFiles,
+            IMessageBroker broker)
             : base(analysisFiles, alignmentFiles) {
             Storage = storage;
+            _broker = broker;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
         }
@@ -169,7 +173,6 @@ namespace CompMs.App.Msdial.Model.Dims
                 ProviderFactory.Create(analysisFile),
                 matchResultEvaluator,
                 Storage.DataBases,
-                Storage.DataBaseMapper.MoleculeAnnotators,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
                 PeakFilterModel).AddTo(Disposables);
@@ -182,12 +185,13 @@ namespace CompMs.App.Msdial.Model.Dims
             }
             return AlignmentModel = new DimsAlignmentModel(
                 alignmentFile,
-                Storage.DataBaseMapper.MoleculeAnnotators,
+                Storage.DataBases,
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
                 Storage.AnalysisFiles,
-                PeakFilterModel).AddTo(Disposables);
+                PeakFilterModel,
+                _broker).AddTo(Disposables);
         }
     }
 }

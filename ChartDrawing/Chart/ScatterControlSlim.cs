@@ -360,6 +360,9 @@ namespace CompMs.Graphics.Chart
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) {
             base.OnMouseLeftButtonDown(e);
+            if (Focusable && !IsKeyboardFocusWithin) {
+                Keyboard.Focus(this);
+            }
             if (e.ClickCount == 1) {
                 if (tree != null && HorizontalAxis is IAxisManager haxis && VerticalAxis is IAxisManager vaxis) {
                     var pt = e.GetPosition(this);

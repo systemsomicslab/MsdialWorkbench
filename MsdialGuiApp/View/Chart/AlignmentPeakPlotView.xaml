@@ -32,13 +32,14 @@
                           Background="WhiteSmoke"
                           BorderBrush="Black">
             <chart:ScatterControlSlim x:Name="alignmentScatter"
-                                    ItemsSource="{Binding Spots}"
-                                    HorizontalProperty="{Binding HorizontalProperty.Value, Mode=OneWay}"
-                                    VerticalProperty="{Binding VerticalProperty.Value, Mode=OneWay}"
-                                    PointBrush="{Binding Brush.Value, Mode=OneWay}"
-                                    DataType="{x:Type do:AlignmentSpotPropertyModel}"
-                                    Radius="5.5"
-                                    SelectedItem="{Binding Target.Value, Mode=TwoWay}"/>
+                                      ItemsSource="{Binding Spots}"
+                                      HorizontalProperty="{Binding HorizontalProperty.Value, Mode=OneWay}"
+                                      VerticalProperty="{Binding VerticalProperty.Value, Mode=OneWay}"
+                                      PointBrush="{Binding Brush.Value, Mode=OneWay}"
+                                      DataType="{x:Type do:AlignmentSpotPropertyModel}"
+                                      Radius="5.5"
+                                      SelectedItem="{Binding Target.Value, Mode=TwoWay}"
+                                      Focusable="True"/>
             <chart:Annotator ItemsSource="{Binding Spots, Mode=OneWay}"
                              HorizontalPropertyName="{Binding HorizontalProperty.Value, Mode=OneWay}"
                              VerticalPropertyName="{Binding VerticalProperty.Value, Mode=OneWay}"

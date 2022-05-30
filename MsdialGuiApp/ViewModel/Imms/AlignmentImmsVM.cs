@@ -1,15 +1,13 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.Base;
-using CompMs.Graphics.Design;
-using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,7 +16,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
@@ -26,7 +23,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public AlignmentImmsVM(
             ImmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IMessageBroker messageBroker)
             : base(model) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
@@ -38,7 +36,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             this.model = model;
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
-
+            _messageBroker = messageBroker;
             Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             Brushes = this.model.Brushes.AsReadOnly();
@@ -85,21 +83,12 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             .Subscribe(_ => Ms1Spots.Refresh())
             .AddTo(Disposables);
 
-            var classBrush = new KeyBrushMapper<BarItem, string>(
-                model.Parameter.ProjectParam.ClassnameToColorBytes
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-                ),
-                item => item.Class,
-                Colors.Blue);
-
             Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
 
-            PlotViewModel = new Chart.AlignmentPeakPlotViewModel(model.PlotModel, SelectedBrush).AddTo(Disposables);
+            PlotViewModel = new Chart.AlignmentPeakPlotViewModel(model.PlotModel, null, Observable.Never<bool>()).AddTo(Disposables);
 
             Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
-            BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel, brushSource: Observable.Return(classBrush)).AddTo(Disposables);
+            BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel).AddTo(Disposables);
             AlignmentEicViewModel = new Chart.AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
             AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(
                 model.AlignmentSpotTableModel,
@@ -163,7 +152,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 
-        public ReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>> SelectedBrush { get; }
+        public ReactivePropertySlim<BrushMapData<AlignmentSpotPropertyModel>> SelectedBrush { get; }
 
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
@@ -338,6 +327,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
+        private readonly IMessageBroker _messageBroker;
 
         private void SearchCompound() {
             using (var csm = model.CreateCompoundSearchModel()) {
@@ -358,17 +348,14 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         private void SaveSpectra(Window owner) {
-            var sfd = new SaveFileDialog {
+            var request = new SaveFileNameRequest(model.SaveSpectra)
+            {
                 Title = "Save spectra",
                 Filter = "NIST format(*.msp)|*.msp|MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf|MSFINDER format(*.mat)|*.mat;|SIRIUS format(*.ms)|*.ms",
                 RestoreDirectory = true,
                 AddExtension = true,
             };
-
-            if (sfd.ShowDialog(owner) == true) {
-                var filename = sfd.FileName;
-                this.model.SaveSpectra(filename);
-            }
+            _messageBroker.Publish(request);
         }
 
         private bool CanSaveSpectra(Window owner) {

@@ -19,7 +19,6 @@ using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -39,7 +38,6 @@ namespace CompMs.App.Msdial.Model.Dims
             IDataProvider provider,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databaseStorage,
-            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
             DataBaseMapper mapper,
             ParameterBase parameter,
             PeakFilterModel peakFilterModel)
@@ -63,7 +61,6 @@ namespace CompMs.App.Msdial.Model.Dims
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper, parameter.PeakPickBaseParam);
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator);
-            AnnotatorContainers = annotatorContainers ?? throw new ArgumentNullException(nameof(annotatorContainers));
 
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var vAxis = Observable.Return(new Range(-0.5, 0.5))
@@ -149,7 +146,6 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
-        public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
 
         public AnalysisPeakPlotModel PlotModel { get; }
 

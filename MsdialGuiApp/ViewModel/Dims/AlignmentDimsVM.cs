@@ -1,34 +1,32 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Dims;
-using CompMs.App.Msdial.Model.Search;
+﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.Search;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.Base;
-using CompMs.Graphics.Design;
-using CompMs.MsdialCore.DataObj;
-using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    class AlignmentDimsVM : AlignmentFileViewModel
+    internal class AlignmentDimsVM : AlignmentFileViewModel
     {
+        private readonly DimsAlignmentModel _model;
+        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
+        private readonly IMessageBroker _broker;
+
         public AlignmentDimsVM(
             DimsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
@@ -42,155 +40,90 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
 
-            Model = model;
-            this.compoundSearchService = compoundSearchService;
-            this.peakSpotTableService = peakSpotTableService;
+            _model = model;
+            _compoundSearchService = compoundSearchService;
+            _peakSpotTableService = peakSpotTableService;
             _broker = broker;
+
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
-            Ms1Spots = CollectionViewSource.GetDefaultView(Model.Ms1Spots);
+            Ms1Spots = CollectionViewSource.GetDefaultView(_model.Ms1Spots);
 
-            Brushes = Model.Brushes.AsReadOnly();
-            SelectedBrush = Model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
-            var classBrush = new KeyBrushMapper<BarItem, string>(
-                Model.Parameter.ProjectParam.ClassnameToColorBytes
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-                ),
-                item => item.Class,
-                Colors.Blue);
+            var peakPlotViewFocus = new Subject<Unit>().AddTo(Disposables);
+            var peakPlotViewFocused = peakPlotViewFocus.Select(_ => true);
+            PlotViewModel = new Chart.AlignmentPeakPlotViewModel(_model.PlotModel, focus: () => peakPlotViewFocus.OnNext(Unit.Default), isFocused: peakPlotViewFocused).AddTo(Disposables);
 
-            PlotViewModel = new Chart.AlignmentPeakPlotViewModel(Model.PlotModel, brushSource: SelectedBrush).AddTo(Disposables);
-
-            Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(Model.Ms2SpectrumModel).AddTo(Disposables);
-            AlignmentEicViewModel = new Chart.AlignmentEicViewModel(Model.AlignmentEicModel).AddTo(Disposables);
-            BarChartViewModel = new Chart.BarChartViewModel(Model.BarChartModel, brushSource: Observable.Return(classBrush)).AddTo(Disposables);
+            Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(_model.Ms2SpectrumModel).AddTo(Disposables);
+            AlignmentEicViewModel = new Chart.AlignmentEicViewModel(_model.AlignmentEicModel).AddTo(Disposables);
+            BarChartViewModel = new Chart.BarChartViewModel(_model.BarChartModel).AddTo(Disposables);
             AlignmentSpotTableViewModel = new DimsAlignmentSpotTableViewModel(
-                Model.AlignmentSpotTableModel,
+                _model.AlignmentSpotTableModel,
                 PeakSpotNavigatorViewModel.MzLowerValue,
                 PeakSpotNavigatorViewModel.MzUpperValue,
                 PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
                 PeakSpotNavigatorViewModel.CommentFilterKeyword)
                 .AddTo(Disposables);
 
-            SearchCompoundCommand = new[] {
-                Model.Target.Select(t => t?.innerModel != null),
-                Model.MsdecResult.Select(r => r != null),
-            }.CombineLatestValuesAreAllTrue()
-            .ToReactiveCommand()
-            .WithSubscribe(SearchCompound)
-            .AddTo(Disposables);
+            SearchCompoundCommand = _model.CanSeachCompound
+                .ToReactiveCommand()
+                .WithSubscribe(SearchCompound)
+                .AddTo(Disposables);
         }
-
-        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
-        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
-        private readonly IMessageBroker _broker;
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
-        public DimsAlignmentModel Model { get; }
 
-        public ICollectionView Ms1Spots {
-            get => ms1Spots;
-            set => SetProperty(ref ms1Spots, value);
-        }
-        private ICollectionView ms1Spots;
+        public ICollectionView Ms1Spots { get; }
+        public override ICollectionView PeakSpotsView => Ms1Spots;
 
-        public override ICollectionView PeakSpotsView => ms1Spots;
-
-        public Chart.AlignmentPeakPlotViewModel PlotViewModel {
-            get => plotViewModel;
-            private set => SetProperty(ref plotViewModel, value);
-        }
-        private Chart.AlignmentPeakPlotViewModel plotViewModel;
-
-        public Chart.MsSpectrumViewModel Ms2SpectrumViewModel {
-            get => ms2SpectrumViewModel;
-            private set => SetProperty(ref ms2SpectrumViewModel, value);
-        }
-        private Chart.MsSpectrumViewModel ms2SpectrumViewModel;
-
-        public Chart.AlignmentEicViewModel AlignmentEicViewModel {
-            get => alignmentEicViewModel;
-            private set => SetProperty(ref alignmentEicViewModel, value);
-        }
-        private Chart.AlignmentEicViewModel alignmentEicViewModel;
-
-        public Chart.BarChartViewModel BarChartViewModel {
-            get => barChartViewModel;
-            private set => SetProperty(ref barChartViewModel, value);
-        }
-        private Chart.BarChartViewModel barChartViewModel;
-
-        public DimsAlignmentSpotTableViewModel AlignmentSpotTableViewModel {
-            get => alignmentSpotTableViewModel;
-            private set => SetProperty(ref alignmentSpotTableViewModel, value);
-        }
-        private DimsAlignmentSpotTableViewModel alignmentSpotTableViewModel;
-
-        public ReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>> SelectedBrush { get; }
-
-        public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
+        public Chart.AlignmentPeakPlotViewModel PlotViewModel { get; }
+        public Chart.MsSpectrumViewModel Ms2SpectrumViewModel { get; }
+        public Chart.AlignmentEicViewModel AlignmentEicViewModel { get; }
+        public Chart.BarChartViewModel BarChartViewModel { get; }
+        public DimsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
 
         public ReactiveCommand SearchCompoundCommand { get; }
 
         private void SearchCompound() {
-            using (var model = new CompoundSearchModel<AlignmentSpotProperty>(
-                Model.AlignmentFile,
-                Model.Target.Value.innerModel,
-                Model.MsdecResult.Value,
-                null,
-                Model.AnnotatorContainers))
+            using (var model = _model.BuildCompoundSearchModel())
             using (var vm = new CompoundSearchVM(model)) {
-                if (compoundSearchService.ShowDialog(vm) == true) {
-                    Model.Target.Value.RaisePropertyChanged();
+                if (_compoundSearchService.ShowDialog(vm) == true) {
+                    _model.Target.Value.RaisePropertyChanged();
                     Ms1Spots?.Refresh();
                 }
             }
         }
 
-        public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
-        private DelegateCommand<Window> saveMs2SpectrumCommand;
+        public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ?? (_saveMs2SpectrumCommand = new DelegateCommand(SaveSpectra, _model.CanSaveSpectra));
+        private DelegateCommand _saveMs2SpectrumCommand;
 
-        private void SaveSpectra(Window owner)
+        private void SaveSpectra()
         {
-            var sfd = new SaveFileDialog
+            var request = new SaveFileNameRequest(_model.SaveSpectra)
             {
                 Title = "Save spectra",
                 Filter = "NIST format(*.msp)|*.msp|MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf|MSFINDER format(*.mat)|*.mat;|SIRIUS format(*.ms)|*.ms",
                 RestoreDirectory = true,
                 AddExtension = true,
             };
-
-            if (sfd.ShowDialog(owner) == true)
-            {
-                var filename = sfd.FileName;
-                Model.SaveSpectra(filename);
-            }
+            _broker.Publish(request);
         }
 
-        private bool CanSaveSpectra(Window owner)
-        {
-            return Model.CanSaveSpectra();
-        }
+        public DelegateCommand CopyMs2SpectrumCommand => _copyMs2SpectrumCommand ?? (_copyMs2SpectrumCommand = new DelegateCommand(_model.CopySpectrum, _model.CanSaveSpectra));
+        private DelegateCommand _copyMs2SpectrumCommand;
 
-        public DelegateCommand CopyMs2SpectrumCommand => copyMs2SpectrumCommand ?? (copyMs2SpectrumCommand = new DelegateCommand(Model.CopySpectrum, Model.CanSaveSpectra));
-        private DelegateCommand copyMs2SpectrumCommand;
-
-        public DelegateCommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
-        private DelegateCommand showIonTableCommand;
+        public DelegateCommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
+        private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {
-            peakSpotTableService.Show(AlignmentSpotTableViewModel);
+            _peakSpotTableService.Show(AlignmentSpotTableViewModel);
         }
 
-        public DelegateCommand<Window> NormalizeCommand => normalizeCommand ?? (normalizeCommand = new DelegateCommand<Window>(Normalize));
-
-        private DelegateCommand<Window> normalizeCommand;
+        public DelegateCommand<Window> NormalizeCommand => _normalizeCommand ?? (_normalizeCommand = new DelegateCommand<Window>(Normalize));
+        private DelegateCommand<Window> _normalizeCommand;
 
         private void Normalize(Window owner) {
-            var parameter = Model.Parameter;
-            using (var vm = new NormalizationSetViewModel(Model.Container, Model.DataBaseMapper, Model.MatchResultEvaluator, parameter, _broker)) {
+            using (var model = _model.BuildNormalizeSetModel())
+            using (var vm = new NormalizationSetViewModel(model)) {
                 var view = new NormalizationSetView
                 {
                     DataContext = vm,
