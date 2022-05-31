@@ -3,12 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Lcimms"
-             xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
-             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
-             xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
-             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj" 
              mc:Ignorable="d" 
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj" 
+             xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
+             xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Lcimms"
+             xmlns:search="clr-namespace:CompMs.App.Msdial.View.Search"
+             xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             xmlns:vmcore="clr-namespace:CompMs.App.Msdial.ViewModel"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
+             xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              behavior:SuppressContextMenuBehavior.IsEnabled="True"
              Name="MainControl"
@@ -22,7 +26,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -61,197 +65,314 @@
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="15" />
                         <RowDefinition Height="220"/>
                         <RowDefinition Height="*" MinHeight="200" />
                     </Grid.RowDefinitions>
 
-                    <!--
-                    <commonview:PeakSpotNavigator DataContext="{Binding AnalysisViewModel.Value}"
-                                                  IsEnabled="False"
-                                                  Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"/>
-                    -->
+                    <search:PeakSpotNavigatorView DataContext="{Binding SelectedViewModel.Value.PeakSpotNavigatorViewModel}"
+                                                  Grid.Row="0" Grid.Column="0"/>
 
-                    <!--
-                    <commonview:SurveyScanView DataContext="{Binding AnalysisViewModel.Value}"
-                                               Spectrum="{Binding Ms1Spectrum}"
-                                               SplashKey="{Binding Ms1SplashKey}"
-                                               MaxIntensity="{Binding Ms1SpectrumMaxIntensity}"
-                                               MassAxis="{StaticResource MassAxis}"
-                                               Grid.Row="2" Grid.Column="0"/>
-                    -->
+                    <chart:SurveyScanView DataContext="{Binding AnalysisViewModel.Value.SurveyScanViewModel}"
+                                          Grid.Row="1" Grid.Column="0">
+                        <chart:SurveyScanView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Save image as...">
+                                    <MenuItem Header="Save as emf"
+                                              Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    <MenuItem Header="Save as png"
+                                              Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                </MenuItem>
+                                <MenuItem Header="Copy image as...">
+                                    <MenuItem Header="Copy as emf"
+                                              Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                    <MenuItem Header="Copy as png"
+                                              Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                </MenuItem>
+                            </ContextMenu>
+                        </chart:SurveyScanView.ContextMenu>
+                    </chart:SurveyScanView>
 
-                    <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="2" Grid.Column="1" 
-                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-                        <TabItem Header="Peak spot viewer" 
-                                 Name="TabItem_RtMzPairwisePlotPeakView" 
-                                 Height="25"
-                                 DataContext="{Binding AnalysisViewModel.Value}"
-                                 Background="{StaticResource MainThemeColor}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-
-                                <chart:PeakView DataContext="{Binding RtMzPlotViewModel}" Grid.Column="0">
-                                    <chart:PeakView.LabelTemplate>
-                                        <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <StackPanel.Resources>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="FontSize" Value="9"/>
-                                                        <Setter Property="Foreground" Value="Gray"/>
-                                                    </Style>
-                                                </StackPanel.Resources>
-                                                <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime, StringFormat=Spot ID: {0}; }"/>
-                                                <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime, StringFormat=Scan #: {0}; }"/>
-                                                <TextBlock Text="{Binding InnerModel.ChromXs.Value, Mode=OneTime, StringFormat=RT[min]: {0:N3}; }"/>
-                                                <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
-                                            </StackPanel>
+                    <TabControl x:Name="TabControl_PairwisePlotViewer"
+                                ItemsSource="{Binding ResultViewModels}"
+                                SelectedItem="{Binding SelectedViewModel}"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                                Grid.Row="1" Grid.Column="1" >
+                        <TabControl.ItemContainerStyle>
+                            <Style TargetType="TabItem">
+                                <Setter Property="Background" Value="{StaticResource MainThemeColor}"/>
+                                <Setter Property="Height" Value="24"/>
+                                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="8,0"/>
+                            </Style>
+                        </TabControl.ItemContainerStyle>
+                        <TabControl.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl Content="{Binding Value}">
+                                    <ContentControl.Resources>
+                                        <DataTemplate DataType="{x:Type vmcore:AnalysisFileViewModel}">
+                                            <TextBlock Name="TabItem_RtMzPairwisePlotPeakView"
+                                                       Text="Peak spot viewer"
+                                                       VerticalAlignment="Stretch"/>
                                         </DataTemplate>
-                                    </chart:PeakView.LabelTemplate>
-                                </chart:PeakView>
-
-                                <chart:PeakView DataContext="{Binding DtMzPlotViewModel}" Grid.Column="1">
-                                    <chart:PeakView.LabelTemplate>
-                                        <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <StackPanel.Resources>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="FontSize" Value="9"/>
-                                                        <Setter Property="Foreground" Value="Gray"/>
-                                                    </Style>
-                                                </StackPanel.Resources>
-                                                <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime, StringFormat=Spot ID: {0}; }"/>
-                                                <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime, StringFormat=Scan #: {0}; }"/>
-                                                <TextBlock Text="{Binding InnerModel.ChromXs.Value, Mode=OneTime, StringFormat=RT[min]: {0:N3}; }"/>
-                                                <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
-                                            </StackPanel>
+                                        <DataTemplate DataType="{x:Type vmcore:AlignmentFileViewModel}">
+                                            <TextBlock Name="TabItem_RtMzPairwisePlotAlignmentView"
+                                                       Text="Alignment spot viewer"
+                                                       VerticalAlignment="Stretch"/>
                                         </DataTemplate>
-                                    </chart:PeakView.LabelTemplate>
-                                </chart:PeakView>
-                            </Grid>
-                        </TabItem>
+                                    </ContentControl.Resources>
+                                </ContentControl>
+                            </DataTemplate>
+                        </TabControl.ItemTemplate>
+                        <TabControl.ContentTemplate>
+                            <DataTemplate>
+                                <ContentControl Content="{Binding Value}">
+                                    <ContentControl.Resources>
+                                        <DataTemplate DataType="{x:Type vmcore:AnalysisFileViewModel}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
 
-                        <TabItem Header="Alignment spot viewer" 
-                                 Name="TabItem_RtMzPairwisePlotAlignmentView" 
-                                 Height="25"
-                                 DataContext="{Binding AlignmentViewModel.Value}"
-                                 Background="{StaticResource MainThemeColor}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
+                                                <chart:PeakView DataContext="{Binding RtMzPlotViewModel}" Grid.Column="0">
+                                                    <chart:PeakView.ContextMenu>
+                                                        <ContextMenu>
+                                                            <MenuItem Header="Save image as...">
+                                                                <!--
+                                                                <MenuItem Header="Save as emf"
+                                                                          Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                                          -->
+                                                                <MenuItem Header="Save as png"
+                                                                          Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                            </MenuItem>
+                                                            <MenuItem Header="Copy image as...">
+                                                                <!--
+                                                                <MenuItem Header="Copy as emf"
+                                                                          Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                                          -->
+                                                                <MenuItem Header="Copy as png"
+                                                                          Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                            </MenuItem>
+                                                        </ContextMenu>
+                                                    </chart:PeakView.ContextMenu>
+                                                    <chart:PeakView.LabelTemplate>
+                                                        <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <StackPanel.Resources>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="FontSize" Value="9"/>
+                                                                        <Setter Property="Foreground" Value="Gray"/>
+                                                                    </Style>
+                                                                </StackPanel.Resources>
+                                                                <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime, StringFormat=Spot ID: {0}; }"/>
+                                                                <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime, StringFormat=Scan #: {0}; }"/>
+                                                                <TextBlock Text="{Binding InnerModel.ChromXs.Value, Mode=OneTime, StringFormat=RT[min]: {0:N3}; }"/>
+                                                                <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </chart:PeakView.LabelTemplate>
+                                                </chart:PeakView>
 
-                                <!--
-                                <commonview:AlignmentPeakPlotView DataContext="{Binding RtPlotVM}">
-                                    <commonview:AlignmentPeakPlotView.LabelTemplate>
-                                        <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <StackPanel.Resources>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="FontSize" Value="9"/>
-                                                        <Setter Property="Foreground" Value="Gray"/>
-                                                    </Style>
-                                                </StackPanel.Resources>
-                                                <TextBlock Text="{Binding InnerModel.AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
-                                                <TextBlock Text="{Binding InnerModel.ChromXs.RT.Value, Mode=OneTime, StringFormat=RT: {0:N3}; }"/>
-                                                <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
-                                            </StackPanel>
+                                                <chart:PeakView DataContext="{Binding DtMzPlotViewModel}" Grid.Column="1">
+                                                    <chart:PeakView.LabelTemplate>
+                                                        <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <StackPanel.Resources>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="FontSize" Value="9"/>
+                                                                        <Setter Property="Foreground" Value="Gray"/>
+                                                                    </Style>
+                                                                </StackPanel.Resources>
+                                                                <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime, StringFormat=Spot ID: {0}; }"/>
+                                                                <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime, StringFormat=Scan #: {0}; }"/>
+                                                                <TextBlock Text="{Binding InnerModel.ChromXs.Value, Mode=OneTime, StringFormat=RT[min]: {0:N3}; }"/>
+                                                                <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </chart:PeakView.LabelTemplate>
+                                                </chart:PeakView>
+                                            </Grid>
                                         </DataTemplate>
-                                    </commonview:AlignmentPeakPlotView.LabelTemplate>
-                                </commonview:AlignmentPeakPlotView>
-
-                                <commonview:AlignmentPeakPlotView DataContext="{Binding DriftPlotVM}">
-                                    <commonview:AlignmentPeakPlotView.LabelTemplate>
-                                        <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
-                                            <StackPanel>
-                                                <StackPanel.Resources>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="FontSize" Value="9"/>
-                                                        <Setter Property="Foreground" Value="Gray"/>
-                                                    </Style>
-                                                </StackPanel.Resources>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding InnerModel.AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
-                                                    <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime, StringFormat=Spot ID: {0}; }"/>
-                                                    <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime, StringFormat=Scan #: {0}; }"/>
-                                                </StackPanel>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding InnerModel.ChromXs.RT.Value, Mode=OneTime, StringFormat=RT: {0:N3}; }"/>
-                                                    <TextBlock Text="{Binding InnerModel.ChromXs.Drift.Value, Mode=OneTime, StringFormat=DT[1/k0]: {0:N4}; }"/>
-                                                    <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
-                                                </StackPanel>
-                                            </StackPanel>
+                                        <DataTemplate DataType="{x:Type vmcore:AlignmentFileViewModel}">
+                                            <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
+                                                <chart:AlignmentPeakPlotView.LabelTemplate>
+                                                    <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <StackPanel.Resources>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="FontSize" Value="9"/>
+                                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                                </Style>
+                                                            </StackPanel.Resources>
+                                                            <TextBlock Text="{Binding AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
+                                                            <TextBlock Text="{Binding TimesCenter, Mode=OneTime, StringFormat=RT[min]: {0:N3}; }"/>
+                                                            <TextBlock Text="{Binding MassCenter, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </chart:AlignmentPeakPlotView.LabelTemplate>
+                                                <chart:AlignmentPeakPlotView.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Save image as...">
+                                                            <!--
+                                                            <MenuItem Header="Save as emf"
+                                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                                      -->
+                                                            <MenuItem Header="Save as png"
+                                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                        </MenuItem>
+                                                        <MenuItem Header="Copy image as...">
+                                                            <!--
+                                                            <MenuItem Header="Copy as emf"
+                                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                                      -->
+                                                            <MenuItem Header="Copy as png"
+                                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </chart:AlignmentPeakPlotView.ContextMenu>
+                                            </chart:AlignmentPeakPlotView>
                                         </DataTemplate>
-                                    </commonview:AlignmentPeakPlotView.LabelTemplate>
-                                </commonview:AlignmentPeakPlotView>
-                                -->
-                            </Grid>
-                        </TabItem>
-
+                                    </ContentControl.Resources>
+                                </ContentControl>
+                            </DataTemplate>
+                        </TabControl.ContentTemplate>
                     </TabControl>
 
-                    <TabControl Name="TabControl_EicViewAndBarChart"
+                    <TabControl ItemsSource="{Binding ChromatogramViewModels.ViewModels.Value}"
+                                SelectedIndex="{Binding ChromatogramViewModels.SelectedIndex.Value}"
                                 Margin="0,-1,0,0"
-                                Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" >
-
-                        <TabItem Header="EIC of focused spot" 
-                                 Height="26"
-                                 Name="TabItem_EicViewer" Background="{StaticResource MainThemeColor}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <!--
-                                <commonview:EicView DataContext="{Binding AnalysisViewModel.Value}"
-                                                    ChromAxis="{StaticResource ChromAxis}"
-                                                    ChromTitle="Retention time [min]"
-                                                    Grid.Column="0"/>
-                                <commonview:EicView DataContext="{Binding AnalysisViewModel.Value}"
-                                                    ChromAxis="{StaticResource ChromAxis}"
-                                                    ChromTitle="Drift time [1/k0]"
-                                                    Grid.Column="1"/>
-                                                    -->
-                            </Grid>
-                        </TabItem>
-
-                        <TabItem Header="Bar chart of aligned spot" 
-                                 Name="TabItem_BarChartViewer" 
-                                 Height="26"
-                                 Background="{StaticResource MainThemeColor}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                            <!--
-                                <eic:BarChartView DataContext="{Binding AlignmentViewModel.Value}"/>
-                                <eic:BarChartView DataContext="{Binding AlignmentViewModel.Value}"/>
-                            -->
-                            </Grid>
-                        </TabItem>
-
-                        <TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="{StaticResource MainThemeColor}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                            <!--
-                                <eic:AlignmentEicView DataContext="{Binding AlignmentViewModel.Value}"/>
-                                <eic:AlignmentEicView DataContext="{Binding AlignmentViewModel.Value}"/>
-                            -->
-                            </Grid>
-                        </TabItem>
-
+                                Grid.Row="0" Grid.Column="1">
+                        <TabControl.ItemContainerStyle>
+                            <Style TargetType="TabItem">
+                                <Setter Property="Background" Value="{StaticResource MainThemeColor}"/>
+                                <Setter Property="Height" Value="24"/>
+                                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="8,0"/>
+                                <Setter Property="IsEnabled" Value="True"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                        <Setter Property="Content" Value="Not loaded"/>
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TabControl.ItemContainerStyle>
+                        <TabControl.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl Content="{Binding}">
+                                    <ContentControl.Resources>
+                                        <DataTemplate DataType="{x:Type vmchart:EicViewModel}">
+                                            <TextBlock Text="Eic of focused spot"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type vmchart:BarChartViewModel}">
+                                            <TextBlock Text="Bar chart of aligned spot"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type vmchart:AlignmentEicViewModel}">
+                                            <TextBlock Text="EIC of aligned spot"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                    </ContentControl.Resources>
+                                </ContentControl>
+                            </DataTemplate>
+                        </TabControl.ItemTemplate>
+                        <TabControl.ContentTemplate>
+                            <DataTemplate>
+                                <ContentControl Content="{Binding}">
+                                    <ContentControl.Resources>
+                                        <DataTemplate DataType="{x:Type vmchart:EicViewModel}">
+                                            <chart:EicView>
+                                                <chart:EicView.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Save image as...">
+                                                            <MenuItem Header="Save as emf"
+                                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                            <MenuItem Header="Save as png"
+                                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                        </MenuItem>
+                                                        <MenuItem Header="Copy image as...">
+                                                            <MenuItem Header="Copy as emf"
+                                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                            <MenuItem Header="Copy as png"
+                                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </chart:EicView.ContextMenu>
+                                            </chart:EicView>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type vmchart:BarChartViewModel}">
+                                            <chart:BarChartView>
+                                                <chart:BarChartView.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Save image as...">
+                                                            <MenuItem Header="Save as emf"
+                                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                            <MenuItem Header="Save as png"
+                                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                        </MenuItem>
+                                                        <MenuItem Header="Copy image as...">
+                                                            <MenuItem Header="Copy as emf"
+                                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                            <MenuItem Header="Copy as png"
+                                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </chart:BarChartView.ContextMenu>
+                                            </chart:BarChartView>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type vmchart:AlignmentEicViewModel}">
+                                            <chart:AlignmentEicView>
+                                                <chart:AlignmentEicView.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Save image as...">
+                                                            <MenuItem Header="Save as emf"
+                                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                            <MenuItem Header="Save as png"
+                                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                        </MenuItem>
+                                                        <MenuItem Header="Copy image as...">
+                                                            <MenuItem Header="Copy as emf"
+                                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                            <MenuItem Header="Copy as png"
+                                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </chart:AlignmentEicView.ContextMenu>
+                                            </chart:AlignmentEicView>
+                                        </DataTemplate>
+                                    </ContentControl.Resources>
+                                </ContentControl>
+                            </DataTemplate>
+                        </TabControl.ContentTemplate>
                     </TabControl>
 
-                    <Grid Grid.Row="2" Grid.Column="1">
+                    <Grid Grid.Row="1" Grid.Column="1">
 
                         <Button Name="Button_TableViewer" Height="25" 
                                 Width="110" Margin="0,2,0,0" 
@@ -318,66 +439,118 @@
 
                     </Grid>
 
-                    <TabControl Name="TabControl_MS2Viewer"
+                    <TabControl x:Name="TabControl_MS2Viewer"
+                                ItemsSource="{Binding MassSpectrumViewModels.ViewModels.Value}"
+                                SelectedIndex="{Binding MassSpectrumViewModels.SelectedIndex.Value}"
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                 Grid.Row="1" >
-
-                        <TabItem Name="TabItem_MeasurementVsReference" 
-                                 Header="Exp. vs. Ref." 
-                                 DataContext="{Binding AnalysisViewModel.Value}"
-                                 Background="{StaticResource MainThemeColor}"
-                                 Height="25">
-                                 <!--
-                            <commonview:ExpRefView Spectrum="{Binding Ms2Spectrum}"
-                                                   DeconvolutionSpectrum="{Binding Ms2DecSpectrum}"
-                                                   ReferenceSpectrum="{Binding Ms2ReferenceSpectrum}"
-                                                   MassMax="{Binding Ms2MassMax}" MassMin="{Binding Ms2MassMin}">
-                                <commonview:ExpRefView.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
-                                    </ContextMenu>
-                                </commonview:ExpRefView.ContextMenu>
-                            </commonview:ExpRefView>
-                            -->
-                        </TabItem>
-
-                        <TabItem Header="MS2 Chrom." 
-                                 Name="TabItem_MS2Chromatogram" 
-                                 Height="25"
-                                 Background="{StaticResource MainThemeColor}">
-                                 <!--
-                            <ms2:ChromatogramView />
-                            -->
-                        </TabItem>
-
-                        <TabItem Header="Raw vs. Purified" 
-                                 Name="TabItem_RawVsDeconvolution" 
-                                 Height="25"
-                                 Background="{StaticResource MainThemeColor}">
-
-<!--
-                            <ms2:RawPurifiedView DataContext="{Binding AnalysisViewModel.Value}"/>
-                            -->
-                        </TabItem>
-
-                        <TabItem Name="TabItem_RepresentativeVsReference"
-                                 Header="Rep. vs. Ref." 
-                                 DataContext="{Binding AlignmentViewModel.Value}"
-                                 Background="{StaticResource MainThemeColor}" 
-                                 Height="25">
-                                 <!--
-                            <commonview:RepRefView Spectrum="{Binding Ms2Spectrum}"
-                                                   ReferenceSpectrum="{Binding Ms2ReferenceSpectrum}"
-                                                   MassMin="{Binding Ms2MassMin}" MassMax="{Binding Ms2MassMax}">
-                                <commonview:RepRefView.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
-                                    </ContextMenu>
-                                </commonview:RepRefView.ContextMenu>
-                            </commonview:RepRefView>
-                            -->
-                        </TabItem>
-
+                        <TabControl.ItemContainerStyle>
+                            <Style TargetType="TabItem">
+                                <Setter Property="Background" Value="{StaticResource MainThemeColor}"/>
+                                <Setter Property="Height" Value="24"/>
+                                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="8,0"/>
+                                <Setter Property="IsEnabled" Value="True"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                        <Setter Property="Content" Value="Not loaded"/>
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TabControl.ItemContainerStyle>
+                        <TabControl.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl Content="{Binding Mode=OneTime}">
+                                    <ContentControl.Resources>
+                                        <DataTemplate DataType="{x:Type vmchart:RawDecSpectrumsViewModel}">
+                                            <TextBlock Text="Exp. vs.Rep."
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                        <DataTemplate x:Key="MS2Chrom"> <!-- MS2 chrom. -->
+                                            <TextBlock Text="MS2 Chrom."
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type vmchart:RawPurifiedSpectrumsViewModel}">
+                                            <TextBlock Text="Raw vs. Purified"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type vmchart:MsSpectrumViewModel}">
+                                            <TextBlock Text="Rep. vs. Ref."
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                    </ContentControl.Resources>
+                                </ContentControl>
+                            </DataTemplate>
+                        </TabControl.ItemTemplate>
+                        <TabControl.ContentTemplate>
+                            <DataTemplate>
+                                <ContentControl Content="{Binding Mode=OneTime}">
+                                    <ContentControl.Resources>
+                                        <DataTemplate DataType="{x:Type vmchart:RawDecSpectrumsViewModel}">
+                                            <chart:ExpRefView DataContext="{Binding DataContext.AnalysisViewModel.Value, ElementName=TabControl_MS2Viewer}">
+                                                <chart:ExpRefView.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Save deconvoluted spectra table as.."
+                                                                  Command="{Binding SaveMs2SpectrumCommand}"/>
+                                                        <MenuItem Header="Save raw spectra table as.."
+                                                                  Command="{Binding SaveMs2RawSpectrumCommand}"/>
+                                                        <MenuItem Header="Save image as...">
+                                                            <MenuItem Header="Save as emf"
+                                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                            <MenuItem Header="Save as png"
+                                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                        </MenuItem>
+                                                        <MenuItem Header="Copy image as...">
+                                                            <MenuItem Header="Copy as emf"
+                                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                            <MenuItem Header="Copy as png"
+                                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </chart:ExpRefView.ContextMenu>
+                                            </chart:ExpRefView>
+                                        </DataTemplate>
+                                        <DataTemplate x:Key="MS2Chrom"> <!-- MS2 chrom. -->
+                                            <TextBlock Text="MS2 Chrom." IsEnabled="False"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type vmchart:RawPurifiedSpectrumsViewModel}">
+                                            <chart:RawPurifiedView DataContext="{Binding DataContext.AnalysisViewModel.Value, ElementName=TabControl_MS2Viewer}"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type vmchart:MsSpectrumViewModel}">
+                                            <chart:RepRefView DataContext="{Binding DataContext.AlignmentViewModel.Value, ElementName=TabControl_MS2Viewer}">
+                                                <chart:RepRefView.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Save spectra table as.."
+                                                                  Command="{Binding SaveMs2SpectrumCommand}"/>
+                                                        <MenuItem Header="Save image as...">
+                                                            <MenuItem Header="Save as emf"
+                                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                            <MenuItem Header="Save as png"
+                                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                        </MenuItem>
+                                                        <MenuItem Header="Copy image as...">
+                                                            <MenuItem Header="Copy as emf"
+                                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                            <MenuItem Header="Copy as png"
+                                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </chart:RepRefView.ContextMenu>
+                                            </chart:RepRefView>
+                                        </DataTemplate>
+                                    </ContentControl.Resources>
+                                </ContentControl>
+                            </DataTemplate>
+                        </TabControl.ContentTemplate>
                     </TabControl>
 
                     <GridSplitter Margin="0, 0, 0, -2" Height="2" 

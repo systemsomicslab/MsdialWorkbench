@@ -116,8 +116,8 @@ namespace CompMs.App.Msdial.ViewModel
             SelectedAlignmentFile = new ReactivePropertySlim<AlignmentFileBeanViewModel>(alignmentFilesView.FirstOrDefault()).AddTo(Disposables);
             model.ObserveProperty(m => m.AnalysisFile)
                 .Do(_ => {
-                    if (SelectedAnalysisFile.Value != null) {
-                        SelectedAnalysisFile.Value.IsSelected = false;
+                    foreach (var file in analysisFilesView) {
+                        file.IsSelected = false;
                     }
                 })
                 .Subscribe(file => {
@@ -127,6 +127,9 @@ namespace CompMs.App.Msdial.ViewModel
                 }).AddTo(Disposables);
             model.ObserveProperty(m => m.AlignmentFile)
                 .Do(_ => {
+                    foreach (var file in alignmentFilesView) {
+                        file.IsSelected = false;
+                    }
                     if (SelectedAlignmentFile.Value != null) {
                         SelectedAlignmentFile.Value.IsSelected = false;
                     }

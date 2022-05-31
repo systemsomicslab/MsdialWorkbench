@@ -60,9 +60,14 @@ namespace CompMs.App.Msdial.View.Core
         private readonly IMessageBroker broker;
 
         public void CloseOwnedWindows() {
-            foreach (var child in OwnedWindows.Cast<Window>()) {
-                child.Close();
-            }
+            Dispatcher.Invoke(() =>
+            {
+                foreach (var child in OwnedWindows.OfType<Window>()) {
+                    if (child.IsLoaded) {
+                        child.Close();
+                    }
+                }
+            });
         }
 
         private void OpenExperimentSpectrumView(ExperimentSpectrumViewModel viewmodel) {
@@ -118,6 +123,7 @@ namespace CompMs.App.Msdial.View.Core
             base.OnContentRendered(e);
 
             if (Properties.Resources.VERSION.Contains("-tada")
+                || Properties.Resources.VERSION.Contains("-alpha")
                 || Properties.Resources.VERSION.Contains("-beta")
                 || Properties.Resources.VERSION.Contains("-dev")) {
                 return;

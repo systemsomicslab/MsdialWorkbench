@@ -13,10 +13,10 @@ namespace CompMs.Common.Mathematics.Statistics {
     {
         private StatisticsMathematics() { }
 
-        public static double[] GetCrossValidationTrainArray(double[] x, int index, int fold)
+        public static double[] GetCrossValidationTrainArray(IReadOnlyList<double> x, int index, int fold)
         {
             var list = new List<double>();
-            for (int i = 0; i < x.Length; i++)
+            for (int i = 0; i < x.Count; i++)
             {
                 var rem = i % fold;
                 if (rem != index) list.Add(x[i]);
@@ -26,10 +26,10 @@ namespace CompMs.Common.Mathematics.Statistics {
             else return null;
         }
 
-        public static double[] GetCrossValidationTestArray(double[] x, int index, int fold)
+        public static double[] GetCrossValidationTestArray(IReadOnlyList<double> x, int index, int fold)
         {
             var list = new List<double>();
-            for (int i = 0; i < x.Length; i++)
+            for (int i = 0; i < x.Count; i++)
             {
                 var rem = i % fold;
                 if (rem == index) list.Add(x[i]);

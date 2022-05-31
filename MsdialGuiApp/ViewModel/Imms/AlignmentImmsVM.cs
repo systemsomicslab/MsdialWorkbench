@@ -98,27 +98,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             PlotViewModel = new Chart.AlignmentPeakPlotViewModel(model.PlotModel, SelectedBrush).AddTo(Disposables);
 
-            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-                model.Parameter.ProjectParam.SpectrumCommentToColorBytes
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-                ),
-                item => item.ToString(),
-                Colors.Blue);
-
-            var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-               model.Parameter.ProjectParam.SpectrumCommentToColorBytes
-               .ToDictionary(
-                   kvp => kvp.Key,
-                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-               ),
-               item => item.ToString(),
-               Colors.Red);
-
-            Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(model.Ms2SpectrumModel,
-                upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
-                lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
+            Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
             BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel, brushSource: Observable.Return(classBrush)).AddTo(Disposables);
             AlignmentEicViewModel = new Chart.AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
             AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(

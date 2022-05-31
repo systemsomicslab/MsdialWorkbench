@@ -1,19 +1,19 @@
-﻿using CompMs.Common.Components;
+﻿using CompMs.Common.Algorithm.PeakPick;
+using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
-using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using MessagePack;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 
-namespace CompMs.MsdialCore.DataObj {
+namespace CompMs.MsdialCore.DataObj
+{
     [MessagePackObject]
     public class ChromatogramPeakFeature : IChromatogramPeakFeature, IChromatogramPeak, IMoleculeMsProperty, IMSIonProperty, IAnnotatedObject
     {
@@ -320,14 +320,66 @@ namespace CompMs.MsdialCore.DataObj {
 
         [Key(51)]
         public int MSDecResultIdUsed { get; set; } = -1;
-        //public int MSDecResultIdUsedForAnnotation() {
-        //    if (MSDecResultIdUsed == -1) {
-        //        return MasterPeakID;
-        //    }
-        //    else {
-        //        return MSDecResultIdUsed;
-        //    }
-        //}
+
+        public static ChromatogramPeakFeature FromPeakDetectionResult(PeakDetectionResult peakDetectionResult, Chromatogram chromatogram, double mz) {
+            if (peakDetectionResult == null) {
+                return null;
+            }
+
+            var peakFeature = new ChromatogramPeakFeature() {
+
+                MasterPeakID = peakDetectionResult.PeakID,
+                PeakID = peakDetectionResult.PeakID,
+
+                ChromScanIdLeft = peakDetectionResult.ScanNumAtLeftPeakEdge,
+                ChromScanIdTop = peakDetectionResult.ScanNumAtPeakTop,
+                ChromScanIdRight = peakDetectionResult.ScanNumAtRightPeakEdge,
+
+                ChromXsLeft = chromatogram.PeakChromXs(peakDetectionResult.ChromXAxisAtLeftPeakEdge, mz),
+                ChromXsTop = chromatogram.PeakChromXs(peakDetectionResult.ChromXAxisAtPeakTop, mz),
+                ChromXsRight = chromatogram.PeakChromXs(peakDetectionResult.ChromXAxisAtRightPeakEdge, mz),
+
+                //assign the scan number of MS1 and MS/MS for precursor ion's peaks
+                MS1RawSpectrumIdTop = chromatogram.Peaks[peakDetectionResult.ScanNumAtPeakTop].ID,
+                MS1RawSpectrumIdLeft = chromatogram.Peaks[peakDetectionResult.ScanNumAtLeftPeakEdge].ID,
+                MS1RawSpectrumIdRight = chromatogram.Peaks[peakDetectionResult.ScanNumAtRightPeakEdge].ID,
+
+                PeakHeightLeft = peakDetectionResult.IntensityAtLeftPeakEdge,
+                PeakHeightTop = peakDetectionResult.IntensityAtPeakTop,
+                PeakHeightRight = peakDetectionResult.IntensityAtRightPeakEdge,
+
+                PeakAreaAboveZero = peakDetectionResult.AreaAboveZero,
+                PeakAreaAboveBaseline = peakDetectionResult.AreaAboveBaseline,
+
+                Mass = (double)mz,
+
+                PeakShape = new ChromatogramPeakShape() {
+                    SignalToNoise = peakDetectionResult.SignalToNoise,
+                    EstimatedNoise = peakDetectionResult.EstimatedNoise,
+                    BasePeakValue = peakDetectionResult.BasePeakValue,
+                    GaussianSimilarityValue = peakDetectionResult.GaussianSimilarityValue,
+                    IdealSlopeValue = peakDetectionResult.IdealSlopeValue,
+                    PeakPureValue = peakDetectionResult.PeakPureValue,
+                    ShapenessValue = peakDetectionResult.ShapnessValue,
+                    SymmetryValue = peakDetectionResult.SymmetryValue,
+                    AmplitudeOrderValue = peakDetectionResult.AmplitudeOrderValue,
+                    AmplitudeScoreValue = peakDetectionResult.AmplitudeScoreValue
+                }
+            };
+
+            return peakFeature;
+        }
+
+        public void SetMs2SpectrumId(PeakMs2Spectra spectra) {
+            if (spectra.IsEmpty) {
+                return;
+            }
+            var indexToEnergy = spectra.FindOriginalIndexToCollisionEnergyAtPeakTop(MS1RawSpectrumIdTop);
+            foreach (var kvp in indexToEnergy) {
+                MS2RawSpectrumID2CE[kvp.Key] = kvp.Value;
+            }
+            MS2RawSpectrumID = spectra.FindOriginalIndexPeakTop(MS1RawSpectrumIdTop);
+        }
 
         // ISpectrumPeak
         double ISpectrumPeak.Intensity {

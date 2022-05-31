@@ -1,9 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CompMs.Common.DataObj;
+using System;
 
-namespace CompMs.Common.Enum {
+namespace CompMs.Common.Enum
+{
     public enum IonMode { Positive, Negative, Both }
+
+    public static class IonModeExtension {
+        public static ScanPolarity ToPolarity(this IonMode ionMode) {
+            switch (ionMode) {
+                case IonMode.Positive:
+                    return ScanPolarity.Positive;
+                case IonMode.Negative:
+                    return ScanPolarity.Negative;
+                case IonMode.Both:
+                default:
+                    return ScanPolarity.Undefined;
+            }
+        }
+    }
+
     public enum MachineCategory { GCMS, LCMS, IMMS, LCIMMS, IFMS, IMS }
     public enum MassToleranceType { Da, Ppm }
     public enum CollisionType { CID, HCD, EIEIO, ECD, HotECD }

@@ -12,8 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
@@ -26,63 +24,67 @@ namespace CompMs.App.Msdial.ViewModel.Chart
            IAxisManager<double> lowerVerticalAxis = null,
            IObservable<IBrushMapper<SpectrumComment>> upperSpectrumBrushSource = null,
            IObservable<IBrushMapper<SpectrumComment>> lowerSpectrumBrushSource = null) {
-
-            this.model = model ?? throw new ArgumentNullException(nameof(model));
+            if (model is null) {
+                throw new ArgumentNullException(nameof(model));
+            }
 
             if (horizontalAxis is null) {
-                horizontalAxis = this.model.HorizontalRangeSource
+                horizontalAxis = model.HorizontalRangeSource
                     .ToReactiveAxisManager<double>(new ConstantMargin(40))
                     .AddTo(Disposables);
             }
             HorizontalAxis = horizontalAxis;
 
             if (upperVerticalAxis is null) {
-                upperVerticalAxis = this.model.UpperVerticalRangeSource
+                upperVerticalAxis = model.UpperVerticalRangeSource
                     .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Standard)
                     .AddTo(Disposables);
             }
             UpperVerticalAxis = upperVerticalAxis;
 
             if (lowerVerticalAxis is null) {
-                lowerVerticalAxis = this.model.LowerVerticalRangeSource
+                lowerVerticalAxis = model.LowerVerticalRangeSource
                     .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Standard)
                     .AddTo(Disposables);
             }
             LowerVerticalAxis = lowerVerticalAxis;
 
-            UpperSpectrum = this.model.UpperSpectrumSource
+            UpperSpectrum = model.UpperSpectrumSource
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            LowerSpectrum = this.model.LowerSpectrumSource
+            LowerSpectrum = model.LowerSpectrumSource
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            GraphTitle = this.model.ObserveProperty(m => m.GraphTitle)
+            UpperSpectrumLoaded = model.UpperSpectrumLoaded;
+            LowerSpectrumLoaded = model.LowerSpectrumLoaded;
+
+            GraphTitle = model.ObserveProperty(m => m.GraphTitle)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            HorizontalTitle = this.model.ObserveProperty(m => m.HorizontalTitle)
+            HorizontalTitle = model.ObserveProperty(m => m.HorizontalTitle)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            VerticalTitle = this.model.ObserveProperty(m => m.VerticalTitle)
+            VerticalTitle = model.ObserveProperty(m => m.VerticalTitle)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            HorizontalProperty = this.model.ObserveProperty(m => m.HorizontalProperty)
+            HorizontalProperty = model.ObserveProperty(m => m.HorizontalProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            VerticalProperty = this.model.ObserveProperty(m => m.VerticalProperty)
+            VerticalProperty = model.ObserveProperty(m => m.VerticalProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            LabelProperty = this.model.ObserveProperty(m => m.LabelProperty)
+            LabelProperty = model.ObserveProperty(m => m.LabelProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            OrderingProperty = this.model.ObserveProperty(m => m.OrderingProperty)
+            OrderingProperty = model.ObserveProperty(m => m.OrderingProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -111,12 +113,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         private static readonly IReadOnlyDictionary<SpectrumComment, Brush> SpectrumBrushes;
 
 
-        private readonly RawPurifiedSpectrumsModel model;
-
         public ReadOnlyReactivePropertySlim<List<SpectrumPeak>> UpperSpectrum { get; }
 
         public ReadOnlyReactivePropertySlim<List<SpectrumPeak>> LowerSpectrum { get; }
-
+        public ReadOnlyReactivePropertySlim<bool> UpperSpectrumLoaded { get; }
+        public ReadOnlyReactivePropertySlim<bool> LowerSpectrumLoaded { get; }
         public IAxisManager<double> HorizontalAxis { get; }
 
         public IAxisManager<double> UpperVerticalAxis { get; }

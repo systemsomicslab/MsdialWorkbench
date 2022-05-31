@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public MobilitySettingModel(MsdialImmsParameter parameter, List<AnalysisFileBean> files, ProcessOption process) {
             immsParameter = parameter;
-            IsReadOnly = (process & ProcessOption.Alignment) == 0;
+            IsReadOnly = false;
             IonMobilityType = parameter.IonMobilityType;
 
             if (parameter.FileID2CcsCoefficients is null) {
@@ -33,7 +33,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public MobilitySettingModel(MsdialLcImMsParameter parameter, List<AnalysisFileBean> files, ProcessOption process) {
             lcimmsParameter = parameter;
-            IsReadOnly = (process & ProcessOption.Alignment) != 0;
+            IsReadOnly = false;
             IonMobilityType = parameter.IonMobilityType;
 
             if (parameter.FileID2CcsCoefficients is null) {

@@ -32,23 +32,30 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+            var rawSpectrumLoaded = new[]
+            {
+                targetSource.Select(_ => false),
+                rawSource.Delay(TimeSpan.FromSeconds(.05d)).Select(_ => true),
+            }.Merge()
+            .Throttle(TimeSpan.FromSeconds(.1d))
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
             var decSource = targetSource.WithLatestFrom(Observable.Return(decLoader),
                 (target, loader) => Observable.FromAsync(token => loader.LoadSpectrumAsync(target, token)))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+            var decSpectrumLoaded = new[]
+            {
+                targetSource.Select(_ => false),
+                decSource.Delay(TimeSpan.FromSeconds(.05d)).Select(_ => true),
+            }.Merge()
+            .Throttle(TimeSpan.FromSeconds(.1d))
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
             var refSource = targetSource.WithLatestFrom(Observable.Return(refLoader),
                 (target, loader) => Observable.FromAsync(token => loader.LoadSpectrumAsync(target, token)))
                 .Switch()
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            var upperSpectrumBrushProperty = upperSpectrumBrush
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            var lowerSpectrumBrushProperty = lowerSpectrumBrush
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            var referenceSpectraExporterProperty = referenceSpectraExporter
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -58,20 +65,22 @@ namespace CompMs.App.Msdial.Model.Chart
                 verticalPropertySelector,
                 graphLabels,
                 hueProperty,
-                upperSpectrumBrushProperty,
-                lowerSpectrumBrushProperty,
+                upperSpectrumBrush,
+                lowerSpectrumBrush,
                 rawSpectraExporeter,
-                referenceSpectraExporterProperty).AddTo(Disposables);
+                referenceSpectraExporter,
+                rawSpectrumLoaded).AddTo(Disposables);
             DecRefSpectrumModels = new MsSpectrumModel(
                 decSource, refSource,
                 horizontalPropertySelector,
                 verticalPropertySelector,
                 graphLabels,
                 hueProperty,
-                upperSpectrumBrushProperty,
-                lowerSpectrumBrushProperty,
+                upperSpectrumBrush,
+                lowerSpectrumBrush,
                 deconvolutedSpectraExporter,
-                referenceSpectraExporterProperty).AddTo(Disposables);
+                referenceSpectraExporter,
+                decSpectrumLoaded).AddTo(Disposables);
         }
 
         public MsSpectrumModel RawRefSpectrumModels { get; }

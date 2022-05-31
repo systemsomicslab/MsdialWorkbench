@@ -87,45 +87,6 @@ namespace CompMs.App.Msdial.Model.Search
         public abstract void SetUnknown();
     }
 
-    public class CompoundSearcher
-    {
-        private readonly IAnnotationQueryFactory<IAnnotationQueryZZZ<MsScanMatchResult>> queryFactory;
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
-
-        public CompoundSearcher(
-            IAnnotationQueryFactory<IAnnotationQueryZZZ<MsScanMatchResult>> queryFactory,
-            MsRefSearchParameterBase msRefSearchParameter,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
-            this.queryFactory = queryFactory ?? throw new ArgumentNullException(nameof(queryFactory));
-            MsRefSearchParameter = msRefSearchParameter is null
-                ? new MsRefSearchParameterBase()
-                : new MsRefSearchParameterBase(msRefSearchParameter);
-            this.refer = refer ?? throw new ArgumentNullException(nameof(refer));
-
-            Id = queryFactory.AnnotatorId;
-        }
-
-        public string Id { get; }
-
-        public MsRefSearchParameterBase MsRefSearchParameter { get; }
-
-        public IEnumerable<ICompoundResult> Search(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature) {
-            var candidates = queryFactory.Create(
-                property,
-                scan,
-                spectrum,
-                ionFeature,
-                MsRefSearchParameter
-            ).FindCandidates().ToList();
-            foreach (var candidate in candidates) {
-                candidate.Source |= SourceType.Manual;
-            }
-            return candidates
-                .OrderByDescending(result => result.TotalScore)
-                .Select(result => new CompoundResult(refer.Refer(result), result));
-        }
-    }
-
     public class CompoundSearchModel<T> : CompoundSearchModel where T: IMSIonProperty, IMoleculeProperty
     {
         public CompoundSearchModel(
@@ -156,7 +117,8 @@ namespace CompMs.App.Msdial.Model.Search
                 Observable.Return(MsSpectrumModel.GetBrush(Brushes.Blue)),
                 Observable.Return(MsSpectrumModel.GetBrush(Brushes.Red)),
                 Observable.Return((ISpectraExporter)null),
-                Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
+                Observable.Return((ISpectraExporter)null),
+                null).AddTo(Disposables);
         }
 
         [Obsolete]

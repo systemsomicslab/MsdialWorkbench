@@ -39,7 +39,7 @@ namespace CompMs.MsdialDimsCore
             Console.WriteLine("Peak picking started");
             var ms1Spectrum = provider.LoadMs1Spectrums().Argmax(spec => spec.Spectrum.Length);
             var chromPeaks = DataAccess.ConvertRawPeakElementToChromatogramPeakList(ms1Spectrum.Spectrum);
-            var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
+            var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.Mz, ChromXUnit.Mz).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
 
             var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
             if (peakPickResults.IsEmptyOrNull()) return;
@@ -52,7 +52,7 @@ namespace CompMs.MsdialDimsCore
 
             // chrom deconvolutions
             Console.WriteLine("Deconvolution started");
-            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, peakFeatures, param);
+            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, peakFeatures);
             var initial_msdec = 30.0;
             var max_msdec = 30.0;
             var msdecProcess = new Algorithm.Ms2Dec(initial_msdec, max_msdec);
@@ -60,7 +60,7 @@ namespace CompMs.MsdialDimsCore
             var msdecResults = msdecProcess.GetMS2DecResults(spectrumList, peakFeatures, param, summary, targetCE, reportAction, token);
 
             Console.WriteLine("Annotation started");
-            annotationProcess.RunAnnotation(peakFeatures, msdecResults, provider, param.NumThreads, token, v => reportAction((int)v));
+            annotationProcess.RunAnnotation(peakFeatures, msdecResults, provider, param.NumThreads, token, v => reportAction?.Invoke((int)v));
 
             var characterEstimator = new Algorithm.PeakCharacterEstimator(90, 10);
             characterEstimator.Process(spectrumList, peakFeatures, msdecResults, evaluator, param, reportAction);

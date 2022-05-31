@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
@@ -23,7 +24,6 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Algorithm;
 using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
-using CompMs.MsdialLcImMsApi.DataObj;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Process;
 using Reactive.Bindings.Extensions;
@@ -53,6 +53,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             providerFactory = new StandardDataProviderFactory();
             accProviderFactory = new LcimmsAccumulateDataProviderFactory();
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
+            PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
         }
 
         private FacadeMatchResultEvaluator matchResultEvaluator;
@@ -76,7 +77,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly IDataProviderFactory<RawMeasurement> providerFactory;
         private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
 
-        protected override AnalysisModelBase LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+        public PeakFilterModel PeakFilterModel { get; }
+
+        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
@@ -88,11 +91,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 accProviderFactory.Create(rawObj),
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
-                Storage.Parameter)
+                Storage.Parameter,
+                PeakFilterModel)
             .AddTo(Disposables);
         }
 
-        protected override AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
@@ -102,7 +106,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
-                Storage.AnalysisFiles)
+                Storage.AnalysisFiles,
+                PeakFilterModel)
             .AddTo(Disposables);
         }
 
@@ -125,27 +130,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
             LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
         }
 
-        public void SetAnalysisParameter(LcimmsAnalysisParameterSetModel analysisParamSetModel) {
-            if (Storage.Parameter.ProcessOption.HasFlag(ProcessOption.Alignment)) {
-                var filename = analysisParamSetModel.AlignmentResultFileName;
-                AlignmentFiles.Add(
-                    new AlignmentFileBean
-                    {
-                        FileID = AlignmentFiles.Count,
-                        FileName = filename,
-                        FilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.arf}"),
-                        EicFilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, $"{filename}.EIC.aef"),
-                        SpectraFilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.dcl}"),
-                        ProteinAssembledResultFilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, $"{filename}.{MsdialDataStorageFormat.prf}"),
-                    });
-                Storage.AlignmentFiles = AlignmentFiles.ToList();
-            }
-
-            annotationProcess = BuildAnnotationProcess(Storage.DataBases, Storage.Parameter.PeakPickBaseParam);
-            Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
-        }
-
         private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
             var containers = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
             foreach (var annotators in storage.MetabolomicsDataBases) {
@@ -154,12 +138,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
             return new StandardAnnotationProcess<IAnnotationQuery>(
                 containers.Select(container => (
                     new AnnotationQueryFactory(container.Annotator, parameter) as IAnnotationQueryFactory<IAnnotationQuery>,
-                    container as IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
+                    container
                 )).ToList());
         }
 
         public async Task RunAnnotationProcess(AnalysisFileBean analysisfile, Action<int> action) {
-            await Task.Run(() => FileProcess.Run(analysisfile, providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true, reportAction: action));
+            await Task.Run(() => FileProcess.Run(analysisfile, providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true, reportAction: action)).ConfigureAwait(false);
         }
 
         public void RunAlignmentProcess() {

@@ -130,6 +130,7 @@
                     Grid.Row="3">
             <Button Content="Export"
                     Command="{Binding ExportPeakCommand}"
+                    Click="ExportButton_Click"
                     Width="64"/>
             <Button Content="Cancel"
                     Click="Button_Click"

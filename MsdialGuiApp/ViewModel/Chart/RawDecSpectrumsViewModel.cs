@@ -1,9 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
-using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.AxisManager.Generic;
-using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -19,20 +17,18 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             RawDecSpectrumsModel model,
             IObservable<IAxisManager<double>> horizontalAxisSource = null,
             IObservable<IAxisManager<double>> upperVerticalAxisSource = null,
-            IObservable<IAxisManager<double>> lowerVerticalAxisSource = null,
-            IObservable<IBrushMapper<SpectrumComment>> upperSpectrumBrushSource = null,
-            IObservable<IBrushMapper<SpectrumComment>> lowerSpectrumBrushSource = null) {
+            IObservable<IAxisManager<double>> lowerVerticalAxisSource = null) {
 
             this.model = model;
 
             if (upperVerticalAxisSource is null) {
                 var upperVerticalAxis = this.model
-                    .RawRefSpectrumModels
+                    .DecRefSpectrumModels
                     .UpperVerticalRangeSource
                     .ToReactiveAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
                     .AddTo(Disposables);
                 var upperLogVerticalAxis = this.model
-                    .RawRefSpectrumModels
+                    .DecRefSpectrumModels
                     .UpperVerticalRangeSource
                     .Select(range => (range.Minimum.Value, range.Maximum.Value))
                     .ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d)
@@ -56,17 +52,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 this.model.RawRefSpectrumModels,
                 horizontalAxisSource,
                 upperVerticalAxisSource,
-                lowerVerticalAxisSource,
-                upperSpectrumBrushSource,
-                lowerSpectrumBrushSource);
+                lowerVerticalAxisSource);
 
             DecRefSpectrumViewModels = new MsSpectrumViewModel(
                 this.model.DecRefSpectrumModels,
                 horizontalAxisSource,
                 upperVerticalAxisSource,
-                lowerVerticalAxisSource,
-                upperSpectrumBrushSource,
-                lowerSpectrumBrushSource);
+                lowerVerticalAxisSource);
         }
 
         private readonly RawDecSpectrumsModel model;

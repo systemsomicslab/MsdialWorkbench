@@ -13,11 +13,12 @@ namespace CompMs.App.Msdial.Model.Chart
     class SurveyScanModel : DisposableModelBase
     {
         public SurveyScanModel(
-            IObservable<List<SpectrumPeakWrapper>> spectrumSource,
+            SurveyScanSpectrum surveyScanSpectrum,
             Func<SpectrumPeakWrapper, double> horizontalSelector,
             Func<SpectrumPeakWrapper, double> verticalSelector) {
 
-            SpectrumSource = spectrumSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            SurveyScanLoaded = surveyScanSpectrum.Loaded;
+            SpectrumSource = surveyScanSpectrum.Spectrum;
 
             HorizontalSelector = horizontalSelector;
             VerticalSelector = verticalSelector;
@@ -46,6 +47,8 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Subscribe(title => Elements.GraphTitle = title)
                 .AddTo(Disposables);
         }
+
+        public ReadOnlyReactivePropertySlim<bool> SurveyScanLoaded { get; }
 
         public IObservable<List<SpectrumPeakWrapper>> SpectrumSource { get; }
 

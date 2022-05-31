@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.CommonMVVM;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Threading.Tasks;
 
@@ -7,16 +8,16 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     public class ProjectSettingModel : BindableBase
     {
-        public ProjectSettingModel(Func<IProjectModel, Task> run) {
-            ProjectParameterSettingModel = new ProjectParameterSettingModel(PrepareDatasetSetting);
+        public ProjectSettingModel(Func<IProjectModel, Task> run, IMessageBroker broker) {
+            ProjectParameterSettingModel = new ProjectParameterSettingModel(PrepareDatasetSetting, broker);
             IsReadOnlyProjectParameter = false;
             this.run = run;
         }
 
-        public ProjectSettingModel(IProjectModel model) {
+        public ProjectSettingModel(IProjectModel model, IMessageBroker broker) {
             Result = model;
             DatasetSettingModel = model.DatasetSettingModel;
-            ProjectParameterSettingModel = new ProjectParameterSettingModel(model.Storage.ProjectParameter);
+            ProjectParameterSettingModel = new ProjectParameterSettingModel(model.Storage.ProjectParameter, broker);
             IsReadOnlyProjectParameter = true;
             run = null;
         }

@@ -10,7 +10,6 @@ using CompMs.MsdialLcmsApi.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.MsdialLcMsApi.Algorithm {
     public class Ms2Dec {
@@ -37,8 +36,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
         }
 
         public MSDecResult GetMS2DecResult(IReadOnlyList<RawSpectrum> spectrumList,
-            ChromatogramPeakFeature chromPeakFeature, MsdialLcmsParameter param, 
-            ChromatogramPeaksDataSummary summary, IupacDatabase iupac, double targetCE = -1) { // targetCE is used in multiple CEs option
+            ChromatogramPeakFeature chromPeakFeature, MsdialLcmsParameter param,
+            ChromatogramPeaksDataSummary summary, IupacDatabase iupac,
+            double targetCE = -1) { // targetCE is used in multiple CEs option
 
             // check target CE ID
             var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
@@ -69,16 +69,13 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             //}
 
             //check the RT range to be considered for chromatogram deconvolution
-            var peakWidth = chromPeakFeature.PeakWidth();
-            if (peakWidth >= summary.AveragePeakWidthOnRtAxis + summary.StdevPeakWidthOnRtAxis * 3) peakWidth = summary.AveragePeakWidthOnRtAxis + summary.StdevPeakWidthOnRtAxis * 3; // width should be less than mean + 3*sigma for excluding redundant peak feature
-            if (peakWidth <= summary.MedianPeakWidthOnRtAxis) peakWidth = summary.MedianPeakWidthOnRtAxis; // currently, the median peak width is used for very narrow peak feature
-
-            var startRt = (float)(chromPeakFeature.ChromXsTop.Value - peakWidth * 1.5F);
-            var endRt = (float)(chromPeakFeature.ChromXsTop.Value + peakWidth * 1.5F);
+            var (startRt, endRt)= summary.GetPeakRange(chromPeakFeature);
 
             //preparing MS1 and MS/MS chromatograms
             //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
-            var ms1Peaklist = DataAccess.GetMs1Peaklist(spectrumList, (float)precursorMz, param.CentroidMs1Tolerance, param.IonMode, ChromXType.RT, ChromXUnit.Min, startRt, endRt);
+            var rawSpectrum = new RawSpectra(spectrumList, param.IonMode, param.AcquisitionType);
+            var chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min);
+            var ms1Peaklist = rawSpectrum.GetMs1ExtractedChromatogram(precursorMz, param.CentroidMs1Tolerance, chromatogramRange).Peaks;
 
             var startScanNum = ms1Peaklist[0].ID;
             var endScanNum = ms1Peaklist[ms1Peaklist.Count - 1].ID;
@@ -98,7 +95,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                 curatedSpectra.Select(x => x.Mass).ToList(), param, targetCE);
 
             foreach (var chromPeaks in ms2ChromPeaksList) {
-                var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
+                var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
                 smoothedMs2ChromPeaksList.Add(sChromPeaks);
             }
 

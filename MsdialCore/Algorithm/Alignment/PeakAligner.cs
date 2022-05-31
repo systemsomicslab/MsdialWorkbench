@@ -122,7 +122,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             IReadOnlyList<RawSpectrum> spectra = provider?.LoadMs1Spectrums();
             if (spectra == null) {
                 using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePath, 0, false, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt)) {
-                    spectra = DataAccess.GetAllSpectra(rawDataAccess);
+                    spectra = rawDataAccess.GetMeasurement()?.SpectrumList;
                 }
             }
             var peakInfos = peaks.Zip(spots)

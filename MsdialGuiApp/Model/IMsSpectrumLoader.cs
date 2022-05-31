@@ -2,26 +2,21 @@
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
-using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.Algorithm;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CompMs.App.Msdial.Model {
+namespace CompMs.App.Msdial.Model
+{
     public interface IMsSpectrumLoader<in T>
     {
         Task<List<SpectrumPeak>> LoadSpectrumAsync(T target, CancellationToken token);
-        List<SpectrumPeak> LoadSpectrum(T target);
     }
 
     class MsRawSpectrumLoader : IMsSpectrumLoader<ChromatogramPeakFeatureModel>
@@ -34,24 +29,19 @@ namespace CompMs.App.Msdial.Model {
         private readonly IDataProvider provider;
         private readonly ParameterBase parameter;
 
-        public List<SpectrumPeak> LoadSpectrum(ChromatogramPeakFeatureModel target) {
+        public Task<List<SpectrumPeak>> LoadSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             return target is null
-                ? new List<SpectrumPeak>()
-                : LoadSpectrumCore(target);
+                ? Task.FromResult(new List<SpectrumPeak>())
+                : LoadSpectrumCoreAsync(target, token);
         }
 
-        public async Task<List<SpectrumPeak>> LoadSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
-            return target is null
-                ? new List<SpectrumPeak>()
-                : await Task.Run(() => LoadSpectrumCore(target), token).ConfigureAwait(false);
-        }
-
-        private List<SpectrumPeak> LoadSpectrumCore(ChromatogramPeakFeatureModel target) {
+        private async Task<List<SpectrumPeak>> LoadSpectrumCoreAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             if (target.MS2RawSpectrumId < 0) {
                 return new List<SpectrumPeak>(0);
             }
+            var msSpectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
             var spectra = DataAccess.GetCentroidMassSpectra(
-                provider.LoadMsSpectrums()[target.MS2RawSpectrumId],
+                msSpectra[target.MS2RawSpectrumId],
                 parameter.MS2DataType,
                 0f, float.MinValue, float.MaxValue);
             if (parameter.RemoveAfterPrecursor) {
@@ -71,17 +61,10 @@ namespace CompMs.App.Msdial.Model {
             this.loader = loader;
         }
 
-        public MsdialCore.MSDec.MSDecResult Result { get; private set; }
+        public MSDecResult Result { get; private set; }
 
         private readonly MSDecLoader loader;
         private readonly IReadOnlyList<object> ms1Peaks;
-
-        public List<SpectrumPeak> LoadSpectrum(object target) {
-            if (target == null) {
-                return new List<SpectrumPeak>(0);
-            }
-            return LoadSpectrumCore(target);
-        }
 
         public async Task<List<SpectrumPeak>> LoadSpectrumAsync(object target, CancellationToken token) {
             var ms2DecSpectrum = new List<SpectrumPeak>();
@@ -128,15 +111,6 @@ namespace CompMs.App.Msdial.Model {
         //private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> moleculeRefer;
         //private readonly IMatchResultRefer<PeptideMsReference, MsScanMatchResult> peptideRefer;
         private readonly DataBaseMapper mapper;
-
-        
-
-        public List<SpectrumPeak> LoadSpectrum(IAnnotatedObject target) {
-            if (target == null) {
-                return new List<SpectrumPeak>();
-            }
-            return LoadSpectrumCore(target);
-        }
 
         public async Task<List<SpectrumPeak>> LoadSpectrumAsync(IAnnotatedObject target, CancellationToken token) {
             var ms2ReferenceSpectrum = new List<SpectrumPeak>();

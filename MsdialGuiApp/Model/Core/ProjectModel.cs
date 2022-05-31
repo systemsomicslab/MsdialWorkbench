@@ -6,6 +6,7 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialIntegrate.Parser;
 using Microsoft.Win32;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -18,10 +19,11 @@ namespace CompMs.App.Msdial.Model.Core
 {
     public class ProjectModel : BindableBase, IProjectModel
     {
-        public ProjectModel(ProjectDataStorage storage) {
+        public ProjectModel(ProjectDataStorage storage, IMessageBroker broker) {
             Storage = storage;
+            _broker = broker;
             Datasets = new ObservableCollection<IDatasetModel>();
-            DatasetSettingModel = new DatasetSettingModel(false, SetNewDataset);
+            DatasetSettingModel = new DatasetSettingModel(false, SetNewDataset, broker);
         }
 
         public ProjectParameter Parameter => Storage.ProjectParameter;
@@ -48,13 +50,15 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         private readonly object lockDatasetAdd = new object();
+        private readonly IMessageBroker _broker;
+
         public void SetNewDataset(IDatasetModel dataset) {
             lock (lockDatasetAdd) {
                 Datasets.Add(dataset);
                 Storage.AddStorage(dataset.Storage);
             }
             CurrentDataset = dataset;
-            DatasetSettingModel = new DatasetSettingModel(false, SetNewDataset);
+            DatasetSettingModel = new DatasetSettingModel(false, SetNewDataset, _broker);
         }
 
         public async Task SaveAsync() {
@@ -87,7 +91,7 @@ namespace CompMs.App.Msdial.Model.Core
             }
         }
 
-        public async static Task<ProjectModel> LoadAsync() {
+        public static async Task<ProjectModel> LoadAsync(IMessageBroker broker) {
             var ofd = new OpenFileDialog
             {
                 Filter = "MS project file(.mdproject)|*.mdproject", //|MTD3 file(.mtd3)|*.mtd3|All(*)|*",
@@ -136,9 +140,9 @@ namespace CompMs.App.Msdial.Model.Core
                         throw new Exception($"Msdial cannot open the project: \n{ofd.FileName}");
                     }
                     projectDataStorage.FixProjectFolder(projectDir);
-                    var model = new ProjectModel(projectDataStorage);
+                    var model = new ProjectModel(projectDataStorage, broker);
                     model.Datasets.Clear();
-                    foreach (var dataset in projectDataStorage.Storages.Select(storage => new DatasetModel(storage))){
+                    foreach (var dataset in projectDataStorage.Storages.Select(storage => new DatasetModel(storage, broker))){
                         model.Datasets.Add(dataset);
                     }
                     model.CurrentDataset = model.Datasets.LastOrDefault();

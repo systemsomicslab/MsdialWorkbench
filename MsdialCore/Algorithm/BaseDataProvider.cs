@@ -9,28 +9,42 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Algorithm
 {
     public abstract class BaseDataProvider : IDataProvider
     {
-        protected readonly List<RawSpectrum> spectrums;
+        private readonly Task<IList<RawSpectrum>> _spectraTask;
 
         protected BaseDataProvider(IEnumerable<RawSpectrum> spectrums) {
             if (spectrums is null) {
                 throw new ArgumentNullException(nameof(spectrums));
             }
 
-            this.spectrums = (spectrums as List<RawSpectrum>) ?? spectrums.ToList();
+            _spectraTask = Task.FromResult((spectrums as IList<RawSpectrum>) ?? spectrums.ToList());
         }
 
-        protected BaseDataProvider(AnalysisFileBean file, bool isProfile, bool isGuiProcess, int retry)
-            :this(LoadMeasurement(file, isProfile, isGuiProcess, retry).SpectrumList) { }
+        protected BaseDataProvider(Task<RawMeasurement> measurementTask) {
+            if (measurementTask is null) {
+                throw new ArgumentNullException(nameof(measurementTask));
+            }
+
+            _spectraTask = Task.Run<IList<RawSpectrum>>(async () =>
+            {
+                var measurement = await measurementTask.ConfigureAwait(false);
+                return measurement.SpectrumList;
+            });
+        }
+
+        protected static Task<RawMeasurement> LoadMeasurementAsync(AnalysisFileBean file, bool isProfile, bool isGuiProcess, int retry, CancellationToken token) {
+            return Task.Run(() => LoadMeasurement(file, isProfile, isGuiProcess, retry), token);
+        }
 
         protected static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isProfile, bool isGuiProcess, int retry) {
             using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isProfile, isGuiProcess)) {
                 for (var i = 0; i < retry; i++) {
-                    var rawObj = DataAccess.GetRawDataMeasurement(access);
+                    var rawObj = access.GetMeasurement();
                     if (rawObj != null) {
                         return rawObj;
                     }
@@ -45,17 +59,37 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         public virtual ReadOnlyCollection<RawSpectrum> LoadMs1Spectrums() {
-            return LoadMsNSpectrums(1);
+            return LoadMs1SpectrumsAsync().Result;
         }
 
-        private ConcurrentDictionary<int, Lazy<ReadOnlyCollection<RawSpectrum>>> cache = new ConcurrentDictionary<int, Lazy<ReadOnlyCollection<RawSpectrum>>>();
         public virtual ReadOnlyCollection<RawSpectrum> LoadMsNSpectrums(int level) {
-            return cache.GetOrAdd(level, i => new Lazy<ReadOnlyCollection<RawSpectrum>>(() => spectrums.Where(spectrum => spectrum.MsLevel == i).ToList().AsReadOnly())).Value;
+            return LoadMsNSpectrumsAsync(level).Result;
         }
 
-        private ReadOnlyCollection<RawSpectrum> spectrumsCache;
         public virtual ReadOnlyCollection<RawSpectrum> LoadMsSpectrums() {
-            return spectrumsCache ?? (spectrumsCache = spectrums.AsReadOnly());
+            return LoadMsSpectrumsAsync().Result;
+        }
+
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token = default) {
+            return Task.Run(async () =>
+            {
+                var spectra = await _spectraTask.ConfigureAwait(false);
+                return new ReadOnlyCollection<RawSpectrum>(spectra);
+            }, token);
+        }
+
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token = default) {
+            return LoadMsNSpectrumsAsync(1, token);
+        }
+
+        private ConcurrentDictionary<int, Lazy<Task<ReadOnlyCollection<RawSpectrum>>>> cache = new ConcurrentDictionary<int, Lazy<Task<ReadOnlyCollection<RawSpectrum>>>>();
+        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token = default) {
+            return cache.GetOrAdd(level,
+                i => new Lazy<Task<ReadOnlyCollection<RawSpectrum>>>(() => Task.Run(async () =>
+                {
+                    var spectra = await _spectraTask.ConfigureAwait(false);
+                    return spectra.Where(spectrum => spectrum.MsLevel == level).ToList().AsReadOnly();
+                }))).Value;
         }
     }
 }

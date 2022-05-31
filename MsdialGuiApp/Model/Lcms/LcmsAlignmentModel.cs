@@ -74,10 +74,12 @@ namespace CompMs.App.Msdial.Model.Lcms
             MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
             RtMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.TimesCenter) ?? 0d;
             RtMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.TimesCenter) ?? 0d;
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, useRtFilter: true);
 
             // Peak scatter plot
-            var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
+            var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
             PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource)
             {
                 GraphTitle = AlignmentFile.FileName,
@@ -273,6 +275,14 @@ namespace CompMs.App.Msdial.Model.Lcms
         public void FragmentSearcher() {
             var features = this.Ms1Spots;
             MsdialCore.Algorithm.FragmentSearcher.Search(features.Select(n => n.innerModel).ToList(), this.decLoader, Parameter);
+
+            foreach (var feature in features) {
+                var featureStatus = feature.innerModel.FeatureFilterStatus;
+                if (featureStatus.IsFragmentExistFiltered) {
+                    Console.WriteLine("A fragment is found in alignment !!!");
+                }
+            }
+
         }
 
         public void GoToMsfinderMethod() {
@@ -282,6 +292,10 @@ namespace CompMs.App.Msdial.Model.Lcms
                 MsdecResult.Value,
                 DataBaseMapper,
                 Parameter);
+        }
+
+        public void Normalize() {
+            
         }
 
         private List<CompoundSearcher> ConvertToCompoundSearchers(DataBaseStorage databases) {

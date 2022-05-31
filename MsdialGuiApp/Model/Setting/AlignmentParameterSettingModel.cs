@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public AlignmentParameterSettingModel(ParameterBase parameter, DateTime now, List<AnalysisFileBean> files, IList<AlignmentFileBean> alignmentFiles, ProcessOption process) {
             IsReadOnly = (process & ProcessOption.Alignment) == 0;
 
-            AlignmentResultFileName = $"AlignmentResult_{now:yyyy_MM_dd_hh_mm_ss}";
+            AlignmentResultFileName = $"AlignmentResult_{now:yyyy_MM_dd_HH_mm_ss}";
             AnalysisFiles = files.AsReadOnly();
             ReferenceFile = AnalysisFiles.FirstOrDefault(f => f.AnalysisFileId == parameter.AlignmentReferenceFileID);
             EqualityParameterSettings = PrepareEqualityParameterSettings(parameter);

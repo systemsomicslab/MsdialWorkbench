@@ -1,17 +1,16 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
-using System.Reactive.Linq;
-using System.Linq;
-using CompMs.App.Msdial.ViewModel.Service;
 using System.IO;
-using Reactive.Bindings.Notifiers;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
@@ -21,11 +20,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             MsSpectrumModel model,
             IObservable<IAxisManager<double>> horizontalAxisSource = null,
             IObservable<IAxisManager<double>> upperVerticalAxisSource = null,
-            IObservable<IAxisManager<double>> lowerVerticalAxisSource = null,
-            IObservable<IBrushMapper<SpectrumComment>> upperSpectrumBrushSource = null,
-            IObservable<IBrushMapper<SpectrumComment>> lowerSpectrumBrushSource = null) {
+            IObservable<IAxisManager<double>> lowerVerticalAxisSource = null) {
+            if (model is null) {
+                throw new ArgumentNullException(nameof(model));
+            }
 
-            this.model = model ?? throw new ArgumentNullException(nameof(model));
+            SpectrumLoaded = model.SpectrumLoaded;
+            ReferenceHasSpectrumInfomation = model.ReferenceHasSpectrumInfomation;
 
             HorizontalAxis = (horizontalAxisSource ?? model.UpperSpectrumModel.HorizontalAxis)
                 .ToReadOnlyReactivePropertySlim()
@@ -75,11 +76,13 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
            
-            UpperSpectrumBrushSource = (upperSpectrumBrushSource?.OfType<IBrushMapper>() ?? model.UpperSpectrumModel.Brush)
-                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            UpperSpectrumBrushSource = model.UpperSpectrumModel.Brush
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
 
-            LowerSpectrumBrushSource = (lowerSpectrumBrushSource?.OfType<IBrushMapper>() ?? model.LowerSpectrumModel.Brush)
-                .ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            LowerSpectrumBrushSource = model.LowerSpectrumModel.Brush
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
 
             SaveUpperSpectrumCommand = model.CanSaveUpperSpectrum.ToReactiveCommand()
                 .WithSubscribe(SaveSpectrum(model.SaveUpperSpectrum))
@@ -90,12 +93,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .AddTo(Disposables);
         }
 
-        private readonly MsSpectrumModel model;
-
         public ReadOnlyReactivePropertySlim<List<SpectrumPeak>> UpperSpectrum { get; }
 
         public ReadOnlyReactivePropertySlim<List<SpectrumPeak>> LowerSpectrum { get; }
-
+        public ReadOnlyReactivePropertySlim<bool> SpectrumLoaded { get; }
+        public ReadOnlyReactivePropertySlim<bool> ReferenceHasSpectrumInfomation { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> HorizontalAxis { get; }
 
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> UpperVerticalAxis { get; }

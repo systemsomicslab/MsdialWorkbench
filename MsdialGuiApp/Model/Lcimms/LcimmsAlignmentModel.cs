@@ -2,9 +2,11 @@
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
@@ -32,7 +34,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseMapper mapper,
             ParameterBase parameter,
-            List<AnalysisFileBean> files)
+            List<AnalysisFileBean> files,
+            PeakFilterModel peakFilterModel)
             : base(alignmentFileBean.FilePath) {
             Parameter = parameter;
             AlignmentFile = alignmentFileBean;
@@ -42,17 +45,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
             BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, observableBarItemsLoader)));
-
-            MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
-            MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
-            RtMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.innerModel.TimesCenter.RT.Value) ?? 0d;
-            RtMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.innerModel.TimesCenter.RT.Value) ?? 0d;
-            DriftMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.innerModel.TimesCenter.Drift.Value) ?? 0d;
-            DriftMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.innerModel.TimesCenter.Drift.Value) ?? 0d;
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, useRtFilter: true);
 
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             var fileName = alignmentFileBean.FileName;
-            var labelSource = this.ObserveProperty(m => m.DisplayLabel);
+            var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
             PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource)
             {
                 GraphTitle = fileName,
@@ -159,7 +156,24 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     SelectedBrush = Brushes[1].Mapper;
                     break;
             }
+
+            var rtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, RtTol, Target.Select(t => t?.TimesCenter ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
+            var dtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, DtTol, Target.Select(t => t?.TimesCenter ?? 0d), "F2", "Drift time(min)", isItalic: false).AddTo(Disposables);
+            var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MzTol, Target.Select(t => t?.MassCenter ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
+            var idSpotFocus = new IdSpotFocus<AlignmentSpotPropertyModel>(
+                Target,
+                id => Ms1Spots.Argmin(spot => Math.Abs(spot.MasterAlignmentID - id)),
+                Target.Select(t => t?.MasterAlignmentID ?? 0d),
+                "Region focus by ID",
+                (mzSpotFocus, spot => spot.MassCenter),
+                (rtSpotFocus, spot => spot.TimesCenter),
+                (dtSpotFocus, spot => spot.TimesCenter)).AddTo(Disposables);
+            FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, mzSpotFocus, rtSpotFocus, dtSpotFocus);
         }
+
+        private static readonly double RtTol = 0.5;
+        private static readonly double DtTol = 0.01;
+        private static readonly double MzTol = 20;
 
         static LcimmsAlignmentModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
@@ -171,17 +185,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
         public string ResultFile { get; }
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
-
-        public double MassMin { get; }
-        public double MassMax { get; }
-        public double RtMin { get; }
-        public double RtMax { get; }
-        public double DriftMin { get; }
-        public double DriftMax { get; }
-
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
-
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
+
+        public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
         public Chart.AlignmentPeakPlotModel PlotModel { get; }
 
@@ -190,6 +197,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public BarChartModel BarChartModel { get; }
 
         public AlignmentEicModel AlignmentEicModel { get; }
+
+        public FocusNavigatorModel FocusNavigatorModel { get; }
 
         // public LcimmsAlignmentSpotTableModel AlignmentSpotTableModel { get; }
 

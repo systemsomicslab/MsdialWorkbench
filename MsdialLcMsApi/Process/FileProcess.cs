@@ -42,8 +42,9 @@ namespace CompMs.MsdialLcMsApi.Process
             Console.WriteLine("Peak picking started");
             var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, param, token, reportAction);
             IsotopeEstimator.Process(chromPeakFeatures, param, iupacDB);
-            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures, param);
-            file.ChromPeakFeaturesSummary = summary;
+            var summaryDto = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures);
+            var summary = ChromatogramPeaksDataSummary.ConvertFromDto(summaryDto);
+            file.ChromPeakFeaturesSummary = summaryDto;
 
             // chrom deconvolutions
             Console.WriteLine("Deconvolution started");
@@ -51,7 +52,7 @@ namespace CompMs.MsdialLcMsApi.Process
             var initial_msdec = 30.0;
             var max_msdec = 30.0;
             var ceList = SpectrumParser.LoadCollisionEnergyTargets(spectrumList);
-            if (param.AcquisitionType == Common.Enum.AcquisitionType.AIF) {
+            if (storage.Parameter.AcquisitionType == Common.Enum.AcquisitionType.AIF) {
                 for (int i = 0; i < ceList.Count; i++) {
                     var targetCE = Math.Round(ceList[i], 2); // must be rounded by 2 decimal points
                     if (targetCE <= 0) {
@@ -61,13 +62,13 @@ namespace CompMs.MsdialLcMsApi.Process
                     var max_msdec_aif = max_msdec / ceList.Count;
                     var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
                     targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
-                        spectrumList, chromPeakFeatures, param, summary, iupacDB, reportAction, token, targetCE);
+                        spectrumList, chromPeakFeatures, storage.Parameter, summary, storage.IupacDatabase, reportAction, token, targetCE);
                 }
             }
             else {
                 var targetCE = ceList.IsEmptyOrNull() ? -1 : ceList[0];
                 targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
-                        spectrumList, chromPeakFeatures, param, summary, iupacDB, reportAction, token);
+                        spectrumList, chromPeakFeatures, storage.Parameter, summary, storage.IupacDatabase, reportAction, token);
             }
 
                 // annotations
@@ -96,7 +97,6 @@ namespace CompMs.MsdialLcMsApi.Process
             // file save
             var paifile = file.PeakAreaBeanInformationFilePath;
             MsdialPeakSerializer.SaveChromatogramPeakFeatures(paifile, chromPeakFeatures);
-
 
             var dclfile = file.DeconvolutionFilePath;
             var dclfiles = new List<string>();

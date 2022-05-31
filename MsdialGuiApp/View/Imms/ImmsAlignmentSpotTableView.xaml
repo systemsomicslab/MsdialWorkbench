@@ -156,6 +156,10 @@
                                     Binding="{Binding Path=Comment}"
                                     IsReadOnly="False"
                                     Width="2*" />
+                <DataGridTextColumn Header="Annotation method"
+                                    Binding="{Binding Path=AnnotatorID}"
+                                    IsReadOnly="True"
+                                    Width="120"/>
                 <DataGridTextColumn Header="Match score"
                                     Binding="{Binding Path=ScanMatchResult.TotalScore, StringFormat=F4}"
                                     IsReadOnly="True"

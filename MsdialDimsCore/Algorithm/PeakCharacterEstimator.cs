@@ -322,19 +322,21 @@ namespace CompMs.MsdialDimsCore.Algorithm
         // currently, only pure peaks are evaluated by this way.
         private void assignLinksBasedOnChromatogramCorrelation(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<RawSpectrum> spectrumList, ParameterBase param) {
             if (chromPeakFeatures[0].ChromXs.RT.Value < 0) return;
+            var rawSpectra = new RawSpectra(spectrumList, param.IonMode, param.AcquisitionType);
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.PeakShape.PeakPureValue >= 0.9)) {
                 
                 var tTopRt = peak.ChromXsTop.RT.Value;
                 var tLeftRt = peak.ChromXsLeft.RT.Value;
                 var tRightRt = peak.ChromXsRight.RT.Value;
-                var tPeaklist = DataAccess.GetMs1Peaklist(spectrumList, (float)peak.Mass, param.CentroidMs1Tolerance, param.IonMode, ChromXType.RT, ChromXUnit.Min, (float)tLeftRt, (float)tRightRt);
-                var tChrom = DataAccess.GetSmoothedPeaklist(tPeaklist, param.SmoothingMethod, param.SmoothingLevel);
+                var chromatogramRange = new ChromatogramRange(tLeftRt, tRightRt, ChromXType.RT, ChromXUnit.Min);
+                var tPeaklist = rawSpectra.GetMs1ExtractedChromatogram(peak.Mass, param.CentroidMs1Tolerance, chromatogramRange);
+                var tChrom = tPeaklist.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
 
                 foreach (var cPeak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 
                 && !n.PeakCharacter.IsLinked && n.PeakID != peak.PeakID && n.PeakShape.PeakPureValue >= 0.9)) {
 
-                    var cPeaklist = DataAccess.GetMs1Peaklist(spectrumList, (float)cPeak.Mass, param.CentroidMs1Tolerance, param.IonMode, ChromXType.RT, ChromXUnit.Min, (float)tLeftRt, (float)tRightRt);
-                    var cChrom = DataAccess.GetSmoothedPeaklist(cPeaklist, param.SmoothingMethod, param.SmoothingLevel);
+                    var cPeaklist = rawSpectra.GetMs1ExtractedChromatogram(cPeak.Mass, param.CentroidMs1Tolerance, chromatogramRange);
+                    var cChrom = cPeaklist.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
 
                     var col = BasicMathematics.Coefficient(cChrom.Select(chrom => chrom.Intensity).ToArray(), tChrom.Select(chrom => chrom.Intensity).ToArray());
                     if (col > 0.95) {

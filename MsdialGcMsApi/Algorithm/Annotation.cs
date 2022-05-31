@@ -4,75 +4,63 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Utility;
-using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
-using CompMs.MsdialGcMsApi.DataObj;
 using CompMs.MsdialGcMsApi.Parameter;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
 
-namespace CompMs.MsdialGcMsApi.Algorithm {
+namespace CompMs.MsdialGcMsApi.Algorithm
+{
     public class Annotation {
-        public double InitialProgress { get; set; } = 60.0;
-        public double ProgressMax { get; set; } = 30.0;
+        private readonly List<MoleculeMsReference> _mspDB;
+        private readonly MsdialGcmsParameter _parameter;
 
-        public Annotation(double InitialProgress, double ProgressMax) {
-            this.InitialProgress = InitialProgress;
-            this.ProgressMax = ProgressMax;
+        public Annotation(List<MoleculeMsReference> mspDB, MsdialGcmsParameter parameter) {
+            _mspDB = mspDB;
+            _parameter = parameter;
         }
 
         /// <summary>
         /// ref must be ordered by retention time or retention index
         /// </summary>
         /// <param name="ms1DecResults"></param>
-        /// <param name="mspDB"></param>
-        /// <param name="param"></param>
         /// <param name="carbon2RtDict"></param>
-        /// <param name="reportAction"></param>
-        public void MainProcess(List<MSDecResult> ms1DecResults, List<MoleculeMsReference> mspDB, 
-            MsdialGcmsParameter param, Dictionary<int, float> carbon2RtDict, Action<int> reportAction) {
-
-            
+        /// <param name="reporter"></param>
+        public void MainProcess(List<MSDecResult> ms1DecResults, Dictionary<int, float> carbon2RtDict, ReportProgress reporter) {
             Console.WriteLine("Annotation started");
-            SetRetentionIndexForMS1DecResults(ms1DecResults, param, carbon2RtDict);
+            SetRetentionIndexForMS1DecResults(ms1DecResults, carbon2RtDict);
 
-            if (param.IsIdentificationOnlyPerformedForAlignmentFile)
+            if (_parameter.IsIdentificationOnlyPerformedForAlignmentFile)
                 return;
 
-            if (mspDB != null && mspDB.Count > 0) {
-                MspBasedProccess(ms1DecResults, mspDB, param, reportAction);
+            if (_mspDB != null && _mspDB.Count > 0) {
+                foreach (var (result, index) in ms1DecResults.WithIndex()) {
+                    MspBasedProccess(result);
+                    Console.WriteLine("Done {0}/{1}", index, ms1DecResults.Count);
+                    reporter.Show(index, ms1DecResults.Count);
+                }
             }
         }
 
-        public void MspBasedProccess(List<MSDecResult> results, List<MoleculeMsReference> mspDB, MsdialGcmsParameter param, Action<int> reportAction) {
-            foreach (var (result, index) in results.WithIndex()) {
-                MspBasedProccess(result, mspDB, param, reportAction);
-                Console.WriteLine("Done {0}/{1}", index, results.Count);
-            }
-        }
-
-        public void MspBasedProccess(MSDecResult msdecResult, List<MoleculeMsReference> mspDB, MsdialGcmsParameter param, Action<int> reportAction) {
-            var rType = param.RetentionType;
+        public void MspBasedProccess(MSDecResult msdecResult) {
+            var rType = _parameter.RetentionType;
             var rValue = rType == RetentionType.RT ? msdecResult.ChromXs.RT.Value : msdecResult.ChromXs.RI.Value;
-            var rTolerance = rType == RetentionType.RT ? param.MspSearchParam.RtTolerance : param.MspSearchParam.RiTolerance;
-            var factor = param.MspSearchParam.IsUseTimeForAnnotationFiltering ? 1.0F : 2.0F;
-            var normMSScanProp = DataAccess.GetNormalizedMSScanProperty(msdecResult, param);
+            var rTolerance = rType == RetentionType.RT ? _parameter.MspSearchParam.RtTolerance : _parameter.MspSearchParam.RiTolerance;
+            var factor = _parameter.MspSearchParam.IsUseTimeForAnnotationFiltering ? 1.0F : 2.0F;
+            var normMSScanProp = DataAccess.GetNormalizedMSScanProperty(msdecResult, _parameter);
 
             rTolerance *= factor;
 
-            RetrieveMspBounds(mspDB, rType, rValue, rTolerance, out int startID, out int endID);
+            var (startID, endID) = RetrieveMspBounds(rType, rValue, rTolerance);
             //Console.WriteLine("ID {0}, Start {1}, End {2}", msdecResult.ScanID, startID, endID);
             var matchedQueries = new List<MsScanMatchResult>();
             for (int i = startID; i < endID; i++) {
-                var refQuery = mspDB[i];
+                var refQuery = _mspDB[i];
                 var refRetention = rType == RetentionType.RT ? refQuery.ChromXs.RT.Value : refQuery.ChromXs.RI.Value;
                 if (Math.Abs(rValue - refRetention) < rTolerance) {
-                    var result = MsScanMatching.CompareEIMSScanProperties(normMSScanProp, refQuery, param.MspSearchParam);
+                    var result = MsScanMatching.CompareEIMSScanProperties(normMSScanProp, refQuery, _parameter.MspSearchParam);
                     if (result.IsSpectrumMatch) {
                         result.LibraryIDWhenOrdered = i;
                         matchedQueries.Add(result);
@@ -90,34 +78,33 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
             }
         }
 
-        private void RetrieveMspBounds(List<MoleculeMsReference> mspDB, RetentionType rType, double rValue, float rTolerance, out int startID, out int endID) {
-            startID = 0;
-            endID = mspDB.Count - 1;
+        private (int, int) RetrieveMspBounds(RetentionType rType, double rValue, float rTolerance) {
             if (rType == RetentionType.RT) {
-                startID = SearchCollection.LowerBound(mspDB,
+                var startID = SearchCollection.LowerBound(_mspDB,
                     new MoleculeMsReference() { ChromXs = new ChromXs(rValue - rTolerance, ChromXType.RT, ChromXUnit.Min) },
                     (a, b) => a.ChromXs.RT.Value.CompareTo(b.ChromXs.RT.Value));
-                endID = SearchCollection.UpperBound(mspDB,
+                var endID = SearchCollection.UpperBound(_mspDB,
                     new MoleculeMsReference() { ChromXs = new ChromXs(rValue + rTolerance, ChromXType.RT, ChromXUnit.Min) },
                     (a, b) => a.ChromXs.RT.Value.CompareTo(b.ChromXs.RT.Value));
+                return (startID, endID);
             }
             else {
-                startID = SearchCollection.LowerBound(mspDB,
+                var startID = SearchCollection.LowerBound(_mspDB,
                     new MoleculeMsReference() { ChromXs = new ChromXs(rValue - rTolerance, ChromXType.RI, ChromXUnit.None) },
                     (a, b) => a.ChromXs.RI.Value.CompareTo(b.ChromXs.RI.Value));
-                endID = SearchCollection.UpperBound(mspDB,
+                var endID = SearchCollection.UpperBound(_mspDB,
                     new MoleculeMsReference() { ChromXs = new ChromXs(rValue + rTolerance, ChromXType.RI, ChromXUnit.None) },
                     (a, b) => a.ChromXs.RI.Value.CompareTo(b.ChromXs.RI.Value));
+                return (startID, endID);
             }
         }
 
-        public void SetRetentionIndexForMS1DecResults(List<MSDecResult> ms1DecResults,
-            MsdialGcmsParameter param, Dictionary<int, float> carbon2RtDict) {
+        public void SetRetentionIndexForMS1DecResults(List<MSDecResult> ms1DecResults, Dictionary<int, float> carbon2RtDict) {
             if (carbon2RtDict.IsEmptyOrNull()) {
                 return;
             }
 
-            if (param.RiCompoundType == RiCompoundType.Alkanes)
+            if (_parameter.RiCompoundType == RiCompoundType.Alkanes)
                 foreach (var result in ms1DecResults) result.ChromXs.RI = new RetentionIndex(RetentionIndexHandler.GetRetentionIndexByAlkanes(carbon2RtDict, (float)result.ChromXs.Value));
             else {
                 var fiehnRiDict = RetentionIndexHandler.GetFiehnFamesDictionary();
@@ -133,7 +120,5 @@ namespace CompMs.MsdialGcMsApi.Algorithm {
                 result.ChromXs.RI = new RetentionIndex((float)Math.Round(RetentionIndexHandler.CalculateFiehnRi(fiehnRiCoeff, rt), 1));
             }
         }
-
-
     }
 }

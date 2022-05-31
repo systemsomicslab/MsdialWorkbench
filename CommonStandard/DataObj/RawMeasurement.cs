@@ -1,7 +1,7 @@
-﻿using System;
+﻿using CompMs.Common.Components;
+using CompMs.Common.Enum;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CompMs.Common.DataObj {
     public enum ScanPolarity
@@ -229,6 +229,26 @@ namespace CompMs.Common.DataObj {
             this.CollisionEnergy = 0;
             this.CollisionEnergyUnit = Units.Undefined;
         }
+
+        public bool ContainsDriftTime(DriftTime drift) {
+            return TimeBegin <= drift.Value && drift.Value < TimeEnd;
+        }
+
+        public bool ContainsMz(double mz, double tolerance, AcquisitionType acquisitionType) {
+            switch (acquisitionType) {
+                case AcquisitionType.AIF:
+                case AcquisitionType.SWATH:
+                    var lowerOffset = IsolationWindowLowerOffset;
+                    var upperOffset = IsolationWindowUpperOffset;
+                    return (double)SelectedIonMz - lowerOffset - tolerance < mz && (double)mz < (double)SelectedIonMz + upperOffset + (double)tolerance;
+                case AcquisitionType.DDA:
+                    return Math.Abs((double)SelectedIonMz - (double)mz) < (double)tolerance;
+                default:
+                    throw new NotSupportedException(nameof(acquisitionType));
+            }
+        }
+
+        public bool IsNotDiapasefData => TimeBegin == TimeEnd;
 
         void DUMP()
         {

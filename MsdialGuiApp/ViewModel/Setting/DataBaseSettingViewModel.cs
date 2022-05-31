@@ -173,14 +173,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         private void Browse() {
 
-            var filter = "MSP file(*.msp)|*.msp?|Lbm file(*.lbm)|*.lbm?|FASTA file(*.fasta)|*.fasta|Text library(*.txt)|*.txt|All(*)|*";
-            if (Model.TargetOmics == TargetOmics.Proteomics) {
-                filter = "FASTA file(*.fasta)|*.fasta|MSP file(*.msp)|*.msp?|Lbm file(*.lbm)|*.lbm?|Text library(*.txt)|*.txt|All(*)|*";
-            }
+            var filter = string.Join("|", OrderingExtensions());
 
             var ofd = new OpenFileDialog
             {
-                Title = "Import alibrary file",
+                Title = "Import a library file",
                 Filter = filter,
                 RestoreDirectory = true,
                 Multiselect = false,
@@ -189,6 +186,41 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             if (ofd.ShowDialog() == true) {
                 DataBasePath.Value = ofd.FileName;
             }
+        }
+
+        private static readonly string MspExtension = "MSP file(*.msp)|*.msp?";
+        private static readonly string LbmExtension = "Lbm file(*.lbm)|*.lbm?";
+        private static readonly string FastaExtension = "FASTA file(*.fasta)|*.fasta";
+        private static readonly string TextExtension = "Text library(*.txt)|*.txt";
+        private List<string> OrderingExtensions() {
+            var filters = new List<string>
+            {
+                 MspExtension,
+                 LbmExtension,
+                 FastaExtension,
+                 TextExtension,
+                 "All(*)|*"
+            };
+            switch (DBSource.Value) {
+                case DataBaseSource.Text:
+                    filters.Remove(TextExtension);
+                    filters.Insert(0, TextExtension);
+                    break;
+                case DataBaseSource.Fasta:
+                    filters.Remove(FastaExtension);
+                    filters.Insert(0, FastaExtension);
+                    break;
+                case DataBaseSource.Lbm:
+                    filters.Remove(LbmExtension);
+                    filters.Insert(0, LbmExtension);
+                    break;
+                case DataBaseSource.Msp:
+                default:
+                    filters.Remove(MspExtension);
+                    filters.Insert(0, MspExtension);
+                    break;
+            }
+            return filters;
         }
 
         public ReadOnlyReactivePropertySlim<bool> IsLipidDataBase { get; }

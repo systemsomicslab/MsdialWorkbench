@@ -148,6 +148,23 @@ namespace CompMs.Common.Utility.Tests
         }
 
         [TestMethod]
+        public void LowerBoundDifferentTypeTest()
+        {
+            var lst = new List<SampleStruct>();
+            for(int i = 0; i<10; i++)
+            {
+                lst.Add(new SampleStruct() { X = -i, Y = i });
+            }
+            var value = 3;
+            var expected = 3;
+            var actual = SearchCollection.LowerBound(lst, value, (a, b) => a.Y.CompareTo(b));
+            Assert.AreEqual(expected, actual);
+
+            actual = SearchCollection.LowerBound(lst.ToArray(), value, (a, b) => a.Y.CompareTo(b));
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
         public void UpperBoundBaseTest()
         {
             var arr = new double[] { 1d, 2d, 3d, 4d, 5d, 6d, 7d };
@@ -236,6 +253,23 @@ namespace CompMs.Common.Utility.Tests
             Assert.AreEqual(expected, actual);
 
             actual = SearchCollection.UpperBound(lst.ToArray(), value, (a, b) => a.Y.CompareTo(b.Y));
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void UpperBoundDifferentTypeTest()
+        {
+            var lst = new List<SampleStruct>();
+            for(int i = 0; i<10; i++)
+            {
+                lst.Add(new SampleStruct() { X = -i, Y = i });
+            }
+            var value = 3;
+            var expected = 4;
+            var actual = SearchCollection.UpperBound(lst, value, (a, b) => a.Y.CompareTo(b));
+            Assert.AreEqual(expected, actual);
+
+            actual = SearchCollection.UpperBound(lst.ToArray(), value, (a, b) => a.Y.CompareTo(b));
             Assert.AreEqual(expected, actual);
         }
 

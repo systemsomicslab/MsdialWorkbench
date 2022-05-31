@@ -12,16 +12,20 @@ namespace CompMs.App.Msdial.Model.Search
 {
     public sealed class PeakSpotNavigatorModel : BindableBase
     {
-        public PeakSpotNavigatorModel(IReadOnlyList<IFilterable> peakSpots, PeakFilterModel peakFilterModel, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+        public PeakSpotNavigatorModel(IReadOnlyList<IFilterable> peakSpots, PeakFilterModel peakFilterModel, IMatchResultEvaluator<MsScanMatchResult> evaluator, bool useRtFilter = false, bool useDtFilter = false) {
             PeakSpots = peakSpots ?? throw new System.ArgumentNullException(nameof(peakSpots));
             PeakFilterModel = peakFilterModel ?? throw new System.ArgumentNullException(nameof(peakFilterModel));
             this.evaluator = evaluator ?? throw new System.ArgumentNullException(nameof(evaluator));
+            UseRtFilter = useRtFilter;
+            UseDtFilter = useDtFilter;
             AmplitudeLowerValue = 0d;
             AmplitudeUpperValue = 1d;
             MzLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.Mass) ?? 0d;
             MzUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.Mass) ?? 1d;
             RtLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.RT.Value) ?? 0d;
             RtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.RT.Value) ?? 1d;
+            DtLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.Drift.Value) ?? 0d;
+            DtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.Drift.Value) ?? 1d;
             metaboliteFilterKeywords = new List<string>();
             MetaboliteFilterKeywords = metaboliteFilterKeywords.AsReadOnly();
             proteinFilterKeywords = new List<string>();
@@ -60,6 +64,7 @@ namespace CompMs.App.Msdial.Model.Search
         }
         private double mzUpperValue;
 
+        public bool UseRtFilter { get; }
         public double RtLowerValue {
             get => rtLowerValue;
             set => SetProperty(ref rtLowerValue, value);
@@ -70,6 +75,18 @@ namespace CompMs.App.Msdial.Model.Search
             set => SetProperty(ref rtUpperValue, value);
         }
         private double rtUpperValue;
+
+        public bool UseDtFilter { get; }
+        public double DtLowerValue {
+            get => dtLowerValue;
+            set => SetProperty(ref dtLowerValue, value);
+        }
+        private double dtLowerValue;
+        public double DtUpperValue { 
+            get => dtUpperValue;
+            set => SetProperty(ref dtUpperValue, value);
+        }
+        private double dtUpperValue;
 
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
@@ -141,7 +158,8 @@ namespace CompMs.App.Msdial.Model.Search
         public bool PeakFilter(IFilterable peak) {
             return PeakFilterModel.PeakFilter(peak, evaluator)
                 && MzFilter(peak)
-                && RtFilter(peak)
+                && (!UseRtFilter || RtFilter(peak))
+                && (!UseDtFilter || DtFilter(peak))
                 && AmplitudeFilter(peak)
                 && ProteinFilter(peak, ProteinFilterKeywords)
                 && MetaboliteFilter(peak, MetaboliteFilterKeywords)
@@ -153,7 +171,11 @@ namespace CompMs.App.Msdial.Model.Search
         }
 
         private bool RtFilter(IChromatogramPeak peak) {
-            return RtLowerValue <= peak.ChromXs.Value && peak.ChromXs.Value <= RtUpperValue;
+            return RtLowerValue <= peak.ChromXs.RT.Value && peak.ChromXs.RT.Value <= RtUpperValue;
+        }
+
+        private bool DtFilter(IChromatogramPeak peak) {
+            return DtLowerValue <= peak.ChromXs.Drift.Value && peak.ChromXs.Drift.Value <= DtUpperValue;
         }
 
         private bool ProteinFilter(IFilterable peak, IEnumerable<string> keywords) {

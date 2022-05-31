@@ -49,7 +49,9 @@ namespace CompMs.App.Msdial.Model.Loader
                                 peaks: pair.Item2,
                                 peakArea: pair.Item2.Where(item => peakProperty.ChromXsLeft.Value <= item.Time && item.Time <= peakProperty.ChromXsRight.Value).ToList(),
                                 class_: id2cls[pair.Item1],
-                                color: cls2color[id2cls[pair.Item1]])))
+                                color: cls2color[id2cls[pair.Item1]],
+                                type: target.ChromXType,
+                                unit: target.ChromXUnit)))
                         .CombineLatest()
                         .Select(xs => xs.ToList()))
                     .Switch();
