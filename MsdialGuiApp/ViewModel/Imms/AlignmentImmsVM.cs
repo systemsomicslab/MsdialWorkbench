@@ -19,18 +19,23 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    class AlignmentImmsVM : AlignmentFileViewModel {
+    internal sealed class AlignmentImmsVM : AlignmentFileViewModel {
         public AlignmentImmsVM(
             ImmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IMessageBroker messageBroker)
+            IMessageBroker messageBroker,
+            FocusControlManager focusControlManager)
             : base(model) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
+
+            if (focusControlManager is null) {
+                throw new ArgumentNullException(nameof(focusControlManager));
             }
 
             this.model = model;
@@ -85,7 +90,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
 
-            PlotViewModel = new Chart.AlignmentPeakPlotViewModel(model.PlotModel, null, Observable.Never<bool>()).AddTo(Disposables);
+            var (focusAction, focused) = focusControlManager.Request();
+            PlotViewModel = new Chart.AlignmentPeakPlotViewModel(model.PlotModel, focusAction, focused).AddTo(Disposables);
 
             Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
             BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel).AddTo(Disposables);

@@ -67,13 +67,13 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private MethodViewModel ConvertToViewModel(IMethodModel model) {
             switch (model) {
                 case LcmsMethodModel lc:
-                    return new LcmsMethodVM(lc, compoundSearchService, peakSpotTableService, proteomicsTableService, _messageBroker);
+                    return LcmsMethodVM.Create(lc, compoundSearchService, peakSpotTableService, proteomicsTableService, _messageBroker);
                 case ImmsMethodModel im:
-                    return new ImmsMethodVM(im, compoundSearchService, peakSpotTableService, _messageBroker);
+                    return ImmsMethodVM.Create(im, compoundSearchService, peakSpotTableService, _messageBroker);
                 case DimsMethodModel di:
                     return DimsMethodVM.Create(di, compoundSearchService, peakSpotTableService, _messageBroker);
                 case LcimmsMethodModel lcim:
-                    return new LcimmsMethodVM(lcim, compoundSearchService, peakSpotTableService);
+                    return LcimmsMethodVM.Create(lcim, compoundSearchService, peakSpotTableService);
                 // case GcmsMethodModel _:
                 default:
                     return null;

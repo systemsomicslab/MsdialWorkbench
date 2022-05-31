@@ -271,7 +271,6 @@
     <Compile Include="ViewModel\Chart\ReactiveAxisManager.cs" />
     <Compile Include="Model\Export\AnalysisResultExportModel.cs" />
     <Compile Include="Model\Loader\IBarItemsLoader.cs" />
-    <Compile Include="Model\AlignmentPeakPlotModel.cs" />
     <Compile Include="Model\DataObj\AxisData.cs" />
     <Compile Include="Model\Dims\DimsAlignmentModel.cs" />
     <Compile Include="Model\Dims\DimsAnalysisModel.cs" />
@@ -283,7 +282,6 @@
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
     <Compile Include="Model\Normalize\SplashSetModel.cs" />
-    <Compile Include="ViewModel\AlignmentPeakPlotVM.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\Chart\SingleSpectrumViewModel.cs" />
     <Compile Include="ViewModel\Chart\SmallClassBarChartViewModel.cs" />
@@ -315,6 +313,7 @@
     <Compile Include="ViewModel\Search\PeakSpotNavigatorViewModel.cs" />
     <Compile Include="ViewModel\Search\SpotFocusViewModel.cs" />
     <Compile Include="ViewModel\Service\ErrorMessageBoxRequest.cs" />
+    <Compile Include="ViewModel\Service\FocusControlManager.cs" />
     <Compile Include="ViewModel\Service\SaveFileNameRequest.cs" />
     <Compile Include="ViewModel\PeakCuration\AlignedChromatogramModificationViewModelLegacy.cs" />
     <Compile Include="ViewModel\Service\TaskNotification.cs" />
@@ -424,6 +423,9 @@
     </Compile>
     <Compile Include="View\Chart\ExperimentSpectrumView.xaml.cs">
       <DependentUpon>ExperimentSpectrumView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dims\DimsRibbon.xaml.cs">
+      <DependentUpon>DimsRibbon.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Export\AnalysisResultExportWin.xaml.cs">
       <DependentUpon>AnalysisResultExportWin.xaml</DependentUpon>
@@ -566,9 +568,6 @@
     </Compile>
     <Compile Include="View\Dims\Footer.xaml.cs">
       <DependentUpon>Footer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Dims\MainRibbon.xaml.cs">
-      <DependentUpon>MainRibbon.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
@@ -768,6 +767,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Dims\DimsRibbon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Export\AnalysisResultExportWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -937,10 +940,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dims\Footer.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Dims\MainRibbon.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -11,16 +11,12 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Windows;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    internal class AlignmentDimsVM : AlignmentFileViewModel
+    internal sealed class AlignmentDimsVM : AlignmentFileViewModel
     {
         private readonly DimsAlignmentModel _model;
         private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
@@ -31,13 +27,18 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             DimsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IMessageBroker broker)
+            IMessageBroker broker,
+            FocusControlManager focusControlManager)
             : base(model) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
+
+            if (focusControlManager is null) {
+                throw new ArgumentNullException(nameof(focusControlManager));
             }
 
             _model = model;
@@ -49,9 +50,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             Ms1Spots = CollectionViewSource.GetDefaultView(_model.Ms1Spots);
 
-            var peakPlotViewFocus = new Subject<Unit>().AddTo(Disposables);
-            var peakPlotViewFocused = peakPlotViewFocus.Select(_ => true);
-            PlotViewModel = new Chart.AlignmentPeakPlotViewModel(_model.PlotModel, focus: () => peakPlotViewFocus.OnNext(Unit.Default), isFocused: peakPlotViewFocused).AddTo(Disposables);
+            var (peakPlotViewFocusAction, peakPlotViewFocused) = focusControlManager.Request();
+            PlotViewModel = new Chart.AlignmentPeakPlotViewModel(_model.PlotModel, focus: peakPlotViewFocusAction, isFocused: peakPlotViewFocused).AddTo(Disposables);
 
             Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(_model.Ms2SpectrumModel).AddTo(Disposables);
             AlignmentEicViewModel = new Chart.AlignmentEicViewModel(_model.AlignmentEicModel).AddTo(Disposables);

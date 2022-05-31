@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -15,22 +16,18 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    class ImmsMethodVM : MethodViewModel
+    internal sealed class ImmsMethodVM : MethodViewModel
     {
-        public ImmsMethodVM(
-            ImmsMethodModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IMessageBroker messageBroker)
-            : base(model,
-                  ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService),
-                  ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, messageBroker)) {
+        private readonly ImmsMethodModel model;
+        private readonly FocusControlManager _focusControlManager;
+
+        private ImmsMethodVM(ImmsMethodModel model, IReadOnlyReactiveProperty<AnalysisFileViewModel> analysisViewModelAsObservable, IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentViewModelAsObservable, FocusControlManager focusControlmanager)
+            : base(model, analysisViewModelAsObservable, alignmentViewModelAsObservable) {
 
             this.model = model;
+            _focusControlManager = focusControlmanager.AddTo(Disposables);
             PropertyChanged += OnDisplayFiltersChanged;
         }
-
-        private readonly ImmsMethodModel model;
 
         public bool RefMatchedChecked {
             get => ReadDisplayFilter(DisplayFilter.RefMatched);
@@ -124,7 +121,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private static IReadOnlyReactiveProperty<AnalysisImmsVM> ConvertToAnalysisViewModel(
             ImmsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            FocusControlManager focusControlManager) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
@@ -134,7 +132,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             ReadOnlyReactivePropertySlim<AnalysisImmsVM> result;
             using (var subject = new Subject<ImmsAnalysisModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new AnalysisImmsVM(m, compoundSearchService, peakSpotTableService))
+                    .Select(m => m is null ? null : new AnalysisImmsVM(m, compoundSearchService, peakSpotTableService, focusControlManager))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AnalysisModel);
@@ -147,7 +145,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             ImmsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IMessageBroker messageBroker) {
+            IMessageBroker messageBroker,
+            FocusControlManager focusControlManager) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
@@ -157,13 +156,20 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             ReadOnlyReactivePropertySlim<AlignmentImmsVM> result;
             using (var subject = new Subject<ImmsAlignmentModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new AlignmentImmsVM(m, compoundSearchService, peakSpotTableService, messageBroker))
+                    .Select(m => m is null ? null : new AlignmentImmsVM(m, compoundSearchService, peakSpotTableService, messageBroker, focusControlManager))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AlignmentModel);
                 subject.OnCompleted();
             }
             return result;
+        }
+        public static ImmsMethodVM Create(ImmsMethodModel model, IWindowService<CompoundSearchVM> compoundSearchService, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, IMessageBroker messageBroker) {
+            var focusControlManager = new FocusControlManager();
+
+            var analysisViewModelAsObservable = ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService, focusControlManager);
+            var alignmentViewModelAsObservable = ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, messageBroker, focusControlManager);
+            return new ImmsMethodVM(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, focusControlManager);
         }
     }
 }

@@ -7,10 +7,11 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    class AnalysisPeakPlotModel : DisposableModelBase
+    internal sealed class AnalysisPeakPlotModel : DisposableModelBase
     {
         public AnalysisPeakPlotModel(
             ObservableCollection<ChromatogramPeakFeatureModel> spots,
@@ -18,25 +19,21 @@ namespace CompMs.App.Msdial.Model.Chart
             Func<ChromatogramPeakFeatureModel, double> verticalSelector,
             IReactiveProperty<ChromatogramPeakFeatureModel> targetSource,
             IObservable<string> labelSource,
+            BrushMapData<ChromatogramPeakFeatureModel> selectedBrush,
+            IList<BrushMapData<ChromatogramPeakFeatureModel>> brushes,
             IAxisManager<double> horizontalAxis = null,
             IAxisManager<double> verticalAxis = null) {
-            if (spots is null) {
-                throw new ArgumentNullException(nameof(spots));
+            if (brushes is null) {
+                throw new ArgumentNullException(nameof(brushes));
             }
 
-            if (targetSource is null) {
-                throw new ArgumentNullException(nameof(targetSource));
-            }
-
-            if (labelSource is null) {
-                throw new ArgumentNullException(nameof(labelSource));
-            }
-
-            Spots = spots;
+            Spots = spots ?? throw new ArgumentNullException(nameof(spots));
             HorizontalSelector = horizontalSelector ?? throw new ArgumentNullException(nameof(horizontalSelector));
             VerticalSelector = verticalSelector ?? throw new ArgumentNullException(nameof(verticalSelector));
-            LabelSource = labelSource;
-            TargetSource = targetSource;
+            LabelSource = labelSource ?? throw new ArgumentNullException(nameof(labelSource));
+            SelectedBrush = selectedBrush ?? throw new ArgumentNullException(nameof(selectedBrush));
+            Brushes = new ReadOnlyCollection<BrushMapData<ChromatogramPeakFeatureModel>>(brushes);
+            TargetSource = targetSource ?? throw new ArgumentNullException(nameof(targetSource));
             GraphTitle = string.Empty;
             HorizontalTitle = string.Empty;
             VerticalTitle = string.Empty;
@@ -132,5 +129,12 @@ namespace CompMs.App.Msdial.Model.Chart
         private string verticalProperty;
 
         public IObservable<string> LabelSource { get; }
+        public BrushMapData<ChromatogramPeakFeatureModel> SelectedBrush {
+            get => _selectedBrush;
+            set => SetProperty(ref _selectedBrush, value);
+        }
+        private BrushMapData<ChromatogramPeakFeatureModel> _selectedBrush;
+
+        public ReadOnlyCollection<BrushMapData<ChromatogramPeakFeatureModel>> Brushes { get; }
     }
 }

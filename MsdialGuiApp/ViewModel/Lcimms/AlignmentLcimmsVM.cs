@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Search;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -17,18 +18,23 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
-    class AlignmentLcimmsVM : AlignmentFileViewModel
+    internal sealed class AlignmentLcimmsVM : AlignmentFileViewModel
     {
         public AlignmentLcimmsVM(
             LcimmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            FocusControlManager focusControlManager)
             : base(model) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
+
+            if (focusControlManager is null) {
+                throw new ArgumentNullException(nameof(focusControlManager));
             }
 
             this.model = model;
@@ -45,7 +51,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
             Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
 
-            PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, null, Observable.Never<bool>()).AddTo(Disposables);
+            var (peakPlotFocusAction, peakPlotFocused) = focusControlManager.Request();
+            PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
 
             Ms2SpectrumViewModel = new MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
             BarChartViewModel = new BarChartViewModel(model.BarChartModel).AddTo(Disposables);

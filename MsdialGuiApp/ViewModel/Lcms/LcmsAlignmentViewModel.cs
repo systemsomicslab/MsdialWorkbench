@@ -9,9 +9,7 @@ using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
-using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -26,14 +24,15 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    class LcmsAlignmentViewModel : AlignmentFileViewModel
+    internal sealed class LcmsAlignmentViewModel : AlignmentFileViewModel
     {
         public LcmsAlignmentViewModel(
             LcmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
-            IMessageBroker broker)
+            IMessageBroker broker,
+            FocusControlManager focusControlManager)
             : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -51,6 +50,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(proteomicsTableService));
             }
 
+            if (focusControlManager is null) {
+                throw new ArgumentNullException(nameof(focusControlManager));
+            }
+
             this.model = model;
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
@@ -65,7 +68,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
 
-            PlotViewModel = new AlignmentPeakPlotViewModel(this.model.PlotModel, null, Observable.Never<bool>()).AddTo(Disposables);
+            var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
+            PlotViewModel = new AlignmentPeakPlotViewModel(this.model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
 
             Ms2SpectrumViewModel = new MsSpectrumViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
             BarChartViewModel = new BarChartViewModel(this.model.BarChartModel).AddTo(Disposables);

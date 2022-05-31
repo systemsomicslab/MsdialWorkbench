@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    class AlignmentPeakPlotModel : BindableBase
+    internal sealed class AlignmentPeakPlotModel : DisposableModelBase
     {
         public AlignmentPeakPlotModel(
             ObservableCollection<AlignmentSpotPropertyModel> spots,
@@ -39,8 +39,8 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalProperty = string.Empty;
             VerticalProperty = string.Empty;
 
-            HorizontalAxis = this.ObserveProperty(m => m.HorizontalRange).ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05));
-            VerticalAxis = this.ObserveProperty(m => m.VerticalRange).ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05));
+            HorizontalAxis = this.ObserveProperty(m => m.HorizontalRange).ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05)).AddTo(Disposables);
+            VerticalAxis = this.ObserveProperty(m => m.VerticalRange).ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05)).AddTo(Disposables);
         }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Spots { get; }

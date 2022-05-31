@@ -11,7 +11,6 @@ using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.Graphics.Base;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
@@ -30,7 +29,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
-    class DimsAlignmentModel : AlignmentModelBase
+    internal class DimsAlignmentModel : AlignmentModelBase
     {
         static DimsAlignmentModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Mz);
@@ -104,14 +103,14 @@ namespace CompMs.App.Msdial.Model.Dims
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.MassCenter, spot => spot.KMD, Target, labelSource, selectedBrush, brushes)
+            PlotModel = new AlignmentPeakPlotModel(Ms1Spots, spot => spot.MassCenter, spot => spot.KMD, Target, labelSource, selectedBrush, brushes)
             {
                 GraphTitle = _alignmentFile.FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
                 VerticalProperty = nameof(AlignmentSpotPropertyModel.KMD),
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Kendrick mass defect"
-            };
+            }.AddTo(Disposables);
 
             var decLoader = new MSDecLoader(alignmentFileBean.SpectraFilePath).AddTo(Disposables);
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Spots);
@@ -205,7 +204,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
-        public Chart.AlignmentPeakPlotModel PlotModel { get; }
+        public AlignmentPeakPlotModel PlotModel { get; }
 
         public MsSpectrumModel Ms2SpectrumModel { get; }
 

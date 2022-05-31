@@ -1,19 +1,14 @@
 ﻿using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Export;
-using CompMs.App.Msdial.View.Lcimms;
 using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.UI.ProgressBar;
-using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialLcImMsApi.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -22,22 +17,25 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
-    sealed class LcimmsMethodVM : MethodViewModel
+    internal sealed class LcimmsMethodVM : MethodViewModel
     {
-        public LcimmsMethodVM(
+        private readonly LcimmsMethodModel model;
+        private readonly FocusControlManager _focusControlManager;
+
+        private LcimmsMethodVM(
             LcimmsMethodModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
-            : base(model, ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService), ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService)) {
+            IReadOnlyReactiveProperty<AnalysisFileViewModel> analysisViewModelAsObservable,
+            IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentViewModelAsObservable,
+            FocusControlManager focusControlManager)
+            : base(model, analysisViewModelAsObservable, alignmentViewModelAsObservable) {
+
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
-
             this.model = model;
+            _focusControlManager = focusControlManager.AddTo(Disposables);
             PropertyChanged += OnDisplayFiltersChanged;
         }
-
-        private readonly LcimmsMethodModel model;
 
         public bool RefMatchedChecked {
             get => ReadDisplayFilter(DisplayFilter.RefMatched);
@@ -137,7 +135,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private static IReadOnlyReactiveProperty<AnalysisLcimmsVM> ConvertToAnalysisViewModel(
             LcimmsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            FocusControlManager focusControlManager) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
@@ -147,7 +146,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             ReadOnlyReactivePropertySlim<AnalysisLcimmsVM> result;
             using (var subject = new Subject<LcimmsAnalysisModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new AnalysisLcimmsVM(m, compoundSearchService, peakSpotTableService))
+                    .Select(m => m is null ? null : new AnalysisLcimmsVM(m, compoundSearchService, peakSpotTableService, focusControlManager))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AnalysisModel);
@@ -159,7 +158,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private static IReadOnlyReactiveProperty<AlignmentLcimmsVM> ConvertToAlignmentViewModel(
             LcimmsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            FocusControlManager focusControlManager) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
@@ -169,13 +169,21 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             ReadOnlyReactivePropertySlim<AlignmentLcimmsVM> result;
             using (var subject = new Subject<LcimmsAlignmentModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new AlignmentLcimmsVM(m, compoundSearchService, peakSpotTableService))
+                    .Select(m => m is null ? null : new AlignmentLcimmsVM(m, compoundSearchService, peakSpotTableService, focusControlManager))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AlignmentModel);
                 subject.OnCompleted();
             }
             return result;
+        }
+
+        public static LcimmsMethodVM Create(LcimmsMethodModel model, IWindowService<CompoundSearchVM> compoundSearchService, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
+            var focusControlManager = new FocusControlManager();
+            var analysisViewModelAsObservable = ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService, focusControlManager);
+            var alignmentViewModelAsObservable = ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, focusControlManager);
+
+            return new LcimmsMethodVM(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, focusControlManager);
         }
     }
 }
