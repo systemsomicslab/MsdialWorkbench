@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
+        xmlns:viewmodel="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type={x:Type viewmodel:MassqlSettingViewModel}}"
         Title="MassQL search window" Height="200" Width="800">
     <Grid>
         <StackPanel Orientation="Horizontal">
@@ -15,12 +17,13 @@
                      Margin="20"
                      TextWrapping="Wrap"
                      VerticalScrollBarVisibility="Visible" />
-            <Button x:Name="Button_Send_MassQL" 
+            <Button x:Name="Button_Send_MassQL"
                         Content="Search by MassQL"
-                        Click="Button_Send_MassQL_Click"
+                        Command="{Binding MassqlSearchCommand}"
                         Margin="1"
                         Height="25" Width="140" 
                         />
+            <!--Click="Button_Send_MassQL_Click"-->
         </StackPanel>
     </Grid>
 </Window>
