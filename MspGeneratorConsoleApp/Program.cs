@@ -102,22 +102,22 @@ namespace CompMs.MspGenerator
 
 
 
-            ////// mtb-info上で最終的なmspを出力
-            //// 指定のフォルダの中にある.mspファイルを結合します。
-            var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
-            var exportFileName = "Msp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedmsp";
+            //////// mtb-info上で最終的なmspを出力
+            ////// 指定のフォルダの中にある.mspファイルを結合します。
+            //var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
+            //var exportFileName = "Msp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedmsp";
 
-            Common.jointMspFiles(mspFolder, exportFileName);
-            //////////結合したファイルを下記フォルダに移動
-            workingDirectry = mspFolder + @"\LBM\";
-            System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
-            ////////
-            MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + exportFileName,
-                 mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20220318.txt", workingDirectry);
+            //Common.jointMspFiles(mspFolder, exportFileName);
+            ////////////結合したファイルを下記フォルダに移動
+            //workingDirectry = mspFolder + @"\LBM\";
+            //System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
+            //////////
+            //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + exportFileName,
+            //     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20220318.txt", workingDirectry);
 
-            //////上書き用
-            ////MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + @"Msp20210426080355_2.jointedmsp",
-            ////     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20210329.txt", workingDirectry);
+            ////////上書き用
+            //////MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + @"Msp20210426080355_2.jointedmsp",
+            //////     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20210329.txt", workingDirectry);
 
 
             ///mspファイル生成ツール
@@ -591,9 +591,9 @@ namespace CompMs.MspGenerator
                 //    (workingFolder + @"\master\masterCCS_20201221_chk.tsv",
                 //     workingFolder + @"\masterCCS_NCDK_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
 
-                //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
-                //    (@"E:\6_Projects\2_metabolome_protocol\RIKEN_InchIKey_SMILES.txt",
-                //     @"E:\6_Projects\2_metabolome_protocol\RIKEN_InchIKey_SMILES_output.txt");
+                qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
+                    (@"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeySmilesRtList.txt",
+                     @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeySmilesRtDescriptorList.txt");
 
 
                 ////モデル作成
@@ -621,10 +621,10 @@ namespace CompMs.MspGenerator
 
                 ////tuningして最善解でモデルファイルを作成（指標はRMSE）
                 ////tuningするパラメーターはコード内を参照 
-                //var workingFolder =
-                // @"D:\takahashi\desktop\Tsugawa-san_work\20210430_RTprediction\calc\";
-                //var trainFile = workingFolder + @"\master\masterRT_NCDK_20210430.txt";
-                //var output = workingFolder + @"\model\masterRT_NCDK_" + DateTime.Now.ToString("yyyyMMddHHmm") + ".model";
+                var workingFolder =
+                 @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB";
+                var trainFile = workingFolder + @"\InChIKeySmilesRtList.txt";
+                var output = workingFolder + @"\InChIKeySmilesRtListModel_NCDK_" + DateTime.Now.ToString("yyyyMMddHHmm") + ".model";
                 //RtCcsPredictOnDotNet.GeneratePredictionModelVS2("RT", trainFile, output);
 
                 //// RT、CCSの予測結果を求め、mspGeneratorで使っている形式で出力する
