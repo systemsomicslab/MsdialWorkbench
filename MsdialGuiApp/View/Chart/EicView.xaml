@@ -65,8 +65,8 @@
                         </Style.Triggers>
                     </Style>
                 </StackPanel.Style>
-                <TextBlock Text="Now loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
-                <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
+                <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="12" Margin="16"/>
+                <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="12"/>
             </StackPanel>
             <chart:MultiChart.VerticalTitle>
                 <MultiBinding StringFormat="{}{0}({1})">
