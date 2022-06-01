@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
+        Name="ProteinEnzymeSetView"
         Title="Setting for protein digestion enzymes" Height="400" Width="600">
     <Window.Resources>
         <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
@@ -86,9 +88,16 @@
                     HorizontalAlignment="Right"
                     Margin="4"
                     Grid.Row="2">
-            <Button Content="Set"
+            <Button Content="Apply"
                     Command="{Binding SetCommand}"
-                    Width="64"/>
+                    Width="64">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <i:CallMethodAction TargetObject="{Binding ElementName=ProteinEnzymeSetView}" MethodName="Close"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+
+            </Button>
             <Button Content="Cancel"
                     Click="Button_Cancel_Click"
                     Width="64"
