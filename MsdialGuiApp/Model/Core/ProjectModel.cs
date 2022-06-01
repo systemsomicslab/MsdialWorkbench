@@ -124,7 +124,7 @@ namespace CompMs.App.Msdial.Model.Core
                             {
                                 var newofd = new OpenFileDialog
                                 {
-                                    Filter = "MTD3 file(.mtd3)|*.mtd3|All(*)|*",
+                                    Filter = "Dataset file(.mddata)|*.mddata|All(*)|*",
                                     Title = "Import a project file",
                                     RestoreDirectory = true
                                 };
