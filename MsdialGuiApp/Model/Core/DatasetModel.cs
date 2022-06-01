@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Subjects;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -27,9 +28,9 @@ namespace CompMs.App.Msdial.Model.Core
             observeParameterChanged = new BehaviorSubject<Unit>(Unit.Default).AddTo(Disposables);
             AnalysisFilePropertySetModel = new AnalysisFilePropertySetModel(Storage.AnalysisFiles, Storage.Parameter, observeParameterChanged);
 
-            AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, Handler, ObserveParameterChanged, broker);
-            IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, Storage, Handler, ObserveParameterChanged, broker);
-            AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, Storage, Handler, ObserveParameterChanged, broker);
+            AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, HandlerAsync, ObserveParameterChanged, broker);
+            IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, Storage, HandlerAsync, ObserveParameterChanged, broker);
+            AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, Storage, HandlerAsync, ObserveParameterChanged, broker);
         }
 
         public IMethodModel Method {
@@ -67,12 +68,12 @@ namespace CompMs.App.Msdial.Model.Core
         }
         private MethodSettingModel alignmentProcessMethodSettingModel;
 
-        private void Handler(MethodSettingModel setting, IMethodModel model) {
+        private Task HandlerAsync(MethodSettingModel setting, IMethodModel model, CancellationToken token) {
             Method = model;
-            AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, Handler, ObserveParameterChanged, _broker);
-            IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, Storage, Handler, ObserveParameterChanged, _broker);
-            AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, Storage, Handler, ObserveParameterChanged, _broker);
-            Method.Run(setting.Option);
+            AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, HandlerAsync, ObserveParameterChanged, _broker);
+            IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, Storage, HandlerAsync, ObserveParameterChanged, _broker);
+            AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, Storage, HandlerAsync, ObserveParameterChanged, _broker);
+            return Method.RunAsync(setting.Option, token);
         }
 
         public AnalysisFilePropertySetModel AnalysisFilePropertySetModel { get; }
@@ -86,8 +87,8 @@ namespace CompMs.App.Msdial.Model.Core
             var streamManager = new DirectoryTreeStreamManager(Storage.Parameter.ProjectFolderPath);
             return Task.WhenAll(new[]
             {
-                Storage?.SaveAsync(streamManager, Storage.Parameter.ProjectFileName, string.Empty),
-                Method?.SaveAsync(),
+                Storage?.SaveAsync(streamManager, Storage.Parameter.ProjectFileName, string.Empty) ?? Task.CompletedTask,
+                Method?.SaveAsync() ?? Task.CompletedTask,
             });
         }
 
@@ -122,8 +123,12 @@ namespace CompMs.App.Msdial.Model.Core
 
         public async Task LoadAsync() {
             var factory = new MethodSettingModelFactory(Storage, ObserveParameterChanged, ProcessOption.All, _broker);
-            Method = await Task.Run(() => factory.BuildMethod());
-            Method.LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+            Method = await Task.Run(() =>
+            {
+                var method = factory.BuildMethod();
+                method.LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), default);
+                return method;
+            });
         }
 
         public static async Task<DatasetModel> LoadAsync(string datasetFile, IMessageBroker broker) {
