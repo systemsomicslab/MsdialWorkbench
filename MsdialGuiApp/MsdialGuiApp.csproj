@@ -448,8 +448,8 @@
     <Compile Include="View\Imms\ImmsAlignmentSpotTableView.xaml.cs">
       <DependentUpon>ImmsAlignmentSpotTableView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imms\MainRibbon.xaml.cs">
-      <DependentUpon>MainRibbon.xaml</DependentUpon>
+    <Compile Include="View\Imms\ImmsRibbon.xaml.cs">
+      <DependentUpon>ImmsRibbon.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Imms\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
@@ -460,8 +460,8 @@
     <Compile Include="View\Lcimms\AlignmentParameterView.xaml.cs">
       <DependentUpon>AlignmentParameterView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Lcimms\MainRibbon.xaml.cs">
-      <DependentUpon>MainRibbon.xaml</DependentUpon>
+    <Compile Include="View\Lcimms\LcimmsRibbon.xaml.cs">
+      <DependentUpon>LcimmsRibbon.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcimms\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
@@ -657,8 +657,8 @@
     <Compile Include="View\Lcms\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Lcms\MainRibbon.xaml.cs">
-      <DependentUpon>MainRibbon.xaml</DependentUpon>
+    <Compile Include="View\Lcms\LcmsRibbon.xaml.cs">
+      <DependentUpon>LcmsRibbon.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\ChromatogramView.xaml.cs">
       <DependentUpon>ChromatogramView.xaml</DependentUpon>
@@ -803,7 +803,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Imms\MainRibbon.xaml">
+    <Page Include="View\Imms\ImmsRibbon.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -823,7 +823,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Lcimms\MainRibbon.xaml">
+    <Page Include="View\Lcimms\LcimmsRibbon.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1059,7 +1059,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Lcms\MainRibbon.xaml">
+    <Page Include="View\Lcms\LcmsRibbon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
