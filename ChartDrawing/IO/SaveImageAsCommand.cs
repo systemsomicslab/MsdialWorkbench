@@ -15,16 +15,16 @@ namespace CompMs.Graphics.IO
 
         public static SaveImageAsCommand EmfInstance { get; } = new SaveImageAsCommand(ImageFormat.Emf);
 
-        private readonly ImageFormat _format;
-
         private SaveImageAsCommand(ImageFormat format) {
-            _format = format;
+            Format = format;
             Formatter = new NoneFormatter();
         }
 
         public SaveImageAsCommand() : this(ImageFormat.None) {
 
         }
+
+        public ImageFormat Format { get; set; }
 
         public IElementFormatter Formatter { get; set; }
 
@@ -36,7 +36,7 @@ namespace CompMs.Graphics.IO
 
         public async void Execute(object parameter) {
             if (parameter is FrameworkElement element) {
-                if (TryGetPathAndEncoder(_format, out var path, out var encoder)) {
+                if (TryGetPathAndEncoder(Format, out var path, out var encoder)) {
                     using (await Formatter.Format(parameter))
                     using (var fs = File.Open(path, FileMode.Create)) {
                         encoder.Save(element, fs);
