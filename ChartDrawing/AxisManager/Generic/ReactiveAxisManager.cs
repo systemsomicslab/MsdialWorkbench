@@ -106,8 +106,8 @@ namespace CompMs.Graphics.AxisManager.Generic
                         axis?.TranslateToAxisValue(value.Item2) ?? 0d));
             }
 
-            private async Task UpdateInitialRange(Range range) {
-                await System.Windows.Application.Current.Dispatcher.InvokeAsync(() => axis?.UpdateInitialRange(range));
+            private Task UpdateInitialRange(Range range) {
+                return System.Windows.Application.Current.Dispatcher.InvokeAsync(() => axis?.UpdateInitialRange(range)).Task;
             }
 
             protected virtual void Dispose(bool disposing) {
