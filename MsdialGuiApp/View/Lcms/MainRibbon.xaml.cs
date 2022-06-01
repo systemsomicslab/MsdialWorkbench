@@ -1,13 +1,13 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows.Controls.Ribbon;
 
 namespace CompMs.App.Msdial.View.Lcms
 {
     /// <summary>
-    /// Interaction logic for MainWindowRibbon.xaml
+    /// Interaction logic for LcmsRibbon.xaml
     /// </summary>
-    public partial class MainRibbon : UserControl
+    public partial class LcmsRibbon : Ribbon
     {
-        public MainRibbon() {
+        public LcmsRibbon() {
             InitializeComponent();
         }
     }
