@@ -375,17 +375,17 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             return Observable.Return<ISettingViewModel>(null);
         }
 
-        private Task RunProcessAsync() {
-            if (!MethodSettingViewModel.Value.TryRun()) {
-                return Task.CompletedTask;
+        private async Task RunProcessAsync() {
+            var runSuccess = await MethodSettingViewModel.Value.TryRunAsync();
+            if (!runSuccess) {
+                return;
             }
             DatasetSettingViewModel.Value.Run();
-            return ProjectSettingViewModel.Value.RunAsync().ContinueWith(
-                t => {
-                    if (t.IsCompleted) {
-                        DialogResult.Value = true;
-                    }
-                });
+            var projectRunTask = ProjectSettingViewModel.Value.RunAsync();
+            await projectRunTask;
+            if (projectRunTask.IsCompleted) {
+                DialogResult.Value = true;
+            }
         }
     }
 }

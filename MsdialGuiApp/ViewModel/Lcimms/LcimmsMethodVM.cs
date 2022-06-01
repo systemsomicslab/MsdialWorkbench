@@ -13,6 +13,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
@@ -93,18 +95,18 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             }
         }
 
-        protected override void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile) {
+        protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
             if (analysisFile?.File is null || analysisFile.File == model.AnalysisFile) {
-                return;
+                return Task.CompletedTask;
             }
-            model.LoadAnalysisFile(analysisFile.File);
+            return model.LoadAnalysisFileAsync(analysisFile.File, token);
         }
 
-        protected override void LoadAlignmentFileCore(AlignmentFileBeanViewModel alignmentFile) {
+        protected override Task LoadAlignmentFileCoreAsync(AlignmentFileBeanViewModel alignmentFile, CancellationToken token) {
             if (alignmentFile?.File is null || alignmentFile.File == model.AlignmentFile) {
-                return;
+                return Task.CompletedTask;
             }
-            model.LoadAlignmentFile(alignmentFile.File);
+            return model.LoadAlignmentFileAsync(alignmentFile.File, token);
         }
 
         public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(ExportAlignment));

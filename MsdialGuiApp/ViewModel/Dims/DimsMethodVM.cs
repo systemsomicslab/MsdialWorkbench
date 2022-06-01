@@ -20,6 +20,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
@@ -80,18 +82,18 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private DisplayFilter displayFilters = 0;
 
-        protected override void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile) {
+        protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
             if (analysisFile?.File == null || _model.AnalysisFile == analysisFile.File) {
-                return;
+                return Task.CompletedTask;
             }
-            _model.LoadAnalysisFile(analysisFile.File);
+            return _model.LoadAnalysisFileAsync(analysisFile.File, token);
         }
 
-        protected override void LoadAlignmentFileCore(AlignmentFileBeanViewModel alignmentFile) {
+        protected override Task LoadAlignmentFileCoreAsync(AlignmentFileBeanViewModel alignmentFile, CancellationToken token) {
             if (alignmentFile?.File == null || _model.AlignmentFile == alignmentFile.File) {
-                return;
+                return Task.CompletedTask;
             }
-            _model.LoadAlignmentFile(alignmentFile.File);
+            return _model.LoadAlignmentFileAsync(alignmentFile.File, token);
         }
 
         public DelegateCommand<Window> ExportAnalysisResultCommand => exportAnalysisResultCommand ?? (exportAnalysisResultCommand = new DelegateCommand<Window>(ExportAnalysis));
