@@ -3,7 +3,6 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
@@ -20,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Dims
@@ -101,7 +101,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 )).ToList());
         }
 
-        public override void Run(ProcessOption option) {
+        public override async Task RunAsync(ProcessOption option, CancellationToken token) {
             Storage.DataBaseMapper = BuildDataBaseMapper(Storage.DataBases);
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             annotationProcess = BuildAnnotationProcess(Storage.DataBases);
@@ -110,9 +110,11 @@ namespace CompMs.App.Msdial.Model.Dims
             var processOption = option;
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                foreach ((var analysisfile, var idx) in Storage.AnalysisFiles.WithIndex()) {
-                    RunAnnotationProcessAsync(analysisfile, null).Wait(); // TODO: change to async method
+                var tasks = new List<Task>();
+                foreach (var analysisfile in Storage.AnalysisFiles) {
+                    tasks.Add(RunAnnotationProcessAsync(analysisfile, null));
                 }
+                await Task.WhenAll(tasks).ConfigureAwait(false);
             }
 
             // Run Alignment
@@ -120,7 +122,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 RunAlignmentProcess();
             }
 
-            LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+            await LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
         public Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {

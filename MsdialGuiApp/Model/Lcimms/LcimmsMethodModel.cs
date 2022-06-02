@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -111,7 +112,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             .AddTo(Disposables);
         }
 
-        public override void Run(ProcessOption option) {
+        public override async Task RunAsync(ProcessOption option, CancellationToken token) {
             // Set analysis param
             var parameter = Storage.Parameter;
             annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
@@ -119,7 +120,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var processOption = option;
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                Storage.AnalysisFiles.ForEach(file => RunAnnotationProcess(file, null).Wait()); // TODO: change to async method
+                var tasks = Storage.AnalysisFiles.Select(file => RunAnnotationProcess(file, null));
+                await Task.WhenAll(tasks).ConfigureAwait(false);
             }
 
             // Run Alignment
@@ -127,7 +129,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 RunAlignmentProcess();
             }
 
-            LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+            await LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
         private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {

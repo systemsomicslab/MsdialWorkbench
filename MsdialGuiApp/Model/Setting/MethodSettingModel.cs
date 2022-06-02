@@ -6,14 +6,16 @@ using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Reactive;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
     public class MethodSettingModel : BindableBase
     {
-        public MethodSettingModel(ProcessOption option, IMsdialDataStorage<ParameterBase> storage, Action<MethodSettingModel, IMethodModel> handler, IObservable<Unit> observeParameterChanged, IMessageBroker broker) {
+        public MethodSettingModel(ProcessOption option, IMsdialDataStorage<ParameterBase> storage, Func<MethodSettingModel, IMethodModel, CancellationToken, Task> asyncHandler, IObservable<Unit> observeParameterChanged, IMessageBroker broker) {
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
-            this.handler = handler;
+            _asyncHandler = asyncHandler;
 
             settingModelFactory = new MethodSettingModelFactory(Storage, observeParameterChanged, option, broker);
             DataCollectionSettingModel = settingModelFactory.CreateDataCollectionSetting();
@@ -33,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public IMsdialDataStorage<ParameterBase> Storage { get; }
 
-        private readonly Action<MethodSettingModel, IMethodModel> handler;
+        private readonly Func<MethodSettingModel, IMethodModel, CancellationToken, Task> _asyncHandler;
         private readonly IMethodSettingModelFactory settingModelFactory;
 
         public ProcessOption Option {
@@ -64,7 +66,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public bool IsReadOnlyAlignmentParameter { get; }
 
-        public bool TryRun() {
+        public async Task<bool> TryRunAsync(CancellationToken token) {
             if (Option.HasFlag(ProcessOption.PeakSpotting)) {
                 if (!DataCollectionSettingModel.TryCommit()) {
                     return false;
@@ -94,7 +96,9 @@ namespace CompMs.App.Msdial.Model.Setting
                 return false;
             }
             var method = settingModelFactory.BuildMethod();
-            handler?.Invoke(this, method);
+            if (!(_asyncHandler is null)) {
+                await _asyncHandler(this, method, token).ConfigureAwait(false);
+            }
             return true;
         }
     }

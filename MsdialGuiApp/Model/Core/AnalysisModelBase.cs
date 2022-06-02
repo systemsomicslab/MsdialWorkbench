@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.Model.Core {
         private string displayLabel = string.Empty;
 
         public Task SaveAsync(CancellationToken token) {
-            return _peakCollection.SerializeAsync(AnalysisFile.AnalysisFilePath, token);
+            return _peakCollection.SerializeAsync(AnalysisFile.PeakAreaBeanInformationFilePath, token);
         }
 
         // IDisposable fields and methods

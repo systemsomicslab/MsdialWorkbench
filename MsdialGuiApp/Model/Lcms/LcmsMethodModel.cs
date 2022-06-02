@@ -38,6 +38,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -134,7 +135,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             .AddTo(Disposables);
         }
 
-        public override void Run(ProcessOption option) {
+        public override async Task RunAsync(ProcessOption option, CancellationToken token) {
             // Set analysis param
             var parameter = Storage.Parameter;
             // matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
@@ -167,7 +168,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     return;
             }
 
-            LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+            await LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
 
 #if DEBUG
             Console.WriteLine(string.Join("\n", Storage.Parameter.ParametersAsText()));

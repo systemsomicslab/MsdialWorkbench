@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Core
@@ -33,12 +34,15 @@ namespace CompMs.App.Msdial.Model.Core
         }
         private IAnalysisModel analysisModelBase;
 
-        public void LoadAnalysisFile(AnalysisFileBean analysisFile) {
+        public Task LoadAnalysisFileAsync(AnalysisFileBean analysisFile, CancellationToken token) {
             if (AnalysisFile == analysisFile || analysisFile is null) {
-                return;
+                return Task.CompletedTask;
             }
+            var task = AnalysisModelBase?.SaveAsync(token) ?? Task.CompletedTask;
             AnalysisFile = analysisFile;
             AnalysisModelBase = LoadAnalysisFileCore(AnalysisFile);
+
+            return task;
         }
 
         protected abstract IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile);
@@ -57,23 +61,28 @@ namespace CompMs.App.Msdial.Model.Core
         }
         private IAlignmentModel alignmentModelBase;
 
-        public void LoadAlignmentFile(AlignmentFileBean alignmentFile) {
+        public Task LoadAlignmentFileAsync(AlignmentFileBean alignmentFile, CancellationToken token) {
             if (AlignmentFile == alignmentFile || alignmentFile is null) {
-                return;
+                return Task.CompletedTask;
             }
+            var task = AlignmentModelBase?.SaveAsync() ?? Task.CompletedTask;
+
             AlignmentFile = alignmentFile;
             AlignmentModelBase = LoadAlignmentFileCore(AlignmentFile);
+
+            return task;
         }
 
         protected abstract IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile);
 
-        public abstract void Run(ProcessOption option);
+        public abstract Task RunAsync(ProcessOption option, CancellationToken token);
 
-        public virtual async Task SaveAsync() {
-            if (AlignmentModelBase is null) {
-                return;
-            }
-            await AlignmentModelBase.SaveAsync();
+        public virtual Task SaveAsync() {
+            return Task.WhenAll(new List<Task>
+            {
+                AnalysisModelBase?.SaveAsync(default) ?? Task.CompletedTask,
+                AlignmentModelBase?.SaveAsync() ?? Task.CompletedTask,
+            });
         }
 
         private bool disposedValue;
