@@ -104,8 +104,8 @@ namespace CompMs.App.Msdial.Model.Dims
             Target.Select(t => $"File: {analysisFile.AnalysisFileName}" + (t is null ? string.Empty : $"Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}"))
                 .Subscribe(title => PlotModel.GraphTitle = title);
 
-            EicLoader = new DimsEicLoader(provider, parameter, parameter.MassRangeBegin, parameter.MassRangeEnd);
-            EicModel = new EicModel(Target, EicLoader)
+            var eicLoader = DimsEicLoader.BuildForEicView(provider, parameter);
+            EicModel = new EicModel(Target, eicLoader)
             {
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Abundance"
@@ -152,6 +152,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 Observable.Return(spectraExporter),
                 Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
+            EicLoader = DimsEicLoader.BuildForPeakTable(provider, parameter);
             PeakTableModel = new DimsAnalysisPeakTableModel(Ms1Peaks, Target, Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d, Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d).AddTo(Disposables);
         }
 
