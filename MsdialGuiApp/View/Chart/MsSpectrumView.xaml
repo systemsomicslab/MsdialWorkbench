@@ -137,7 +137,7 @@
                                  LabelPropertyName="{Binding LabelProperty.Value}"
                                  OrderingPropertyName="{Binding OrderingProperty.Value}"
                                  ContentAlignment="BottomCenter"
-                                 Format="N2"
+                                 Format="N4"
                                  Brush="Black"
                                  Overlap="Horizontal, Direct"
                                  ClipToBounds="True"/>
