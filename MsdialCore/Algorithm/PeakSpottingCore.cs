@@ -80,7 +80,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 var chromPeakFeatures = GetChromatogramPeakFeatures(provider, focusedMass, chromatogramRange);
                 if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) {
                     focusedMass += massStep;
-                    reporter.Show(focusedMass - startMass, endMass - startMass);
+                    reporter?.Show(focusedMass - startMass, endMass - startMass);
                     continue;
                 }
 
@@ -88,13 +88,13 @@ namespace CompMs.MsdialCore.Algorithm {
                 chromPeakFeatures = RemovePeakAreaBeanRedundancy(chromPeakFeaturesList, chromPeakFeatures, massStep);
                 if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) {
                     focusedMass += massStep;
-                    reporter.Show(focusedMass - startMass, endMass - startMass);
+                    reporter?.Show(focusedMass - startMass, endMass - startMass);
                     continue;
                 }
 
                 chromPeakFeaturesList.Add(chromPeakFeatures);
                 focusedMass += massStep;
-                reporter.Show(focusedMass - startMass, endMass - startMass);
+                reporter?.Show(focusedMass - startMass, endMass - startMass);
             }
             return GetCombinedChromPeakFeatures(chromPeakFeaturesList, provider);
         }
@@ -120,7 +120,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 .Select(targetMass => {
                     var chromPeakFeatures = GetChromatogramPeakFeatures(provider, targetMass, chromatogramRange);
                     Interlocked.Increment(ref counter);
-                    reporter.Show(counter, targetMasses.Count);
+                    reporter?.Show(counter, targetMasses.Count);
                     return chromPeakFeatures;
                 })
                 .ToArray();
@@ -154,7 +154,7 @@ namespace CompMs.MsdialCore.Algorithm {
                         finally {
                             sem.Release();
                             Interlocked.Increment(ref counter);
-                            reporter.Show(counter, targetMasses.Count);
+                            reporter?.Show(counter, targetMasses.Count);
                         }
                     });
                     tasks.Add(v);

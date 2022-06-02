@@ -39,27 +39,28 @@ namespace CompMs.App.Msdial.Model.Setting
 
     public sealed class MethodSettingModelFactory : IMethodSettingModelFactory
     {
-        public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, IObservable<Unit> observeParameterChanged, ProcessOption process, IMessageBroker broker)
+        public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, IObservable<Unit> observeParameterChanged, ProcessOption process, IMessageBroker messageBroker)
             : this(storage,
                   observeParameterChanged.Select(_ => storage.Parameter),
                   observeParameterChanged.Select(_ => new HeightBarItemsLoader(storage.Parameter.FileID_ClassName)),
-                  process, broker) {
+                  process,
+                  messageBroker) {
 
         }
 
-        public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, IObservable<ParameterBase> parameterAsObservable, IObservable<IBarItemsLoader> loader, ProcessOption process, IMessageBroker broker) {
+        public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, IObservable<ParameterBase> parameterAsObservable, IObservable<IBarItemsLoader> loader, ProcessOption process, IMessageBroker messageBroker) {
             switch (storage) {
                 case IMsdialDataStorage<MsdialLcImMsParameter> lcimmsStorage:
                     factoryImpl = new LcimmsMethodSettingModelFactory(lcimmsStorage, process);
                     break;
                 case IMsdialDataStorage<MsdialLcmsParameter> lcmsStorage:
-                    factoryImpl = new LcmsMethodSettingModelFactory(lcmsStorage, parameterAsObservable, loader, process, broker);
+                    factoryImpl = new LcmsMethodSettingModelFactory(lcmsStorage, parameterAsObservable, loader, process, messageBroker);
                     break;
                 case IMsdialDataStorage<MsdialImmsParameter> immsStorage:
-                    factoryImpl = new ImmsMethodSettingModelFactory(immsStorage, process, broker);
+                    factoryImpl = new ImmsMethodSettingModelFactory(immsStorage, process, messageBroker);
                     break;
                 case IMsdialDataStorage<MsdialDimsParameter> dimsStorage:
-                    factoryImpl = new DimsMethodSettingModelFactory(dimsStorage, process);
+                    factoryImpl = new DimsMethodSettingModelFactory(dimsStorage, process, messageBroker);
                     break;
                 default:
                     throw new ArgumentException(nameof(storage));
@@ -84,10 +85,12 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         private readonly IMsdialDataStorage<MsdialDimsParameter> storage;
         private readonly ProcessOption process;
+        private readonly IMessageBroker _messageBroker;
 
-        public DimsMethodSettingModelFactory(IMsdialDataStorage<MsdialDimsParameter> storage, ProcessOption process) {
+        public DimsMethodSettingModelFactory(IMsdialDataStorage<MsdialDimsParameter> storage, ProcessOption process, IMessageBroker messageBroker) {
             this.storage = storage;
             this.process = process;
+            _messageBroker = messageBroker;
         }
 
         public AdductIonSettingModel CreateAdductIonSetting() {
@@ -149,7 +152,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            var method = new DimsMethodModel(storage, storage.AnalysisFiles, storage.AlignmentFiles);
+            var method = new DimsMethodModel(storage, storage.AnalysisFiles, storage.AlignmentFiles, _messageBroker);
             method.Load();
             return method;
         }

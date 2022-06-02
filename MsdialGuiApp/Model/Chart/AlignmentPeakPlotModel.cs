@@ -5,6 +5,7 @@ using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -17,34 +18,20 @@ namespace CompMs.App.Msdial.Model.Chart
             Func<AlignmentSpotPropertyModel, double> horizontalSelector,
             Func<AlignmentSpotPropertyModel, double> verticalSelector,
             IReactiveProperty<AlignmentSpotPropertyModel> targetSource,
-            IObservable<string> labelSource) {
-            if (spots is null) {
-                throw new ArgumentNullException(nameof(spots));
+            IObservable<string> labelSource,
+            BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
+            IList<BrushMapData<AlignmentSpotPropertyModel>> brushes) {
+            if (brushes is null) {
+                throw new ArgumentNullException(nameof(brushes));
             }
 
-            if (horizontalSelector is null) {
-                throw new ArgumentNullException(nameof(horizontalSelector));
-            }
-
-            if (verticalSelector is null) {
-                throw new ArgumentNullException(nameof(verticalSelector));
-            }
-
-            if (targetSource is null) {
-                throw new ArgumentNullException(nameof(targetSource));
-            }
-
-            if (labelSource is null) {
-                throw new ArgumentNullException(nameof(labelSource));
-            }
-
-            Spots = spots;
-            TargetSource = targetSource;
-
-            HorizontalSelector = horizontalSelector;
-            VerticalSelector = verticalSelector;
-
-            LabelSource = labelSource;
+            Spots = spots ?? throw new ArgumentNullException(nameof(spots));
+            TargetSource = targetSource ?? throw new ArgumentNullException(nameof(targetSource));
+            HorizontalSelector = horizontalSelector ?? throw new ArgumentNullException(nameof(horizontalSelector));
+            VerticalSelector = verticalSelector ?? throw new ArgumentNullException(nameof(verticalSelector));
+            LabelSource = labelSource ?? throw new ArgumentNullException(nameof(labelSource));
+            SelectedBrush = selectedBrush ?? throw new ArgumentNullException(nameof(selectedBrush));
+            Brushes = new ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>>(brushes);
 
             GraphTitle = string.Empty;
             HorizontalTitle = string.Empty;
@@ -136,5 +123,13 @@ namespace CompMs.App.Msdial.Model.Chart
         private string verticalProperty;
 
         public IObservable<string> LabelSource { get; }
+
+        public BrushMapData<AlignmentSpotPropertyModel> SelectedBrush {
+            get => _selectedBrush;
+            set => SetProperty(ref _selectedBrush, value);
+        }
+        private BrushMapData<AlignmentSpotPropertyModel> _selectedBrush;
+
+        public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
     }
 }

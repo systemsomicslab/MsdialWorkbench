@@ -45,6 +45,7 @@
                     <Binding Path="VerticalAxis.UnitLabel"/>
                 </MultiBinding>
             </chart:MultiChart.VerticalTitle>
+            <!--
             <StackPanel VerticalAlignment="Center">
                 <StackPanel.Style>
                     <Style TargetType="StackPanel">
@@ -59,6 +60,7 @@
                 <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
                 <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
             </StackPanel>
+            -->
             <chart:LineSpectrumControlSlim ItemsSource="{Binding Spectrum.Value, Mode=OneWay}"
                                            DataType="{x:Type do:SpectrumPeakWrapper}"
                                            HorizontalProperty="{Binding HorizontalProperty.Value}"
