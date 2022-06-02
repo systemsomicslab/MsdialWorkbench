@@ -156,10 +156,11 @@ namespace CompMs.Common.Lipidomics
             var adductmass = adduct.AdductIonName == "[M+NH4]+" ? MassDiffDictionary.ProtonMass : adduct.AdductIonAccurateMass;
             return new[]
             {
+                new SpectrumPeak(chainMass + MassDiffDictionary.ProtonMass, 100d, $"{acylChain} acyl") { SpectrumComment = SpectrumComment.acylchain },
                 new SpectrumPeak(lipidMass - chainMass + adductmass, 100d, $"-{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
                 new SpectrumPeak(lipidMass - chainMass -H2O + adductmass, 100d, $"-{acylChain}-H2O") { SpectrumComment = SpectrumComment.acylchain },
-                new SpectrumPeak(lipidMass - chainMass - C3H9O6P + adductmass, 400d, $"-Header -{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
-                new SpectrumPeak(lipidMass - chainMass - C3H9O6P -H2O + adductmass, 200d, $"-Header -{acylChain}-H2O") { SpectrumComment = SpectrumComment.acylchain },
+                new SpectrumPeak(lipidMass - chainMass - C3H9O6P + adductmass, 200d, $"-Header -{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
+                new SpectrumPeak(lipidMass - chainMass - C3H9O6P -H2O + adductmass, 100d, $"-Header -{acylChain}-H2O") { SpectrumComment = SpectrumComment.acylchain },
             };
         }
 
