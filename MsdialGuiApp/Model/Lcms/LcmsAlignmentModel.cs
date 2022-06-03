@@ -26,6 +26,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Media;
 using CompMs.App.Msdial.Model.Loader;
+using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
@@ -60,7 +61,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             CompoundSearchers = ConvertToCompoundSearchers(databases);
-            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, barItemsLoader)));
+
+            var unknownBarItemsLoader = new BarItemsLoaderData("Unknown", barItemsLoader);
+            var barItemsLoaderDataProperty = new ReactivePropertySlim<BarItemsLoaderData>(unknownBarItemsLoader).AddTo(Disposables);
+            var barItemsLoaderProperty = barItemsLoaderDataProperty.Where(data => !(data is null)).Select(data => data.ObservableLoader).Switch().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, barItemsLoaderProperty)));
            
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             this.decLoader = new MSDecLoader(AlignmentFile.SpectraFilePath);
@@ -159,6 +164,16 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Observable.Return(lowerSpecBrush)).AddTo(Disposables);
 
             // Class intensity bar chart
+            var barItemLoaderDatas = new[]
+            {
+                unknownBarItemsLoader,
+                new BarItemsLoaderData("Peak height", parameterAsObservable.Select(p => new HeightBarItemsLoader(p.FileID_ClassName))),
+                new BarItemsLoaderData("Peak area above base line", parameterAsObservable.Select(p => new AreaAboveZeroBarItemsLoader(p.FileID_ClassName))),
+                new BarItemsLoaderData("Peak area above zero", parameterAsObservable.Select(p => new AreaAboveBaseLineBarItemsLoader(p.FileID_ClassName))),
+                new BarItemsLoaderData("Normalized peak height", parameterAsObservable.Select(p => new NormalizedHeightBarItemsLoader(p.FileID_ClassName))),
+                new BarItemsLoaderData("Normalized peak area above base line", parameterAsObservable.Select(p => new NormalizedAreaAboveZeroBarItemsLoader(p.FileID_ClassName))),
+                new BarItemsLoaderData("Normalized peak area above zero", parameterAsObservable.Select(p => new NormalizedAreaAboveBaseLineBarItemsLoader(p.FileID_ClassName))),
+            };
             var classBrush = ParameterAsObservable
                 .Select(p => new KeyBrushMapper<BarItem, string>(
                     p.ProjectParam.ClassnameToColorBytes
@@ -168,7 +183,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     ),
                     item => item.Class,
                     Colors.Blue));
-            BarChartModel = BarChartModel.Create(Target, barItemsLoader, classBrush).AddTo(Disposables);
+            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, classBrush).AddTo(Disposables);
             BarChartModel.Elements.HorizontalTitle = "Class";
             BarChartModel.Elements.VerticalTitle = "Height";
             BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);

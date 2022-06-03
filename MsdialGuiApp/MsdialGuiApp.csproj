@@ -150,6 +150,7 @@
     <Compile Include="Model\DataObj\StandardCompoundModel.cs" />
     <Compile Include="Model\DataObj\SurveyScanSpectrum.cs" />
     <Compile Include="Model\Imms\ImmsAnnotatorSettingModel.cs" />
+    <Compile Include="Model\Loader\BarItemsLoaderData.cs" />
     <Compile Include="Model\Normalize\IonAbundance.cs" />
     <Compile Include="Model\Normalize\NormalizationSetModel.cs" />
     <Compile Include="Model\Normalize\SplashProduct.cs" />

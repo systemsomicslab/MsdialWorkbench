@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Base;
@@ -10,6 +11,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Media;
@@ -95,7 +97,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
 
         public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> BrushSource { get; }
+
         public Action FocusAction { get; }
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
+
+        public IReactiveProperty<BarItemsLoaderData> BarItemsLoaderData => _model.BarItemsLoaderData;
+        public ReadOnlyCollection<BarItemsLoaderData> BarItemsLoaderDatas => new ReadOnlyCollection<BarItemsLoaderData>(_model.BarItemsLoaderDatas);
     }
 }

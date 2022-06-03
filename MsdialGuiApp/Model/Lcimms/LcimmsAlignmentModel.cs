@@ -138,7 +138,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 ),
                 item => item.Class,
                 Colors.Blue);
-            BarChartModel = BarChartModel.Create(Target, Observable.Return(BarItemsLoader), Observable.Return(classBrush)).AddTo(Disposables);
+            var barItemsLoaderData = new BarItemsLoaderData("Loader", Observable.Return(BarItemsLoader));
+            var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
+            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
             BarChartModel.Elements.HorizontalTitle = "Class";
             BarChartModel.Elements.VerticalTitle = "Height";
             BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);
