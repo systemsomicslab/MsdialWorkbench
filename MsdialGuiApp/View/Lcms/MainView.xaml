@@ -12,6 +12,7 @@
              xmlns:vmcore="clr-namespace:CompMs.App.Msdial.ViewModel"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             xmlns:behavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              Name="MainControl"
              MouseRightButtonDown="MainControl_MouseRightButtonDown"
@@ -412,7 +413,7 @@
                                             </chart:EicView>
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type vmchart:BarChartViewModel}">
-                                            <chart:BarChartView>
+                                            <chart:BarChartView behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding FocusAction, Mode=OneWay}">
                                                 <chart:BarChartView.ContextMenu>
                                                     <ContextMenu>
                                                         <MenuItem Header="Save image as...">

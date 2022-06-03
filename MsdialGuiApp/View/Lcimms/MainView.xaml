@@ -14,6 +14,7 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:commonbehavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
              behavior:SuppressContextMenuBehavior.IsEnabled="True"
              Name="MainControl"
              d:DataContext="{d:DesignInstance Type={x:Type vm:LcimmsMethodVM}}"
@@ -203,7 +204,9 @@
                                             </Grid>
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type vmcore:AlignmentFileViewModel}">
-                                            <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
+                                            <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}"
+                                                                         commonbehavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"
+                                                                         d:DataContext="{d:DesignInstance Type={x:Type vmchart:AlignmentPeakPlotViewModel}}">
                                                 <chart:AlignmentPeakPlotView.LabelTemplate>
                                                     <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
                                                         <StackPanel Orientation="Horizontal">
@@ -319,7 +322,7 @@
                                             </chart:EicView>
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type vmchart:BarChartViewModel}">
-                                            <chart:BarChartView>
+                                            <chart:BarChartView commonbehavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding FocusAction, Mode=OneWay}">
                                                 <chart:BarChartView.ContextMenu>
                                                     <ContextMenu>
                                                         <MenuItem Header="Save image as...">

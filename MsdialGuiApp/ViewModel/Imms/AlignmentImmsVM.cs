@@ -94,7 +94,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             PlotViewModel = new Chart.AlignmentPeakPlotViewModel(model.PlotModel, focusAction, focused).AddTo(Disposables);
 
             Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
-            BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel, null, Observable.Never<bool>()).AddTo(Disposables);
+
+            var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
+            BarChartViewModel = new Chart.BarChartViewModel(model.BarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
             AlignmentEicViewModel = new Chart.AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
             AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(
                 model.AlignmentSpotTableModel,

@@ -56,7 +56,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(_model.Ms2SpectrumModel).AddTo(Disposables);
             AlignmentEicViewModel = new Chart.AlignmentEicViewModel(_model.AlignmentEicModel).AddTo(Disposables);
-            BarChartViewModel = new Chart.BarChartViewModel(_model.BarChartModel, null, Observable.Never<bool>()).AddTo(Disposables);
+
+            var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
+            BarChartViewModel = new Chart.BarChartViewModel(_model.BarChartModel, focusAction: barChartViewFocusAction, isFocused: barChartViewFocused).AddTo(Disposables);
             AlignmentSpotTableViewModel = new DimsAlignmentSpotTableViewModel(
                     _model.AlignmentSpotTableModel,
                     PeakSpotNavigatorViewModel.MzLowerValue,
