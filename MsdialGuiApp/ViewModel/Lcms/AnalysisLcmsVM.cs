@@ -110,7 +110,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.RtLowerValue,
                 PeakSpotNavigatorViewModel.RtUpperValue,
                 PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                PeakSpotNavigatorViewModel.CommentFilterKeyword)
+                PeakSpotNavigatorViewModel.CommentFilterKeyword,
+                PeakSpotNavigatorViewModel.IsEditting)
             .AddTo(Disposables);
 
             ProteomicsPeakTableViewModel = new LcmsProteomicsPeakTableViewModel(
@@ -122,7 +123,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.RtUpperValue,
                 PeakSpotNavigatorViewModel.ProteinFilterKeyword,
                 PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                PeakSpotNavigatorViewModel.CommentFilterKeyword)
+                PeakSpotNavigatorViewModel.CommentFilterKeyword,
+                PeakSpotNavigatorViewModel.IsEditting)
             .AddTo(Disposables);
 
             SearchCompoundCommand = this.model.CanSearchCompound

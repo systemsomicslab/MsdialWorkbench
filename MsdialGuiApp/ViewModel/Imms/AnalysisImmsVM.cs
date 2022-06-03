@@ -94,7 +94,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 DriftLower,
                 DriftUpper,
                 MetaboliteFilterKeyword,
-                CommentFilterKeyword)
+                CommentFilterKeyword,
+                Observable.Never<bool>().ToReactiveProperty())
                 .AddTo(Disposables);
 
             SearchCompoundCommand = this.model.CanSearchCompound

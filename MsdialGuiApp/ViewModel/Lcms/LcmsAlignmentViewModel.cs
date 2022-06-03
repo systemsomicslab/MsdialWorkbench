@@ -92,7 +92,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.RtUpperValue,
                 PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
                 PeakSpotNavigatorViewModel.CommentFilterKeyword,
-                classBrush)
+                classBrush,
+                PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
             ProteomicsAlignmentTableViewModel = new LcmsProteomicsAlignmentTableViewModel(
                 this.model.AlignmentSpotTableModel,
@@ -102,7 +103,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.RtUpperValue,
                 PeakSpotNavigatorViewModel.ProteinFilterKeyword,
                 PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                PeakSpotNavigatorViewModel.CommentFilterKeyword)
+                PeakSpotNavigatorViewModel.CommentFilterKeyword,
+                PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
 
             SearchCompoundCommand = this.model.CanSearchCompound

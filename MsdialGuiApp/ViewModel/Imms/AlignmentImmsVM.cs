@@ -98,10 +98,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             AlignmentEicViewModel = new Chart.AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
             AlignmentSpotTableViewModel = new ImmsAlignmentSpotTableViewModel(
                 model.AlignmentSpotTableModel,
-                MassLower,
-                MassUpper, DriftLower,
-                DriftUpper, MetaboliteFilterKeyword,
-                CommentFilterKeyword)
+                MassLower, MassUpper,
+                DriftLower, DriftUpper,
+                MetaboliteFilterKeyword, CommentFilterKeyword,
+                Observable.Never<bool>().ToReactiveProperty())
                 .AddTo(Disposables);
 
             SearchCompoundCommand = this.model.CanSearchCompound
