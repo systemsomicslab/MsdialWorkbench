@@ -14,7 +14,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -26,6 +25,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 {
     internal sealed class LcmsAlignmentViewModel : AlignmentFileViewModel
     {
+        private readonly LcmsAlignmentModel _model;
+        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> _proteomicsTableService;
+        private readonly IMessageBroker _broker;
+
         public LcmsAlignmentViewModel(
             LcmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
@@ -34,46 +39,28 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IMessageBroker broker,
             FocusControlManager focusControlManager)
             : base(model) {
-            if (model is null) {
-                throw new ArgumentNullException(nameof(model));
-            }
-
-            if (compoundSearchService is null) {
-                throw new ArgumentNullException(nameof(compoundSearchService));
-            }
-
-            if (peakSpotTableService is null) {
-                throw new ArgumentNullException(nameof(peakSpotTableService));
-            }
-
-            if (proteomicsTableService is null) {
-                throw new ArgumentNullException(nameof(proteomicsTableService));
-            }
-
             if (focusControlManager is null) {
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
 
-            this.model = model;
-            this.compoundSearchService = compoundSearchService;
-            this.peakSpotTableService = peakSpotTableService;
-            this.proteomicsTableService = proteomicsTableService;
-            _broker = broker;
-            Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            Brushes = this.model.Brushes.AsReadOnly();
-            SelectedBrush = this.model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            _compoundSearchService = compoundSearchService ?? throw new ArgumentNullException(nameof(compoundSearchService));
+            _peakSpotTableService = peakSpotTableService ?? throw new ArgumentNullException(nameof(peakSpotTableService));
+            _proteomicsTableService = proteomicsTableService ?? throw new ArgumentNullException(nameof(proteomicsTableService));
+            _broker = broker ?? throw new ArgumentNullException(nameof(broker));
 
+            Target = _model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
             PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
 
-            Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
+            Ms1Spots = CollectionViewSource.GetDefaultView(_model.Ms1Spots);
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
-            PlotViewModel = new AlignmentPeakPlotViewModel(this.model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
+            PlotViewModel = new AlignmentPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
 
-            Ms2SpectrumViewModel = new MsSpectrumViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
-            BarChartViewModel = new BarChartViewModel(this.model.BarChartModel).AddTo(Disposables);
-            AlignmentEicViewModel = new AlignmentEicViewModel(this.model.AlignmentEicModel).AddTo(Disposables);
+            Ms2SpectrumViewModel = new MsSpectrumViewModel(_model.Ms2SpectrumModel).AddTo(Disposables);
+            BarChartViewModel = new BarChartViewModel(_model.BarChartModel).AddTo(Disposables);
+            AlignmentEicViewModel = new AlignmentEicViewModel(_model.AlignmentEicModel).AddTo(Disposables);
             
             var classBrush = model.ParameterAsObservable
                 .Select(p => new KeyBrushMapper<BarItem, string>(
@@ -85,7 +72,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                     item => item.Class,
                     Colors.Blue));
             AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(
-                this.model.AlignmentSpotTableModel,
+                _model.AlignmentSpotTableModel,
                 PeakSpotNavigatorViewModel.MzLowerValue,
                 PeakSpotNavigatorViewModel.MzUpperValue,
                 PeakSpotNavigatorViewModel.RtLowerValue,
@@ -96,7 +83,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
             ProteomicsAlignmentTableViewModel = new LcmsProteomicsAlignmentTableViewModel(
-                this.model.AlignmentSpotTableModel,
+                _model.AlignmentSpotTableModel,
                 PeakSpotNavigatorViewModel.MzLowerValue,
                 PeakSpotNavigatorViewModel.MzUpperValue,
                 PeakSpotNavigatorViewModel.RtLowerValue,
@@ -107,7 +94,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
 
-            SearchCompoundCommand = this.model.CanSearchCompound
+            SearchCompoundCommand = _model.CanSearchCompound
                 .ToReactiveCommand()
                 .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
@@ -115,16 +102,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
         }
 
-        private readonly LcmsAlignmentModel model;
-        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
-        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
-        private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
-        private readonly IMessageBroker _broker;
-
         public PeakFilterViewModel PeakFilterViewModel { get; }
-
-        public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
-        public ReactivePropertySlim<BrushMapData<AlignmentSpotPropertyModel>> SelectedBrush { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public ICollectionView Ms1Spots { get; }
         public override ICollectionView PeakSpotsView => Ms1Spots;
@@ -138,39 +116,38 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public LcmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
         public LcmsProteomicsAlignmentTableViewModel ProteomicsAlignmentTableViewModel { get; }
         public AlignedChromatogramModificationViewModelLegacy AlignedChromatogramModificationViewModel { get; }
+        public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
 
         public ReactiveCommand SearchCompoundCommand { get; }
 
         private void SearchCompound() {
-            using (var csm = model.CreateCompoundSearchModel()) {
+            using (var csm = _model.CreateCompoundSearchModel()) {
                 if (csm is null) {
                     return;
                 }
                 using (var vm = new LcmsCompoundSearchViewModel(csm)) {
-                    compoundSearchService.ShowDialog(vm);
+                    _compoundSearchService.ShowDialog(vm);
                 }
             }
         }
 
-        public DelegateCommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
-        private DelegateCommand showIonTableCommand;
+        public DelegateCommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
+        private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {
-            if (model.Parameter.TargetOmics == CompMs.Common.Enum.TargetOmics.Proteomics) {
-                proteomicsTableService.Show(ProteomicsAlignmentTableViewModel);
+            if (_model.Parameter.TargetOmics == CompMs.Common.Enum.TargetOmics.Proteomics) {
+                _proteomicsTableService.Show(ProteomicsAlignmentTableViewModel);
             }
             else {
-                peakSpotTableService.Show(AlignmentSpotTableViewModel);
+                _peakSpotTableService.Show(AlignmentSpotTableViewModel);
             }
         }
 
-        public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
+        public DelegateCommand SaveSpectraCommand => _saveSpectraCommand ?? (_saveSpectraCommand = new DelegateCommand(SaveSpectra, _model.CanSaveSpectra));
+        private DelegateCommand _saveSpectraCommand;
 
-        public DelegateCommand<Window> SaveSpectraCommand => saveSpectraCommand ?? (saveSpectraCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
-        private DelegateCommand<Window> saveSpectraCommand;
-
-        private void SaveSpectra(Window owner) {
-            var request = new SaveFileNameRequest(model.SaveSpectra)
+        private void SaveSpectra() {
+            var request = new SaveFileNameRequest(_model.SaveSpectra)
             {
                 Title = "Save spectra",
                 Filter = "NIST format(*.msp)|*.msp|MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf|MSFINDER format(*.mat)|*.mat;|SIRIUS format(*.ms)|*.ms",
@@ -180,17 +157,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             _broker.Publish(request);
         }
 
-        private bool CanSaveSpectra(Window owner) {
-            return this.model.CanSaveSpectra();
-        }
-
-        public DelegateCommand<Window> NormalizeCommand => normalizeCommand ?? (normalizeCommand = new DelegateCommand<Window>(Normalize));
-
-        private DelegateCommand<Window> normalizeCommand;
+        public DelegateCommand<Window> NormalizeCommand => _normalizeCommand ?? (_normalizeCommand = new DelegateCommand<Window>(Normalize));
+        private DelegateCommand<Window> _normalizeCommand;
 
         private void Normalize(Window owner) {
-            var parameter = model.Parameter;
-            using (var vm = new NormalizationSetViewModel(model.Container, model.DataBaseMapper, model.MatchResultEvaluator, parameter, _broker)) {
+            var parameter = _model.Parameter;
+            using (var vm = new NormalizationSetViewModel(_model.Container, _model.DataBaseMapper, _model.MatchResultEvaluator, parameter, _broker)) {
                 var view = new NormalizationSetView {
                     DataContext = vm,
                     Owner = owner,
