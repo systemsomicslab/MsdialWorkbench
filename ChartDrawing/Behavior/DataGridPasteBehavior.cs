@@ -45,6 +45,7 @@ namespace CompMs.Graphics.Behavior
                 var startRow = datagrid.Items.IndexOf(datagrid.CurrentItem);
                 var startCol = datagrid.Columns.IndexOf(datagrid.CurrentCell.Column);
 
+                datagrid.BeginEdit();
                 for (int i = 0; i < clipText.Length; i++)
                 {
                     if (i + startRow >= datagrid.Items.Count) break;

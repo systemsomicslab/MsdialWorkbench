@@ -56,7 +56,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 PeakSpotNavigatorViewModel.MzLowerValue,
                 PeakSpotNavigatorViewModel.MzUpperValue,
                 PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                PeakSpotNavigatorViewModel.CommentFilterKeyword)
+                PeakSpotNavigatorViewModel.CommentFilterKeyword,
+                PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
 
             SearchCompoundCommand = new[]

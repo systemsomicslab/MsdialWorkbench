@@ -57,11 +57,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             AlignmentEicViewModel = new Chart.AlignmentEicViewModel(_model.AlignmentEicModel).AddTo(Disposables);
             BarChartViewModel = new Chart.BarChartViewModel(_model.BarChartModel).AddTo(Disposables);
             AlignmentSpotTableViewModel = new DimsAlignmentSpotTableViewModel(
-                _model.AlignmentSpotTableModel,
-                PeakSpotNavigatorViewModel.MzLowerValue,
-                PeakSpotNavigatorViewModel.MzUpperValue,
-                PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                PeakSpotNavigatorViewModel.CommentFilterKeyword)
+                    _model.AlignmentSpotTableModel,
+                    PeakSpotNavigatorViewModel.MzLowerValue,
+                    PeakSpotNavigatorViewModel.MzUpperValue,
+                    PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
+                    PeakSpotNavigatorViewModel.CommentFilterKeyword,
+                    PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
 
             SearchCompoundCommand = _model.CanSeachCompound
