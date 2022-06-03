@@ -567,7 +567,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             var dialog = new MassqlSettingView()
             {
                 DataContext = vm,
-                Owner = owner,
+                //Owner = owner,
+                Owner = Application.Current.MainWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             dialog.Show();
