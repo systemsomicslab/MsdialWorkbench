@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using System;
@@ -11,13 +12,15 @@ using System.Threading.Tasks;
 namespace CompMs.App.Msdial.Model.Core
 {
 
-    public abstract class MethodModelBase : BindableBase, IMethodModel, IDisposable
+    internal abstract class MethodModelBase : BindableBase, IMethodModel, IDisposable
     {
         public MethodModelBase(
             IEnumerable<AnalysisFileBean> analysisFiles,
             IEnumerable<AlignmentFileBean> alignmentFiles) {
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(analysisFiles ?? new AnalysisFileBean[] { });
             AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles ?? new AlignmentFileBean[] { });
+
+            FilePropertySetModel = new AnalysisFilePropertySetModel(AnalysisFiles, null /*parameter*/, null);
         }
 
         public AnalysisFileBean AnalysisFile {
@@ -54,7 +57,6 @@ namespace CompMs.App.Msdial.Model.Core
         private AlignmentFileBean alignmentFile;
 
         public ObservableCollection<AlignmentFileBean> AlignmentFiles { get; }
-
         public IAlignmentModel AlignmentModelBase {
             get => alignmentModelBase;
             private set => SetProperty(ref alignmentModelBase, value);
@@ -76,6 +78,8 @@ namespace CompMs.App.Msdial.Model.Core
         protected abstract IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile);
 
         public abstract Task RunAsync(ProcessOption option, CancellationToken token);
+
+        public AnalysisFilePropertySetModel FilePropertySetModel { get; }
 
         public virtual Task SaveAsync() {
             return Task.WhenAll(new List<Task>

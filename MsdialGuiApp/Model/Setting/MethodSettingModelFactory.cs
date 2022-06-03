@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Lcimms;
@@ -37,10 +38,11 @@ namespace CompMs.App.Msdial.Model.Setting
         IMethodModel BuildMethod();
     }
 
-    public sealed class MethodSettingModelFactory : IMethodSettingModelFactory
+    internal sealed class MethodSettingModelFactory : IMethodSettingModelFactory
     {
-        public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, IObservable<Unit> observeParameterChanged, ProcessOption process, IMessageBroker messageBroker)
+        public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, ProjectBaseParameterModel projectBaseParameter, IObservable<Unit> observeParameterChanged, ProcessOption process, IMessageBroker messageBroker)
             : this(storage,
+                  projectBaseParameter,
                   observeParameterChanged.Select(_ => storage.Parameter),
                   observeParameterChanged.Select(_ => new HeightBarItemsLoader(storage.Parameter.FileID_ClassName)),
                   process,
@@ -48,13 +50,13 @@ namespace CompMs.App.Msdial.Model.Setting
 
         }
 
-        public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, IObservable<ParameterBase> parameterAsObservable, IObservable<IBarItemsLoader> loader, ProcessOption process, IMessageBroker messageBroker) {
+        public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, ProjectBaseParameterModel projectBaseParameter, IObservable<ParameterBase> parameterAsObservable, IObservable<IBarItemsLoader> loader, ProcessOption process, IMessageBroker messageBroker) {
             switch (storage) {
                 case IMsdialDataStorage<MsdialLcImMsParameter> lcimmsStorage:
                     factoryImpl = new LcimmsMethodSettingModelFactory(lcimmsStorage, process);
                     break;
                 case IMsdialDataStorage<MsdialLcmsParameter> lcmsStorage:
-                    factoryImpl = new LcmsMethodSettingModelFactory(lcmsStorage, parameterAsObservable, loader, process, messageBroker);
+                    factoryImpl = new LcmsMethodSettingModelFactory(lcmsStorage, projectBaseParameter, parameterAsObservable, loader, process, messageBroker);
                     break;
                 case IMsdialDataStorage<MsdialImmsParameter> immsStorage:
                     factoryImpl = new ImmsMethodSettingModelFactory(immsStorage, process, messageBroker);
@@ -161,6 +163,7 @@ namespace CompMs.App.Msdial.Model.Setting
     sealed class LcmsMethodSettingModelFactory : IMethodSettingModelFactory
     {
         private readonly IMsdialDataStorage<MsdialLcmsParameter> storage;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly IObservable<ParameterBase> parameterAsObservable;
         private readonly IObservable<IBarItemsLoader> loader;
         private readonly ProcessOption process;
@@ -168,12 +171,14 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public LcmsMethodSettingModelFactory(
             IMsdialDataStorage<MsdialLcmsParameter> storage,
+            ProjectBaseParameterModel projectBaseParameter,
             IObservable<ParameterBase> parameterAsObservable,
             IObservable<IBarItemsLoader> observeBarItemsLoader,
             ProcessOption process,
             IMessageBroker broker) {
 
             this.storage = storage;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             this.parameterAsObservable = parameterAsObservable;
             loader = observeBarItemsLoader;
             this.process = process;
@@ -239,7 +244,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new LcmsMethodModel(storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true), parameterAsObservable, loader, _broker);
+            return new LcmsMethodModel(storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true), _projectBaseParameter, parameterAsObservable, loader, _broker);
         }
     }
 

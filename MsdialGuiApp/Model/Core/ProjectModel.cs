@@ -17,7 +17,7 @@ using System.Windows.Input;
 
 namespace CompMs.App.Msdial.Model.Core
 {
-    public class ProjectModel : BindableBase, IProjectModel
+    internal sealed class ProjectModel : BindableBase, IProjectModel
     {
         public ProjectModel(ProjectDataStorage storage, IMessageBroker broker) {
             Storage = storage;

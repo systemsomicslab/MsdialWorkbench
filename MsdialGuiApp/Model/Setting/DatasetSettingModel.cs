@@ -5,7 +5,7 @@ using System;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class DatasetSettingModel : BindableBase
+    internal sealed class DatasetSettingModel : BindableBase
     {
         public DatasetSettingModel(bool isReadOnly, Action<IDatasetModel> handler, IMessageBroker broker) {
             IsReadOnlyDatasetParameter = isReadOnly;

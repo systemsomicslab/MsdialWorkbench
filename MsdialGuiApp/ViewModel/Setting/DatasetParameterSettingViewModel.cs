@@ -13,7 +13,7 @@ using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public class DatasetParameterSettingViewModel : ViewModelBase, ISettingViewModel
+    internal sealed class DatasetParameterSettingViewModel : ViewModelBase, ISettingViewModel
     {
         public DatasetParameterSettingViewModel(DatasetParameterSettingModel model, IObservable<bool> isEnabled) {
             Model = model;

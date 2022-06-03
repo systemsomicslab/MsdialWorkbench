@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public class ProcessSettingViewModel : ViewModelBase
+    internal sealed class ProcessSettingViewModel : ViewModelBase
     {
         public ProcessSettingViewModel(ProjectSettingModel projectSettingModel) {
             var project = Observable.Return(new ProjectSettingViewModel(projectSettingModel).AddTo(Disposables));

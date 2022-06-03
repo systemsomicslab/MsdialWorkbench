@@ -18,7 +18,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Core
 {
-    public class DatasetViewModel : ViewModelBase
+    internal sealed class DatasetViewModel : ViewModelBase
     {
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;

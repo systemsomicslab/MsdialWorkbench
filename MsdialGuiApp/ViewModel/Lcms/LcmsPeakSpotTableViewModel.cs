@@ -132,7 +132,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReactiveProperty<double> rtUpper,
             IReactiveProperty<string> metaboliteFilterKeyword,
             IReactiveProperty<string> commentFilterKeyword,
-            IObservable<IBrushMapper<BarItem>> classBrush,
             IReactiveProperty<bool> isEditting)
             : base(
                   model,
@@ -142,7 +141,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   rtUpper,
                   metaboliteFilterKeyword,
                   commentFilterKeyword) {
-            ClassBrush = classBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
         }
 

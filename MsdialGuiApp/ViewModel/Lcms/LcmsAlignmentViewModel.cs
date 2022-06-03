@@ -64,15 +64,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             BarChartViewModel = new BarChartViewModel(_model.BarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(_model.AlignmentEicModel).AddTo(Disposables);
             
-            var classBrush = model.ParameterAsObservable
-                .Select(p => new KeyBrushMapper<BarItem, string>(
-                    p.ProjectParam.ClassnameToColorBytes
-                    .ToDictionary(
-                        kvp => kvp.Key,
-                        kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-                    ),
-                    item => item.Class,
-                    Colors.Blue));
             AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(
                 _model.AlignmentSpotTableModel,
                 PeakSpotNavigatorViewModel.MzLowerValue,
@@ -81,7 +72,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.RtUpperValue,
                 PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
                 PeakSpotNavigatorViewModel.CommentFilterKeyword,
-                classBrush,
                 PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
             ProteomicsAlignmentTableViewModel = new LcmsProteomicsAlignmentTableViewModel(

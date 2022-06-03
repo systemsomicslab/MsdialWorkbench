@@ -1,9 +1,8 @@
-﻿using CompMs.App.Msdial.Utility;
+﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Enum;
-using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,31 +12,12 @@ using System.Reactive;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class AnalysisFilePropertySetModel : BindableBase
+    internal class AnalysisFilePropertySetModel : BindableBase
     {
-        public AnalysisFilePropertySetModel(string projectFolderPath, MachineCategory category) {
-            ProjectFolderPath = projectFolderPath;
-            Category = category;
-
-            AnalysisFilePropertyCollection = new ObservableCollection<AnalysisFileBean>();
-        }
-
         public string ProjectFolderPath { get; }
         public MachineCategory Category { get; }
 
         public ObservableCollection<AnalysisFileBean> AnalysisFilePropertyCollection { get; }
-
-        public List<AnalysisFileBean> GetAnalysisFileBeanCollection() {
-
-            var importedFiles = AnalysisFilePropertyCollection.Where(n => n.AnalysisFileIncluded).ToList();
-            var counter = 0;
-            foreach (var file in importedFiles) {
-                file.AnalysisFileId = counter; 
-                counter++;
-            }
-
-            return importedFiles;
-        }
 
         public void ReadImportedFiles(IReadOnlyList<string> filenames) {
             AnalysisFilePropertyCollection.Clear();
@@ -68,17 +48,17 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         // Parameter reset functions
-        private readonly ParameterBase parameter;
         private readonly IObserver<Unit> observer;
+        private readonly ProjectBaseParameterModel _projectParameter;
 
-        public AnalysisFilePropertySetModel(List<AnalysisFileBean> files, ParameterBase parameter, IObserver<Unit> observer) {
-            AnalysisFilePropertyCollection = new ObservableCollection<AnalysisFileBean>(files);
-            this.parameter = parameter;
+        public AnalysisFilePropertySetModel(IEnumerable<AnalysisFileBean> files, ProjectBaseParameterModel projectParameter, IObserver<Unit> observer) {
+            AnalysisFilePropertyCollection = files as ObservableCollection<AnalysisFileBean> ?? new ObservableCollection<AnalysisFileBean>(files);
+            _projectParameter = projectParameter;
             this.observer = observer;
         }
 
         public void Update() {
-            ParameterFactory.SetParameterFromAnalysisFiles(parameter, AnalysisFilePropertyCollection);
+            _projectParameter.SetFileDependentProperties(AnalysisFilePropertyCollection);
             observer?.OnNext(Unit.Default);
         }
     }

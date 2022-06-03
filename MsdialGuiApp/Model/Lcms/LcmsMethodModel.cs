@@ -10,7 +10,6 @@ using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.ViewModel.Lcms;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -19,12 +18,10 @@ using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
-using CompMs.Graphics.UI.Message;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
@@ -45,15 +42,25 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    sealed class LcmsMethodModel : MethodModelBase
+    internal sealed class LcmsMethodModel : MethodModelBase
     {
+        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+
         static LcmsMethodModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
         }
 
+        private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly IObservable<ParameterBase> parameterAsObservable;
+        private readonly IObservable<IBarItemsLoader> barItemsLoader;
+        private readonly IMessageBroker _broker;
+        private IAnnotationProcess annotationProcess;
+
         public LcmsMethodModel(
             IMsdialDataStorage<MsdialLcmsParameter> storage,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
+            ProjectBaseParameterModel projectBaseParameter,
             IObservable<ParameterBase> parameterAsObservable,
             IObservable<IBarItemsLoader> barItemsLoader,
             IMessageBroker broker)
@@ -68,6 +75,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Storage = storage;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             this.providerFactory = providerFactory;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             this.parameterAsObservable = parameterAsObservable;
             this.barItemsLoader = barItemsLoader;
             _broker = broker;
@@ -91,13 +99,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             set => SetProperty(ref alignmentModel, value);
         }
         private LcmsAlignmentModel alignmentModel;
-
-        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
-        private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
-        private readonly IObservable<ParameterBase> parameterAsObservable;
-        private readonly IObservable<IBarItemsLoader> barItemsLoader;
-        private readonly IMessageBroker _broker;
-        private IAnnotationProcess annotationProcess;
 
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
@@ -129,6 +130,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 PeakFilterModel,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
+                _projectBaseParameter,
                 parameterAsObservable,
                 barItemsLoader,
                 Storage.AnalysisFiles)

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Core
 {
-    public interface IProjectModel : INotifyPropertyChanged
+    internal interface IProjectModel : INotifyPropertyChanged
     {
         IDatasetModel CurrentDataset { get; set; }
 

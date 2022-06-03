@@ -147,6 +147,7 @@
     <Compile Include="Model\Core\IAlignmentModel.cs" />
     <Compile Include="Model\Core\IAnalysisModel.cs" />
     <Compile Include="Model\Core\IMethodModel.cs" />
+    <Compile Include="Model\DataObj\ProjectBaseParameterModel.cs" />
     <Compile Include="Model\DataObj\StandardCompoundModel.cs" />
     <Compile Include="Model\DataObj\SurveyScanSpectrum.cs" />
     <Compile Include="Model\Imms\ImmsAnnotatorSettingModel.cs" />
