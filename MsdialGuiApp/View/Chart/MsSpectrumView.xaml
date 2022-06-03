@@ -90,7 +90,7 @@
                                  VerticalPropertyName="{Binding VerticalProperty.Value}"
                                  LabelPropertyName="{Binding LabelProperty.Value}"
                                  OrderingPropertyName="{Binding OrderingProperty.Value}"
-                                 Format="N2"
+                                 Format="N4"
                                  Brush="Black"
                                  Overlap="Horizontal, Direct"
                                  ClipToBounds="True"/>
