@@ -16,7 +16,7 @@
     <d:DesignerProperties.DesignResources>
         <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
     </d:DesignerProperties.DesignResources>
-    <Ribbon>
+    <Ribbon SelectionChanged="Ribbon_SelectionChanged">
 
         <Ribbon.Resources>
 
@@ -136,7 +136,7 @@
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                               KeyTip="N"/>
                 <RibbonButton Label="MS-CleanR peak filtering" LargeImageSource="{StaticResource MsCleanR_icon_is}"
-                              IsEnabled="True"
+                              IsEnabled="False"
                               Command="{Binding ShowMscleanrFilterSettingCommand}"
                               KeyTip="T"/>
                 <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"

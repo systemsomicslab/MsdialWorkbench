@@ -10,5 +10,10 @@ namespace CompMs.App.Msdial.View.Lcms
         public MainRibbon() {
             InitializeComponent();
         }
+
+        private void Ribbon_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }
