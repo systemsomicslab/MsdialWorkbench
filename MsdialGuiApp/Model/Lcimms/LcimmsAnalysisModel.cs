@@ -88,8 +88,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             }.AddTo(Disposables);
-            RtEicLoader = new EicLoader(accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
-            RtEicModel = new EicModel(Target, RtEicLoader)
+            var rtEicLoader = EicLoader.BuildForAllRange(accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            RtEicLoader = EicLoader.BuildForPeakRange(accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            RtEicModel = new EicModel(Target, rtEicLoader)
             {
                 HorizontalTitle = RtMzPlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
@@ -109,8 +110,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                         : $"Spot ID: {t.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5} RT min: {t.InnerModel.ChromXsTop.RT.Value} Drift time msec: {t.InnerModel.ChromXsTop.Drift.Value}"))
                 .Subscribe(title => DtMzPlotModel.GraphTitle = title);
 
-            DtEicLoader = new EicLoader(spectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
-            DtEicModel = new EicModel(Target, DtEicLoader)
+            var dtEicLoader = EicLoader.BuildForAllRange(spectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            DtEicLoader = EicLoader.BuildForPeakRange(spectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            DtEicModel = new EicModel(Target, dtEicLoader)
             {
                 HorizontalTitle = DtMzPlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",

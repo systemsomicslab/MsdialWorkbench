@@ -29,7 +29,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    class LcmsAnalysisModel : AnalysisModelBase {
+    internal sealed class LcmsAnalysisModel : AnalysisModelBase {
         private readonly IDataProvider provider;
 
         public LcmsAnalysisModel(
@@ -114,8 +114,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .AddTo(Disposables);
 
             // Eic chart
-            EicLoader = new EicLoader(this.provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
-            EicModel = new EicModel(Target, EicLoader) {
+            var eicLoader = EicLoader.BuildForAllRange(this.provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            EicLoader = EicLoader.BuildForPeakRange(this.provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            EicModel = new EicModel(Target, eicLoader) {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
             }.AddTo(Disposables);

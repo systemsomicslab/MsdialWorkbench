@@ -92,8 +92,9 @@ namespace CompMs.App.Msdial.Model.Imms
                         : $"Spot ID: {t.InnerModel.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.InnerModel.Mass:N5}"))
                 .Subscribe(title => PlotModel.GraphTitle = title);
 
-            EicLoader = new EicLoader(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd);
-            EicModel = new EicModel(Target, EicLoader)
+            var eicLoader = EicLoader.BuildForAllRange(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd);
+            EicLoader = EicLoader.BuildForPeakRange(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd);
+            EicModel = new EicModel(Target, eicLoader)
             {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
