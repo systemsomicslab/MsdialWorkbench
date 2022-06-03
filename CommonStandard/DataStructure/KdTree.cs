@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Extension;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -168,17 +169,9 @@ namespace CompMs.Common.DataStructure
             }
         }
 
-        private static List<IComparer<Node>> ComparersCache = new List<IComparer<Node>>();
-        private static object lockObject = new object();
+        private static ConcurrentDictionary<int, IComparer<Node>> comparersCache = new ConcurrentDictionary<int, IComparer<Node>>();
         private static IComparer<Node> GetComparer(int depth) {
-            if (depth >= ComparersCache.Count) {
-                lock (lockObject) {
-                    for (int i = ComparersCache.Count; i <= depth; i++) {
-                        ComparersCache.Add(new NodeDepthComparer(i));
-                    }
-                }
-            }
-            return ComparersCache[depth];
+            return comparersCache.GetOrAdd(depth, i => new NodeDepthComparer(i));
         }
 
         class Node
