@@ -48,18 +48,15 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         // Parameter reset functions
-        private readonly IObserver<Unit> observer;
         private readonly ProjectBaseParameterModel _projectParameter;
 
-        public AnalysisFilePropertySetModel(IEnumerable<AnalysisFileBean> files, ProjectBaseParameterModel projectParameter, IObserver<Unit> observer) {
+        public AnalysisFilePropertySetModel(IEnumerable<AnalysisFileBean> files, ProjectBaseParameterModel projectParameter) {
             AnalysisFilePropertyCollection = files as ObservableCollection<AnalysisFileBean> ?? new ObservableCollection<AnalysisFileBean>(files);
             _projectParameter = projectParameter;
-            this.observer = observer;
         }
 
         public void Update() {
             _projectParameter.SetFileDependentProperties(AnalysisFilePropertyCollection);
-            observer?.OnNext(Unit.Default);
         }
     }
 }

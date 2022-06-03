@@ -236,7 +236,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private void FilePropertyResettingWindow() {
             var storage = DatasetViewModel.Value.Model.Storage;
             var files = storage.AnalysisFiles;
-            var analysisFilePropertySetModel = new AnalysisFilePropertySetModel(files, new ProjectBaseParameterModel(Storage.Parameter.ProjectParam), null);
+            var analysisFilePropertySetModel = new AnalysisFilePropertySetModel(files, new ProjectBaseParameterModel(Storage.Parameter.ProjectParam));
             using (var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetViewModel(analysisFilePropertySetModel)) {
                 var afpsw_result = analysisFilePropertyResetService.ShowDialog(analysisFilePropertySetWindowVM);
                 if (afpsw_result == true) {

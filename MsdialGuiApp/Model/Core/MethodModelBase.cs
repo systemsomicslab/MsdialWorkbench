@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Setting;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
@@ -16,11 +17,16 @@ namespace CompMs.App.Msdial.Model.Core
     {
         public MethodModelBase(
             IEnumerable<AnalysisFileBean> analysisFiles,
-            IEnumerable<AlignmentFileBean> alignmentFiles) {
+            IEnumerable<AlignmentFileBean> alignmentFiles,
+            ProjectBaseParameterModel projectBaseParameter) {
+            if (projectBaseParameter is null) {
+                throw new ArgumentNullException(nameof(projectBaseParameter));
+            }
+
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(analysisFiles ?? new AnalysisFileBean[] { });
             AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles ?? new AlignmentFileBean[] { });
 
-            FilePropertySetModel = new AnalysisFilePropertySetModel(AnalysisFiles, null /*parameter*/, null);
+            FilePropertySetModel = new AnalysisFilePropertySetModel(AnalysisFiles, projectBaseParameter);
         }
 
         public AnalysisFileBean AnalysisFile {

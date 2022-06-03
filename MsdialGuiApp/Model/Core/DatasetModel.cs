@@ -8,13 +8,10 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialIntegrate.Parser;
 using Microsoft.Win32;
-using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.IO;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -30,12 +27,11 @@ namespace CompMs.App.Msdial.Model.Core
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _broker = broker;
             _projectBaseParameter = new ProjectBaseParameterModel(Storage.Parameter.ProjectParam);
-            observeParameterChanged = new BehaviorSubject<Unit>(Unit.Default).AddTo(Disposables);
-            AnalysisFilePropertySetModel = new AnalysisFilePropertySetModel(Storage.AnalysisFiles, _projectBaseParameter, observeParameterChanged);
+            AnalysisFilePropertySetModel = new AnalysisFilePropertySetModel(Storage.AnalysisFiles, _projectBaseParameter);
 
-            AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, HandlerAsync, _projectBaseParameter, ObserveParameterChanged, broker);
-            IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, Storage, HandlerAsync, _projectBaseParameter, ObserveParameterChanged, broker);
-            AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, Storage, HandlerAsync, _projectBaseParameter, ObserveParameterChanged, broker);
+            AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, HandlerAsync, _projectBaseParameter, broker);
+            IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, Storage, HandlerAsync, _projectBaseParameter, broker);
+            AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, Storage, HandlerAsync, _projectBaseParameter, broker);
         }
 
         public IMethodModel Method {
@@ -51,8 +47,6 @@ namespace CompMs.App.Msdial.Model.Core
 
         public IMsdialDataStorage<ParameterBase> Storage { get; }
 
-        public IObservable<Unit> ObserveParameterChanged => observeParameterChanged;
-        private readonly BehaviorSubject<Unit> observeParameterChanged;
         public MethodSettingModel AllProcessMethodSettingModel {
             get => allProcessMethodSettingModel;
             private set => SetProperty(ref allProcessMethodSettingModel, value);
@@ -73,9 +67,9 @@ namespace CompMs.App.Msdial.Model.Core
 
         private Task HandlerAsync(MethodSettingModel setting, IMethodModel model, CancellationToken token) {
             Method = model;
-            AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, HandlerAsync, _projectBaseParameter, ObserveParameterChanged, _broker);
-            IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, Storage, HandlerAsync, _projectBaseParameter, ObserveParameterChanged, _broker);
-            AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, Storage, HandlerAsync, _projectBaseParameter, ObserveParameterChanged, _broker);
+            AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, HandlerAsync, _projectBaseParameter, _broker);
+            IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, Storage, HandlerAsync, _projectBaseParameter, _broker);
+            AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, Storage, HandlerAsync, _projectBaseParameter, _broker);
             return Method.RunAsync(setting.Option, token);
         }
 
@@ -125,7 +119,7 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         public async Task LoadAsync() {
-            var factory = new MethodSettingModelFactory(Storage, _projectBaseParameter, ObserveParameterChanged, ProcessOption.All, _broker);
+            var factory = new MethodSettingModelFactory(Storage, _projectBaseParameter, ProcessOption.All, _broker);
             Method = await Task.Run(() =>
             {
                 var method = factory.BuildMethod();
@@ -148,7 +142,7 @@ namespace CompMs.App.Msdial.Model.Core
                 MessageBox.Show("Msdial cannot open the project: \n" + datasetFile, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             var result = new DatasetModel(storage, broker);
-            var factory = new MethodSettingModelFactory(storage, result._projectBaseParameter, result.ObserveParameterChanged, ProcessOption.All, broker);
+            var factory = new MethodSettingModelFactory(storage, result._projectBaseParameter, ProcessOption.All, broker);
             result.Method = factory.BuildMethod();
             message.Close();
 

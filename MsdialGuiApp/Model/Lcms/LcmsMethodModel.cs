@@ -52,8 +52,6 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
         private readonly ProjectBaseParameterModel _projectBaseParameter;
-        private readonly IObservable<ParameterBase> parameterAsObservable;
-        private readonly IObservable<IBarItemsLoader> barItemsLoader;
         private readonly IMessageBroker _broker;
         private IAnnotationProcess annotationProcess;
 
@@ -61,10 +59,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             IMsdialDataStorage<MsdialLcmsParameter> storage,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
             ProjectBaseParameterModel projectBaseParameter,
-            IObservable<ParameterBase> parameterAsObservable,
-            IObservable<IBarItemsLoader> barItemsLoader,
             IMessageBroker broker)
-            : base(storage.AnalysisFiles, storage.AlignmentFiles) {
+            : base(storage.AnalysisFiles, storage.AlignmentFiles, projectBaseParameter) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
             }
@@ -76,8 +72,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             this.providerFactory = providerFactory;
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
-            this.parameterAsObservable = parameterAsObservable;
-            this.barItemsLoader = barItemsLoader;
             _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
         }
@@ -131,8 +125,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.DataBaseMapper,
                 Storage.Parameter,
                 _projectBaseParameter,
-                parameterAsObservable,
-                barItemsLoader,
                 Storage.AnalysisFiles)
             .AddTo(Disposables);
         }

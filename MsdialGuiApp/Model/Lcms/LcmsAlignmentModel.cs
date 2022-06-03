@@ -43,18 +43,18 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseMapper mapper,
             MsdialLcmsParameter parameter,
             ProjectBaseParameterModel projectBaseParameter,
-            IObservable<ParameterBase> parameterAsObservable,
-            IObservable<IBarItemsLoader> barItemsLoader,
             List<AnalysisFileBean> files)
             : base(alignmentFileBean.FilePath) {
             if (databases is null) {
                 throw new ArgumentNullException(nameof(databases));
             }
 
+            if (projectBaseParameter is null) {
+                throw new ArgumentNullException(nameof(projectBaseParameter));
+            }
+
             AlignmentFile = alignmentFileBean;
             Parameter = parameter;
-            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
-            ParameterAsObservable = parameterAsObservable ?? throw new ArgumentNullException(nameof(parameterAsObservable));
             DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             CompoundSearchers = ConvertToCompoundSearchers(databases);
@@ -229,7 +229,6 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public AlignmentFileBean AlignmentFile { get; }
         public ParameterBase Parameter { get; }
-        public IObservable<ParameterBase> ParameterAsObservable { get; }
         public DataBaseMapper DataBaseMapper { get; }
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
 
@@ -239,8 +238,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
-        protected readonly MSDecLoader decLoader;
-        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly MSDecLoader decLoader;
 
         public double MassMin { get; }
         public double MassMax { get; }

@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -37,8 +38,9 @@ namespace CompMs.App.Msdial.Model.Dims
             IMsdialDataStorage<MsdialDimsParameter> storage,
             List<AnalysisFileBean> analysisFiles,
             List<AlignmentFileBean> alignmentFiles,
+            ProjectBaseParameterModel projectBaseParameter,
             IMessageBroker broker)
-            : base(analysisFiles, alignmentFiles) {
+            : base(analysisFiles, alignmentFiles, projectBaseParameter) {
             Storage = storage;
             _broker = broker;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);

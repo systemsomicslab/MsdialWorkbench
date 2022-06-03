@@ -44,8 +44,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
-        public LcimmsMethodModel(IMsdialDataStorage<MsdialLcImMsParameter> storage)
-            : base(storage.AnalysisFiles, storage.AlignmentFiles) {
+        public LcimmsMethodModel(IMsdialDataStorage<MsdialLcImMsParameter> storage, ProjectBaseParameterModel projectBaseParameter)
+            : base(storage.AnalysisFiles, storage.AlignmentFiles, projectBaseParameter) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
             }

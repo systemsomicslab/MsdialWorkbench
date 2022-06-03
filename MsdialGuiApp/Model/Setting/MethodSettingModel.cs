@@ -6,7 +6,6 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,11 +13,11 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     internal sealed class MethodSettingModel : BindableBase
     {
-        public MethodSettingModel(ProcessOption option, IMsdialDataStorage<ParameterBase> storage, Func<MethodSettingModel, IMethodModel, CancellationToken, Task> asyncHandler, ProjectBaseParameterModel projectBaseParameter, IObservable<Unit> observeParameterChanged, IMessageBroker broker) {
+        public MethodSettingModel(ProcessOption option, IMsdialDataStorage<ParameterBase> storage, Func<MethodSettingModel, IMethodModel, CancellationToken, Task> asyncHandler, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker) {
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _asyncHandler = asyncHandler;
 
-            settingModelFactory = new MethodSettingModelFactory(Storage, projectBaseParameter, observeParameterChanged, option, broker);
+            settingModelFactory = new MethodSettingModelFactory(Storage, projectBaseParameter, option, broker);
             DataCollectionSettingModel = settingModelFactory.CreateDataCollectionSetting();
             PeakDetectionSettingModel = settingModelFactory.CreatePeakDetectionSetting();
             DeconvolutionSettingModel = settingModelFactory.CreateDeconvolutionSetting();

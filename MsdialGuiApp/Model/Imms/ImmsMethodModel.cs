@@ -36,7 +36,7 @@ using System.Threading;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
-    class ImmsMethodModel : MethodModelBase
+    internal sealed class ImmsMethodModel : MethodModelBase
     {
         static ImmsMethodModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
@@ -44,8 +44,8 @@ namespace CompMs.App.Msdial.Model.Imms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly IMessageBroker _broker;
 
-        public ImmsMethodModel(IMsdialDataStorage<MsdialImmsParameter> storage, IMessageBroker broker)
-            : base(storage.AnalysisFiles, storage.AlignmentFiles) {
+        public ImmsMethodModel(IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
+            : base(storage.AnalysisFiles, storage.AlignmentFiles, projectBaseParameter) {
             Storage = storage;
             _broker = broker;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
