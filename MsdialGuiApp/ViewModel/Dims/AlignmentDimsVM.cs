@@ -11,6 +11,7 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.ComponentModel;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Data;
 
@@ -55,7 +56,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(_model.Ms2SpectrumModel).AddTo(Disposables);
             AlignmentEicViewModel = new Chart.AlignmentEicViewModel(_model.AlignmentEicModel).AddTo(Disposables);
-            BarChartViewModel = new Chart.BarChartViewModel(_model.BarChartModel).AddTo(Disposables);
+            BarChartViewModel = new Chart.BarChartViewModel(_model.BarChartModel, null, Observable.Never<bool>()).AddTo(Disposables);
             AlignmentSpotTableViewModel = new DimsAlignmentSpotTableViewModel(
                     _model.AlignmentSpotTableModel,
                     PeakSpotNavigatorViewModel.MzLowerValue,

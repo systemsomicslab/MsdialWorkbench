@@ -55,7 +55,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
 
             Ms2SpectrumViewModel = new MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
-            BarChartViewModel = new BarChartViewModel(model.BarChartModel).AddTo(Disposables);
+            BarChartViewModel = new BarChartViewModel(model.BarChartModel, null, Observable.Never<bool>()).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
             /*
             AlignmentSpotTableViewModel = new LcimmsAlignmentSpotTableViewModel(

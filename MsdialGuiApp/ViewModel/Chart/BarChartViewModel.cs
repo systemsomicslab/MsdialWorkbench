@@ -16,33 +16,29 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    class BarChartViewModel : ViewModelBase
+    internal sealed class BarChartViewModel : ViewModelBase
     {
-        public BarChartViewModel(BarChartModel model, IAxisManager<string> horizontalAxis = null, IAxisManager<double> verticalAxis = null) {
+        private readonly BarChartModel _model;
 
-            if (model is null) {
-                throw new ArgumentNullException(nameof(model));
-            }
-            this.model = model;
+        public BarChartViewModel(BarChartModel model, Action focusAction, IObservable<bool> isFocused) {
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            FocusAction = focusAction;
+            IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            BarItems = this.model.BarItemsSource
+            BarItems = model.BarItemsSource
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            if (horizontalAxis is null) {
-                horizontalAxis = this.model.BarItemsSource
-                    .Select(items => items.Select(item => item.Class).ToArray())
-                    .ToReactiveCategoryAxisManager()
-                    .AddTo(Disposables);
-            }
-            HorizontalAxis = horizontalAxis;
+            HorizontalAxis = model
+                .BarItemsSource
+                .Select(items => items.Select(item => item.Class).ToArray())
+                .ToReactiveCategoryAxisManager()
+                .AddTo(Disposables);
 
-            if (verticalAxis is null) {
-                verticalAxis = this.model.VerticalRangeAsObservable
-                    .ToReactiveAxisManager<double>(new RelativeMargin(0, 0.05), new Range(0, 0), LabelType.Order)
-                    .AddTo(Disposables);
-            }
-            VerticalAxis = verticalAxis;
+            VerticalAxis = model
+                .VerticalRangeAsObservable
+                .ToReactiveAxisManager<double>(new RelativeMargin(0, 0.05), new Range(0, 0), LabelType.Order)
+                .AddTo(Disposables);
 
             var brushSource = model.ClassBrush;
             if (brushSource is null) {
@@ -61,28 +57,26 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            HorizontalTitle = this.model.Elements
+            HorizontalTitle = model.Elements
                 .ObserveProperty(m => m.HorizontalTitle)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            VerticalTitle = this.model.Elements
+            VerticalTitle = model.Elements
                 .ObserveProperty(m => m.VerticalTitle)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            HorizontalProperty = this.model.Elements
+            HorizontalProperty = model.Elements
                 .ObserveProperty(m => m.HorizontalProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            VerticalProperty = this.model.Elements
+            VerticalProperty = model.Elements
                 .ObserveProperty(m => m.VerticalProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
         }
-
-        private readonly BarChartModel model;
 
         public ReadOnlyReactivePropertySlim<List<BarItem>> BarItems { get; }
 
@@ -101,5 +95,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
 
         public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> BrushSource { get; }
+        public Action FocusAction { get; }
+        public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
     }
 }

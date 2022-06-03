@@ -59,7 +59,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             PlotViewModel = new AlignmentPeakPlotViewModel(_model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
 
             Ms2SpectrumViewModel = new MsSpectrumViewModel(_model.Ms2SpectrumModel).AddTo(Disposables);
-            BarChartViewModel = new BarChartViewModel(_model.BarChartModel).AddTo(Disposables);
+            BarChartViewModel = new BarChartViewModel(_model.BarChartModel, null, Observable.Never<bool>()).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(_model.AlignmentEicModel).AddTo(Disposables);
             
             var classBrush = model.ParameterAsObservable
