@@ -5,6 +5,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         mc:Ignorable="d" 
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+        xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+        xmlns:chartSetting="clr-namespace:CompMs.App.Msdial.View.ChartSetting"
         Background="{StaticResource MainThemeColor}"
         d:Background="White"
         d:DataContext="{d:DesignInstance Type={x:Type vm:ImmsMethodVM}}"
@@ -49,8 +51,7 @@
         </RibbonApplicationMenu>
     </Ribbon.ApplicationMenu>
     <Ribbon.ContextualTabGroups>
-        <RibbonContextualTabGroup Header="Tool" Visibility="Visible" Background="{StaticResource MainThemeColor}"/>
-        <RibbonContextualTabGroup Header="Graph" Visibility="Visible" Background="{StaticResource MainThemeColor}"/>
+        <RibbonContextualTabGroup Header="Graph tools" Visibility="Visible" Background="{StaticResource MainThemeColor}"/>
     </Ribbon.ContextualTabGroups>
     <RibbonTab Header="Processing"
                KeyTip="P">
@@ -224,34 +225,6 @@
                           KeyTip="C"/>
         </RibbonGroup>
     </RibbonTab>
-    <RibbonTab Header="Spot filtering"
-               ContextualTabGroupHeader="Tool">
-        <RibbonGroup Header="Display filter">
-            <RibbonCheckBox Label="Ref. matched" IsChecked="{Binding RefMatchedChecked}"/>
-            <RibbonCheckBox Label="Suggested" IsChecked="{Binding SuggestedChecked}"/>
-            <RibbonCheckBox Label="Unknown" IsChecked="{Binding UnknownChecked}"/>
-            <RibbonCheckBox Label="Ccs matched" IsChecked="{Binding CcsChecked}" IsEnabled="False"/>
-            <RibbonCheckBox Label="MS2 acquired" IsChecked="{Binding Ms2AcquiredChecked}"/>
-            <RibbonCheckBox Label="Molecular ion" IsChecked="{Binding MolecularIonChecked}" IsEnabled="False"/>
-            <RibbonCheckBox Label="Blank filter" IsChecked="{Binding BlankFilterChecked}" IsEnabled="False"/>
-            <RibbonCheckBox Label="Unique ions" IsChecked="{Binding UniqueIonsChecked}" IsEnabled="False"/>
-            <RibbonCheckBox Label="Manually modified" IsChecked="{Binding ManuallyModifiedChecked}"/>
-        </RibbonGroup>
-    </RibbonTab>
-    <RibbonTab Header="Utility"
-               ContextualTabGroupHeader="Graph">
-        <RibbonGroup Header="Peak color">
-            <RibbonComboBox Label="Alignment"
-                            SelectionBoxWidth="80"
-                            VerticalAlignment="Center">
-                <RibbonGallery SelectedValue="{Binding AlignmentViewModel.Value.SelectedBrush.Value}"
-                               SelectedValuePath="Mapper">
-                    <RibbonGalleryCategory ItemsSource="{Binding AlignmentViewModel.Value.Brushes}"
-                                           DisplayMemberPath="Label"/>
-                </RibbonGallery>
-            </RibbonComboBox>
-        </RibbonGroup>
-    </RibbonTab>
     <RibbonTab Header="Help"
                KeyTip="H">
         <RibbonGroup>
@@ -266,4 +239,36 @@
                           KeyTip="T"/>
         </RibbonGroup>
     </RibbonTab>
+    <RibbonTab Header="Spot filtering"
+               ContextualTabGroupHeader="Graph tools">
+        <RibbonGroup Header="Display filter">
+            <RibbonCheckBox Label="Ref. matched" IsChecked="{Binding RefMatchedChecked}"/>
+            <RibbonCheckBox Label="Suggested" IsChecked="{Binding SuggestedChecked}"/>
+            <RibbonCheckBox Label="Unknown" IsChecked="{Binding UnknownChecked}"/>
+            <RibbonCheckBox Label="Ccs matched" IsChecked="{Binding CcsChecked}" IsEnabled="False"/>
+            <RibbonCheckBox Label="MS2 acquired" IsChecked="{Binding Ms2AcquiredChecked}"/>
+            <RibbonCheckBox Label="Molecular ion" IsChecked="{Binding MolecularIonChecked}" IsEnabled="False"/>
+            <RibbonCheckBox Label="Blank filter" IsChecked="{Binding BlankFilterChecked}" IsEnabled="False"/>
+            <RibbonCheckBox Label="Unique ions" IsChecked="{Binding UniqueIonsChecked}" IsEnabled="False"/>
+            <RibbonCheckBox Label="Manually modified" IsChecked="{Binding ManuallyModifiedChecked}"/>
+        </RibbonGroup>
+    </RibbonTab>
+    <RibbonTab Header="Utility"
+               ContextualTabGroupHeader="Graph tools">
+        <RibbonGroup Header="Peak color">
+            <RibbonComboBox Label="Alignment"
+                            SelectionBoxWidth="80"
+                            VerticalAlignment="Center">
+                <RibbonGallery SelectedValue="{Binding AlignmentViewModel.Value.SelectedBrush.Value}"
+                               SelectedValuePath="Mapper">
+                    <RibbonGalleryCategory ItemsSource="{Binding AlignmentViewModel.Value.Brushes}"
+                                           DisplayMemberPath="Label"/>
+                </RibbonGallery>
+            </RibbonComboBox>
+        </RibbonGroup>
+    </RibbonTab>
+    <chartSetting:BarChartOfAlignedSpotSettingRibbonTab ContextualTabGroupHeader="Graph tools"
+                                                        DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"
+                                                        d:DataContext="{d:DesignInstance Type={x:Type vmchart:BarChartViewModel}}"
+                                                        Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}}"/>
 </Ribbon>

@@ -6,6 +6,7 @@
         mc:Ignorable="d"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
         xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+        xmlns:chartSetting="clr-namespace:CompMs.App.Msdial.View.ChartSetting"
         d:Background="White"
         d:DataContext="{d:DesignInstance Type={x:Type vm:LcmsMethodVM}}"
         d:DesignHeight="450" d:DesignWidth="800">
@@ -290,21 +291,8 @@
                           KeyTip="T"/>                
         </RibbonGroup>
     </RibbonTab>
-    <RibbonTab Header="Bar chart"
-               ContextualTabGroupHeader="Graph tools"
-               DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"
-               Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}}"
-               d:Visibility="Visible"
-               d:DataContext="{d:DesignInstance Type={x:Type vmchart:BarChartViewModel}}">
-        <RibbonGroup Header="Vertical axis type">
-            <RibbonComboBox Label="Peak height/area"
-                            SelectionBoxWidth="240"
-                            VerticalAlignment="Center">
-                <RibbonGallery SelectedItem="{Binding BarItemsLoaderData.Value}">
-                    <RibbonGalleryCategory ItemsSource="{Binding BarItemsLoaderDatas}"
-                                           DisplayMemberPath="Label"/>
-                </RibbonGallery>
-            </RibbonComboBox>
-        </RibbonGroup>
-    </RibbonTab>
+    <chartSetting:BarChartOfAlignedSpotSettingRibbonTab ContextualTabGroupHeader="Graph tools"
+                                                        DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"
+                                                        d:DataContext="{d:DesignInstance Type={x:Type vmchart:BarChartViewModel}}"
+                                                        Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}}"/>
 </Ribbon>

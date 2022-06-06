@@ -370,6 +370,9 @@
     <Compile Include="View\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\ChartSetting\BarChartOfAlignedSpotSettingRibbonTab.xaml.cs">
+      <DependentUpon>BarChartOfAlignedSpotSettingRibbonTab.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Chart\AlignmentEicView.xaml.cs">
       <DependentUpon>AlignmentEicView.xaml</DependentUpon>
     </Compile>
@@ -690,6 +693,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Resource>
+    <Page Include="View\ChartSetting\BarChartOfAlignedSpotSettingRibbonTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Chart\AlignmentEicView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
