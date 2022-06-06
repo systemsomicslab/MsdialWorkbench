@@ -22,37 +22,33 @@ namespace CompMs.App.Msdial.Model.DataObj
                 _projectParameter.FileID_AnalysisFileType = new Dictionary<int, AnalysisFileType>();
             }
             _fileIdToAnalysisFileType = _projectParameter.FileID_AnalysisFileType;
-            FileIdToAnalysisFileType = new ReadOnlyDictionary<int, AnalysisFileType>(_fileIdToAnalysisFileType);
 
             if (_projectParameter.FileID_ClassName is null) {
                 _projectParameter.FileID_ClassName = new Dictionary<int, string>();
             }
             _fileIdToClassName = _projectParameter.FileID_ClassName;
-            FileIdToClassName = new ReadOnlyDictionary<int, string>(_fileIdToClassName);
 
             if (_projectParameter.ClassnameToOrder is null) {
                 _projectParameter.ClassnameToOrder = new Dictionary<string, int>();
             }
             _classnameToOrder = _projectParameter.ClassnameToOrder;
-            ClassnameToOrder = new ReadOnlyDictionary<string, int>(_classnameToOrder);
 
             if (_projectParameter.ClassnameToColorBytes is null) {
                 _projectParameter.ClassnameToColorBytes = new Dictionary<string, List<byte>>();
             }
             _classnameToColorBytes = _projectParameter.ClassnameToColorBytes;
-            ClassnameToColorBytes = new ReadOnlyDictionary<string, List<byte>>(_classnameToColorBytes);
         }
 
-        public ReadOnlyDictionary<int, AnalysisFileType> FileIdToAnalysisFileType { get; }
+        public ReadOnlyDictionary<int, AnalysisFileType> FileIdToAnalysisFileType => new ReadOnlyDictionary<int, AnalysisFileType>(_fileIdToAnalysisFileType);
         private readonly Dictionary<int, AnalysisFileType> _fileIdToAnalysisFileType;
 
-        public ReadOnlyDictionary<int, string> FileIdToClassName { get; }
+        public ReadOnlyDictionary<int, string> FileIdToClassName => new ReadOnlyDictionary<int, string>(_fileIdToClassName);
         private readonly Dictionary<int, string> _fileIdToClassName;
 
-        public ReadOnlyDictionary<string, int> ClassnameToOrder { get; }
+        public ReadOnlyDictionary<string, int> ClassnameToOrder => new ReadOnlyDictionary<string, int>(_classnameToOrder);
         private readonly Dictionary<string, int> _classnameToOrder;
 
-        public ReadOnlyDictionary<string, List<byte>> ClassnameToColorBytes { get; }
+        public ReadOnlyDictionary<string, List<byte>> ClassnameToColorBytes => new ReadOnlyDictionary<string, List<byte>>(_classnameToColorBytes);
         private readonly Dictionary<string, List<byte>> _classnameToColorBytes;
 
         public bool IsBoxPlotForAlignmentResult {
