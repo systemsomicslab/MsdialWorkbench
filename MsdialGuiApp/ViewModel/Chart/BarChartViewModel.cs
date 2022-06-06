@@ -1,7 +1,7 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.ViewModel.Loader;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Base;
@@ -78,6 +78,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ObserveProperty(m => m.VerticalProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+
+            BarItemsLoaderDataViewModels = _model.BarItemsLoaderDatas.Select(data => new BarItemsLoaderDataViewModel(data, _model.BarItemsLoaderData)).ToList().AsReadOnly();
+            BarItemsLoaderDataViewModel = _model.BarItemsLoaderData.Select(m => BarItemsLoaderDataViewModels.FirstOrDefault(vm => vm.Model == m)).ToReactiveProperty().AddTo(Disposables);
+            BarItemsLoaderDataViewModel.Subscribe(vm => _model.BarItemsLoaderData.Value = vm?.Model).AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<List<BarItem>> BarItems { get; }
@@ -101,7 +105,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public Action FocusAction { get; }
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
 
-        public IReactiveProperty<BarItemsLoaderData> BarItemsLoaderData => _model.BarItemsLoaderData;
-        public ReadOnlyCollection<BarItemsLoaderData> BarItemsLoaderDatas => new ReadOnlyCollection<BarItemsLoaderData>(_model.BarItemsLoaderDatas);
+        public IReactiveProperty<BarItemsLoaderDataViewModel> BarItemsLoaderDataViewModel { get; }
+        public ReadOnlyCollection<BarItemsLoaderDataViewModel> BarItemsLoaderDataViewModels { get; }
     }
 }

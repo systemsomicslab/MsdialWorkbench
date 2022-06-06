@@ -10,6 +10,7 @@
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:commonbehavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
              behavior:SuppressContextMenuBehavior.IsEnabled="True"
@@ -261,9 +262,7 @@
                                  Name="TabItem_BarChartViewer" 
                                  Height="26"
                                  Background="{StaticResource MainThemeColor}">
-                            <chart:BarChartView DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"
-                                                commonbehavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding FocusAction, Mode=OneWay}"
-                                                d:DataContext="{d:DesignInstance Type={x:Type vmchart:BarChartViewModel}}"/>
+                            <chart:BarChartView DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"/>
                         </TabItem>
 
                         <TabItem Name="TabItem_AlignedEic"
