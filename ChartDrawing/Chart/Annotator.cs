@@ -411,11 +411,16 @@ namespace CompMs.Graphics.Chart
                     break;
             }
 
-            var texts = new List<Tuple<FormattedText, Point>>();
+            var texts = new List<Tuple<FormattedText, Point, Rect>>();
             var brush = Brush;
             var fontSize = FontSize;
             bool flippedX = FlippedX, flippedY = FlippedY;
             var overlap = Overlap;
+            var ppd = VisualTreeHelper.GetDpi(this).PixelsPerDip;
+            var repText = new FormattedText("1000.00000", culture, FlowDirection.LeftToRight, typeFace, fontSize, brush, ppd) { TextAlignment = TextAlignment.Center };
+            var repWidth = repText.Width;
+            var repHeight = repText.Height;
+            var repVec = new Vector(repWidth / 2, repHeight / 2);
             foreach(var data in datas.OrderByDescending(d => d.order)) {
                 if (TopN.HasValue && texts.Count >= TopN)
                     break;
@@ -423,20 +428,21 @@ namespace CompMs.Graphics.Chart
 
                     double xx = hAxis.TranslateToRenderPoint(data.x, flippedX, actualWidth);
                     double yy = vAxis.TranslateToRenderPoint(data.y, flippedY, actualHeight);
+                    var p = new Point(xx + dx, yy + dy);
+                    var rect = new Rect(p - repVec, p + repVec);
+                    if (texts.Any(other => overlap.IsOverlap(rect, p, other.Item3, other.Item2))) {
+                        continue;
+                    }
 
-                    var text = new FormattedText(data.label, culture, FlowDirection.LeftToRight, typeFace, fontSize, brush, 1)
+                    var text = new FormattedText(data.label, culture, FlowDirection.LeftToRight, typeFace, fontSize, brush, ppd)
                     {
                         TextAlignment = TextAlignment.Center
                     };
-                    var p = new Point(xx + dx, yy + dy);
-
-                    if (!texts.Any(other => overlap.IsOverlap(text, p, other.Item1, other.Item2))) {
-                        texts.Add(Tuple.Create(text, p));
-                    }
+                    texts.Add(Tuple.Create(text, p, rect));
                 }
             }
 
-            foreach ((var text, var point) in texts) {
+            foreach ((var text, var point, _) in texts) {
                 drawingContext.DrawText(text, point);
             }
         }
@@ -486,14 +492,14 @@ namespace CompMs.Graphics.Chart
     [TypeConverter(typeof(OverlapMethodTypeConverter))]
     public interface IOverlapMethod
     {
-        bool IsOverlap(FormattedText text1, Point p1, FormattedText text2, Point p2);
+        bool IsOverlap(Rect rect1, Point p1, Rect rect2, Point p2);
     }
 
     class DirectOverlap : IOverlapMethod
     {
-        public bool IsOverlap(FormattedText text1, Point p1, FormattedText text2, Point p2) {
-            return (text1.Width + text2.Width) / 2 > Math.Abs(p1.X - p2.X)
-                && (text1.Height + text2.Height) / 2 > Math.Abs(p1.Y - p2.Y);
+        public bool IsOverlap(Rect rect1, Point p1, Rect rect2, Point p2) {
+            return (rect1.Width + rect2.Width) / 2 > Math.Abs(p1.X - p2.X)
+                && (rect1.Height + rect2.Height) / 2 > Math.Abs(p1.Y - p2.Y);
         }
 
         public static DirectOverlap Method { get; } = new DirectOverlap();
@@ -505,8 +511,8 @@ namespace CompMs.Graphics.Chart
 
     class HorizontalOverlap : IOverlapMethod
     {
-        public bool IsOverlap(FormattedText text1, Point p1, FormattedText text2, Point p2) {
-            return text2.Width / 2 > Math.Abs(p1.X - p2.X);
+        public bool IsOverlap(Rect rect1, Point p1, Rect rect2, Point p2) {
+            return (rect1.Width + rect2.Width) / 2 > Math.Abs(p1.X - p2.X);
         }
 
         public static HorizontalOverlap Method { get; } = new HorizontalOverlap();
@@ -518,8 +524,8 @@ namespace CompMs.Graphics.Chart
 
     class VerticalOverlap : IOverlapMethod
     {
-        public bool IsOverlap(FormattedText text1, Point p1, FormattedText text2, Point p2) {
-            return text2.Height / 2 > Math.Abs(p1.Y - p2.Y);
+        public bool IsOverlap(Rect rect1, Point p1, Rect rect2, Point p2) {
+            return (rect1.Height + rect2.Height) / 2 > Math.Abs(p1.Y - p2.Y);
         }
 
         public static VerticalOverlap Method { get; } = new VerticalOverlap();
@@ -531,7 +537,7 @@ namespace CompMs.Graphics.Chart
 
     class IgnoreOverlap : IOverlapMethod
     {
-        public bool IsOverlap(FormattedText text1, Point p1, FormattedText text2, Point p2) {
+        public bool IsOverlap(Rect rect1, Point p1, Rect rect2, Point p2) {
             return false;
         }
 
@@ -554,11 +560,11 @@ namespace CompMs.Graphics.Chart
 
         private readonly List<IOverlapMethod> methods;
 
-        public bool IsOverlap(FormattedText text1, Point p1, FormattedText text2, Point p2) {
+        public bool IsOverlap(Rect rect1, Point p1, Rect rect2, Point p2) {
             if (methods == null) {
                 return false;
             }
-            return methods.Any(method => method.IsOverlap(text1, p1, text2, p2));
+            return methods.Any(method => method.IsOverlap(rect1, p1, rect2, p2));
         }
 
         public override string ToString() {
