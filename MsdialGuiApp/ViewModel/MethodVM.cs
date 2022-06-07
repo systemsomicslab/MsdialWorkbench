@@ -9,14 +9,18 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel
 {
     public abstract class MethodViewModel : ViewModelBase
     {
-        public MethodViewModel(IMethodModel model, IObservable<AnalysisFileViewModel> analysisFileViewModel, IObservable<AlignmentFileViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels) {
+        public MethodViewModel(IMethodModel model, IReadOnlyReactiveProperty<AnalysisFileViewModel> analysisFileViewModel, IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels) {
             Model = model;
             var analysisFilesView = model.AnalysisFiles.ToReadOnlyReactiveCollection(file => new AnalysisFileBeanViewModel(file));
             AnalysisFilesView = CollectionViewSource.GetDefaultView(analysisFilesView);
@@ -53,33 +57,37 @@ namespace CompMs.App.Msdial.ViewModel
 
             LoadAnalysisFileCommand = SelectedAnalysisFile
                 .Select(file => file != null)
-                .ToReactiveCommand()
-                .WithSubscribe(LoadAnalysisFile)
+                .ObserveOnUIDispatcher()
+                .ToAsyncReactiveCommand()
+                .WithSubscribe(() => LoadAnalysisFileAsync(default))
                 .AddTo(Disposables);
             LoadAlignmentFileCommand = SelectedAlignmentFile
                 .Select(file => file != null)
-                .ToReactiveCommand()
-                .WithSubscribe(LoadAlignmentFile)
+                .ObserveOnUIDispatcher()
+                .ToAsyncReactiveCommand()
+                .WithSubscribe(() => LoadAlignmentFileAsync(default))
                 .AddTo(Disposables);
 
-            AnalysisViewModel = analysisFileViewModel.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            AlignmentViewModel = alignmentFileViewModel.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            AnalysisViewModel = analysisFileViewModel.AddTo(Disposables);
+            AlignmentViewModel = alignmentFileViewModel.AddTo(Disposables);
             resultViewModels = new List<IReadOnlyReactiveProperty<ResultVM>> { AnalysisViewModel, AlignmentViewModel, };
             ResultViewModels = resultViewModels.AsReadOnly();
+
+            viewModelChanged = new Subject<Unit>().AddTo(Disposables);
             SelectedViewModel = AnalysisViewModel;
 
-            ChromatogramViewModels = chromatogramViewModels;
-            MassSpectrumViewModels = massSpectrumViewModels;
+            ChromatogramViewModels = chromatogramViewModels.AddTo(Disposables);
+            MassSpectrumViewModels = massSpectrumViewModels.AddTo(Disposables);
 
-            this.ObserveProperty(self => self.SelectedViewModel)
-                .Where(vm => vm == AnalysisViewModel)
+            viewModelChanged
+                .Where(_ => SelectedViewModel == analysisFileViewModel)
                 .Subscribe(_ =>
                 {
                     chromatogramViewModels.SelectAnalysisFile();
                     massSpectrumViewModels.SelectAnalysisFile();
                 }).AddTo(Disposables);
-            this.ObserveProperty(self => self.SelectedViewModel)
-                .Where(vm => vm == AlignmentViewModel)
+            viewModelChanged
+                .Where(_ => SelectedViewModel == alignmentFileViewModel)
                 .Subscribe(_ =>
                 {
                     chromatogramViewModels.SelectAlignmentFile();
@@ -98,7 +106,7 @@ namespace CompMs.App.Msdial.ViewModel
             .AddTo(Disposables);
         }
 
-        public MethodViewModel(IMethodModel model, IObservable<AnalysisFileViewModel> analysisFileViewModel, IObservable<AlignmentFileViewModel> alignmentFileViewModel) {
+        public MethodViewModel(IMethodModel model, IReadOnlyReactiveProperty<AnalysisFileViewModel> analysisFileViewModel, IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentFileViewModel) {
             Model = model;
             var analysisFilesView = model.AnalysisFiles.ToReadOnlyReactiveCollection(file => new AnalysisFileBeanViewModel(file));
             AnalysisFilesView = CollectionViewSource.GetDefaultView(analysisFilesView);
@@ -112,8 +120,8 @@ namespace CompMs.App.Msdial.ViewModel
             SelectedAlignmentFile = new ReactivePropertySlim<AlignmentFileBeanViewModel>(alignmentFilesView.FirstOrDefault()).AddTo(Disposables);
             model.ObserveProperty(m => m.AnalysisFile)
                 .Do(_ => {
-                    if (SelectedAnalysisFile.Value != null) {
-                        SelectedAnalysisFile.Value.IsSelected = false;
+                    foreach (var file in analysisFilesView) {
+                        file.IsSelected = false;
                     }
                 })
                 .Subscribe(file => {
@@ -123,6 +131,9 @@ namespace CompMs.App.Msdial.ViewModel
                 }).AddTo(Disposables);
             model.ObserveProperty(m => m.AlignmentFile)
                 .Do(_ => {
+                    foreach (var file in alignmentFilesView) {
+                        file.IsSelected = false;
+                    }
                     if (SelectedAlignmentFile.Value != null) {
                         SelectedAlignmentFile.Value.IsSelected = false;
                     }
@@ -135,19 +146,22 @@ namespace CompMs.App.Msdial.ViewModel
 
             LoadAnalysisFileCommand = SelectedAnalysisFile
                 .Select(file => file != null)
-                .ToReactiveCommand()
-                .WithSubscribe(LoadAnalysisFile)
+                .ObserveOnUIDispatcher()
+                .ToAsyncReactiveCommand()
+                .WithSubscribe(() => LoadAnalysisFileAsync(default))
                 .AddTo(Disposables);
             LoadAlignmentFileCommand = SelectedAlignmentFile
                 .Select(file => file != null)
-                .ToReactiveCommand()
-                .WithSubscribe(LoadAlignmentFile)
+                .ObserveOnUIDispatcher()
+                .ToAsyncReactiveCommand()
+                .WithSubscribe(() => LoadAlignmentFileAsync(default))
                 .AddTo(Disposables);
 
-            AnalysisViewModel = analysisFileViewModel.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            AlignmentViewModel = alignmentFileViewModel.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            AnalysisViewModel = analysisFileViewModel.AddTo(Disposables);
+            AlignmentViewModel = alignmentFileViewModel.AddTo(Disposables);
             resultViewModels = new List<IReadOnlyReactiveProperty<ResultVM>> { AnalysisViewModel, AlignmentViewModel, };
             ResultViewModels = resultViewModels.AsReadOnly();
+            viewModelChanged = new Subject<Unit>().AddTo(Disposables);
             SelectedViewModel = AnalysisViewModel;
 
             var chromatogramViewModels = new List<IReadOnlyReactiveProperty<ViewModelBase>> { };
@@ -165,44 +179,57 @@ namespace CompMs.App.Msdial.ViewModel
         public ICollectionView AnalysisFilesView { get; }
         public ICollectionView AlignmentFilesView { get; }
 
-        public ReactiveCommand LoadAnalysisFileCommand { get; }
+        public AsyncReactiveCommand LoadAnalysisFileCommand { get; }
 
-        protected void LoadAnalysisFile() {
+        protected Task LoadAnalysisFileAsync(CancellationToken token) {
             if (!(SelectedAnalysisFile.Value is null)) {
                 // foreach (AnalysisFileBeanViewModel analysisFile in AnalysisFilesView) {
                 //     analysisFile.IsSelected = false;
                 // }
                 // SelectedAnalysisFile.Value.IsSelected = true;
-                LoadAnalysisFileCore(SelectedAnalysisFile.Value);
+                var task = LoadAnalysisFileCoreAsync(SelectedAnalysisFile.Value, token);
+                ChromatogramViewModels.SelectAnalysisFile();
+                MassSpectrumViewModels.SelectAnalysisFile();
+                return task;
             }
+            return Task.CompletedTask;
         }
 
-        protected abstract void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile);
+        protected abstract Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token);
 
-        public ReactiveCommand LoadAlignmentFileCommand { get; }
+        public AsyncReactiveCommand LoadAlignmentFileCommand { get; }
 
-        protected void LoadAlignmentFile() {
+        protected Task LoadAlignmentFileAsync(CancellationToken token) {
             if (!(SelectedAlignmentFile.Value is null)) {
                 // foreach (AlignmentFileBeanViewModel alignmentFile in AlignmentFilesView) {
                 //     alignmentFile.IsSelected = false;
                 // }
                 // SelectedAlignmentFile.Value.IsSelected = true;
-                LoadAlignmentFileCore(SelectedAlignmentFile.Value);
+                var task = LoadAlignmentFileCoreAsync(SelectedAlignmentFile.Value, token);
+                ChromatogramViewModels.SelectAlignmentFile();
+                MassSpectrumViewModels.SelectAlignmentFile();
+                return task;
             }
+            return Task.CompletedTask;
         }
 
-        protected abstract void LoadAlignmentFileCore(AlignmentFileBeanViewModel alignmentFile);
+        protected abstract Task LoadAlignmentFileCoreAsync(AlignmentFileBeanViewModel alignmentFile, CancellationToken token);
 
-        public ReadOnlyReactivePropertySlim<AnalysisFileViewModel> AnalysisViewModel { get; }
+        public IReadOnlyReactiveProperty<AnalysisFileViewModel> AnalysisViewModel { get; }
 
-        public ReadOnlyReactivePropertySlim<AlignmentFileViewModel> AlignmentViewModel { get; }
+        public IReadOnlyReactiveProperty<AlignmentFileViewModel> AlignmentViewModel { get; }
 
         public ReadOnlyCollection<IReadOnlyReactiveProperty<ResultVM>> ResultViewModels { get; }
         private readonly List<IReadOnlyReactiveProperty<ResultVM>> resultViewModels;
 
-        public IReadOnlyReactiveProperty<ResultVM> SelectedViewModel { 
+        private readonly Subject<Unit> viewModelChanged;
+        public IReadOnlyReactiveProperty<ResultVM> SelectedViewModel {
             get => selectedViewModel;
-            set => SetProperty(ref selectedViewModel, value);
+            set {
+                if (SetProperty(ref selectedViewModel, value)) {
+                    viewModelChanged.OnNext(Unit.Default);
+                }
+            }
         }
         private IReadOnlyReactiveProperty<ResultVM> selectedViewModel;
 

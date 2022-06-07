@@ -133,7 +133,29 @@
                                Grid.Row="0">
                 <TextBox Text="{Binding AnnotatorID.Value, UpdateSourceTrigger=PropertyChanged}"/>
             </ui:LabeledContent>
-            <GroupBox BorderThickness="0" Grid.Row="1">
+
+            <GroupBox Header="Shotgun proteomics parameter setting"
+                      BorderThickness="0"
+                      Grid.Row="1"
+                      Visibility="{Binding IsProteomicsDataBase.Value, Converter={StaticResource BooleanToVisibility}}">
+                <StackPanel>
+                    <!--<ui:LabeledContent PrependLabel="Mass range begin:"
+                                       AppendLabel="Da">
+                        <TextBox Text="{Binding MassRangeBegin.Value, UpdateSourceTrigger=PropertyChanged}"
+                                 HorizontalContentAlignment="Right"/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Mass range end:"
+                                       AppendLabel="Da">
+                        <TextBox Text="{Binding MassRangeEnd.Value, UpdateSourceTrigger=PropertyChanged}"
+                                 HorizontalContentAlignment="Right"/>
+                    </ui:LabeledContent>-->
+
+                    <ContentControl Content="{Binding ProteomicsParameterVM}"
+                                    ContentTemplate="{StaticResource ProteomicsParameterSetting}" />
+                </StackPanel>
+            </GroupBox>
+            
+            <GroupBox BorderThickness="0" Grid.Row="2">
                 <GroupBox.Header>
                     <TextBlock Text="FASTA database and MS/MS identification setting"
                                FontStyle="Italic"
@@ -145,21 +167,21 @@
             </GroupBox>
 
             <Expander Header="MS2 spectrum cut off" Margin="0,8"
-                      Grid.Row="2">
+                      Grid.Row="3">
                 <ContentControl Content="{Binding ParameterViewModel}"
                                 ContentTemplate="{StaticResource Ms2Setting}"
                                 Margin="8"/>
             </Expander>
 
             <Expander Header="Annotaion cut off" Margin="0,8"
-                      Grid.Row="3">
+                      Grid.Row="4">
                 <ContentControl Content="{Binding ParameterViewModel}"
                                 ContentTemplate="{StaticResource Ms2ScoreCutOffSetting}"
                                 Margin="8"/>
             </Expander>
 
             <Expander Header="Retention time setting" Margin="0,8"
-                      Grid.Row="4">
+                      Grid.Row="5">
                 <ContentControl Content="{Binding ParameterViewModel}"
                                 ContentTemplate="{StaticResource RetentionTimeSetting}"
                                 Margin="8"/>

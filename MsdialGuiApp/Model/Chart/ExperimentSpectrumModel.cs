@@ -11,6 +11,8 @@ using CompMs.MsdialCore.Utility;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
@@ -54,21 +56,23 @@ namespace CompMs.App.Msdial.Model.Chart
             return RangeSelectableChromatogramModel.SelectedRanges.Count == 2;
         }
 
-        public void SetExperimentSpectrum() {
+        public async Task SetExperimentSpectrumAsync(CancellationToken token) {
             var rangeModel = RangeSelectableChromatogramModel;
             (var mainStart, var mainEnd) = rangeModel.ConvertToRt(rangeModel.SelectedRanges[1]);
             (var subStart, var subEnd) = rangeModel.ConvertToRt(rangeModel.SelectedRanges[0]);
 
-            var spectrum = provider.LoadMsNSpectrums(level: 2);
+            var spectrum = await provider.LoadMsNSpectrumsAsync(level: 2, token).ConfigureAwait(false);
             var experiments = spectrum.Select(spec => spec.ExperimentID).Distinct().OrderBy(v => v).ToArray();
-            Ms2Spectrums.Clear();
-            foreach (var exp in experiments) {
-                Ms2Spectrums.Add(new SummarizedSpectrumModel(DataAccess.GetSubtractSpectrum(spectrum, mainStart, mainEnd, subStart, subEnd, 1e-3, exp).OrderBy(s => s.Mass).ToList(), exp));
-            }
+            await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                Ms2Spectrums.Clear();
+                foreach (var exp in experiments) {
+                    Ms2Spectrums.Add(new SummarizedSpectrumModel(DataAccess.GetSubtractSpectrum(spectrum, mainStart, mainEnd, subStart, subEnd, 1e-3, exp).OrderBy(s => s.Mass).ToList(), exp));
+                }
+            });
 
-            var ms1Spectrum = provider.LoadMs1Spectrums();
+            var ms1Spectrum = await provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
             Ms1Spectrum = new SummarizedSpectrumModel(DataAccess.GetSubtractSpectrum(ms1Spectrum, mainStart, mainEnd, subStart, subEnd, 1e-3, -1).Where(s => s.Intensity > 5).OrderBy(s => s.Mass).ToList(), -1);
-           
         }
 
         public void SaveSpectrumAsNist(string mspFileName) {

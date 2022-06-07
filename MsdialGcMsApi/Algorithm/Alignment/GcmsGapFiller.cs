@@ -128,11 +128,11 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
 
             var centralMz = center.Mz.Value;
             var rtTol = maxRt - minRt;
-            var peaklist = DataAccess.GetBaselineCorrectedPeaklistByMassAccuracy(
+            var chromatogram = DataAccess.GetBaselineCorrectedPeaklistByMassAccuracy(
                spectrum, centralRT,
                centralRT - rtTol * 3.0F,
                centralRT + rtTol * 3.0F, centralMz, param);
-            return DataAccess.GetSmoothedPeaklist(peaklist, smoothingMethod, smoothingLevel);
+            return chromatogram.Smoothing(smoothingMethod, smoothingLevel);
         }
     }
 
@@ -212,11 +212,11 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
             }
             #endregion
             var rtTol = maxRt - minRt;
-            var peaklist = DataAccess.GetBaselineCorrectedPeaklistByMassAccuracy(
+            var chromatogram = DataAccess.GetBaselineCorrectedPeaklistByMassAccuracy(
                spectrum, centralRT,
                centralRT - rtTol * 3.0F,
                centralRT + rtTol * 3.0F, centralMz, param);
-            return DataAccess.GetSmoothedPeaklist(peaklist, smoothingMethod, smoothingLevel);
+            return chromatogram.Smoothing(smoothingMethod, smoothingLevel);
         }
     }
 }

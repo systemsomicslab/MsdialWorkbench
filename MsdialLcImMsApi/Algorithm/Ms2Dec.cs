@@ -22,8 +22,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             this.ProgressMax = ProgressMax;
         }
 
-        public List<MSDecResult> GetMS2DecResults(List<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
-            MsdialLcImMsParameter param, ChromatogramPeaksDataSummary summary, IupacDatabase iupac,
+        public List<MSDecResult> GetMS2DecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
+            MsdialLcImMsParameter param, ChromatogramPeaksDataSummaryDto summary, IupacDatabase iupac,
             Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
 
             var msdecResults = new List<MSDecResult>();
@@ -43,8 +43,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             return msdecResults;
         }
 
-        public MSDecResult GetMS2DecResult(List<RawSpectrum> spectrumList, ChromatogramPeakFeature rtChromPeak, ChromatogramPeakFeature dtChromPeak,
-            MsdialLcImMsParameter param, ChromatogramPeaksDataSummary summary, IupacDatabase iupac, double targetCE) {
+        public MSDecResult GetMS2DecResult(IReadOnlyList<RawSpectrum> spectrumList, ChromatogramPeakFeature rtChromPeak, ChromatogramPeakFeature dtChromPeak,
+            MsdialLcImMsParameter param, ChromatogramPeaksDataSummaryDto summary, IupacDatabase iupac, double targetCE) {
             if (dtChromPeak.MS2RawSpectrumID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(dtChromPeak);
 
             rtChromPeak.MS2RawSpectrumID = 1; // needed for visualization
@@ -105,7 +105,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             var smoothedMs2ChromPeaksList = new List<List<ChromatogramPeak>>();
 
             foreach (var chromPeaks in ms2ChromPeaksList) {
-                var sChromPeaks = DataAccess.GetSmoothedPeaklist(chromPeaks, param.SmoothingMethod, param.SmoothingLevel);
+                var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.Drift, ChromXUnit.Msec).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
                 smoothedMs2ChromPeaksList.Add(sChromPeaks);
             }
 

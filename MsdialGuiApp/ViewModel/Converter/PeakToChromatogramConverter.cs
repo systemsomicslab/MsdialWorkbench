@@ -12,7 +12,7 @@ namespace CompMs.App.Msdial.ViewModel.Converter
             if (values.Length >= 2 &&
                 values[0] is ChromatogramPeakFeatureModel feature &&
                 values[1] is EicLoader loader) {
-                (var eic, var area, var peak) = loader.LoadEic(feature);
+                (var eic, var area, var peak) = loader.LoadEicAsync(feature, default).Result;
                 return new { Eic = eic, EicArea = area, EicPeak = peak };
             }
             return null;

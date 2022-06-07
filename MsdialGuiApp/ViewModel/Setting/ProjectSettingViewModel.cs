@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public class ProjectSettingViewModel : ViewModelBase, ISettingViewModel
+    internal sealed class ProjectSettingViewModel : ViewModelBase, ISettingViewModel
     {
         public ProjectSettingViewModel(ProjectSettingModel model) {
             Model = model;

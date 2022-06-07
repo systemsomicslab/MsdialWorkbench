@@ -1,6 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Utility;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.MessagePack;
@@ -13,7 +15,9 @@ using CompMs.MsdialCore.Parameter;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -47,28 +51,38 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 throw new ArgumentNullException(nameof(proteomicsTableService));
             }
 
+            _broker = MessageBroker.Default;
+
             this.analysisFilePropertyResetService = analysisFilePropertyResetService;
             this.processSettingService = processSettingSerivce ?? throw new ArgumentNullException(nameof(processSettingSerivce));
             parameter = new ReactivePropertySlim<ParameterBase>().AddTo(Disposables);
-            Model = new MainWindowModel();
+            Model = new MainWindowModel(_broker);
 
             var projectViewModel = Model.ObserveProperty(m => m.CurrentProject)
-                .Select(m => m is null ? null : new ProjectViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, analysisFilePropertyResetService))
-                .DisposePreviousValue();
+                .Select(m => m is null ? null : new ProjectViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, analysisFilePropertyResetService, _broker))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
             var datasetViewModel = projectViewModel
-                .Switch(project => project?.CurrentDatasetViewModel.StartWith(project.CurrentDatasetViewModel.Value));
+                .Switch(project => project?.CurrentDatasetViewModel ?? Observable.Never<DatasetViewModel>())
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+                //.Switch(project => project?.CurrentDatasetViewModel.StartWith(project.CurrentDatasetViewModel.Value));
             var methodViewModel = datasetViewModel
-                .Switch(dataset => dataset?.MethodViewModel.StartWith(dataset.MethodViewModel.Value));
+                .Switch(dataset => dataset?.MethodViewModel ?? Observable.Never<MethodViewModel>())
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            //.Switch(dataset => dataset?.MethodViewModel.StartWith(dataset.MethodViewModel.Value));
 
-            ProjectViewModel = projectViewModel
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            DatasetViewModel = datasetViewModel
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            MethodViewModel = methodViewModel
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
+            ProjectViewModel = projectViewModel;
+            //.ToReadOnlyReactivePropertySlim()
+            //.AddTo(Disposables);
+            DatasetViewModel = datasetViewModel;
+            //.ToReadOnlyReactivePropertySlim()
+            //.AddTo(Disposables);
+            MethodViewModel = methodViewModel;
+                // .ToReadOnlyReactivePropertySlim()
+                // .AddTo(Disposables);
 
             var projectSaveEnableState = new ReactivePropertySlim<bool>(true);
             CreateNewProjectCommand = projectSaveEnableState.ToAsyncReactiveCommand()
@@ -96,10 +110,15 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 .WithSubscribe(Model.LoadAsync)
                 .AddTo(Disposables);
 
-            TaskProgressCollection = new ReactiveCollection<ProgressBarVM>().AddTo(Disposables);
-            AddWhileSaving(Model.NowSaving, TaskProgressCollection).AddTo(Disposables);
+            _taskProgressCollection = new TaskProgressCollection();
+            _taskProgressCollection.ShowWhileSwitchOn(Model.NowSaving, "Saving...").AddTo(Disposables);
+            _broker.ToObservable<ITaskNotification>()
+                .Subscribe(_taskProgressCollection.Update)
+                .AddTo(Disposables);
+            
         }
 
+        private readonly IMessageBroker _broker;
         private readonly IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService;
         private readonly IWindowService<ProcessSettingViewModel> processSettingService;
         private readonly ReactivePropertySlim<ParameterBase> parameter;
@@ -110,7 +129,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public ReadOnlyReactivePropertySlim<DatasetViewModel> DatasetViewModel { get; }
         public ReadOnlyReactivePropertySlim<MethodViewModel> MethodViewModel { get; }
 
-        public ReactiveCollection<ProgressBarVM> TaskProgressCollection { get; }
+        private readonly TaskProgressCollection _taskProgressCollection;
+        public ReadOnlyObservableCollection<ProgressBarVM> TaskProgressCollection => _taskProgressCollection.ProgressBars;
 
         public IMsdialDataStorage<ParameterBase> Storage {
             get => storage;
@@ -143,7 +163,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public AsyncReactiveCommand AddNewDatasetCommand { get; }
 
         private Task AddNewDataset() {
-            using (var vm = new ProcessSettingViewModel(Model.CurrentProject)) {
+            using (var vm = new ProcessSettingViewModel(Model.CurrentProject, _broker)) {
                 return RunProcess(vm);
             }
         }
@@ -151,7 +171,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public AsyncReactiveCommand ExecuteAllMethodProcessCommand { get; }
 
         private Task ExecuteAllMethodProcess() {
-            using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.AllProcessMethodSettingModel)) {
+            using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.AllProcessMethodSettingModel, _broker)) {
                 return RunProcess(vm);
             }
         }
@@ -159,7 +179,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public AsyncReactiveCommand ExecuteIdentificationMethodProcessCommand { get; }
 
         private Task ExecuteIdentificationMethodProcess() {
-            using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.IdentificationProcessMethodSettingModel)) {
+            using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.IdentificationProcessMethodSettingModel, _broker)) {
                 return RunProcess(vm);
             }
         }
@@ -167,7 +187,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public AsyncReactiveCommand ExecuteAlignmentMethodProcessCommand { get; }
 
         private Task ExecuteAlignmentMethodProcess() {
-            using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.AlignmentProcessMethodSettingModel)) {
+            using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.AlignmentProcessMethodSettingModel, _broker)) {
                 return RunProcess(vm);
             }
         }
@@ -216,7 +236,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private void FilePropertyResettingWindow() {
             var storage = DatasetViewModel.Value.Model.Storage;
             var files = storage.AnalysisFiles;
-            var analysisFilePropertySetModel = new AnalysisFilePropertySetModel(files, Storage.Parameter, null);
+            var analysisFilePropertySetModel = new AnalysisFilePropertySetModel(files, new ProjectBaseParameterModel(Storage.Parameter.ProjectParam));
             using (var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetViewModel(analysisFilePropertySetModel)) {
                 var afpsw_result = analysisFilePropertyResetService.ShowDialog(analysisFilePropertySetWindowVM);
                 if (afpsw_result == true) {
@@ -231,14 +251,6 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         private void GoToTutorial() {
             System.Diagnostics.Process.Start("https://mtbinfo-team.github.io/mtbinfo.github.io/MS-DIAL/tutorial.html");
-        }
-
-        private IDisposable AddWhileSaving(IObservable<bool> saving, ReactiveCollection<ProgressBarVM> collection) {
-            return saving.Where(x => x)
-                .Select(_ => new ProgressBarVM { Label = "Saving...", IsIndeterminate = true, })
-                .Do(collection.AddOnScheduler)
-                .SelectMany(vm => saving.Where(x => !x).Take(1).Select(_ => vm))
-                .Subscribe(collection.RemoveOnScheduler);
         }
     }
 }

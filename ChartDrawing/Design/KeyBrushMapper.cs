@@ -25,6 +25,7 @@ namespace CompMs.Graphics.Design
             }
             this.func = func;
             this.defaultValue = new SolidColorBrush(defaultValue);
+            this.defaultValue.Freeze();
         }
 
         public KeyBrushMapper(IReadOnlyDictionary<U, Color> mapper, Func<T, U> func) {

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Core
 {
-    public interface IDatasetModel : INotifyPropertyChanged
+    internal interface IDatasetModel : INotifyPropertyChanged
     {
-        IMethodModel Method { get; set; }
+        IMethodModel Method { get; }
 
         IMsdialDataStorage<ParameterBase> Storage { get; }
 

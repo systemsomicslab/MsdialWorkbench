@@ -16,26 +16,27 @@ namespace CompMs.MsdialCore.Normalize
         public static void None(
             IReadOnlyList<AlignmentSpotProperty> globalSpots) {
 
+            var targets = new NormalizationTargetSpotCollection(globalSpots);
             // initialize
-            InitializeNormalizationProcess(globalSpots);
-            foreach (var spot in globalSpots) {
+            targets.Initialize();
+            foreach (var target in targets.TargetSpots) {
                 // finalization
-                SetRawHeightData(spot);
+                target.FillNormalizeProperties();
             }
         }
 
         public static void InternalStandardNormalize(
             IReadOnlyList<AlignmentSpotProperty> globalSpots,
             IonAbundanceUnit unit) {
+            var targets = new NormalizationTargetSpotCollection(globalSpots);
             // initialize
-            InitializeNormalizationProcess(globalSpots);
-            foreach (var spot in globalSpots) {
-                var isID = spot.InternalStandardAlignmentID;
-                if (isID >= 0 && isID < globalSpots.Count) {
-                    NormalizeByInternalStandard(spot, globalSpots[isID], unit);
+            targets.Initialize();
+            foreach (var target in targets.TargetSpots) {
+                if (target.Spot.InternalStandardAlignmentID >= 0 && target.Spot.InternalStandardAlignmentID < targets.TargetSpots.Count) {
+                    NormalizeByInternalStandard(target.Spot, targets.FindSpot(target.Spot.InternalStandardAlignmentID), unit);
                 }
                 else {
-                    SetRawHeightData(spot);
+                    target.FillNormalizeProperties();
                 }
             }
         }
@@ -83,22 +84,24 @@ namespace CompMs.MsdialCore.Normalize
             IReadOnlyList<AnalysisFileBean> files,
             IReadOnlyList<AlignmentSpotProperty> globalSpots,
             IonAbundanceUnit unit) {
+            var targets = new NormalizationTargetSpotCollection(globalSpots);
             // initialize
-            InitializeNormalizationProcess(globalSpots);
-            foreach (var spot in globalSpots) {
-                SetRawHeightData(spot);
+            targets.Initialize();
+            foreach (var target in targets.TargetSpots) {
+                target.FillNormalizeProperties();
             }
-            var optSpan = LowessSpanTune(files, globalSpots);
-            LowessNormalize(files, globalSpots, optSpan);
+            var optSpan = LowessSpanTune(files, targets.Spots);
+            LowessNormalize(files, targets.Spots, optSpan);
         }
 
         public static void ISNormThenByLowessNormalize(
             IReadOnlyList<AnalysisFileBean> files,
             IReadOnlyList<AlignmentSpotProperty> globalSpots,
             IonAbundanceUnit unit) {
-            InternalStandardNormalize(globalSpots, unit);
-            var optSpan = LowessSpanTune(files, globalSpots);
-            LowessNormalize(files, globalSpots, optSpan);
+            var targets = new NormalizationTargetSpotCollection(globalSpots);
+            InternalStandardNormalize(targets.Spots, unit);
+            var optSpan = LowessSpanTune(files, targets.Spots);
+            LowessNormalize(files, targets.Spots, optSpan);
         }
 
         public static void SplashNormalize(
@@ -108,85 +111,40 @@ namespace CompMs.MsdialCore.Normalize
             IonAbundanceUnit unit,
             IMatchResultEvaluator<MsScanMatchResult> evaluator) {
 
+            var targets = new NormalizationTargetSpotCollection(globalSpots);
+            var compounds = new StandardCompoundSet(splashLipids);
+
             // initialize
-            InitializeNormalizationProcess(globalSpots);
+            targets.Initialize();
             
             //normalization to 1 for IS spot
 
             // first try to normalize IS peaks
-            foreach (var compound in splashLipids) {
-                NormalizeInternalStandard(globalSpots[compound.PeakID], compound, unit);
+            foreach (var compound in compounds.Compounds) {
+                targets.NormalizeInternalStandardSpot(compound, unit);
             }
 
             var lipidClasses = new HashSet<string>(LipidomicsConverter.GetLipidClasses());
-            var stdCompoundsTable = splashLipids.Where(lipid => lipid.TargetClass != "Any others").ToLookup(compound => compound.TargetClass);
-            var otherCompound = splashLipids.FirstOrDefault(lipid => lipid.TargetClass == "Any others");
-            foreach (var spot in globalSpots) {
-
+            foreach (var target in targets.TargetSpots) {
                 // first try to normalize except for "any others" property
-                if (IsNormalized(spot)) {
+                if (target.IsNormalized()) {
                     continue;
                 }
-                var lipidclass = GetAnnotatedLipidClass(spot, refer, lipidClasses, evaluator);
-                var stdCompound = stdCompoundsTable[lipidclass].FirstOrDefault();
+                var lipidclass = target.GetAnnotatedLipidClass(evaluator, refer, lipidClasses);
+                var stdCompound = compounds.StdCompoundsTable[lipidclass].FirstOrDefault();
                 if (stdCompound != null) {
-                    NormalizeByInternalStandard(spot, globalSpots[stdCompound.PeakID], stdCompound, unit);
+                    target.NormalizeByInternalStandard(targets.FindSpot(stdCompound.PeakID), stdCompound, unit);
                     continue;
                 }
 
                 // second, normalized by any other tagged compounds
-                if (otherCompound != null) {
-                    NormalizeByInternalStandard(spot, globalSpots[otherCompound.PeakID], otherCompound, unit);
+                if (compounds.OtherCompound != null) {
+                    target.NormalizeByInternalStandard(targets.FindSpot(compounds.OtherCompound.PeakID), compounds.OtherCompound, unit);
                     continue;
                 }
 
                 // finalization
-                SetRawHeightData(spot);
-            }
-        }
-
-        private static void SetRawHeightData(AlignmentSpotProperty spot) {
-            spot.IonAbundanceUnit = IonAbundanceUnit.Height;
-            foreach (var targetProp in spot.AlignedPeakProperties) {
-                targetProp.NormalizedPeakHeight = targetProp.PeakHeightTop;
-                targetProp.NormalizedPeakAreaAboveBaseline = targetProp.PeakAreaAboveBaseline;
-                targetProp.NormalizedPeakAreaAboveZero = targetProp.PeakAreaAboveZero;
-            }
-        }
-
-        private static void NormalizeInternalStandard(AlignmentSpotProperty spot, StandardCompound compound, IonAbundanceUnit unit) {
-            spot.IonAbundanceUnit = unit;
-            spot.InternalStandardAlignmentID = compound.PeakID;
-            foreach (var prop in spot.AlignedPeakProperties) {
-                prop.NormalizedPeakHeight = compound.Concentration;
-                prop.NormalizedPeakAreaAboveBaseline = compound.Concentration;
-                prop.NormalizedPeakAreaAboveZero = compound.Concentration;
-            }
-        }
-
-        private static bool IsNormalized(AlignmentSpotProperty spot) {
-            return spot.InternalStandardAlignmentID >= 0;
-        }
-
-        private static void NormalizeByInternalStandard(AlignmentSpotProperty spot, 
-            AlignmentSpotProperty isSpot, StandardCompound compound, IonAbundanceUnit unit) {
-            spot.InternalStandardAlignmentID = compound.PeakID;
-            spot.IonAbundanceUnit = unit;
-            var targetProps = spot.AlignedPeakProperties;
-            var isProps = isSpot.AlignedPeakProperties;
-            for (int i = 0; i < isProps.Count; i++) {
-                var isProp = isProps[i];
-                var targetProp = targetProps[i];
-
-                var baseIntensity = isProp.PeakHeightTop > 0 ? isProp.PeakHeightTop : 1.0;
-                var targetIntensity = targetProp.PeakHeightTop;
-                targetProp.NormalizedPeakHeight = compound.Concentration *  targetIntensity / baseIntensity;
-                var baseArea = isProp.PeakAreaAboveBaseline > 0 ? isProp.PeakAreaAboveBaseline : 1.0;
-                var targetArea = targetProp.PeakAreaAboveBaseline;
-                targetProp.NormalizedPeakAreaAboveBaseline = compound.Concentration *  targetArea / baseArea;
-                var baseAreaZero = isProp.PeakAreaAboveZero > 0 ? isProp.PeakAreaAboveZero : 1.0;
-                var targetAreaZero = targetProp.PeakAreaAboveZero;
-                targetProp.NormalizedPeakAreaAboveZero = compound.Concentration *  targetAreaZero / baseAreaZero;
+                target.FillNormalizeProperties();
             }
         }
 
@@ -215,45 +173,11 @@ namespace CompMs.MsdialCore.Normalize
             }
         }
 
-
-        private static void InitializeNormalizationProcess(IReadOnlyList<AlignmentSpotProperty> spots) {
-            foreach (var spot in spots) {
-                spot.InternalStandardAlignmentID = -1;
-                foreach (var prop in spot.AlignedPeakProperties) {
-                    prop.NormalizedPeakHeight = -1d;
-                    prop.NormalizedPeakAreaAboveBaseline = -1d;
-                    prop.NormalizedPeakAreaAboveZero = -1d;
-                }
-            }
-        }
-
-        private static string GetAnnotatedLipidClass(AlignmentSpotProperty spot, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, HashSet<string> lipidClasses, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
-            if (string.IsNullOrEmpty(spot.Name) || spot.IsAnnotationSuggested(evaluator)) {
-                return "Unknown";
-            }
-
-            var reference = refer.Refer(spot.MatchResults.Representative);
-            var lipidClass = reference?.CompoundClass;
-            if (string.IsNullOrEmpty(lipidClass) && lipidClasses.Contains(reference?.Ontology)) {
-                lipidClass = reference.Ontology;
-            }
-
-            if (!string.IsNullOrEmpty(lipidClass)) {
-                var lbmClass = LipidomicsConverter.ConvertMsdialClassDefinitionToLbmClassEnumVS2(lipidClass);
-                lipidClass = LipidomicsConverter.ConvertLbmClassEnumToMsdialClassDefinitionVS2(lbmClass);
-            }
-
-            return string.IsNullOrEmpty(lipidClass) ? "Unknown" : lipidClass;
-        }
-
-        public static (double, double) GetMinimumLowessOptSize(IReadOnlyList<AnalysisFileBean> files) {
+        public static double GetMinimumLowessOptSize(IReadOnlyList<AnalysisFileBean> files) {
             var count = files.Count(n => n.AnalysisFileIncluded && n.AnalysisFileType == AnalysisFileType.QC);
             var minOptSize = SmootherMathematics.GetMinimumLowessSpan(count);
-
-            return (count, minOptSize);
+            return minOptSize;
         }
-
-        
 
         public static void LowessNormalize(
             IReadOnlyList<AnalysisFileBean> files,
@@ -355,45 +279,26 @@ namespace CompMs.MsdialCore.Normalize
 
         }
 
-        public static double LowessSpanTune(
-            IReadOnlyList<AnalysisFileBean> files,
-            IReadOnlyList<AlignmentSpotProperty> globalSpots) {
+        public static double LowessSpanTune(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<AlignmentSpotProperty> globalSpots) {
 
-            var qcList = new List<double[]>();
-            var items = GetMinimumLowessOptSize(files);
-            var minSpan = items.Item2;
+            var fileCollection = new AnalysisFileCollection(files);
+            var minSpan = fileCollection.MinimumLowessSpan();
             var optSpanList = new List<double>();
-
-            var batchDict = files.GroupBy(item => item.AnalysisBatch).ToDictionary(grp => grp.Key, grp => grp.ToList());
-            foreach (var eachBatch in batchDict) {
-                var analysisFileBeanCollectionPerBatch = eachBatch.Value;
-                for (int i = 0; i < globalSpots.Count; i++) {
-                    qcList = new List<double[]>();
-                    for (int j = 0; j < analysisFileBeanCollectionPerBatch.Count; j++) {
-                        var alignedProp = analysisFileBeanCollectionPerBatch[j];
-                        if (alignedProp.AnalysisFileType == AnalysisFileType.QC && alignedProp.AnalysisFileIncluded) {
-                            var variable = globalSpots[i].AlignedPeakProperties[alignedProp.AnalysisFileId].PeakHeightTop;
-                            qcList.Add(new double[] { alignedProp.AnalysisFileAnalyticalOrder, variable });
-                        }
-                    }
-
-                    qcList = qcList.OrderBy(n => n[0]).ToList();
-
-                    var xQcArray = new double[qcList.Count];
-                    var yQcArray = new double[qcList.Count];
-
-                    for (int j = 0; j < qcList.Count; j++) { xQcArray[j] = qcList[j][0]; yQcArray[j] = qcList[j][1]; }
-
+            foreach (var eachBatch in files.GroupBy(item => item.AnalysisBatch)) {
+                var analysisFileBeanCollectionPerBatch = eachBatch
+                    .Where(bean => bean.AnalysisFileType == AnalysisFileType.QC && bean.AnalysisFileIncluded)
+                    .OrderBy(bean => bean.AnalysisFileAnalyticalOrder)
+                    .ToArray();
+                var xQcArray = analysisFileBeanCollectionPerBatch.Select(bean => (double)bean.AnalysisFileAnalyticalOrder).ToArray();
+                foreach (var spot in globalSpots) {
+                    var yQcArray = analysisFileBeanCollectionPerBatch.Select(bean => spot.AlignedPeakProperties[bean.AnalysisFileId].PeakHeightTop).ToArray();
 
                     var recoSpan = SmootherMathematics.GetOptimalLowessSpanByCrossValidation(xQcArray, yQcArray, minSpan, 0.05, 3, 7);
                     optSpanList.Add(recoSpan);
                 }
             }
-            var optSpanArray = optSpanList.ToArray();
-            var optSpan = BasicMathematics.Mean(optSpanArray);
-
+            var optSpan = BasicMathematics.Mean(optSpanList);
             return Math.Round(optSpan, 2);
         }
-
     }
 }

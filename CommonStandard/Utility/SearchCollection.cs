@@ -6,7 +6,7 @@ namespace CompMs.Common.Utility
 {
     public static class SearchCollection
     {
-        public static int LowerBound<T>(IReadOnlyList<T> collection, T value, int start, int end, Comparison<T> compare)
+        public static int LowerBound<T, U>(this IReadOnlyList<T> collection, U value, int start, int end, Func<T, U, int> compare)
         {
             int lo = start;
             int hi = end;
@@ -22,32 +22,32 @@ namespace CompMs.Common.Utility
             return lo;
         }
 
-        public static int LowerBound<T>(IReadOnlyList<T> collection, T value, Comparison<T> compare)
+        public static int LowerBound<T, U>(this IReadOnlyList<T> collection, U value, Func<T, U, int> compare)
         {
             return LowerBound(collection, value, 0, collection.Count, compare);
         }
 
-        public static int LowerBound<T>(IReadOnlyList<T> collection, T value, int start, int end, IComparer<T> comparer)
+        public static int LowerBound<T>(this IReadOnlyList<T> collection, T value, int start, int end, IComparer<T> comparer)
         {
             return LowerBound(collection, value, start, end, comparer.Compare);
         }
 
-        public static int LowerBound<T>(IReadOnlyList<T> collection, T value) where T : IComparable
+        public static int LowerBound<T>(this IReadOnlyList<T> collection, T value) where T : IComparable
         {
             return LowerBound(collection, value, 0, collection.Count, Comparer<T>.Default.Compare);
         }
 
-        public static int LowerBound<T>(IReadOnlyList<T> collection, T value, int start, int end) where T : IComparable
+        public static int LowerBound<T>(this IReadOnlyList<T> collection, T value, int start, int end) where T : IComparable
         {
             return LowerBound(collection, value, start, end, Comparer<T>.Default.Compare);
         }
 
-        public static int LowerBound<T>(IReadOnlyList<T> collection, T value, IComparer<T> comparer)
+        public static int LowerBound<T>(this IReadOnlyList<T> collection, T value, IComparer<T> comparer)
         {
             return LowerBound(collection, value, 0, collection.Count, comparer.Compare);
         }
 
-        public static int UpperBound<T>(IReadOnlyList<T> collection, T value, int start, int end, Comparison<T> compare)
+        public static int UpperBound<T, U>(this IReadOnlyList<T> collection, U value, int start, int end, Func<T, U, int> compare)
         {
             int lo = start;
             int hi = end;
@@ -64,27 +64,27 @@ namespace CompMs.Common.Utility
             return lo;
         }
 
-        public static int UpperBound<T>(IReadOnlyList<T> collection, T value, Comparison<T> compare)
+        public static int UpperBound<T, U>(this IReadOnlyList<T> collection, U value, Func<T, U, int> compare)
         {
             return UpperBound(collection, value, 0, collection.Count, compare);
         }
 
-        public static int UpperBound<T>(IReadOnlyList<T> collection, T value, int start, int end, IComparer<T> comparer)
+        public static int UpperBound<T>(this IReadOnlyList<T> collection, T value, int start, int end, IComparer<T> comparer)
         {
             return UpperBound(collection, value, start, end, comparer.Compare);
         }
 
-        public static int UpperBound<T>(IReadOnlyList<T> collection, T value) where T : IComparable
+        public static int UpperBound<T>(this IReadOnlyList<T> collection, T value) where T : IComparable
         {
             return UpperBound(collection, value, 0, collection.Count, Comparer<T>.Default.Compare);
         }
 
-        public static int UpperBound<T>(IReadOnlyList<T> collection, T value, int start, int end) where T : IComparable
+        public static int UpperBound<T>(this IReadOnlyList<T> collection, T value, int start, int end) where T : IComparable
         {
             return UpperBound(collection, value, start, end, Comparer<T>.Default.Compare);
         }
 
-        public static int UpperBound<T>(IReadOnlyList<T> collection, T value, IComparer<T> comparer)
+        public static int UpperBound<T>(this IReadOnlyList<T> collection, T value, IComparer<T> comparer)
         {
             return UpperBound(collection, value, 0, collection.Count, comparer.Compare);
         }

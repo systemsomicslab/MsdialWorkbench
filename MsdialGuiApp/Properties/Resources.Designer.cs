@@ -70,7 +70,7 @@ namespace CompMs.App.Msdial.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to http://prime.psc.riken.jp/compms/msdial/vdd.json.
+        ///   Looks up a localized string similar to http://prime.psc.riken.jp/compms/msdial/vmsdial.json.
         /// </summary>
         public static string VDD_URI {
             get {
@@ -79,7 +79,7 @@ namespace CompMs.App.Msdial.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 5.0.0.
+        ///   Looks up a localized string similar to 5.0.3-alpha.
         /// </summary>
         public static string VERSION {
             get {

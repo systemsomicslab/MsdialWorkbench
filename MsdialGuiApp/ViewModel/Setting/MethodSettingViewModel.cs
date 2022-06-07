@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public class MethodSettingViewModel : ViewModelBase, ISettingViewModel
+    internal sealed class MethodSettingViewModel : ViewModelBase, ISettingViewModel
     {
         public MethodSettingViewModel(MethodSettingModel model, IObservable<bool> isEnabled) {
             Model = model ?? throw new ArgumentNullException(nameof(model));
@@ -87,8 +87,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }           
         }
 
-        public bool TryRun() {
-            return Model.TryRun();
+        public Task<bool> TryRunAsync() {
+            return Model.TryRunAsync(default);
         }
 
         // TODO: delete method

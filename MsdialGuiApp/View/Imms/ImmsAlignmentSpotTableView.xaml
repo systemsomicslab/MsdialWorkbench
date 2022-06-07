@@ -8,6 +8,7 @@
              xmlns:rs="clr-namespace:CompMs.Graphics.UI.RangeSlider;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:converter="clr-namespace:CompMs.App.Msdial.ViewModel.Converter"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              d:DataContext="{d:DesignInstance Type=vm:ImmsAlignmentSpotTableViewModel}"
              d:DesignHeight="450" d:DesignWidth="1200">
     <d:DesignerProperties.DesignStyle>
@@ -103,6 +104,7 @@
                   VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                   Unloaded="DataGrid_Unloaded"
                   SelectionChanged="PeakSpotView_SelectionChanged"
+                  behavior:DataGridIsEdittingBehavior.IsEditting="{Binding IsEditting.Value, Mode=OneWayToSource}"
                   Grid.Row="1">
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
@@ -156,6 +158,14 @@
                                     Binding="{Binding Path=Comment}"
                                     IsReadOnly="False"
                                     Width="2*" />
+                <DataGridTextColumn Header="Annotation method"
+                                    Binding="{Binding Path=AnnotatorID}"
+                                    IsReadOnly="True"
+                                    Width="120"/>
+                <DataGridTextColumn Header="Match score"
+                                    Binding="{Binding Path=ScanMatchResult.TotalScore, StringFormat=F4}"
+                                    IsReadOnly="True"
+                                    Width="70" />
                 <DataGridTextColumn Header="S/N"
                                     Binding="{Binding Path=SignalToNoiseAve, StringFormat=F1}"
                                     IsReadOnly="True"

@@ -12,7 +12,7 @@ using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public class ProjectParameterSettingViewModel : ViewModelBase, ISettingViewModel
+    internal sealed class ProjectParameterSettingViewModel : ViewModelBase, ISettingViewModel
     {
         public ProjectParameterSettingViewModel(ProjectParameterSettingModel model) {
             Model = model ?? throw new ArgumentNullException(nameof(model));

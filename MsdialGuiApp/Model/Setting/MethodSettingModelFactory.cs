@@ -1,10 +1,10 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.Model.Lcms;
-using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.Algorithm;
@@ -14,6 +14,7 @@ using CompMs.MsdialDimsCore.Parameter;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.IO;
 using System.Linq;
@@ -36,29 +37,21 @@ namespace CompMs.App.Msdial.Model.Setting
         IMethodModel BuildMethod();
     }
 
-    public sealed class MethodSettingModelFactory : IMethodSettingModelFactory
+    internal sealed class MethodSettingModelFactory : IMethodSettingModelFactory
     {
-        public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, IObservable<Unit> observeParameterChanged, ProcessOption process)
-            : this(storage,
-                  observeParameterChanged.Select(_ => storage.Parameter),
-                  observeParameterChanged.Select(_ => new HeightBarItemsLoader(storage.Parameter.FileID_ClassName)),
-                  process) {
-
-        }
-
-        public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, IObservable<ParameterBase> parameterAsObservable, IObservable<IBarItemsLoader> loader, ProcessOption process) {
+        public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker messageBroker) {
             switch (storage) {
                 case IMsdialDataStorage<MsdialLcImMsParameter> lcimmsStorage:
-                    factoryImpl = new LcimmsMethodSettingModelFactory(lcimmsStorage, process);
+                    factoryImpl = new LcimmsMethodSettingModelFactory(lcimmsStorage, projectBaseParameter, process);
                     break;
                 case IMsdialDataStorage<MsdialLcmsParameter> lcmsStorage:
-                    factoryImpl = new LcmsMethodSettingModelFactory(lcmsStorage, parameterAsObservable, loader, process);
+                    factoryImpl = new LcmsMethodSettingModelFactory(lcmsStorage, projectBaseParameter, process, messageBroker);
                     break;
                 case IMsdialDataStorage<MsdialImmsParameter> immsStorage:
-                    factoryImpl = new ImmsMethodSettingModelFactory(immsStorage, process);
+                    factoryImpl = new ImmsMethodSettingModelFactory(immsStorage, projectBaseParameter, process, messageBroker);
                     break;
                 case IMsdialDataStorage<MsdialDimsParameter> dimsStorage:
-                    factoryImpl = new DimsMethodSettingModelFactory(dimsStorage, process);
+                    factoryImpl = new DimsMethodSettingModelFactory(dimsStorage, projectBaseParameter, process, messageBroker);
                     break;
                 default:
                     throw new ArgumentException(nameof(storage));
@@ -82,11 +75,15 @@ namespace CompMs.App.Msdial.Model.Setting
     sealed class DimsMethodSettingModelFactory : IMethodSettingModelFactory
     {
         private readonly IMsdialDataStorage<MsdialDimsParameter> storage;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly ProcessOption process;
+        private readonly IMessageBroker _messageBroker;
 
-        public DimsMethodSettingModelFactory(IMsdialDataStorage<MsdialDimsParameter> storage, ProcessOption process) {
+        public DimsMethodSettingModelFactory(IMsdialDataStorage<MsdialDimsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker messageBroker) {
             this.storage = storage;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             this.process = process;
+            _messageBroker = messageBroker;
         }
 
         public AdductIonSettingModel CreateAdductIonSetting() {
@@ -148,27 +145,33 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new DimsMethodModel(storage, storage.AnalysisFiles, storage.AlignmentFiles);
+            var method = new DimsMethodModel(storage, storage.AnalysisFiles, storage.AlignmentFiles, _projectBaseParameter, _messageBroker);
+            method.Load();
+            return method;
         }
     }
 
     sealed class LcmsMethodSettingModelFactory : IMethodSettingModelFactory
     {
         private readonly IMsdialDataStorage<MsdialLcmsParameter> storage;
-        private readonly IObservable<ParameterBase> parameterAsObservable;
-        private readonly IObservable<IBarItemsLoader> loader;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly ProcessOption process;
+        private readonly IMessageBroker _broker;
 
         public LcmsMethodSettingModelFactory(
-            IMsdialDataStorage<MsdialLcmsParameter> storage, 
-            IObservable<ParameterBase> parameterAsObservable,
-            IObservable<IBarItemsLoader> observeBarItemsLoader,
-            ProcessOption process) {
+            IMsdialDataStorage<MsdialLcmsParameter> storage,
+            ProjectBaseParameterModel projectBaseParameter,
+            ProcessOption process,
+            IMessageBroker broker) {
 
             this.storage = storage;
-            this.parameterAsObservable = parameterAsObservable;
-            loader = observeBarItemsLoader;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             this.process = process;
+            _broker = broker;
+            if (this.storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
+                this.storage.Parameter.MaxChargeNumber = 8;
+                this.storage.Parameter.RemoveAfterPrecursor = false;
+            }
         }
 
         public AdductIonSettingModel CreateAdductIonSetting() {
@@ -209,10 +212,7 @@ namespace CompMs.App.Msdial.Model.Setting
                     }
                 }
             }
-            else if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                parameter.MaxChargeNumber = 8;
-                parameter.RemoveAfterPrecursor = false;
-            }
+            
             return model;
         }
 
@@ -229,18 +229,22 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new LcmsMethodModel(storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true), parameterAsObservable, loader);
+            return new LcmsMethodModel(storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true), _projectBaseParameter, _broker);
         }
     }
 
     sealed class ImmsMethodSettingModelFactory : IMethodSettingModelFactory
     {
         private readonly IMsdialDataStorage<MsdialImmsParameter> storage;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly ProcessOption process;
+        private readonly IMessageBroker _broker;
 
-        public ImmsMethodSettingModelFactory(IMsdialDataStorage<MsdialImmsParameter> storage, ProcessOption process) {
+        public ImmsMethodSettingModelFactory(IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker broker) {
             this.storage = storage;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             this.process = process;
+            _broker = broker;
         }
 
         public AdductIonSettingModel CreateAdductIonSetting() {
@@ -297,17 +301,21 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new ImmsMethodModel(storage);
+            var method = new ImmsMethodModel(storage, _projectBaseParameter, _broker);
+            method.Load();
+            return method;
         }
     }
 
     sealed class LcimmsMethodSettingModelFactory : IMethodSettingModelFactory
     {
         private readonly IMsdialDataStorage<MsdialLcImMsParameter> storage;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly ProcessOption process;
 
-        public LcimmsMethodSettingModelFactory(IMsdialDataStorage<MsdialLcImMsParameter> storage, ProcessOption process) {
+        public LcimmsMethodSettingModelFactory(IMsdialDataStorage<MsdialLcImMsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process) {
             this.storage = storage;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             this.process = process;
         }
 
@@ -365,7 +373,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new LcimmsMethodModel(storage);
+            return new LcimmsMethodModel(storage, _projectBaseParameter);
         }
     }
 }

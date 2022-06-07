@@ -15,6 +15,7 @@ using CompMs.MsdialLcImMsApi.DataObj;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.DataObj;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -24,22 +25,25 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class DatasetParameterSettingModel : BindableBase
+    internal sealed class DatasetParameterSettingModel : BindableBase
     {
         private readonly DatasetFileSettingModel fileSettingModel;
         private readonly Action<DatasetModel> next;
+        private readonly IMessageBroker _broker;
 
-        public DatasetParameterSettingModel(DateTime dt, DatasetFileSettingModel fileSettingModel, Action<DatasetModel> next) {
+        public DatasetParameterSettingModel(DateTime dt, DatasetFileSettingModel fileSettingModel, Action<DatasetModel> next, IMessageBroker broker) {
             this.fileSettingModel = fileSettingModel;
             this.next = next;
+            _broker = broker;
             fileSettingModel.PropertyChanged += UpdateDatasetFolderPath;
-            DatasetFileName = $"AlignmentResult_{dt:yyyy_MM_dd_hh_mm_ss}";
+            DatasetFileName = $"Dataset_{dt:yyyy_MM_dd_HH_mm_ss}.mddata";
 
             IsReadOnly = false;
         }
 
-        public DatasetParameterSettingModel(ParameterBase parameter, DatasetFileSettingModel fileSettingModel) {
+        public DatasetParameterSettingModel(ParameterBase parameter, DatasetFileSettingModel fileSettingModel, IMessageBroker broker) {
             this.fileSettingModel = fileSettingModel;
+            _broker = broker;
             fileSettingModel.PropertyChanged += UpdateDatasetFolderPath;
             this.next = null;
 
@@ -184,6 +188,10 @@ namespace CompMs.App.Msdial.Model.Setting
             if (!string.IsNullOrEmpty(Comment))
                 Comment = Comment.Replace("\r", "").Replace("\n", " ");
 
+            if (!DatasetFileName.EndsWith(".mddata")) {
+                DatasetFileName += ".mddata";
+            }
+
             var parameter = ParameterFactory.CreateParameter(Ionization, SeparationType);
             var projectParameter = parameter.ProjectParam;
             fileSettingModel.CommitFileParameters(projectParameter);
@@ -214,7 +222,7 @@ namespace CompMs.App.Msdial.Model.Setting
             storage.DataBaseMapper = new DataBaseMapper();
             storage.DataBases = DataBaseStorage.CreateEmpty();
 
-            var dataset = new DatasetModel(storage);
+            var dataset = new DatasetModel(storage, _broker);
             next?.Invoke(dataset);
         }
 

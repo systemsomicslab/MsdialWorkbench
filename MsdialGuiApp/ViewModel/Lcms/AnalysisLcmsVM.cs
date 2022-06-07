@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Search;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
@@ -14,18 +15,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    class AnalysisLcmsVM : AnalysisFileViewModel
+    internal sealed class AnalysisLcmsVM : AnalysisFileViewModel
     {
         public AnalysisLcmsVM(
             LcmsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, 
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
+            FocusControlManager focusControlManager)
             : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -43,6 +46,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(proteomicsTableService));
             }
 
+            if (focusControlManager is null) {
+                throw new ArgumentNullException(nameof(focusControlManager));
+            }
+
             this.model = model;
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
@@ -51,11 +58,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
             PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
 
-            var DisplayFilters = this.ObserveProperty(m => m.DisplayFilters)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            PlotViewModel = new AnalysisPeakPlotViewModel(this.model.PlotModel, brushSource: Observable.Return(this.model.Brush)).AddTo(Disposables);
+            var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
+            PlotViewModel = new AnalysisPeakPlotViewModel(this.model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
             EicViewModel = new EicViewModel(
                 this.model.EicModel,
                 horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
@@ -69,16 +73,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 item => item.ToString(),
                 Colors.Blue);
 
+            var projectParameter = this.model.Parameter.ProjectParam;
             var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
                 comment =>
                 {
                     var commentString = comment.ToString();
-                    var parameter = this.model.Parameter.ProjectParam;
-                    if (parameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
+                    if (projectParameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
                         return Color.FromRgb(color[0], color[1], color[2]);
                     }
                     else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
-                        && parameter.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
+                        && projectParameter.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
                         return Color.FromRgb(color[0], color[1], color[2]);
                     }
                     else {
@@ -87,9 +91,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 },
                 true);
 
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel,
-                upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
-                lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
 
             RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(this.model.RawPurifiedSpectrumsModel,
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
@@ -108,7 +110,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.RtLowerValue,
                 PeakSpotNavigatorViewModel.RtUpperValue,
                 PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                PeakSpotNavigatorViewModel.CommentFilterKeyword)
+                PeakSpotNavigatorViewModel.CommentFilterKeyword,
+                PeakSpotNavigatorViewModel.IsEditting)
             .AddTo(Disposables);
 
             ProteomicsPeakTableViewModel = new LcmsProteomicsPeakTableViewModel(
@@ -120,7 +123,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.RtUpperValue,
                 PeakSpotNavigatorViewModel.ProteinFilterKeyword,
                 PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                PeakSpotNavigatorViewModel.CommentFilterKeyword)
+                PeakSpotNavigatorViewModel.CommentFilterKeyword,
+                PeakSpotNavigatorViewModel.IsEditting)
             .AddTo(Disposables);
 
             SearchCompoundCommand = this.model.CanSearchCompound
@@ -131,10 +135,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             ExperimentSpectrumViewModel = model.ExperimentSpectrumModel
                 .Where(model_ => model_ != null)
                 .Select(model_ => new ExperimentSpectrumViewModel(model_))
+                .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
             FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
+
+            SaveMs2RawSpectrumCommand = model.CanSaveRawSpectra
+                .ToAsyncReactiveCommand<Window>()
+                .WithSubscribe(SaveRawSpectraAsync)
+                .AddTo(Disposables);
         }
 
         private readonly LcmsAnalysisModel model;
@@ -185,8 +195,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
         private DelegateCommand<Window> saveMs2SpectrumCommand;
 
-        public DelegateCommand<Window> SaveMs2RawSpectrumCommand => saveMs2RawSpectrumCommand ?? (saveMs2RawSpectrumCommand = new DelegateCommand<Window>(SaveRawSpectra, CanSaveRawSpectra));
-        private DelegateCommand<Window> saveMs2RawSpectrumCommand;
+        public AsyncReactiveCommand<Window> SaveMs2RawSpectrumCommand { get; }
 
         public ReadOnlyReactivePropertySlim<ExperimentSpectrumViewModel> ExperimentSpectrumViewModel { get; }
 
@@ -208,7 +217,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             return this.model.CanSaveSpectra();
         }
 
-        private void SaveRawSpectra(Window owner) {
+        private async Task SaveRawSpectraAsync(Window owner) {
             var sfd = new SaveFileDialog {
                 Title = "Save raw spectra",
                 Filter = "NIST format(*.msp)|*.msp", // MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf;
@@ -218,12 +227,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             if (sfd.ShowDialog(owner) == true) {
                 var filename = sfd.FileName;
-                this.model.SaveRawSpectra(filename);
+                await model.SaveRawSpectra(filename).ConfigureAwait(false);
             }
         }
 
         private bool CanSaveRawSpectra(Window owner) {
-            return this.model.CanSaveRawSpectra();
+            return this.model.CanSaveRawSpectra.Value;
         }
     }
 

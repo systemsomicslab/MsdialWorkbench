@@ -2,12 +2,11 @@
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Core.Base;
-using CompMs.Graphics.Design;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -15,21 +14,25 @@ using System;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    class AnalysisImmsVM : AnalysisFileViewModel {
+    internal sealed class AnalysisImmsVM : AnalysisFileViewModel {
         public AnalysisImmsVM(
             ImmsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            FocusControlManager focusControlManager)
             : base(model) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
+
+            if (focusControlManager is null) {
+                throw new ArgumentNullException(nameof(focusControlManager));
             }
 
             this.model = model;
@@ -77,31 +80,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             .Subscribe(_ => Ms1PeaksView.Refresh())
             .AddTo(Disposables);
 
-            PlotViewModel = new AnalysisPeakPlotViewModel(this.model.PlotModel, brushSource: Observable.Return(this.model.Brush)).AddTo(Disposables);
+            var (focusAction, focused) = focusControlManager.Request();
+            PlotViewModel = new AnalysisPeakPlotViewModel(this.model.PlotModel, focusAction, focused).AddTo(Disposables);
             EicViewModel = new EicViewModel(this.model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
 
-
-            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-                this.model.parameter.ProjectParam.SpectrumCommentToColorBytes
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-                ),
-                item => item.ToString(),
-                Colors.Blue);
-
-            var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-               this.model.parameter.ProjectParam.SpectrumCommentToColorBytes
-               .ToDictionary(
-                   kvp => kvp.Key,
-                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-               ),
-               item => item.ToString(),
-               Colors.Red);
-
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel,
-                upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
-                lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel).AddTo(Disposables);
             SurveyScanViewModel = new SurveyScanViewModel(this.model.SurveyScanModel, horizontalAxis: PlotViewModel.VerticalAxis).AddTo(Disposables);
             PeakTableViewModel = new ImmsAnalysisPeakTableViewModel(
                 this.model.PeakTableModel,
@@ -111,7 +94,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 DriftLower,
                 DriftUpper,
                 MetaboliteFilterKeyword,
-                CommentFilterKeyword)
+                CommentFilterKeyword,
+                Observable.Never<bool>().ToReactiveProperty())
                 .AddTo(Disposables);
 
             SearchCompoundCommand = this.model.CanSearchCompound

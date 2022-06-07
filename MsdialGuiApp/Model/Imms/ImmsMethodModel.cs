@@ -31,19 +31,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Reactive.Bindings.Notifiers;
+using System.Threading;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
-    class ImmsMethodModel : MethodModelBase
+    internal sealed class ImmsMethodModel : MethodModelBase
     {
         static ImmsMethodModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+        private readonly IMessageBroker _broker;
 
-        public ImmsMethodModel(IMsdialDataStorage<MsdialImmsParameter> storage)
-            : base(storage.AnalysisFiles, storage.AlignmentFiles) {
+        public ImmsMethodModel(IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
+            : base(storage.AnalysisFiles, storage.AlignmentFiles, projectBaseParameter) {
             Storage = storage;
+            _broker = broker;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
 
             var parameter = Storage.Parameter;
@@ -89,7 +93,7 @@ namespace CompMs.App.Msdial.Model.Imms
             ProviderFactory = parameter?.ProviderFactoryParameter.Create(5, true);
         }
 
-        public override void Run(ProcessOption option) {
+        public override Task RunAsync(ProcessOption option, CancellationToken token) {
             Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             ProviderFactory = Storage.Parameter.ProviderFactoryParameter.Create(5, true);
@@ -98,16 +102,16 @@ namespace CompMs.App.Msdial.Model.Imms
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
                 if (!ProcessAnnotaion(null, Storage))
-                    return;
+                    return Task.CompletedTask;
             }
 
             // Run Alignment
             if (processOption.HasFlag(ProcessOption.Alignment)) {
                 if (!ProcessAlignment(null, Storage))
-                    return;
+                    return Task.CompletedTask;
             }
 
-            LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+            return LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token);
         }
 
         private bool ProcessAnnotaion(Window owner, IMsdialDataStorage<MsdialImmsParameter> storage) {
@@ -192,7 +196,7 @@ namespace CompMs.App.Msdial.Model.Imms
             }
         }
 
-        protected override AnalysisModelBase LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
@@ -210,7 +214,7 @@ namespace CompMs.App.Msdial.Model.Imms
             return AnalysisModel;
         }
 
-        protected override AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
@@ -229,7 +233,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public void ExportAlignment(Window owner) {
             var container = Storage;
             var metadataAccessor = new ImmsMetadataAccessor(container.DataBaseMapper, container.Parameter);
-            var vm = new AlignmentResultExport2VM(AlignmentFile, container.AlignmentFiles, container);
+            var vm = new AlignmentResultExport2VM(AlignmentFile, container.AlignmentFiles, container, _broker);
             vm.ExportTypes.AddRange(
                 new List<ExportType2>
                 {

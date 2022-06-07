@@ -1,45 +1,52 @@
-﻿using CompMs.App.Msdial.Dims;
-using CompMs.App.Msdial.Model.Dims;
+﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Export;
+using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.Search;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.UI.ProgressBar;
-using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialDimsCore.Export;
-using CompMs.MsdialDimsCore.Parameter;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    class DimsMethodVM : MethodViewModel {
-        public DimsMethodVM(
+    internal sealed class DimsMethodVM : MethodViewModel {
+        private readonly DimsMethodModel _model;
+        private readonly IMessageBroker _broker;
+        private readonly FocusControlManager _focusControlManager;
+
+        private DimsMethodVM(
             DimsMethodModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
-            : base(model,
-                  ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService),
-                  ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService)) {
+            IMessageBroker broker,
+            IReadOnlyReactiveProperty<AnalysisDimsVM> analysisVM,
+            IReadOnlyReactiveProperty<AlignmentDimsVM> alignmentVM,
+            ViewModelSwitcher chromatogramViewModels,
+            ViewModelSwitcher massSpectrumViewModels,
+            FocusControlManager focusControlManager)
+            : base(model, analysisVM, alignmentVM, chromatogramViewModels, massSpectrumViewModels) {
 
-            Model = model;
-            PropertyChanged += OnDisplayFiltersChanged;
+            _model = model;
+            _broker = broker;
+            _focusControlManager = focusControlManager.AddTo(Disposables);
+
+            PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilterModel).AddTo(Disposables);
         }
-
-        internal DimsMethodModel Model { get; }
 
         public bool RefMatchedChecked {
             get => ReadDisplayFilter(DisplayFilter.RefMatched);
@@ -75,104 +82,25 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private DisplayFilter displayFilters = 0;
 
-        void OnDisplayFiltersChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(displayFilters)) {
-                if (AnalysisViewModel.Value != null)
-                    AnalysisViewModel.Value.DisplayFilters = displayFilters;
-                // if (AlignmentViewModel.Value != null)
-                //     AlignmentViewModel.Value.DisplayFilters = displayFilters;
+        protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
+            if (analysisFile?.File == null || _model.AnalysisFile == analysisFile.File) {
+                return Task.CompletedTask;
             }
+            return _model.LoadAnalysisFileAsync(analysisFile.File, token);
         }
 
-        private bool ProcessSetAnalysisParameter(Window owner) {
-            var parameter = Model.Storage.Parameter;
-            var analysisModel = new DimsAnalysisParameterSetModel(parameter, Model.AnalysisFiles);
-            using (var analysisParamSetVM = new DimsAnalysisParameterSetViewModel(analysisModel)) {
-
-                // var analysisParamSetVM = new AnalysisParamSetVM<MsdialDimsParameter>((MsdialDimsParameter)Model.Storage.ParameterBase, Model.AnalysisFiles);
-                var apsw = new AnalysisParamSetForDimsWindow
-                {
-                    DataContext = analysisParamSetVM,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-                if (apsw.ShowDialog() != true)
-                    return false;
+        protected override Task LoadAlignmentFileCoreAsync(AlignmentFileBeanViewModel alignmentFile, CancellationToken token) {
+            if (alignmentFile?.File == null || _model.AlignmentFile == alignmentFile.File) {
+                return Task.CompletedTask;
             }
-            parameter.ProviderFactoryParameter = analysisModel.DataCollectionSettingModel.CreateDataProviderFactoryParameter();
-            Model.AnalysisParamSetProcess(analysisModel);
-            
-            return true;
-        }
-
-        private bool ProcessAnnotaion(Window owner, IMsdialDataStorage<MsdialDimsParameter> storage) {
-            var vm = new ProgressBarMultiContainerVM
-            {
-                MaxValue = storage.AnalysisFiles.Count,
-                CurrentValue = 0,
-                ProgressBarVMs = new ObservableCollection<ProgressBarVM>(
-                        storage.AnalysisFiles.Select(file => new ProgressBarVM { Label = file.AnalysisFileName })
-                    ),
-            };
-            var pbmcw = new ProgressBarMultiContainerWindow
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-
-            pbmcw.Loaded += async (s, e) => {
-                foreach (((var analysisfile, var pbvm), var idx) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs).WithIndex()) {
-                    await Model.RunAnnotationProcessAsync(analysisfile, v => pbvm.CurrentValue = v);
-                    vm.CurrentValue++;
-                }
-                pbmcw.Close();
-            };
-
-            pbmcw.ShowDialog();
-
-            return true;
-        }
-
-        private bool ProcessAlignment(Window owner, IMsdialDataStorage<MsdialDimsParameter> storage) {
-            var vm = new ProgressBarVM
-            {
-                IsIndeterminate = true,
-                Label = "Alignment process..",
-            };
-            var pbw = new ProgressBarWindow
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            pbw.Loaded += async (s, e) => {
-                await Task.Run(() => Model.RunAlignmentProcess());
-                pbw.Close();
-            };
-            pbw.ShowDialog();
-            return true;
-        }
-
-        protected override void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile) {
-            if (analysisFile?.File == null || Model.AnalysisFile == analysisFile.File) {
-                return;
-            }
-            Model.LoadAnalysisFile(analysisFile.File);
-        }
-
-        protected override void LoadAlignmentFileCore(AlignmentFileBeanViewModel alignmentFile) {
-            if (alignmentFile?.File == null || Model.AlignmentFile == alignmentFile.File) {
-                return;
-            }
-            Model.LoadAlignmentFile(alignmentFile.File);
+            return _model.LoadAlignmentFileAsync(alignmentFile.File, token);
         }
 
         public DelegateCommand<Window> ExportAnalysisResultCommand => exportAnalysisResultCommand ?? (exportAnalysisResultCommand = new DelegateCommand<Window>(ExportAnalysis));
         private DelegateCommand<Window> exportAnalysisResultCommand;
 
         private void ExportAnalysis(Window owner) {
-            var container = Model.Storage;
+            var container = _model.Storage;
             var spectraTypes = new List<Model.Export.SpectraType>
             {
                 new Model.Export.SpectraType(
@@ -190,7 +118,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 new Model.Export.SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
             };
 
-            using (var vm = new AnalysisResultExportViewModel(container.AnalysisFiles, spectraTypes, spectraFormats, Model.ProviderFactory)) {
+            using (var vm = new AnalysisResultExportViewModel(container.AnalysisFiles, spectraTypes, spectraFormats, _model.ProviderFactory)) {
 
                 var dialog = new AnalysisResultExportWin
                 {
@@ -204,12 +132,15 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(ExportAlignment));
+
+        public PeakFilterViewModel PeakFilterViewModel { get; }
+
         private DelegateCommand<Window> exportAlignmentResultCommand;
 
         private void ExportAlignment(Window owner) {
-            var container = Model.Storage;
+            var container = _model.Storage;
             var metadataAccessor = new DimsMetadataAccessor(container.DataBaseMapper, container.Parameter);
-            var vm = new AlignmentResultExport2VM(Model.AlignmentFile, Model.AlignmentFiles, container);
+            var vm = new AlignmentResultExport2VM(_model.AlignmentFile, _model.AlignmentFiles, container, _broker);
             vm.ExportTypes.AddRange(
                 new List<ExportType2>
                 {
@@ -246,37 +177,79 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             OnPropertyChanged(nameof(displayFilters));
         }
 
-        private static IObservable<AnalysisDimsVM> ConvertToAnalysisViewModel(
+        private static IReadOnlyReactiveProperty<AnalysisDimsVM> ConvertToAnalysisViewModel(
             DimsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            FocusControlManager focusControlManager) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
-            return method.ObserveProperty(m => m.AnalysisModel)
-                .Where(m => m != null)
-                .Select(m => new AnalysisDimsVM(m, compoundSearchService, peakSpotTableService))
-                .DisposePreviousValue();
-
+            ReadOnlyReactivePropertySlim<AnalysisDimsVM> result;
+            using (var subject = new Subject<DimsAnalysisModel>()) {
+                result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
+                    .Select(m => m is null ? null : new AnalysisDimsVM(m, compoundSearchService, peakSpotTableService, focusControlManager))
+                    .DisposePreviousValue()
+                    .ToReadOnlyReactivePropertySlim();
+                subject.OnNext(method.AnalysisModel);
+                subject.OnCompleted();
+            }
+            return result;
         }
 
-        private static IObservable<AlignmentDimsVM> ConvertToAlignmentViewModel(
+        private static IReadOnlyReactiveProperty<AlignmentDimsVM> ConvertToAlignmentViewModel(
             DimsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService) {
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IMessageBroker broker,
+            FocusControlManager focusControlManager) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
+
+            if (focusControlManager is null) {
+                throw new ArgumentNullException(nameof(focusControlManager));
+            }
+
             return method.ObserveProperty(m => m.AlignmentModel)
                 .Where(m => m != null)
-                .Select(m => new AlignmentDimsVM(m, compoundSearchService, peakSpotTableService))
-                .DisposePreviousValue();
+                .Select(m => new AlignmentDimsVM(m, compoundSearchService, peakSpotTableService, broker, focusControlManager))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim();
+        }
+
+        public static DimsMethodVM Create(
+            DimsMethodModel model,
+            IWindowService<CompoundSearchVM> compoundSearchService,
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IMessageBroker broker) {
+            var focusControlManager = new FocusControlManager();
+            var analysisVM = ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService, focusControlManager);
+            var alignmentVM = ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, broker, focusControlManager);
+            var chromvms = PrepareChromatogramViewModels(analysisVM, alignmentVM);
+            var msvms = PrepareMassSpectrumViewModels(analysisVM, alignmentVM);
+            return new DimsMethodVM(model, broker, analysisVM, alignmentVM, chromvms, msvms, focusControlManager);
+        }
+
+        private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<AnalysisDimsVM> analysisAsObservable, IObservable<AlignmentDimsVM> alignmentAsObservable) {
+            var eic = analysisAsObservable.Select(vm => vm?.EicViewModel);
+            var bar = alignmentAsObservable.Select(vm => vm?.BarChartViewModel);
+            var alignmentEic = alignmentAsObservable.Select(vm => vm?.AlignmentEicViewModel);
+            return new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase>[] { eic, bar, alignmentEic});
+        }
+
+        private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<AnalysisDimsVM> analysisAsObservable, IObservable<AlignmentDimsVM> alignmentAsObservable) {
+            var rawdec = analysisAsObservable.Select(vm => vm?.RawDecSpectrumsViewModel);
+            var rawpur = Observable.Return<ViewModelBase>(null); // analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
+            var ms2chrom = Observable.Return<ViewModelBase>(null); // ms2 chrom
+            var repref = alignmentAsObservable.Select(vm => vm?.Ms2SpectrumViewModel);
+            return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase>[] { rawdec, ms2chrom, rawpur, repref});
         }
     }
 }

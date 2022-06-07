@@ -1,8 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
-using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Search;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -11,61 +11,58 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    class LcmsMethodVM : MethodViewModel {
-        public LcmsMethodVM(
+    internal sealed class LcmsMethodVM : MethodViewModel {
+        private readonly LcmsMethodModel model;
+        private readonly IMessageBroker _broker;
+        private readonly FocusControlManager _focusManager;
+
+        private LcmsMethodVM(
             LcmsMethodModel model,
-            IObservable<AnalysisLcmsVM> analysisAsObservable,
-            IObservable<LcmsAlignmentViewModel> alignmentAsObservable)
+            IReadOnlyReactiveProperty<AnalysisLcmsVM> analysisAsObservable,
+            IReadOnlyReactiveProperty<LcmsAlignmentViewModel> alignmentAsObservable,
+            IMessageBroker broker,
+            FocusControlManager focusControlManager)
             : base(
                   model, analysisAsObservable, alignmentAsObservable,
                   PrepareChromatogramViewModels(analysisAsObservable, alignmentAsObservable),
                   PrepareMassSpectrumViewModels(analysisAsObservable, alignmentAsObservable)) {
 
             this.model = model;
+            _broker = broker;
+            _focusManager = focusControlManager.AddTo(Disposables);
 
             ShowExperimentSpectrumCommand = new ReactiveCommand().AddTo(Disposables);
 
-            AnalysisViewModel
-                .OfType<AnalysisLcmsVM>()
+            analysisAsObservable
                 .Where(vm => vm != null)
                 .Select(vm => ShowExperimentSpectrumCommand.WithLatestFrom(vm.ExperimentSpectrumViewModel, (a, b) => b))
                 .Switch()
-                .Subscribe(vm => MessageBroker.Default.Publish(vm))
+                .Subscribe(vm => broker.Publish(vm))
                 .AddTo(Disposables);
-            PeakFilterViewModel = new PeakFilterViewModel(this.model.PeakFilterModel).AddTo(Disposables);
+            PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilterModel).AddTo(Disposables);
         }
-
-        public LcmsMethodVM(
-            LcmsMethodModel model,
-            IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService)
-            : this(model,
-                  ConvertToAnalysisViewModelAsObservable(model, compoundSearchService, peakSpotTableService, proteomicsTableService),
-                  ConvertToAlignmentViewModelAsObservable(model, compoundSearchService, peakSpotTableService, proteomicsTableService)) {
-            
-        }
-
-        private readonly LcmsMethodModel model;
 
         public PeakFilterViewModel PeakFilterViewModel { get; }
 
-        protected override void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile) {
+        protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
             if (analysisFile?.File == null || analysisFile.File == model.AnalysisFile) {
-                return;
+                return Task.CompletedTask;
             }
-            model.LoadAnalysisFile(analysisFile.File);
+            return model.LoadAnalysisFileAsync(analysisFile.File, token);
         }
 
-        protected override void LoadAlignmentFileCore(AlignmentFileBeanViewModel alignmentFile) {
+        protected override Task LoadAlignmentFileCoreAsync(AlignmentFileBeanViewModel alignmentFile, CancellationToken token) {
             if (alignmentFile?.File == null || alignmentFile.File == model.AlignmentFile) {
-                return;
+                return Task.CompletedTask;
             }
-            model.LoadAlignmentFile(alignmentFile.File);
+            return model.LoadAlignmentFileAsync(alignmentFile.File, token);
         }
 
         public DelegateCommand<Window> ExportAnalysisResultCommand => exportAnalysisResultCommand ?? (exportAnalysisResultCommand = new DelegateCommand<Window>(model.ExportAnalysis));
@@ -92,12 +89,38 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             (fragmentSearchSettingCommand = new DelegateCommand<Window>(FragmentSearchSettingMethod));
         private DelegateCommand<Window> fragmentSearchSettingCommand;
 
+        public DelegateCommand<Window> ShowMassqlSearchSettingCommand => massqlSearchSettingCommand ??
+            (massqlSearchSettingCommand= new DelegateCommand<Window>(MassqlSearchSettingMethod));
+        private DelegateCommand<Window> massqlSearchSettingCommand;
+
+        public DelegateCommand<Window> ShowMscleanrFilterSettingCommand => mscleanrFilterSettingCommand ??
+            (mscleanrFilterSettingCommand = new DelegateCommand<Window>(MscleanrFilterSettingMethod));
+        private DelegateCommand<Window> mscleanrFilterSettingCommand;
+
         private void FragmentSearchSettingMethod(Window obj) {
             if (SelectedViewModel.Value is AlignmentFileViewModel) {
                 model.ShowShowFragmentSearchSettingView(obj, true);
             }
             else {
                 model.ShowShowFragmentSearchSettingView(obj, false);
+            }
+        }
+
+        private void MassqlSearchSettingMethod(Window obj) {
+            if (SelectedViewModel.Value is AlignmentFileViewModel) {
+                model.ShowShowMassqlSearchSettingView(obj, true);
+            }
+            else {
+                model.ShowShowMassqlSearchSettingView(obj, false);
+            }
+        }
+
+        private void MscleanrFilterSettingMethod(Window obj) {
+            if (SelectedViewModel.Value is AlignmentFileViewModel) {
+                model.ShowShowMscleanrFilterSettingView(obj, true);
+            }
+            else {
+                Console.WriteLine("Please select an item in Alignment navigator!!");
             }
         }
 
@@ -113,11 +136,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
-        private static IObservable<AnalysisLcmsVM> ConvertToAnalysisViewModelAsObservable(
+        private static IReadOnlyReactiveProperty<AnalysisLcmsVM> ConvertToAnalysisViewModelAsObservable(
             LcmsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService) {
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
+            FocusControlManager focusManager) {
             if (method is null) {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -134,18 +158,29 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(proteomicsTableService));
             }
 
-            return method.ObserveProperty(m => m.AnalysisModel)
-                .StartWith(method.AnalysisModel)
-                .Where(m => m != null)
-                .Select(m => new AnalysisLcmsVM(m, compoundSearchService, peakSpotTableService, proteomicsTableService))
-                .DisposePreviousValue();
+            if (focusManager is null) {
+                throw new ArgumentNullException(nameof(focusManager));
+            }
+
+            ReadOnlyReactivePropertySlim<AnalysisLcmsVM> result;
+            using (var subject = new Subject<LcmsAnalysisModel>()) {
+                result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
+                    .Select(m => m is null ? null : new AnalysisLcmsVM(m, compoundSearchService, peakSpotTableService, proteomicsTableService, focusManager))
+                    .DisposePreviousValue()
+                    .ToReadOnlyReactivePropertySlim();
+                subject.OnNext(method.AnalysisModel);
+                subject.OnCompleted();
+            }
+            return result;
         }
 
-        private static IObservable<LcmsAlignmentViewModel> ConvertToAlignmentViewModelAsObservable(
+        private static IReadOnlyReactiveProperty<LcmsAlignmentViewModel> ConvertToAlignmentViewModelAsObservable(
             LcmsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService) {
+            IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
+            IMessageBroker broker,
+            FocusControlManager focusControlManager) {
             if (method is null) {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -162,26 +197,49 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(proteomicsTableService));
             }
 
-            return method.ObserveProperty(m => m.AlignmentModel)
-                .StartWith(method.AlignmentModel)
-                .Where(m => m != null)
-                .Select(m => new LcmsAlignmentViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService))
-                .DisposePreviousValue();
+            if (focusControlManager is null) {
+                throw new ArgumentNullException(nameof(focusControlManager));
+            }
+
+            ReadOnlyReactivePropertySlim<LcmsAlignmentViewModel> result;
+            using (var subject = new Subject<LcmsAlignmentModel>()) {
+                result = subject.Concat(method.ObserveProperty(m => m.AlignmentModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
+                    .Select(m => m is null ? null : new LcmsAlignmentViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, broker, focusControlManager))
+                    .DisposePreviousValue()
+                    .ToReadOnlyReactivePropertySlim();
+                subject.OnNext(method.AlignmentModel);
+                subject.OnCompleted();
+            }
+            return result;
         }
 
         private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<AnalysisLcmsVM> analysisAsObservable, IObservable<LcmsAlignmentViewModel> alignmentAsObservable) {
-            var eic = analysisAsObservable.Select(vm => vm.EicViewModel).StartWith((EicViewModel)null);
-            var bar = alignmentAsObservable.Select(vm => vm.BarChartViewModel).StartWith((BarChartViewModel)null);
-            var alignmentEic = alignmentAsObservable.Select(vm => vm.AlignmentEicViewModel).StartWith((AlignmentEicViewModel)null);
+            var eic = analysisAsObservable.Select(vm => vm?.EicViewModel);
+            var bar = alignmentAsObservable.Select(vm => vm?.BarChartViewModel);
+            var alignmentEic = alignmentAsObservable.Select(vm => vm?.AlignmentEicViewModel);
             return new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase>[] { eic, bar, alignmentEic});
         }
 
         private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<AnalysisLcmsVM> analysisAsObservable, IObservable<LcmsAlignmentViewModel> alignmentAsObservable) {
-            var rawdec = analysisAsObservable.Select(vm => vm.RawDecSpectrumsViewModel).StartWith((RawDecSpectrumsViewModel)null);
-            var rawpur = analysisAsObservable.Select(vm => vm.RawPurifiedSpectrumsViewModel).StartWith((RawPurifiedSpectrumsViewModel)null);
-            var ms2chrom = Observable.Return<ViewModelBase>(null).StartWith((ViewModelBase)null); // ms2 chrom
-            var repref = alignmentAsObservable.Select(vm => vm.Ms2SpectrumViewModel).StartWith((MsSpectrumViewModel)null);
+            var rawdec = analysisAsObservable.Select(vm => vm?.RawDecSpectrumsViewModel);
+            var rawpur = analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
+            var ms2chrom = Observable.Return<ViewModelBase>(null); // ms2 chrom
+            var repref = alignmentAsObservable.Select(vm => vm?.Ms2SpectrumViewModel);
             return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase>[] { rawdec, ms2chrom, rawpur, repref});
+        }
+
+        public static LcmsMethodVM Create(
+                LcmsMethodModel model,
+                IWindowService<CompoundSearchVM> compoundSearchService,
+                IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+                IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
+                IMessageBroker broker) {
+
+            var focusControlManager = new FocusControlManager();
+            var analysisAsObservable = ConvertToAnalysisViewModelAsObservable(model, compoundSearchService, peakSpotTableService, proteomicsTableService, focusControlManager);
+            var alignmentAsObservable = ConvertToAlignmentViewModelAsObservable(model, compoundSearchService, peakSpotTableService, proteomicsTableService, broker, focusControlManager);
+
+            return new LcmsMethodVM(model, analysisAsObservable, alignmentAsObservable, broker, focusControlManager);
         }
     }
 }

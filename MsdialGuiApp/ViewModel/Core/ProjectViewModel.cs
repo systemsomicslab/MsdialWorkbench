@@ -5,30 +5,33 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Core
 {
-    public class ProjectViewModel : ViewModelBase
+    internal sealed class ProjectViewModel : ViewModelBase
     {
         public ProjectViewModel(
             IProjectModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
-            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService) {
+            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService,
+            IMessageBroker broker) {
             CurrentDataset = model.ToReactivePropertySlimAsSynchronized(m => m.CurrentDataset).AddTo(Disposables);
             Datasets = model.Datasets.ToReadOnlyReactiveCollection().AddTo(Disposables);
 
-            CurrentDatasetViewModel = model.ToReactivePropertySlimAsSynchronized(
-                m => m.CurrentDataset,
-                m => m is null ? null : new DatasetViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, analysisFilePropertyResetService),
-                vm => vm?.Model
-            ).AddTo(Disposables);
+            CurrentDatasetViewModel = model.ObserveProperty(m => m.CurrentDataset)
+                .Select(m => m is null ? null : new DatasetViewModel(m, compoundSearchService, peakSpotTableService, proteomicsTableService, analysisFilePropertyResetService, broker))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
         }
 
         public ReactivePropertySlim<IDatasetModel> CurrentDataset { get; }
         public ReadOnlyReactiveCollection<IDatasetModel> Datasets { get; }
 
-        public ReactivePropertySlim<DatasetViewModel> CurrentDatasetViewModel { get; }
+        public ReadOnlyReactivePropertySlim<DatasetViewModel> CurrentDatasetViewModel { get; }
     }
 }

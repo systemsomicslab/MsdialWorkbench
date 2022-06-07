@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Table;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -52,7 +53,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             double massMin,
             double massMax,
             double rtMin,
-            double rtMax)
+            double rtMax,
+            IObservable<IBrushMapper<BarItem>> classBrush)
             : base(
                   peakSpots,
                   target,
@@ -60,7 +62,10 @@ namespace CompMs.App.Msdial.Model.Lcms
                   massMax,
                   rtMin,
                   rtMax) {
+            ClassBrush = classBrush;
         }
+
+        public IObservable<IBrushMapper<BarItem>> ClassBrush { get; }
     }
 
     sealed class LcmsAnalysisPeakTableModel : LcmsPeakSpotTableModel<ChromatogramPeakFeatureModel>

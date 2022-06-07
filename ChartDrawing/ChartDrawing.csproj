@@ -77,6 +77,7 @@
     <Compile Include="Base\DataPointCollection.cs" />
     <Compile Include="Base\RangeSelection.cs" />
     <Compile Include="Behavior\AreaSelectBehavior.cs" />
+    <Compile Include="Behavior\DataGridIsEdittingBehavior.cs" />
     <Compile Include="Chart\AreaChartControl.cs" />
     <Compile Include="AxisManager\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\Generic\AutoContinuousAxisManager.cs" />

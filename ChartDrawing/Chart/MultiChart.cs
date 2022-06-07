@@ -1,19 +1,9 @@
 ﻿using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CompMs.Graphics.Chart
 {
@@ -177,6 +167,27 @@ namespace CompMs.Graphics.Chart
 
         protected override DependencyObject GetContainerForItemOverride() {
             return new ContentControl();
+        }
+
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e) {
+            base.OnMouseLeftButtonUp(e);
+            if (!IsKeyboardFocused) {
+                Keyboard.Focus(this);
+            }
+        }
+
+        protected override void OnMouseRightButtonUp(MouseButtonEventArgs e) {
+            base.OnMouseRightButtonUp(e);
+            if (!IsKeyboardFocused) {
+                Keyboard.Focus(this);
+            }
+        }
+
+        protected override void OnMouseWheel(MouseWheelEventArgs e) {
+            base.OnMouseWheel(e);
+            if (!IsKeyboardFocused) {
+                Keyboard.Focus(this);
+            }
         }
     }
 }

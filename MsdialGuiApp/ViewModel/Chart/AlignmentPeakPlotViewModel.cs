@@ -7,22 +7,28 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    class AlignmentPeakPlotViewModel : ViewModelBase
+    internal sealed class AlignmentPeakPlotViewModel : ViewModelBase
     {
-        public AlignmentPeakPlotViewModel(AlignmentPeakPlotModel model, IObservable<IBrushMapper<AlignmentSpotPropertyModel>> brushSource) {
+        private readonly AlignmentPeakPlotModel _model;
+
+        public AlignmentPeakPlotViewModel(AlignmentPeakPlotModel model, Action focus, IObservable<bool> isFocused) {
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+
+            Focus = focus;
+            IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             Spots = model.Spots;
             HorizontalAxis = model.HorizontalAxis;
             VerticalAxis = model.VerticalAxis;
 
-            if (brushSource == null) {
-                brushSource = Observable.Return<IBrushMapper<AlignmentSpotPropertyModel>>(null);
-            }
-            Brush = brushSource.ToReadOnlyReactivePropertySlim()
+            SelectedBrush = model.ToReactivePropertyAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
+            Brush = SelectedBrush.Select(data => data?.Mapper)
+                .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
             Target = model.TargetSource;
@@ -52,6 +58,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .AddTo(Disposables);
         }
 
+        public Action Focus { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
+
         public ObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
 
         public IAxisManager<double> HorizontalAxis { get; }
@@ -59,6 +69,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public IAxisManager<double> VerticalAxis { get; }
 
         public ReadOnlyReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>> Brush { get; }
+
+        public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes => _model.Brushes;
+
+        public ReactiveProperty<BrushMapData<AlignmentSpotPropertyModel>> SelectedBrush { get; }
 
         public IReactiveProperty<AlignmentSpotPropertyModel> Target { get; }
 

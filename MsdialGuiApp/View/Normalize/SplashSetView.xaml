@@ -19,7 +19,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -43,7 +43,7 @@
                                AppendLabel=""
                                Grid.Column="0">
                 <ComboBox ItemsSource="{Binding SplashProducts}"
-                          SelectedValue="{Binding SplashProduct, Mode=TwoWay}"
+                          SelectedValue="{Binding SplashProduct.Value, Mode=TwoWay}"
                           DisplayMemberPath="Label"
                           IsSynchronizedWithCurrentItem="True"
                           VerticalContentAlignment="Center"
@@ -54,7 +54,7 @@
                                AppendLabel=""
                                Grid.Column="1">
                 <ComboBox ItemsSource="{Binding OutputUnits}"
-                          SelectedValue="{Binding OutputUnit, Mode=TwoWay}"
+                          SelectedValue="{Binding OutputUnit.Value, Mode=TwoWay}"
                           DisplayMemberPath="Label"
                           VerticalContentAlignment="Center"
                           Width="160"
@@ -66,7 +66,7 @@
         </Grid>
 
         <DataGrid Margin="8,0"
-                  ItemsSource="{Binding Path=SplashProducts/Lipids}"
+                  ItemsSource="{Binding Path=SplashProduct.Value.Lipids}"
                   AutoGenerateColumns="False"
                   VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                   CanUserReorderColumns="False" ClipboardCopyMode="ExcludeHeader"

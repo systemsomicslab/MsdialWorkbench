@@ -1,14 +1,11 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Dims;
-using CompMs.App.Msdial.Model.Search;
+﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Search;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.Core.Base;
-using CompMs.Graphics.Design;
-using CompMs.MsdialCore.DataObj;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -16,16 +13,20 @@ using System;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    class AnalysisDimsVM : AnalysisFileViewModel
+    internal sealed class AnalysisDimsVM : AnalysisFileViewModel
     {
+        private readonly DimsAnalysisModel _model;
+        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
+
         public AnalysisDimsVM(
             DimsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            FocusControlManager focusControlManager)
             : base(model) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
@@ -34,146 +35,49 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
 
-            Model = model;
-            this.compoundSearchService = compoundSearchService;
-            this.peakSpotTableService = peakSpotTableService;
+            if (focusControlManager is null) {
+                throw new ArgumentNullException(nameof(focusControlManager));
+            }
 
-            MassMin = Model.MassMin;
-            MassMax = Model.MassMax;
-            MassLower = new ReactiveProperty<double>(MassMin).AddTo(Disposables);
-            MassUpper = new ReactiveProperty<double>(MassMax).AddTo(Disposables);
-            MassLower.SetValidateNotifyError(v => v < MassMin ? "Too small" : null)
-                .SetValidateNotifyError(v => v > MassUpper.Value ? "Too large" : null);
-            MassUpper.SetValidateNotifyError(v => v < MassLower.Value ? "Too small" : null)
-                .SetValidateNotifyError(v => v > MassMax ? "Too large" : null);
+            _model = model;
+            _compoundSearchService = compoundSearchService;
+            _peakSpotTableService = peakSpotTableService;
 
-            var DisplayFilters = this.ObserveProperty(m => m.DisplayFilters)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
+            PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
-            Observable.Merge(new[]
-            {
-                MassLower.ToUnit(),
-                MassUpper.ToUnit(),
-                CommentFilterKeyword.ToUnit(),
-                MetaboliteFilterKeyword.ToUnit(),
-                DisplayFilters.ToUnit(),
-                AmplitudeLowerValue.ToUnit(),
-                AmplitudeUpperValue.ToUnit(),
-            })
-            .Throttle(TimeSpan.FromMilliseconds(500))
-            .ObserveOnDispatcher()
-            .Subscribe(_ => Ms1PeaksView.Refresh())
-            .AddTo(Disposables);
-
-            PlotViewModel = new AnalysisPeakPlotViewModel(Model.PlotModel, brushSource: Observable.Return(Model.Brush)).AddTo(Disposables);
-            EicViewModel = new EicViewModel(Model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
+            var (focusAction, focused) = focusControlManager.Request();
+            PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, focusAction, focused).AddTo(Disposables);
+            EicViewModel = new EicViewModel(_model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
             
-            var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-                model.Parameter.ProjectParam.SpectrumCommentToColorBytes
-                .ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-                ),
-                item => item.ToString(),
-                Colors.Blue);
-
-            var lowerSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-               model.Parameter.ProjectParam.SpectrumCommentToColorBytes
-               .ToDictionary(
-                   kvp => kvp.Key,
-                   kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-               ),
-               item => item.ToString(),
-               Colors.Red);
-
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(Model.Ms2SpectrumModel, 
-                upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
-                lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(_model.Ms2SpectrumModel).AddTo(Disposables);
             PeakTableViewModel = new DimsAnalysisPeakTableViewModel(
-                Model.PeakTableModel,
-                Observable.Return(Model.EicLoader),
-                MassLower,
-                MassUpper,
-                MetaboliteFilterKeyword,
-                CommentFilterKeyword)
+                _model.PeakTableModel,
+                Observable.Return(_model.EicLoader),
+                PeakSpotNavigatorViewModel.MzLowerValue,
+                PeakSpotNavigatorViewModel.MzUpperValue,
+                PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
+                PeakSpotNavigatorViewModel.CommentFilterKeyword,
+                PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
 
             SearchCompoundCommand = new[]
             {
                 Target.Select(t => t?.InnerModel != null),
-                Model.MsdecResult.Select(r => r != null),
+                _model.MsdecResult.Select(r => r != null),
             }.CombineLatestValuesAreAllTrue()
             .ToReactiveCommand()
             .WithSubscribe(SearchCompound)
             .AddTo(Disposables);
-
-            Ms1PeaksView.Filter += PeakFilter;
         }
 
-        public DimsAnalysisModel Model { get; }
+        public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
+        public AnalysisPeakPlotViewModel PlotViewModel { get; }
 
-        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
-        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
+        public EicViewModel EicViewModel { get; }
 
-        public AnalysisPeakPlotViewModel PlotViewModel {
-            get => plotViewModel2;
-            set => SetProperty(ref plotViewModel2, value);
-        }
-        private AnalysisPeakPlotViewModel plotViewModel2;
+        public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
 
-        public EicViewModel EicViewModel {
-            get => eicViewModel2;
-            set => SetProperty(ref eicViewModel2, value);
-        }
-        private EicViewModel eicViewModel2;
-
-        public RawDecSpectrumsViewModel RawDecSpectrumsViewModel {
-            get => rawDecSpectrumsViewModel;
-            set => SetProperty(ref rawDecSpectrumsViewModel, value);
-        }
-        private RawDecSpectrumsViewModel rawDecSpectrumsViewModel;
-
-        public DimsAnalysisPeakTableViewModel PeakTableViewModel {
-            get => peakTableViewModel;
-            set => SetProperty(ref peakTableViewModel, value);
-        }
-        private DimsAnalysisPeakTableViewModel peakTableViewModel;
-
-        public bool RefMatchedChecked {
-            get => ReadDisplayFilters(DisplayFilter.RefMatched);
-            set => SetDisplayFilters(DisplayFilter.RefMatched, value);
-        }
-
-        public bool SuggestedChecked {
-            get => ReadDisplayFilters(DisplayFilter.Suggested);
-            set => SetDisplayFilters(DisplayFilter.Suggested, value);
-        }
-
-        public bool UnknownChecked {
-            get => ReadDisplayFilters(DisplayFilter.Unknown);
-            set => SetDisplayFilters(DisplayFilter.Unknown, value);
-        }
-
-        public bool Ms2AcquiredChecked {
-            get => ReadDisplayFilters(DisplayFilter.Ms2Acquired);
-            set => SetDisplayFilters(DisplayFilter.Ms2Acquired, value);
-        }
-
-        public bool MolecularIonChecked {
-            get => ReadDisplayFilters(DisplayFilter.MolecularIon);
-            set => SetDisplayFilters(DisplayFilter.MolecularIon, value);
-        }
-
-        public bool ManuallyModifiedChecked {
-            get => ReadDisplayFilters(DisplayFilter.ManuallyModified);
-            set => SetDisplayFilters(DisplayFilter.ManuallyModified, value);
-        }
-
-        public double MassMin { get; }
-        public double MassMax { get; }
-        public ReactiveProperty<double> MassLower { get; }
-        public ReactiveProperty<double> MassUpper { get; }
+        public DimsAnalysisPeakTableViewModel PeakTableViewModel { get; }
 
         public int FocusID {
             get => focusID;
@@ -187,58 +91,27 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
         private double focusMz;
 
-        protected bool PeakFilter(object obj) {
-            if (obj is ChromatogramPeakFeatureModel peak) {
-                return AnnotationFilter(peak)
-                    && MzFilter(peak)
-                    && AmplitudeFilter(peak)
-                    && (!Ms2AcquiredChecked || peak.IsMsmsContained)
-                    && (!MolecularIonChecked || peak.IsotopeWeightNumber == 0)
-                    && (!ManuallyModifiedChecked || peak.InnerModel.IsManuallyModifiedForAnnotation)
-                    && MetaboliteFilter(peak, MetaboliteFilterKeywords.Value)
-                    && CommentFilter(peak, CommentFilterKeywords.Value);
-            }
-            return false;
-        }
-
-        bool AnnotationFilter(ChromatogramPeakFeatureModel peak) {
-            if (!ReadDisplayFilters(DisplayFilter.Annotates)) return true;
-            return RefMatchedChecked && peak.IsRefMatched(Model.MatchResultEvaluator)
-                || SuggestedChecked && peak.IsSuggested(Model.MatchResultEvaluator)
-                || UnknownChecked && peak.IsUnknown;
-        }
-
-        bool MzFilter(ChromatogramPeakFeatureModel peak) {
-            return MassLower.Value <= peak.Mass && peak.Mass <= MassUpper.Value;
-        }
-
         public DelegateCommand<IAxisManager> FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand<IAxisManager>(FocusByID));
         private DelegateCommand<IAxisManager> focusByIDCommand;
 
         private void FocusByID(IAxisManager axis) {
-            Model.FocusById(axis, FocusID);
+            _model.FocusById(axis, FocusID);
         }
 
         public DelegateCommand<IAxisManager> FocusByMzCommand => focusByMzCommand ?? (focusByMzCommand = new DelegateCommand<IAxisManager>(FocusByMz));
         private DelegateCommand<IAxisManager> focusByMzCommand;
 
-        private static readonly double MzTol = 20;
         private void FocusByMz(IAxisManager axis) {
-            Model.FocusByMz(axis, FocusMz);
+            _model.FocusByMz(axis, FocusMz);
         }
 
         public ReactiveCommand SearchCompoundCommand { get; }
 
         private void SearchCompound() {
-            using (var model = new CompoundSearchModel<ChromatogramPeakFeature>(
-                Model.AnalysisFile,
-                Target.Value.InnerModel,
-                Model.MsdecResult.Value,
-                null,
-                Model.AnnotatorContainers))
+            using (var model = _model.BuildCompoundSearchModel())
             using (var vm = new CompoundSearchVM(model)) {
-                if (compoundSearchService.ShowDialog(vm) == true) {
-                    Model.Target.Value.RaisePropertyChanged();
+                if (_compoundSearchService.ShowDialog(vm) == true) {
+                    _model.Target.Value.RaisePropertyChanged();
                     Ms1PeaksView?.Refresh();
                 }
             }
@@ -248,7 +121,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DelegateCommand showIonTableCommand;
 
         private void ShowIonTable() {
-            peakSpotTableService.Show(PeakTableViewModel);
+            _peakSpotTableService.Show(PeakTableViewModel);
         }
 
         public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
@@ -267,16 +140,16 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (sfd.ShowDialog(owner) == true)
             {
                 var filename = sfd.FileName;
-                Model.SaveSpectra(filename);
+                _model.SaveSpectra(filename);
             }
         }
 
         private bool CanSaveSpectra(Window owner)
         {
-            return Model.CanSaveSpectra();
+            return _model.CanSaveSpectra();
         }
 
-        public DelegateCommand CopyMs2SpectrumCommand => copyMs2SpectrumCommand ?? (copyMs2SpectrumCommand = new DelegateCommand(Model.CopySpectrum, Model.CanSaveSpectra));
+        public DelegateCommand CopyMs2SpectrumCommand => copyMs2SpectrumCommand ?? (copyMs2SpectrumCommand = new DelegateCommand(_model.CopySpectrum, _model.CanSaveSpectra));
         private DelegateCommand copyMs2SpectrumCommand;
     }
 }

@@ -9,7 +9,7 @@ namespace CompMs.CommonMVVM.Common
             base.InsertItem(index, item);
             // After calling dispose method, adding items will be disposed.
             if (disposedValue) {
-                item.Dispose();
+                item?.Dispose();
             }
         }
 
@@ -17,7 +17,7 @@ namespace CompMs.CommonMVVM.Common
             base.SetItem(index, item);
             // After calling dispose method, adding items will be disposed.
             if (disposedValue) {
-                item.Dispose();
+                item?.Dispose();
             }
         }
 
@@ -27,7 +27,7 @@ namespace CompMs.CommonMVVM.Common
             if (!disposedValue) {
                 if (disposing) {
                     foreach (var disposable in this) {
-                        disposable.Dispose();
+                        disposable?.Dispose();
                     }
                 }
 

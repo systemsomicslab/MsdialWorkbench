@@ -7,15 +7,17 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Core
 {
-    public class MainWindowModel : BindableBase
+    internal sealed class MainWindowModel : BindableBase
     {
-        public MainWindowModel() {
-            ProjectSetting = new ProjectSettingModel(SetNewProject);
+        public MainWindowModel(IMessageBroker broker) {
+            ProjectSetting = new ProjectSettingModel(SetNewProject, broker);
             nowSaving = new BusyNotifier();
+            _broker = broker;
         }
 
         public IObservable<bool> NowSaving => nowSaving;
         private readonly BusyNotifier nowSaving;
+        private readonly IMessageBroker _broker;
 
         public IProjectModel CurrentProject {
             get => currentProject;
@@ -31,7 +33,7 @@ namespace CompMs.App.Msdial.Model.Core
 
         private Task SetNewProject(IProjectModel project) {
             CurrentProject = project;
-            ProjectSetting = new ProjectSettingModel(SetNewProject);
+            ProjectSetting = new ProjectSettingModel(SetNewProject, _broker);
             return Task.CompletedTask;
         }
 
@@ -55,7 +57,7 @@ namespace CompMs.App.Msdial.Model.Core
 
         public async Task LoadAsync() {
             try {
-                var loadedProject = await ProjectModel.LoadAsync().ConfigureAwait(true);
+                var loadedProject = await ProjectModel.LoadAsync(_broker).ConfigureAwait(true);
                 if (!(loadedProject is null)) {
                     CurrentProject = loadedProject;
                 }

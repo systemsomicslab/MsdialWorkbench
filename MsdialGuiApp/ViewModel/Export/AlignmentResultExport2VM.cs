@@ -1,10 +1,13 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,17 +21,21 @@ namespace CompMs.App.Msdial.ViewModel.Export
 {
     public class AlignmentResultExport2VM : ViewModelBase
     {
+        private readonly IMsdialDataStorage<ParameterBase> container;
+        private readonly IMessageBroker _broker;
+
         public AlignmentResultExport2VM(
             AlignmentFileBean alignmentFile,
             ICollection<AlignmentFileBean> alignmentFiles,
-            IMsdialDataStorage<ParameterBase> container) {
+            IMsdialDataStorage<ParameterBase> container,
+            IMessageBroker broker) {
 
             this.alignmentFiles = CollectionViewSource.GetDefaultView(alignmentFiles);
             if (alignmentFile != null)
                 this.alignmentFiles.MoveCurrentTo(alignmentFile);
             this.container = container;
-            ExportTypes = new List<ExportType2> {
-            };
+            _broker = broker ?? MessageBroker.Default;
+            ExportTypes = new List<ExportType2>();
 
         }
 
@@ -80,8 +87,6 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
         public List<ExportType2> ExportTypes { get; } = new List<ExportType2>();
 
-        private readonly IMsdialDataStorage<ParameterBase> container;
-
         public DelegateCommand BrowseDirectoryCommand => browseDirectoryCommand ?? (browseDirectoryCommand = new DelegateCommand(BrowseDirectory));
         private DelegateCommand browseDirectoryCommand;
 
@@ -103,14 +108,19 @@ namespace CompMs.App.Msdial.ViewModel.Export
             var files = container.AnalysisFiles;
             var alignmentFile = AlignmentFile;
             var dt = DateTime.Now;
+            var task = TaskNotification.Start($"Exporting {alignmentFile.FileName}");
+            _broker.Publish(task);
 
             var resultContainer = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(alignmentFile.FilePath);
             var msdecResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
 
             var exporter = Format.Exporter;
+            var exportTypes = ExportTypes.Where(type => type.IsSelected).ToArray();
             
-            foreach (var exportType in ExportTypes.Where(type => type.IsSelected)) {
-                var outfile = Path.Combine(ExportDirectory, $"{exportType.FilePrefix}_{alignmentFile.FileID}_{dt:yyyy_MM_dd_HH_mm_ss}.txt");
+            foreach (var (exportType, index) in exportTypes.WithIndex()) {
+                var outName = $"{exportType.FilePrefix}_{alignmentFile.FileID}_{dt:yyyy_MM_dd_HH_mm_ss}.txt";
+                var outfile = Path.Combine(ExportDirectory, outName);
+                _broker.Publish(TaskNotification.Progress(task, ((double)index) / exportTypes.Length, $"Exporting {outName}"));
                 using (var outstream = File.Open(outfile, FileMode.Create, FileAccess.Write)) {
                     if (exportType.FilePrefix == "Protein") {
                         var container = MsdialProteomicsSerializer.LoadProteinResultContainer(alignmentFile.ProteinAssembledResultFilePath);
@@ -146,6 +156,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
                     }
                 }
             }
+            _broker.Publish(TaskNotification.End(task));
         }
 
         private bool CanExportAlignmentResult() {

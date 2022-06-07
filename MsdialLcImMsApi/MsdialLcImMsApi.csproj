@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Algorithm\PeakSpot\**" />
+    <EmbeddedResource Remove="Algorithm\PeakSpot\**" />
+    <None Remove="Algorithm\PeakSpot\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
     <ProjectReference Include="..\MsdialCore\MsdialCore.csproj" />
     <ProjectReference Include="..\MsdialLcMsApi\MsdialLcMsApi.csproj" />

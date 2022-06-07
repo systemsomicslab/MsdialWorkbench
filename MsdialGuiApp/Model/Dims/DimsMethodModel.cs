@@ -1,24 +1,26 @@
 ﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialDimsCore;
 using CompMs.MsdialDimsCore.Algorithm.Alignment;
 using CompMs.MsdialDimsCore.Parameter;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Dims
@@ -30,19 +32,25 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+        private readonly IMessageBroker _broker;
 
         public DimsMethodModel(
             IMsdialDataStorage<MsdialDimsParameter> storage,
             List<AnalysisFileBean> analysisFiles,
-            List<AlignmentFileBean> alignmentFiles)
-            : base(analysisFiles, alignmentFiles) {
+            List<AlignmentFileBean> alignmentFiles,
+            ProjectBaseParameterModel projectBaseParameter,
+            IMessageBroker broker)
+            : base(analysisFiles, alignmentFiles, projectBaseParameter) {
             Storage = storage;
+            _broker = broker;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
+            PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
         }
 
         private IAnnotationProcess annotationProcess;
         private FacadeMatchResultEvaluator matchResultEvaluator;
 
+        public PeakFilterModel PeakFilterModel { get; }
         public IMsdialDataStorage<MsdialDimsParameter> Storage { get; }
 
         public DimsAnalysisModel AnalysisModel {
@@ -73,30 +81,6 @@ namespace CompMs.App.Msdial.Model.Dims
             ProviderFactory = Storage.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
         }
 
-        public void AnalysisParamSetProcess(DimsAnalysisParameterSetModel parameterSetModel) {
-            Storage.DataBases = parameterSetModel.IdentifySettingModel.Create();
-            if (parameterSetModel.TogetherWithAlignment) {
-                var alignmentResultFileName = parameterSetModel.AlignmentResultFileName;
-                AlignmentFiles.Add(
-                    new AlignmentFileBean
-                    {
-                        FileID = AlignmentFiles.Count,
-                        FileName = alignmentResultFileName,
-                        FilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.arf),
-                        EicFilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, alignmentResultFileName + ".EIC.aef"),
-                        SpectraFilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.dcl),
-                        ProteinAssembledResultFilePath = Path.Combine(Storage.Parameter.ProjectFolderPath, alignmentResultFileName + "." + MsdialDataStorageFormat.prf)
-                    }
-                );
-                Storage.AlignmentFiles = AlignmentFiles.ToList();
-            }
-
-            Storage.DataBaseMapper = BuildDataBaseMapper(Storage.DataBases);
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
-            annotationProcess = BuildAnnotationProcess(Storage.DataBases);
-            ProviderFactory = parameterSetModel.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
-        }
-
         private DataBaseMapper BuildDataBaseMapper(DataBaseStorage storage) {
             var mapper = new DataBaseMapper();
             foreach (var db in storage.MetabolomicsDataBases) {
@@ -115,11 +99,11 @@ namespace CompMs.App.Msdial.Model.Dims
             return new StandardAnnotationProcess<IAnnotationQuery>(
                 containers.Select(container => (
                     new AnnotationQueryWithoutIsotopeFactory(container.Annotator) as IAnnotationQueryFactory<IAnnotationQuery>,
-                    container.Annotator as IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
+                    container
                 )).ToList());
         }
 
-        public override void Run(ProcessOption option) {
+        public override async Task RunAsync(ProcessOption option, CancellationToken token) {
             Storage.DataBaseMapper = BuildDataBaseMapper(Storage.DataBases);
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             annotationProcess = BuildAnnotationProcess(Storage.DataBases);
@@ -128,9 +112,11 @@ namespace CompMs.App.Msdial.Model.Dims
             var processOption = option;
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                foreach ((var analysisfile, var idx) in Storage.AnalysisFiles.WithIndex()) {
-                    RunAnnotationProcessAsync(analysisfile, null).Wait(); // TODO: change to async method
+                var tasks = new List<Task>();
+                foreach (var analysisfile in Storage.AnalysisFiles) {
+                    tasks.Add(RunAnnotationProcessAsync(analysisfile, null));
                 }
+                await Task.WhenAll(tasks).ConfigureAwait(false);
             }
 
             // Run Alignment
@@ -138,11 +124,11 @@ namespace CompMs.App.Msdial.Model.Dims
                 RunAlignmentProcess();
             }
 
-            LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+            await LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
-        public async Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {
-            await Task.Run(() => ProcessFile.Run(analysisfile, ProviderFactory, Storage, annotationProcess, matchResultEvaluator, reportAction: action));
+        public Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {
+            return Task.Run(() => ProcessFile.Run(analysisfile, ProviderFactory, Storage, annotationProcess, matchResultEvaluator, reportAction: action));
         }
 
         public void RunAlignmentProcess() {
@@ -181,7 +167,7 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
-        protected override AnalysisModelBase LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
@@ -190,23 +176,26 @@ namespace CompMs.App.Msdial.Model.Dims
                 analysisFile,
                 ProviderFactory.Create(analysisFile),
                 matchResultEvaluator,
-                Storage.DataBaseMapper.MoleculeAnnotators,
+                Storage.DataBases,
                 Storage.DataBaseMapper,
-                Storage.Parameter).AddTo(Disposables);
+                Storage.Parameter,
+                PeakFilterModel).AddTo(Disposables);
         }
 
-        protected override AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
             }
             return AlignmentModel = new DimsAlignmentModel(
                 alignmentFile,
-                Storage.DataBaseMapper.MoleculeAnnotators,
+                Storage.DataBases,
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
-                Storage.AnalysisFiles).AddTo(Disposables);
+                Storage.AnalysisFiles,
+                PeakFilterModel,
+                _broker).AddTo(Disposables);
         }
     }
 }

@@ -35,12 +35,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm
                 tLeftRt = spot.TimesCenter.Value + 2.5;
             }
 
-            var peaklist = DataAccess.GetMs1Peaklist(
-                spectrum, (float)peak.Mass,
-                ms1MassTolerance,
-                peak.IonMode, ChromXType.RT, ChromXUnit.Min, (float)tLeftRt, (float)tRightRt);
+            var ms1Spectra = new Ms1Spectra(spectrum, peak.IonMode);
+            var chromatogramRange = new ChromatogramRange(tLeftRt, tRightRt, ChromXType.RT, ChromXUnit.Min);
+            var peaklist = ms1Spectra.GetMs1ExtractedChromatogram(peak.Mass, ms1MassTolerance, chromatogramRange);
             return new ChromatogramPeakInfo(
-                peak.FileID, peaklist,
+                peak.FileID, peaklist.Peaks,
                 (float)peak.ChromXsTop.RT.Value, (float)peak.ChromXsLeft.RT.Value, (float)peak.ChromXsRight.RT.Value);
         }
 

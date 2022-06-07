@@ -1,4 +1,6 @@
-﻿using CompMs.App.MsdialConsole.MspCuration;
+﻿using CompMs.App.MsdialConsole.Casmi;
+using CompMs.App.MsdialConsole.DataObjTest;
+using CompMs.App.MsdialConsole.MspCuration;
 using CompMs.App.MsdialConsole.Parser;
 using CompMs.App.MsdialConsole.Process;
 using CompMs.App.MsdialConsole.ProteomicsTest;
@@ -125,16 +127,38 @@ namespace CompMs.App.MsdialConsole {
             //         .Cast<Common.Components.MoleculeMsReference>());
 
 #if DEBUG
-            //var projectPath = @"D:\msdial_test\Msdial\out\wine2\2022_01_05_13_17_26.mtd3";
+            //var projectPath = @"C:\Users\lab\Desktop\dropmet\20140809_MSDIAL_DemoFiles_Swath\neg\hoge20220427.mtd3";
             //var output = new MemoryStream();
-            //// using var output = File.Open(@"D:\msdial_test\Msdial\out\wine2\output.tsv", FileMode.Create);
-            //var tester = new Export.ExporterTest();
+           // using var output = File.Open(@"C:\Users\lab\Desktop\dropmet\output.tsv", FileMode.Create);
+            var tester = new Export.ExporterTest();
+            var curator = new PostCurator();
             //var curator = (PostCurator)null; // new PostCurator();
             //tester.Export(projectPath, output, curator);
             //Console.WriteLine(Encoding.UTF8.GetString(output.ToArray()));
-#endif
 
-            MspCurator.WriteRtMzInChIKey(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Neg-VS15_PfppRT.msp");
+
+            //var massqlTester = new MassQLTest();
+            //massqlTester.Run();
+
+
+
+#endif
+            // casmi 2022
+            //ParseArpanaDatabase.Convert2InChIKeyRtList(@"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\original", @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeyRtList.txt");
+            //ParseArpanaDatabase.InsertSmiles2InChIKeyRtList(
+            //    @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeyRtList.txt",
+            //    @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\MSMS-Neg-Vaniya-Fiehn_Natural_Products_Library_20200109.msp",
+            //    @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\MSMS-Pos-Vaniya-Fiehn_Natural_Products_Library_20200109.msp",
+            //    @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeySmilesRtList.txt");
+
+            ParseArpanaDatabase.CreatInChIKeySmilesList(
+                @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\MsfinderStructureDB-VS15.esd",
+                @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\MSMS-RIKEN-Neg-VS15.msp",
+                @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\MSMS-RIKEN-Pos-VS15.msp",
+                @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\RIKEN_All_Smiles.txt");
+
+
+            //MspCurator.WriteRtMzInChIKey(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Neg-VS15_PfppRT.msp");
             //MspCurator.AddRT2MspQueries(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Neg-VS15.msp", @"E:\6_Projects\2_metabolome_protocol\PFPP_NEG.txt");
             //MspCurator.AddRT2MspQueries(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Pos-VS15.msp", @"E:\6_Projects\2_metabolome_protocol\PFPP_POS.txt");
         }

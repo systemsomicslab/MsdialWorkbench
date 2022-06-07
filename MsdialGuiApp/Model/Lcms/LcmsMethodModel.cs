@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.LC;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
@@ -11,7 +10,6 @@ using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.ViewModel.Lcms;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -20,12 +18,10 @@ using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
-using CompMs.Graphics.UI.Message;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
@@ -34,28 +30,37 @@ using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcMsApi.Export;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    sealed class LcmsMethodModel : MethodModelBase
+    internal sealed class LcmsMethodModel : MethodModelBase
     {
+        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+
         static LcmsMethodModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
         }
 
+        private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly IMessageBroker _broker;
+        private IAnnotationProcess annotationProcess;
+
         public LcmsMethodModel(
             IMsdialDataStorage<MsdialLcmsParameter> storage,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
-            IObservable<ParameterBase> parameterAsObservable,
-            IObservable<IBarItemsLoader> barItemsLoader)
-            : base(storage.AnalysisFiles, storage.AlignmentFiles) {
+            ProjectBaseParameterModel projectBaseParameter,
+            IMessageBroker broker)
+            : base(storage.AnalysisFiles, storage.AlignmentFiles, projectBaseParameter) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
             }
@@ -66,8 +71,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             Storage = storage;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             this.providerFactory = providerFactory;
-            this.parameterAsObservable = parameterAsObservable;
-            this.barItemsLoader = barItemsLoader;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
         }
 
@@ -89,14 +94,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
         private LcmsAlignmentModel alignmentModel;
 
-        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
-        private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
-        private readonly IObservable<ParameterBase> parameterAsObservable;
-        private readonly IObservable<IBarItemsLoader> barItemsLoader;
-        private IAnnotationProcess annotationProcess;
 
-
-        protected override AnalysisModelBase LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
@@ -113,7 +112,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             .AddTo(Disposables);
         }
 
-        protected override AlignmentModelBase LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
             if (AlignmentModel != null) {
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
@@ -125,13 +124,12 @@ namespace CompMs.App.Msdial.Model.Lcms
                 PeakFilterModel,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
-                parameterAsObservable,
-                barItemsLoader,
+                _projectBaseParameter,
                 Storage.AnalysisFiles)
             .AddTo(Disposables);
         }
 
-        public override void Run(ProcessOption option) {
+        public override async Task RunAsync(ProcessOption option, CancellationToken token) {
             // Set analysis param
             var parameter = Storage.Parameter;
             // matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
@@ -164,65 +162,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                     return;
             }
 
-            LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+            await LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
 
 #if DEBUG
             Console.WriteLine(string.Join("\n", Storage.Parameter.ParametersAsText()));
 #endif
-        }
-
-        public bool ProcessSetAnalysisParameter(Window owner) {
-            var parameter = Storage.Parameter;
-            var analysisParamSetModel = new LcmsAnalysisParameterSetModel(parameter, AnalysisFiles, Storage.DataBases);
-            using (var analysisParamSetVM = new LcmsAnalysisParameterSetViewModel(analysisParamSetModel)) {
-                var apsw = new AnalysisParamSetForLcWindow
-                {
-                    DataContext = analysisParamSetVM,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-                if (apsw.ShowDialog() != true) {
-                    return false;
-                }
-            }
-
-            var message = new ShortMessageWindow() {
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Text = "Loading library files..",
-            };
-            message.Show();
-            Storage.DataBases = analysisParamSetModel.IdentitySettingModel.Create();
-            message.Close();
-
-            if (parameter.TogetherWithAlignment) {
-                var filename = analysisParamSetModel.AlignmentResultFileName;
-                AlignmentFiles.Add(
-                    new AlignmentFileBean
-                    {
-                        FileID = AlignmentFiles.Count,
-                        FileName = filename,
-                        FilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.arf),
-                        EicFilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + ".EIC.aef"),
-                        SpectraFilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.dcl),
-                        ProteinAssembledResultFilePath = System.IO.Path.Combine(Storage.Parameter.ProjectFolderPath, filename + "." + MsdialDataStorageFormat.prf),
-                    }
-                );
-                Storage.AlignmentFiles = AlignmentFiles.ToList();
-            }
-
-            Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
-            if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                annotationProcess = BuildProteoMetabolomicsAnnotationProcess(Storage.DataBases, parameter);
-            }
-            else if(parameter.TargetOmics == TargetOmics.Lipidomics && parameter.CollistionType == CollisionType.EIEIO) {
-                annotationProcess = BuildEadLipidomicsAnnotationProcess(Storage.DataBases, Storage.DataBaseMapper, parameter);
-            }
-            else {
-                annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
-            }
-            return true;
         }
 
         private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
@@ -389,7 +333,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public void ExportAlignment(Window owner) {
             var container = Storage;
-            var vm = new AlignmentResultExport2VM(AlignmentFile, container.AlignmentFiles, container);
+            var vm = new AlignmentResultExport2VM(AlignmentFile, container.AlignmentFiles, container, _broker);
 
             if (container.Parameter.TargetOmics == TargetOmics.Proteomics) {
                 var metadataAccessor = new LcmsProteomicsMetadataAccessor(container.DataBaseMapper, container.Parameter);
@@ -593,12 +537,79 @@ namespace CompMs.App.Msdial.Model.Lcms
                 }
                 if (model.IsAlignSpotViewSelected.Value) {
                     alignmentModel.FragmentSearcher();
-                }
-                else {
+                } else {
                     analysisModel.FragmentSearcher();
                 }
             }
         }
+
+        public void ShowShowMassqlSearchSettingView(Window owner, bool isAlignmentViewSelected) {
+            var container = Storage;
+            var analysisModel = AnalysisModel;
+            if (analysisModel is null) return;
+            var alignmentModel = AlignmentModel;
+            var param = container.Parameter;
+
+            MassqlSettingModel model;
+            if (isAlignmentViewSelected) {
+                model = new MassqlSettingModel(container.Parameter, alignmentModel.FragmentSearcher);
+            }
+            else {
+                model = new MassqlSettingModel(container.Parameter, analysisModel.FragmentSearcher);
+            }
+            var vm = new MassqlSettingViewModel(model);
+            var dialog = new MassqlSettingView()
+            {
+                DataContext = vm,
+                //Owner = owner,
+                Owner = Application.Current.MainWindow,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            dialog.Show();
+
+            //if (dialog.ShowDialog() == true) {
+            //    param.FragmentSearchSettingValues = model.SendMassql();
+            //    if (param.FragmentSearchSettingValues.Count > 1) {
+            //        param.AndOrAtFragmentSearch = AndOr.AND;
+            //    }
+            //    if (isAlignmentViewSelected) {
+            //        alignmentModel.FragmentSearcher();
+            //    } else {
+            //        analysisModel.FragmentSearcher();
+            //    }
+            //}
+
+            //param.FragmentSearchSettingValues = model.FragmentQuerySettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();
+            //param.AndOrAtFragmentSearch = model.SearchOption.Value;
+        }
+
+        public void ShowShowMscleanrFilterSettingView(Window owner, bool isAlignmentViewSelected) {
+            var container = Storage;
+            var analysisModel = AnalysisModel;
+            if (analysisModel is null) return;
+            var alignmentModel = AlignmentModel;
+            var param = container.Parameter;
+
+            MassqlSettingModel model;
+            if (isAlignmentViewSelected) {
+                model = new MassqlSettingModel(container.Parameter, alignmentModel.FragmentSearcher);
+            }
+            else {
+                model = new MassqlSettingModel(container.Parameter, analysisModel.FragmentSearcher);
+            }
+            var vm = new MassqlSettingViewModel(model);
+            var dialog = new MassqlSettingView()
+            {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            dialog.Show();
+
+            //param.FragmentSearchSettingValues = model.FragmentQuerySettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();
+            //param.AndOrAtFragmentSearch = model.SearchOption.Value;
+        }
+
 
         public void GoToMsfinderMethod(bool isAlignmentView) {
             if (isAlignmentView) {

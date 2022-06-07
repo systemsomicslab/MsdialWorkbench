@@ -22,6 +22,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             this.model = model;
 
+            SurveyScanLoaded = model.SurveyScanLoaded;
+
             if (horizontalAxis is null) {
                 horizontalAxis = this.model.HorizontalRangeSource
                     .ToReactiveAxisManager<double>(new RelativeMargin(0.05))
@@ -60,6 +62,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         private readonly SurveyScanModel model;
 
         public ReadOnlyReactivePropertySlim<List<SpectrumPeakWrapper>> Spectrum { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> SurveyScanLoaded { get; }
 
         public IAxisManager<double> HorizontalAxis { get; }
 

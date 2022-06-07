@@ -13,32 +13,37 @@ using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Core
 {
-    public class DatasetViewModel : ViewModelBase
+    internal sealed class DatasetViewModel : ViewModelBase
     {
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
         private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
         private readonly IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService;
+        private readonly IMessageBroker _messageBroker;
 
         public DatasetViewModel(
             IDatasetModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
-            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService) {
+            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService,
+            IMessageBroker messageBroker) {
             Model = model;
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
             this.proteomicsTableService = proteomicsTableService;
             this.analysisFilePropertyResetService = analysisFilePropertyResetService;
-            MethodViewModel = model.ToReactivePropertySlimAsSynchronized(
-                m => m.Method,
-                m => ConvertToViewModel(m),
-                vm => vm?.Model)
-            .AddTo(Disposables);
+            _messageBroker = messageBroker;
+            MethodViewModel = model.ObserveProperty(m => m.Method)
+                .Select(ConvertToViewModel)
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
             FilePropertyResetCommand = new ReactiveCommand()
                 .WithSubscribe(FilePropertyResetting)
                 .AddTo(Disposables);
@@ -46,7 +51,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         public IDatasetModel Model { get; }
 
-        public ReactivePropertySlim<MethodViewModel> MethodViewModel { get; }
+        public ReadOnlyReactivePropertySlim<MethodViewModel> MethodViewModel { get; }
 
         public ReactiveCommand FilePropertyResetCommand { get; }
 
@@ -62,13 +67,13 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private MethodViewModel ConvertToViewModel(IMethodModel model) {
             switch (model) {
                 case LcmsMethodModel lc:
-                    return new LcmsMethodVM(lc, compoundSearchService, peakSpotTableService, proteomicsTableService);
+                    return LcmsMethodVM.Create(lc, compoundSearchService, peakSpotTableService, proteomicsTableService, _messageBroker);
                 case ImmsMethodModel im:
-                    return new ImmsMethodVM(im, compoundSearchService, peakSpotTableService);
+                    return ImmsMethodVM.Create(im, compoundSearchService, peakSpotTableService, _messageBroker);
                 case DimsMethodModel di:
-                    return new DimsMethodVM(di, compoundSearchService, peakSpotTableService);
+                    return DimsMethodVM.Create(di, compoundSearchService, peakSpotTableService, _messageBroker);
                 case LcimmsMethodModel lcim:
-                    return new LcimmsMethodVM(lcim, compoundSearchService, peakSpotTableService);
+                    return LcimmsMethodVM.Create(lcim, compoundSearchService, peakSpotTableService);
                 // case GcmsMethodModel _:
                 default:
                     return null;

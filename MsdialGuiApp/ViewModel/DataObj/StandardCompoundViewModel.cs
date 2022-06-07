@@ -1,108 +1,103 @@
-﻿using CompMs.CommonMVVM;
-using CompMs.MsdialCore.DataObj;
-using System;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.CommonMVVM;
 using System.ComponentModel.DataAnnotations;
 
 namespace CompMs.App.Msdial.ViewModel.DataObj
 {
     public class StandardCompoundViewModel : ViewModelBase
     {
-        public StandardCompoundViewModel() : this(new StandardCompound()) {
-
-        }
-
-        public StandardCompoundViewModel(StandardCompound compound) {
-            this.Compound = compound;
+        public StandardCompoundViewModel(StandardCompoundModel compound) {
+            _compound = compound;
             Refresh();
         }
 
-        public StandardCompound Compound { get; }
+        private readonly StandardCompoundModel _compound;
 
         public void Refresh() {
-            StandardName = Compound.StandardName;
-            MolecularWeight = Compound.MolecularWeight;
-            Concentration = Compound.Concentration;
-            TargetClass = Compound.TargetClass;
-            DilutionRate = Compound.DilutionRate;
-            PeakID = Compound.PeakID;
+            StandardName = _compound.StandardName;
+            MolecularWeight = _compound.MolecularWeight;
+            Concentration = _compound.Concentration;
+            TargetClass = _compound.TargetClass;
+            DilutionRate = _compound.DilutionRate;
+            PeakID = _compound.PeakID;
         }
 
         [Required]
         public string StandardName {
-            get => standardName;
+            get => _standardName;
             set {
-                if (SetProperty(ref standardName, value)) {
+                if (SetProperty(ref _standardName, value)) {
                     if (!ContainsError(nameof(StandardName))) {
-                        Compound.StandardName = standardName;
+                        _compound.StandardName = _standardName;
                     }
                 }
             }
         }
-        private string standardName;
+        private string _standardName;
 
         [Range(0, double.MaxValue)]
         public double MolecularWeight {
-            get => molecularWeight;
+            get => _molecularWeight;
             set {
-                if (SetProperty(ref molecularWeight, value)) {
+                if (SetProperty(ref _molecularWeight, value)) {
                     if (!ContainsError(nameof(MolecularWeight))) {
-                        Compound.MolecularWeight = molecularWeight;
+                        _compound.MolecularWeight = _molecularWeight;
                     }
                 }
             }
         }
-        private double molecularWeight;
+        private double _molecularWeight;
 
         [Range(0, double.MaxValue)]
         public double Concentration {
-            get => concentration;
+            get => _concentration;
             set {
-                if (SetProperty(ref concentration, value)) {
+                if (SetProperty(ref _concentration, value)) {
                     if (!ContainsError(nameof(Concentration))) {
-                        Compound.Concentration = concentration;
+                        _compound.Concentration = _concentration;
                     }
                 }
             }
         }
-        private double concentration;
+        private double _concentration;
 
         [Required]
         public string TargetClass {
-            get => targetClass;
+            get => _targetClass;
             set {
-                if (SetProperty(ref targetClass, value)) {
-                    if (!ContainsError(nameof(targetClass))) {
-                        Compound.TargetClass = targetClass;
+                if (SetProperty(ref _targetClass, value)) {
+                    if (!ContainsError(nameof(_targetClass))) {
+                        _compound.TargetClass = _targetClass;
                     }
                 }
             }
         }
-        private string targetClass;
+        private string _targetClass;
 
         [Range(0, double.MaxValue)]
         public double DilutionRate {
-            get => dilutionRate;
+            get => _dilutionRate;
             set {
-                if (SetProperty(ref dilutionRate, value)) {
+                if (SetProperty(ref _dilutionRate, value)) {
                     if (!ContainsError(nameof(DilutionRate))) {
-                        Compound.DilutionRate = dilutionRate;
+                        _compound.DilutionRate = _dilutionRate;
                     }
                 }
             }
         }
-        private double dilutionRate;
+        private double _dilutionRate;
 
         [Range(0, int.MaxValue)]
         public int PeakID {
-            get => peakID;
+            get => _peakID;
             set {
-                if (SetProperty(ref peakID, value)) {
+                if (SetProperty(ref _peakID, value)) {
                     if (!ContainsError(nameof(PeakID))) {
-                        Compound.PeakID = peakID;
+                        _compound.PeakID = _peakID;
                     }
                 }
             }
         }
-        private int peakID;
+        private int _peakID;
     }
 }

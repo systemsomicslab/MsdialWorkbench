@@ -196,7 +196,7 @@ namespace CompMs.Common.Mathematics.Basic {
             return minOptSize;
         }
 
-        public static double GetOptimalLowessSpanByCrossValidation(double[] x, double[] y, double minSpan, double spanStep, int iter, int fold)
+        public static double GetOptimalLowessSpanByCrossValidation(IReadOnlyList<double> x, IReadOnlyList<double> y, double minSpan, double spanStep, int iter, int fold)
         {
             var optSpan = 0.7;
             var minDevi = double.MaxValue;
@@ -251,7 +251,7 @@ namespace CompMs.Common.Mathematics.Basic {
             return Math.Round(optSpan, 3);
         }
 
-        private static double getMinimumTrainSpan(double[] x, int fold)
+        private static double getMinimumTrainSpan(IReadOnlyList<double> x, int fold)
         {
             var xTrain = StatisticsMathematics.GetCrossValidationTrainArray(x, 0, fold);
             var minSpan = GetMinimumLowessSpan(xTrain.Length);
