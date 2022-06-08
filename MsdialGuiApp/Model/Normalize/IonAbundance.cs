@@ -2,11 +2,11 @@
 
 namespace CompMs.App.Msdial.Model.Normalize
 {
-    class IonAbundance
+    internal sealed class IonAbundance
     {
-        public IonAbundance(IonAbundanceUnit unit, string label) {
+        public IonAbundance(IonAbundanceUnit unit) {
             Unit = unit;
-            Label = label;
+            Label = unit.ToLabel();
         }
 
         public IonAbundanceUnit Unit { get; set; }

@@ -47,15 +47,15 @@ namespace CompMs.App.Msdial.Model.Normalize
             }
 
             OutputUnits = new ObservableCollection<IonAbundance>() {
-                new IonAbundance(IonAbundanceUnit.nmol_per_microL_plasma, "nmol/μL plasma"),
-                new IonAbundance(IonAbundanceUnit.pmol_per_microL_plasma, "pmol/μL plasma"),
-                new IonAbundance(IonAbundanceUnit.fmol_per_microL_plasma, "fmol/μL plasma"),
-                new IonAbundance(IonAbundanceUnit.nmol_per_mg_tissue, "nmol/mg tissue"),
-                new IonAbundance(IonAbundanceUnit.pmol_per_mg_tissue, "pmol/mg tissue"),
-                new IonAbundance(IonAbundanceUnit.fmol_per_mg_tissue, "fmol/mg tissue"),
-                new IonAbundance(IonAbundanceUnit.nmol_per_10E6_cells, "nmol/10^6 cells"),
-                new IonAbundance(IonAbundanceUnit.pmol_per_10E6_cells, "pmol/10^6 cells"),
-                new IonAbundance(IonAbundanceUnit.fmol_per_10E6_cells, "fmol/10^6 cells") };
+                new IonAbundance(IonAbundanceUnit.nmol_per_microL_plasma),
+                new IonAbundance(IonAbundanceUnit.pmol_per_microL_plasma),
+                new IonAbundance(IonAbundanceUnit.fmol_per_microL_plasma),
+                new IonAbundance(IonAbundanceUnit.nmol_per_mg_tissue),
+                new IonAbundance(IonAbundanceUnit.pmol_per_mg_tissue),
+                new IonAbundance(IonAbundanceUnit.fmol_per_mg_tissue),
+                new IonAbundance(IonAbundanceUnit.nmol_per_10E6_cells),
+                new IonAbundance(IonAbundanceUnit.pmol_per_10E6_cells),
+                new IonAbundance(IonAbundanceUnit.fmol_per_10E6_cells) };
             OutputUnit = OutputUnits.FirstOrDefault();
         }
 
