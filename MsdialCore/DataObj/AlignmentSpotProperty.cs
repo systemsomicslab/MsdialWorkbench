@@ -1,16 +1,15 @@
-﻿using CompMs.Common.Components;
+﻿using Accord.Statistics.Testing;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Accord.Statistics.Testing;
-using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.Common.Proteomics.DataObj;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]

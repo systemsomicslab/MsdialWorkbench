@@ -138,13 +138,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 ),
                 item => item.Class,
                 Colors.Blue);
-            var barItemsLoaderData = new BarItemsLoaderData("Loader", Observable.Return(BarItemsLoader));
+            var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", Observable.Return(BarItemsLoader), Observable.Return(true));
             var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
             BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
-            BarChartModel.Elements.HorizontalTitle = "Class";
-            BarChartModel.Elements.VerticalTitle = "Height";
-            BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);
-            BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
 
             var eicFile = alignmentFileBean.EicFilePath;
             var classToColor = parameter.ClassnameToColorBytes

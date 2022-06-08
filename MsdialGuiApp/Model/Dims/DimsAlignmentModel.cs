@@ -162,13 +162,9 @@ namespace CompMs.App.Msdial.Model.Dims
                 ),
                 item => item.Class,
                 Colors.Blue);
-            var barItemsLoaderData = new BarItemsLoaderData("Loader", Observable.Return(barItemsLoader));
+            var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", Observable.Return(barItemsLoader), Observable.Return(true));
             var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
             BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
-            BarChartModel.Elements.HorizontalTitle = "Class";
-            BarChartModel.Elements.VerticalTitle = "Height";
-            BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);
-            BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
 
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
