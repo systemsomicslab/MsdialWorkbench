@@ -87,7 +87,8 @@ namespace CompMs.MsdialCore.DataObj
             var tasks = storage.ProjectParameters.Select(projectParameter => LoadDataStorage(datasetStreamManagerFactory, projectParameter, serializer, setNewPlacement, faultedHandle)).ToArray();
             try {
                 var datas = await Task.WhenAll(tasks).ConfigureAwait(false);
-                storage.InnerStorages.AddRange(datas);
+                var distinctDatas = datas.GroupBy(data => data.Parameter.ProjectParam.ProjectFilePath).Select(ds => ds.First());
+                storage.InnerStorages.AddRange(distinctDatas);
             }
             catch (Exception ex) {
                 Debug.WriteLine(ex.ToString());
