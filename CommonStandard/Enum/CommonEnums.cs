@@ -80,6 +80,10 @@ namespace CompMs.Common.Enum
                     return "Peak height/IS peak";
                 case IonAbundanceUnit.NormalizedByQcPeakHeight:
                     return "Peak height/QC peak";
+                case IonAbundanceUnit.NormalizedByMaxPeakOnTIC:
+                    return "Peak height/TIC";
+                case IonAbundanceUnit.NormalizedByMaxPeakOnNamedPeaks:
+                    return "Peak height/MTIC";
 
                 case IonAbundanceUnit.pmol:
                     return "pmol";
@@ -89,10 +93,6 @@ namespace CompMs.Common.Enum
                     return "ng";
                 case IonAbundanceUnit.pg:
                     return "pg";
-                case IonAbundanceUnit.NormalizedByMaxPeakOnTIC:
-                    //return "Peak height/TIC"; //?
-                case IonAbundanceUnit.NormalizedByMaxPeakOnNamedPeaks:
-                    //return "Peak height/specific peak"; //?
                 default:
                     return "pmol/μL plasma";
 
@@ -102,8 +102,6 @@ namespace CompMs.Common.Enum
                 // case IonAbundanceUnit.nmol_per_microG_protein: return "nmol/μg protein";
                 // case IonAbundanceUnit.pmol_per_microG_protein: return "pmol/μg protein";
                 // case IonAbundanceUnit.fmol_per_microG_protein: return "fmol/μg protein";
-                //case IonAbundanceUnit.NormalizedByTIC: return "Peak height/TIC";
-                //case IonAbundanceUnit.NormalizedByMTIC: return "Peak height/MTIC";
             }
         }
     }

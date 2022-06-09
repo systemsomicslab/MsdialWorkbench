@@ -6,6 +6,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.Normalize;
 using MessagePack;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
-    public class AlignmentSpotProperty : IMSIonProperty, IMoleculeProperty, IChromatogramPeak, IAnnotatedObject{
+    public class AlignmentSpotProperty : IMSIonProperty, IMoleculeProperty, IChromatogramPeak, IAnnotatedObject, INormalizationTarget {
 
         // IDs to link properties
         [Key(0)]
@@ -342,6 +343,22 @@ namespace CompMs.MsdialCore.DataObj {
         ChromXs IChromatogramPeak.ChromXs {
             get => TimesCenter;
             set => TimesCenter = value;
+        }
+
+        // INormalizationTarget
+        int INormalizationTarget.Id => MasterAlignmentID;
+
+        int INormalizationTarget.InternalStandardId {
+            get => InternalStandardAlignmentID;
+            set => InternalStandardAlignmentID = value;
+        }
+
+        IReadOnlyList<INormalizationTarget> INormalizationTarget.Children => AlignmentDriftSpotFeatures;
+
+        IReadOnlyList<INormalizableValue> INormalizationTarget.Values => AlignedPeakProperties;
+
+        MoleculeMsReference INormalizationTarget.RetriveReference(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return refer.Refer(MatchResults.Representative);
         }
     }
 
