@@ -1,16 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.Normalize;
-using CompMs.Common.Components;
-using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parameter;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using Reactive.Bindings.Notifiers;
 
 namespace CompMs.App.Msdial.ViewModel.Normalize
 {
-    class NormalizationSetViewModel : ViewModelBase
+    internal sealed class NormalizationSetViewModel : ViewModelBase
     {
         private readonly NormalizationSetModel _model;
 
@@ -19,20 +14,30 @@ namespace CompMs.App.Msdial.ViewModel.Normalize
             _model = model;
             SplashViewModel = new SplashSetViewModel(_model.SplashSetModel).AddTo(Disposables);
 
-            Parameter = new ParameterBaseVM(model.Parameter);
+            IsNormalizeNone = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeNone).AddTo(Disposables);
+            IsNormalizeIS = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeIS).AddTo(Disposables);
+            IsNormalizeLowess = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeLowess).AddTo(Disposables);
+            IsNormalizeIsLowess = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeIsLowess).AddTo(Disposables);
+            IsNormalizeSplash = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeSplash).AddTo(Disposables);
+            IsNormalizeTic = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeTic).AddTo(Disposables);
+            IsNormalizeMTic = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeMTic).AddTo(Disposables);
+
+            NormalizeCommand = model.CanNormalizeProperty
+                .ToReactiveCommand()
+                .WithSubscribe(model.Normalize)
+                .AddTo(Disposables);
         }
 
-        public NormalizationSetViewModel(
-            AlignmentResultContainer container,
-            IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
-            IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            ParameterBase parameter,
-            IMessageBroker broker) : this(new NormalizationSetModel(container, refer, evaluator, parameter, broker)) {
-
-        }
-
-        public ParameterBaseVM Parameter { get; }
+        public ReactivePropertySlim<bool> IsNormalizeNone { get; }
+        public ReactivePropertySlim<bool> IsNormalizeIS { get; }
+        public ReactivePropertySlim<bool> IsNormalizeLowess { get; }
+        public ReactivePropertySlim<bool> IsNormalizeIsLowess { get; }
+        public ReactivePropertySlim<bool> IsNormalizeSplash { get; }
+        public ReactivePropertySlim<bool> IsNormalizeTic { get; }
+        public ReactivePropertySlim<bool> IsNormalizeMTic { get; }
 
         public SplashSetViewModel SplashViewModel { get; }
+
+        public ReactiveCommand NormalizeCommand { get; }
     }
 }

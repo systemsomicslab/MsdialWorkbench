@@ -125,7 +125,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.DataBaseMapper,
                 Storage.Parameter,
                 _projectBaseParameter,
-                Storage.AnalysisFiles)
+                Storage.AnalysisFiles,
+                _broker)
             .AddTo(Disposables);
         }
 

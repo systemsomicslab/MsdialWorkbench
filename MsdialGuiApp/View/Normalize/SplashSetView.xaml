@@ -23,14 +23,10 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <UserControl.CommandBindings>
-        <CommandBinding Command="Close" Executed="CloseCommand_Execute" CanExecute="CloseCommand_CanExecute"/>
-    </UserControl.CommandBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition/>
-            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
 
         <Grid Margin="8,4">
@@ -68,7 +64,7 @@
         <DataGrid Margin="8,0"
                   ItemsSource="{Binding Path=SplashProduct.Value.Lipids}"
                   AutoGenerateColumns="False"
-                  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto"
                   CanUserReorderColumns="False" ClipboardCopyMode="ExcludeHeader"
                   behavior:DataGridPasteBehavior.Enable="True"
                   Grid.Row="1">
@@ -104,18 +100,5 @@
                                     Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
-
-        <StackPanel Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Margin="8,4"
-                    Grid.Row="2">
-            <Button Content="Normalize"
-                    Command="{Binding NormalizeCommand}"
-                    Width="80"
-                    Margin="8,0"/>
-            <Button Content="Cancel"
-                    Command="Close"
-                    Width="80"/>
-        </StackPanel>
     </Grid>
 </UserControl>

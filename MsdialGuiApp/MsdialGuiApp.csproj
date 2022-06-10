@@ -152,9 +152,15 @@
     <Compile Include="Model\DataObj\SurveyScanSpectrum.cs" />
     <Compile Include="Model\Imms\ImmsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Loader\BarItemsLoaderData.cs" />
+    <Compile Include="Model\Normalize\InternalStandardLowessNormalizeModel.cs" />
+    <Compile Include="Model\Normalize\InternalStandardNormalizeModel.cs" />
     <Compile Include="Model\Normalize\IonAbundance.cs" />
+    <Compile Include="Model\Normalize\LowessNormalizeModel.cs" />
+    <Compile Include="Model\Normalize\MticNormalize.cs" />
+    <Compile Include="Model\Normalize\NoneNormalizeModel.cs" />
     <Compile Include="Model\Normalize\NormalizationSetModel.cs" />
     <Compile Include="Model\Normalize\SplashProduct.cs" />
+    <Compile Include="Model\Normalize\TicNormalizeModel.cs" />
     <Compile Include="Model\Search\CompoundSearcher.cs" />
     <Compile Include="Model\Search\CompoundSearcherCollection.cs" />
     <Compile Include="Model\Search\FocusNavigatorModel.cs" />

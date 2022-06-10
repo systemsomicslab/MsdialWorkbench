@@ -42,6 +42,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly IMatchResultEvaluator<MsScanMatchResult> _matchResultEvaluator;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
         private readonly ParameterBase _parameter;
+        private readonly List<AnalysisFileBean> _files;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly IMessageBroker _broker;
 
@@ -59,6 +60,7 @@ namespace CompMs.App.Msdial.Model.Dims
             _alignmentFile = alignmentFileBean;
 
             _parameter = parameter;
+            _files = files ?? throw new ArgumentNullException(nameof(files));
             _broker = broker;
             _dataBaseMapper = mapper;
             _matchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
@@ -220,7 +222,7 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         public NormalizationSetModel BuildNormalizeSetModel() {
-            return new NormalizationSetModel(Container, _dataBaseMapper, _matchResultEvaluator, _parameter, _broker);
+            return new NormalizationSetModel(Container, _files, _dataBaseMapper, _matchResultEvaluator, _parameter, _broker);
         }
 
         public bool CanSaveSpectra() => Target.Value.innerModel != null && _msdecResult.Value != null;

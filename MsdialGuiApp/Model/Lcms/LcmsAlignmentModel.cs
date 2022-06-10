@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Normalize;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -19,6 +20,7 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -43,7 +45,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseMapper mapper,
             MsdialLcmsParameter parameter,
             ProjectBaseParameterModel projectBaseParameter,
-            List<AnalysisFileBean> files)
+            List<AnalysisFileBean> files,
+            IMessageBroker messageBroker)
             : base(alignmentFileBean.FilePath) {
             if (databases is null) {
                 throw new ArgumentNullException(nameof(databases));
@@ -55,6 +58,8 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             AlignmentFile = alignmentFileBean;
             Parameter = parameter;
+            _files = files ?? throw new ArgumentNullException(nameof(files));
+            _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
             DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             CompoundSearchers = ConvertToCompoundSearchers(databases);
@@ -236,6 +241,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
         private readonly MSDecLoader decLoader;
+        private readonly List<AnalysisFileBean> _files;
+        private readonly IMessageBroker _messageBroker;
 
         public double MassMin { get; }
         public double MassMax { get; }
@@ -310,8 +317,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Parameter);
         }
 
-        public void Normalize() {
-            
+        public NormalizationSetModel Normalize() {
+            return new NormalizationSetModel(Container, _files, DataBaseMapper, MatchResultEvaluator, Parameter, _messageBroker);
         }
 
         private List<CompoundSearcher> ConvertToCompoundSearchers(DataBaseStorage databases) {
