@@ -59,7 +59,7 @@
                     <Setter Property="Width" Value="80"/>
                 </Style>
             </StackPanel.Resources>
-            <Button Content="Normalize" Command="{Binding NormalizeCommand}"/>
+            <Button Content="Normalize" Command="{Binding NormalizeCommand}" Click="Invoke_Normalize"/>
             <Button Content="Cancel" Command="Close"/>
         </StackPanel>
     </Grid>

@@ -150,8 +150,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand<Window> _normalizeCommand;
 
         private void Normalize(Window owner) {
-            using (var model = _model.Normalize())
-            using (var vm = new NormalizationSetViewModel(model)) {
+            using (var vm = new NormalizationSetViewModel(_model.NormalizationSetModel)) {
                 var view = new NormalizationSetView {
                     DataContext = vm,
                     Owner = owner,

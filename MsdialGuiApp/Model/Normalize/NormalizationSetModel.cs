@@ -8,8 +8,11 @@ using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
+using System;
 using System.Collections.Generic;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.Model.Normalize
 {
@@ -25,6 +28,11 @@ namespace CompMs.App.Msdial.Model.Normalize
             ParameterBase parameter,
             IMessageBroker broker) {
             _dataNormalizationParameter = parameter.DataNormalizationBaseParam;
+
+            _normalized = new Subject<Unit>().AddTo(Disposables);
+            IsNormalized = _normalized.ToConstant(true)
+                .ToReadOnlyReactivePropertySlim(initialValue: container.IsNormalized)
+                .AddTo(Disposables);
 
             IsNormalizeNone = _dataNormalizationParameter.IsNormalizeNone;
             IsNormalizeIS = _dataNormalizationParameter.IsNormalizeIS;
@@ -56,7 +64,7 @@ namespace CompMs.App.Msdial.Model.Normalize
             .AddTo(Disposables);
         }
 
-        public ParameterBase Parameter { get; }
+        public ReadOnlyReactivePropertySlim<bool> IsNormalized { get; }
 
         public bool IsNormalizeNone {
             get => _isNormalizeNone;
@@ -105,6 +113,9 @@ namespace CompMs.App.Msdial.Model.Normalize
 
         public ReadOnlyReactivePropertySlim<bool> CanNormalizeProperty { get; }
 
+        public IObservable<Unit> Normalized => _normalized;
+        private readonly Subject<Unit> _normalized;
+
         public void Normalize() {
             _dataNormalizationParameter.IsNormalizeNone = false;
             _dataNormalizationParameter.IsNormalizeIS = false;
@@ -117,30 +128,37 @@ namespace CompMs.App.Msdial.Model.Normalize
             if (IsNormalizeNone) {
                 NoneNormalizeModel.Normalize();
                 _dataNormalizationParameter.IsNormalizeNone = true;
+                _normalized.OnNext(Unit.Default);
             }
             else if (IsNormalizeIS) {
                 InternalStandardNormalizeModel.Normalize();
                 _dataNormalizationParameter.IsNormalizeIS = true;
+                _normalized.OnNext(Unit.Default);
             }
             else if (IsNormalizeLowess) {
                 LowessNormalizeModel.Normalize();
                 _dataNormalizationParameter.IsNormalizeLowess = true;
+                _normalized.OnNext(Unit.Default);
             }
             else if (IsNormalizeIsLowess) {
                 InternalStandardLowessNormalizeModel.Normalize();
                 _dataNormalizationParameter.IsNormalizeIsLowess = true;
+                _normalized.OnNext(Unit.Default);
             }
             else if (IsNormalizeSplash) {
                 SplashSetModel.Normalize();
                 _dataNormalizationParameter.IsNormalizeSplash = true;
+                _normalized.OnNext(Unit.Default);
             }
             else if (IsNormalizeTic) {
                 TicNormalizeModel.Normalize();
                 _dataNormalizationParameter.IsNormalizeTic = true;
+                _normalized.OnNext(Unit.Default);
             }
             else if (IsNormalizeMTic) {
                 MticNormalizeModel.Normalize();
                 _dataNormalizationParameter.IsNormalizeMTic = true;
+                _normalized.OnNext(Unit.Default);
             }
         }
     }
