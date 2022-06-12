@@ -76,7 +76,7 @@
                              LabelPropertyName="Mass"
                              OrderingPropertyName="Intensity"
                              Brush="Black"
-                             Format="N2"
+                             Format="N4"
                              Overlap="Horizontal,Direct"
                              ClipToBounds="True"
                              IsHitTestVisible="False"/>

@@ -7,7 +7,7 @@ using System;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class ProjectParameterSettingModel : BindableBase
+    internal sealed class ProjectParameterSettingModel : BindableBase
     {
         public ProjectParameterSettingModel(Action<ProjectModel> next, IMessageBroker broker) {
             var dt = DateTime.Now;

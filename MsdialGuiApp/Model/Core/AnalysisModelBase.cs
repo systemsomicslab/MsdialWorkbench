@@ -11,11 +11,15 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Core {
     public abstract class AnalysisModelBase : BindableBase, IAnalysisModel, IDisposable
     {
+        private readonly ChromatogramPeakFeatureCollection _peakCollection;
+
         public AnalysisModelBase(AnalysisFileBean analysisFile) {
             if (analysisFile is null) {
                 throw new ArgumentNullException(nameof(analysisFile));
@@ -23,6 +27,7 @@ namespace CompMs.App.Msdial.Model.Core {
 
             AnalysisFile = analysisFile;
             var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
+            _peakCollection = new ChromatogramPeakFeatureCollection(peaks);
             Ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
                 peaks.Select(peak => new ChromatogramPeakFeatureModel(peak))
             );
@@ -54,6 +59,10 @@ namespace CompMs.App.Msdial.Model.Core {
             set => SetProperty(ref displayLabel, value);
         }
         private string displayLabel = string.Empty;
+
+        public Task SaveAsync(CancellationToken token) {
+            return _peakCollection.SerializeAsync(AnalysisFile.PeakAreaBeanInformationFilePath, token);
+        }
 
         // IDisposable fields and methods
         protected CompositeDisposable Disposables = new CompositeDisposable();

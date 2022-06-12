@@ -44,16 +44,21 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public DimsAnalysisPeakTableViewModel(
             DimsPeakSpotTableModel<ChromatogramPeakFeatureModel> model,
             IObservable<EicLoader> eicLoader,
-            IReactiveProperty<double> massLower, IReactiveProperty<double> massUpper,
-            IReactiveProperty<string> metaboliteFilterKeyword, IReactiveProperty<string> commentFilterKeyword)
+            IReactiveProperty<double> massLower,
+            IReactiveProperty<double> massUpper,
+            IReactiveProperty<string> metaboliteFilterKeyword,
+            IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty<bool> isEditting)
             : base(model, massLower, massUpper, metaboliteFilterKeyword, commentFilterKeyword) {
             if (eicLoader is null) {
                 throw new ArgumentNullException(nameof(eicLoader));
             }
 
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
         }
 
+        public IReactiveProperty<bool> IsEditting { get; }
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
     }
 
@@ -62,10 +67,14 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public DimsAlignmentSpotTableViewModel(
             DimsPeakSpotTableModel<AlignmentSpotPropertyModel> model,
             IReactiveProperty<double> massLower,
-            IReactiveProperty<double> massUpper, IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword)
+            IReactiveProperty<double> massUpper,
+            IReactiveProperty<string> metaboliteFilterKeyword,
+            IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty isEdittng)
             : base(model, massLower, massUpper, metaboliteFilterKeyword, commentFilterKeyword) {
-
+            IsEdittng = isEdittng ?? throw new ArgumentNullException(nameof(isEdittng));
         }
+
+        public IReactiveProperty IsEdittng { get; }
     }
 }

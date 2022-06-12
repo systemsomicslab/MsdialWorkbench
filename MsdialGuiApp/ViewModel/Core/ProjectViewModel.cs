@@ -10,7 +10,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Core
 {
-    public class ProjectViewModel : ViewModelBase
+    internal sealed class ProjectViewModel : ViewModelBase
     {
         public ProjectViewModel(
             IProjectModel model,

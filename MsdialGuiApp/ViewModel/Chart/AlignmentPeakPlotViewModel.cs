@@ -12,17 +12,19 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    class AlignmentPeakPlotViewModel : ViewModelBase
+    internal sealed class AlignmentPeakPlotViewModel : ViewModelBase
     {
         private readonly AlignmentPeakPlotModel _model;
 
         public AlignmentPeakPlotViewModel(AlignmentPeakPlotModel model, Action focus, IObservable<bool> isFocused) {
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+
+            Focus = focus;
+            IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             Spots = model.Spots;
             HorizontalAxis = model.HorizontalAxis;
             VerticalAxis = model.VerticalAxis;
-
-            IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             SelectedBrush = model.ToReactivePropertyAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
             Brush = SelectedBrush.Select(data => data?.Mapper)
@@ -54,8 +56,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             LabelProperty = model.LabelSource
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            _model = model ?? throw new ArgumentNullException(nameof(model));
-            Focus = focus;
         }
 
         public Action Focus { get; }

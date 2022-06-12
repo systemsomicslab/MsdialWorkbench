@@ -1,28 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
+using System.Windows.Controls.Ribbon;
 
 namespace CompMs.App.Msdial.View.Dims
 {
     /// <summary>
-    /// Interaction logic for MainWindowRibbon.xaml
+    /// Interaction logic for DimsRibbon.xaml
     /// </summary>
-    public partial class MainRibbon : UserControl
+    public partial class DimsRibbon : Ribbon
     {
         public readonly DependencyProperty IsAnalysisViewFocusedProperty =
             DependencyProperty.Register(
-                nameof(IsAnalysisViewFocused), typeof(bool), typeof(MainRibbon),
+                nameof(IsAnalysisViewFocused), typeof(bool), typeof(DimsRibbon),
                 new FrameworkPropertyMetadata(true));
 
         public bool IsAnalysisViewFocused {
@@ -32,7 +20,7 @@ namespace CompMs.App.Msdial.View.Dims
 
         public readonly DependencyProperty IsAlignmentViewFocusedProperty =
             DependencyProperty.Register(
-                nameof(IsAlignmentViewFocusedProperty), typeof(bool), typeof(MainRibbon),
+                nameof(IsAlignmentViewFocusedProperty), typeof(bool), typeof(DimsRibbon),
                 new FrameworkPropertyMetadata(false));
 
         public bool IsAlignmentViewFocused {
@@ -40,7 +28,7 @@ namespace CompMs.App.Msdial.View.Dims
             set => SetValue(IsAlignmentViewFocusedProperty, value);
         }
 
-        public MainRibbon() {
+        public DimsRibbon() {
             InitializeComponent();
         }
     }

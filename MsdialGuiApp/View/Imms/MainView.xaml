@@ -8,10 +8,12 @@
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              mc:Ignorable="d" 
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
+             xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
-             xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
-             behavior:SuppressContextMenuBehavior.IsEnabled="True"
+             xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+             xmlns:commonbehavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+             behavior:SuppressContextMenuBehavior.IsEnabled="True"
              d:DataContext="{d:DesignInstance Type=vm:ImmsMethodVM}"
              Name="MainControl"
              d:DesignHeight="775" d:DesignWidth="1280">
@@ -159,7 +161,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <local:MainRibbon x:Name="RibbonMenu"  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+        <local:ImmsRibbon x:Name="RibbonMenu"  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
         <commonview:Navigator Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
 
         <GridSplitter Margin="0, 0, 0, 0" Width="2" ResizeDirection="Columns" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" />

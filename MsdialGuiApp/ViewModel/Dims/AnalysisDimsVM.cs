@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Search;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -24,7 +25,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public AnalysisDimsVM(
             DimsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            FocusControlManager focusControlManager)
             : base(model) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
@@ -33,13 +35,18 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
 
+            if (focusControlManager is null) {
+                throw new ArgumentNullException(nameof(focusControlManager));
+            }
+
             _model = model;
             _compoundSearchService = compoundSearchService;
             _peakSpotTableService = peakSpotTableService;
 
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
-            PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, brushSource: Observable.Return(_model.Brush)).AddTo(Disposables);
+            var (focusAction, focused) = focusControlManager.Request();
+            PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, focusAction, focused).AddTo(Disposables);
             EicViewModel = new EicViewModel(_model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
             
             RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(_model.Ms2SpectrumModel).AddTo(Disposables);
@@ -49,7 +56,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 PeakSpotNavigatorViewModel.MzLowerValue,
                 PeakSpotNavigatorViewModel.MzUpperValue,
                 PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
-                PeakSpotNavigatorViewModel.CommentFilterKeyword)
+                PeakSpotNavigatorViewModel.CommentFilterKeyword,
+                PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
 
             SearchCompoundCommand = new[]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 
 
@@ -187,7 +188,6 @@ namespace CompMs.Graphics.Core.Base
             Update();
         }
 
-        #region PropertyChanged event
         protected static void ChartUpdate(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is FrameworkElement fe) {
@@ -210,7 +210,27 @@ namespace CompMs.Graphics.Core.Base
                 }
             }
         }
-        #endregion
+
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e) {
+            base.OnMouseLeftButtonUp(e);
+            if (Focusable && !IsKeyboardFocused) {
+                Keyboard.Focus(this);
+            }
+        }
+
+        protected override void OnMouseRightButtonUp(MouseButtonEventArgs e) {
+            base.OnMouseRightButtonUp(e);
+            if (Focusable && !IsKeyboardFocused) {
+                Keyboard.Focus(this);
+            }
+        }
+
+        protected override void OnMouseWheel(MouseWheelEventArgs e) {
+            base.OnMouseWheel(e);
+            if (Focusable && !IsKeyboardFocused) {
+                Keyboard.Focus(this);
+            }
+        }
 
         #region VisualCollection
         protected override int VisualChildrenCount => visualChildren.Count;

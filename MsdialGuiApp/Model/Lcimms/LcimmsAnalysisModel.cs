@@ -52,22 +52,51 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, useRtFilter: true, useDtFilter: true);
 
+            var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
+                    new KeyBrushMapper<ChromatogramPeakFeatureModel, string>(
+                        ChemOntologyColor.Ontology2RgbaBrush,
+                        peak => peak?.Ontology ?? string.Empty,
+                        Color.FromArgb(180, 181, 181, 181)),
+                    "Ontology");
+            var intensityBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
+                    new DelegateBrushMapper<ChromatogramPeakFeatureModel>(
+                        peak => Color.FromArgb(
+                            180,
+                            (byte)(255 * peak.InnerModel.PeakShape.AmplitudeScoreValue),
+                            (byte)(255 * (1 - Math.Abs(peak.InnerModel.PeakShape.AmplitudeScoreValue - 0.5))),
+                            (byte)(255 - 255 * peak.InnerModel.PeakShape.AmplitudeScoreValue)),
+                        enableCache: true),
+                    "Ontology");
+            var brushes = new[] { intensityBrush, ontologyBrush, };
+            BrushMapData<ChromatogramPeakFeatureModel> selectedBrush;
+            switch (parameter.TargetOmics) {
+                case TargetOmics.Lipidomics:
+                    selectedBrush = ontologyBrush;
+                    break;
+                case TargetOmics.Metabolomics:
+                case TargetOmics.Proteomics:
+                default:
+                    selectedBrush = intensityBrush;
+                    break;
+            }
+            Brush = selectedBrush.Mapper;
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            RtMzPlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelSource)
+            RtMzPlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelSource, selectedBrush, brushes)
             {
                 HorizontalTitle = "Retention time [min]",
                 VerticalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             }.AddTo(Disposables);
-            RtEicLoader = new EicLoader(accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
-            RtEicModel = new EicModel(Target, RtEicLoader)
+            var rtEicLoader = EicLoader.BuildForAllRange(accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            RtEicLoader = EicLoader.BuildForPeakRange(accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            RtEicModel = new EicModel(Target, rtEicLoader)
             {
                 HorizontalTitle = RtMzPlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
             }.AddTo(Disposables);
 
-            DtMzPlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelSource, verticalAxis: RtMzPlotModel.VerticalAxis)
+            DtMzPlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelSource, selectedBrush, brushes, verticalAxis: RtMzPlotModel.VerticalAxis)
             {
                 HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "m/z",
@@ -81,8 +110,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                         : $"Spot ID: {t.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5} RT min: {t.InnerModel.ChromXsTop.RT.Value} Drift time msec: {t.InnerModel.ChromXsTop.Drift.Value}"))
                 .Subscribe(title => DtMzPlotModel.GraphTitle = title);
 
-            DtEicLoader = new EicLoader(spectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
-            DtEicModel = new EicModel(Target, DtEicLoader)
+            var dtEicLoader = EicLoader.BuildForAllRange(spectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            DtEicLoader = EicLoader.BuildForPeakRange(spectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            DtEicModel = new EicModel(Target, dtEicLoader)
             {
                 HorizontalTitle = DtMzPlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",

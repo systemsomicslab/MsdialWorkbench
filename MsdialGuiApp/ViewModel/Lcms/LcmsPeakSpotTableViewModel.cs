@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public IReactiveProperty<double> RtUpper { get; }
     }
 
-    sealed class LcmsProteomicsPeakTableViewModel : LcmsPeakSpotTableViewModel {
+    internal sealed class LcmsProteomicsPeakTableViewModel : LcmsPeakSpotTableViewModel {
         public LcmsProteomicsPeakTableViewModel(
             ILcmsPeakSpotTableModel model,
             IObservable<EicLoader> eicLoader,
@@ -68,7 +68,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReactiveProperty<double> rtUpper,
             IReactiveProperty<string> proteinFilterKeyword,
             IReactiveProperty<string> peptideFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword)
+            IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty<bool> isEditting)
             : base(
                   model,
                   massLower,
@@ -81,15 +82,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(eicLoader));
             }
             ProteinFilterKeyword = proteinFilterKeyword;
+            IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
         public IReactiveProperty<string> PeptideFilterKeyword { get => this.MetaboliteFilterKeyword; }
         public IReactiveProperty<string> ProteinFilterKeyword { get; }
+        public IReactiveProperty<bool> IsEditting { get; }
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
     }
 
-    sealed class LcmsAnalysisPeakTableViewModel : LcmsPeakSpotTableViewModel
+    internal sealed class LcmsAnalysisPeakTableViewModel : LcmsPeakSpotTableViewModel
     {
         public LcmsAnalysisPeakTableViewModel(
             ILcmsPeakSpotTableModel model,
@@ -99,7 +102,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReactiveProperty<double> rtLower,
             IReactiveProperty<double> rtUpper,
             IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword)
+            IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty<bool> isEditting)
             : base(
                   model,
                   massLower,
@@ -112,11 +116,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(eicLoader));
             }
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
         }
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
+        public IReactiveProperty<bool> IsEditting { get; }
     }
    
-    sealed class LcmsAlignmentSpotTableViewModel : LcmsPeakSpotTableViewModel
+    internal sealed class LcmsAlignmentSpotTableViewModel : LcmsPeakSpotTableViewModel
     {
         public LcmsAlignmentSpotTableViewModel(
             LcmsAlignmentSpotTableModel model,
@@ -126,7 +132,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReactiveProperty<double> rtUpper,
             IReactiveProperty<string> metaboliteFilterKeyword,
             IReactiveProperty<string> commentFilterKeyword,
-            IObservable<IBrushMapper<BarItem>> classBrush)
+            IReactiveProperty<bool> isEditting)
             : base(
                   model,
                   massLower,
@@ -135,13 +141,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   rtUpper,
                   metaboliteFilterKeyword,
                   commentFilterKeyword) {
-            ClassBrush = classBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
         }
 
         public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> ClassBrush { get; }
+        public IReactiveProperty<bool> IsEditting { get; }
     }
 
-    sealed class LcmsProteomicsAlignmentTableViewModel : LcmsPeakSpotTableViewModel {
+    internal sealed class LcmsProteomicsAlignmentTableViewModel : LcmsPeakSpotTableViewModel {
         public LcmsProteomicsAlignmentTableViewModel(
             LcmsAlignmentSpotTableModel model,
             IReactiveProperty<double> massLower,
@@ -150,7 +158,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReactiveProperty<double> rtUpper,
             IReactiveProperty<string> proteinFilterKeyword,
             IReactiveProperty<string> peptideFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword)
+            IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty<bool> isEditting)
             : base(
                   model,
                   massLower,
@@ -160,8 +169,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   peptideFilterKeyword,
                   commentFilterKeyword) {
             ProteinFilterKeyword = proteinFilterKeyword;
+            IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
         }
         public IReactiveProperty<string> PeptideFilterKeyword { get => this.MetaboliteFilterKeyword; }
         public IReactiveProperty<string> ProteinFilterKeyword { get; }
+        public IReactiveProperty<bool> IsEditting { get; }
     }
 }
