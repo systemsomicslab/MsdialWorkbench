@@ -322,10 +322,11 @@ namespace CompMs.Common.Lipidomics
             var doublebondIons_matched = doublebondIons.Where(n => n.IsMatched).ToList();
             var matchedCount = doublebondIons_matched.Count;
             var matchedPercent = matchedCount / (doublebondIons.Count + 1e-10);
+            var matchedCoefficient = GetMatchedCoefficient(doublebondIons_matched);
 
-            var dbhigh_enriched = doublebondIons_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high)).Sum(n => n.Resolution);
-            var dblow_enriched = doublebondIons_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_low)).Sum(n => n.Resolution);
-            var dbBonusScore = dbhigh_enriched > 3.0 * dblow_enriched ? 0.5 : 0.0;
+            //var dbhigh_enriched = doublebondIons_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_high)).Sum(n => n.Resolution);
+            //var dblow_enriched = doublebondIons_matched.Where(n => n.SpectrumComment.HasFlag(SpectrumComment.doublebond_low)).Sum(n => n.Resolution);
+            //var dbBonusScore = dbhigh_enriched > 3.0 * dblow_enriched ? 0.5 : 0.0;
 
             var isDoubleBondIdentified = matchedPercent > doublebondIonCutoff ? true : false;
 
@@ -337,7 +338,7 @@ namespace CompMs.Common.Lipidomics
             result.ClassIonScore = isClassIonExisted ? 1.0 : 0.0;
             result.ChainIonScore = isChainIonExisted ? 1.0 : 0.0;
             result.PositionIonScore = isPositionIonExisted ? 1.0 : 0.0;
-            result.DoubleBondIonScore = matchedPercent + dbBonusScore;
+            result.DoubleBondIonScore = matchedPercent + matchedCoefficient;
 
             var score = result.ClassIonScore + result.ChainIonScore + result.PositionIonScore + result.DoubleBondIonScore;
             var counter = classionsDetected + chainIonsDetected + positionIonsDetected + matchedCount;
@@ -415,6 +416,26 @@ namespace CompMs.Common.Lipidomics
 
             //}
             //return result;
+        }
+
+        private static double GetMatchedCoefficient(List<SpectrumPeak> peaks) {
+            double sum1 = 0, sum2 = 0, mean1 = 0, mean2 = 0, covariance = 0, sqrt1 = 0, sqrt2 = 0;
+            for (int i = 0; i < peaks.Count; i++) {
+                sum1 += peaks[i].Resolution;
+                sum2 += peaks[i].Intensity;
+            }
+            mean1 = (double)(sum1 / peaks.Count);
+            mean2 = (double)(sum2 / peaks.Count);
+
+            for (int i = 0; i < peaks.Count; i++) {
+                covariance += (peaks[i].Resolution - mean1) * (peaks[i].Intensity - mean2);
+                sqrt1 += Math.Pow(peaks[i].Resolution - mean1, 2);
+                sqrt2 += Math.Pow(peaks[i].Intensity - mean2, 2);
+            }
+            if (sqrt1 == 0 || sqrt2 == 0)
+                return 0;
+            else
+                return (double)(covariance / Math.Sqrt(sqrt1 * sqrt2));
         }
 
         public static bool IsDiagnosticFragmentsExist(List<SpectrumPeak> spectrum, List<SpectrumPeak> refSpectrum, double mzTolerance)

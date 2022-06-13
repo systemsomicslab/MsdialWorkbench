@@ -23,6 +23,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             SelectedTo = Model.SelectedEnzymes.ToMappedReadOnlyObservableCollection(enzyme => new EnzymeBeanSelection(enzyme));
             Disposables.Add(SelectedTo);
 
+            maxMissedCleavage = model.MaxMissedCleavage;
+
             var notifir = new PropertyChangedNotifier(Model);
             Disposables.Add(notifir);
             notifir
@@ -89,7 +91,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             }
         }
 
-        private int maxMissedCleavage = 2;
+        private int maxMissedCleavage;
 
         protected override void OnErrorsChanged([CallerMemberName] string propertyname = "") {
             base.OnErrorsChanged(propertyname);
