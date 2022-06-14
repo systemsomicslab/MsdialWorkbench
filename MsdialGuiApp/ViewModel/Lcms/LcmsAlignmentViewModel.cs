@@ -1,8 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcms;
-using CompMs.App.Msdial.Model.Normalize;
 using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Search;
@@ -20,7 +20,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    internal sealed class LcmsAlignmentViewModel : AlignmentFileViewModel
+    internal sealed class LcmsAlignmentViewModel : AlignmentFileViewModel, IAlignmentResultViewModel
     {
         private readonly LcmsAlignmentModel _model;
         private readonly IWindowService<CompoundSearchVM> _compoundSearchService;

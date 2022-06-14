@@ -107,22 +107,22 @@
 
         <ContentControl Content="{Binding MethodViewModel.Value}">
             <ContentControl.Resources>
-                <DataTemplate DataType="{x:Type lcvm:LcmsMethodVM}"
+                <DataTemplate DataType="{x:Type lcvm:LcmsMethodViewModel}"
                               xmlns:lcvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
                               xmlns:lcvw="clr-namespace:CompMs.App.Msdial.View.Lcms">
                     <lcvw:MainView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type divm:DimsMethodVM}"
+                <DataTemplate DataType="{x:Type divm:DimsMethodViewModel}"
                               xmlns:divm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
                               xmlns:divw="clr-namespace:CompMs.App.Msdial.View.Dims">
                     <divw:MainView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type imvm:ImmsMethodVM}"
+                <DataTemplate DataType="{x:Type imvm:ImmsMethodViewModel}"
                               xmlns:imvm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
                               xmlns:imvw="clr-namespace:CompMs.App.Msdial.View.Imms">
                     <imvw:MainView />
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type lcimvm:LcimmsMethodVM}"
+                <DataTemplate DataType="{x:Type lcimvm:LcimmsMethodViewModel}"
                               xmlns:lcimvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
                               xmlns:lcimvw="clr-namespace:CompMs.App.Msdial.View.Lcimms">
                     <lcimvw:MainView />

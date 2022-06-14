@@ -7,7 +7,7 @@
              xmlns:converter="clr-namespace:CompMs.Graphics.Converter;assembly=ChartDrawing"
              mc:Ignorable="d" 
              Name="FooterView"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisLcmsVM}}"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:LcmsAnalysisViewModel}}"
              d:DesignHeight="30" d:DesignWidth="1280">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">

@@ -8,7 +8,7 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
              Name="ExpRefPlot"
              d:DesignHeight="600" d:DesignWidth="370"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisImmsVM}}">
+             d:DataContext="{d:DesignInstance Type={x:Type vm:ImmsAnalysisViewModel}}">
     <d:DesingerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>

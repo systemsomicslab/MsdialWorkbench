@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.View.Normalize;
+using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
@@ -11,20 +12,19 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.ComponentModel;
-using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    internal sealed class AlignmentDimsVM : AlignmentFileViewModel
+    internal sealed class DimsAlignmentViewModel : AlignmentFileViewModel, IAlignmentResultViewModel
     {
         private readonly DimsAlignmentModel _model;
         private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
         private readonly IMessageBroker _broker;
 
-        public AlignmentDimsVM(
+        public DimsAlignmentViewModel(
             DimsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,

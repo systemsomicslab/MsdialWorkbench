@@ -15,7 +15,7 @@
              Name="MainControl"
              MouseRightButtonDown="MainControl_MouseRightButtonDown"
              ContextMenuOpening="MainControl_ContextMenuOpening"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:DimsMethodVM}}"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:DimsMethodViewModel}}"
              d:DesignHeight="775" d:DesignWidth="1280">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">

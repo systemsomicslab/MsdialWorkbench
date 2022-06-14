@@ -10,7 +10,7 @@
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
              Name="RawPurePlot"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisLcmsVM}}"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:LcmsAnalysisViewModel}}"
              d:DesignHeight="600" d:DesignWidth="370">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">

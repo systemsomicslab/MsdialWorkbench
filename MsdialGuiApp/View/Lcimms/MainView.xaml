@@ -17,7 +17,7 @@
              xmlns:commonbehavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
              behavior:SuppressContextMenuBehavior.IsEnabled="True"
              Name="MainControl"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:LcimmsMethodVM}}"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:LcimmsMethodViewModel}}"
              d:DesignHeight="775" d:DesignWidth="1280">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
