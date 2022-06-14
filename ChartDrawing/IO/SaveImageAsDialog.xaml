@@ -12,10 +12,11 @@
     <StackPanel>
         <ui:ExecutableBar Label="Path:"
                           LabelWidth="48"
-                          Command=""
+                          Command="SaveAs"
                           ButtonContent="Select"
                           Margin="8,4">
-            <TextBox Text="{Binding Path=Path, UpdateSourceTrigger=PropertyChanged}"
+            <TextBox x:Name="ExportPath_TextBox"
+                     Text="{Binding Path=Path, UpdateSourceTrigger=PropertyChanged}"
                      HorizontalAlignment="Stretch" VerticalAlignment="Center"
                      VerticalContentAlignment="Center"
                      Height="24"
