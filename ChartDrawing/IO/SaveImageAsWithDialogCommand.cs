@@ -6,6 +6,8 @@ namespace CompMs.Graphics.IO
 {
     public class SaveImageAsWithDialogCommand : ICommand
     {
+        public static SaveImageAsWithDialogCommand Instance { get; } = new SaveImageAsWithDialogCommand();
+
         public SaveImageAsWithDialogCommand() {
 
         }

@@ -4,8 +4,10 @@ using System.Windows.Input;
 
 namespace CompMs.Graphics.IO
 {
-    public class CopyImageAsWithDialogCommand : ICommand
+    public sealed class CopyImageAsWithDialogCommand : ICommand
     {
+        public static CopyImageAsWithDialogCommand Instance { get; } = new CopyImageAsWithDialogCommand();
+
         public CopyImageAsWithDialogCommand() {
 
         }
