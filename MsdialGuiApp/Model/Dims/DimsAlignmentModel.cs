@@ -170,7 +170,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
-            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, alignmentFileBean.EicFilePath, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor));
+            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, alignmentFileBean.EicFilePath, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor)).AddTo(Disposables);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader,
                 files, parameter,

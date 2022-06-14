@@ -203,7 +203,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .Select(classToColor => classToColor.ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])));
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target,
-                new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, projectBaseParameter.ObserveProperty(p => p.FileIdToClassName), classToColorAsObservable),
+                new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, projectBaseParameter.ObserveProperty(p => p.FileIdToClassName), classToColorAsObservable).AddTo(Disposables),
                 files, parameter,
                 peak => peak.Time,
                 peak => peak.Intensity).AddTo(Disposables);
