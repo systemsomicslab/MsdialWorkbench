@@ -38,6 +38,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             PeakFilterModel peakFilterModel)
             : base(alignmentFileBean.FilePath) {
             Parameter = parameter;
+            _files = files ?? throw new ArgumentNullException(nameof(files));
             AlignmentFile = alignmentFileBean;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             ResultFile = alignmentFileBean.FilePath;
@@ -186,6 +187,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+        private readonly List<AnalysisFileBean> _files;
+
         public ParameterBase Parameter { get; }
         public AlignmentFileBean AlignmentFile { get; }
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
@@ -221,6 +224,15 @@ namespace CompMs.App.Msdial.Model.Lcimms
             set => SetProperty(ref barItemsLoader, value);
         }
         private IBarItemsLoader barItemsLoader;
+
+        public CompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {
+            return new CompoundSearchModel<AlignmentSpotProperty>(
+                _files[Target.Value.RepresentativeFileID],
+                Target.Value.innerModel,
+                MsdecResult.Value,
+                null,
+                null);
+        }
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(Container, ResultFile);

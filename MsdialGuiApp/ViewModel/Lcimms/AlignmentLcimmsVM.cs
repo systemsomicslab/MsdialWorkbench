@@ -138,12 +138,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             if (model.Target.Value?.innerModel == null || model.MsdecResult.Value == null)
                 return;
 
-            using (var model = new CompoundSearchModel<AlignmentSpotProperty>(
-                this.model.AlignmentFile,
-                Target.Value.innerModel,
-                this.model.MsdecResult.Value,
-                null,
-                null))
+            using (var model = this.model.CreateCompoundSearchModel())
             using (var vm = new CompoundSearchVM(model)) {
                 compoundSearchService.ShowDialog(vm);
             }

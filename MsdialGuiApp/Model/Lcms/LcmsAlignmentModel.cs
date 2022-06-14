@@ -44,6 +44,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly MSDecLoader _decLoader;
         private readonly AlignmentFileBean _alignmentFile;
         private readonly DataBaseMapper _dataBaseMapper;
+        private readonly List<AnalysisFileBean> _files;
         private readonly List<CompoundSearcher> _compoundSearchers;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
 
@@ -68,6 +69,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             _alignmentFile = alignmentFileBean;
             Parameter = parameter;
+            _files = files ?? throw new ArgumentNullException(nameof(files));
             _dataBaseMapper = mapper;
             _compoundSearchers = ConvertToCompoundSearchers(databases);
 
@@ -257,7 +259,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public CompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {
             return new LcmsCompoundSearchModel<AlignmentSpotProperty>(
-                _alignmentFile,
+                _files[Target.Value.RepresentativeFileID],
                 Target.Value.innerModel,
                 _msdecResult.Value,
                 _compoundSearchers);

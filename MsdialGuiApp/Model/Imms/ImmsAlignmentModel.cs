@@ -7,7 +7,6 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM.ChemView;
-using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -23,7 +22,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Imms
@@ -42,6 +40,7 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentFile = alignmentFileBean;
             ResultFile = alignmentFileBean.FilePath;
             Parameter = parameter;
+            _files = files ?? throw new ArgumentNullException(nameof(files));
             DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             AnnotatorContainers = annotatorContainers;
@@ -216,7 +215,7 @@ namespace CompMs.App.Msdial.Model.Imms
             }
 
             return new ImmsCompoundSearchModel<AlignmentSpotProperty>(
-                AlignmentFile,
+                _files[Target.Value.RepresentativeFileID],
                 Target.Value.innerModel,
                 MsdecResult.Value,
                 null,
@@ -238,6 +237,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private IBarItemsLoader barItemsLoader;
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+        private readonly List<AnalysisFileBean> _files;
 
         public AlignmentFileBean AlignmentFile { get; }
 

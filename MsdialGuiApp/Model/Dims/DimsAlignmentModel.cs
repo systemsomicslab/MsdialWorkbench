@@ -218,7 +218,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public ReadOnlyReactivePropertySlim<bool> CanSeachCompound { get; }
 
         public CompoundSearchModel BuildCompoundSearchModel() {
-            return new CompoundSearchModel<AlignmentSpotProperty>(_alignmentFile, Target.Value.innerModel, _msdecResult.Value, _compoundSearchers.Items);
+            return new CompoundSearchModel<AlignmentSpotProperty>(_files[Target.Value.RepresentativeFileID], Target.Value.innerModel, _msdecResult.Value, _compoundSearchers.Items);
         }
 
         public NormalizationSetModel BuildNormalizeSetModel() {
