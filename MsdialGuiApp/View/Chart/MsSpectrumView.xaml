@@ -44,7 +44,7 @@
                                   Command="{x:Static io:SaveImageAsCommand.PngInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
-                    <MenuItem Header="Save image with dialog..."
+                    <MenuItem Header="Save image using dialog"
                               Command="{StaticResource ReverseMsSpectrumSaveWithDialogCommand}"
                               CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     <MenuItem Header="Copy image as...">
@@ -55,7 +55,7 @@
                                   Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
-                    <MenuItem Header="Copy image with dialog..."
+                    <MenuItem Header="Copy image using dialog"
                               Command="{StaticResource ReverseMsSpectrumCopyWithDialogCommand}"
                               CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                 </ContextMenu>
