@@ -176,30 +176,6 @@
                                                         </StackPanel>
                                                     </DataTemplate>
                                                 </chart:AlignmentPeakPlotView.LabelTemplate>
-                                                <chart:AlignmentPeakPlotView.ContextMenu>
-                                                    <ContextMenu>
-                                                        <MenuItem Header="Save image as...">
-                                                            <!--
-                                                            <MenuItem Header="Save as emf"
-                                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
-                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                                                      -->
-                                                            <MenuItem Header="Save as png"
-                                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
-                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                                        </MenuItem>
-                                                        <MenuItem Header="Copy image as...">
-                                                            <!--
-                                                            <MenuItem Header="Copy as emf"
-                                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
-                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                                                      -->
-                                                            <MenuItem Header="Copy as png"
-                                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
-                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                                        </MenuItem>
-                                                    </ContextMenu>
-                                                </chart:AlignmentPeakPlotView.ContextMenu>
                                             </chart:AlignmentPeakPlotView>
                                         </DataTemplate>
                                     </ContentControl.Resources>
