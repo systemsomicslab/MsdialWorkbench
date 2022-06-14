@@ -27,22 +27,6 @@
     <Grid>
         <Grid.ContextMenu>
             <ContextMenu>
-                <MenuItem Header="Save image as...">
-                    <MenuItem Header="Save as emf"
-                              Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
-                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    <MenuItem Header="Save as png"
-                              Command="{x:Static io:SaveImageAsCommand.PngInstance}"
-                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                </MenuItem>
-                <MenuItem Header="Copy image as...">
-                    <MenuItem Header="Copy as emf"
-                              Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
-                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    <MenuItem Header="Copy as png"
-                              Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
-                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                </MenuItem>
                 <MenuItem Header="Change data source to.."
                           ItemsSource="{Binding PlacementTarget.DataContext.BarItemsLoaderDataViewModels, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                           DisplayMemberPath="Label">
@@ -52,6 +36,29 @@
                             <Setter Property="IsEnabled" Value="{Binding IsEnabled.Value, Mode=OneWay}"/>
                         </Style>
                     </MenuItem.ItemContainerStyle>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="Save image using dialog"
+                          Command="{x:Static io:SaveImageAsWithDialogCommand.Instance}"
+                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                <MenuItem Header="Save image as...">
+                    <MenuItem Header="Save as emf"
+                              Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Save as png"
+                              Command="{x:Static io:SaveImageAsCommand.PngInstance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                </MenuItem>
+                <MenuItem Header="Copy image using dialog"
+                          Command="{x:Static io:CopyImageAsWithDialogCommand.Instance}"
+                          CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                <MenuItem Header="Copy image as...">
+                    <MenuItem Header="Copy as emf"
+                              Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Copy as png"
+                              Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                 </MenuItem>
             </ContextMenu>
         </Grid.ContextMenu>
