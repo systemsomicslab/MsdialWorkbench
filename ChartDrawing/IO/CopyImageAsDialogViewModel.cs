@@ -1,32 +1,34 @@
 ﻿using CompMs.CommonMVVM;
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace CompMs.Graphics.IO
 {
-    internal class SaveImageAsDialogViewModel : ViewModelBase
-    {
-        private readonly SaveImageAsDialogModel _model;
+    internal class CopyImageAsDialogViewModel : ViewModelBase {
+        private readonly CopyImageAsDialogModel _model;
 
-        public SaveImageAsDialogViewModel(SaveImageAsDialogModel model) {
+        public CopyImageAsDialogViewModel(CopyImageAsDialogModel model) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
-            Path = model.Path;
+            ImageFormats = new ReadOnlyObservableCollection<ImageFormat>(model.ImageFormats);
+            ImageFormat = _model.ImageFormat;
             DpiX = model.DpiX.ToString();
             DpiY = model.DpiY.ToString();
         }
 
-        [Required(ErrorMessage = "Path is empty.")]
-        public string Path {
-            get => _path;
+        public ReadOnlyObservableCollection<ImageFormat> ImageFormats { get; }
+
+        public ImageFormat ImageFormat {
+            get => _imageFormat;
             set {
-                if (SetProperty(ref _path, value)) {
-                    if (!ContainsError(nameof(Path))) {
-                        _model.Path = value;
+                if (SetProperty(ref _imageFormat, value)) {
+                    if (!ContainsError(nameof(ImageFormat))) {
+                        _model.ImageFormat = value;
                     }
                 }
             }
         }
-        private string _path = string.Empty;
+        private ImageFormat _imageFormat;
 
         [Required(ErrorMessage = "DpiX is empty.")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid format")]
@@ -56,7 +58,7 @@ namespace CompMs.Graphics.IO
         }
         private string _dpiY;
 
-        public DelegateCommand SaveCommand => _saveCommand ?? (_saveCommand = new DelegateCommand(() => { _ = _model.ExportAsync(); }));
-        private DelegateCommand _saveCommand;
+        public DelegateCommand CopyCommand => _copyCommand ?? (_copyCommand = new DelegateCommand(() => { _ = _model.ExportAsync(); }));
+        private DelegateCommand _copyCommand;
     }
 }

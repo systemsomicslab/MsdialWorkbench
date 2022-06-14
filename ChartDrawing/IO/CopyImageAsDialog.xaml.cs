@@ -3,11 +3,11 @@
 namespace CompMs.Graphics.IO
 {
     /// <summary>
-    /// Interaction logic for SaveImageAsDialog.xaml
+    /// Interaction logic for CopyImageAsDialog.xaml
     /// </summary>
-    public partial class SaveImageAsDialog : System.Windows.Window
+    public partial class CopyImageAsDialog : System.Windows.Window
     {
-        public SaveImageAsDialog() {
+        public CopyImageAsDialog() {
             InitializeComponent();
 
             CommandBindings.Add(new CommandBinding(ApplicationCommands.Close, Click_close));

@@ -20,6 +20,7 @@
             <io:StyleFormatter x:Key="ReverseMsSpectrumFormatter" Style="{StaticResource ResourceKey=VerticalConcatChartFormal}"/>
             <io:SaveImageAsCommand x:Key="ReverseMsSpectrumSaveEmfCommand" Formatter="{StaticResource ReverseMsSpectrumFormatter}" Format="Emf"/>
             <io:SaveImageAsWithDialogCommand x:Key="ReverseMsSpectrumSaveWithDialogCommand"/>
+            <io:CopyImageAsWithDialogCommand x:Key="ReverseMsSpectrumCopyWithDialogCommand"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -54,6 +55,9 @@
                                   Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
+                    <MenuItem Header="Copy image with dialog..."
+                              Command="{StaticResource ReverseMsSpectrumCopyWithDialogCommand}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
             <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis.Value}">

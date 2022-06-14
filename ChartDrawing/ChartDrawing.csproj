@@ -145,6 +145,12 @@
     <Compile Include="Chart\LineChartControl.cs" />
     <Compile Include="Chart\LineSpectrumControl.cs" />
     <Compile Include="IO\CopyImageAsCommand.cs" />
+    <Compile Include="IO\CopyImageAsDialog.xaml.cs">
+      <DependentUpon>CopyImageAsDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="IO\CopyImageAsDialogModel.cs" />
+    <Compile Include="IO\CopyImageAsDialogViewModel.cs" />
+    <Compile Include="IO\CopyImageAsWithDialogCommand.cs" />
     <Compile Include="IO\IElementEncoder.cs" />
     <Compile Include="IO\EmfEncoder.cs" />
     <Compile Include="IO\IElementFormatter.cs" />
@@ -188,6 +194,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Default\DefaultUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="IO\CopyImageAsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
