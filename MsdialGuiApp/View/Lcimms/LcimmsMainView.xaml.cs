@@ -18,9 +18,9 @@ namespace CompMs.App.Msdial.View.Lcimms
     /// <summary>
     /// Interaction logic for MainView.xaml
     /// </summary>
-    public partial class MainView : UserControl
+    public partial class LcimmsMainView : UserControl
     {
-        public MainView() {
+        public LcimmsMainView() {
             InitializeComponent();
         }
     }

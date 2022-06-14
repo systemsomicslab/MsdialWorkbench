@@ -466,8 +466,8 @@
     <Compile Include="View\Imms\ImmsRibbon.xaml.cs">
       <DependentUpon>ImmsRibbon.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imms\MainView.xaml.cs">
-      <DependentUpon>MainView.xaml</DependentUpon>
+    <Compile Include="View\Imms\ImmsMainView.xaml.cs">
+      <DependentUpon>ImmsMainView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Imms\PeakPropertyView.xaml.cs">
       <DependentUpon>PeakPropertyView.xaml</DependentUpon>
@@ -478,8 +478,8 @@
     <Compile Include="View\Lcimms\LcimmsRibbon.xaml.cs">
       <DependentUpon>LcimmsRibbon.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Lcimms\MainView.xaml.cs">
-      <DependentUpon>MainView.xaml</DependentUpon>
+    <Compile Include="View\Lcimms\LcimmsMainView.xaml.cs">
+      <DependentUpon>LcimmsMainView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\LcmsAlignmentSpotTableView.xaml.cs">
       <DependentUpon>LcmsAlignmentSpotTableView.xaml</DependentUpon>
@@ -584,8 +584,8 @@
     <Compile Include="View\Dims\Footer.xaml.cs">
       <DependentUpon>Footer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\MainView.xaml.cs">
-      <DependentUpon>MainView.xaml</DependentUpon>
+    <Compile Include="View\Dims\DimsMainView.xaml.cs">
+      <DependentUpon>DimsMainView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\PeakPropertyView.xaml.cs">
       <DependentUpon>PeakPropertyView.xaml</DependentUpon>
@@ -669,8 +669,8 @@
     <Compile Include="View\Lcms\Footer.xaml.cs">
       <DependentUpon>Footer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Lcms\MainView.xaml.cs">
-      <DependentUpon>MainView.xaml</DependentUpon>
+    <Compile Include="View\Lcms\LcmsMainView.xaml.cs">
+      <DependentUpon>LcmsMainView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\LcmsRibbon.xaml.cs">
       <DependentUpon>LcmsRibbon.xaml</DependentUpon>
@@ -826,7 +826,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Imms\MainView.xaml">
+    <Page Include="View\Imms\ImmsMainView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -846,7 +846,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Lcimms\MainView.xaml">
+    <Page Include="View\Lcimms\LcimmsMainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -962,7 +962,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Dims\MainView.xaml">
+    <Page Include="View\Dims\DimsMainView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1074,7 +1074,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Lcms\MainView.xaml">
+    <Page Include="View\Lcms\LcmsMainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
