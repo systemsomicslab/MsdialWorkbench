@@ -210,15 +210,15 @@
                         </Border>
 
                         <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
-                                                    VerticalAxis="{x:Null}"
-                                                    Margin="1,0,0,0"
-                                                    LayoutTransform="{StaticResource RotateL}"
-                                                    Grid.Row="1" Grid.Column="2"/>
+                                                     VerticalAxis="{x:Null}"
+                                                     Margin="1,0,0,0"
+                                                     LayoutTransform="{StaticResource RotateL}"
+                                                     Grid.Row="1" Grid.Column="2"/>
                         <chart:VerticalAxisControl x:Name="PART_VerticalAxis"
-                                                  HorizontalAxis="{x:Null}"
-                                                  Margin="0,0,0,1"
-                                                  LayoutTransform="{StaticResource RotateL}"
-                                                  Grid.Row="2" Grid.RowSpan="2" Grid.Column="1"/>
+                                                   HorizontalAxis="{x:Null}"
+                                                   Margin="0,0,0,1"
+                                                   LayoutTransform="{StaticResource RotateL}"
+                                                   Grid.Row="2" Grid.RowSpan="2" Grid.Column="1"/>
 
                         <TextBlock Name="HorizontalTitle"
                                    Text="{TemplateBinding HorizontalTitle}"
@@ -317,25 +317,18 @@
     </Style>
 
     <Style TargetType="{x:Type chart:MultiChart}" x:Key="VerticalAlignedChartFormal">
+        <Style.Resources>
+            <Style TargetType="chart:Annotator">
+                <Setter Property="FontSize" Value="17"/>
+            </Style>
+        </Style.Resources>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Black"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="24"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Name="GraphTitle"
-                                   Text="{Binding GraphTitle, RelativeSource={RelativeSource TemplatedParent}}"
-                                   Style="{StaticResource GraphTitle}"
-                                   IsHitTestVisible="False"
-                                   Grid.Row="0"/>
-                        <UniformGrid Columns="1"
-                                     IsItemsHost="True"
-                                     Grid.Row="1"/>
-                    </Grid>
+                    <UniformGrid Columns="1"
+                                 IsItemsHost="True"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -350,7 +343,7 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="15"/>
-                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="60"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
 
@@ -367,13 +360,17 @@
                             <ContentControl Content="{Binding}"/>
                         </Border>
                         <chart:VerticalAxisControl VerticalAxis="{Binding Path=(core:ChartBaseControl.VerticalAxis)}"
-                                                  FlippedY="{Binding Path=(core:ChartBaseControl.FlippedY)}"
-                                                  HorizontalAxis="{x:Null}"
-                                                  Margin="0,0,0,1.5"
-                                                  Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"/>
+                                                   FlippedY="{Binding Path=(core:ChartBaseControl.FlippedY)}"
+                                                   HorizontalAxis="{x:Null}"
+                                                   ShortTickSize="0"
+                                                   LabelSize="17"
+                                                   Margin="0,0,0,1.5"
+                                                   Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"/>
                         <chart:HorizontalAxisControl HorizontalAxis="{Binding Path=(core:ChartBaseControl.HorizontalAxis)}"
                                                      FlippedX="{Binding Path=(core:ChartBaseControl.FlippedX)}"
                                                      VerticalAxis="{x:Null}"
+                                                     ShortTickSize="0"
+                                                     LabelSize="17"
                                                      Margin="1.5,0,0,0"
                                                      Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"/>
                         <TextBlock Name="HorizontalTitle"
@@ -475,6 +472,11 @@
     </Style>
 
     <Style TargetType="{x:Type chart:MultiChart}" x:Key="VerticalConcatChartFormal">
+        <Style.Resources>
+            <Style TargetType="chart:Annotator">
+                <Setter Property="FontSize" Value="17"/>
+            </Style>
+        </Style.Resources>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Black"/>
         <Setter Property="Template">
@@ -491,18 +493,15 @@
                             <ColumnDefinition Width="15"/>
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Name="GraphTitle"
-                                   Text="{Binding GraphTitle, RelativeSource={RelativeSource TemplatedParent}}"
-                                   Style="{StaticResource GraphTitle}"
-                                   IsHitTestVisible="False"
-                                   Grid.Row="0" Grid.Column="1" />
                         <UniformGrid IsItemsHost="True"
                                      Columns="1"
                                      Grid.Row="1" Grid.Column="1"/>
                         <chart:HorizontalAxisControl x:Name="PART_HorizontalAxis"
-                                                    VerticalAxis="{x:Null}"
-                                                    Margin="41.5,0,0,0"
-                                                    Grid.Row="2" Grid.Column="1" />
+                                                     VerticalAxis="{x:Null}"
+                                                     LabelSize="17"
+                                                     ShortTickSize="0"
+                                                     Margin="61.5,0,0,0"
+                                                     Grid.Row="2" Grid.Column="1" />
                         <TextBlock Name="HorizontalTitle"
                                    Text="{TemplateBinding HorizontalTitle}"
                                    Style="{StaticResource FormalItalicAxisTitle}"
@@ -526,7 +525,7 @@
                 <DataTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="60"/>
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Border BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
@@ -540,6 +539,8 @@
                         </Border>
                         <chart:VerticalAxisControl VerticalAxis="{Binding Path=(core:ChartBaseControl.VerticalAxis)}"
                                                    FlippedY="{Binding Path=(core:ChartBaseControl.FlippedY)}"
+                                                   ShortTickSize="0"
+                                                   LabelSize="17"
                                                    HorizontalAxis="{x:Null}"
                                                    Grid.Column="0"/>
                     </Grid>
