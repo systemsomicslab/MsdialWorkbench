@@ -598,11 +598,13 @@
                                    Text="{TemplateBinding HorizontalTitle}"
                                    Style="{StaticResource AxisTitle}"
                                    IsHitTestVisible="False"
+                                   ClipToBounds="False"
                                    Grid.Row="3" Grid.Column="2"/>
                         <TextBlock Name="VerticalTitle"
                                    Text="{TemplateBinding VerticalTitle}"
                                    Style="{StaticResource AxisTitle}"
                                    IsHitTestVisible="False"
+                                   ClipToBounds="False"
                                    Grid.Row="1" Grid.Column="0">
                             <TextBlock.LayoutTransform>
                                 <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>

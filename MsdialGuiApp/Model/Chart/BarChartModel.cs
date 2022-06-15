@@ -45,6 +45,17 @@ namespace CompMs.App.Msdial.Model.Chart
                 })
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+
+            Elements.HorizontalTitle = "Class";
+            Elements.VerticalTitle = "Height";
+            Elements.HorizontalProperty = nameof(BarItem.Class);
+            Elements.VerticalProperty = nameof(BarItem.Height);
+            barItemsLoaderData
+                .Where(data => !(data is null))
+                .Select(data => data.AxisLabel)
+                .Switch()
+                .Subscribe(label => Elements.VerticalTitle = label)
+                .AddTo(Disposables);
         }
 
         public IObservable<List<BarItem>> BarItemsSource { get; }

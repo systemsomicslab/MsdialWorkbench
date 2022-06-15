@@ -26,16 +26,16 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    internal sealed class DimsMethodVM : MethodViewModel {
+    internal sealed class DimsMethodViewModel : MethodViewModel {
         private readonly DimsMethodModel _model;
         private readonly IMessageBroker _broker;
         private readonly FocusControlManager _focusControlManager;
 
-        private DimsMethodVM(
+        private DimsMethodViewModel(
             DimsMethodModel model,
             IMessageBroker broker,
-            IReadOnlyReactiveProperty<AnalysisDimsVM> analysisVM,
-            IReadOnlyReactiveProperty<AlignmentDimsVM> alignmentVM,
+            IReadOnlyReactiveProperty<DimsAnalysisViewModel> analysisVM,
+            IReadOnlyReactiveProperty<DimsAlignmentViewModel> alignmentVM,
             ViewModelSwitcher chromatogramViewModels,
             ViewModelSwitcher massSpectrumViewModels,
             FocusControlManager focusControlManager)
@@ -177,7 +177,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             OnPropertyChanged(nameof(displayFilters));
         }
 
-        private static IReadOnlyReactiveProperty<AnalysisDimsVM> ConvertToAnalysisViewModel(
+        private static IReadOnlyReactiveProperty<DimsAnalysisViewModel> ConvertToAnalysisViewModel(
             DimsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
@@ -188,10 +188,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
-            ReadOnlyReactivePropertySlim<AnalysisDimsVM> result;
+            ReadOnlyReactivePropertySlim<DimsAnalysisViewModel> result;
             using (var subject = new Subject<DimsAnalysisModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new AnalysisDimsVM(m, compoundSearchService, peakSpotTableService, focusControlManager))
+                    .Select(m => m is null ? null : new DimsAnalysisViewModel(m, compoundSearchService, peakSpotTableService, focusControlManager))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AnalysisModel);
@@ -200,7 +200,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             return result;
         }
 
-        private static IReadOnlyReactiveProperty<AlignmentDimsVM> ConvertToAlignmentViewModel(
+        private static IReadOnlyReactiveProperty<DimsAlignmentViewModel> ConvertToAlignmentViewModel(
             DimsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
@@ -219,12 +219,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             return method.ObserveProperty(m => m.AlignmentModel)
                 .Where(m => m != null)
-                .Select(m => new AlignmentDimsVM(m, compoundSearchService, peakSpotTableService, broker, focusControlManager))
+                .Select(m => new DimsAlignmentViewModel(m, compoundSearchService, peakSpotTableService, broker, focusControlManager))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim();
         }
 
-        public static DimsMethodVM Create(
+        public static DimsMethodViewModel Create(
             DimsMethodModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
@@ -234,17 +234,17 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             var alignmentVM = ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, broker, focusControlManager);
             var chromvms = PrepareChromatogramViewModels(analysisVM, alignmentVM);
             var msvms = PrepareMassSpectrumViewModels(analysisVM, alignmentVM);
-            return new DimsMethodVM(model, broker, analysisVM, alignmentVM, chromvms, msvms, focusControlManager);
+            return new DimsMethodViewModel(model, broker, analysisVM, alignmentVM, chromvms, msvms, focusControlManager);
         }
 
-        private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<AnalysisDimsVM> analysisAsObservable, IObservable<AlignmentDimsVM> alignmentAsObservable) {
+        private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<DimsAnalysisViewModel> analysisAsObservable, IObservable<DimsAlignmentViewModel> alignmentAsObservable) {
             var eic = analysisAsObservable.Select(vm => vm?.EicViewModel);
             var bar = alignmentAsObservable.Select(vm => vm?.BarChartViewModel);
             var alignmentEic = alignmentAsObservable.Select(vm => vm?.AlignmentEicViewModel);
             return new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase>[] { eic, bar, alignmentEic});
         }
 
-        private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<AnalysisDimsVM> analysisAsObservable, IObservable<AlignmentDimsVM> alignmentAsObservable) {
+        private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<DimsAnalysisViewModel> analysisAsObservable, IObservable<DimsAlignmentViewModel> alignmentAsObservable) {
             var rawdec = analysisAsObservable.Select(vm => vm?.RawDecSpectrumsViewModel);
             var rawpur = Observable.Return<ViewModelBase>(null); // analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
             var ms2chrom = Observable.Return<ViewModelBase>(null); // ms2 chrom

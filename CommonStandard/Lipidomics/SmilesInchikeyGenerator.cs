@@ -13,8 +13,13 @@ namespace CompMs.Common.Lipidomics
         {
             if (lipid.Chains is PositionLevelChains plChains)
             {
+                var smilesHeaderDict = SmilesLipidHeader.HeaderDictionary;
+                var headerSmiles = smilesHeaderDict[lipid.LipidClass.ToString()];
+                if (headerSmiles==null) return null;
+
                 var chainList = new List<string>();
                 var jointPosition = 10;
+                
                 foreach (var chain in plChains.Chains)
                 {
                     var oxidized = chain.Oxidized;
@@ -36,9 +41,6 @@ namespace CompMs.Common.Lipidomics
                     chainList.Add(chainSmiles);
                     jointPosition = jointPosition + 10;
                 }
-                var smilesHeaderDict = SmilesLipidHeader.HeaderDictionary;
-                var headerSmiles = smilesHeaderDict[lipid.LipidClass.ToString()];
-                if (headerSmiles==null) return null;
 
                 var rawSmiles = headerSmiles + string.Join(".", chainList);
 
@@ -124,17 +126,17 @@ namespace CompMs.Common.Lipidomics
             {"PEtOH", "C(O%10)C(O%20)COP(O)(OCC)=O."},
             {"PMeOH", "C(O%10)C(O%20)COP(O)(OC)=O."},
 
-            {"LPC", "C(O%10)C(O)COP([O-])(=O)OCC[N+](C)(C)C."},
-            //{"LPCSN1", "C(O%10)C(O)COP([O-])(=O)OCC[N+](C)(C)C."},
-            {"LPA", "C(O%10)C(O)COP(O)(O)=O."},
-            {"LPE", "C(O%10)C(O)COP(O)(=O)OCCN."},
-            {"LPG", "C(O)(CO)COP(O)(=O)OCC(O)C(O%10)."},
-            {"LPI", "C(O%10)C(O)COP(O)(=O)OC1C(O)C(O)C(O)C(O)C1O."},
-            {"LPS", "C(N)(COP(O)(=O)OCC(O)C(O%10))C(O)=O."},
-            {"EtherLPC", "C(O)C(O%10)COP([O-])(=O)OCC[N+](C)(C)C."},
-            {"EtherLPE", "C(O%10)C(O)COP(O)(=O)OCCN."},
-            //{"EtherLPE_P", "C(O%10)C(O)COP(O)(=O)OCCN."},
-            {"EtherLPG", "C(O)(CO)COP(O)(=O)OCC(O)C(O%10)."},
+            //{"LPC", "C(O%10)C(O)COP([O-])(=O)OCC[N+](C)(C)C."},
+            ////{"LPCSN1", "C(O%10)C(O)COP([O-])(=O)OCC[N+](C)(C)C."},
+            //{"LPA", "C(O%10)C(O)COP(O)(O)=O."},
+            //{"LPE", "C(O%10)C(O)COP(O)(=O)OCCN."},
+            //{"LPG", "C(O)(CO)COP(O)(=O)OCC(O)C(O%10)."},
+            //{"LPI", "C(O%10)C(O)COP(O)(=O)OC1C(O)C(O)C(O)C(O)C1O."},
+            //{"LPS", "C(N)(COP(O)(=O)OCC(O)C(O%10))C(O)=O."},
+            //{"EtherLPC", "C(O)C(O%10)COP([O-])(=O)OCC[N+](C)(C)C."},
+            //{"EtherLPE", "C(O%10)C(O)COP(O)(=O)OCCN."},
+            ////{"EtherLPE_P", "C(O%10)C(O)COP(O)(=O)OCCN."},
+            //{"EtherLPG", "C(O)(CO)COP(O)(=O)OCC(O)C(O%10)."},
             //{"EtherLPI", "C(O%10)C(O)COP(O)(=O)OC1C(O)C(O)C(O)C(O)C1O."},
             //{"EtherLPS", "C(N)(COP(O)(=O)OCC(O)C(O%10))C(O)=O."},
             //{"EtherLPA", "C(O%10)C(O)COP(O)(O)=O."},
@@ -218,28 +220,28 @@ namespace CompMs.Common.Lipidomics
             {"HexCer_NS", "OCC1OC(OCC%10N%20)C(O)C(O)C1O."},
             {"HexCer_OS", "OCC1OC(OCC%10N%20)C(O)C(O)C1O."},
 
-            //{"GM1", "CC(=O)NC1C(O)CC(OC2C(O)C(OC3C(O)C(O)C(OCC%10N%20)OC3CO)OC(CO)C2OC2OC(CO)C(O)C(OC3OC(CO)C(O)C(O)C3O)C2NC(C)=O)(OC1C(O)C(O)CO)C(O)=O."},
-            //{"GM3", "CC(O)=NC1C(O)CC(OC2C(O)C(CO)OC(OC3C(CO)OC(OCC%10N%20)C(O)C3O)C2O)(OC1C(O)C(O)CO)C(O)=O."},
-            //{"GD1a", "CC(=O)NC1C(O)CC(OC2C(O)C(CO)OC(OC3C(O)C(CO)OC(OC4C(CO)OC(OC5C(O)C(O)C(OCC%10N%20)OC5CO)C(O)C4OC4(CC(O)C(NC(C)=O)C(O4)C(O)C(O)CO)C(O)=O)C3NC(C)=O)C2O)(OC1C(O)C(O)CO)C(O)=O."},
-            //{"GD1b", "CC(=O)NC1C(O)CC(OC(CO)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(OC3C(O)C(O)C(OCC%10N%20)OC3CO)OC(CO)C2OC2OC(CO)C(O)C(OC3OC(CO)C(O)C(O)C3O)C2NC(C)=O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
-            //{"GD2", "CC(=O)NC1C(O)CC(OC(CO)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(OC3C(O)C(O)C(OCC%10N%20)OC3CO)OC(CO)C2OC2OC(CO)C(O)C(O)C2NC(C)=O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
-            //{"GD3", "CC(=O)NC1C(O)CC(OCC(O)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(CO)OC(OC3C(O)C(O)C(OCC%10N%20)OC3CO)C2O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
-            //{"GT1b", "CC(=O)NC1C(O)CC(OC(CO)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(OC3C(O)C(O)C(OCC%10N%20)OC3CO)OC(CO)C2OC2OC(CO)C(O)C(OC3OC(CO)C(O)C(OC4(CC(O)C(NC(C)=O)C(O4)C(O)C(O)CO)C(O)=O)C3O)C2NC(C)=O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
-            //{"GQ1b", "CC(=O)NC1C(O)CC(OC(CO)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(CO)OC(OC3C(O)C(CO)OC(OC4C(CO)OC(OC5C(O)C(O)C(OCC%10N%20)OC5CO)C(O)C4OC4(CC(O)C(NC(C)=O)C(O4)C(O)C(CO)OC4(CC(O)C(NC(C)=O)C(O4)C(O)C(O)CO)C(O)=O)C(O)=O)C3NC(C)=O)C2O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
-            //{"NGcGM3", "OCC(O)C(O)C1OC(CC(O)C1N=C(O)CO)(OC1C(O)C(CO)OC(OC2C(O)C(O)C(OCC%10N%20)OC2CO)C1O)C(O)=O."},
-            //{"CerP", "OP(O)(=O)OCC%10N%20."},
-            //{"Hex2Cer", "N%20C%10COC1OC(CO)C(OC2OC(CO)C(O)C(O)C2O)C(O)C1O."},
-            //{"Hex3Cer", "N%20C%10COC1OC(CO)C(OC2OC(CO)C(OC3OC(CO)C(O)C(O)C3O)C(O)C2O)C(O)C1O."},
+            {"GM1", "CC(=O)NC1C(O)CC(OC2C(O)C(OC3C(O)C(O)C(OCC%10N%20)OC3CO)OC(CO)C2OC2OC(CO)C(O)C(OC3OC(CO)C(O)C(O)C3O)C2NC(C)=O)(OC1C(O)C(O)CO)C(O)=O."},
+            {"GM3", "CC(O)=NC1C(O)CC(OC2C(O)C(CO)OC(OC3C(CO)OC(OCC%10N%20)C(O)C3O)C2O)(OC1C(O)C(O)CO)C(O)=O."},
+            {"GD1a", "CC(=O)NC1C(O)CC(OC2C(O)C(CO)OC(OC3C(O)C(CO)OC(OC4C(CO)OC(OC5C(O)C(O)C(OCC%10N%20)OC5CO)C(O)C4OC4(CC(O)C(NC(C)=O)C(O4)C(O)C(O)CO)C(O)=O)C3NC(C)=O)C2O)(OC1C(O)C(O)CO)C(O)=O."},
+            {"GD1b", "CC(=O)NC1C(O)CC(OC(CO)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(OC3C(O)C(O)C(OCC%10N%20)OC3CO)OC(CO)C2OC2OC(CO)C(O)C(OC3OC(CO)C(O)C(O)C3O)C2NC(C)=O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
+            {"GD2", "CC(=O)NC1C(O)CC(OC(CO)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(OC3C(O)C(O)C(OCC%10N%20)OC3CO)OC(CO)C2OC2OC(CO)C(O)C(O)C2NC(C)=O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
+            {"GD3", "CC(=O)NC1C(O)CC(OCC(O)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(CO)OC(OC3C(O)C(O)C(OCC%10N%20)OC3CO)C2O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
+            {"GT1b", "CC(=O)NC1C(O)CC(OC(CO)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(OC3C(O)C(O)C(OCC%10N%20)OC3CO)OC(CO)C2OC2OC(CO)C(O)C(OC3OC(CO)C(O)C(OC4(CC(O)C(NC(C)=O)C(O4)C(O)C(O)CO)C(O)=O)C3O)C2NC(C)=O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
+            {"GQ1b", "CC(=O)NC1C(O)CC(OC(CO)C(O)C2OC(CC(O)C2NC(C)=O)(OC2C(O)C(CO)OC(OC3C(O)C(CO)OC(OC4C(CO)OC(OC5C(O)C(O)C(OCC%10N%20)OC5CO)C(O)C4OC4(CC(O)C(NC(C)=O)C(O4)C(O)C(CO)OC4(CC(O)C(NC(C)=O)C(O4)C(O)C(O)CO)C(O)=O)C(O)=O)C3NC(C)=O)C2O)C(O)=O)(OC1C(O)C(O)CO)C(O)=O."},
+            {"NGcGM3", "OCC(O)C(O)C1OC(CC(O)C1N=C(O)CO)(OC1C(O)C(CO)OC(OC2C(O)C(O)C(OCC%10N%20)OC2CO)C1O)C(O)=O."},
+            {"CerP", "OP(O)(=O)OCC%10N%20."},
+            {"Hex2Cer", "N%20C%10COC1OC(CO)C(OC2OC(CO)C(O)C(O)C2O)C(O)C1O."},
+            {"Hex3Cer", "N%20C%10COC1OC(CO)C(OC2OC(CO)C(OC3OC(CO)C(O)C(O)C3O)C(O)C2O)C(O)C1O."},
 
-            //{"MIPC", "OCC1OC(OC2C(O)C(O)C(O)C(O)C2OP(O)(=O)OCC(%10)N%20)C(O)C(O)C1O."},
+            {"MIPC", "OCC1OC(OC2C(O)C(O)C(O)C(O)C2OP(O)(=O)OCC(%10)N%20)C(O)C(O)C1O."},
 
 
             ////ceramide need chain conbination
-            //{"SHexCer", "OCC1OC(OCC%10N%20)C(O)C(OS(O)(=O)=O)C1O."},
+            {"SHexCer", "OCC1OC(OCC%10N%20)C(O)C(OS(O)(=O)=O)C1O."},
             //{"SHexCer+O", "OCC1OC(OCC%10N%20)C(O)C(OS(O)(=O)=O)C1O."},
-            //{"SM", "C[N+](C)(C)CCOP([O-])(=O)OCC%10N%20."},
+            {"SM", "C[N+](C)(C)CCOP([O-])(=O)OCC%10N%20."},
             //{"SM+O", "C[N+](C)(C)CCOP([O-])(=O)OCC%10N%20."},
-            //{"SL", "C%10N%20CS(O)(=O)=O."},
+            {"SL", "C%10N%20CS(O)(=O)=O."},
             //{"SL+O", "C%10N%20CS(O)(=O)=O."},
             //{"PI_Cer", "OC1C(O)C(O)C(OP(O)(=O)OCC(%10)N%20)C(O)C1O."},
             ////{"PI_Cer_d+O", "OC1C(O)C(O)C(OP(O)(=O)OCC(%10)N%20)C(O)C1O."},

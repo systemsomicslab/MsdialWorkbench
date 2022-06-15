@@ -19,6 +19,8 @@
             </ResourceDictionary.MergedDictionaries>
             <io:StyleFormatter x:Key="ReverseMsSpectrumFormatter" Style="{StaticResource ResourceKey=VerticalConcatChartFormal}"/>
             <io:SaveImageAsCommand x:Key="ReverseMsSpectrumSaveEmfCommand" Formatter="{StaticResource ReverseMsSpectrumFormatter}" Format="Emf"/>
+            <io:SaveImageAsWithDialogCommand x:Key="ReverseMsSpectrumSaveWithDialogCommand"/>
+            <io:CopyImageAsWithDialogCommand x:Key="ReverseMsSpectrumCopyWithDialogCommand"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -32,6 +34,9 @@
                     <MenuItem Header="Save spectrum as nist format"
                               Command="{Binding PlacementTarget.DataContext.SaveUpperSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     <MenuItem Header="Save image as...">
+                        <MenuItem Header="Save formatted image"
+                                  Command="{StaticResource ReverseMsSpectrumSaveEmfCommand}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                         <MenuItem Header="Save as emf"
                                   Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
@@ -39,8 +44,8 @@
                                   Command="{x:Static io:SaveImageAsCommand.PngInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
-                    <MenuItem Header="Save image"
-                              Command="{StaticResource ReverseMsSpectrumSaveEmfCommand}"
+                    <MenuItem Header="Save image using dialog"
+                              Command="{StaticResource ReverseMsSpectrumSaveWithDialogCommand}"
                               CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     <MenuItem Header="Copy image as...">
                         <MenuItem Header="Copy as emf"
@@ -50,6 +55,9 @@
                                   Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
+                    <MenuItem Header="Copy image using dialog"
+                              Command="{StaticResource ReverseMsSpectrumCopyWithDialogCommand}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
             <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis.Value}">

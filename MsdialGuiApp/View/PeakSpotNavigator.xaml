@@ -6,7 +6,7 @@
              mc:Ignorable="d" 
              xmlns:rs="clr-namespace:CompMs.Graphics.UI.RangeSlider;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisImmsVM}}"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:ImmsAnalysisViewModel}}"
              d:DesignHeight="235" d:DesignWidth="200">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">

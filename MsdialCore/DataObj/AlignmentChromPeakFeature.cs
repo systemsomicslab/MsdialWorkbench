@@ -2,18 +2,17 @@
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using MessagePack;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
+using CompMs.MsdialCore.Normalize;
+using MessagePack;
+using System.Collections.Generic;
 using System.Linq;
-using System.Collections.ObjectModel;
 
-namespace CompMs.MsdialCore.DataObj {
+namespace CompMs.MsdialCore.DataObj
+{
     [MessagePackObject]
-    public class AlignmentChromPeakFeature : IChromatogramPeakFeature, IMSIonProperty, IAnnotatedObject {
+    public class AlignmentChromPeakFeature : IChromatogramPeakFeature, IMSIonProperty, IAnnotatedObject, INormalizableValue {
 
         // ID metadata
         [Key(0)]
@@ -241,5 +240,8 @@ namespace CompMs.MsdialCore.DataObj {
 
         [Key(52)]
         public bool IsManuallyModifiedForQuant { get; set; }
+
+        // INormalizableValue
+        double INormalizableValue.PeakHeight => PeakHeightTop;
     }
 }

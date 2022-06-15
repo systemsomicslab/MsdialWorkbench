@@ -1,9 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.MsdialCore.DataObj;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Xml.Linq;
 
 namespace CompMs.App.Msdial.Model.Normalize
@@ -16,12 +18,19 @@ namespace CompMs.App.Msdial.Model.Normalize
             }
 
             Label = label;
-            Lipids = new ObservableCollection<StandardCompoundModel>(lipids);
+            var lipids_ = new ObservableCollection<StandardCompoundModel>(lipids);
+            Lipids = new ReadOnlyObservableCollection<StandardCompoundModel>(lipids_);
         }
 
         public string Label { get; }
 
-        public ObservableCollection<StandardCompoundModel> Lipids { get; }
+        public ReadOnlyObservableCollection<StandardCompoundModel> Lipids { get; }
+
+        public IObservable<bool> CanNormalize(IReadOnlyList<AlignmentSpotProperty> spots) {
+            return Lipids.ObserveElementPropertyChanged()
+                .Select(_ => Observable.Defer(() => Observable.Return(Lipids.Any(lipid => lipid.IsRequiredFieldFilled(spots)))))
+                .Switch();
+        }
 
         public static SplashProduct BuildPublicProduct(XElement element) {
             return ToProduct(element, false);

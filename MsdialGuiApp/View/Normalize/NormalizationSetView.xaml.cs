@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace CompMs.App.Msdial.View.Normalize
 {
@@ -21,9 +10,14 @@ namespace CompMs.App.Msdial.View.Normalize
     {
         public NormalizationSetView() {
             InitializeComponent();
-            CommandBindings.Add(new CommandBinding(DoneCommand, (s, e) => { DialogResult = true; Close(); }));
+            CommandBindings.Add(new CommandBinding(ApplicationCommands.Close, (s, e) => Close()));
         }
 
         public readonly static RoutedCommand DoneCommand = new RoutedCommand(nameof(DoneCommand), typeof(NormalizationSetView));
+
+        private void Invoke_Normalize(object sender, RoutedEventArgs e) {
+            DialogResult = true;
+            Close();
+        }
     }
 }

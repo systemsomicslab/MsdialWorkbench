@@ -38,6 +38,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             PeakFilterModel peakFilterModel)
             : base(alignmentFileBean.FilePath) {
             Parameter = parameter;
+            _files = files ?? throw new ArgumentNullException(nameof(files));
             AlignmentFile = alignmentFileBean;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             ResultFile = alignmentFileBean.FilePath;
@@ -138,18 +139,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 ),
                 item => item.Class,
                 Colors.Blue);
-            var barItemsLoaderData = new BarItemsLoaderData("Loader", Observable.Return(BarItemsLoader));
+            var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", Observable.Return(BarItemsLoader), Observable.Return(true));
             var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
             BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
-            BarChartModel.Elements.HorizontalTitle = "Class";
-            BarChartModel.Elements.VerticalTitle = "Height";
-            BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);
-            BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
 
             var eicFile = alignmentFileBean.EicFilePath;
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
-            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor));
+            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor)).AddTo(Disposables);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader, files, parameter,
                 peak => peak.Time,
@@ -190,6 +187,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+        private readonly List<AnalysisFileBean> _files;
+
         public ParameterBase Parameter { get; }
         public AlignmentFileBean AlignmentFile { get; }
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
@@ -225,6 +224,15 @@ namespace CompMs.App.Msdial.Model.Lcimms
             set => SetProperty(ref barItemsLoader, value);
         }
         private IBarItemsLoader barItemsLoader;
+
+        public CompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {
+            return new CompoundSearchModel<AlignmentSpotProperty>(
+                _files[Target.Value.RepresentativeFileID],
+                Target.Value.innerModel,
+                MsdecResult.Value,
+                null,
+                null);
+        }
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(Container, ResultFile);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace CompMs.CommonMVVM.Common
 {
@@ -27,7 +28,12 @@ namespace CompMs.CommonMVVM.Common
             if (!disposedValue) {
                 if (disposing) {
                     foreach (var disposable in this) {
-                        disposable?.Dispose();
+                        if (disposable is Freezable) {
+                            Application.Current.Dispatcher.Invoke(() => disposable?.Dispose());
+                        }
+                        else {
+                            disposable?.Dispose();
+                        }
                     }
                 }
 
