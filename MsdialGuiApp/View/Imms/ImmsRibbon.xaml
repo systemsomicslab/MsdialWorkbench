@@ -11,6 +11,13 @@
         d:Background="White"
         d:DataContext="{d:DesignInstance Type={x:Type vm:ImmsMethodViewModel}}"
         d:DesignHeight="450" d:DesignWidth="800">
+    <Ribbon.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Ribbon.Resources>
     <Ribbon.QuickAccessToolBar>
         <RibbonQuickAccessToolBar>
             <RibbonButton SmallImageSource="{StaticResource New_project_is}"
