@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -14,13 +15,13 @@ namespace CompMs.Graphics.IO
 
         public static SaveImageAsCommand EmfInstance { get; } = new SaveImageAsCommand(ImageFormat.Emf);
 
-        public SaveImageAsCommand() : this(ImageFormat.None) {
-
+        private SaveImageAsCommand(ImageFormat format) {
+            Format = format;
+            Formatter = new NoneFormatter();
         }
 
-        private SaveImageAsCommand(ImageFormat format) {
-            this.Format = format;
-            Formatter = new NoneFormatter();
+        public SaveImageAsCommand() : this(ImageFormat.None) {
+
         }
 
         public ImageFormat Format { get; set; }
@@ -44,39 +45,30 @@ namespace CompMs.Graphics.IO
             }
         }
 
-        private static readonly string EmfFilter = "Extended Metafile Format(.emf)|*.emf";
-        private static readonly string PngFilter = "PNG image(.png)|*.png";
+        private static readonly string EMF_FILTER = "Extended Metafile Format(.emf)|*.emf";
+        private static readonly string PNG_FILTER = "PNG image(.png)|*.png";
+        private static readonly string[] IMAGE_FILTERS = new[] { EMF_FILTER, PNG_FILTER, };
         private bool TryGetPathAndEncoder(ImageFormat format, out string path, out IElementEncoder encoder) {
-            string filter;
             switch (format) {
-                case ImageFormat.Emf:
-                    (filter, encoder) = (EmfFilter, new EmfEncoder());
-                    return TryGetSaveFilePath(filter, out path);
                 case ImageFormat.Png:
-                    (filter, encoder) = (PngFilter, new PngEncoder());
-                    return TryGetSaveFilePath(filter, out path);
+                    return TryGetSaveFilePathAndFormat(PNG_FILTER, out path, out encoder);
+                case ImageFormat.Emf:
                 default:
-                    return TryGetSaveFilePathAndFormat(out path, out encoder);
+                    return TryGetSaveFilePathAndFormat(EMF_FILTER, out path, out encoder);
             }
         }
 
-        private bool TryGetSaveFilePath(string filter, out string path) {
-            var sfd = new SaveFileDialog
-            {
-                Title = "Save image dialog.",
-                Filter = filter,
-                RestoreDirectory = true,
-            };
-            var result = sfd.ShowDialog() ?? false;
-            path = sfd.FileName ?? string.Empty;
-            return result;
-        }
+        private bool TryGetSaveFilePathAndFormat(string initialFilter, out string path, out IElementEncoder encoder) {
+            var filters = IMAGE_FILTERS.ToList();
+            if (filters.Contains(initialFilter)) {
+                filters.Remove(initialFilter);
+            }
+            filters.Insert(0, initialFilter);
 
-        private bool TryGetSaveFilePathAndFormat(out string path, out IElementEncoder encoder) {
             var sfd = new SaveFileDialog
             {
                 Title = "Save image dialog.",
-                Filter = string.Join("|", EmfFilter, PngFilter),
+                Filter = string.Join("|", IMAGE_FILTERS),
                 RestoreDirectory = true,
             };
             var result = sfd.ShowDialog() ?? false;

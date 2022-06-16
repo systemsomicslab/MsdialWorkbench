@@ -55,17 +55,45 @@ namespace CompMs.App.Msdial.Model.Imms
             DriftMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.TimesCenter) ?? 0d;
             DriftMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.TimesCenter) ?? 0d;
 
+            Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
+            {
+                new BrushMapData<AlignmentSpotPropertyModel>(
+                    new KeyBrushMapper<AlignmentSpotPropertyModel, string>(
+                        ChemOntologyColor.Ontology2RgbaBrush,
+                        spot => spot?.Ontology ?? string.Empty,
+                        Color.FromArgb(180, 181, 181, 181)),
+                    "Ontology"),
+                new BrushMapData<AlignmentSpotPropertyModel>(
+                    new DelegateBrushMapper<AlignmentSpotPropertyModel>(
+                        spot => Color.FromArgb(
+                            180,
+                            (byte)(255 * spot.innerModel.RelativeAmplitudeValue),
+                            (byte)(255 * (1 - Math.Abs(spot.innerModel.RelativeAmplitudeValue - 0.5))),
+                            (byte)(255 - 255 * spot.innerModel.RelativeAmplitudeValue)),
+                        enableCache: true),
+                    "Amplitude"),
+            };
+            switch (parameter.TargetOmics) {
+                case TargetOmics.Lipidomics:
+                    SelectedBrush = Brushes[0];
+                    break;
+                case TargetOmics.Metabolomics:
+                case TargetOmics.Proteomics:
+                    SelectedBrush = Brushes[1];
+                    break;
+            }
+
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             var fileName = alignmentFileBean.FileName;
             var labelSource = this.ObserveProperty(m => m.DisplayLabel);
-            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource)
+            PlotModel = new AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, SelectedBrush, Brushes)
             {
                 GraphTitle = fileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
                 VerticalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
                 HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "m/z",
-            };
+            }.AddTo(Disposables);
 
             var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
@@ -110,7 +138,17 @@ namespace CompMs.App.Msdial.Model.Imms
                 Observable.Return(upperSpecBrush),
                 Observable.Return(lowerSpecBrush)).AddTo(Disposables);
 
-            BarChartModel = BarChartModel.Create(Target, BarItemsLoader);
+            var classBrush = new KeyBrushMapper<BarItem, string>(
+                Parameter.ProjectParam.ClassnameToColorBytes
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
+                ),
+                item => item.Class,
+                Colors.Blue);
+            var barItemsLoaderData = new BarItemsLoaderData("Loader", Observable.Return(BarItemsLoader));
+            var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
+            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
             BarChartModel.Elements.HorizontalTitle = "Class";
             BarChartModel.Elements.VerticalTitle = "Height";
             BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);
@@ -137,34 +175,6 @@ namespace CompMs.App.Msdial.Model.Imms
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
-            {
-                new BrushMapData<AlignmentSpotPropertyModel>(
-                    new KeyBrushMapper<AlignmentSpotPropertyModel, string>(
-                        ChemOntologyColor.Ontology2RgbaBrush,
-                        spot => spot?.Ontology ?? string.Empty,
-                        Color.FromArgb(180, 181, 181, 181)),
-                    "Ontology"),
-                new BrushMapData<AlignmentSpotPropertyModel>(
-                    new DelegateBrushMapper<AlignmentSpotPropertyModel>(
-                        spot => Color.FromArgb(
-                            180,
-                            (byte)(255 * spot.innerModel.RelativeAmplitudeValue),
-                            (byte)(255 * (1 - Math.Abs(spot.innerModel.RelativeAmplitudeValue - 0.5))),
-                            (byte)(255 - 255 * spot.innerModel.RelativeAmplitudeValue)),
-                        enableCache: true),
-                    "Amplitude"),
-            };
-            switch (parameter.TargetOmics) {
-                case TargetOmics.Lipidomics:
-                    SelectedBrush = Brushes[0].Mapper;
-                    break;
-                case TargetOmics.Metabolomics:
-                case TargetOmics.Proteomics:
-                    SelectedBrush = Brushes[1].Mapper;
-                    break;
-            }
-
             CanSearchCompound = new[]
             {
                 Target.Select(t => t?.innerModel is null),
@@ -189,7 +199,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
-        public Chart.AlignmentPeakPlotModel PlotModel { get; }
+        public AlignmentPeakPlotModel PlotModel { get; }
 
         public MsSpectrumModel Ms2SpectrumModel { get; }
 
@@ -219,11 +229,11 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
-        public IBrushMapper<AlignmentSpotPropertyModel> SelectedBrush {
+        public BrushMapData<AlignmentSpotPropertyModel> SelectedBrush {
             get => selectedBrush;
             set => SetProperty(ref selectedBrush, value);
         }
-        private IBrushMapper<AlignmentSpotPropertyModel> selectedBrush;
+        private BrushMapData<AlignmentSpotPropertyModel> selectedBrush;
 
         public IBarItemsLoader BarItemsLoader {
             get => barItemsLoader;

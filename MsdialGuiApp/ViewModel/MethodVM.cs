@@ -12,6 +12,8 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel
@@ -55,13 +57,15 @@ namespace CompMs.App.Msdial.ViewModel
 
             LoadAnalysisFileCommand = SelectedAnalysisFile
                 .Select(file => file != null)
-                .ToReactiveCommand()
-                .WithSubscribe(LoadAnalysisFile)
+                .ObserveOnUIDispatcher()
+                .ToAsyncReactiveCommand()
+                .WithSubscribe(() => LoadAnalysisFileAsync(default))
                 .AddTo(Disposables);
             LoadAlignmentFileCommand = SelectedAlignmentFile
                 .Select(file => file != null)
-                .ToReactiveCommand()
-                .WithSubscribe(LoadAlignmentFile)
+                .ObserveOnUIDispatcher()
+                .ToAsyncReactiveCommand()
+                .WithSubscribe(() => LoadAlignmentFileAsync(default))
                 .AddTo(Disposables);
 
             AnalysisViewModel = analysisFileViewModel.AddTo(Disposables);
@@ -142,13 +146,15 @@ namespace CompMs.App.Msdial.ViewModel
 
             LoadAnalysisFileCommand = SelectedAnalysisFile
                 .Select(file => file != null)
-                .ToReactiveCommand()
-                .WithSubscribe(LoadAnalysisFile)
+                .ObserveOnUIDispatcher()
+                .ToAsyncReactiveCommand()
+                .WithSubscribe(() => LoadAnalysisFileAsync(default))
                 .AddTo(Disposables);
             LoadAlignmentFileCommand = SelectedAlignmentFile
                 .Select(file => file != null)
-                .ToReactiveCommand()
-                .WithSubscribe(LoadAlignmentFile)
+                .ObserveOnUIDispatcher()
+                .ToAsyncReactiveCommand()
+                .WithSubscribe(() => LoadAlignmentFileAsync(default))
                 .AddTo(Disposables);
 
             AnalysisViewModel = analysisFileViewModel.AddTo(Disposables);
@@ -173,37 +179,41 @@ namespace CompMs.App.Msdial.ViewModel
         public ICollectionView AnalysisFilesView { get; }
         public ICollectionView AlignmentFilesView { get; }
 
-        public ReactiveCommand LoadAnalysisFileCommand { get; }
+        public AsyncReactiveCommand LoadAnalysisFileCommand { get; }
 
-        protected void LoadAnalysisFile() {
+        protected Task LoadAnalysisFileAsync(CancellationToken token) {
             if (!(SelectedAnalysisFile.Value is null)) {
                 // foreach (AnalysisFileBeanViewModel analysisFile in AnalysisFilesView) {
                 //     analysisFile.IsSelected = false;
                 // }
                 // SelectedAnalysisFile.Value.IsSelected = true;
-                LoadAnalysisFileCore(SelectedAnalysisFile.Value);
+                var task = LoadAnalysisFileCoreAsync(SelectedAnalysisFile.Value, token);
                 ChromatogramViewModels.SelectAnalysisFile();
                 MassSpectrumViewModels.SelectAnalysisFile();
+                return task;
             }
+            return Task.CompletedTask;
         }
 
-        protected abstract void LoadAnalysisFileCore(AnalysisFileBeanViewModel analysisFile);
+        protected abstract Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token);
 
-        public ReactiveCommand LoadAlignmentFileCommand { get; }
+        public AsyncReactiveCommand LoadAlignmentFileCommand { get; }
 
-        protected void LoadAlignmentFile() {
+        protected Task LoadAlignmentFileAsync(CancellationToken token) {
             if (!(SelectedAlignmentFile.Value is null)) {
                 // foreach (AlignmentFileBeanViewModel alignmentFile in AlignmentFilesView) {
                 //     alignmentFile.IsSelected = false;
                 // }
                 // SelectedAlignmentFile.Value.IsSelected = true;
-                LoadAlignmentFileCore(SelectedAlignmentFile.Value);
+                var task = LoadAlignmentFileCoreAsync(SelectedAlignmentFile.Value, token);
                 ChromatogramViewModels.SelectAlignmentFile();
                 MassSpectrumViewModels.SelectAlignmentFile();
+                return task;
             }
+            return Task.CompletedTask;
         }
 
-        protected abstract void LoadAlignmentFileCore(AlignmentFileBeanViewModel alignmentFile);
+        protected abstract Task LoadAlignmentFileCoreAsync(AlignmentFileBeanViewModel alignmentFile, CancellationToken token);
 
         public IReadOnlyReactiveProperty<AnalysisFileViewModel> AnalysisViewModel { get; }
 

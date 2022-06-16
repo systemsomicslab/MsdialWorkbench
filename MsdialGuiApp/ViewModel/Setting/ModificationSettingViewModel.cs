@@ -18,6 +18,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         public ModificationSettingViewModel(ModificationSettingModel model) {
             Model = model;
+
+            maxNumberOfModificationsPerPeptide = model.MaxNumberOfModificationsPerPeptide;
             
             SelectedVariableModificationFrom = Model.UnSelectedVariableModifications.ToMappedReadOnlyObservableCollection(modification => new ModificationBeanSelection(modification));
             Disposables.Add(SelectedVariableModificationFrom);
@@ -127,7 +129,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             }
         }
 
-        private int maxNumberOfModificationsPerPeptide = 2;
+        private int maxNumberOfModificationsPerPeptide;
 
         protected override void OnErrorsChanged([CallerMemberName] string propertyname = "") {
             base.OnErrorsChanged(propertyname);

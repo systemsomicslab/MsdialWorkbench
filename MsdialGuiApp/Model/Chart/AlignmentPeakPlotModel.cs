@@ -5,23 +5,24 @@ using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    class AlignmentPeakPlotModel : BindableBase
+    internal sealed class AlignmentPeakPlotModel : DisposableModelBase
     {
         public AlignmentPeakPlotModel(
             ObservableCollection<AlignmentSpotPropertyModel> spots,
             Func<AlignmentSpotPropertyModel, double> horizontalSelector,
             Func<AlignmentSpotPropertyModel, double> verticalSelector,
             IReactiveProperty<AlignmentSpotPropertyModel> targetSource,
-            IObservable<string> labelSource) {
-            if (spots is null) {
-                throw new ArgumentNullException(nameof(spots));
-            }
-
+            IObservable<string> labelSource,
+            BrushMapData<AlignmentSpotPropertyModel> selectedBrush,
+            IList<BrushMapData<AlignmentSpotPropertyModel>> brushes) {
             if (horizontalSelector is null) {
                 throw new ArgumentNullException(nameof(horizontalSelector));
             }
@@ -30,21 +31,15 @@ namespace CompMs.App.Msdial.Model.Chart
                 throw new ArgumentNullException(nameof(verticalSelector));
             }
 
-            if (targetSource is null) {
-                throw new ArgumentNullException(nameof(targetSource));
+            if (brushes is null) {
+                throw new ArgumentNullException(nameof(brushes));
             }
 
-            if (labelSource is null) {
-                throw new ArgumentNullException(nameof(labelSource));
-            }
-
-            Spots = spots;
-            TargetSource = targetSource;
-
-            HorizontalSelector = horizontalSelector;
-            VerticalSelector = verticalSelector;
-
-            LabelSource = labelSource;
+            Spots = spots ?? throw new ArgumentNullException(nameof(spots));
+            TargetSource = targetSource ?? throw new ArgumentNullException(nameof(targetSource));
+            LabelSource = labelSource ?? throw new ArgumentNullException(nameof(labelSource));
+            SelectedBrush = selectedBrush ?? throw new ArgumentNullException(nameof(selectedBrush));
+            Brushes = new ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>>(brushes);
 
             GraphTitle = string.Empty;
             HorizontalTitle = string.Empty;
@@ -52,58 +47,38 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalProperty = string.Empty;
             VerticalProperty = string.Empty;
 
-            HorizontalAxis = this.ObserveProperty(m => m.HorizontalRange).ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05));
-            VerticalAxis = this.ObserveProperty(m => m.VerticalRange).ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05));
+            HorizontalAxis = spots.CollectionChangedAsObservable().ToUnit()
+                .StartWith(Unit.Default)
+                .Select(_ => Observable.Defer(() =>
+                {
+                    if (!(spots?.Any() ?? false) || horizontalSelector == null) {
+                        return Observable.Return(new Range(0, 1));
+                    }
+                    return Observable.Return(new Range(spots.Min(horizontalSelector), spots.Max(horizontalSelector)));
+                }))
+                .Switch()
+                .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
+                .AddTo(Disposables);
+            VerticalAxis = spots.CollectionChangedAsObservable().ToUnit()
+                .StartWith(Unit.Default)
+                .Select(_ => Observable.Defer(() =>
+                {
+                    if (!(spots?.Any() ?? false) || verticalSelector == null) {
+                        return Observable.Return(new Range(0, 1));
+                    }
+                    return Observable.Return(new Range(spots.Min(verticalSelector), spots.Max(verticalSelector)));
+                }))
+                .Switch()
+                .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
+                .AddTo(Disposables);
         }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Spots { get; }
 
         public IReactiveProperty<AlignmentSpotPropertyModel> TargetSource { get; }
 
-        public Range HorizontalRange {
-            get {
-                if (!Spots.Any() || HorizontalSelector == null) {
-                    return new Range(0, 1);
-                }
-                var minimum = Spots.Min(HorizontalSelector);
-                var maximum = Spots.Max(HorizontalSelector);
-                return new Range(minimum, maximum);
-            }
-        }
-
-        public Range VerticalRange {
-            get {
-                if (!Spots.Any() || VerticalSelector == null) {
-                    return new Range(0, 1);
-                }
-                var minimum = Spots.Min(VerticalSelector);
-                var maximum = Spots.Max(VerticalSelector);
-                return new Range(minimum, maximum);
-            }
-        }
-
         public IAxisManager<double> HorizontalAxis { get; }
         public IAxisManager<double> VerticalAxis { get; }
-
-        public Func<AlignmentSpotPropertyModel, double> HorizontalSelector {
-            get => horizontalSelector;
-            set {
-                if (SetProperty(ref horizontalSelector, value)) {
-                    OnPropertyChanged(nameof(HorizontalRange));
-                }
-            }
-        }
-        private Func<AlignmentSpotPropertyModel, double> horizontalSelector;
-
-        public Func<AlignmentSpotPropertyModel, double> VerticalSelector {
-            get => verticalSelector;
-            set {
-                if (SetProperty(ref verticalSelector, value)) {
-                    OnPropertyChanged(nameof(VerticalRange));
-                }
-            }
-        }
-        private Func<AlignmentSpotPropertyModel, double> verticalSelector;
 
         public string GraphTitle {
             get => graphTitle;
@@ -136,5 +111,13 @@ namespace CompMs.App.Msdial.Model.Chart
         private string verticalProperty;
 
         public IObservable<string> LabelSource { get; }
+
+        public BrushMapData<AlignmentSpotPropertyModel> SelectedBrush {
+            get => _selectedBrush;
+            set => SetProperty(ref _selectedBrush, value);
+        }
+        private BrushMapData<AlignmentSpotPropertyModel> _selectedBrush;
+
+        public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
     }
 }

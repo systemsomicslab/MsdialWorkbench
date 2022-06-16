@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class ProjectSettingModel : BindableBase
+    internal sealed class ProjectSettingModel : BindableBase
     {
         public ProjectSettingModel(Func<IProjectModel, Task> run, IMessageBroker broker) {
             ProjectParameterSettingModel = new ProjectParameterSettingModel(PrepareDatasetSetting, broker);

@@ -1,9 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.ComponentModel;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Data;
 
@@ -75,10 +77,12 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 .Subscribe()
                 .AddTo(Disposables);
 
+            IsEditting = new ReactivePropertySlim<bool>().AddTo(Disposables);
+
             PeakSpotsView = CollectionViewSource.GetDefaultView(model.PeakSpots);
             PeakSpotsView.Filter += PeakFilter;
 
-            new[]
+            var needRefresh = new[]
             {
                 PeakFilterViewModel.CheckedFilter.ToUnit(),
                 AmplitudeLowerValue.ToUnit(),
@@ -92,16 +96,35 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 MetaboliteFilterKeyword.ToUnit(),
                 ProteinFilterKeyword.ToUnit(),
                 CommentFilterKeyword.ToUnit(),
-            }.Merge()
-            .Throttle(TimeSpan.FromMilliseconds(500))
-            .ObserveOnUIDispatcher()
-            .Subscribe(_ => PeakSpotsView?.Refresh())
-            .AddTo(Disposables);
+            }.Merge();
+
+            var ifIsEditting = needRefresh.Take(1).Zip(IsEditting.Where(x => !x)).Select(x => x.First);
+            var ifIsNotEditting = needRefresh;
+
+            IsEditting
+                .Select(isEditting => isEditting ? ifIsEditting : ifIsNotEditting)
+                .Switch()
+                .Throttle(TimeSpan.FromMilliseconds(500))
+                .ObserveOnUIDispatcher()
+                .SelectMany(_ => Observable.Defer(() => {
+                    PeakSpotsView?.Refresh();
+                    return Observable.Return(Unit.Default);
+                }))
+                .OnErrorRetry<Unit, InvalidOperationException>(_ => System.Diagnostics.Debug.WriteLine("Failed to refresh. Retry after 0.1 seconds."), retryCount: 5, delay: TimeSpan.FromSeconds(1))
+                .Catch<Unit, InvalidOperationException>(e => {
+                    System.Diagnostics.Debug.WriteLine("Failed to refresh. CollectionView couldn't be refreshed.");
+                    return Observable.Return(Unit.Default);
+                })
+                .Repeat()
+                .Subscribe()
+                .AddTo(Disposables);
         }
 
         public ReactivePropertySlim<string> SelectedAnnotationLabel { get; }
 
         public ICollectionView PeakSpotsView { get; }
+
+        public ReactivePropertySlim<bool> IsEditting { get; }
 
         public ReactiveProperty<double> AmplitudeLowerValue { get; }
         public ReactiveProperty<double> AmplitudeUpperValue { get; }

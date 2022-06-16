@@ -3,10 +3,10 @@ using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Search;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.Base;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -18,18 +18,23 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
-    class AlignmentLcimmsVM : AlignmentFileViewModel
+    internal sealed class AlignmentLcimmsVM : AlignmentFileViewModel
     {
         public AlignmentLcimmsVM(
             LcimmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            FocusControlManager focusControlManager)
             : base(model) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
             if (peakSpotTableService is null) {
                 throw new ArgumentNullException(nameof(peakSpotTableService));
+            }
+
+            if (focusControlManager is null) {
+                throw new ArgumentNullException(nameof(focusControlManager));
             }
 
             this.model = model;
@@ -46,10 +51,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
             Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
 
-            PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, SelectedBrush).AddTo(Disposables);
+            var (peakPlotFocusAction, peakPlotFocused) = focusControlManager.Request();
+            PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
 
             Ms2SpectrumViewModel = new MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
-            BarChartViewModel = new BarChartViewModel(model.BarChartModel, brushSource: null).AddTo(Disposables);
+
+            var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
+            BarChartViewModel = new BarChartViewModel(model.BarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
             /*
             AlignmentSpotTableViewModel = new LcimmsAlignmentSpotTableViewModel(
@@ -113,7 +121,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 
-        public ReactivePropertySlim<IBrushMapper<AlignmentSpotPropertyModel>> SelectedBrush { get; }
+        public ReactivePropertySlim<BrushMapData<AlignmentSpotPropertyModel>> SelectedBrush { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public PeakFilterViewModel PeakFilterViewModel { get; }
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }

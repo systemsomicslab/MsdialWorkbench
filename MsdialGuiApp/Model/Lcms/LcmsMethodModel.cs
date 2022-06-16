@@ -10,7 +10,6 @@ using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.ViewModel.Lcms;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -19,12 +18,10 @@ using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
-using CompMs.Graphics.UI.Message;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
@@ -38,25 +35,32 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    sealed class LcmsMethodModel : MethodModelBase
+    internal sealed class LcmsMethodModel : MethodModelBase
     {
+        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+
         static LcmsMethodModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
         }
 
+        private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly IMessageBroker _broker;
+        private IAnnotationProcess annotationProcess;
+
         public LcmsMethodModel(
             IMsdialDataStorage<MsdialLcmsParameter> storage,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
-            IObservable<ParameterBase> parameterAsObservable,
-            IObservable<IBarItemsLoader> barItemsLoader,
+            ProjectBaseParameterModel projectBaseParameter,
             IMessageBroker broker)
-            : base(storage.AnalysisFiles, storage.AlignmentFiles) {
+            : base(storage.AnalysisFiles, storage.AlignmentFiles, projectBaseParameter) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
             }
@@ -67,8 +71,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Storage = storage;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             this.providerFactory = providerFactory;
-            this.parameterAsObservable = parameterAsObservable;
-            this.barItemsLoader = barItemsLoader;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
         }
@@ -90,13 +93,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             set => SetProperty(ref alignmentModel, value);
         }
         private LcmsAlignmentModel alignmentModel;
-
-        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
-        private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
-        private readonly IObservable<ParameterBase> parameterAsObservable;
-        private readonly IObservable<IBarItemsLoader> barItemsLoader;
-        private readonly IMessageBroker _broker;
-        private IAnnotationProcess annotationProcess;
 
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
@@ -128,13 +124,12 @@ namespace CompMs.App.Msdial.Model.Lcms
                 PeakFilterModel,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
-                parameterAsObservable,
-                barItemsLoader,
+                _projectBaseParameter,
                 Storage.AnalysisFiles)
             .AddTo(Disposables);
         }
 
-        public override void Run(ProcessOption option) {
+        public override async Task RunAsync(ProcessOption option, CancellationToken token) {
             // Set analysis param
             var parameter = Storage.Parameter;
             // matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
@@ -167,7 +162,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     return;
             }
 
-            LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+            await LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
 
 #if DEBUG
             Console.WriteLine(string.Join("\n", Storage.Parameter.ParametersAsText()));
@@ -566,7 +561,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             var dialog = new MassqlSettingView()
             {
                 DataContext = vm,
-                Owner = owner,
+                //Owner = owner,
+                Owner = Application.Current.MainWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             dialog.Show();

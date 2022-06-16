@@ -11,18 +11,19 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    class AnalysisPeakPlotViewModel : ViewModelBase
+    internal sealed class AnalysisPeakPlotViewModel : ViewModelBase
     {
-        public AnalysisPeakPlotViewModel(AnalysisPeakPlotModel model, IObservable<IBrushMapper<ChromatogramPeakFeatureModel>> brushSource) {
+        private readonly AnalysisPeakPlotModel _model;
+
+        public AnalysisPeakPlotViewModel(AnalysisPeakPlotModel model, Action focus, IObservable<bool> isFocused) {
             Spots = model.Spots;
 
             HorizontalAxis = model.HorizontalAxis;
             VerticalAxis = model.VerticalAxis;
 
-            if (brushSource == null) {
-                brushSource = Observable.Return<IBrushMapper<ChromatogramPeakFeatureModel>>(null);
-            }
-            Brush = brushSource.ToReadOnlyReactivePropertySlim()
+            SelectedBrush = model.ToReactivePropertyAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
+            Brush = SelectedBrush.Select(data => data?.Mapper)
+                .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
             Target = model.TargetSource;
@@ -50,7 +51,14 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             LabelProperty = model.LabelSource
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+            _model = model;
+            Focus = focus;
+            IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
+
+        public Action Focus { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
 
         public ObservableCollection<ChromatogramPeakFeatureModel> Spots { get; }
 
@@ -59,6 +67,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public IAxisManager<double> VerticalAxis { get; } 
 
         public ReadOnlyReactivePropertySlim<IBrushMapper<ChromatogramPeakFeatureModel>> Brush { get; }
+
+        public ReadOnlyCollection<BrushMapData<ChromatogramPeakFeatureModel>> Brushes => _model.Brushes;
+
+        public ReactiveProperty<BrushMapData<ChromatogramPeakFeatureModel>> SelectedBrush { get; }
 
         public IReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
 

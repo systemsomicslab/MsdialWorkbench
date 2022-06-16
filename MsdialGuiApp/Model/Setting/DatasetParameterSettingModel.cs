@@ -25,7 +25,7 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class DatasetParameterSettingModel : BindableBase
+    internal sealed class DatasetParameterSettingModel : BindableBase
     {
         private readonly DatasetFileSettingModel fileSettingModel;
         private readonly Action<DatasetModel> next;

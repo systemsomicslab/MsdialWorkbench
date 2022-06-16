@@ -14,6 +14,7 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:commonbehavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
              behavior:SuppressContextMenuBehavior.IsEnabled="True"
              Name="MainControl"
              d:DataContext="{d:DesignInstance Type={x:Type vm:LcimmsMethodVM}}"
@@ -44,7 +45,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <local:MainRibbon Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+        <local:LcimmsRibbon Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
         <commonview:Navigator Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
 
         <GridSplitter Margin="0, 0, 0, 0" Width="2" ResizeDirection="Columns" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" />
@@ -203,7 +204,9 @@
                                             </Grid>
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type vmcore:AlignmentFileViewModel}">
-                                            <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
+                                            <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}"
+                                                                         commonbehavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"
+                                                                         d:DataContext="{d:DesignInstance Type={x:Type vmchart:AlignmentPeakPlotViewModel}}">
                                                 <chart:AlignmentPeakPlotView.LabelTemplate>
                                                     <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
                                                         <StackPanel Orientation="Horizontal">
@@ -319,28 +322,7 @@
                                             </chart:EicView>
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type vmchart:BarChartViewModel}">
-                                            <chart:BarChartView>
-                                                <chart:BarChartView.ContextMenu>
-                                                    <ContextMenu>
-                                                        <MenuItem Header="Save image as...">
-                                                            <MenuItem Header="Save as emf"
-                                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
-                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                                            <MenuItem Header="Save as png"
-                                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
-                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                                        </MenuItem>
-                                                        <MenuItem Header="Copy image as...">
-                                                            <MenuItem Header="Copy as emf"
-                                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
-                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                                            <MenuItem Header="Copy as png"
-                                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
-                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                                        </MenuItem>
-                                                    </ContextMenu>
-                                                </chart:BarChartView.ContextMenu>
-                                            </chart:BarChartView>
+                                            <chart:BarChartView/>
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type vmchart:AlignmentEicViewModel}">
                                             <chart:AlignmentEicView>

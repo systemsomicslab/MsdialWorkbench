@@ -12,6 +12,7 @@
              xmlns:vmcore="clr-namespace:CompMs.App.Msdial.ViewModel"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             xmlns:behavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              Name="MainControl"
              MouseRightButtonDown="MainControl_MouseRightButtonDown"
@@ -162,7 +163,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <local:MainRibbon x:Name="RibbonMenu" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+        <local:LcmsRibbon x:Name="RibbonMenu" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
         <commonview:Navigator Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
 
         <GridSplitter Margin="0, 0, 0, 0" Width="2" ResizeDirection="Columns" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" />
@@ -412,28 +413,7 @@
                                             </chart:EicView>
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type vmchart:BarChartViewModel}">
-                                            <chart:BarChartView>
-                                                <chart:BarChartView.ContextMenu>
-                                                    <ContextMenu>
-                                                        <MenuItem Header="Save image as...">
-                                                            <MenuItem Header="Save as emf"
-                                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
-                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                                            <MenuItem Header="Save as png"
-                                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
-                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                                        </MenuItem>
-                                                        <MenuItem Header="Copy image as...">
-                                                            <MenuItem Header="Copy as emf"
-                                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
-                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                                            <MenuItem Header="Copy as png"
-                                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
-                                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                                        </MenuItem>
-                                                    </ContextMenu>
-                                                </chart:BarChartView.ContextMenu>
-                                            </chart:BarChartView>
+                                            <chart:BarChartView/>
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type vmchart:AlignmentEicViewModel}">
                                             <chart:AlignmentEicView>

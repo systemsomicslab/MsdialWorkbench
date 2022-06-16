@@ -15,7 +15,9 @@ namespace CompMs.App.Msdial.Model.Setting {
         private ProteomicsParameter Parameter { get; set; }
         public ModificationSettingModel(ProteomicsParameter Parameter) {
             this.Parameter = Parameter;
+            var isFirstApp = false;
             if (Parameter.VariableModifications.IsEmptyOrNull()) {
+                isFirstApp = true;  
                 var mParser = new ModificationsXmlRefParser();
                 mParser.Read();
                 Parameter.VariableModifications = mParser.Modifications;
@@ -34,7 +36,7 @@ namespace CompMs.App.Msdial.Model.Setting {
             var selectedFModifications = fModifications.Where(n => n.IsSelected).ToList();
             var unselectedFModifications = fModifications.Where(n => n.IsSelected == false).ToList();
 
-            if (selectedVModifications.IsEmptyOrNull()) {
+            if (isFirstApp && selectedVModifications.IsEmptyOrNull()) {
                 var defaultVMods = new List<string> { "Acetyl (Protein N-term)", "Oxidation (M)" };
                 selectedVModifications = new List<Modification>();
                 unselectedVModifications = new List<Modification>();
@@ -54,7 +56,7 @@ namespace CompMs.App.Msdial.Model.Setting {
             UnSelectedVariableModifications = new ObservableCollection<Modification>(unselectedVModifications);
             SelectedVariableModifications = new ObservableCollection<Modification>(selectedVModifications);
 
-            if (selectedFModifications.IsEmptyOrNull()) {
+            if (isFirstApp && selectedFModifications.IsEmptyOrNull()) {
                 var defaultFMods = new List<string> { "Carbamidomethyl (C)" };
                 selectedFModifications = new List<Modification>();
                 unselectedFModifications = new List<Modification>();
@@ -115,8 +117,7 @@ namespace CompMs.App.Msdial.Model.Setting {
                 fmods.Add(mod);
             }
             parameter.FixedModifications = fmods;
-
-            parameter.MaxMissedCleavage = maxNumberOfModificationsPerPeptide;
+            parameter.MaxNumberOfModificationsPerPeptide = maxNumberOfModificationsPerPeptide;
         }
 
         public ObservableCollection<Modification> SelectedVariableModifications {
@@ -180,7 +181,7 @@ namespace CompMs.App.Msdial.Model.Setting {
             set => SetProperty(ref maxNumberOfModificationsPerPeptide, value);
         }
 
-        private int maxNumberOfModificationsPerPeptide = 5;
+        private int maxNumberOfModificationsPerPeptide;
 
     }
 }

@@ -7,7 +7,7 @@ using System;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    abstract class ImmsPeakSpotTableViewModel : PeakSpotTableViewModelBase
+    internal abstract class ImmsPeakSpotTableViewModel : PeakSpotTableViewModelBase
     {
         protected ImmsPeakSpotTableViewModel(
             IImmsPeakSpotTableModel model,
@@ -54,7 +54,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public IReactiveProperty<double> DriftUpper { get; }
     }
 
-    sealed class ImmsAnalysisPeakTableViewModel : ImmsPeakSpotTableViewModel
+    internal sealed class ImmsAnalysisPeakTableViewModel : ImmsPeakSpotTableViewModel
     {
         public ImmsAnalysisPeakTableViewModel(
             ImmsAnalysisPeakTableModel model,
@@ -63,19 +63,22 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             IReactiveProperty<double> massUpper,
             IReactiveProperty<double> driftLower,
             IReactiveProperty<double> driftUpper,
-            IReactiveProperty<string> metaboliteFilterKeyword, IReactiveProperty<string> commentFilterKeyword)
+            IReactiveProperty<string> metaboliteFilterKeyword, IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty<bool> isEditting)
             : base(model, massLower, massUpper, driftLower, driftUpper, metaboliteFilterKeyword, commentFilterKeyword) {
             if (eicLoader is null) {
                 throw new ArgumentNullException(nameof(eicLoader));
             }
 
             EicLoader = eicLoader.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
         }
 
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
+        public IReactiveProperty<bool> IsEditting { get; }
     }
 
-    sealed class ImmsAlignmentSpotTableViewModel : ImmsPeakSpotTableViewModel
+    internal sealed class ImmsAlignmentSpotTableViewModel : ImmsPeakSpotTableViewModel
     {
         public ImmsAlignmentSpotTableViewModel(
             ImmsAlignmentSpotTableModel model,
@@ -84,7 +87,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             IReactiveProperty<double> driftLower,
             IReactiveProperty<double> driftUpper,
             IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword)
+            IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty<bool> isEditting)
             : base(
                   model,
                   massLower,
@@ -93,7 +97,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                   driftUpper,
                   metaboliteFilterKeyword,
                   commentFilterKeyword) {
-
+            IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
         }
+
+        public IReactiveProperty<bool> IsEditting { get; }
     }
 }

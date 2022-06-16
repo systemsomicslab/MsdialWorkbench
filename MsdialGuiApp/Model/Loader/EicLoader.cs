@@ -13,13 +13,14 @@ using System.Threading.Tasks;
 namespace CompMs.App.Msdial.Model.Loader
 {
     public class EicLoader {
-        public EicLoader(
+        protected EicLoader(
             IDataProvider provider,
             ParameterBase parameter,
             ChromXType chromXType,
             ChromXUnit chromXUnit,
             double rangeBegin,
-            double rangeEnd) {
+            double rangeEnd,
+            bool isConstantRange = true) {
 
             this.provider = provider;
             this.parameter = parameter;
@@ -27,6 +28,7 @@ namespace CompMs.App.Msdial.Model.Loader
             this.chromXUnit = chromXUnit;
             this.rangeBegin = rangeBegin;
             this.rangeEnd = rangeEnd;
+            _isConstantRange = isConstantRange;
 
             _rawSpectraTask = Task.Run(async () => new RawSpectra(await provider.LoadMs1SpectrumsAsync(default).ConfigureAwait(false), parameter.IonMode, parameter.AcquisitionType));
             _chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
@@ -37,6 +39,7 @@ namespace CompMs.App.Msdial.Model.Loader
         protected readonly ChromXType chromXType;
         protected readonly ChromXUnit chromXUnit;
         protected readonly double rangeBegin, rangeEnd;
+        private readonly bool _isConstantRange;
         private readonly Task<RawSpectra> _rawSpectraTask;
         private readonly ChromatogramRange _chromatogramRange;
 
@@ -76,7 +79,17 @@ namespace CompMs.App.Msdial.Model.Loader
             return eic;
         }
 
-        internal List<ChromatogramPeakWrapper> LoadHighestEicTrace(List<ChromatogramPeakFeatureModel> targets) {
+        private static double PEAK_WIDTH_FACTOR = 3d;
+        private ChromatogramRange GetChromatogramRange(ChromatogramPeakFeatureModel target) {
+            if (_isConstantRange) {
+                return _chromatogramRange;
+            }
+            var width = target.InnerModel.PeakWidth(chromXType) * PEAK_WIDTH_FACTOR;
+            var center = target.ChromXValue ?? 0d;
+            return new ChromatogramRange(center - width / 2, center + width / 2, chromXType, chromXUnit);
+        }
+
+        public List<ChromatogramPeakWrapper> LoadHighestEicTrace(List<ChromatogramPeakFeatureModel> targets) {
             return _rawSpectra
                 .GetMs1ExtractedChromatogramByHighestBasePeakMz(targets, parameter.CentroidMs1Tolerance, _chromatogramRange)
                 .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
@@ -89,7 +102,7 @@ namespace CompMs.App.Msdial.Model.Loader
             return Task.Run(async () =>
             {
                 var rawSpectra = await _rawSpectraTask.ConfigureAwait(false);
-                var ms1Peaks = rawSpectra.GetMs1ExtractedChromatogram(target.Mass, parameter.CentroidMs1Tolerance, _chromatogramRange);
+                var ms1Peaks = rawSpectra.GetMs1ExtractedChromatogram(target.Mass, parameter.CentroidMs1Tolerance, GetChromatogramRange(target));
                 return ms1Peaks.Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                     .Where(peak => peak != null)
                     .Select(peak => new ChromatogramPeakWrapper(peak))
@@ -153,6 +166,14 @@ namespace CompMs.App.Msdial.Model.Loader
                 .Where(peak => peak != null)
                 .Select(peak => new ChromatogramPeakWrapper(peak))
                 .ToList();
+        }
+
+        public static EicLoader BuildForAllRange(IDataProvider provider, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
+            return new EicLoader(provider, parameter, chromXType, chromXUnit, rangeBegin, rangeEnd);
+        }
+
+        public static EicLoader BuildForPeakRange(IDataProvider provider, ParameterBase parameter, ChromXType chromXType, ChromXUnit chromXUnit, double rangeBegin, double rangeEnd) {
+            return new EicLoader(provider, parameter, chromXType, chromXUnit, rangeBegin, rangeEnd, isConstantRange: false);
         }
     }
 }

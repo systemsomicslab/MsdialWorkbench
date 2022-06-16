@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.FormulaGenerator.DataObj;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,17 +23,19 @@ namespace CompMs.Common.Lipidomics
             }
             var chainLoss = lipid.Mass - chain.Mass - nlMass;
             var diffs = new double[chain.CarbonCount];
-            for (int i = 0; i < chain.CarbonCount; i++)
+            for (int i = 0; i < chain.CarbonCount; i++) // numbering from COOH. 18:2(9,12) -> 9 is 8 and 12 is 11 
             {
                 diffs[i] = CH2;
             }
 
             var bondPositions = new List<int>();
-            foreach (var bond in chain.DoubleBond.Bonds)
+            foreach (var bond in chain.DoubleBond.Bonds) // double bond 18:2(9,12) -> 9 is 9 and 12 is 12 
             {
                 diffs[bond.Position - 1] -= MassDiffDictionary.HydrogenMass;
                 diffs[bond.Position] -= MassDiffDictionary.HydrogenMass;
                 bondPositions.Add(bond.Position);
+
+                //Console.WriteLine(bond.Position);
             }
             for (int i = 1; i < chain.CarbonCount; i++)
             {
@@ -45,37 +48,68 @@ namespace CompMs.Common.Lipidomics
                 var speccomment = SpectrumComment.doublebond;
                 var factor = 1.0;
                 var factorHLoss = 0.5;
-                var factorHGain = 0.5;
-                if (bondPositions.Contains(i - 1))
-                {
-                    factor = 1.75;
+                var factorHGain = 0.2;
+
+                if (bondPositions.Contains(i - 1)) { // in the case of 18:2(9,12), Radical is big, and H loss is next
+                    factor = 4.0;
                     factorHLoss = 2.0;
-                    factorHGain = 0.5;
                     speccomment |= SpectrumComment.doublebond_high;
                 }
-                else if (bondPositions.Contains(i + 1))
-                {
-                    factor = 0.5;
-                    factorHLoss = 0.25;
-                    factorHGain = 0.25;
+                else if (bondPositions.Contains(i)) {
+                    // now no modification
+                }
+                else if (bondPositions.Contains(i + 1)) { 
+                    factor = 0.25;
+                    factorHLoss = 0.5;
+                    factorHGain = 0.05;
                     speccomment |= SpectrumComment.doublebond_low;
                 }
-                else if (bondPositions.Contains(i + 3))
-                {
-                    if (bondPositions.Contains(i))
-                    {
-                        factor = 1.0;
+                else if (bondPositions.Contains(i + 2)) { 
+                    // now no modification
+                }
+                else if (bondPositions.Contains(i + 3)) {
+                    if (bondPositions.Contains(i)) {
+                        factor = 4.0;
                         factorHLoss = 0.5;
-                        factorHGain = 1.5;
+                        factorHGain = 2.0;
                     }
-                    else
-                    {
-                        factor = 1.5;
-                        factorHLoss = 2.0;
-                        factorHGain = 0.75;
+                    else {
+                        factorHLoss = 4.0;
                         speccomment |= SpectrumComment.doublebond_high;
                     }
+                    speccomment |= SpectrumComment.doublebond_high;
                 }
+
+
+
+                //if (bondPositions.Contains(i - 1))
+                //{
+                //    factor = 1.5;
+                //    factorHLoss = 1.25;
+                //    factorHGain = 0.25;
+                //    speccomment |= SpectrumComment.doublebond_high;
+                //}
+                //else if (bondPositions.Contains(i + 1))
+                //{
+                //    factor = 0.5;
+                //    speccomment |= SpectrumComment.doublebond_low;
+                //}
+                //else if (bondPositions.Contains(i + 3))
+                //{
+                //    if (bondPositions.Contains(i))
+                //    {
+                //        factor = 1.5;
+                //        factorHLoss = 0.25;
+                //        factorHGain = 1.0;
+                //    }
+                //    else
+                //    {
+                //        factor = 1.5;
+                //        factorHLoss = 2.0;
+                //        speccomment |= SpectrumComment.doublebond_high;
+                //    }
+                //}
+
                 if (i == 2)
                 {
                     factor = 0.75;
