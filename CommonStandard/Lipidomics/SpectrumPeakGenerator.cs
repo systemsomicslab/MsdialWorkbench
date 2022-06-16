@@ -48,44 +48,50 @@ namespace CompMs.Common.Lipidomics
                 var factorHGain = 0.5;
                 if (bondPositions.Contains(i - 1))
                 {
-                    factor = 1.5;
-                    factorHLoss = 1.25;
-                    factorHGain = 0.25;
+                    factor = 1.75;
+                    factorHLoss = 2.0;
+                    factorHGain = 0.5;
                     speccomment |= SpectrumComment.doublebond_high;
                 }
                 else if (bondPositions.Contains(i + 1))
                 {
                     factor = 0.5;
+                    factorHLoss = 0.25;
+                    factorHGain = 0.25;
                     speccomment |= SpectrumComment.doublebond_low;
                 }
                 else if (bondPositions.Contains(i + 3))
                 {
                     if (bondPositions.Contains(i))
                     {
-                        factor = 1.5;
-                        factorHLoss = 0.25;
-                        factorHGain = 1.0;
+                        factor = 1.0;
+                        factorHLoss = 0.5;
+                        factorHGain = 1.5;
                     }
                     else
                     {
                         factor = 1.5;
                         factorHLoss = 2.0;
+                        factorHGain = 0.75;
                         speccomment |= SpectrumComment.doublebond_high;
                     }
                 }
                 if (i == 2)
                 {
+                    factor = 0.75;
                     factorHLoss = 2.0;
+                    factorHGain = 0.5;
                 }
                 if (i == 1)
                 {
-                    factor = 2.0;
-                    factorHGain = 1.0;
+                    factor = 1.5;
+                    factorHLoss = 0.5;
+                    factorHGain = 2.0;
                 }
 
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), factor * factorHLoss * abundance, $"{chain} C{i + 1}-H") { SpectrumComment = speccomment });
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), factorHLoss * abundance, $"{chain} C{i + 1}-H") { SpectrumComment = speccomment });
                 peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), factor * abundance, $"{chain} C{i + 1}") { SpectrumComment = speccomment });
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), factor * factorHGain * abundance, $"{chain} C{i + 1}+H") { SpectrumComment = speccomment });
+                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), factorHGain * abundance, $"{chain} C{i + 1}+H") { SpectrumComment = speccomment });
             }
 
             return peaks;
