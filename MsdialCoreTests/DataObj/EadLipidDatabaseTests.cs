@@ -4,6 +4,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Parser;
 using CompMs.Common.Lipidomics;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 
@@ -45,7 +46,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 Charge = 2,
                 MsLevel = 2,
             };
-            var actuals1 = db.BatchGenerate(new[] { lipid, }, lipid, adduct, reference);
+            var actuals1 = db.Generates(new[] { lipid, }, lipid, adduct, reference);
 
             // var actual1 = db.Generate(lipid, adduct, reference);
             var actual1 = actuals1.SingleOrDefault();
@@ -55,7 +56,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             reference.PrecursorMz = adduct.ConvertToMz(lipid.Mass);
             reference.Name = "Lipid2";
             reference.AdductType = adduct;
-            var actuals2 = db.BatchGenerate(new[] { lipid, }, lipid, adduct, reference);
+            var actuals2 = db.Generates(new[] { lipid, }, lipid, adduct, reference);
             // var actual2 = db.Generate(lipid, adduct, reference);
             var actual2 = actuals2.SingleOrDefault();
             Assert.AreEqual(1, actual2.ScanID);
@@ -63,7 +64,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             // db.Register(new[] { actual1, actual2, null }, TODO); // ignore null
 
             var result = new MsScanMatchResult { LibraryID = 0, };
-            var actual3 = db.Refer(result);
+            var actual3 = ((IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>)db).Refer(result);
             Assert.AreEqual(actual1.ScanID, actual3.ScanID);
             Assert.AreEqual(actual1.PrecursorMz, actual3.PrecursorMz, 1e-7);
             Assert.AreEqual(actual1.ChromXs.RT.Value, actual3.ChromXs.RT.Value, 1e-5);
@@ -92,7 +93,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             }
 
             result = new MsScanMatchResult { LibraryID = 1, };
-            var actual4 = db.Refer(result);
+            var actual4 = ((IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>)db).Refer(result);
             Assert.AreEqual(actual2.ScanID, actual4.ScanID);
             Assert.AreEqual(actual2.PrecursorMz, actual4.PrecursorMz, 1e-7);
             Assert.AreEqual(actual2.ChromXs.RT.Value, actual4.ChromXs.RT.Value, 1e-5);
@@ -121,10 +122,10 @@ namespace CompMs.MsdialCore.DataObj.Tests
             }
 
             result = new MsScanMatchResult { LibraryID = 2 };
-            var actual5 = db.Refer(result);
+            var actual5 = ((IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>)db).Refer(result);
             Assert.IsNull(actual5);
 
-            var actuals6 = db.BatchGenerate(new[] { lipid, }, lipid, adduct, reference);
+            var actuals6 = db.Generates(new[] { lipid, }, lipid, adduct, reference);
             var actual6 = actuals6.Single();
             Assert.AreEqual(actual2.ScanID, actual6.ScanID);
         }

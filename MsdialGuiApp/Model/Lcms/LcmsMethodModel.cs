@@ -227,11 +227,26 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
 
             pbmcw.Loaded += async (s, e) => {
+                var sem = new SemaphoreSlim(3);
+                var tasks = new List<Task>();
+                var current = 0;
                 foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                    var provider = providerFactory.Create(analysisfile);
-                    await Task.Run(() => MsdialLcMsApi.Process.FileProcess.Run(analysisfile, provider, storage, annotationProcess, matchResultEvaluator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
-                    vm.CurrentValue++;
+                    var task = Task.Run(async () =>
+                    {
+                        await sem.WaitAsync().ConfigureAwait(false);
+                        try {
+                            var provider = providerFactory.Create(analysisfile);
+                            MsdialLcMsApi.Process.FileProcess.Run(analysisfile, provider, storage, annotationProcess, matchResultEvaluator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v);
+                            Interlocked.Increment(ref current);
+                            vm.CurrentValue = current;
+                        }
+                        finally {
+                            sem.Release();
+                        }
+                    });
+                    tasks.Add(task);
                 }
+                await Task.WhenAll(tasks.ToArray());
 
                 pbmcw.Close();
             };
