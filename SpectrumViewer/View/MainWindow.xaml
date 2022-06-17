@@ -48,22 +48,6 @@
                             <rp:EventToReactiveCommand Command="{Binding DropCommand}"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
-                    <ContentControl.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Save spectrum image as png"
-                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
-                                      CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                            <MenuItem Header="Save spectrum image as emf"
-                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
-                                      CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                            <MenuItem Header="Copy spectrum image as png"
-                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
-                                      CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                            <MenuItem Header="Copy spectrum image as emf"
-                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
-                                      CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                        </ContextMenu>
-                    </ContentControl.ContextMenu>
                 </ContentControl>
             </DataTemplate>
             <DataTemplate x:Key="NewItemTabHeader">
