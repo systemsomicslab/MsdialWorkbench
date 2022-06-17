@@ -9,23 +9,39 @@ using System.IO;
 
 namespace CompMs.MsdialCore.DataObj
 {
+    public enum LipidDatabaseFormat {
+        None = 0,
+        Sqlite = 1,
+        Dictionary = 2,
+    }
+
     [MessagePack.MessagePackObject]
     public sealed class EadLipidDatabase : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IReferenceDataBase, IDisposable
     {
         private readonly ILipidDatabase _innerDb;
 
-        public EadLipidDatabase(string id) : this(Path.GetTempFileName(), id) {
-
-        }
-
-        public EadLipidDatabase(string dbPath, string id) {
-            _innerDb = new EadLipidPosetDatabase(dbPath, id);
+        [MessagePack.SerializationConstructor]
+        public EadLipidDatabase(string dbPath, string id, LipidDatabaseFormat type) {
             Id = id;
-            //_innerDb = new EadLipidSqliteDatabase(dbPath, id);
+            switch (type) {
+                case LipidDatabaseFormat.None: // For loading previous project which use sqlite database.
+                case LipidDatabaseFormat.Sqlite:
+                    DatabaseFormat = LipidDatabaseFormat.Sqlite;
+                    _innerDb = new EadLipidSqliteDatabase(dbPath, id);
+                    break;
+                case LipidDatabaseFormat.Dictionary:
+                default:
+                    DatabaseFormat = LipidDatabaseFormat.Dictionary;
+                    _innerDb = new EadLipidPosetDatabase(dbPath, id);
+                    break;
+            }
         }
 
         [MessagePack.Key(nameof(Id))]
         public string Id { get; }
+
+        [MessagePack.Key(nameof(DatabaseFormat))]
+        public LipidDatabaseFormat DatabaseFormat { get; }
 
         public List<MoleculeMsReference> Generates(IEnumerable<ILipid> lipids, ILipid seed, AdductIon adduct, MoleculeMsReference baseReference) {
             return _innerDb.Generates(lipids, seed, adduct, baseReference);
