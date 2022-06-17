@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj
 {
-    internal sealed class EadLipidPosetDatabase : ILipidDatabase
+    internal sealed class EadLipidDictionaryDatabase : ILipidDatabase
     {
         private readonly string _dbPath;
         private readonly string _id;
@@ -22,7 +22,7 @@ namespace CompMs.MsdialCore.DataObj
         private readonly List<MoleculeMsReference> _references;
         private readonly object syncObject = new object();
 
-        public EadLipidPosetDatabase(string dbPath, string id) {
+        public EadLipidDictionaryDatabase(string dbPath, string id) {
             _dbPath = dbPath;
             _id = id;
             _lipidGenerator = FacadeLipidSpectrumGenerator.Default;
@@ -116,7 +116,7 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
-        ~EadLipidPosetDatabase()
+        ~EadLipidDictionaryDatabase()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: false);
