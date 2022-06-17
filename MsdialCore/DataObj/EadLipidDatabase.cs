@@ -18,12 +18,18 @@ namespace CompMs.MsdialCore.DataObj
     [MessagePack.MessagePackObject]
     public sealed class EadLipidDatabase : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IReferenceDataBase, IDisposable
     {
-        private readonly ILipidDatabase _innerDb;
+        private readonly string _dbPath;
+        private ILipidDatabase _innerDb;
 
         [MessagePack.SerializationConstructor]
-        public EadLipidDatabase(string dbPath, string id, LipidDatabaseFormat type) {
+        public EadLipidDatabase(string id, LipidDatabaseFormat dataBaseFormat) : this(Path.GetTempFileName(), id, dataBaseFormat) {
+
+        }
+
+        public EadLipidDatabase(string dbPath, string id, LipidDatabaseFormat dataBaseFormat) {
+            _dbPath = dbPath;
             Id = id;
-            switch (type) {
+            switch (dataBaseFormat) {
                 case LipidDatabaseFormat.None: // For loading previous project which use sqlite database.
                 case LipidDatabaseFormat.Sqlite:
                     DatabaseFormat = LipidDatabaseFormat.Sqlite;
@@ -41,7 +47,7 @@ namespace CompMs.MsdialCore.DataObj
         public string Id { get; }
 
         [MessagePack.Key(nameof(DatabaseFormat))]
-        public LipidDatabaseFormat DatabaseFormat { get; }
+        public LipidDatabaseFormat DatabaseFormat { get; private set; }
 
         public List<MoleculeMsReference> Generates(IEnumerable<ILipid> lipids, ILipid seed, AdductIon adduct, MoleculeMsReference baseReference) {
             return _innerDb.Generates(lipids, seed, adduct, baseReference);
@@ -53,6 +59,35 @@ namespace CompMs.MsdialCore.DataObj
 
         public void Load(Stream stream, string folderpath) {
             _innerDb.Load(stream, folderpath);
+        }
+
+        public void SwitchTo(LipidDatabaseFormat format) {
+            if (format == DatabaseFormat) {
+                return;
+            }
+            IEnumerable<MoleculeMsReference> references;
+            switch (format) {
+                case LipidDatabaseFormat.Sqlite:
+                    references = _innerDb.GetReferences();
+                    _innerDb.Dispose();
+                    if (File.Exists(_dbPath)) {
+                        File.Delete(_dbPath);
+                    }
+                    _innerDb = new EadLipidSqliteDatabase(_dbPath, Id);
+                    _innerDb.SetReferences(references);
+                    DatabaseFormat = LipidDatabaseFormat.Sqlite;
+                    break;
+                case LipidDatabaseFormat.Dictionary:
+                    references = _innerDb.GetReferences();
+                    _innerDb.Dispose();
+                    if (File.Exists(_dbPath)) {
+                        File.Delete(_dbPath);
+                    }
+                    _innerDb = new EadLipidPosetDatabase(_dbPath, Id);
+                    _innerDb.SetReferences(references);
+                    DatabaseFormat = LipidDatabaseFormat.Dictionary;
+                    break;
+            }
         }
         
         // IMatchResultRefer
@@ -69,6 +104,7 @@ namespace CompMs.MsdialCore.DataObj
             if (!disposedValue) {
                 if (disposing) {
                     _innerDb.Dispose();
+                    _innerDb = null;
                 }
                 disposedValue = true;
             }

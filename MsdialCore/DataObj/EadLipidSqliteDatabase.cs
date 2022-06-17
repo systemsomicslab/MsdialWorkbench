@@ -200,6 +200,34 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
+        // ILipidDatabase
+        List<MoleculeMsReference> ILipidDatabase.GetReferences() {
+            var command = connection.CreateCommand();
+            command.CommandText = $"SELECT * FROM {ReferenceTableName}";
+            var reader = command.ExecuteReader();
+            var lipidReferenceDictionary = new Dictionary<int, LipidReference>();
+            while (reader.Read()) {
+                var lipidReference = LipidReference.ParseLipidReference(reader);
+                lipidReferenceDictionary[lipidReference.ScanID] = lipidReference;
+            }
+            command = connection.CreateCommand();
+            command.CommandText = $"SELECT * FROM {SpectrumTableName}";
+            reader = command.ExecuteReader();
+            var result = new List<MoleculeMsReference>();
+            foreach (var group in LipidReference.ParseSpectrumAndId(reader).GroupBy(pair => pair.Item2, pair => pair.Item1)) {
+                lipidReferenceDictionary[group.Key].Spectrum.AddRange(group);
+                result.Add(lipidReferenceDictionary[group.Key].ConvertToReference());
+            }
+            return result;
+        }
+
+        void ILipidDatabase.SetReferences(IEnumerable<MoleculeMsReference> references) {
+            foreach (var reference in references) {
+                var lipid = FacadeLipidParser.Default.Parse(reference.Name);
+                Register(new[] { reference, }, lipid);
+            }
+        }
+
         private bool disposedValue;
 
         private void Dispose(bool disposing) {

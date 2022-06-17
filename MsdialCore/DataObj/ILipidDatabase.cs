@@ -11,5 +11,8 @@ namespace CompMs.MsdialCore.DataObj
     internal interface ILipidDatabase : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IReferenceDataBase, IDisposable
     {
         List<MoleculeMsReference> Generates(IEnumerable<ILipid> lipids, ILipid seed, AdductIon adduct, MoleculeMsReference baseReference);
+
+        List<MoleculeMsReference> GetReferences();
+        void SetReferences(IEnumerable<MoleculeMsReference> references);
     }
 }

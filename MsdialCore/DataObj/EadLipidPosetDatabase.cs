@@ -1,11 +1,11 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.DataStructure;
 using CompMs.Common.Lipidomics;
 using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,96 +16,59 @@ namespace CompMs.MsdialCore.DataObj
     {
         private readonly string _dbPath;
         private readonly string _id;
-        private readonly DirectionalLinkedGraph<ILipid> _graph;
         private readonly ILipidSpectrumGenerator _lipidGenerator;
         private readonly IEqualityComparer<ILipid> _comparer;
-        private readonly Dictionary<ILipid, MoleculeMsReference> _lipidToReference;
+        private readonly ConcurrentDictionary<ILipid, Lazy<MoleculeMsReference>> _lipidToReference;
         private readonly List<MoleculeMsReference> _references;
         private readonly object syncObject = new object();
-        private int _scanId = 0;
 
         public EadLipidPosetDatabase(string dbPath, string id) {
             _dbPath = dbPath;
             _id = id;
             _lipidGenerator = FacadeLipidSpectrumGenerator.Default;
             _comparer = new LipidNameComparer();
-            _graph = new DirectionalLinkedGraph<ILipid>(_comparer);
+            _lipidToReference = new ConcurrentDictionary<ILipid, Lazy<MoleculeMsReference>>(_comparer);
             _references = new List<MoleculeMsReference>();
-            _lipidToReference = new Dictionary<ILipid, MoleculeMsReference>(_comparer);
         }
 
         public List<MoleculeMsReference> Generates(IEnumerable<ILipid> lipids, ILipid seed, AdductIon adduct, MoleculeMsReference baseReference) {
-            if (_graph.Contains(seed)) {
-                var references = new List<MoleculeMsReference>();
-                var descendants = new HashSet<ILipid>(_graph.GetDescendants(seed), _comparer);
-                descendants.Add(seed);
-                var pairs = new List<(ILipid, MoleculeMsReference)>();
-                foreach (var lipid in lipids) {
-                    if (descendants.Contains(lipid)) {
-                        var reference = _lipidToReference[lipid];
-                        references.Add(reference);
-                    }
-                    else {
-                        var reference = GenerateReference(lipid, adduct, baseReference);
-                        if (reference is null) {
-                            continue;
-                        }
-                        pairs.Add((lipid, reference));
-                        references.Add(reference);
-                    }
+            var references = new List<MoleculeMsReference>();
+            foreach (var lipid in lipids) {
+                var lazyReference = _lipidToReference.GetOrAdd(lipid, lipid_ => new Lazy<MoleculeMsReference>(() => GenerateReference(lipid_, adduct, baseReference), isThreadSafe: true));
+                if (lazyReference.Value is MoleculeMsReference reference) {
+                    references.Add(reference);
                 }
-                var addReferences = pairs.Select(pair => pair.Item2).ToList();
-                lock (syncObject) {
-                    foreach (var (lipid, reference) in pairs) {
-                        _lipidToReference[lipid] = reference;
-                    }
-                    _graph.Add(seed, pairs.Select(pair => pair.Item1));
-                    _references.AddRange(addReferences);
-                    foreach (var reference in addReferences) {
-                        reference.ScanID = _scanId++;
-                    }
-                }
-                return references;
             }
-            else {
-                var pairs = new List<(ILipid, MoleculeMsReference)>();
-                foreach (var lipid in lipids) {
-                    var reference = GenerateReference(lipid, adduct, baseReference);
-                    if (reference is null) {
-                        continue;
-                    }
-                    pairs.Add((lipid, reference));
-                }
-                var childrenPairs = pairs.Where(pair => !_comparer.Equals(seed, pair.Item1)).ToArray();
-                var children = childrenPairs.Select(pair => pair.Item1).ToArray();
-                var childrenReferences = childrenPairs.Select(pair => pair.Item2).ToArray();
-                var seedReference = pairs.FirstOrDefault(pair => _comparer.Equals(seed, pair.Item1)).Item2 ?? GenerateReference(seed, adduct, baseReference);
-                var references = pairs.Select(pair => pair.Item2).ToList();
-                lock (syncObject) {
-                    foreach (var (lipid, reference) in pairs) {
-                        _lipidToReference[lipid] = reference;
-                    }
-                    if (!(seedReference is null)) {
-                        _graph.Add(seed, children);
-                        _references.Add(seedReference);
-                        seedReference.ScanID = _scanId++;
-                    }
-                    _references.AddRange(childrenReferences);
-                    foreach (var reference in childrenReferences) {
-                        reference.ScanID = _scanId++;
-                    }
-                }
-                return references;
-            }
+            return references;
         }
 
         private MoleculeMsReference GenerateReference(ILipid lipid, AdductIon adduct, MoleculeMsReference baseReference) {
             if (!_lipidGenerator.CanGenerate(lipid, adduct)) {
                 return null;
             }
-            return lipid.GenerateSpectrum(_lipidGenerator, adduct, baseReference) as MoleculeMsReference;
+            if (lipid.GenerateSpectrum(_lipidGenerator, adduct, baseReference) is MoleculeMsReference reference) {
+                lock (syncObject) {
+                    reference.ScanID = _references.Count;
+                    _references.Add(reference);
+                }
+                return reference;
+            }
+            return null;
         }
 
+        // ILipidDatabase
+        List<MoleculeMsReference> ILipidDatabase.GetReferences() {
+            return _references;
+        }
+
+        void ILipidDatabase.SetReferences(IEnumerable<MoleculeMsReference> references) {
+            var refs = references.ToList();
+            var max = refs.DefaultIfEmpty().Max(r => r?.ScanID) ?? 0;
+            _references.AddRange(Enumerable.Repeat<MoleculeMsReference>(null, max));
+            foreach (var r in refs) {
+                _references[r.ScanID] = r;
+            }
+        }
 
         // IMatchResultRefer
         string IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>.Key => _id;
@@ -126,14 +89,11 @@ namespace CompMs.MsdialCore.DataObj
             lock (syncObject) {
                 _references.Clear();
                 _lipidToReference.Clear();
-                _graph.Clear();
 
                 _references.AddRange(references);
                 foreach (var (lipid, reference) in pairs) {
-                    _lipidToReference[lipid] = reference;
-                    _graph.Add(lipid, Enumerable.Empty<ILipid>());
+                    _lipidToReference[lipid] = new Lazy<MoleculeMsReference>(() => reference, isThreadSafe: true);
                 }
-                _scanId = _references.Count;
             }
         }
 
