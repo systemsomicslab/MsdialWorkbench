@@ -7,6 +7,7 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using System;
+using System.IO;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
@@ -131,7 +132,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public EadLipidDatabase CreateEadLipidDatabase() {
             switch (DBSource) {
                 case DataBaseSource.EadLipid:
-                    return eadLipidDatabase ?? new EadLipidDatabase(DataBaseID);
+                    return eadLipidDatabase ?? new EadLipidDatabase(Path.GetTempFileName(), DataBaseID, LipidDatabaseFormat.Dictionary);
                 default:
                     return null;
             }
