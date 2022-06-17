@@ -126,7 +126,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 model.ShowShowMscleanrFilterSettingView(obj, true);
             }
             else {
-                Console.WriteLine("Please select an item in Alignment navigator!!");
+                MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+                //Console.WriteLine("Please select an item in Alignment navigator!!");
             }
         }
 

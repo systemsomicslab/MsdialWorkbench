@@ -143,6 +143,50 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
+        public bool IsBlankFilteredByPostCurator {
+            get => innerModel.IsBlankFilteredByPostCurator;
+            set
+            {
+                if (innerModel.IsBlankFilteredByPostCurator != value) {
+                    innerModel.IsBlankFilteredByPostCurator = value;
+                    OnPropertyChanged(nameof(IsBlankFilteredByPostCurator));
+                }
+            }
+        }
+
+        public bool IsMzFilteredByPostCurator {
+            get => innerModel.IsMzFilteredByPostCurator;
+            set
+            {
+                if (innerModel.IsMzFilteredByPostCurator != value) {
+                    innerModel.IsMzFilteredByPostCurator = value;
+                    OnPropertyChanged(nameof(IsMzFilteredByPostCurator));
+                }
+            }
+        }
+
+        public bool IsRsdFilteredByPostCurator {
+            get => innerModel.IsRsdFilteredByPostCurator;
+            set
+            {
+                if (innerModel.IsRsdFilteredByPostCurator != value) {
+                    innerModel.IsRsdFilteredByPostCurator = value;
+                    OnPropertyChanged(nameof(IsRsdFilteredByPostCurator));
+                }
+            }
+        }
+
+        public bool IsRmdFilteredByPostCurator {
+            get => innerModel.IsRmdFilteredByPostCurator;
+            set
+            {
+                if (innerModel.IsRmdFilteredByPostCurator != value) {
+                    innerModel.IsRmdFilteredByPostCurator = value;
+                    OnPropertyChanged(nameof(IsRmdFilteredByPostCurator));
+                }
+            }
+        }
+
         public BarItemCollection BarItemCollection { get; }
 
         internal readonly AlignmentSpotProperty innerModel;
