@@ -6,6 +6,7 @@ using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -55,6 +56,7 @@ namespace CompMs.App.SpectrumViewer.ViewModel
 
         public ReadOnlyReactivePropertySlim<ILipid> Lipid { get; }
 
+        public ReadOnlyCollection<AdductIon> Adducts => Model.Adducts;
         public ReactivePropertySlim<AdductIon> Adduct { get; }
 
         public ReadOnlyReactiveCollection<IMSScanProperty> Scans { get; }

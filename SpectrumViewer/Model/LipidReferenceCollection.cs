@@ -1,8 +1,6 @@
 ﻿using CompMs.Common.DataObj.Property;
-using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Lipidomics;
-using CompMs.Common.Parser;
 using CompMs.CommonMVVM;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,7 +11,10 @@ namespace CompMs.App.SpectrumViewer.Model
     public class LipidReferenceCollection : BindableBase, IScanCollection
     {
         public LipidReferenceCollection() {
-            Adducts = new List<AdductIon> { AdductIonParser.GetAdductIonBean("[M+H]+") }.AsReadOnly();
+            Adducts = new List<AdductIon> {
+                AdductIon.GetAdductIon("[M+H]+"),
+                AdductIon.GetAdductIon("[M+Na]+"),
+            }.AsReadOnly();
             Adduct = Adducts.First();
             Scans = new ObservableCollection<IMSScanProperty>();
 
