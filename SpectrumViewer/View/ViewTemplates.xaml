@@ -266,6 +266,27 @@
                     <TextBlock Text="{Binding Name}" Margin="8,0" Foreground="Black"/>
                 </StackPanel>
             </DataTemplate>
+            <DataTemplate x:Key="ExportLegendItem">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"
+                            Margin="0,4"
+                            Visibility="{Binding Visible, Converter={StaticResource BooleanToVisibility}}">
+                    <ToggleButton IsChecked="{Binding Visible}">
+                        <Image Width="24">
+                            <Image.Source>
+                                <DrawingImage>
+                                    <DrawingImage.Drawing>
+                                        <GeometryDrawing Geometry="M 0,0 H 8"
+                                                         Pen="{Binding Path=(ItemsControl.AlternationIndex),
+                                                                       RelativeSource={RelativeSource TemplatedParent},
+                                                                       Converter={StaticResource PenConverter}}"/>
+                                    </DrawingImage.Drawing>
+                                </DrawingImage>
+                            </Image.Source>
+                        </Image>
+                    </ToggleButton>
+                    <TextBlock Text="{Binding Name}" Margin="8,0" Foreground="Black"/>
+                </StackPanel>
+            </DataTemplate>
             <Style TargetType="ContentControl" x:Key="ViewChartStyle">
                 <Setter Property="ContentTemplate">
                     <Setter.Value>
@@ -500,7 +521,7 @@
                                 <ItemsControl ItemsSource="{Binding UpperSpectrumsViewModel.DisplayScans}"
                                               VerticalAlignment="Center"
                                               AlternationCount="8"
-                                              ItemTemplate="{StaticResource LegendItem}"
+                                              ItemTemplate="{StaticResource ExportLegendItem}"
                                               Grid.Row="0"
                                               Grid.Column="3"/>
 
@@ -550,7 +571,7 @@
                                 <ItemsControl ItemsSource="{Binding LowerSpectrumsViewModel.DisplayScans}"
                                               VerticalAlignment="Center"
                                               AlternationCount="8"
-                                              ItemTemplate="{StaticResource LegendItem}"
+                                              ItemTemplate="{StaticResource ExportLegendItem}"
                                               Grid.Row="1"
                                               Grid.Column="3"/>
 
@@ -705,10 +726,12 @@
             </i:Interaction.Triggers>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{Binding Name, Mode=OneTime}"/>
-                <TextBlock Text="Class:" Margin="4,0"/>
-                <TextBlock Text="{Binding CompoundClass, Mode=OneTime}"/>
+                <TextBlock Text="{Binding CompoundClass, StringFormat=Class: {0}, Mode=OneTime}" Margin="4,0"/>
             </StackPanel>
-            <TextBlock Text="{Binding PrecursorMz, StringFormat=Precursor m/z: {0:N4}}"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding AdductType, StringFormat=Adduct: {0}, Mode=OneTime}"/>
+                <TextBlock Text="{Binding PrecursorMz, StringFormat=Precursor m/z: {0:N4}}" Margin="4,0"/>
+            </StackPanel>
         </StackPanel>
     </DataTemplate>
 
@@ -723,20 +746,28 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <DockPanel Grid.Row="0">
                 <Button Content="&#xE721;" FontFamily="Segoe MDL2 Assets"
                         Command="{Binding ParseLipidCommand}"
                         DockPanel.Dock="Right"/>
-                <TextBox Text="{Binding LipidStr.Value}"/>
+                <TextBox Text="{Binding LipidStr.Value, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.InputBindings>
+                        <KeyBinding Gesture="Enter" Command="{Binding ParseLipidCommand, Mode=OneTime}"/>
+                    </TextBox.InputBindings>
+                </TextBox>
             </DockPanel>
+            <ComboBox ItemsSource="{Binding Adducts}"
+                      SelectedItem="{Binding Adduct.Value}"
+                      Grid.Row="1"/>
             <TextBlock Text="{Binding Lipid.Value, StringFormat=Current lipid: {0}}"
-                       Grid.Row="1"/>
+                       Grid.Row="2"/>
             <ListBox ItemsSource="{Binding Scans, Mode=OneWay}"
                      SelectedItem="{Binding Scan.Value}"
                      Background="LightGray"
-                     Grid.Row="2"/>
+                     Grid.Row="3"/>
         </Grid>
     </DataTemplate>
 
