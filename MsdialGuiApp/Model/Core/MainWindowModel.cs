@@ -7,7 +7,7 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Core
 {
-    public class MainWindowModel : BindableBase
+    internal sealed class MainWindowModel : BindableBase
     {
         public MainWindowModel(IMessageBroker broker) {
             ProjectSetting = new ProjectSettingModel(SetNewProject, broker);

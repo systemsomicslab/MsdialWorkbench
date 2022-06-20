@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
              Name="RepRefPlot"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:AlignmentImmsVM}}"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:ImmsAlignmentViewModel}}"
              d:DesignHeight="600" d:DesignWidth="370">
     <d:DesingerProperties.DesignStyle>
         <Style TargetType="UserControl">

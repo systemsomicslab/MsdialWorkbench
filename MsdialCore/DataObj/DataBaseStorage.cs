@@ -79,6 +79,7 @@ namespace CompMs.MsdialCore.DataObj
                     using (var dbStream = dbEntry.Open()) {
                         item.Save(dbStream);
                     }
+                    item.DataBase.SwitchTo(LipidDatabaseFormat.Dictionary);
                 }
 
                 var storageEntry = archive.CreateEntry(StoragePath);

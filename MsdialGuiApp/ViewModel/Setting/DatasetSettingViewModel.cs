@@ -11,7 +11,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public class DatasetSettingViewModel : ViewModelBase, ISettingViewModel
+    internal sealed class DatasetSettingViewModel : ViewModelBase, ISettingViewModel
     {
         public DatasetSettingViewModel(DatasetSettingModel model, IObservable<bool> isEnabled) {
             Model = model ?? throw new ArgumentNullException(nameof(model));

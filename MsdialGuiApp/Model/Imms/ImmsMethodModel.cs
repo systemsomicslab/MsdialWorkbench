@@ -32,10 +32,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Reactive.Bindings.Notifiers;
+using System.Threading;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
-    class ImmsMethodModel : MethodModelBase
+    internal sealed class ImmsMethodModel : MethodModelBase
     {
         static ImmsMethodModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
@@ -43,8 +44,8 @@ namespace CompMs.App.Msdial.Model.Imms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly IMessageBroker _broker;
 
-        public ImmsMethodModel(IMsdialDataStorage<MsdialImmsParameter> storage, IMessageBroker broker)
-            : base(storage.AnalysisFiles, storage.AlignmentFiles) {
+        public ImmsMethodModel(IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
+            : base(storage.AnalysisFiles, storage.AlignmentFiles, projectBaseParameter) {
             Storage = storage;
             _broker = broker;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
@@ -92,7 +93,7 @@ namespace CompMs.App.Msdial.Model.Imms
             ProviderFactory = parameter?.ProviderFactoryParameter.Create(5, true);
         }
 
-        public override void Run(ProcessOption option) {
+        public override Task RunAsync(ProcessOption option, CancellationToken token) {
             Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             ProviderFactory = Storage.Parameter.ProviderFactoryParameter.Create(5, true);
@@ -101,16 +102,16 @@ namespace CompMs.App.Msdial.Model.Imms
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
                 if (!ProcessAnnotaion(null, Storage))
-                    return;
+                    return Task.CompletedTask;
             }
 
             // Run Alignment
             if (processOption.HasFlag(ProcessOption.Alignment)) {
                 if (!ProcessAlignment(null, Storage))
-                    return;
+                    return Task.CompletedTask;
             }
 
-            LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+            return LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token);
         }
 
         private bool ProcessAnnotaion(Window owner, IMsdialDataStorage<MsdialImmsParameter> storage) {
@@ -240,7 +241,7 @@ namespace CompMs.App.Msdial.Model.Imms
                     new ExportType2("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.Parameter), "Area", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
                     new ExportType2("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.Parameter), "NormalizedHeight", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
                     new ExportType2("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.Parameter), "NormalizedArea", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Alignment ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.Parameter), "PeakID"),
+                    new ExportType2("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.Parameter), "PeakID"),
                     new ExportType2("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.Parameter), "Mz"),
                     new ExportType2("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.Parameter), "SN"),
                     new ExportType2("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.Parameter), "MsmsIncluded"),

@@ -104,6 +104,7 @@
                   VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                   behavior:DataGridCommitBehavior.Enable="True"
                   behavior:DataGridScrollToSelectionBehavior.Enable="True"
+                  behavior:DataGridIsEdittingBehavior.IsEditting="{Binding IsEditting.Value, Mode=OneWayToSource}"
                   Grid.Row="1">
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">

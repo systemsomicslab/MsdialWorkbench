@@ -11,7 +11,6 @@ using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.Graphics.Base;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
@@ -30,7 +29,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
-    class DimsAlignmentModel : AlignmentModelBase
+    internal class DimsAlignmentModel : AlignmentModelBase
     {
         static DimsAlignmentModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Mz);
@@ -43,6 +42,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly IMatchResultEvaluator<MsScanMatchResult> _matchResultEvaluator;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
         private readonly ParameterBase _parameter;
+        private readonly List<AnalysisFileBean> _files;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly IMessageBroker _broker;
 
@@ -60,6 +60,7 @@ namespace CompMs.App.Msdial.Model.Dims
             _alignmentFile = alignmentFileBean;
 
             _parameter = parameter;
+            _files = files ?? throw new ArgumentNullException(nameof(files));
             _broker = broker;
             _dataBaseMapper = mapper;
             _matchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
@@ -104,14 +105,14 @@ namespace CompMs.App.Msdial.Model.Dims
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.MassCenter, spot => spot.KMD, Target, labelSource, selectedBrush, brushes)
+            PlotModel = new AlignmentPeakPlotModel(Ms1Spots, spot => spot.MassCenter, spot => spot.KMD, Target, labelSource, selectedBrush, brushes)
             {
                 GraphTitle = _alignmentFile.FileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
                 VerticalProperty = nameof(AlignmentSpotPropertyModel.KMD),
                 HorizontalTitle = "m/z",
                 VerticalTitle = "Kendrick mass defect"
-            };
+            }.AddTo(Disposables);
 
             var decLoader = new MSDecLoader(alignmentFileBean.SpectraFilePath).AddTo(Disposables);
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Spots);
@@ -163,15 +164,13 @@ namespace CompMs.App.Msdial.Model.Dims
                 ),
                 item => item.Class,
                 Colors.Blue);
-            BarChartModel = BarChartModel.Create(Target, Observable.Return(barItemsLoader), Observable.Return(classBrush)).AddTo(Disposables);
-            BarChartModel.Elements.HorizontalTitle = "Class";
-            BarChartModel.Elements.VerticalTitle = "Height";
-            BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);
-            BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
+            var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", Observable.Return(barItemsLoader), Observable.Return(true));
+            var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
+            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
 
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
-            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, alignmentFileBean.EicFilePath, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor));
+            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, alignmentFileBean.EicFilePath, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor)).AddTo(Disposables);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader,
                 files, parameter,
@@ -205,7 +204,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
-        public Chart.AlignmentPeakPlotModel PlotModel { get; }
+        public AlignmentPeakPlotModel PlotModel { get; }
 
         public MsSpectrumModel Ms2SpectrumModel { get; }
 
@@ -219,11 +218,11 @@ namespace CompMs.App.Msdial.Model.Dims
         public ReadOnlyReactivePropertySlim<bool> CanSeachCompound { get; }
 
         public CompoundSearchModel BuildCompoundSearchModel() {
-            return new CompoundSearchModel<AlignmentSpotProperty>(_alignmentFile, Target.Value.innerModel, _msdecResult.Value, _compoundSearchers.Items);
+            return new CompoundSearchModel<AlignmentSpotProperty>(_files[Target.Value.RepresentativeFileID], Target.Value.innerModel, _msdecResult.Value, _compoundSearchers.Items);
         }
 
         public NormalizationSetModel BuildNormalizeSetModel() {
-            return new NormalizationSetModel(Container, _dataBaseMapper, _matchResultEvaluator, _parameter, _broker);
+            return new NormalizationSetModel(Container, _files, _dataBaseMapper, _matchResultEvaluator, _parameter, _broker);
         }
 
         public bool CanSaveSpectra() => Target.Value.innerModel != null && _msdecResult.Value != null;

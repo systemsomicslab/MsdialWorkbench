@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Setting;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.Message;
@@ -7,29 +8,30 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialIntegrate.Parser;
 using Microsoft.Win32;
-using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.IO;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Subjects;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Core
 {
-    public class DatasetModel : DisposableModelBase, IDatasetModel
+    internal sealed class DatasetModel : DisposableModelBase, IDatasetModel
     {
+        private readonly IMessageBroker _broker;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
+
         public DatasetModel(IMsdialDataStorage<ParameterBase> storage, IMessageBroker broker) {
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _broker = broker;
-            observeParameterChanged = new BehaviorSubject<Unit>(Unit.Default).AddTo(Disposables);
-            AnalysisFilePropertySetModel = new AnalysisFilePropertySetModel(Storage.AnalysisFiles, Storage.Parameter, observeParameterChanged);
+            _projectBaseParameter = new ProjectBaseParameterModel(Storage.Parameter.ProjectParam);
+            AnalysisFilePropertySetModel = new AnalysisFilePropertySetModel(Storage.AnalysisFiles, _projectBaseParameter);
 
-            AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, Handler, ObserveParameterChanged, broker);
-            IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, Storage, Handler, ObserveParameterChanged, broker);
-            AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, Storage, Handler, ObserveParameterChanged, broker);
+            AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, HandlerAsync, _projectBaseParameter, broker);
+            IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, Storage, HandlerAsync, _projectBaseParameter, broker);
+            AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, Storage, HandlerAsync, _projectBaseParameter, broker);
         }
 
         public IMethodModel Method {
@@ -44,10 +46,6 @@ namespace CompMs.App.Msdial.Model.Core
         private IMethodModel method;
 
         public IMsdialDataStorage<ParameterBase> Storage { get; }
-
-        public IObservable<Unit> ObserveParameterChanged => observeParameterChanged;
-        private readonly BehaviorSubject<Unit> observeParameterChanged;
-        private readonly IMessageBroker _broker;
 
         public MethodSettingModel AllProcessMethodSettingModel {
             get => allProcessMethodSettingModel;
@@ -67,12 +65,12 @@ namespace CompMs.App.Msdial.Model.Core
         }
         private MethodSettingModel alignmentProcessMethodSettingModel;
 
-        private void Handler(MethodSettingModel setting, IMethodModel model) {
+        private Task HandlerAsync(MethodSettingModel setting, IMethodModel model, CancellationToken token) {
             Method = model;
-            AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, Handler, ObserveParameterChanged, _broker);
-            IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, Storage, Handler, ObserveParameterChanged, _broker);
-            AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, Storage, Handler, ObserveParameterChanged, _broker);
-            Method.Run(setting.Option);
+            AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, HandlerAsync, _projectBaseParameter, _broker);
+            IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, Storage, HandlerAsync, _projectBaseParameter, _broker);
+            AlignmentProcessMethodSettingModel = new MethodSettingModel(ProcessOption.Alignment, Storage, HandlerAsync, _projectBaseParameter, _broker);
+            return Method.RunAsync(setting.Option, token);
         }
 
         public AnalysisFilePropertySetModel AnalysisFilePropertySetModel { get; }
@@ -86,8 +84,8 @@ namespace CompMs.App.Msdial.Model.Core
             var streamManager = new DirectoryTreeStreamManager(Storage.Parameter.ProjectFolderPath);
             return Task.WhenAll(new[]
             {
-                Storage?.SaveAsync(streamManager, Storage.Parameter.ProjectFileName, string.Empty),
-                Method?.SaveAsync(),
+                Storage?.SaveAsync(streamManager, Storage.Parameter.ProjectFileName, string.Empty) ?? Task.CompletedTask,
+                Method?.SaveAsync() ?? Task.CompletedTask,
             });
         }
 
@@ -95,7 +93,7 @@ namespace CompMs.App.Msdial.Model.Core
             // TODO: Move these dialogs to the view.
             var sfd = new SaveFileDialog
             {
-                Filter = "MTD file(*.mtd3)|*.mtd3",
+                Filter = "Dataset file(*.mddata)|*.mddata",
                 Title = "Save project dialog",
                 InitialDirectory = Storage.Parameter.ProjectFolderPath,
             };
@@ -121,9 +119,13 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         public async Task LoadAsync() {
-            var factory = new MethodSettingModelFactory(Storage, ObserveParameterChanged, ProcessOption.All, _broker);
-            Method = await Task.Run(() => factory.BuildMethod());
-            Method.LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+            var factory = new MethodSettingModelFactory(Storage, _projectBaseParameter, ProcessOption.All, _broker);
+            Method = await Task.Run(() =>
+            {
+                var method = factory.BuildMethod();
+                method.LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), default);
+                return method;
+            });
         }
 
         public static async Task<DatasetModel> LoadAsync(string datasetFile, IMessageBroker broker) {
@@ -140,7 +142,7 @@ namespace CompMs.App.Msdial.Model.Core
                 MessageBox.Show("Msdial cannot open the project: \n" + datasetFile, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             var result = new DatasetModel(storage, broker);
-            var factory = new MethodSettingModelFactory(storage, result.ObserveParameterChanged, ProcessOption.All, broker);
+            var factory = new MethodSettingModelFactory(storage, result._projectBaseParameter, ProcessOption.All, broker);
             result.Method = factory.BuildMethod();
             message.Close();
 

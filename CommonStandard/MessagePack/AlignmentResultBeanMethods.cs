@@ -57,6 +57,8 @@ namespace CompMs.Common.MessagePack
                     var alignedDriftSpotPropertyBeans = MessagePackDefaultHandler.LoadLargerListFromFile<ObservableCollection<AlignedDriftSpotPropertyBean>>(driftPath);
                     for (var i = 0; i < alignedPeakPropertyBeans.Count; i++) {
                         collection[i].AlignedPeakPropertyBeanCollection = alignedPeakPropertyBeans[i];
+                    }
+                    for (var i = 0; i < alignedDriftSpotPropertyBeans.Count; i++) {
                         collection[i].AlignedDriftSpots = alignedDriftSpotPropertyBeans[i];
                     }
                 }

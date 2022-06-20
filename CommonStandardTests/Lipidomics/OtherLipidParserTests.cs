@@ -43,10 +43,10 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(1038.7864, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.HBMP, lipid.LipidClass);
 
-            //errored
-            //lipid = parser.Parse("HBMP 18:1/18:1_18:1");
-            //Assert.AreEqual(1038.7864, lipid.Mass, 0.01);
-            //Assert.AreEqual(LbmClass.HBMP, lipid.LipidClass);
+            //need to consider?
+            lipid = parser.Parse("HBMP 18:1/18:1_18:1");
+            Assert.AreEqual(1038.7864, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.HBMP, lipid.LipidClass);
         }
     }
 
@@ -62,19 +62,19 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(1405.0035, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.CL, lipid.LipidClass);
 
-            //errored
-            //lipid = parser.Parse("CL 34:1_34:1");
-            //Assert.AreEqual(1405.0035, lipid.Mass, 0.01);
-            //Assert.AreEqual(LbmClass.CL, lipid.LipidClass);
-
             lipid = parser.Parse("CL 16:0_18:1_16:0_18:1");
             Assert.AreEqual(1405.0035, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.CL, lipid.LipidClass);
 
-            //errored
-            //lipid = parser.Parse("CL 16:0_18:1/16:0_18:1");
-            //Assert.AreEqual(1405.0035, lipid.Mass, 0.01);
-            //Assert.AreEqual(LbmClass.CL, lipid.LipidClass);
+            //need to consider?
+            lipid = parser.Parse("CL 16:0_18:1/16:0_18:1");
+            Assert.AreEqual(1405.0035, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.CL, lipid.LipidClass);
+
+            //need to consider?
+            lipid = parser.Parse("CL 34:1_34:1");
+            Assert.AreEqual(1405.0035, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.CL, lipid.LipidClass);
         }
     }
     [TestClass()]

@@ -7,7 +7,6 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM.ChemView;
-using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -23,7 +22,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Imms
@@ -42,6 +40,7 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentFile = alignmentFileBean;
             ResultFile = alignmentFileBean.FilePath;
             Parameter = parameter;
+            _files = files ?? throw new ArgumentNullException(nameof(files));
             DataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             AnnotatorContainers = annotatorContainers;
@@ -86,14 +85,14 @@ namespace CompMs.App.Msdial.Model.Imms
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             var fileName = alignmentFileBean.FileName;
             var labelSource = this.ObserveProperty(m => m.DisplayLabel);
-            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, SelectedBrush, Brushes)
+            PlotModel = new AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, SelectedBrush, Brushes)
             {
                 GraphTitle = fileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
                 VerticalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
                 HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "m/z",
-            };
+            }.AddTo(Disposables);
 
             var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
@@ -146,16 +145,14 @@ namespace CompMs.App.Msdial.Model.Imms
                 ),
                 item => item.Class,
                 Colors.Blue);
-            BarChartModel = BarChartModel.Create(Target, Observable.Return(BarItemsLoader), Observable.Return(classBrush)).AddTo(Disposables);
-            BarChartModel.Elements.HorizontalTitle = "Class";
-            BarChartModel.Elements.VerticalTitle = "Height";
-            BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);
-            BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
+            var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", Observable.Return(BarItemsLoader), Observable.Return(true));
+            var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
+            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
 
             var eicFile = alignmentFileBean.EicFilePath;
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
-            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor));
+            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor)).AddTo(Disposables);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader, files, parameter,
                 peak => peak.Time,
@@ -197,7 +194,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
-        public Chart.AlignmentPeakPlotModel PlotModel { get; }
+        public AlignmentPeakPlotModel PlotModel { get; }
 
         public MsSpectrumModel Ms2SpectrumModel { get; }
 
@@ -218,7 +215,7 @@ namespace CompMs.App.Msdial.Model.Imms
             }
 
             return new ImmsCompoundSearchModel<AlignmentSpotProperty>(
-                AlignmentFile,
+                _files[Target.Value.RepresentativeFileID],
                 Target.Value.innerModel,
                 MsdecResult.Value,
                 null,
@@ -240,6 +237,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private IBarItemsLoader barItemsLoader;
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+        private readonly List<AnalysisFileBean> _files;
 
         public AlignmentFileBean AlignmentFile { get; }
 

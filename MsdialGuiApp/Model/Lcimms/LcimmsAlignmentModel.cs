@@ -38,6 +38,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             PeakFilterModel peakFilterModel)
             : base(alignmentFileBean.FilePath) {
             Parameter = parameter;
+            _files = files ?? throw new ArgumentNullException(nameof(files));
             AlignmentFile = alignmentFileBean;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             ResultFile = alignmentFileBean.FilePath;
@@ -78,14 +79,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
             var fileName = alignmentFileBean.FileName;
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
-            PlotModel = new Chart.AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, SelectedBrush, Brushes)
+            PlotModel = new AlignmentPeakPlotModel(Ms1Spots, spot => spot.TimesCenter, spot => spot.MassCenter, Target, labelSource, SelectedBrush, Brushes)
             {
                 GraphTitle = fileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
                 VerticalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
                 HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "m/z",
-            };
+            }.AddTo(Disposables);
 
             var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
@@ -138,16 +139,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 ),
                 item => item.Class,
                 Colors.Blue);
-            BarChartModel = BarChartModel.Create(Target, Observable.Return(BarItemsLoader), Observable.Return(classBrush)).AddTo(Disposables);
-            BarChartModel.Elements.HorizontalTitle = "Class";
-            BarChartModel.Elements.VerticalTitle = "Height";
-            BarChartModel.Elements.HorizontalProperty = nameof(BarItem.Class);
-            BarChartModel.Elements.VerticalProperty = nameof(BarItem.Height);
+            var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", Observable.Return(BarItemsLoader), Observable.Return(true));
+            var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
+            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
 
             var eicFile = alignmentFileBean.EicFilePath;
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
-            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor));
+            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, eicFile, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor)).AddTo(Disposables);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader, files, parameter,
                 peak => peak.Time,
@@ -188,6 +187,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+        private readonly List<AnalysisFileBean> _files;
+
         public ParameterBase Parameter { get; }
         public AlignmentFileBean AlignmentFile { get; }
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
@@ -198,7 +199,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
-        public Chart.AlignmentPeakPlotModel PlotModel { get; }
+        public AlignmentPeakPlotModel PlotModel { get; }
 
         public MsSpectrumModel Ms2SpectrumModel { get; }
 
@@ -223,6 +224,15 @@ namespace CompMs.App.Msdial.Model.Lcimms
             set => SetProperty(ref barItemsLoader, value);
         }
         private IBarItemsLoader barItemsLoader;
+
+        public CompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {
+            return new CompoundSearchModel<AlignmentSpotProperty>(
+                _files[Target.Value.RepresentativeFileID],
+                Target.Value.innerModel,
+                MsdecResult.Value,
+                null,
+                null);
+        }
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(Container, ResultFile);

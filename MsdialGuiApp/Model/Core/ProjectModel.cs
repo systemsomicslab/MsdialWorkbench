@@ -17,7 +17,7 @@ using System.Windows.Input;
 
 namespace CompMs.App.Msdial.Model.Core
 {
-    public class ProjectModel : BindableBase, IProjectModel
+    internal sealed class ProjectModel : BindableBase, IProjectModel
     {
         public ProjectModel(ProjectDataStorage storage, IMessageBroker broker) {
             Storage = storage;
@@ -124,7 +124,7 @@ namespace CompMs.App.Msdial.Model.Core
                             {
                                 var newofd = new OpenFileDialog
                                 {
-                                    Filter = "MTD3 file(.mtd3)|*.mtd3|All(*)|*",
+                                    Filter = "Dataset file(.mddata)|*.mddata|All(*)|*",
                                     Title = "Import a project file",
                                     RestoreDirectory = true
                                 };

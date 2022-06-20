@@ -3,6 +3,7 @@ using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Core
@@ -20,10 +21,9 @@ namespace CompMs.App.Msdial.Model.Core
 
         AlignmentFileBean AlignmentFile { get; }
 
-        void Run(ProcessOption process);
-
-        void LoadAnalysisFile(AnalysisFileBean analysisFile);
+        Task LoadAnalysisFileAsync(AnalysisFileBean analysisFile, CancellationToken token);
 
         Task SaveAsync();
+        Task RunAsync(ProcessOption option, CancellationToken token);
     }
 }

@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -101,6 +102,16 @@ namespace CompMs.App.Msdial.Model.DataObj
                 {
                     innerModel.Comment = value;
                     OnPropertyChanged(nameof(Comment));
+                }
+            }
+        }
+
+        public IonAbundanceUnit IonAbundanceUnit {
+            get => innerModel.IonAbundanceUnit;
+            set {
+                if (innerModel.IonAbundanceUnit != value) {
+                    innerModel.IonAbundanceUnit = value;
+                    OnPropertyChanged(nameof(IonAbundanceUnit));
                 }
             }
         }

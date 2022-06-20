@@ -10,7 +10,6 @@ using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.ViewModel.Lcms;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -19,12 +18,10 @@ using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
-using CompMs.Graphics.UI.Message;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
@@ -38,25 +35,32 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    sealed class LcmsMethodModel : MethodModelBase
+    internal sealed class LcmsMethodModel : MethodModelBase
     {
+        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+
         static LcmsMethodModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
         }
 
+        private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly IMessageBroker _broker;
+        private IAnnotationProcess annotationProcess;
+
         public LcmsMethodModel(
             IMsdialDataStorage<MsdialLcmsParameter> storage,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
-            IObservable<ParameterBase> parameterAsObservable,
-            IObservable<IBarItemsLoader> barItemsLoader,
+            ProjectBaseParameterModel projectBaseParameter,
             IMessageBroker broker)
-            : base(storage.AnalysisFiles, storage.AlignmentFiles) {
+            : base(storage.AnalysisFiles, storage.AlignmentFiles, projectBaseParameter) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
             }
@@ -67,8 +71,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Storage = storage;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
             this.providerFactory = providerFactory;
-            this.parameterAsObservable = parameterAsObservable;
-            this.barItemsLoader = barItemsLoader;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
         }
@@ -90,13 +93,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             set => SetProperty(ref alignmentModel, value);
         }
         private LcmsAlignmentModel alignmentModel;
-
-        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
-        private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
-        private readonly IObservable<ParameterBase> parameterAsObservable;
-        private readonly IObservable<IBarItemsLoader> barItemsLoader;
-        private readonly IMessageBroker _broker;
-        private IAnnotationProcess annotationProcess;
 
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
@@ -128,13 +124,13 @@ namespace CompMs.App.Msdial.Model.Lcms
                 PeakFilterModel,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
-                parameterAsObservable,
-                barItemsLoader,
-                Storage.AnalysisFiles)
+                _projectBaseParameter,
+                Storage.AnalysisFiles,
+                _broker)
             .AddTo(Disposables);
         }
 
-        public override void Run(ProcessOption option) {
+        public override async Task RunAsync(ProcessOption option, CancellationToken token) {
             // Set analysis param
             var parameter = Storage.Parameter;
             // matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
@@ -167,7 +163,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     return;
             }
 
-            LoadAnalysisFile(Storage.AnalysisFiles.FirstOrDefault());
+            await LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
 
 #if DEBUG
             Console.WriteLine(string.Join("\n", Storage.Parameter.ParametersAsText()));
@@ -231,11 +227,26 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
 
             pbmcw.Loaded += async (s, e) => {
+                var sem = new SemaphoreSlim(3);
+                var tasks = new List<Task>();
+                var current = 0;
                 foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                    var provider = providerFactory.Create(analysisfile);
-                    await Task.Run(() => MsdialLcMsApi.Process.FileProcess.Run(analysisfile, provider, storage, annotationProcess, matchResultEvaluator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
-                    vm.CurrentValue++;
+                    var task = Task.Run(async () =>
+                    {
+                        await sem.WaitAsync().ConfigureAwait(false);
+                        try {
+                            var provider = providerFactory.Create(analysisfile);
+                            MsdialLcMsApi.Process.FileProcess.Run(analysisfile, provider, storage, annotationProcess, matchResultEvaluator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v);
+                            Interlocked.Increment(ref current);
+                            vm.CurrentValue = current;
+                        }
+                        finally {
+                            sem.Release();
+                        }
+                    });
+                    tasks.Add(task);
                 }
+                await Task.WhenAll(tasks.ToArray());
 
                 pbmcw.Close();
             };
@@ -349,7 +360,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     new ExportType2("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.Parameter), "Area", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
                     new ExportType2("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.Parameter), "NormalizedHeight", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
                     new ExportType2("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.Parameter), "NormalizedArea", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Alignment ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.Parameter), "PeakID"),
+                    new ExportType2("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.Parameter), "PeakID"),
                     new ExportType2("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.Parameter), "Mz"),
                     new ExportType2("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.Parameter), "SN"),
                     new ExportType2("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.Parameter), "MsmsIncluded"),
@@ -366,7 +377,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     new ExportType2("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.Parameter), "Area", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
                     new ExportType2("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.Parameter), "NormalizedHeight", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
                     new ExportType2("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.Parameter), "NormalizedArea", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Alignment ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.Parameter), "PeakID"),
+                    new ExportType2("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.Parameter), "PeakID"),
                     new ExportType2("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.Parameter), "Mz"),
                     new ExportType2("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.Parameter), "SN"),
                     new ExportType2("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.Parameter), "MsmsIncluded"),

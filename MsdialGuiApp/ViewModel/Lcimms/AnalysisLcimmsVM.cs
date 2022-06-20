@@ -1,28 +1,28 @@
 ﻿using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Search;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
-using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.Design;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
-    class AnalysisLcimmsVM : AnalysisFileViewModel
+    internal sealed class LcimmsAnalysisViewModel : AnalysisFileViewModel, IAnalysisResultViewModel
     {
-        public AnalysisLcimmsVM(
+        public LcimmsAnalysisViewModel(
             LcimmsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
-            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService)
+            IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            FocusControlManager focusControlManager)
             : base(model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -36,6 +36,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 throw new ArgumentNullException(nameof(peakSpotTableService));
             }
 
+            if (focusControlManager is null) {
+                throw new ArgumentNullException(nameof(focusControlManager));
+            }
+
             this.model = model;
             this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
@@ -43,13 +47,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
             PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
 
+            var (rtmzPeakFocusAction, rtmzPeakFocused) = focusControlManager.Request();
             var brush = Observable.Return(this.model.Brush);
-            RtMzPlotViewModel = new AnalysisPeakPlotViewModel(this.model.RtMzPlotModel, brushSource: brush).AddTo(Disposables);
+            RtMzPlotViewModel = new AnalysisPeakPlotViewModel(this.model.RtMzPlotModel, rtmzPeakFocusAction, rtmzPeakFocused).AddTo(Disposables);
             RtEicViewModel = new EicViewModel(
                 this.model.RtEicModel,
                 horizontalAxis: RtMzPlotViewModel.HorizontalAxis).AddTo(Disposables);
 
-            DtMzPlotViewModel = new AnalysisPeakPlotViewModel(this.model.DtMzPlotModel, brushSource: brush).AddTo(Disposables);
+            var (dtmzPeakFocusAction, dtmzPeakFocused) = focusControlManager.Request();
+            DtMzPlotViewModel = new AnalysisPeakPlotViewModel(this.model.DtMzPlotModel, dtmzPeakFocusAction, dtmzPeakFocused).AddTo(Disposables);
             DtEicViewModel = new EicViewModel(
                 this.model.DtEicModel,
                 horizontalAxis: DtMzPlotViewModel.HorizontalAxis).AddTo(Disposables);
