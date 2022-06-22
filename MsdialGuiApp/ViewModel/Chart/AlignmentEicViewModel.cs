@@ -26,20 +26,20 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             this.model = model;
 
             if (horizontalAxis is null) {
-                horizontalAxis = this.model.HorizontalRangeSource
+                horizontalAxis = this.model.HorizontalRange
                     .ToReactiveAxisManager<double>()
                     .AddTo(Disposables);
             }
             HorizontalAxis = horizontalAxis;
 
             if (verticalAxis is null) {
-                verticalAxis = this.model.VerticalRangeSource
+                verticalAxis = this.model.VerticalRange
                     .ToReactiveAxisManager<double>(new RelativeMargin(0, 0.05), new Range(0, 0), LabelType.Order)
                     .AddTo(Disposables);
             }
             VerticalAxis = verticalAxis;
 
-            EicChromatograms = this.model.EicChromatogramsSource
+            EicChromatograms = this.model.EicChromatograms
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 

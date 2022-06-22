@@ -3,24 +3,35 @@ using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.Lipidomics;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Normalize;
 using CompMs.MsdialCore.Parameter;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Xml.Linq;
 
 namespace CompMs.App.Msdial.Model.Normalize
 {
-    class SplashSetModel : DisposableModelBase
+    internal sealed class SplashSetModel : DisposableModelBase
     {
+        private readonly AlignmentResultContainer _container;
+        private readonly IReadOnlyList<AlignmentSpotProperty> _spots;
+        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
+        private readonly ParameterBase _parameter;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+        private readonly IMessageBroker _broker;
+
         public SplashSetModel(AlignmentResultContainer container, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker broker) {
             _container = container;
             _spots = container.AlignmentSpotProperties;
@@ -37,7 +48,7 @@ namespace CompMs.App.Msdial.Model.Normalize
                 || Properties.Resources.VERSION.EndsWith("-beta")
                 || Properties.Resources.VERSION.EndsWith("-dev");
             SplashProducts = new ObservableCollection<SplashProduct>(isPrivate ? GetPrivateSplashResource() : GetPublicSplashResource());
-            if (parameter.AdvancedProcessOptionBaseParam.StandardCompounds != null) {
+            if (!parameter.AdvancedProcessOptionBaseParam.StandardCompounds.IsEmptyOrNull()) {
                 var product = new SplashProduct("Previous compounds", parameter.AdvancedProcessOptionBaseParam.StandardCompounds.Select(lipid => new StandardCompoundModel(lipid)));
                 SplashProducts.Add(product);
                 SplashProduct = product;
@@ -47,24 +58,19 @@ namespace CompMs.App.Msdial.Model.Normalize
             }
 
             OutputUnits = new ObservableCollection<IonAbundance>() {
-                new IonAbundance(IonAbundanceUnit.nmol_per_microL_plasma, "nmol/μL plasma"),
-                new IonAbundance(IonAbundanceUnit.pmol_per_microL_plasma, "pmol/μL plasma"),
-                new IonAbundance(IonAbundanceUnit.fmol_per_microL_plasma, "fmol/μL plasma"),
-                new IonAbundance(IonAbundanceUnit.nmol_per_mg_tissue, "nmol/mg tissue"),
-                new IonAbundance(IonAbundanceUnit.pmol_per_mg_tissue, "pmol/mg tissue"),
-                new IonAbundance(IonAbundanceUnit.fmol_per_mg_tissue, "fmol/mg tissue"),
-                new IonAbundance(IonAbundanceUnit.nmol_per_10E6_cells, "nmol/10^6 cells"),
-                new IonAbundance(IonAbundanceUnit.pmol_per_10E6_cells, "pmol/10^6 cells"),
-                new IonAbundance(IonAbundanceUnit.fmol_per_10E6_cells, "fmol/10^6 cells") };
+                new IonAbundance(IonAbundanceUnit.nmol_per_microL_plasma),
+                new IonAbundance(IonAbundanceUnit.pmol_per_microL_plasma),
+                new IonAbundance(IonAbundanceUnit.fmol_per_microL_plasma),
+                new IonAbundance(IonAbundanceUnit.nmol_per_mg_tissue),
+                new IonAbundance(IonAbundanceUnit.pmol_per_mg_tissue),
+                new IonAbundance(IonAbundanceUnit.fmol_per_mg_tissue),
+                new IonAbundance(IonAbundanceUnit.nmol_per_10E6_cells),
+                new IonAbundance(IonAbundanceUnit.pmol_per_10E6_cells),
+                new IonAbundance(IonAbundanceUnit.fmol_per_10E6_cells) };
             OutputUnit = OutputUnits.FirstOrDefault();
-        }
 
-        private readonly AlignmentResultContainer _container;
-        private readonly IReadOnlyList<AlignmentSpotProperty> _spots;
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
-        private readonly ParameterBase _parameter;
-        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
-        private readonly IMessageBroker _broker;
+            CanNormalizeProperty = this.ObserveProperty(m => m.SplashProduct).Select(product => product?.CanNormalize(_spots) ?? Observable.Return(false)).Switch().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+        }
 
         public ObservableCollection<SplashProduct> SplashProducts { get; }
 
@@ -99,27 +105,25 @@ namespace CompMs.App.Msdial.Model.Normalize
             var task = TaskNotification.Start("Normalize..");
             var publisher = new TaskProgressPublisher(_broker, task);
             using (publisher.Start()) {
-                var compoundsZZZ = SplashProduct.Lipids.Where(lipid => lipid.IsRequiredFieldFilled(_spots)).ToList();
-                if (compoundsZZZ.Count == 0) {
+                var compoundModels = SplashProduct.Lipids.Where(lipid => lipid.IsRequiredFieldFilled(_spots)).ToList();
+                if (compoundModels.Count == 0) {
                     MessageBox.Show("Please fill the required fields for normalization", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-                foreach (var compound in compoundsZZZ) {
+                foreach (var compound in compoundModels) {
                     compound.Commit();
                 }
-                var compounds = compoundsZZZ.Select(lipid => lipid.Compound).ToList();
+                var compounds = compoundModels.Select(lipid => lipid.Compound).ToList();
                 Normalization.SplashNormalize(_spots, _refer, compounds, OutputUnit.Unit, _evaluator);
                 _parameter.StandardCompounds = compounds;
-                foreach (var compound in compoundsZZZ) {
+                foreach (var compound in compoundModels) {
                     compound.Refresh();
                 }
                 _container.IsNormalized = true;
             }
         }
 
-        public bool CanNormalize() {
-            return SplashProduct.Lipids.Any(lipid => lipid.IsRequiredFieldFilled(_spots));
-        }
+        public ReadOnlyReactivePropertySlim<bool> CanNormalizeProperty { get; }
 
         public static List<SplashProduct> GetPublicSplashResource() {
             var assembly = Assembly.GetExecutingAssembly();

@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -16,13 +17,13 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    internal sealed class AnalysisDimsVM : AnalysisFileViewModel
+    internal sealed class DimsAnalysisViewModel : AnalysisFileViewModel, IAnalysisResultViewModel
     {
         private readonly DimsAnalysisModel _model;
         private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
 
-        public AnalysisDimsVM(
+        public DimsAnalysisViewModel(
             DimsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,

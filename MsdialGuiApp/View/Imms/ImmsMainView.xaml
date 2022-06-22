@@ -1,21 +1,21 @@
-﻿<UserControl x:Class="CompMs.App.Msdial.View.Dims.MainView"
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Imms.ImmsMainView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imms"
              xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
-             xmlns:behavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
-             xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
-             xmlns:chartvm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
-             xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              mc:Ignorable="d" 
-             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
+             xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
+             xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+             xmlns:commonbehavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+             behavior:SuppressContextMenuBehavior.IsEnabled="True"
+             d:DataContext="{d:DesignInstance Type=vm:ImmsMethodViewModel}"
              Name="MainControl"
-             MouseRightButtonDown="MainControl_MouseRightButtonDown"
-             ContextMenuOpening="MainControl_ContextMenuOpening"
-             d:DataContext="{d:DesignInstance Type={x:Type vm:DimsMethodVM}}"
              d:DesignHeight="775" d:DesignWidth="1280">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -161,16 +161,13 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <local:DimsRibbon x:Name="RibbonMenu" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+        <local:ImmsRibbon x:Name="RibbonMenu"  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
         <commonview:Navigator Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"/>
 
-        <GridSplitter Margin="0, 0, 0, 0" Width="2"
-                      ResizeDirection="Columns"
-                      VerticalAlignment="Stretch" HorizontalAlignment="Right"
-                      Grid.Column="0" Grid.Row="1" Grid.RowSpan="2"/>
+        <GridSplitter Margin="0, 0, 0, 0" Width="2" ResizeDirection="Columns" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Right" />
 
         <Grid Grid.Row="1" Grid.Column="1">
-            <Grid Name="Grid_DataViewer">
+            <Grid Name="Grid_DataViewer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" MinWidth="370"/>
@@ -179,27 +176,31 @@
 
                 <Grid Grid.Column="0">
 
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" MinWidth="200" />
+                        <ColumnDefinition Width="*" MinWidth="200" />
+                    </Grid.ColumnDefinitions>
+
                     <Grid.RowDefinitions>
                         <RowDefinition Height="15" />
                         <RowDefinition Height="220"/>
                         <RowDefinition Height="*" MinHeight="200" />
                     </Grid.RowDefinitions>
 
-                    <TabControl Name="TabControl_PairwisePlotViewer"
-                                SelectedIndex="0"
-                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                Grid.Row="2" SelectionChanged="TabControl_PairwisePlotViewer_SelectionChanged" >
-                        <TabControl.ItemContainerStyle>
-                            <Style TargetType="TabItem">
-                                <Setter Property="Height" Value="25"/>
-                                <Setter Property="Background" Value="{StaticResource MainThemeColor}"/>
-                            </Style>
-                        </TabControl.ItemContainerStyle>
+                    <commonview:PeakSpotNavigator DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
+                                                  Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"/>
 
-                        <TabItem Name="TabItem_RtMzPairwisePlotPeakView"
-                                 Header="Peak spot viewer" 
+                    <chart:SurveyScanView DataContext="{Binding AnalysisViewModel.Value.SurveyScanViewModel}"
+                                          Grid.Row="2" Grid.Column="0"/>
+
+                    <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="2" Grid.Column="1" 
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+                        <TabItem Header="Peak spot viewer" 
+                                 Name="TabItem_RtMzPairwisePlotPeakView" 
+                                 Height="25"
                                  DataContext="{Binding AnalysisViewModel.Value}"
-                                 DataContextChanged="TabItem_RtMzPairwisePlotPeakView_DataContextChanged">
+                                 Background="{StaticResource MainThemeColor}">
                             <chart:PeakView DataContext="{Binding PlotViewModel}">
                                 <chart:PeakView.LabelTemplate>
                                     <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
@@ -212,6 +213,7 @@
                                             </StackPanel.Resources>
                                             <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime, StringFormat=Spot ID: {0}; }"/>
                                             <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime, StringFormat=Scan #: {0}; }"/>
+                                            <TextBlock Text="{Binding InnerModel.ChromXs.Value, Mode=OneTime, StringFormat=DT[1/k0]: {0:N4}; }"/>
                                             <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
                                         </StackPanel>
                                     </DataTemplate>
@@ -219,15 +221,13 @@
                             </chart:PeakView>
                         </TabItem>
 
-                        <TabItem Name="TabItem_RtMzPairwisePlotAlignmentView"
-                                 Header="Alignment spot viewer" 
+                        <TabItem Header="Alignment spot viewer" 
+                                 Name="TabItem_RtMzPairwisePlotAlignmentView" 
+                                 Height="25"
                                  DataContext="{Binding AlignmentViewModel.Value}"
-                                 DataContextChanged="TabItem_RtMzPairwisePlotAlignmentView_DataContextChanged">
+                                 Background="{StaticResource MainThemeColor}">
 
-                            <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}"
-                                                         Focusable="True"
-                                                         behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"
-                                                         d:DataContext="{d:DesignInstance Type={x:Type chartvm:AlignmentPeakPlotViewModel}}">
+                            <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
                                 <chart:AlignmentPeakPlotView.LabelTemplate>
                                     <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
                                         <StackPanel Orientation="Horizontal">
@@ -237,12 +237,9 @@
                                                     <Setter Property="Foreground" Value="Gray"/>
                                                 </Style>
                                             </StackPanel.Resources>
-                                            <TextBlock Text="ID #: "/>
-                                            <TextBlock Text="{Binding AlignmentID, Mode=OneTime}"/>
-                                            <TextBlock Text="; "/>
-                                            <TextBlock Text="Mass[Da]: "/>
-                                            <TextBlock Text="{Binding MassCenter, StringFormat=N5, Mode=OneTime}"/>
-                                            <TextBlock Text=";"/>
+                                            <TextBlock Text="{Binding AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
+                                            <TextBlock Text="{Binding TimesCenter, Mode=OneTime, StringFormat=DT[1/k0]: {0:N4}; }"/>
+                                            <TextBlock Text="{Binding MassCenter, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
                                         </StackPanel>
                                     </DataTemplate>
                                 </chart:AlignmentPeakPlotView.LabelTemplate>
@@ -253,7 +250,7 @@
 
                     <TabControl Name="TabControl_EicViewAndBarChart"
                                 Margin="0,-1,0,0"
-                                Grid.Row="0" Grid.RowSpan="2" >
+                                Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" >
 
                         <TabItem Header="EIC of focused spot" 
                                  Height="26"
@@ -268,23 +265,23 @@
                             <chart:BarChartView DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"/>
                         </TabItem>
 
-
-                        <TabItem Header="EIC of aligned spot" Name="TabItem_AlignedEic" Background="{StaticResource MainThemeColor}">
+                        <TabItem Name="TabItem_AlignedEic"
+                                 Header="EIC of aligned spot"
+                                 Background="{StaticResource MainThemeColor}">
                             <chart:AlignmentEicView DataContext="{Binding AlignmentViewModel.Value.AlignmentEicViewModel}"/>
                         </TabItem>
 
                     </TabControl>
 
-                    <Grid Grid.Row="2">
+                    <Grid Grid.Row="2" Grid.Column="1">
 
                         <Button Name="Button_TableViewer"
                                 DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
                                 Command="{Binding ShowIonTableCommand, Mode=OneWay}"
-                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                                HorizontalContentAlignment="Right"
                                 Background="AliceBlue"
-                                VerticalAlignment="Top" HorizontalAlignment="Right"
                                 Margin="0,2,0,0" 
+                                HorizontalContentAlignment="Right"
+                                VerticalAlignment="Top" HorizontalAlignment="Right"
                                 Height="25" Width="110">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
@@ -294,6 +291,12 @@
                             </Button.Content>
                         </Button>
                     </Grid>
+
+                    <GridSplitter Margin="0, 0, 0, 0" 
+                                  Width="2" 
+                                  ResizeDirection="Columns" 
+                                  Grid.Column="1" Grid.RowSpan="3" 
+                                  VerticalAlignment="Stretch" HorizontalAlignment="Left" />
 
                     <GridSplitter Margin="0,0,0,-2" 
                                   Height="2" ResizeDirection="Rows" ResizeBehavior="CurrentAndNext" 
@@ -322,14 +325,14 @@
                                  Name="TabItem_BasicProperty" 
                                  Height="25"
                                  Background="{StaticResource MainThemeColor}">
-                                <local:PeakPropertyView DataContext="{Binding Model.Target.Value, Mode=OneWay}"/>
+                                <local:PeakPropertyView DataContext="{Binding Target.Value}"/>
                             </TabItem>
 
                             <TabItem Header="Compound detail" 
                                  Name="TabItem_CompoundDetail" 
                                  Height="25"
                                  Background="{StaticResource MainThemeColor}">
-                                <local:CompoundDetailView DataContext="{Binding Model.Target.Value, Mode=OneWay}"/>
+                                <local:CompoundDetailView DataContext="{Binding Target.Value}"/>
                             </TabItem>
                          
                         </TabControl>
@@ -348,13 +351,31 @@
                             <chart:ExpRefView>
                                 <chart:ExpRefView.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Copy spectra as.." Command="{Binding CopyMs2SpectrumCommand, Mode=OneTime}">
-                                            <MenuItem Header="Copy spectra as msp" Command="{Binding CopyMs2SpectrumCommand, Mode=OneTime}"/>
-                                        </MenuItem>
                                         <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
                                     </ContextMenu>
                                 </chart:ExpRefView.ContextMenu>
                             </chart:ExpRefView>
+                        </TabItem>
+
+                        <TabItem Header="MS2 Chrom." 
+                                 Name="TabItem_MS2Chromatogram" 
+                                 Height="25"
+                                 IsEnabled="False"
+                                 Background="{StaticResource MainThemeColor}">
+                                 <!--
+                            <ms2:ChromatogramView />
+                            -->
+                        </TabItem>
+
+                        <TabItem Header="Raw vs. Purified" 
+                                 Name="TabItem_RawVsDeconvolution" 
+                                 Height="25"
+                                 IsEnabled="False"
+                                 Background="{StaticResource MainThemeColor}">
+
+<!--
+                            <ms2:RawPurifiedView DataContext="{Binding AnalysisViewModel.Value}"/>
+                            -->
                         </TabItem>
 
                         <TabItem Name="TabItem_RepresentativeVsReference"
@@ -365,9 +386,6 @@
                             <chart:RepRefView>
                                 <chart:RepRefView.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Copy spectra as.." Command="{Binding CopyMs2SpectrumCommand, Mode=OneTime}">
-                                            <MenuItem Header="Copy spectra as msp" Command="{Binding CopyMs2SpectrumCommand, Mode=OneTime}"/>
-                                        </MenuItem>
                                         <MenuItem Header="Save spectra table as.." Command="{Binding SaveMs2SpectrumCommand}" />
                                     </ContextMenu>
                                 </chart:RepRefView.ContextMenu>
@@ -383,7 +401,6 @@
                                   HorizontalAlignment="Stretch" />
 
                 </Grid>
-
                 <GridSplitter Margin="0, 0, 0, 0" Width="2" 
                               ResizeDirection="Columns" 
                               Grid.Column="1" Grid.RowSpan="2" 
@@ -392,9 +409,11 @@
 
             </Grid>
         </Grid>
+        <!--
         <local:Footer DataContext="{Binding AnalysisViewModel.Value}"
-                      IsEnabled="False"
+                      ChromAxis="{StaticResource ChromAxis}" MassAxis="{StaticResource MassAxis}"
                       Grid.Row="2" Grid.Column="1"/>
+                      -->
 
         <GridSplitter Margin="0,0,0,0" 
                     Height="2" ResizeDirection="Rows" ResizeBehavior="CurrentAndNext" 

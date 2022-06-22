@@ -47,6 +47,65 @@ namespace CompMs.Common.Enum
         nmol_per_10E6_cells, pmol_per_10E6_cells, fmol_per_10E6_cells,
         NormalizedByInternalStandardPeakHeight, NormalizedByQcPeakHeight, NormalizedByMaxPeakOnTIC, NormalizedByMaxPeakOnNamedPeaks
     }
+
+    public static class IonAbundanceUnitExtension {
+        public static string ToLabel(this IonAbundanceUnit unit) {
+            var unitEnum = unit;
+            switch (unitEnum) {
+                case IonAbundanceUnit.Intensity:
+                    return "Intensity";
+                case IonAbundanceUnit.Height:
+                    return "Height";
+                case IonAbundanceUnit.Area:
+                    return "Area";
+                case IonAbundanceUnit.nmol_per_microL_plasma:
+                    return "nmol/μL plasma";
+                case IonAbundanceUnit.pmol_per_microL_plasma:
+                    return "pmol/μL plasma";
+                case IonAbundanceUnit.fmol_per_microL_plasma:
+                    return "fmol/μL plasma";
+                case IonAbundanceUnit.nmol_per_mg_tissue:
+                    return "nmol/mg tissue";
+                case IonAbundanceUnit.pmol_per_mg_tissue:
+                    return "pmol/mg tissue";
+                case IonAbundanceUnit.fmol_per_mg_tissue:
+                    return "fmol/mg tissue";
+                case IonAbundanceUnit.nmol_per_10E6_cells:
+                    return "nmol/10^6 cells";
+                case IonAbundanceUnit.pmol_per_10E6_cells:
+                    return "pmol/10^6 cells";
+                case IonAbundanceUnit.fmol_per_10E6_cells:
+                    return "fmol/10^6 cells";
+                case IonAbundanceUnit.NormalizedByInternalStandardPeakHeight:
+                    return "Peak height/IS peak";
+                case IonAbundanceUnit.NormalizedByQcPeakHeight:
+                    return "Peak height/QC peak";
+                case IonAbundanceUnit.NormalizedByMaxPeakOnTIC:
+                    return "Peak height/TIC";
+                case IonAbundanceUnit.NormalizedByMaxPeakOnNamedPeaks:
+                    return "Peak height/MTIC";
+
+                case IonAbundanceUnit.pmol:
+                    return "pmol";
+                case IonAbundanceUnit.fmol:
+                    return "fmol";
+                case IonAbundanceUnit.ng:
+                    return "ng";
+                case IonAbundanceUnit.pg:
+                    return "pg";
+                default:
+                    return "pmol/μL plasma";
+
+                // case IonAbundanceUnit.nmol_per_individual: return "nmol/individual";
+                // case IonAbundanceUnit.pmol_per_individual: return "pmol/individual";
+                // case IonAbundanceUnit.fmol_per_individual: return "fmol/individual";
+                // case IonAbundanceUnit.nmol_per_microG_protein: return "nmol/μg protein";
+                // case IonAbundanceUnit.pmol_per_microG_protein: return "pmol/μg protein";
+                // case IonAbundanceUnit.fmol_per_microG_protein: return "fmol/μg protein";
+            }
+        }
+    }
+
     public enum PeakLinkFeatureEnum {
         SameFeature, Isotope, Adduct, ChromSimilar, FoundInUpperMsMs, CorrelSimilar
     }

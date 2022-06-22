@@ -15,20 +15,12 @@ namespace CompMs.Graphics.IO
         }
 
         private CopyImageAsCommand(ImageFormat format) {
-            switch (format) {
-                case ImageFormat.Png:
-                    encoder = new PngEncoder();
-                    this.format = DataFormats.Bitmap;
-                    break;
-                case ImageFormat.Emf:
-                    encoder = new EmfEncoder();
-                    this.format = DataFormats.EnhancedMetafile;
-                    break;
-            }
+            Format = format;
+            Formatter = new NoneFormatter();
         }
 
-        private readonly IElementEncoder encoder;
-        private readonly string format;
+        public ImageFormat Format { get; set; }
+        public IElementFormatter Formatter { get; set; }
 
         public event EventHandler CanExecuteChanged;
 
@@ -36,10 +28,34 @@ namespace CompMs.Graphics.IO
             return true;
         }
 
-        public void Execute(object parameter) {
+        public async void Execute(object parameter) {
             if (parameter is FrameworkElement element) {
-                var obj = encoder.Get(element);
-                Clipboard.SetData(format, obj);
+                using (await Formatter.Format(element)) {
+                    var encoder = GetEncoder(Format);
+                    var obj = encoder.Get(element);
+                    var dataFormat = GetDataFormat(Format);
+                    Clipboard.SetData(dataFormat, obj);
+                }
+            }
+        }
+
+        private string GetDataFormat(ImageFormat format) {
+            switch (format) {
+                case ImageFormat.Png:
+                    return DataFormats.Bitmap;
+                case ImageFormat.Emf:
+                default:
+                    return DataFormats.EnhancedMetafile;
+            }
+        }
+
+        private IElementEncoder GetEncoder(ImageFormat format) {
+            switch (format) {
+                case ImageFormat.Png:
+                    return new PngEncoder();
+                case ImageFormat.Emf:
+                default:
+                    return new EmfEncoder();
             }
         }
     }

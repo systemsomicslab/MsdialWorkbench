@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
@@ -79,9 +81,16 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            BarItemsLoaderDataViewModels = _model.BarItemsLoaderDatas.Select(data => new BarItemsLoaderDataViewModel(data, _model.BarItemsLoaderData)).ToList().AsReadOnly();
+            BarItemsLoaderDataViewModels = new ReadOnlyObservableCollection<BarItemsLoaderDataViewModel>(new ObservableCollection<BarItemsLoaderDataViewModel>(_model.BarItemsLoaderDatas.Select(data => new BarItemsLoaderDataViewModel(data, _model.BarItemsLoaderData))));
             BarItemsLoaderDataViewModel = _model.BarItemsLoaderData.Select(m => BarItemsLoaderDataViewModels.FirstOrDefault(vm => vm.Model == m)).ToReactiveProperty().AddTo(Disposables);
             BarItemsLoaderDataViewModel.Subscribe(vm => _model.BarItemsLoaderData.Value = vm?.Model).AddTo(Disposables);
+
+            var cv = CollectionViewSource.GetDefaultView(BarItemsLoaderDataViewModels);
+            cv.Filter += o => ((BarItemsLoaderDataViewModel)o).IsEnabled.Value;
+            BarItemsLoaderDataViewModels.ObserveElementObservableProperty(vm => vm.IsEnabled)
+                .Throttle(TimeSpan.FromMilliseconds(50))
+                .Subscribe(_ => Application.Current.Dispatcher.Invoke(() => cv?.Refresh()))
+                .AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<List<BarItem>> BarItems { get; }
@@ -106,6 +115,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
 
         public IReactiveProperty<BarItemsLoaderDataViewModel> BarItemsLoaderDataViewModel { get; }
-        public ReadOnlyCollection<BarItemsLoaderDataViewModel> BarItemsLoaderDataViewModels { get; }
+        public ReadOnlyObservableCollection<BarItemsLoaderDataViewModel> BarItemsLoaderDataViewModels { get; }
     }
 }
