@@ -1,4 +1,4 @@
-using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
@@ -63,6 +63,48 @@ namespace CompMs.App.Msdial.Model
         }
     }
 
+    internal sealed class MultiMsRawSpectrumLoader : DisposableModelBase, IMsSpectrumLoader<ChromatogramPeakFeatureModel>
+    {
+        private readonly IDataProvider _provider;
+        private readonly ParameterBase _parameter;
+        private readonly Task<ReadOnlyCollection<RawSpectrum>> _msSpectra;
+
+        public MultiMsRawSpectrumLoader(IDataProvider provider, ParameterBase parameter) {
+            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
+            _msSpectra = _provider.LoadMsSpectrumsAsync(default);
+            _ms2List = new Subject<List<int>>().AddTo(Disposables);
+            Ms2IdSelector = new ReactivePropertySlim<int>().AddTo(Disposables);
+        }
+
+        public ReactivePropertySlim<int> Ms2IdSelector { get; }
+
+        public IObservable<List<int>> Ms2List => _ms2List;
+        private readonly Subject<List<int>> _ms2List;
+
+        private IObservable<List<SpectrumPeak>> LoadSpectrumAsObservableCore(ChromatogramPeakFeatureModel target) {
+            if (target.InnerModel.MS2RawSpectrumID2CE.Count == 0) {
+                return Observable.Return(new List<SpectrumPeak>(0));
+            }
+            _ms2List.OnNext(target.InnerModel.MS2RawSpectrumID2CE.Keys.ToList());
+            Ms2IdSelector.Value = target.MS2RawSpectrumId;
+
+            return Observable.FromAsync(() => _msSpectra).CombineLatest(Ms2IdSelector, (msSpectra, ms2Id) =>
+            {
+                var spectra = DataAccess.GetCentroidMassSpectra(msSpectra[ms2Id], _parameter.MS2DataType, 0f, float.MinValue, float.MaxValue);
+                if (_parameter.RemoveAfterPrecursor) {
+                    spectra = spectra.Where(spectrum => spectrum.Mass <= target.Mass + _parameter.KeptIsotopeRange).ToList();
+                }
+                return spectra;
+            });
+        }
+
+        public IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(ChromatogramPeakFeatureModel target) {
+            return target is null
+                ? Observable.Return(new List<SpectrumPeak>(0))
+                : LoadSpectrumAsObservableCore(target);
+        }
+    }
 
     internal sealed class MsDecSpectrumLoader : IMsSpectrumLoader<object>
     {
