@@ -10,8 +10,31 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    class RawDecSpectrumsModel : DisposableModelBase
+    internal sealed class RawDecSpectrumsModel : DisposableModelBase
     {
+        public RawDecSpectrumsModel(
+            IObservable<ChromatogramPeakFeatureModel> targetSource,
+            MultiMsRawSpectrumLoader rawLoader,
+            IMsSpectrumLoader<ChromatogramPeakFeatureModel> decLoader,
+            IMsSpectrumLoader<ChromatogramPeakFeatureModel> refLoader,
+            PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
+            PropertySelector<SpectrumPeak, double> verticalPropertySelector,
+            GraphLabels graphLabels,
+            string hueProperty,
+            IObservable<IBrushMapper> upperSpectrumBrush,
+            IObservable<IBrushMapper> lowerSpectrumBrush,
+            IObservable<ISpectraExporter> rawSpectraExporeter,
+            IObservable<ISpectraExporter> deconvolutedSpectraExporter,
+            IObservable<ISpectraExporter> referenceSpectraExporter)
+            : this(targetSource,
+                  (IMsSpectrumLoader<ChromatogramPeakFeatureModel>)rawLoader, decLoader, refLoader,
+                  horizontalPropertySelector, verticalPropertySelector,
+                  graphLabels,
+                  hueProperty, upperSpectrumBrush, lowerSpectrumBrush,
+                  rawSpectraExporeter, deconvolutedSpectraExporter, referenceSpectraExporter) {
+            RawLoader = rawLoader;
+        }
+
         public RawDecSpectrumsModel(
             IObservable<ChromatogramPeakFeatureModel> targetSource,
             IMsSpectrumLoader<ChromatogramPeakFeatureModel> rawLoader,
@@ -85,5 +108,6 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public MsSpectrumModel RawRefSpectrumModels { get; }
         public MsSpectrumModel DecRefSpectrumModels { get; }
+        public MultiMsRawSpectrumLoader RawLoader { get; }
     }
 }
