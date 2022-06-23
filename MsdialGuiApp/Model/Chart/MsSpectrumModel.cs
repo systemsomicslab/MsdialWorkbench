@@ -173,8 +173,8 @@ namespace CompMs.App.Msdial.Model.Chart
             where T: U, V {
 
             return new MsSpectrumModel(
-                source.Select(src => Observable.FromAsync(token => upperLoader.LoadSpectrumAsync(src, token))).Switch(),
-                source.Select(src => Observable.FromAsync(token => lowerLoader.LoadSpectrumAsync(src, token))).Switch(),
+                source.Select(src => upperLoader.LoadSpectrumAsObservable(src)).Switch(),
+                source.Select(src => lowerLoader.LoadSpectrumAsObservable(src)).Switch(),
                 new PropertySelector<SpectrumPeak, double>(horizontalProperty, horizontalSelector),
                 new PropertySelector<SpectrumPeak, double>(verticalProperty, verticalSelector),
                 new GraphLabels(graphTitle, horizontalTitle, verticalTitle, labelProperty, orderingProperty),

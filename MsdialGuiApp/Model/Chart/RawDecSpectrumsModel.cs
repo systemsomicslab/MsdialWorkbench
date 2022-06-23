@@ -28,7 +28,7 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<ISpectraExporter> referenceSpectraExporter) {
 
             var rawSource = targetSource.WithLatestFrom(Observable.Return(rawLoader),
-                (target, loader) => Observable.FromAsync(token => loader.LoadSpectrumAsync(target, token)))
+                (target, loader) => loader.LoadSpectrumAsObservable(target))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Chart
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
             var decSource = targetSource.WithLatestFrom(Observable.Return(decLoader),
-                (target, loader) => Observable.FromAsync(token => loader.LoadSpectrumAsync(target, token)))
+                (target, loader) => loader.LoadSpectrumAsObservable(target))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -54,7 +54,7 @@ namespace CompMs.App.Msdial.Model.Chart
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
             var refSource = targetSource.WithLatestFrom(Observable.Return(refLoader),
-                (target, loader) => Observable.FromAsync(token => loader.LoadSpectrumAsync(target, token)))
+                (target, loader) =>  loader.LoadSpectrumAsObservable(target))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
