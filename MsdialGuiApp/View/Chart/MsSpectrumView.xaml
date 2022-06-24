@@ -100,7 +100,8 @@
                                                            LineThickness="{Binding LineThickness.Value}"
                                                            HueProperty="SpectrumComment">
                                 <chart:LineSpectrumControlSlim.ToolTip>
-                                    <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                    <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                             d:DataContext="{d:DesignInstance Type={x:Type chart:LineSpectrumControlSlim}}">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="m/z: "/>
                                             <TextBlock Text="{Binding FocusedItem.Mass}"/>
@@ -113,8 +114,8 @@
                             <chart:Annotator ItemsSource="{Binding Spectrum.Value}"
                                              HorizontalPropertyName="{Binding HorizontalProperty}"
                                              VerticalPropertyName="{Binding VerticalProperty}"
-                                             LabelPropertyName="{Binding LabelProperty.Value, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                             OrderingPropertyName="{Binding OrderingProperty.Value, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                             LabelPropertyName="{Binding DataContext.LabelProperty.Value, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                             OrderingPropertyName="{Binding DataContext.OrderingProperty.Value, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                              Brush="Black"
                                              Overlap="Horizontal, Direct"
                                              ClipToBounds="True"/>
@@ -190,7 +191,8 @@
                                                LineBrush="{Binding LowerSpectrumBrushSource.Value}"
                                                HueProperty="SpectrumComment">
                     <chart:LineSpectrumControlSlim.ToolTip>
-                        <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                        <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}"
+                                 d:DataContext="{d:DesignInstance Type={x:Type chart:LineSpectrumControlSlim}}">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding FocusedItem.Mass, StringFormat=m/z: {0}}"/>
