@@ -55,40 +55,31 @@ namespace CompMs.App.Msdial.Model.Chart
             }
 
             var upperMsSpectrum = upperSpectrum.Select(spectrum => new MsSpectrum(spectrum));
-            var lowerMsSpectrum = lowerSpectrum.Select(spectrum => new MsSpectrum(spectrum));
-
             var upperVerticalRangeProperty = upperMsSpectrum
-                .Select(msSpectrum => msSpectrum.GetSpectrumRange(verticalPropertySelector.Selector))
-                .StartWith(new Range(0, 1))
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
+                .Select(msSpectrum => msSpectrum.GetSpectrumRange(verticalPropertySelector.Selector));
             UpperVerticalRangeSource = upperVerticalRangeProperty;
             var upperContinuousVerticalAxis = upperVerticalRangeProperty
-                .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent);
+                .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
+                .AddTo(Disposables);
             var upperLogVerticalAxis = upperVerticalRangeProperty
                 .Select(range => (range.Minimum.Value, range.Maximum.Value))
-                .ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d);
+                .ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d)
+                .AddTo(Disposables);
             UpperVerticalAxisItemCollection = new ObservableCollection<AxisItemModel>(new[]
             {
                 new AxisItemModel(upperContinuousVerticalAxis, "Normal"),
                 new AxisItemModel(upperLogVerticalAxis, "Log10"),
             });
 
+            var lowerMsSpectrum = lowerSpectrum.Select(spectrum => new MsSpectrum(spectrum));
             var lowerVerticalRangeSource = lowerMsSpectrum
-                .Select(msSpectrum => msSpectrum.GetSpectrumRange(verticalPropertySelector.Selector))
-                .StartWith(new Range(0, 1))
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
+                .Select(msSpectrum => msSpectrum.GetSpectrumRange(verticalPropertySelector.Selector));
 
-            var horizontalSelector = horizontalPropertySelector.Selector;
             var horizontalRangeSource = new[]
             {
-                upperMsSpectrum.Select(msSpectrum => msSpectrum.GetSpectrumRange(horizontalSelector)),
-                lowerMsSpectrum.Select(msSpectrum => msSpectrum.GetSpectrumRange(horizontalSelector)),
-            }.CombineLatest(xs => xs.Aggregate((x, y) => x.Union(y)))
-            .StartWith(new Range(0, 1))
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposables);
+                upperMsSpectrum.Select(msSpectrum => msSpectrum.GetSpectrumRange(horizontalPropertySelector.Selector)),
+                lowerMsSpectrum.Select(msSpectrum => msSpectrum.GetSpectrumRange(horizontalPropertySelector.Selector)),
+            }.CombineLatest(xs => xs.Aggregate((x, y) => x.Union(y)));
 
             var horizontalAxis = horizontalRangeSource.ToReactiveContinuousAxisManager<double>(new ConstantMargin(40)).AddTo(Disposables);
             var horizontalAxisObservable = Observable.Return(horizontalAxis);
