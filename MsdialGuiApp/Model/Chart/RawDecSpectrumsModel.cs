@@ -77,7 +77,7 @@ namespace CompMs.App.Msdial.Model.Chart
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
             var refSource = targetSource.WithLatestFrom(Observable.Return(refLoader),
-                (target, loader) =>  loader.LoadSpectrumAsObservable(target))
+                (target, loader) => loader.LoadSpectrumAsObservable(target))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);

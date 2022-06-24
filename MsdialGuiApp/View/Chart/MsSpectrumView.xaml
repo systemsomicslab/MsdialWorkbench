@@ -15,6 +15,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <io:StyleFormatter x:Key="ReverseMsSpectrumFormatter" Style="{StaticResource ResourceKey=VerticalConcatChartFormal}"/>
@@ -30,6 +31,10 @@
                           Style="{StaticResource VerticalConcatChart}">
             <chart:MultiChart.ContextMenu>
                 <ContextMenu>
+                    <MenuItem Header="Show all spectrum peak"
+                              Command="{Binding PlacementTarget.DataContext.SwitchAllSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Show matched spectrum peak"
+                              Command="{Binding PlacementTarget.DataContext.SwitchCompareSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     <MenuItem Header="Save spectrum as nist format"
                               Command="{Binding PlacementTarget.DataContext.SaveUpperSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     <MenuItem Header="Save image as...">
@@ -62,6 +67,62 @@
                               CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
+            <ItemsControl ItemsSource="{Binding UpperSpectraViewModel}"
+                          core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis.Value}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:SingleSpectrumViewModel}">
+                        <Grid Visibility="{Binding IsVisible.Value, Converter={StaticResource BooleanToVisibility}}">
+                            <StackPanel VerticalAlignment="Center">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding DataContext.SpectrumLoaded.Value, Mode=OneWay, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <TextBlock Text="Loading ..." HorizontalAlignment="Center" FontSize="16" Margin="16"/>
+                                <ProgressBar IsIndeterminate="True" HorizontalAlignment="Center" Width="160" Height="16"/>
+                            </StackPanel>
+                            <chart:LineSpectrumControlSlim x:Name="MS2Line"
+                                                           ItemsSource="{Binding Spectrum.Value}"
+                                                           DataType="{x:Type components:SpectrumPeak}"
+                                                           HorizontalProperty="{Binding HorizontalProperty}"
+                                                           VerticalProperty="{Binding VerticalProperty}"
+                                                           LineBrush="{Binding Brush.Value}"
+                                                           LineThickness="{Binding LineThickness.Value}"
+                                                           HueProperty="SpectrumComment">
+                                <chart:LineSpectrumControlSlim.ToolTip>
+                                    <ToolTip DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="m/z: "/>
+                                            <TextBlock Text="{Binding FocusedItem.Mass}"/>
+                                            <TextBlock Text=" Intensity: "/>
+                                            <TextBlock Text="{Binding FocusedItem.Intensity}"/>
+                                        </StackPanel>
+                                    </ToolTip>
+                                </chart:LineSpectrumControlSlim.ToolTip>
+                            </chart:LineSpectrumControlSlim>
+                            <chart:Annotator ItemsSource="{Binding Spectrum.Value}"
+                                             HorizontalPropertyName="{Binding HorizontalProperty}"
+                                             VerticalPropertyName="{Binding VerticalProperty}"
+                                             LabelPropertyName="{Binding LabelProperty.Value, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                             OrderingPropertyName="{Binding OrderingProperty.Value, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                             Brush="Black"
+                                             Overlap="Horizontal, Direct"
+                                             ClipToBounds="True"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <!--
             <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis.Value}">
                 <StackPanel VerticalAlignment="Center">
                     <StackPanel.Style>
@@ -104,6 +165,7 @@
                                  Overlap="Horizontal, Direct"
                                  ClipToBounds="True"/>
             </Grid>
+            -->
 
             <Grid core:ChartBaseControl.FlippedY="False" core:ChartBaseControl.VerticalAxis="{Binding LowerVerticalAxis.Value}">
                 <TextBlock Text="No information" FontSize="24"
