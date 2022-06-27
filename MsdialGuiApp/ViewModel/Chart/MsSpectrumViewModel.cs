@@ -28,6 +28,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             SpectrumLoaded = model.SpectrumLoaded;
             ReferenceHasSpectrumInfomation = model.ReferenceHasSpectrumInfomation;
 
+            UpperSpectraViewModel = model.UpperSpectraModel.ToReadOnlyReactiveCollection(m => new SingleSpectrumViewModel(m)).AddTo(Disposables);
+            LowerSpectrumViewModel = new SingleSpectrumViewModel(model.LowerSpectrumModel).AddTo(Disposables);
+
             HorizontalAxis = (horizontalAxisSource ?? model.UpperSpectrumModel.HorizontalAxis)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -91,7 +94,18 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             SaveLowerSpectrumCommand = model.CanSaveLowerSpectrum.ToReactiveCommand()
                 .WithSubscribe(SaveSpectrum(model.SaveLowerSpectrum))
                 .AddTo(Disposables);
+
+            SwitchAllSpectrumCommand = new ReactiveCommand()
+                .WithSubscribe(model.SwitchViewToAllSpectrum)
+                .AddTo(Disposables);
+
+            SwitchCompareSpectrumCommand = new ReactiveCommand()
+                .WithSubscribe(model.SwitchViewToCompareSpectrum)
+                .AddTo(Disposables);
         }
+
+        public ReadOnlyReactiveCollection<SingleSpectrumViewModel> UpperSpectraViewModel { get; }
+        public SingleSpectrumViewModel LowerSpectrumViewModel { get; }
 
         public ReadOnlyReactivePropertySlim<List<SpectrumPeak>> UpperSpectrum { get; }
 
@@ -121,6 +135,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<IBrushMapper> UpperSpectrumBrushSource { get; }
 
         public ReadOnlyReactivePropertySlim<IBrushMapper> LowerSpectrumBrushSource { get; }
+
+        public ReactiveCommand SwitchAllSpectrumCommand { get; }
+
+        public ReactiveCommand SwitchCompareSpectrumCommand { get; }
 
         public ReactiveCommand SaveUpperSpectrumCommand { get; }
 

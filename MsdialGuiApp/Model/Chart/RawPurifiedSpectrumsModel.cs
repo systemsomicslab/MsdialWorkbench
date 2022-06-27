@@ -33,13 +33,13 @@ namespace CompMs.App.Msdial.Model.Chart
 
             var upperSpectrum = targetSource
                 .WithLatestFrom(Observable.Return(rawLoader),
-                    (target, loader) => Observable.FromAsync(token => loader.LoadSpectrumAsync(target, token)))
+                    (target, loader) => loader.LoadSpectrumAsObservable(target))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             var lowerSpectrum = targetSource
                 .WithLatestFrom(Observable.Return(decLoader),
-                    (target, loader) => Observable.FromAsync(token => loader.LoadSpectrumAsync(target, token)))
+                    (target, loader) => loader.LoadSpectrumAsObservable(target))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);

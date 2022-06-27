@@ -131,7 +131,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            rawSpectrumLoader = new MsRawSpectrumLoader(this.provider, Parameter);
+            var rawSpectrumLoader = new MultiMsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
+            _rawSpectrumLoader = rawSpectrumLoader;
             var decSpectrumLoader = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
 
             // Ms2 spectrum
@@ -181,7 +182,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Raw vs Purified spectrum model
             RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(
                 Target,
-                rawSpectrumLoader,
+                _rawSpectrumLoader,
                 decSpectrumLoader,
                 peak => peak.Mass,
                 peak => peak.Intensity) {
@@ -264,7 +265,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public EicModel EicModel { get; }
         public ReadOnlyReactivePropertySlim<ExperimentSpectrumModel> ExperimentSpectrumModel { get; }
 
-        private readonly MsRawSpectrumLoader rawSpectrumLoader;
+        private readonly IMsSpectrumLoader<ChromatogramPeakFeatureModel> _rawSpectrumLoader;
 
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public RawPurifiedSpectrumsModel RawPurifiedSpectrumsModel { get; }
@@ -329,7 +330,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public async Task SaveRawSpectra(string filename) {
             using (var file = File.Open(filename, FileMode.Create)) {
                 var target = Target.Value;
-                var spectrum = await rawSpectrumLoader.LoadSpectrumAsync(target, default).ConfigureAwait(false);
+                var spectrum = await _rawSpectrumLoader.LoadSpectrumAsObservable(target).FirstAsync();
                 SpectraExport.SaveSpectraTable(
                     (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.')),
                     file,
