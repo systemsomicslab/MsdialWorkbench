@@ -97,12 +97,17 @@ namespace CompMs.App.Msdial.Model.Setting {
             var ghosts = new List<double>();
             var postcurparam = _parameter.PostCurationParameter;
             Console.WriteLine("just check where I'm in ....");
+            postcurparam.IsBlankFilter = BlankRatioChecked;
+            postcurparam.IsBlankGhostFilter = DeleteGhostPeaksChecked;
+            postcurparam.IsMzFilter = IncorrectMassChecked;
+            postcurparam.IsRmdFilter = RMDChecked;
+            postcurparam.IsRsdFilter = RSDChecked;
 
             // process
             //foreach (var spot in _spots) {
             foreach (var spot in _spotprops) {
-                var frag = false;
                 spot.IsBlankFilteredByPostCurator = false;
+                spot.IsBlankGhostFilteredByPostCurator = false;
                 spot.IsMzFilteredByPostCurator = false;
                 spot.IsRsdFilteredByPostCurator = false;
                 spot.IsRmdFilteredByPostCurator = false;
@@ -198,13 +203,16 @@ namespace CompMs.App.Msdial.Model.Setting {
 
             }
 
-            //if (postcurparam.IsBlankGhostFilter) {
-            //    foreach (var spot in spots) {
-            //        if (ghosts.Contains(Math.Round(spot.MassCenter, 3))) {
-            //            spot.IsBlankGhostFilteredByPostCurator = true;
-            //        }
-            //    }
-            //}
+            foreach (var spot in _spotprops) {
+                if (postcurparam.IsBlankFilter && postcurparam.IsBlankGhostFilter) {
+                    if (spot.IsBlankFilteredByPostCurator == false) {
+                        if (ghosts.Contains(Math.Round(spot.MassCenter, 3))) {
+                            spot.IsBlankGhostFilteredByPostCurator = true;
+                            Console.WriteLine("A spot is filtered by MS-CleanR Blank Ghost filter!!");
+                        }
+                    }
+                }
+            }
 
         }
     }

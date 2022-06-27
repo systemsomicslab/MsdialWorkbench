@@ -164,6 +164,16 @@ namespace CompMs.App.Msdial.Model.DataObj
                 }
             }
         }
+        public bool IsBlankGhostFilteredByPostCurator {
+            get => innerModel.IsBlankGhostFilteredByPostCurator;
+            set
+            {
+                if (innerModel.IsBlankGhostFilteredByPostCurator != value) {
+                    innerModel.IsBlankGhostFilteredByPostCurator = value;
+                    OnPropertyChanged(nameof(IsBlankGhostFilteredByPostCurator));
+                }
+            }
+        }
 
         public bool IsMzFilteredByPostCurator {
             get => innerModel.IsMzFilteredByPostCurator;
