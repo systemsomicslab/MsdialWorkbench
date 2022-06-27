@@ -290,7 +290,7 @@
     <Compile Include="Model\Dims\DimsEicModel.cs" />
     <Compile Include="Model\Dims\DimsMethodModel.cs" />
     <Compile Include="Model\Imms\ImmsAnalysisModel.cs" />
-    <Compile Include="Model\IMsSpectrumLoader.cs" />
+    <Compile Include="Model\Loader\IMsSpectrumLoader.cs" />
     <Compile Include="Model\Lcimms\LcimmsAlignmentModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
