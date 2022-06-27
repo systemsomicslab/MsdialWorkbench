@@ -20,7 +20,7 @@ using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CompMs.App.Msdial.Model
+namespace CompMs.App.Msdial.Model.Loader
 {
     public interface IMsSpectrumLoader<in T>
     {
@@ -135,13 +135,13 @@ namespace CompMs.App.Msdial.Model
             if (target.GetType() == typeof(ChromatogramPeakFeatureModel)) {
                 var peak = (ChromatogramPeakFeatureModel)ms1Peaks[idx];
                 idx = peak.MSDecResultIDUsedForAnnotation;
-            } 
+            }
             else if (target.GetType() == typeof(AlignmentSpotPropertyModel)) {
                 var peak = (AlignmentSpotPropertyModel)ms1Peaks[idx];
                 //idx = peak.MSDecResultIDUsedForAnnotation;
             }
             else {
-               
+
             }
             var msdecResult = loader.LoadMSDecResult(idx);
             Result = msdecResult;
@@ -197,7 +197,7 @@ namespace CompMs.App.Msdial.Model
                     return reference.Spectrum;
                 }
             }
-           
+
             return new List<SpectrumPeak>();
         }
 
