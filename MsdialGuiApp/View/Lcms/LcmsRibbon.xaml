@@ -294,15 +294,14 @@
     <chartSetting:BarChartOfAlignedSpotSettingRibbonTab ContextualTabGroupHeader="Graph tools"
                                                         DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"
                                                         d:DataContext="{d:DesignInstance Type={x:Type vmchart:BarChartViewModel}}"
-                                                        Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}}"/>
+                                                        Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"/>
     <RibbonTab ContextualTabGroupHeader="Graph tools"
                Header="MS/MS spectrum"
                DataContext="{Binding AnalysisViewModel.Value.RawDecSpectrumsViewModel}"
                d:DataContext="{d:DesignInstance Type={x:Type vmchart:RawDecSpectrumsViewModel}}"
-               Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}}">
+               Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}">
         <RibbonGroup Header="Select raw MS/MS spectrum">
             <RibbonComboBox Label="Spectrum id"
-                            SelectionBoxWidth="240"
                             VerticalAlignment="Center">
                 <RibbonGallery SelectedItem="{Binding SelectedMs2Id.Value}">
                     <RibbonGalleryCategory ItemsSource="{Binding Ms2IdList.Value}"/>

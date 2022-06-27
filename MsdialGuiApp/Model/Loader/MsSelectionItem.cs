@@ -1,13 +1,20 @@
-﻿namespace CompMs.App.Msdial.Model.Loader
+﻿using CompMs.CommonMVVM;
+
+namespace CompMs.App.Msdial.Model.Loader
 {
-    internal sealed class MsSelectionItem
+    internal sealed class MsSelectionItem : BindableBase
     {
+        private readonly double _collisionEnergy;
+
         public MsSelectionItem(int id, double collisionEnergy) {
             Id = id;
-            CollisionEnergy = collisionEnergy;
+            _collisionEnergy = collisionEnergy;
         }
 
         public int Id { get; }
-        public double CollisionEnergy { get; }
+
+        public override string ToString() {
+            return $"{Id}(CE:{_collisionEnergy})";
+        }
     }
 }

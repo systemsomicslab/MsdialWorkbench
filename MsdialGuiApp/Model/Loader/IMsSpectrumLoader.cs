@@ -73,33 +73,25 @@ namespace CompMs.App.Msdial.Model.Loader
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
             _msSpectra = _provider.LoadMsSpectrumsAsync(default);
-            _ms2List = new Subject<List<int>>().AddTo(Disposables);
-            Ms2IdSelector = new ReactivePropertySlim<int>().AddTo(Disposables);
-            _ms2ListZZZ = new Subject<List<MsSelectionItem>>().AddTo(Disposables);
-            Ms2IdSelectorZZZ = new ReactivePropertySlim<MsSelectionItem>().AddTo(Disposables);
+            _ms2List = new Subject<List<MsSelectionItem>>().AddTo(Disposables);
+            Ms2IdSelector = new ReactivePropertySlim<MsSelectionItem>().AddTo(Disposables);
         }
 
-        public ReactivePropertySlim<int> Ms2IdSelector { get; }
+        public ReactivePropertySlim<MsSelectionItem> Ms2IdSelector { get; }
 
-        public IObservable<List<int>> Ms2List => _ms2List;
-        private readonly Subject<List<int>> _ms2List;
-
-        public ReactivePropertySlim<MsSelectionItem> Ms2IdSelectorZZZ { get; }
-
-        public IObservable<List<MsSelectionItem>> Ms2ListZZZ => _ms2ListZZZ;
-        private readonly Subject<List<MsSelectionItem>> _ms2ListZZZ;
+        public IObservable<List<MsSelectionItem>> Ms2List => _ms2List;
+        private readonly Subject<List<MsSelectionItem>> _ms2List;
 
         private IObservable<List<SpectrumPeak>> LoadSpectrumAsObservableCore(ChromatogramPeakFeatureModel target) {
             if (target.InnerModel.MS2RawSpectrumID2CE.Count == 0) {
                 return Observable.Return(new List<SpectrumPeak>(0));
             }
-            _ms2List.OnNext(target.InnerModel.MS2RawSpectrumID2CE.Keys.ToList());
-            Ms2IdSelector.Value = target.MS2RawSpectrumId;
             var items = target.InnerModel.MS2RawSpectrumID2CE.Select(pair => new MsSelectionItem(pair.Key, pair.Value)).ToList();
-            _ms2ListZZZ.OnNext(items);
-            Ms2IdSelectorZZZ.Value = items.FirstOrDefault(item => item.Id == target.MS2RawSpectrumId);
+            _ms2List.OnNext(items);
+            var defaultValue = items.FirstOrDefault(item => item.Id == target.MS2RawSpectrumId) ?? items.First();
+            Ms2IdSelector.Value = defaultValue;
 
-            return Observable.FromAsync(() => _msSpectra).CombineLatest(Ms2IdSelector.Merge(Ms2IdSelectorZZZ.Select(item => item.Id)), (msSpectra, ms2Id) =>
+            return Observable.FromAsync(() => _msSpectra).CombineLatest(Ms2IdSelector.Where(item => !(item is null)).Select(item => item.Id), (msSpectra, ms2Id) =>
             {
                 var spectra = DataAccess.GetCentroidMassSpectra(msSpectra[ms2Id], _parameter.MS2DataType, 0f, float.MinValue, float.MaxValue);
                 if (_parameter.RemoveAfterPrecursor) {
