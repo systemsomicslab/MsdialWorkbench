@@ -125,6 +125,37 @@
                           IsChecked="{Binding PeakFilterViewModel.UniqueIons}"
                           IsEnabled="{Binding PeakFilterViewModel.EnableUniqueIons, Mode=OneTime}"
                           ToolTip="Display precursor ions having searched fragments"/>
+
+                <CheckBox Name="CheckBox_IsMscleanrBlankPassed" 
+                          Content="MS-CleanR blank filter"
+                          IsChecked="{Binding PeakFilterViewModel.MscleanrBlank}"
+                          IsEnabled="{Binding PeakFilterViewModel.EnableMsclearBlank, Mode=OneTime}"
+                          ToolTip="Display peaks passing MS-CleanR blank filter"/>
+
+                <CheckBox Name="CheckBox_IsMscleanrBlankGhostPassed" 
+                          Content="MS-CleanR blank-ghost filter"
+                          IsChecked="{Binding PeakFilterViewModel.MssleanrBlankGhost}"
+                          IsEnabled="{Binding PeakFilterViewModel.EnableMsclearBlankGhost, Mode=OneTime}"
+                          ToolTip="Display peaks passing MS-CleanR blank-ghost filter"/>
+
+                <CheckBox Name="CheckBox_IsMscleanrIncorrectMassPassed" 
+                          Content="MS-CleanR incorrect mass filter"
+                          IsChecked="{Binding PeakFilterViewModel.MscleanrIncorrectMass}"
+                          IsEnabled="{Binding PeakFilterViewModel.EnableMsclearIncorrectMass, Mode=OneTime}"
+                          ToolTip="Display peaks passing MS-CleanR Incorrect Mass filter"/>
+
+                <CheckBox Name="CheckBox_IsMscleanrRsdPassed"
+                          Content="MS-CleanR Relative Standard Deviation filter"
+                          IsChecked="{Binding PeakFilterViewModel.MscleanrRsd}"
+                          IsEnabled="{Binding PeakFilterViewModel.EnableMsclearRsd, Mode=OneTime}"
+                          ToolTip="Display peaks passing MS-CleanR RSD filter"/>
+
+                <CheckBox Name="CheckBox_IsMscleanrRmdPassed"
+                          Content="MS-CleanR Relative Mass Defect filter"
+                          IsChecked="{Binding PeakFilterViewModel.MscleanrRmd}"
+                          IsEnabled="{Binding PeakFilterViewModel.EnableMsclearRmd, Mode=OneTime}"
+                          ToolTip="Display peaks passing MS-CleanR RMD filter"/>
+
             </UniformGrid>
         </StackPanel>
     </StackPanel>
