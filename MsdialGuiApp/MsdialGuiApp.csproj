@@ -153,6 +153,7 @@
     <Compile Include="Model\DataObj\SurveyScanSpectrum.cs" />
     <Compile Include="Model\Imms\ImmsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Loader\BarItemsLoaderData.cs" />
+    <Compile Include="Model\Loader\MsSelectionItem.cs" />
     <Compile Include="Model\Normalize\InternalStandardLowessNormalizeModel.cs" />
     <Compile Include="Model\Normalize\InternalStandardNormalizeModel.cs" />
     <Compile Include="Model\Normalize\IonAbundance.cs" />
