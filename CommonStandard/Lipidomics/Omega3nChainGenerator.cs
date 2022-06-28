@@ -53,6 +53,9 @@ namespace CompMs.Common.Lipidomics
             if (carbon == 14 && doubleBond.Count == 1 && doubleBond.UnDecidedCount == 1) {
                 result = result.Prepend(new DoubleBond(DoubleBondInfo.Z(9)));
             }
+            if (carbon == 16 && doubleBond.Count == 1 && doubleBond.UnDecidedCount == 1) {
+                result = result.Prepend(new DoubleBond(DoubleBondInfo.Z(9)));
+            }
             return result;
         }
 

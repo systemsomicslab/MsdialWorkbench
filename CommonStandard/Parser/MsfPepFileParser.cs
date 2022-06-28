@@ -42,19 +42,27 @@ namespace CompMs.Common.Parser {
         }
 
         public static void LoadPeptideInformation(string pepfile, List<PeptideMsReference> pepMsRefObjs, Dictionary<int, string> ID2Code,  Dictionary<string, AminoAcid> Code2AminoAcidObj) {
+            // Prepare array to map ID to AminoAcid.
+            var id2aa = new AminoAcid[ID2Code.Keys.DefaultIfEmpty().Max() + 1];
+            foreach (var pair in ID2Code) {
+                id2aa[pair.Key] = Code2AminoAcidObj[pair.Value];
+            }
             using (var fs = File.Open(pepfile, FileMode.Open, FileAccess.ReadWrite)) {
+                // Allocate buffer once.
+                var numPeptide = new byte[4];
+                var aaBuffer = new byte[100 * 4];
                 foreach (var pepms in pepMsRefObjs) {
-                    var buffer = new byte[4];
-                    fs.Read(buffer, 0, 4);
-                    var pepCount = BitConverter.ToInt32(buffer, 0);
+                    fs.Read(numPeptide, 0, 4);
+                    var pepCount = BitConverter.ToInt32(numPeptide, 0);
 
-                    buffer = new byte[pepCount * 4];
-                    fs.Read(buffer, 0, buffer.Length);
-
-                    var aaObjs = new List<AminoAcid>();
+                    if (pepCount * 4 > aaBuffer.Length) {
+                        aaBuffer = new byte[pepCount * 4];
+                    }
+                    fs.Read(aaBuffer, 0, pepCount * 4);
+                    var aaObjs = new List<AminoAcid>(pepCount);
                     for (int i = 0; i < pepCount; i++) {
-                        var id = BitConverter.ToInt32(buffer, 4 * i);
-                        aaObjs.Add(Code2AminoAcidObj[ID2Code[id]]);
+                        var id = BitConverter.ToInt32(aaBuffer, 4 * i);
+                        aaObjs.Add(id2aa[id]);
                     }
                     pepms.Peptide.SequenceObj = aaObjs;
                 }

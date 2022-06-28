@@ -1,7 +1,9 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Extension;
+using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
@@ -11,34 +13,30 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
-    class AlignmentEicLoader
+    internal sealed class AlignmentEicLoader : DisposableModelBase
     {
-        public AlignmentEicLoader(
-            ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer,
-            string eicFile,
-            IObservable<IReadOnlyDictionary<int, string>> id2clsAsObservable,
-            IObservable<IReadOnlyDictionary<string, Color>> cls2colorAsObservable) {
+        public AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, string eicFile, IObservable<IReadOnlyDictionary<int, string>> id2clsAsObservable, IObservable<IReadOnlyDictionary<string, Color>> cls2colorAsObservable) {
 
-            this.chromatogramSpotSerializer = chromatogramSpotSerializer;
-            this.eicFile = eicFile;
-            id2ClsAsObservable = id2clsAsObservable;
-            cls2ColorAsObservable = cls2colorAsObservable;
+            _chromatogramSpotSerializer = chromatogramSpotSerializer;
+            _eicFile = eicFile;
+            _id2ClsAsObservable = id2clsAsObservable.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            _cls2ColorAsObservable = cls2colorAsObservable.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
-        private readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
-        private readonly string eicFile;
-        private readonly IObservable<IReadOnlyDictionary<int, string>> id2ClsAsObservable;
-        private readonly IObservable<IReadOnlyDictionary<string, Color>> cls2ColorAsObservable;
+        private readonly ChromatogramSerializer<ChromatogramSpotInfo> _chromatogramSpotSerializer;
+        private readonly string _eicFile;
+        private readonly IObservable<IReadOnlyDictionary<int, string>> _id2ClsAsObservable;
+        private readonly IObservable<IReadOnlyDictionary<string, Color>> _cls2ColorAsObservable;
 
         public IObservable<List<Chromatogram>> LoadEicAsObservable(AlignmentSpotPropertyModel target) {
             if (target != null) {
                 // maybe using file pointer is better
-                var spotinfo = chromatogramSpotSerializer.DeserializeAtFromFile(eicFile, target.MasterAlignmentID);
+                var spotinfo = _chromatogramSpotSerializer.DeserializeAtFromFile(_eicFile, target.MasterAlignmentID);
                 var itemss = spotinfo.PeakInfos.Select(peakinfo => (peakinfo.FileID, peakinfo.Chromatogram.Select(chrom => new PeakItem(chrom)).ToList()));
 
                 var eicChromatograms = Observable.CombineLatest(
-                    id2ClsAsObservable,
-                    cls2ColorAsObservable,
+                    _id2ClsAsObservable,
+                    _cls2ColorAsObservable,
                     (id2cls, cls2color) => itemss
                         .Zip(target.AlignedPeakPropertiesModel,
                             (pair, peakProperty) =>

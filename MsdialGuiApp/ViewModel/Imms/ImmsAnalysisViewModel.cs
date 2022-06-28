@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -17,8 +18,9 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    internal sealed class AnalysisImmsVM : AnalysisFileViewModel {
-        public AnalysisImmsVM(
+    internal sealed class ImmsAnalysisViewModel : AnalysisFileViewModel, IAnalysisResultViewModel
+    {
+        public ImmsAnalysisViewModel(
             ImmsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,

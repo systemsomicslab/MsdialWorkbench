@@ -6,6 +6,7 @@ using CompMs.Graphics.Core.Base;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,27 +40,21 @@ namespace CompMs.App.Msdial.Model.Chart
                 throw new ArgumentNullException(nameof(verticalSelector));
             }
 
-            AlignmentSpotPropertyModel = model;
+            EicChromatograms = chromatoramSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables); ;
 
-            EicChromatogramsSource = chromatoramSource;
-            EicChromatogramsSource.Subscribe(chromatograms => EicChromatograms = chromatograms);
-
-            HorizontalSelector = horizontalSelector;
-            VerticalSelector = verticalSelector;
-
-            var peaksox = EicChromatogramsSource
+            var peaksox = EicChromatograms
                 .Select(chroms => chroms.SelectMany(chrom => chrom.Peaks).ToArray());
 
             var nopeak = peaksox.Where(peaks => !peaks.Any()).Select(_ => new Range(0, 1));
 
             var anypeak = peaksox.Where(peaks => peaks.Any());
             var hrox = anypeak
-                .Select(peaks => new Range(peaks.Min(HorizontalSelector), peaks.Max(HorizontalSelector)));
+                .Select(peaks => new Range(peaks.Min(horizontalSelector), peaks.Max(horizontalSelector)));
             var vrox = anypeak
-                .Select(peaks => new Range(peaks.Min(VerticalSelector), peaks.Max(VerticalSelector)));
+                .Select(peaks => new Range(peaks.Min(verticalSelector), peaks.Max(verticalSelector)));
 
-            HorizontalRangeSource = hrox.Merge(nopeak).ToReadOnlyReactivePropertySlim();
-            VerticalRangeSource = vrox.Merge(nopeak).ToReadOnlyReactivePropertySlim();
+            HorizontalRange = hrox.Merge(nopeak).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            VerticalRange = vrox.Merge(nopeak).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             var alignedChromatogramModificationModel = model.Where(model_ => model_ != null).CombineLatest(
                 chromatoramSource.Where(chromatogram => chromatogram != null && chromatogram.Count > 0),
@@ -72,65 +67,11 @@ namespace CompMs.App.Msdial.Model.Chart
             SampleTableViewerInAlignmentModel = sampleTableViewerInAlignmentModelLegacy;
         }
 
-        public List<Chromatogram> EicChromatograms {
-            get => eicChromatogram;
-            set {
-                if (SetProperty(ref eicChromatogram, value)) {
-                    OnPropertyChanged(nameof(HorizontalRange));
-                    OnPropertyChanged(nameof(VerticalRange));
-                }
-            }
-        }
-        private List<Chromatogram> eicChromatogram;
-
-        public IObservable<AlignmentSpotPropertyModel> AlignmentSpotPropertyModel { get; set; }
-
-        public Range HorizontalRange {
-            get {
-                if (EicChromatograms.Any() && HorizontalSelector != null) {
-                    var minimum = EicChromatograms
-                        .SelectMany(chrom => chrom.Peaks)
-                        .Select(HorizontalSelector)
-                        .DefaultIfEmpty().Min();
-                    var maximum = EicChromatograms
-                        .SelectMany(chrom => chrom.Peaks)
-                        .Select(HorizontalSelector)
-                        .DefaultIfEmpty().Max();
-                    return new Range(minimum, maximum);
-                }
-                return new Range(0, 1);
-            }
-        }
-
-        public Range VerticalRange {
-            get {
-                if (EicChromatograms.Any() && VerticalSelector != null) {
-                    var minimum = EicChromatograms
-                        .SelectMany(chrom => chrom.Peaks)
-                        .Select(VerticalSelector)
-                        .DefaultIfEmpty().Min();
-                    var maximum = EicChromatograms
-                        .SelectMany(chrom => chrom.Peaks)
-                        .Select(VerticalSelector)
-                        .DefaultIfEmpty().Max();
-                    return new Range(minimum, maximum);
-                }
-                return new Range(0, 1);
-            }
-        }
-
-        public IObservable<List<Chromatogram>> EicChromatogramsSource { get; }
-
-        public IObservable<Range> HorizontalRangeSource { get; }
-
-        public IObservable<Range> VerticalRangeSource { get; }
-
+        public ReadOnlyReactivePropertySlim<List<Chromatogram>> EicChromatograms { get; }
+        public ReadOnlyReactivePropertySlim<Range> HorizontalRange { get; }
+        public ReadOnlyReactivePropertySlim<Range> VerticalRange { get; }
 
         public GraphElements Elements { get; } = new GraphElements();
-
-        public Func<PeakItem, double> HorizontalSelector { get; }
-
-        public Func<PeakItem, double> VerticalSelector { get; }
 
         public IObservable<AlignedChromatogramModificationModelLegacy> AlignedChromatogramModificationModel { get; }
         public IObservable<SampleTableViewerInAlignmentModelLegacy> SampleTableViewerInAlignmentModel { get; }
@@ -145,7 +86,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
             return new AlignmentEicModel(
                 source,
-                source.Select(loader.LoadEicAsObservable).Switch(),
+                source.Do(_ => Console.WriteLine("Target changed")).Select(loader.LoadEicAsObservable).Do(_ => Console.WriteLine("Observable changed")).Switch(),
                 AnalysisFiles,
                 Param,
                 horizontalSelector, verticalSelector

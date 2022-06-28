@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Search;
@@ -9,21 +10,17 @@ using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.Design;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    internal sealed class LcmsAlignmentViewModel : AlignmentFileViewModel
+    internal sealed class LcmsAlignmentViewModel : AlignmentFileViewModel, IAlignmentResultViewModel
     {
         private readonly LcmsAlignmentModel _model;
         private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
@@ -153,8 +150,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand<Window> _normalizeCommand;
 
         private void Normalize(Window owner) {
-            var parameter = _model.Parameter;
-            using (var vm = new NormalizationSetViewModel(_model.Container, _model.DataBaseMapper, _model.MatchResultEvaluator, parameter, _broker)) {
+            using (var vm = new NormalizationSetViewModel(_model.NormalizationSetModel)) {
                 var view = new NormalizationSetView {
                     DataContext = vm,
                     Owner = owner,

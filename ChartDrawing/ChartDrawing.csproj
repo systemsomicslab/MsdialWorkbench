@@ -40,6 +40,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -144,6 +145,12 @@
     <Compile Include="Chart\LineChartControl.cs" />
     <Compile Include="Chart\LineSpectrumControl.cs" />
     <Compile Include="IO\CopyImageAsCommand.cs" />
+    <Compile Include="IO\CopyImageAsDialog.xaml.cs">
+      <DependentUpon>CopyImageAsDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="IO\CopyImageAsDialogModel.cs" />
+    <Compile Include="IO\CopyImageAsDialogViewModel.cs" />
+    <Compile Include="IO\CopyImageAsWithDialogCommand.cs" />
     <Compile Include="IO\IElementEncoder.cs" />
     <Compile Include="IO\EmfEncoder.cs" />
     <Compile Include="IO\IElementFormatter.cs" />
@@ -151,6 +158,12 @@
     <Compile Include="IO\ImageFormat.cs" />
     <Compile Include="IO\SaveImageAsCommand.cs" />
     <Compile Include="IO\PngEncoder.cs" />
+    <Compile Include="IO\SaveImageAsDialog.xaml.cs">
+      <DependentUpon>SaveImageAsDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="IO\SaveImageAsDialogModel.cs" />
+    <Compile Include="IO\SaveImageAsDialogViewModel.cs" />
+    <Compile Include="IO\SaveImageAsWithDialogCommand.cs" />
     <Compile Include="IO\StyleFormatter.cs" />
     <Compile Include="Legacy\ChromatogramBean.cs" />
     <Compile Include="Legacy\ChromatogramXicViewModel.cs" />
@@ -181,6 +194,14 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Default\DefaultUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="IO\CopyImageAsDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="IO\SaveImageAsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

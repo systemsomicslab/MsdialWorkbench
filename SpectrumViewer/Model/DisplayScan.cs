@@ -11,11 +11,16 @@ namespace CompMs.App.SpectrumViewer.Model
     {
         public DisplayScan(IMSScanProperty scan) {
             Scan = scan ?? throw new ArgumentNullException(nameof(scan));
-            if (Scan is IMoleculeProperty molecule) {
-                Name = molecule.Name;
-            }
-            else {
-                Name = $"Precursor m/z: {Scan.PrecursorMz}";
+            switch (scan) {
+                case MoleculeMsReference reference:
+                    Name = $"{reference.Name} {reference.AdductType}";
+                    break;
+                case IMoleculeProperty property:
+                    Name = property.Name;
+                    break;
+                default:
+                    Name = $"Precursor m/z: {scan.PrecursorMz}";
+                    break;
             }
         }
 

@@ -19,6 +19,7 @@
             </ResourceDictionary.MergedDictionaries>
             <io:StyleFormatter x:Key="ReverseMsSpectrumFormatter" Style="{StaticResource ResourceKey=VerticalConcatChartFormal}"/>
             <io:SaveImageAsCommand x:Key="ReverseMsSpectrumSaveEmfCommand" Formatter="{StaticResource ReverseMsSpectrumFormatter}" Format="Emf"/>
+            <io:CopyImageAsCommand x:Key="ReverseMsSpectrumCopyEmfCommand" Formatter="{StaticResource ReverseMsSpectrumFormatter}" Format="Emf"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -32,6 +33,9 @@
                     <MenuItem Header="Save spectrum as nist format"
                               Command="{Binding PlacementTarget.DataContext.SaveUpperSpectrumCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     <MenuItem Header="Save image as...">
+                        <MenuItem Header="Save formatted image"
+                                  Command="{StaticResource ReverseMsSpectrumSaveEmfCommand}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                         <MenuItem Header="Save as emf"
                                   Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
@@ -39,10 +43,13 @@
                                   Command="{x:Static io:SaveImageAsCommand.PngInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
-                    <MenuItem Header="Save image"
-                              Command="{StaticResource ReverseMsSpectrumSaveEmfCommand}"
+                    <MenuItem Header="Save image using dialog"
+                              Command="{x:Static io:SaveImageAsWithDialogCommand.Instance}"
                               CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     <MenuItem Header="Copy image as...">
+                        <MenuItem Header="Copy formatted image"
+                                  Command="{StaticResource ReverseMsSpectrumCopyEmfCommand}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                         <MenuItem Header="Copy as emf"
                                   Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
@@ -50,6 +57,9 @@
                                   Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
+                    <MenuItem Header="Copy image using dialog"
+                              Command="{x:Static io:CopyImageAsWithDialogCommand.Instance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
             <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis.Value}">
@@ -90,7 +100,6 @@
                                  VerticalPropertyName="{Binding VerticalProperty.Value}"
                                  LabelPropertyName="{Binding LabelProperty.Value}"
                                  OrderingPropertyName="{Binding OrderingProperty.Value}"
-                                 Format="N4"
                                  Brush="Black"
                                  Overlap="Horizontal, Direct"
                                  ClipToBounds="True"/>
@@ -137,7 +146,6 @@
                                  LabelPropertyName="{Binding LabelProperty.Value}"
                                  OrderingPropertyName="{Binding OrderingProperty.Value}"
                                  ContentAlignment="BottomCenter"
-                                 Format="N4"
                                  Brush="Black"
                                  Overlap="Horizontal, Direct"
                                  ClipToBounds="True"/>

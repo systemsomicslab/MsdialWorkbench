@@ -17,11 +17,9 @@
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <io:SaveImageAsCommand x:Key="SaveFormattedChartCommand" Format="Emf">
-                <io:SaveImageAsCommand.Formatter>
-                    <io:StyleFormatter Style="{StaticResource VerticalAlignedChartFormal}"/>
-                </io:SaveImageAsCommand.Formatter>
-            </io:SaveImageAsCommand>
+            <io:StyleFormatter x:Key="FormattedChartFormatter" Style="{StaticResource VerticalAlignedChartFormal}"/>
+            <io:SaveImageAsCommand x:Key="SaveFormattedChartCommand" Formatter="{StaticResource FormattedChartFormatter}" Format="Emf"/>
+            <io:CopyImageAsCommand x:Key="CopyFormattedChartCommand" Formatter="{StaticResource FormattedChartFormatter}" Format="Emf"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid DataContext="{Binding RawPurifiedSpectrumsViewModel}"
@@ -40,6 +38,9 @@
                 <ContextMenu>
                     <StaticResource ResourceKey="SaveSpectra"/>
                     <MenuItem Header="Save image as...">
+                        <MenuItem Header="Save formatted image"
+                                  Command="{StaticResource SaveFormattedChartCommand}"
+                                  CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                         <MenuItem Header="Save as emf"
                                   Command="{x:Static io:SaveImageAsCommand.EmfInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
@@ -47,10 +48,13 @@
                                   Command="{x:Static io:SaveImageAsCommand.PngInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
-                    <MenuItem Header="Save chart image"
-                              Command="{StaticResource SaveFormattedChartCommand}"
-                              CommandParameter="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Save image using dialog"
+                              Command="{x:Static io:SaveImageAsWithDialogCommand.Instance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     <MenuItem Header="Copy image as...">
+                        <MenuItem Header="Copy formatted image"
+                                  Command="{StaticResource CopyFormattedChartCommand}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                         <MenuItem Header="Copy as emf"
                                   Command="{x:Static io:CopyImageAsCommand.EmfInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
@@ -58,6 +62,9 @@
                                   Command="{x:Static io:CopyImageAsCommand.BitmapInstance}"
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
+                    <MenuItem Header="Copy image using dialog"
+                              Command="{x:Static io:CopyImageAsWithDialogCommand.Instance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
             <Grid core:ChartBaseControl.VerticalAxis="{Binding UpperVerticalAxis}">
@@ -100,7 +107,6 @@
                                  VerticalPropertyName="{Binding VerticalProperty.Value}"
                                  LabelPropertyName="{Binding LabelProperty.Value}"
                                  OrderingPropertyName="{Binding OrderingProperty.Value}"
-                                 Format="N2"
                                  Brush="Black"
                                  Overlap="Horizontal, Direct"
                                  ClipToBounds="True"/>
@@ -145,7 +151,6 @@
                                  VerticalPropertyName="{Binding VerticalProperty.Value}"
                                  LabelPropertyName="{Binding LabelProperty.Value}"
                                  OrderingPropertyName="{Binding OrderingProperty.Value}"
-                                 Format="N2"
                                  Brush="Black"
                                  Overlap="Horizontal, Direct"
                                  ClipToBounds="True"/>

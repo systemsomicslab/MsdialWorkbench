@@ -95,9 +95,13 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ui:LabeledContent}">
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="{TemplateBinding PrependLabel}" Foreground="{TemplateBinding Foreground}" />
+                        <Label Content="{TemplateBinding PrependLabel}"
+                               Foreground="{TemplateBinding Foreground}"
+                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                         <ContentPresenter />
-                        <Label Content="{TemplateBinding AppendLabel}" Foreground="{TemplateBinding Foreground}" />
+                        <Label Content="{TemplateBinding AppendLabel}"
+                               Foreground="{TemplateBinding Foreground}"
+                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                     </StackPanel>
                 </ControlTemplate>
             </Setter.Value>

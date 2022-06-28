@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace CompMs.App.Msdial.View.Dims
 {
     /// <summary>
-    /// Interaction logic for MainView.xaml
+    /// Interaction logic for DimsMainView.xaml
     /// </summary>
-    public partial class MainView : UserControl
+    public partial class DimsMainView : UserControl
     {
-        public MainView() {
+        public DimsMainView() {
             InitializeComponent();
         }
 

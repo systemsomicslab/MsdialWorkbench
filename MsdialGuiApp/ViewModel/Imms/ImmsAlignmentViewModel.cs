@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -19,8 +20,9 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    internal sealed class AlignmentImmsVM : AlignmentFileViewModel {
-        public AlignmentImmsVM(
+    internal sealed class ImmsAlignmentViewModel : AlignmentFileViewModel, IAlignmentResultViewModel
+    {
+        public ImmsAlignmentViewModel(
             ImmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,

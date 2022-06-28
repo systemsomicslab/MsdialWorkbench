@@ -18,11 +18,11 @@ using System.Windows.Shapes;
 namespace CompMs.App.Msdial.View.Imms
 {
     /// <summary>
-    /// Interaction logic for MainView.xaml
+    /// Interaction logic for ImmsMainView.xaml
     /// </summary>
-    public partial class MainView : UserControl
+    public partial class ImmsMainView : UserControl
     {
-        public MainView() {
+        public ImmsMainView() {
             InitializeComponent();
 
             var tabChange = Observable.FromEvent<SelectionChangedEventHandler, SelectionChangedEventArgs>(

@@ -6,11 +6,11 @@ using System.Windows.Input;
 namespace CompMs.App.Msdial.View.Lcms
 {
     /// <summary>
-    /// Interaction logic for MainView.xaml
+    /// Interaction logic for LcmsMainView.xaml
     /// </summary>
-    public partial class MainView : UserControl
+    public partial class LcmsMainView : UserControl
     {
-        public MainView() {
+        public LcmsMainView() {
             InitializeComponent();
         }
 
