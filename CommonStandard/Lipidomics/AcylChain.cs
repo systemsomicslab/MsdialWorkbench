@@ -5,17 +5,6 @@ using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface IChain {
-        int CarbonCount { get; }
-        IDoubleBond DoubleBond { get; }
-        IOxidized Oxidized { get; }
-        int DoubleBondCount { get; }
-        int OxidizedCount { get; }
-        double Mass { get; }
-
-        IEnumerable<IChain> GetCandidates(IChainGenerator generator);
-    }
-
     public class AcylChain : IChain
     {
         public AcylChain(int carbonCount, IDoubleBond doubleBond, IOxidized oxidized) {
