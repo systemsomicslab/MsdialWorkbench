@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.AxisManager.Generic;
@@ -22,11 +23,10 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             IObservable<IAxisManager<double>> lowerVerticalAxisSource = null;
             FocusAction = focusAction;
             IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            IsFocused.Subscribe(x => Console.WriteLine($"RawDecSpectrumsViewModel IsFocused propoerty become {x}."));
 
             if (model.RawLoader is null) {
-                Ms2IdList = Observable.Return(new List<int>(0)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-                SelectedMs2Id = new ReactivePropertySlim<int>().AddTo(Disposables);
+                Ms2IdList = Observable.Return(new List<MsSelectionItem>(0)).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+                SelectedMs2Id = new ReactivePropertySlim<MsSelectionItem>().AddTo(Disposables);
             }
             else {
                 Ms2IdList = model.RawLoader.Ms2List.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -83,9 +83,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReactivePropertySlim<AxisItemModel> UpperVerticalAxis { get; }
 
-        public ReadOnlyReactivePropertySlim<List<int>> Ms2IdList { get; }
+        public ReadOnlyReactivePropertySlim<List<MsSelectionItem>> Ms2IdList { get; }
+        public ReactivePropertySlim<MsSelectionItem> SelectedMs2Id { get; }
 
-        public ReactivePropertySlim<int> SelectedMs2Id { get; }
         public Action FocusAction { get; }
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
     }

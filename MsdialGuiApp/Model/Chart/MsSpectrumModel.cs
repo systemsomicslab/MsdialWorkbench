@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;

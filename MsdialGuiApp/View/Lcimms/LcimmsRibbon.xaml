@@ -275,8 +275,12 @@
                           KeyTip="T"/>
         </RibbonGroup>
     </RibbonTab>
+    <chartSetting:ExpRefViewSettingRibbonTab ContextualTabGroupHeader="Graph tools"
+                                             DataContext="{Binding AnalysisViewModel.Value.RawDecSpectrumsViewModel}"
+                                             d:DataContext="{d:DesignInstance Type={x:Type vmchart:RawDecSpectrumsViewModel}}"
+                                             Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"/>
     <chartSetting:BarChartOfAlignedSpotSettingRibbonTab ContextualTabGroupHeader="Graph tools"
                                                         DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"
                                                         d:DataContext="{d:DesignInstance Type={x:Type vmchart:BarChartViewModel}}"
-                                                        Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}}"/>
+                                                        Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"/>
 </Ribbon>

@@ -153,6 +153,7 @@
     <Compile Include="Model\DataObj\SurveyScanSpectrum.cs" />
     <Compile Include="Model\Imms\ImmsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Loader\BarItemsLoaderData.cs" />
+    <Compile Include="Model\Loader\MsSelectionItem.cs" />
     <Compile Include="Model\Normalize\InternalStandardLowessNormalizeModel.cs" />
     <Compile Include="Model\Normalize\InternalStandardNormalizeModel.cs" />
     <Compile Include="Model\Normalize\IonAbundance.cs" />
@@ -290,7 +291,7 @@
     <Compile Include="Model\Dims\DimsEicModel.cs" />
     <Compile Include="Model\Dims\DimsMethodModel.cs" />
     <Compile Include="Model\Imms\ImmsAnalysisModel.cs" />
-    <Compile Include="Model\IMsSpectrumLoader.cs" />
+    <Compile Include="Model\Loader\IMsSpectrumLoader.cs" />
     <Compile Include="Model\Lcimms\LcimmsAlignmentModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
@@ -382,6 +383,9 @@
     </Compile>
     <Compile Include="View\ChartSetting\BarChartOfAlignedSpotSettingRibbonTab.xaml.cs">
       <DependentUpon>BarChartOfAlignedSpotSettingRibbonTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ChartSetting\ExpRefViewSettingRibbonTab.xaml.cs">
+      <DependentUpon>ExpRefViewSettingRibbonTab.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\AlignmentEicView.xaml.cs">
       <DependentUpon>AlignmentEicView.xaml</DependentUpon>
@@ -704,6 +708,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Resource>
     <Page Include="View\ChartSetting\BarChartOfAlignedSpotSettingRibbonTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ChartSetting\ExpRefViewSettingRibbonTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
