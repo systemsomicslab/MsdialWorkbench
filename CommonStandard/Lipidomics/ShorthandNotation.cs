@@ -1,3 +1,5 @@
+using CompMs.Common.DataStructure;
+
 namespace CompMs.Common.Lipidomics
 {
     internal class DoubleBondShorthandNotation
@@ -9,7 +11,7 @@ namespace CompMs.Common.Lipidomics
         }
 
     }
-    internal sealed class OxidizedShorthandNotation
+    internal sealed class OxidizedShorthandNotation : IVisitor<IOxidized, IOxidized>
     {
         public static OxidizedShorthandNotation All { get; } = new OxidizedShorthandNotation();
 
@@ -17,5 +19,11 @@ namespace CompMs.Common.Lipidomics
             
         }
 
+        public IOxidized Visit(IOxidized item) {
+            if (item.DecidedCount == 0) {
+                return item;
+            }
+            return new Oxidized(item.Count);
+        }
     }
 }

@@ -1,9 +1,10 @@
-﻿using System.Collections.ObjectModel;
+﻿using CompMs.Common.DataStructure;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface IOxidized
+    public interface IOxidized : IVisitableElement<IOxidized>
     {
         int Count { get; }
         int DecidedCount { get; }
@@ -27,13 +28,6 @@ namespace CompMs.Common.Lipidomics
 
         public ReadOnlyCollection<int> Oxidises { get; }
 
-        internal Oxidized Convert(OxidizedShorthandNotation notation) {
-            if (DecidedCount == 0) {
-                return this;
-            }
-            return new Oxidized(Count);
-        }
-
         public override string ToString() {
             if (Count == 0) {
                 return "";
@@ -52,6 +46,10 @@ namespace CompMs.Common.Lipidomics
 
         public static Oxidized CreateFromPosition(params int[] oxidises) {
             return new Oxidized(oxidises.Length, oxidises);
+        }
+
+        public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, IOxidized, TDecomposed> decomposer) {
+            return decomposer.Decompose(visitor, this);
         }
     }
 }
