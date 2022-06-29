@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace CompMs.Common.Lipidomics.Tests
 {
@@ -49,6 +50,22 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(0, db.UnDecidedCount);
             Assert.AreEqual(1, db.Bonds.Count);
             Assert.AreEqual("1(1)", db.ToString());
+        }
+
+        [TestMethod()]
+        [DataTestMethod]
+        [DynamicData(nameof(GetConvertTestData), DynamicDataSourceType.Method)]
+        public void DoubleBondConvertTest(DoubleBond db, int count, int decidedCount, int undecidedCount, string repr) {
+            Assert.AreEqual(count, db.Count);
+            Assert.AreEqual(decidedCount, db.DecidedCount);
+            Assert.AreEqual(undecidedCount, db.UnDecidedCount);
+            Assert.AreEqual(repr, db.ToString());
+        }
+
+        public static IEnumerable<object[]> GetConvertTestData() {
+            yield return new object[] { DoubleBond.CreateFromPosition().Convert(DoubleBondShorthandNotation.All), 0, 0, 0, "0", };
+            yield return new object[] { DoubleBond.CreateFromPosition(1).Convert(DoubleBondShorthandNotation.All), 1, 0, 1, "1", };
+            yield return new object[] { DoubleBond.CreateFromPosition(9, 11).Convert(DoubleBondShorthandNotation.All), 2, 0, 2, "2", };
         }
     }
 }

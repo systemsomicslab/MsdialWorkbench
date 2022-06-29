@@ -16,7 +16,7 @@ namespace CompMs.Common.Lipidomics
         IDoubleBond Decide(params IDoubleBondInfo[] infos);
     }
 
-    public class DoubleBond : IDoubleBond
+    public sealed class DoubleBond : IDoubleBond
     {
         public DoubleBond(int count, IList<IDoubleBondInfo> bonds) {
             Count = count;
@@ -48,6 +48,14 @@ namespace CompMs.Common.Lipidomics
                 return null;
             }
             return new DoubleBond(Count, Bonds.Concat(infos).OrderBy(x => x.Position).ToArray());
+        }
+
+        internal DoubleBond Convert(DoubleBondShorthandNotation notation) {
+            if (DecidedCount == 0) {
+                return this;
+            }
+
+            return new DoubleBond(Count);
         }
 
         public static DoubleBond CreateFromPosition(params int[] positions) {
@@ -111,6 +119,14 @@ namespace CompMs.Common.Lipidomics
                 default:
                     return $"{Position}";
             }
+        }
+
+        public override bool Equals(object obj) {
+            return obj is DoubleBondInfo info && Position == info.Position && State == info.State;
+        }
+
+        public override int GetHashCode() {
+            return (Position, State).GetHashCode();
         }
     }
 }
