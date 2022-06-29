@@ -55,6 +55,9 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(CreateAlignedChromatogramModificationDialog);
             broker.ToObservable<SampleTableViewerInAlignmentViewModelLegacy>()
                 .Subscribe(CreateSampleTableViewerDialog);
+#if DEBUG
+            System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
+#endif
         }
 
         private readonly IMessageBroker broker;

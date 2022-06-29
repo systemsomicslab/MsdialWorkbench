@@ -13,7 +13,7 @@ using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    public class SingleSpectrumModel : DisposableModelBase
+    public sealed class SingleSpectrumModel : DisposableModelBase
     {
         public SingleSpectrumModel(
             IObservable<List<SpectrumPeak>> spectrum,
@@ -50,6 +50,9 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Select(p => p.First != null && p.Second != null)
                 .ToReadOnlyReactivePropertySlim(false)
                 .AddTo(Disposables);
+
+            IsVisible = new ReactivePropertySlim<bool>(true).AddTo(Disposables);
+            LineThickness = new ReactivePropertySlim<double>(2d).AddTo(Disposables);
         }
 
         public IObservable<List<SpectrumPeak>> Spectrum { get; }
@@ -60,6 +63,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public PropertySelector<SpectrumPeak, double> VerticalPropertySelector { get; }
         public IObservable<IBrushMapper> Brush { get; }
         public string HueProperty { get; }
+        public ReactivePropertySlim<bool> IsVisible { get; }
+        public ReactivePropertySlim<double> LineThickness { get; }
 
         private readonly Subject<Stream> SaveAsObservable;
 

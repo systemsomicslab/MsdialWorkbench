@@ -50,7 +50,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, focusAction, focused).AddTo(Disposables);
             EicViewModel = new EicViewModel(_model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
             
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(_model.Ms2SpectrumModel).AddTo(Disposables);
+            var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(_model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
             PeakTableViewModel = new DimsAnalysisPeakTableViewModel(
                 _model.PeakTableModel,
                 Observable.Return(_model.EicLoader),
