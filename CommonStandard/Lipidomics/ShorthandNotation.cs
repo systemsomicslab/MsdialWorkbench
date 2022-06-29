@@ -1,4 +1,4 @@
-﻿namespace CompMs.Common.Lipidomics
+namespace CompMs.Common.Lipidomics
 {
     internal class DoubleBondShorthandNotation
     {
@@ -7,5 +7,15 @@
         private DoubleBondShorthandNotation() {
 
         }
+
+    }
+    internal sealed class OxidizedShorthandNotation
+    {
+        public static OxidizedShorthandNotation All { get; } = new OxidizedShorthandNotation();
+
+        private OxidizedShorthandNotation() {
+            
+        }
+
     }
 }

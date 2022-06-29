@@ -12,7 +12,7 @@ namespace CompMs.Common.Lipidomics
         ReadOnlyCollection<int> Oxidises { get; }
     }
 
-    public class Oxidized : IOxidized
+    public sealed class Oxidized : IOxidized
     {
         public Oxidized(int count, params int[] oxidises) {
             Count = count;
@@ -26,6 +26,13 @@ namespace CompMs.Common.Lipidomics
         public int UnDecidedCount => Count - DecidedCount;
 
         public ReadOnlyCollection<int> Oxidises { get; }
+
+        internal Oxidized Convert(OxidizedShorthandNotation notation) {
+            if (DecidedCount == 0) {
+                return this;
+            }
+            return new Oxidized(Count);
+        }
 
         public override string ToString() {
             if (Count == 0) {
