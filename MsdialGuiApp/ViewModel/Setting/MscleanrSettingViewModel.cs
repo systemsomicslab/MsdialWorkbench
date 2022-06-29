@@ -11,9 +11,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
-
             this.model = model;
-            BlankRatioMinimum = model.BlankRatioMinimum.ToString();
+            this.BlankRatioMinimum = model.BlankRatioMinimum.ToString();
+            this.RSDMaximum = model.RSDMaximum.ToString();
+            this.RMDMinimum = model.RMDMinimum.ToString();
+            this.RMDMaximum = model.RMDMaximum.ToString();
+            MscleanrFilterCommand.RaiseCanExecuteChanged();
+            //BlankRatioMinimum = model.BlankRatioMinimum.ToString();
         }
 
         public bool BlankRatioChecked {
@@ -34,8 +38,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             get => _blankRatioMinimum;
             set
             {
-                if(SetProperty(ref _blankRatioMinimum, value) && !ContainsError(nameof(BlankRatioMinimum))) {
-                    model.BlankRatioMinimumZZZ = double.Parse(value);
+                if (SetProperty(ref _blankRatioMinimum, value))
+                {
+                    if (!ContainsError(nameof(BlankRatioMinimum)))
+                    {
+                        model.BlankRatioMinimum = double.Parse(value);
+                    }
+                    MscleanrFilterCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -81,8 +90,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             get => _RSDMaximum;
             set
             {
-                if (SetProperty(ref _RSDMaximum, value) && !ContainsError(nameof(RSDMaximum))) {
-                    model.RSDMaximum = double.Parse(value);
+                if (SetProperty(ref _RSDMaximum, value))
+                {
+                    if (!ContainsError(nameof(RSDMaximum)))
+                    {
+                        model.RSDMaximum = double.Parse(value);
+                    }
+                    MscleanrFilterCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -106,8 +120,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             get => _RMDMinimum;
             set
             {
-                if (SetProperty(ref _RMDMinimum, value) && !ContainsError(nameof(RMDMinimum))) {
-                    model.RMDMinimum = double.Parse(value);
+                if (SetProperty(ref _RMDMinimum, value))
+                {
+                    if (!ContainsError(nameof(RMDMinimum)))
+                    {
+                        model.RMDMinimum = double.Parse(value);
+                    }
+                    MscleanrFilterCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -120,10 +139,16 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
             get => _RMDMaximum;
             set
             {
-                if (SetProperty(ref _RMDMaximum, value) && !ContainsError(nameof(RMDMaximum))) {
-                    model.RMDMaximum = double.Parse(value);
+                if (SetProperty(ref _RMDMaximum, value))
+                {
+                    if (!ContainsError(nameof(RMDMaximum)))
+                    {
+                        model.RMDMaximum = double.Parse(value);
+                    }
+                    MscleanrFilterCommand.RaiseCanExecuteChanged();
                 }
             }
+
         }
         private string _RMDMaximum;
 
@@ -138,7 +163,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         //}
         //private string _blankRatioMinimum;
 
-        public DelegateCommand MscleanrFilterCommand => mscleanrFilterCommand ?? (mscleanrFilterCommand = new DelegateCommand(model.RunMscleanrFilter));//, Model.CanNormalize));
+        public DelegateCommand MscleanrFilterCommand => mscleanrFilterCommand ?? (mscleanrFilterCommand = new DelegateCommand(model.RunMscleanrFilter, () => !HasValidationErrors));//, Model.CanNormalize));
         private DelegateCommand mscleanrFilterCommand;
 
     }

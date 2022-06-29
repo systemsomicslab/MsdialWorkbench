@@ -990,7 +990,7 @@ namespace CompMs.MsdialCore.Parameter {
     [MessagePackObject]
     public class PostCuratorParameter {
         [Key(0)]
-        public double FilterBlankThreshold { get; set; } = 0.8;
+        public double FilterBlankThreshold { get; set; }
         [Key(1)]
         public bool IsBlankFilter { get; set; } = false;
         [Key(2)]
@@ -1000,13 +1000,13 @@ namespace CompMs.MsdialCore.Parameter {
         [Key(4)]
         public bool IsRsdFilter { get; set; } = false;
         [Key(5)]
-        public double FilterRsdThreshold { get; set; } = 30.0;
+        public double FilterRsdThreshold { get; set; }
         [Key(6)]
         public bool IsRmdFilter { get; set; } = false;
         [Key(7)]
-        public double FilterMinRmdThreshold { get; set; } = 50.0;
+        public double FilterMinRmdThreshold { get; set; }
         [Key(8)]
-        public double FilterMaxRmdThreshold { get; set; } = 3000.0;
+        public double FilterMaxRmdThreshold { get; set; }
     }
 
     [MessagePackObject]

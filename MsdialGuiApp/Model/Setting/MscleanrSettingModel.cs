@@ -20,12 +20,6 @@ namespace CompMs.App.Msdial.Model.Setting {
         private bool blankRatioChecked;
 
 
-        public double BlankRatioMinimumZZZ {
-            get => blankRatioMinimumZZZ;
-            set => SetProperty(ref blankRatioMinimumZZZ, value);
-        }
-        private double blankRatioMinimumZZZ;
-
         public double BlankRatioMinimum {
             get => blankRatioMinimum;
             set => SetProperty(ref blankRatioMinimum, value);
@@ -102,6 +96,10 @@ namespace CompMs.App.Msdial.Model.Setting {
             postcurparam.IsMzFilter = IncorrectMassChecked;
             postcurparam.IsRmdFilter = RMDChecked;
             postcurparam.IsRsdFilter = RSDChecked;
+            postcurparam.FilterBlankThreshold = BlankRatioMinimum;
+            postcurparam.FilterRsdThreshold = RSDMaximum;
+            postcurparam.FilterMinRmdThreshold = RMDMinimum;
+            postcurparam.FilterMaxRmdThreshold = RMDMaximum;
 
             // process
             //foreach (var spot in _spots) {
