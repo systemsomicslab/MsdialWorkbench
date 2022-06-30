@@ -2,12 +2,34 @@ using CompMs.Common.DataStructure;
 
 namespace CompMs.Common.Lipidomics
 {
-    internal class AcylChainShorthandNotation : IVisitor<AcylChain, AcylChain>
+    internal class AlkylChainShorthandNotation : IVisitor<AlkylChain, AlkylChain>
     {
-        public static AcylChainShorthandNotation All { get; } = new AcylChainShorthandNotation(DoubleBondShorthandNotation.All, OxidizedShorthandNotation.All);
-
         private readonly DoubleBondShorthandNotation _doubleBondNotation;
         private readonly OxidizedShorthandNotation _oxidizedNotation;
+
+        public static AlkylChainShorthandNotation All { get; } = new AlkylChainShorthandNotation(DoubleBondShorthandNotation.All, OxidizedShorthandNotation.All);
+
+        private AlkylChainShorthandNotation(DoubleBondShorthandNotation doubleBondNotation, OxidizedShorthandNotation oxidizedNotation) {
+            _doubleBondNotation = doubleBondNotation ?? throw new System.ArgumentNullException(nameof(doubleBondNotation));
+            _oxidizedNotation = oxidizedNotation ?? throw new System.ArgumentNullException(nameof(oxidizedNotation));
+        }
+
+        public AlkylChain Visit(AlkylChain item) {
+            var db = _doubleBondNotation.Visit(item.DoubleBond);
+            var ox = _oxidizedNotation.Visit(item.Oxidized);
+            if (db == item.DoubleBond && ox == item.Oxidized) {
+                return item;
+            }
+            return new AlkylChain(item.CarbonCount, db, ox);
+        }
+    }
+
+    internal class AcylChainShorthandNotation : IVisitor<AcylChain, AcylChain>
+    {
+        private readonly DoubleBondShorthandNotation _doubleBondNotation;
+        private readonly OxidizedShorthandNotation _oxidizedNotation;
+
+        public static AcylChainShorthandNotation All { get; } = new AcylChainShorthandNotation(DoubleBondShorthandNotation.All, OxidizedShorthandNotation.All);
 
         private AcylChainShorthandNotation(DoubleBondShorthandNotation doubleBondNotation, OxidizedShorthandNotation oxidizedNotation) {
             _doubleBondNotation = doubleBondNotation ?? throw new System.ArgumentNullException(nameof(doubleBondNotation));

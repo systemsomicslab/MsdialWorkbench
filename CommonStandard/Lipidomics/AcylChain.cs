@@ -55,7 +55,7 @@ namespace CompMs.Common.Lipidomics
         }
     }
 
-    public class AlkylChain : IChain
+    public class AlkylChain : IChain, IVisitableElement<AlkylChain>
     {
         public AlkylChain(int carbonCount, IDoubleBond doubleBond, IOxidized oxidized) {
             CarbonCount = carbonCount;
@@ -112,6 +112,10 @@ namespace CompMs.Common.Lipidomics
             else {
                 throw new ArgumentException("Plasmalogens must have more than 1 double bonds.");
             }
+        }
+
+        public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, AlkylChain, TDecomposed> decomposer) {
+            return decomposer.Decompose(visitor, this);
         }
     }
 
