@@ -11,6 +11,8 @@ namespace CompMs.Common.Lipidomics
 
         public static AlkylChainShorthandNotation All { get; } = new AlkylChainShorthandNotation(DoubleBondShorthandNotation.All, OxidizedShorthandNotation.All);
 
+        public static AlkylChainShorthandNotation AllForPlasmalogen { get; } = new AlkylChainShorthandNotation(DoubleBondShorthandNotation.AllForPlasmalogen, OxidizedShorthandNotation.All);
+
         private AlkylChainShorthandNotation(DoubleBondShorthandNotation doubleBondNotation, OxidizedShorthandNotation oxidizedNotation) {
             _doubleBondNotation = doubleBondNotation ?? throw new System.ArgumentNullException(nameof(doubleBondNotation));
             _oxidizedNotation = oxidizedNotation ?? throw new System.ArgumentNullException(nameof(oxidizedNotation));
@@ -65,7 +67,7 @@ namespace CompMs.Common.Lipidomics
                 return item;
             }
             if (_excludes.Length == 0) {
-            return new DoubleBond(item.Count);
+                return new DoubleBond(item.Count);
             }
             else {
                 return new DoubleBond(item.Count, Product(item.Bonds));
