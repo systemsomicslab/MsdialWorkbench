@@ -2,7 +2,7 @@ using CompMs.Common.DataStructure;
 
 namespace CompMs.Common.Lipidomics
 {
-    internal class DoubleBondShorthandNotation
+    internal class DoubleBondShorthandNotation : IVisitor<IDoubleBond, IDoubleBond>
     {
         public static DoubleBondShorthandNotation All { get; } = new DoubleBondShorthandNotation();
 
@@ -10,6 +10,12 @@ namespace CompMs.Common.Lipidomics
 
         }
 
+        public IDoubleBond Visit(IDoubleBond item) {
+            if (item.DecidedCount == 0) {
+                return item;
+            }
+            return new DoubleBond(item.Count);
+        }
     }
     internal sealed class OxidizedShorthandNotation : IVisitor<IOxidized, IOxidized>
     {

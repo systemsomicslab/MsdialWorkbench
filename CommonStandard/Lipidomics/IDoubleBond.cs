@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using CompMs.Common.DataStructure;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface IDoubleBond
+    public interface IDoubleBond : IVisitableElement<IDoubleBond>
     {
         int Count { get; }
         int DecidedCount { get; }
@@ -50,14 +51,6 @@ namespace CompMs.Common.Lipidomics
             return new DoubleBond(Count, Bonds.Concat(infos).OrderBy(x => x.Position).ToArray());
         }
 
-        internal DoubleBond Convert(DoubleBondShorthandNotation notation) {
-            if (DecidedCount == 0) {
-                return this;
-            }
-
-            return new DoubleBond(Count);
-        }
-
         public static DoubleBond CreateFromPosition(params int[] positions) {
             return new DoubleBond(positions.Length, positions.Select(p => DoubleBondInfo.Create(p)).ToArray());
         }
@@ -69,6 +62,10 @@ namespace CompMs.Common.Lipidomics
             else {
                 return Count.ToString();
             }
+        }
+
+        public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, IDoubleBond, TDecomposed> decomposer) {
+            return decomposer.Decompose(visitor, this);
         }
     }
 

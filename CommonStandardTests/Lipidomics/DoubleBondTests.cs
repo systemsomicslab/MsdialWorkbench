@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using CompMs.Common.DataStructure;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
 namespace CompMs.Common.Lipidomics.Tests
@@ -54,18 +55,20 @@ namespace CompMs.Common.Lipidomics.Tests
 
         [TestMethod()]
         [DataTestMethod]
-        [DynamicData(nameof(GetConvertTestData), DynamicDataSourceType.Method)]
-        public void DoubleBondConvertTest(DoubleBond db, int count, int decidedCount, int undecidedCount, string repr) {
+        [DynamicData(nameof(GetAcceptTestData), DynamicDataSourceType.Method)]
+        public void DoubleBondAcceptTest(DoubleBond db, int count, int decidedCount, int undecidedCount, string repr) {
             Assert.AreEqual(count, db.Count);
             Assert.AreEqual(decidedCount, db.DecidedCount);
             Assert.AreEqual(undecidedCount, db.UnDecidedCount);
             Assert.AreEqual(repr, db.ToString());
         }
 
-        public static IEnumerable<object[]> GetConvertTestData() {
-            yield return new object[] { DoubleBond.CreateFromPosition().Convert(DoubleBondShorthandNotation.All), 0, 0, 0, "0", };
-            yield return new object[] { DoubleBond.CreateFromPosition(1).Convert(DoubleBondShorthandNotation.All), 1, 0, 1, "1", };
-            yield return new object[] { DoubleBond.CreateFromPosition(9, 11).Convert(DoubleBondShorthandNotation.All), 2, 0, 2, "2", };
+        public static IEnumerable<object[]> GetAcceptTestData() {
+            var visitor = DoubleBondShorthandNotation.All;
+            var decomposer = new IdentityDecomposer<IDoubleBond, IDoubleBond>();
+            yield return new object[] { DoubleBond.CreateFromPosition().Accept(visitor, decomposer), 0, 0, 0, "0", };
+            yield return new object[] { DoubleBond.CreateFromPosition(1).Accept(visitor, decomposer), 1, 0, 1, "1", };
+            yield return new object[] { DoubleBond.CreateFromPosition(9, 11).Accept(visitor, decomposer), 2, 0, 2, "2", };
         }
     }
 }
