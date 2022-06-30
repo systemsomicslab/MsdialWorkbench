@@ -1,11 +1,12 @@
-﻿using CompMs.Common.FormulaGenerator.DataObj;
+﻿using CompMs.Common.DataStructure;
+using CompMs.Common.FormulaGenerator.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public class AcylChain : IChain
+    public class AcylChain : IChain, IVisitableElement<AcylChain>
     {
         public AcylChain(int carbonCount, IDoubleBond doubleBond, IOxidized oxidized) {
             CarbonCount = carbonCount;
@@ -47,6 +48,10 @@ namespace CompMs.Common.Lipidomics
                 return MassDiffDictionary.HydrogenMass;
             }
             return carbon * MassDiffDictionary.CarbonMass + (2 * carbon - 2 * doubleBond - 1) * MassDiffDictionary.HydrogenMass + (1 + oxidize) * MassDiffDictionary.OxygenMass;
+        }
+
+        public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, AcylChain, TDecomposed> decomposer) {
+            return decomposer.Decompose(visitor, this);
         }
     }
 
