@@ -69,6 +69,11 @@ namespace CompMs.Common.Lipidomics.Tests
             yield return new object[] { DoubleBond.CreateFromPosition().Accept(visitor, decomposer), 0, 0, 0, "0", };
             yield return new object[] { DoubleBond.CreateFromPosition(1).Accept(visitor, decomposer), 1, 0, 1, "1", };
             yield return new object[] { DoubleBond.CreateFromPosition(9, 11).Accept(visitor, decomposer), 2, 0, 2, "2", };
+
+            visitor = DoubleBondShorthandNotation.CreateExcludes(9);
+            yield return new object[] { DoubleBond.CreateFromPosition().Accept(visitor, decomposer), 0, 0, 0, "0", };
+            yield return new object[] { DoubleBond.CreateFromPosition(1).Accept(visitor, decomposer), 1, 0, 1, "1", };
+            yield return new object[] { DoubleBond.CreateFromPosition(9, 11).Accept(visitor, decomposer), 2, 1, 1, "2(9)", };
         }
     }
 }

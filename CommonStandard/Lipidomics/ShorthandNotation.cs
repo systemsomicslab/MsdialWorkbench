@@ -1,4 +1,6 @@
 using CompMs.Common.DataStructure;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
@@ -48,17 +50,40 @@ namespace CompMs.Common.Lipidomics
 
     internal class DoubleBondShorthandNotation : IVisitor<IDoubleBond, IDoubleBond>
     {
-        public static DoubleBondShorthandNotation All { get; } = new DoubleBondShorthandNotation();
+        private readonly int[] _excludes;
 
-        private DoubleBondShorthandNotation() {
+        public static DoubleBondShorthandNotation All { get; } = new DoubleBondShorthandNotation(new int[0]);
 
+        public static DoubleBondShorthandNotation AllForPlasmalogen { get; } = new DoubleBondShorthandNotation(new[] { 1, });
+
+        private DoubleBondShorthandNotation(params int[] excludes) {
+            _excludes = excludes;
         }
 
         public IDoubleBond Visit(IDoubleBond item) {
             if (item.DecidedCount == 0) {
                 return item;
             }
+            if (_excludes.Length == 0) {
             return new DoubleBond(item.Count);
+            }
+            else {
+                return new DoubleBond(item.Count, Product(item.Bonds));
+            }
+        }
+
+        private List<IDoubleBondInfo> Product(IEnumerable<IDoubleBondInfo> bonds) {
+            var results = new List<IDoubleBondInfo>();
+            foreach (var bond in bonds) {
+                if (_excludes.Contains(bond.Position)) {
+                    results.Add(bond);
+                }
+            }
+            return results;
+        }
+
+        public static DoubleBondShorthandNotation CreateExcludes(params int[] excludes) {
+            return new DoubleBondShorthandNotation(excludes);
         }
     }
 
