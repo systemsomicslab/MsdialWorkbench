@@ -64,6 +64,10 @@ namespace CompMs.Common.Lipidomics
             }
         }
 
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IDoubleBond, TDecomposed> decomposer) {
+            return decomposer.Decompose(visitor, this);
+        }
+
         public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, IDoubleBond, TDecomposed> decomposer) {
             return decomposer.Decompose(visitor, this);
         }

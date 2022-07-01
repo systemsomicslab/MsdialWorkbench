@@ -23,15 +23,21 @@ namespace CompMs.Common.DataStructure.Tests
 
     internal class IntDecomposer : IDecomposer<string, int, int>
     {
-        public string Decompose(IVisitor<string, int> visitor, int element) {
-            return visitor.Visit(element);
+        public string Decompose(IAcyclicVisitor visitor, int element) {
+            if (visitor is IVisitor<string, int> vis) {
+                return vis.Visit(element);
+            }
+            return string.Empty;
         }
     }
 
     internal class IntListDecomposer : IDecomposer<string, List<int>, int>
     {
-        public string Decompose(IVisitor<string, int> visitor, List<int> element) {
-            return string.Join(",", element.Select(visitor.Visit));
+        public string Decompose(IAcyclicVisitor visitor, List<int> element) {
+            if (visitor is IVisitor<string, int> vis) {
+                return string.Join(",", element.Select(vis.Visit));
+            }
+            return string.Empty;
         }
     }
 
@@ -48,6 +54,10 @@ namespace CompMs.Common.DataStructure.Tests
 
         public Visitable(TElement element) {
             _element = element;
+        }
+
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, TElement, TDecomposed> decomposer) {
+            return decomposer.Decompose(visitor, _element);
         }
 
         public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, TElement, TDecomposed> decomposer) {

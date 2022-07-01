@@ -54,7 +54,7 @@ namespace CompMs.Common.Lipidomics
             return new Oxidized(oxidises.Length, oxidises);
         }
 
-        public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, IOxidized, TDecomposed> decomposer) {
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IOxidized, TDecomposed> decomposer) {
             return decomposer.Decompose(visitor, this);
         }
     }

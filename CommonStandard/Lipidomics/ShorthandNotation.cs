@@ -157,23 +157,6 @@ namespace CompMs.Common.Lipidomics
         }
     }
 
-    internal class ChainDecomposer<TResult> : IDecomposer<TResult, IChain, (IChain, IDoubleBond, IOxidized)>, IDecomposer<IDoubleBond, IChain, IDoubleBond>, IDecomposer<IOxidized, IChain, IOxidized>
-    {
-        public TResult Decompose(IVisitor<TResult, (IChain, IDoubleBond, IOxidized)> visitor, IChain element) {
-            var db = visitor is IVisitor<IDoubleBond, IDoubleBond> dbVisitor ? element.Accept(dbVisitor, this) : element.DoubleBond;
-            var ox = visitor is IVisitor<IOxidized, IOxidized> oxVisitor ? element.Accept(oxVisitor, this) : element.Oxidized;
-            return visitor.Visit((element, db, ox));
-        }
-
-        public IDoubleBond Decompose(IVisitor<IDoubleBond, IDoubleBond> visitor, IChain element) {
-            return visitor.Visit(element.DoubleBond);
-        }
-
-        public IOxidized Decompose(IVisitor<IOxidized, IOxidized> visitor, IChain element) {
-            return visitor.Visit(element.Oxidized);
-        }
-    }
-
     internal class DoubleBondShorthandNotation : IVisitor<IDoubleBond, IDoubleBond>
     {
         private readonly int[] _excludes;

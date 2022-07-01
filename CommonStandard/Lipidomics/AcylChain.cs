@@ -50,11 +50,11 @@ namespace CompMs.Common.Lipidomics
             return carbon * MassDiffDictionary.CarbonMass + (2 * carbon - 2 * doubleBond - 1) * MassDiffDictionary.HydrogenMass + (1 + oxidize) * MassDiffDictionary.OxygenMass;
         }
 
-        public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, IChain, TDecomposed> decomposer) {
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IChain, TDecomposed> decomposer) {
             return decomposer.Decompose(visitor, this);
         }
 
-        public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, AcylChain, TDecomposed> decomposer) {
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, AcylChain, TDecomposed> decomposer) {
             return decomposer.Decompose(visitor, this);
         }
     }
@@ -118,11 +118,11 @@ namespace CompMs.Common.Lipidomics
             }
         }
 
-        public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, AlkylChain, TDecomposed> decomposer) {
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IChain, TDecomposed> decomposer) {
             return decomposer.Decompose(visitor, this);
         }
 
-        public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, IChain, TDecomposed> decomposer) {
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, AlkylChain, TDecomposed> decomposer) {
             return decomposer.Decompose(visitor, this);
         }
     }
@@ -164,11 +164,11 @@ namespace CompMs.Common.Lipidomics
             return generator.Generate(this);
         }
 
-        public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, SphingoChain, TDecomposed> decomposer) {
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IChain, TDecomposed> decomposer) {
             return decomposer.Decompose(visitor, this);
         }
 
-        public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, IChain, TDecomposed> decomposer) {
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, SphingoChain, TDecomposed> decomposer) {
             return decomposer.Decompose(visitor, this);
         }
 
