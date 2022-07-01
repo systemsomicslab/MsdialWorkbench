@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.DataStructure;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -15,6 +16,11 @@ namespace CompMs.Common.Lipidomics
 
     public sealed class Oxidized : IOxidized
     {
+        public Oxidized(int count, IList<int> oxidises) {
+            Count = count;
+            Oxidises = new ReadOnlyCollection<int>(oxidises);
+        }
+
         public Oxidized(int count, params int[] oxidises) {
             Count = count;
             Oxidises = new ReadOnlyCollection<int>(oxidises);

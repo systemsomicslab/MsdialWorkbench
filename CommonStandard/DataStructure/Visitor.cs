@@ -10,7 +10,7 @@
         TResult Decompose(IVisitor<TResult, TDecomposed> visitor, TElement element);
     }
 
-    public interface IVisitableElement<TElement>
+    public interface IVisitableElement<out TElement>
     {
         TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, TElement, TDecomposed> decomposer);
     }

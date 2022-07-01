@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using CompMs.Common.DataStructure;
+using System.Collections.Generic;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface IChain {
+    public interface IChain : IVisitableElement<IChain> {
         int CarbonCount { get; }
         IDoubleBond DoubleBond { get; }
         IOxidized Oxidized { get; }

@@ -11,7 +11,7 @@ namespace CompMs.Common.Lipidomics.Tests
         [DataTestMethod]
         [DynamicData(nameof(GetAcylChainAcceptTestData), DynamicDataSourceType.Method)]
         public void VisitTest(AcylChain chain) {
-            var visitor = AcylChainShorthandNotation.All;
+            var visitor = AcylChainShorthandNotation.Default;
             var decomposer = new IdentityDecomposer<AcylChain, AcylChain>();
             var actual = chain.Accept(visitor, decomposer);
             Assert.AreEqual(chain.CarbonCount, actual.CarbonCount);
