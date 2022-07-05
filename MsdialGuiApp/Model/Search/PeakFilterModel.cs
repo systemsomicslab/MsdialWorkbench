@@ -26,7 +26,12 @@ namespace CompMs.App.Msdial.Model.Search
                 && (!checkedFilter.All(DisplayFilter.MolecularIon) || filterable.IsBaseIsotopeIon)
                 && (!checkedFilter.All(DisplayFilter.Blank) || !filterable.IsBlankFiltered)
                 && (!checkedFilter.All(DisplayFilter.UniqueIons) || filterable.IsFragmentQueryExisted)
-                && (!checkedFilter.All(DisplayFilter.ManuallyModified) || filterable.IsManuallyModifiedForAnnotation);
+                && (!checkedFilter.All(DisplayFilter.ManuallyModified) || filterable.IsManuallyModifiedForAnnotation)
+                && (!checkedFilter.All(DisplayFilter.MscleanrBlank) || !filterable.IsBlankFilteredByPostCurator)
+                && (!checkedFilter.All(DisplayFilter.MscleanrBlankGhost) || !filterable.IsBlankGhostFilteredByPostCurator)
+                && (!checkedFilter.All(DisplayFilter.MscleanrIncorrectMass) || !filterable.IsMzFilteredByPostCurator)
+                && (!checkedFilter.All(DisplayFilter.MscleanrRsd) || !filterable.IsRsdFilteredByPostCurator)
+                && (!checkedFilter.All(DisplayFilter.MscleanrRmd) || !filterable.IsRmdFilteredByPostCurator);
         }
 
         private bool AnnotationFilter(IAnnotatedObject spot, IMatchResultEvaluator<MsScanMatchResult> evaluator) {

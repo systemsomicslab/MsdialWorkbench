@@ -136,6 +136,11 @@ namespace CompMs.App.Msdial.Model.DataObj
         bool IFilterable.IsBaseIsotopeIon => innerModel.PeakCharacter.IsotopeWeightNumber == 0;
         bool IFilterable.IsBlankFiltered => innerModel.FeatureFilterStatus.IsBlankFiltered;
         bool IFilterable.IsManuallyModifiedForAnnotation => innerModel.IsManuallyModifiedForAnnotation;
+        bool IFilterable.IsBlankFilteredByPostCurator => true;
+        bool IFilterable.IsBlankGhostFilteredByPostCurator => true;
+        bool IFilterable.IsMzFilteredByPostCurator => true;
+        bool IFilterable.IsRmdFilteredByPostCurator => true;
+        bool IFilterable.IsRsdFilteredByPostCurator => true;
 
         double IFilterable.RelativeAmplitudeValue => innerModel.PeakShape.AmplitudeScoreValue;
 

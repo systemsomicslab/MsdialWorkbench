@@ -72,12 +72,13 @@ namespace CompMs.Graphics.AxisManager
             targets = tmps.Select(tmp => tmp.target).ToList();
             minTree = new SegmentTree<AxisValue>(targets.Count, new AxisValue(double.MaxValue), (u, v) => Math.Min(u.Value, v.Value));
             maxTree = new SegmentTree<AxisValue>(targets.Count, new AxisValue(double.MinValue), (u, v) => Math.Max(u.Value, v.Value));
-            foreach ((var tmp, var idx) in tmps.WithIndex()) {
-                minTree.Set(idx, tmp.value);
-                maxTree.Set(idx, tmp.value);
+            using (minTree.LazyUpdate())
+            using (maxTree.LazyUpdate()) {
+                foreach ((var tmp, var idx) in tmps.WithIndex()) {
+                    minTree[idx] = tmp.value;
+                    maxTree[idx] = tmp.value;
+                }
             }
-            minTree.Build();
-            maxTree.Build();
         }
 
         protected override void SetAxisStates() {

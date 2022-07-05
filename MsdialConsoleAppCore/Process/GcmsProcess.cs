@@ -61,6 +61,9 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
             var rdamProperty = AnalysisFilesParser.GetRdamProperty(analysisFiles);
             var alignmentFile = AlignmentResultParser.GetAlignmentFileBean(inputFolder);
 
+            //get file properties in project prop
+            projectProp = getFilePropertyDictionaryFromAnalysisFiles(projectProp, analysisFiles);
+
             if (gcmsParam.RiDictionaryFilePath != string.Empty)
             {
                 var errorMessage = string.Empty;
@@ -178,6 +181,18 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
             }
         }
 
+        private static ProjectPropertyBean getFilePropertyDictionaryFromAnalysisFiles(ProjectPropertyBean projectProp, List<AnalysisFileBean> analysisFiles)
+        {
+            for (int i = 0; i < analysisFiles.Count; i++)
+            {
+                projectProp.FileID_RdamID[i] = i;
+                projectProp.FileID_ClassName[i] = analysisFiles[i].AnalysisFilePropertyBean.AnalysisFileClass;
+                projectProp.FileID_AnalysisFileType[i] = analysisFiles[i].AnalysisFilePropertyBean.AnalysisFileType;
+            }
+
+            return projectProp;
+        }
+
         private static int Execute(ProjectPropertyBean projectProp, RdamPropertyBean rdamProperty, List<AnalysisFileBean> analysisFiles, 
             AnalysisParamOfMsdialGcms gcmsParam, List<MspFormatCompoundInformationBean> mspDB, 
             AlignmentFileBean alignmentFile, string outputfolder, bool isProjectStore)
@@ -206,7 +221,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
 
                 PeakAlignment.JointAligner(projectProp, new ObservableCollection<AnalysisFileBean>(analysisFiles), gcmsParam, alignmentResult, mspDB, null);
                 Console.WriteLine("Joint aligner finished");
-                
+
                 PeakAlignment.QuantAndGapFilling(rdamProperty, new ObservableCollection<AnalysisFileBean>(analysisFiles), gcmsParam, alignmentResult, alignmentFile, projectProp, mspDB, null);
                 Console.WriteLine("Gap filling finished");
 

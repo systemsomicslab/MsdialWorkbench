@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Base;
@@ -10,8 +11,31 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    class RawDecSpectrumsModel : DisposableModelBase
+    internal sealed class RawDecSpectrumsModel : DisposableModelBase
     {
+        public RawDecSpectrumsModel(
+            IObservable<ChromatogramPeakFeatureModel> targetSource,
+            MultiMsRawSpectrumLoader rawLoader,
+            IMsSpectrumLoader<ChromatogramPeakFeatureModel> decLoader,
+            IMsSpectrumLoader<ChromatogramPeakFeatureModel> refLoader,
+            PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
+            PropertySelector<SpectrumPeak, double> verticalPropertySelector,
+            GraphLabels graphLabels,
+            string hueProperty,
+            IObservable<IBrushMapper> upperSpectrumBrush,
+            IObservable<IBrushMapper> lowerSpectrumBrush,
+            IObservable<ISpectraExporter> rawSpectraExporeter,
+            IObservable<ISpectraExporter> deconvolutedSpectraExporter,
+            IObservable<ISpectraExporter> referenceSpectraExporter)
+            : this(targetSource,
+                  (IMsSpectrumLoader<ChromatogramPeakFeatureModel>)rawLoader, decLoader, refLoader,
+                  horizontalPropertySelector, verticalPropertySelector,
+                  graphLabels,
+                  hueProperty, upperSpectrumBrush, lowerSpectrumBrush,
+                  rawSpectraExporeter, deconvolutedSpectraExporter, referenceSpectraExporter) {
+            RawLoader = rawLoader;
+        }
+
         public RawDecSpectrumsModel(
             IObservable<ChromatogramPeakFeatureModel> targetSource,
             IMsSpectrumLoader<ChromatogramPeakFeatureModel> rawLoader,
@@ -28,7 +52,7 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<ISpectraExporter> referenceSpectraExporter) {
 
             var rawSource = targetSource.WithLatestFrom(Observable.Return(rawLoader),
-                (target, loader) => Observable.FromAsync(token => loader.LoadSpectrumAsync(target, token)))
+                (target, loader) => loader.LoadSpectrumAsObservable(target))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -41,7 +65,7 @@ namespace CompMs.App.Msdial.Model.Chart
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
             var decSource = targetSource.WithLatestFrom(Observable.Return(decLoader),
-                (target, loader) => Observable.FromAsync(token => loader.LoadSpectrumAsync(target, token)))
+                (target, loader) => loader.LoadSpectrumAsObservable(target))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -54,7 +78,7 @@ namespace CompMs.App.Msdial.Model.Chart
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
             var refSource = targetSource.WithLatestFrom(Observable.Return(refLoader),
-                (target, loader) => Observable.FromAsync(token => loader.LoadSpectrumAsync(target, token)))
+                (target, loader) => loader.LoadSpectrumAsObservable(target))
                 .Switch()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -85,5 +109,6 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public MsSpectrumModel RawRefSpectrumModels { get; }
         public MsSpectrumModel DecRefSpectrumModels { get; }
+        public MultiMsRawSpectrumLoader RawLoader { get; }
     }
 }

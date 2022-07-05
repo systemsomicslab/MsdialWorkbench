@@ -111,7 +111,9 @@
                       DisplayMemberPath="Label"/>
         </StackPanel>
 
-        <Grid DataContext="{Binding RawDecSpectrumsViewModel}" Grid.Row="1" Margin="0,0,10,0">
+        <Grid DataContext="{Binding RawDecSpectrumsViewModel}" Grid.Row="1" Margin="0,0,10,0"
+             xmlns:behavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
+             behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding FocusAction, Mode=OneWay}">
 
             <local:MsSpectrumView DataContext="{Binding RawRefSpectrumViewModels}"
                                   Visibility="{Binding IsChecked,

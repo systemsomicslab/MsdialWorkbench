@@ -582,21 +582,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             dialog.Show();
-
-            //if (dialog.ShowDialog() == true) {
-            //    param.FragmentSearchSettingValues = model.SendMassql();
-            //    if (param.FragmentSearchSettingValues.Count > 1) {
-            //        param.AndOrAtFragmentSearch = AndOr.AND;
-            //    }
-            //    if (isAlignmentViewSelected) {
-            //        alignmentModel.FragmentSearcher();
-            //    } else {
-            //        analysisModel.FragmentSearcher();
-            //    }
-            //}
-
-            //param.FragmentSearchSettingValues = model.FragmentQuerySettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();
-            //param.AndOrAtFragmentSearch = model.SearchOption.Value;
         }
 
         public void ShowShowMscleanrFilterSettingView(Window owner, bool isAlignmentViewSelected) {
@@ -605,16 +590,12 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (analysisModel is null) return;
             var alignmentModel = AlignmentModel;
             var param = container.Parameter;
+            var spotprops = alignmentModel.Ms1Spots;
 
-            MassqlSettingModel model;
-            if (isAlignmentViewSelected) {
-                model = new MassqlSettingModel(container.Parameter, alignmentModel.FragmentSearcher);
-            }
-            else {
-                model = new MassqlSettingModel(container.Parameter, analysisModel.FragmentSearcher);
-            }
-            var vm = new MassqlSettingViewModel(model);
-            var dialog = new MassqlSettingView()
+            MscleanrSettingModel model;
+            model = new MscleanrSettingModel(container.Parameter, spotprops);
+            var vm = new MscleanrSettingViewModel(model);
+            var dialog = new MscleanrSettingView()
             {
                 DataContext = vm,
                 Owner = owner,

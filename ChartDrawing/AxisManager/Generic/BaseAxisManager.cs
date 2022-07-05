@@ -124,6 +124,9 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         public void Recalculate(double drawableLength) {
+            if (drawableLength == 0) {
+                return;
+            }
             // var lo = -(1 + ChartMargin.Left + ChartMargin.Right) / (drawableLength - 2 * ConstantMargin) * ConstantMargin - ChartMargin.Left;
             // var hi = 1 - lo - ChartMargin.Left + ChartMargin.Right;
             (var lo, var hi) = ChartMargin.Add(0, drawableLength);
