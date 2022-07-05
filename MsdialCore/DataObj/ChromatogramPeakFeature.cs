@@ -293,7 +293,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         [IgnoreMember]
-        public bool IsMsmsContained => MS2RawSpectrumID >= 0;
+        public bool IsMsmsContained => MSDecResultIdUsed >= 0 || MS2RawSpectrumID >= 0;
 
         [Key(38)]
         public string Comment { get; set; } = string.Empty;

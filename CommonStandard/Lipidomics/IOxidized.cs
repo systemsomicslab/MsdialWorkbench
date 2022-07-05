@@ -1,9 +1,11 @@
-﻿using System.Collections.ObjectModel;
+﻿using CompMs.Common.DataStructure;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface IOxidized
+    public interface IOxidized : IVisitableElement<IOxidized>
     {
         int Count { get; }
         int DecidedCount { get; }
@@ -12,8 +14,13 @@ namespace CompMs.Common.Lipidomics
         ReadOnlyCollection<int> Oxidises { get; }
     }
 
-    public class Oxidized : IOxidized
+    public sealed class Oxidized : IOxidized
     {
+        public Oxidized(int count, IList<int> oxidises) {
+            Count = count;
+            Oxidises = new ReadOnlyCollection<int>(oxidises);
+        }
+
         public Oxidized(int count, params int[] oxidises) {
             Count = count;
             Oxidises = new ReadOnlyCollection<int>(oxidises);
@@ -45,6 +52,10 @@ namespace CompMs.Common.Lipidomics
 
         public static Oxidized CreateFromPosition(params int[] oxidises) {
             return new Oxidized(oxidises.Length, oxidises);
+        }
+
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IOxidized, TDecomposed> decomposer) {
+            return decomposer.Decompose(visitor, this);
         }
     }
 }
