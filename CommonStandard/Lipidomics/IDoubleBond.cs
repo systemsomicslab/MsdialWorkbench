@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using CompMs.Common.DataStructure;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface IDoubleBond
+    public interface IDoubleBond : IVisitableElement<IDoubleBond>
     {
         int Count { get; }
         int DecidedCount { get; }
@@ -16,7 +17,7 @@ namespace CompMs.Common.Lipidomics
         IDoubleBond Decide(params IDoubleBondInfo[] infos);
     }
 
-    public class DoubleBond : IDoubleBond
+    public sealed class DoubleBond : IDoubleBond
     {
         public DoubleBond(int count, IList<IDoubleBondInfo> bonds) {
             Count = count;
@@ -61,6 +62,14 @@ namespace CompMs.Common.Lipidomics
             else {
                 return Count.ToString();
             }
+        }
+
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IDoubleBond, TDecomposed> decomposer) {
+            return decomposer.Decompose(visitor, this);
+        }
+
+        public TResult Accept<TResult, TDecomposed>(IVisitor<TResult, TDecomposed> visitor, IDecomposer<TResult, IDoubleBond, TDecomposed> decomposer) {
+            return decomposer.Decompose(visitor, this);
         }
     }
 
@@ -111,6 +120,14 @@ namespace CompMs.Common.Lipidomics
                 default:
                     return $"{Position}";
             }
+        }
+
+        public override bool Equals(object obj) {
+            return obj is DoubleBondInfo info && Position == info.Position && State == info.State;
+        }
+
+        public override int GetHashCode() {
+            return (Position, State).GetHashCode();
         }
     }
 }

@@ -1,22 +1,12 @@
-﻿using CompMs.Common.FormulaGenerator.DataObj;
+﻿using CompMs.Common.DataStructure;
+using CompMs.Common.FormulaGenerator.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public interface IChain {
-        int CarbonCount { get; }
-        IDoubleBond DoubleBond { get; }
-        IOxidized Oxidized { get; }
-        int DoubleBondCount { get; }
-        int OxidizedCount { get; }
-        double Mass { get; }
-
-        IEnumerable<IChain> GetCandidates(IChainGenerator generator);
-    }
-
-    public class AcylChain : IChain
+    public class AcylChain : IChain, IVisitableElement<AcylChain>
     {
         public AcylChain(int carbonCount, IDoubleBond doubleBond, IOxidized oxidized) {
             CarbonCount = carbonCount;
@@ -59,9 +49,17 @@ namespace CompMs.Common.Lipidomics
             }
             return carbon * MassDiffDictionary.CarbonMass + (2 * carbon - 2 * doubleBond - 1) * MassDiffDictionary.HydrogenMass + (1 + oxidize) * MassDiffDictionary.OxygenMass;
         }
+
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IChain, TDecomposed> decomposer) {
+            return decomposer.Decompose(visitor, this);
+        }
+
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, AcylChain, TDecomposed> decomposer) {
+            return decomposer.Decompose(visitor, this);
+        }
     }
 
-    public class AlkylChain : IChain
+    public class AlkylChain : IChain, IVisitableElement<AlkylChain>
     {
         public AlkylChain(int carbonCount, IDoubleBond doubleBond, IOxidized oxidized) {
             CarbonCount = carbonCount;
@@ -119,9 +117,17 @@ namespace CompMs.Common.Lipidomics
                 throw new ArgumentException("Plasmalogens must have more than 1 double bonds.");
             }
         }
+
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IChain, TDecomposed> decomposer) {
+            return decomposer.Decompose(visitor, this);
+        }
+
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, AlkylChain, TDecomposed> decomposer) {
+            return decomposer.Decompose(visitor, this);
+        }
     }
 
-    public class SphingoChain : IChain
+    public class SphingoChain : IChain, IVisitableElement<SphingoChain>
     {
         public SphingoChain(int carbonCount, IDoubleBond doubleBond, IOxidized oxidized) {
             if (oxidized is null) {
@@ -156,6 +162,14 @@ namespace CompMs.Common.Lipidomics
 
         public IEnumerable<IChain> GetCandidates(IChainGenerator generator) {
             return generator.Generate(this);
+        }
+
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, IChain, TDecomposed> decomposer) {
+            return decomposer.Decompose(visitor, this);
+        }
+
+        public TResult Accept<TResult, TDecomposed>(IAcyclicVisitor visitor, IDecomposer<TResult, SphingoChain, TDecomposed> decomposer) {
+            return decomposer.Decompose(visitor, this);
         }
 
         public override string ToString() {

@@ -17,8 +17,8 @@ namespace CompMs.MsdialCore.DataObj
         private readonly string _dbPath;
         private readonly string _id;
         private readonly ILipidSpectrumGenerator _lipidGenerator;
-        private readonly IEqualityComparer<ILipid> _comparer;
-        private readonly ConcurrentDictionary<ILipid, Lazy<MoleculeMsReference>> _lipidToReference;
+        private readonly IEqualityComparer<(ILipid, AdductIon)> _comparer;
+        private readonly ConcurrentDictionary<(ILipid, AdductIon), Lazy<MoleculeMsReference>> _lipidToReference;
         private readonly List<MoleculeMsReference> _references;
         private readonly object syncObject = new object();
 
@@ -26,15 +26,15 @@ namespace CompMs.MsdialCore.DataObj
             _dbPath = dbPath;
             _id = id;
             _lipidGenerator = FacadeLipidSpectrumGenerator.Default;
-            _comparer = new LipidNameComparer();
-            _lipidToReference = new ConcurrentDictionary<ILipid, Lazy<MoleculeMsReference>>(_comparer);
+            _comparer = new LipidNameAdductPairComparer();
+            _lipidToReference = new ConcurrentDictionary<(ILipid, AdductIon), Lazy<MoleculeMsReference>>(_comparer);
             _references = new List<MoleculeMsReference>();
         }
 
         public List<MoleculeMsReference> Generates(IEnumerable<ILipid> lipids, ILipid seed, AdductIon adduct, MoleculeMsReference baseReference) {
             var references = new List<MoleculeMsReference>();
             foreach (var lipid in lipids) {
-                var lazyReference = _lipidToReference.GetOrAdd(lipid, lipid_ => new Lazy<MoleculeMsReference>(() => GenerateReference(lipid_, adduct, baseReference), isThreadSafe: true));
+                var lazyReference = _lipidToReference.GetOrAdd((lipid, adduct), pair => new Lazy<MoleculeMsReference>(() => GenerateReference(pair.Item1, pair.Item2, baseReference), isThreadSafe: true));
                 if (lazyReference.Value is MoleculeMsReference reference) {
                     references.Add(reference);
                 }
@@ -92,7 +92,7 @@ namespace CompMs.MsdialCore.DataObj
 
                 _references.AddRange(references);
                 foreach (var (lipid, reference) in pairs) {
-                    _lipidToReference[lipid] = new Lazy<MoleculeMsReference>(() => reference, isThreadSafe: true);
+                    _lipidToReference[(lipid, reference.AdductType)] = new Lazy<MoleculeMsReference>(() => reference, isThreadSafe: true);
                 }
             }
         }
@@ -128,14 +128,14 @@ namespace CompMs.MsdialCore.DataObj
             GC.SuppressFinalize(this);
         }
 
-        class LipidNameComparer : IEqualityComparer<ILipid>
+        class LipidNameAdductPairComparer : IEqualityComparer<(ILipid, AdductIon)>
         {
-            public bool Equals(ILipid x, ILipid y) {
-                return Equals(x?.Name, y?.Name);
+            public bool Equals((ILipid, AdductIon) x, (ILipid, AdductIon) y) {
+                return Equals(x.Item1?.Name, y.Item1?.Name) && Equals(x.Item2?.AdductIonName, y.Item2?.AdductIonName);
             }
 
-            public int GetHashCode(ILipid obj) {
-                return obj.Name.GetHashCode();
+            public int GetHashCode((ILipid, AdductIon) obj) {
+                return (obj.Item1.Name, obj.Item2.AdductIonName).GetHashCode();
             }
         }
     }
