@@ -117,6 +117,7 @@ namespace CompMs.App.Msdial.Model.Core
                         streamManager,
                         deserializer,
                         path => new DirectoryTreeStreamManager(path),
+                        projectDir,
                         async parameter =>
                         {
                             string result = null;
