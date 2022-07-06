@@ -839,7 +839,7 @@ namespace CompMs.Common.Lipidomics {
             var spectrum = new List<SpectrumPeak>();
             var maxintensity = peaks.Max(n => n.Intensity);
             foreach (var peak in peaks) {
-                spectrum.Add(new SpectrumPeak { Mass = peak.Mass, Intensity = peak.Intensity / maxintensity * 100.0 });
+                spectrum.Add(new SpectrumPeak { Mass = peak.Mass, Intensity = peak.Intensity / maxintensity * 100.0f });
             }
             return spectrum.OrderByDescending(n => n.Intensity).ToList();
         }

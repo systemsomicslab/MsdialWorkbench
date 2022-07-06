@@ -38,9 +38,9 @@ namespace CompMs.Common.Lipidomics {
 
             var peaks = new List<SpectrumPeak>();
             for (int i = 0; i < acylChain.CarbonCount - 1; i++) {
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), abundance, $"{acylChain} C{i + 1}"));
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{acylChain} C{i + 1}-H"));
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{acylChain} C{i + 1}+H"));
+                peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + diffs[i]), (float)abundance, $"{acylChain} C{i + 1}"));
+                peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), (float)abundance * 0.5f, $"{acylChain} C{i + 1}-H"));
+                peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), (float)abundance * 0.5f, $"{acylChain} C{i + 1}+H"));
             }
 
             return peaks;
@@ -70,9 +70,9 @@ namespace CompMs.Common.Lipidomics {
             var peaks = new List<SpectrumPeak>();
             for (int i = 0; i < alkylChain.CarbonCount - 1; i++)
             {
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), abundance, $"{alkylChain} C{i + 1}"));
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{alkylChain} C{i + 1}-H"));
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{alkylChain} C{i + 1}+H"));
+                peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + diffs[i]), (float)abundance, $"{alkylChain} C{i + 1}"));
+                peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), (float)abundance * 0.5f, $"{alkylChain} C{i + 1}-H"));
+                peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), (float)abundance * 0.5f, $"{alkylChain} C{i + 1}+H"));
             }
 
             return peaks;

@@ -29,8 +29,8 @@ namespace CompMs.Common.Parser.Tests
                     Comment = "Awesome comment",
                     Spectrum = new List<SpectrumPeak>
                     {
-                        new SpectrumPeak(123.45678d, 456d),
-                        new SpectrumPeak(234.56789d, 567d),
+                        new SpectrumPeak(123.45678f, 456f),
+                        new SpectrumPeak(234.56789f, 567f),
                     },
                 },
 
@@ -47,8 +47,8 @@ namespace CompMs.Common.Parser.Tests
                     IonMode = IonMode.Negative,
                     Spectrum = new List<SpectrumPeak>
                     {
-                        new SpectrumPeak(345.67890d, 678d, "spectrum1"),
-                        new SpectrumPeak(456.78901d, 789d, "spectrum2; abcdefg"),
+                        new SpectrumPeak(345.67890f, 678f, "spectrum1"),
+                        new SpectrumPeak(456.78901f, 789f, "spectrum2; abcdefg"),
                     },
                 },
 

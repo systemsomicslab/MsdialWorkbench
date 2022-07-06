@@ -532,7 +532,7 @@ namespace CompMs.MsdialCore.MSDec {
 
 				for (int j = 0; j < chromatogram.Count; j++) {
 					if (j == peakTopOfDeconvolutedChrom) {
-						ms1DecResult.Spectrum.Add(new SpectrumPeak(chromatogram[j].Mass, chromatogram[j].Intensity));
+						ms1DecResult.Spectrum.Add(new SpectrumPeak((float)chromatogram[j].Mass, (float)chromatogram[j].Intensity));
 						sumHeight += chromatogram[j].Intensity;
 
 						if (chromatogram[j].Intensity > ms1Chromatograms[i][peakTopOfOriginalChrom].Intensity)

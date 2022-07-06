@@ -93,9 +93,9 @@ namespace CompMs.MsdialCore.Export.Tests
                 RawSpectrumID = 1,
                 Spectrum = new List<SpectrumPeak>
                 {
-                    new SpectrumPeak { Mass = 700.00001, Intensity = 1000, },
-                    new SpectrumPeak { Mass = 500.00002, Intensity = 200, },
-                    new SpectrumPeak { Mass = 200.00003, Intensity = 50, },
+                    new SpectrumPeak { Mass = 700.00001f, Intensity = 1000, },
+                    new SpectrumPeak { Mass = 500.00002f, Intensity = 200, },
+                    new SpectrumPeak { Mass = 200.00003f, Intensity = 50, },
                 },
             };
             var provider = new MockDataProvider();
