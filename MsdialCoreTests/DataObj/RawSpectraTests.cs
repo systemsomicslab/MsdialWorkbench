@@ -13,11 +13,11 @@ namespace CompMs.MsdialCore.DataObj.Tests
         public void GetMs1ChromatogramRtTest() {
             var spectra = new RawSpectra(new[]
             {
-                new RawSpectrum { ScanStartTime = 1d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, } } },
-                new RawSpectrum { ScanStartTime = 2d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 101d, Intensity = 1001d, } } },
-                new RawSpectrum { ScanStartTime = 3d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 102d, Intensity = 1002d, } } },
-                new RawSpectrum { ScanStartTime = 4d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 1003d, } } },
-                new RawSpectrum { ScanStartTime = 5d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, } } },
+                new RawSpectrum { ScanStartTime = 1d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100f, Intensity = 1000f, } } },
+                new RawSpectrum { ScanStartTime = 2d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 101f, Intensity = 1001f, } } },
+                new RawSpectrum { ScanStartTime = 3d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 102f, Intensity = 1002f, } } },
+                new RawSpectrum { ScanStartTime = 4d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 103f, Intensity = 1003f, } } },
+                new RawSpectrum { ScanStartTime = 5d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 104f, Intensity = 1004f, } } },
             },
             IonMode.Positive, AcquisitionType.DDA);
             var chromatogramRange = new ChromatogramRange(2d, 4d, ChromXType.RT, ChromXUnit.Min);
@@ -41,11 +41,11 @@ namespace CompMs.MsdialCore.DataObj.Tests
         public void GetMs1ChromatogramDtTest() {
             var spectra = new RawSpectra(new[]
             {
-                new RawSpectrum { DriftTime = 1d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, } } },
-                new RawSpectrum { DriftTime = 2d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 101d, Intensity = 1001d, } } },
-                new RawSpectrum { DriftTime = 3d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 102d, Intensity = 1002d, } } },
-                new RawSpectrum { DriftTime = 4d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 1003d, } } },
-                new RawSpectrum { DriftTime = 5d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, } } },
+                new RawSpectrum { DriftTime = 1d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100f, Intensity = 1000f, } } },
+                new RawSpectrum { DriftTime = 2d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 101f, Intensity = 1001f, } } },
+                new RawSpectrum { DriftTime = 3d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 102f, Intensity = 1002f, } } },
+                new RawSpectrum { DriftTime = 4d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 103f, Intensity = 1003f, } } },
+                new RawSpectrum { DriftTime = 5d, ScanPolarity = ScanPolarity.Negative, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 104f, Intensity = 1004f, } } },
             },
             IonMode.Negative, AcquisitionType.DDA);
             var chromatogramRange = new ChromatogramRange(2d, 4d, ChromXType.Drift, ChromXUnit.Msec);
@@ -69,11 +69,11 @@ namespace CompMs.MsdialCore.DataObj.Tests
         public void GetMs1TotalIonChromatogramTest() {
             var spectra = new RawSpectra(new[]
             {
-                new RawSpectrum { ScanStartTime = 1d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, new RawPeakElement{ Mz = 105d, Intensity = 1005d, }, } },
-                new RawSpectrum { ScanStartTime = 2d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 101d, Intensity = 1001d, }, new RawPeakElement{ Mz = 106d, Intensity = 1006d, }, } },
-                new RawSpectrum { ScanStartTime = 3d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 102d, Intensity = 1002d, }, new RawPeakElement{ Mz = 107d, Intensity = 1007d, }, } },
-                new RawSpectrum { ScanStartTime = 4d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 1003d, }, new RawPeakElement{ Mz = 108d, Intensity = 1008d, }, } },
-                new RawSpectrum { ScanStartTime = 5d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, }, new RawPeakElement{ Mz = 109d, Intensity = 1009d, }, } },
+                new RawSpectrum { ScanStartTime = 1d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100f, Intensity = 1000f, }, new RawPeakElement{ Mz = 105f, Intensity = 1005f, }, } },
+                new RawSpectrum { ScanStartTime = 2d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 101f, Intensity = 1001f, }, new RawPeakElement{ Mz = 106f, Intensity = 1006f, }, } },
+                new RawSpectrum { ScanStartTime = 3d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 102f, Intensity = 1002f, }, new RawPeakElement{ Mz = 107f, Intensity = 1007f, }, } },
+                new RawSpectrum { ScanStartTime = 4d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 103f, Intensity = 1003f, }, new RawPeakElement{ Mz = 108f, Intensity = 1008f, }, } },
+                new RawSpectrum { ScanStartTime = 5d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 104f, Intensity = 1004f, }, new RawPeakElement{ Mz = 109f, Intensity = 1009f, }, } },
             },
             IonMode.Positive, AcquisitionType.DDA);
             var chromatogramRange = new ChromatogramRange(2d, 4d, ChromXType.RT, ChromXUnit.Min);
@@ -97,11 +97,11 @@ namespace CompMs.MsdialCore.DataObj.Tests
         public void GetMs1BasePeakChromatogramTest() {
             var spectra = new RawSpectra(new[]
             {
-                new RawSpectrum { ScanStartTime = 1d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, new RawPeakElement{ Mz = 105d, Intensity = 1005d, }, } },
-                new RawSpectrum { ScanStartTime = 2d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 101d, Intensity = 1001d, }, new RawPeakElement{ Mz = 106d, Intensity = 1006d, }, } },
-                new RawSpectrum { ScanStartTime = 3d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 102d, Intensity = 1002d, }, new RawPeakElement{ Mz = 107d, Intensity = 1007d, }, } },
-                new RawSpectrum { ScanStartTime = 4d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 1003d, }, new RawPeakElement{ Mz = 108d, Intensity = 1008d, }, } },
-                new RawSpectrum { ScanStartTime = 5d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, }, new RawPeakElement{ Mz = 109d, Intensity = 1009d, }, } },
+                new RawSpectrum { ScanStartTime = 1d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100f, Intensity = 1000f, }, new RawPeakElement{ Mz = 105f, Intensity = 1005f, }, } },
+                new RawSpectrum { ScanStartTime = 2d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 101f, Intensity = 1001f, }, new RawPeakElement{ Mz = 106f, Intensity = 1006f, }, } },
+                new RawSpectrum { ScanStartTime = 3d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 102f, Intensity = 1002f, }, new RawPeakElement{ Mz = 107f, Intensity = 1007f, }, } },
+                new RawSpectrum { ScanStartTime = 4d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 103f, Intensity = 1003f, }, new RawPeakElement{ Mz = 108f, Intensity = 1008f, }, } },
+                new RawSpectrum { ScanStartTime = 5d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 104f, Intensity = 1004f, }, new RawPeakElement{ Mz = 109f, Intensity = 1009f, }, } },
             },
             IonMode.Positive, AcquisitionType.DDA);
             var chromatogramRange = new ChromatogramRange(2d, 4d, ChromXType.RT, ChromXUnit.Min);
@@ -125,11 +125,11 @@ namespace CompMs.MsdialCore.DataObj.Tests
         public void GetMs1ExtractedChromatogramByHighestBasePeakMzTest() {
             var spectra = new RawSpectra(new[]
             {
-                new RawSpectrum { ScanStartTime = 1d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100d, Intensity = 1000d, }, new RawPeakElement{ Mz = 105d, Intensity = 1005d, },  } },
-                new RawSpectrum { ScanStartTime = 2d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 101d, Intensity = 1001d, }, new RawPeakElement{ Mz = 106d, Intensity = 1006d, },  } },
-                new RawSpectrum { ScanStartTime = 3d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 102d, Intensity = 1002d, }, new RawPeakElement{ Mz = 107d, Intensity = 1007d, },  } },
-                new RawSpectrum { ScanStartTime = 4d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 103d, Intensity = 1003d, }, new RawPeakElement{ Mz = 108d, Intensity = 1008d, },  } },
-                new RawSpectrum { ScanStartTime = 5d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 104d, Intensity = 1004d, }, new RawPeakElement{ Mz = 109d, Intensity = 1009d, },  } },
+                new RawSpectrum { ScanStartTime = 1d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 100f, Intensity = 1000f, }, new RawPeakElement{ Mz = 105f, Intensity = 1005f, },  } },
+                new RawSpectrum { ScanStartTime = 2d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 101f, Intensity = 1001f, }, new RawPeakElement{ Mz = 106f, Intensity = 1006f, },  } },
+                new RawSpectrum { ScanStartTime = 3d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 102f, Intensity = 1002f, }, new RawPeakElement{ Mz = 107f, Intensity = 1007f, },  } },
+                new RawSpectrum { ScanStartTime = 4d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 103f, Intensity = 1003f, }, new RawPeakElement{ Mz = 108f, Intensity = 1008f, },  } },
+                new RawSpectrum { ScanStartTime = 5d, ScanPolarity = ScanPolarity.Positive, MsLevel = 1, Spectrum = new[] { new RawPeakElement{ Mz = 104f, Intensity = 1004f, }, new RawPeakElement{ Mz = 109f, Intensity = 1009f, },  } },
             },
             IonMode.Positive, AcquisitionType.DDA);
             var features = new[]

@@ -307,7 +307,7 @@ namespace CompMs.MsdialCore.Utility {
                 var maxIntensityMz = double.MinValue;
                 var maxMass = quantMass;
                 //var startIndex = GetMs1StartIndex(quantMass, sliceWidth, massSpectra);
-                var startIndex = SearchCollection.LowerBound(massSpectra, new RawPeakElement() { Mz = quantMass - sliceWidth }, (a, b) => a.Mz.CompareTo(b.Mz));
+                var startIndex = SearchCollection.LowerBound(massSpectra, new RawPeakElement() { Mz = (float)quantMass - sliceWidth }, (a, b) => a.Mz.CompareTo(b.Mz));
 
                 for (int j = startIndex; j < massSpectra.Length; j++) {
                     if (massSpectra[j].Mz < quantMass - sliceWidth) continue;
@@ -873,9 +873,9 @@ namespace CompMs.MsdialCore.Utility {
             var revFact = Math.Pow(0.1, 5);
             var elements = new List<RawPeakElement>();
             foreach (var pair in dict) {
-                var mz = (double)pair.Key * revFact;
-                var intensity = Math.Round(pair.Value / (double)counter, 0);
-                elements.Add(new RawPeakElement() { Mz = mz, Intensity = intensity });
+                var mz = pair.Key * revFact;
+                var intensity = Math.Round(pair.Value / counter, 0);
+                elements.Add(new RawPeakElement() { Mz = (float)mz, Intensity = (float)intensity });
             }
             return elements.OrderBy(n => n.Mz).ToArray();
         }

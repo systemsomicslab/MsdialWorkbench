@@ -144,17 +144,17 @@ namespace CompMs.MsdialCore.Export.Tests
                         OriginalIndex = 2,
                         Spectrum = new[]
                         {
-                            new RawPeakElement { Mz = 700d, Intensity = 1000d, },
-                            new RawPeakElement { Mz = 701.00001, Intensity = 100d, },
+                            new RawPeakElement { Mz = 700f, Intensity = 1000f, },
+                            new RawPeakElement { Mz = 701.00001f, Intensity = 100f, },
                         },
                     },
                     new RawSpectrum
                     {
                         Spectrum = new[]
                         {
-                            new RawPeakElement { Mz = 200.00003, Intensity = 50, },
-                            new RawPeakElement { Mz = 500.00002, Intensity = 200, },
-                            new RawPeakElement { Mz = 700.00001, Intensity = 1000, },
+                            new RawPeakElement { Mz = 200.00003f, Intensity = 50, },
+                            new RawPeakElement { Mz = 500.00002f, Intensity = 200, },
+                            new RawPeakElement { Mz = 700.00001f, Intensity = 1000, },
                         },
                     },
 
