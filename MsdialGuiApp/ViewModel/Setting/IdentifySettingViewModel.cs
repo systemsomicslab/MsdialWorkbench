@@ -204,7 +204,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .SelectMany(vm => dataBasesDoesnotHaveError
                     .TakeUntil(removedDataBase.Where(x => x == vm))
                     .Where(x => x)
-                    .Do(x => Console.WriteLine("DB does not have error: {0}", x))
                     .Where(_ => AnnotatorViewModels.All(avm => avm.Model.DataBaseSettingModel != vm.Model))
                     .Take(1)
                     .SelectMany(_ => Observable.Interval(TimeSpan.FromMilliseconds(100)))
