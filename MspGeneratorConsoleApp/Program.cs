@@ -591,9 +591,9 @@ namespace CompMs.MspGenerator
                 //    (workingFolder + @"\master\masterCCS_20201221_chk.tsv",
                 //     workingFolder + @"\masterCCS_NCDK_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
 
-                qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
-                    (@"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeySmilesRtList.txt",
-                     @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeySmilesRtDescriptorList.txt");
+                //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
+                //    (@"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeySmilesRtList.txt",
+                //     @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeySmilesRtDescriptorList.txt");
 
 
                 ////モデル作成
@@ -712,27 +712,30 @@ namespace CompMs.MspGenerator
                 //MergeRTandCCSintoMsp.generateInchikeyAndSmilesAndChainsListFromMsp(@"Z:\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\LBM\Msp20210527163602.jointedmsp");
 
 
-                //temp 20211108
+                //temp 20211108 // not work???
                 //LipidStructureGenerator.LipidInchikeySmiles(LbmClass.EtherPC, "PC P-16:1/18:2(9Z,12Z)");
 
-                //var parameter01 = new LipidChainInfo { CNum =18, DoubleNum =3, DoublePosition = new string[] { "12Z","6Z","9Z"}, EtherFlag = true, OxNum =0, SnPosition =0};
-                //var parameter02 = new LipidChainInfo { CNum =26, DoubleNum =0, DoublePosition = new string[] { }, EtherFlag = false, OxNum =0, SnPosition =0};
+                //var parameter01 = new LipidChainInfo { CNum = 18, DoubleNum = 3, DoublePosition = new string[] { "12Z", "6Z", "9Z" }, EtherFlag = true, OxNum = 0, SnPosition = 0 };
+                //var parameter02 = new LipidChainInfo { CNum = 26, DoubleNum = 0, DoublePosition = new string[] { }, EtherFlag = false, OxNum = 0, SnPosition = 0 };
                 //var chainList = new List<LipidChainInfo>() { parameter01, parameter02 };
                 //LipidStructureGenerator.LipidInchikeySmiles(LbmClass.EtherPC, chainList);
 
             }
-            // SmilesInChIKeygen test
-            //var alkyl = new AlkylChain(18, DoubleBond.CreateFromPosition(1, 12), new Oxidized(0));
-            //var acyl = new AcylChain(20, DoubleBond.CreateFromPosition(5, 8, 11, 14, 17), new Oxidized(0));
-            //var lipid = new Lipid(CompMs.Common.Enum.LbmClass.EtherPC, 789.5672409, new PositionLevelChains(alkyl, acyl));
+            {
+                SmilesInchikeyGenerator.run(@"d:\mikikot\Desktop\Tsugawa-san_work\~SCIEX_EAD\20220624_EIEIO\result\all\generateSmilesAndInChIKey.txt");
 
-            //var result = SmilesInchikeyGenerator.Generate(lipid);
-            //Console.WriteLine(result.Smiles);
-            //Console.WriteLine(result.InchiKey);
-            //Console.ReadKey();
-            //Assert.AreEqual("C(OC=CCCCCCCCCCC=CCCCCC)C(OC(=O)CCCC=CCC=CCC=CCC=CCC=CCC)COP([O-])(=O)OCC[N+](C)(C)C", result.Smiles);
-            //Assert.AreEqual("VZRVIPQLHQGIMS-UHFFFAOYSA-N", result.InchiKey);
+                // SmilesInChIKeygen test
+                //var alkyl = new AlkylChain(18, DoubleBond.CreateFromPosition(1, 12), new Oxidized(0));
+                //var acyl = new AcylChain(20, DoubleBond.CreateFromPosition(5, 8, 11, 14, 17), new Oxidized(0));
+                //var lipid = new Lipid(CompMs.Common.Enum.LbmClass.EtherPC, 789.5672409, new PositionLevelChains(alkyl, acyl));
 
+                //var result = SmilesInchikeyGenerator.Generate(lipid);
+                //Console.WriteLine(result.Smiles);
+                //Console.WriteLine(result.InchiKey);
+                //Console.ReadKey();
+                //Assert.AreEqual("C(OC=CCCCCCCCCCC=CCCCCC)C(OC(=O)CCCC=CCC=CCC=CCC=CCC=CCC)COP([O-])(=O)OCC[N+](C)(C)C", result.Smiles);
+                //Assert.AreEqual("VZRVIPQLHQGIMS-UHFFFAOYSA-N", result.InchiKey);
+            }
         }
     }
 }

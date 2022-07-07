@@ -503,7 +503,7 @@ namespace CompMs.MspGenerator
             if (chainString.Contains("P-"))
             {
                 chainDictionary = AcylChainDic.etherChainPlasmenylDictionary;
-                doubleNum = doubleNum - 1;
+                doubleNum = doubleNum + 1;
             }
             else if (chainString.Contains("O-"))
             {
