@@ -91,7 +91,7 @@ namespace CompMs.MsdialCore.Parser {
         }
 
         public static int GetSpectrumDataBytes() {
-            return 20;
+            return 12; // 4(float SpectrumPeak.Mass) + 4(float SpectrumPeak.Intensity) + 4(int SpectrumPeak.PeakQuality)
         }
 
         private static void SaveCounters(FileStream fs, MSDecResult msdecResult) {
