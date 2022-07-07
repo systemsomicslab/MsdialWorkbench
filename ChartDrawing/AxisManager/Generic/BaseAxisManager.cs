@@ -2,7 +2,9 @@
 using CompMs.Graphics.Core.Base;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 
 namespace CompMs.Graphics.AxisManager.Generic
 {
@@ -147,7 +149,43 @@ namespace CompMs.Graphics.AxisManager.Generic
         public abstract AxisValue TranslateToAxisValue(T value);
 
         public virtual AxisValue TranslateToAxisValue(object value) {
-            return TranslateToAxisValue((T)value);
+            if (TryConvert(value, out var value_)) {
+                return TranslateToAxisValue(value_);
+            }
+            return AxisValue.NaN;
+        }
+
+        private static Dictionary<Type, bool> _cacheConvertible = new Dictionary<Type, bool>();
+        private static bool _isConvertible = typeof(T).GetInterfaces().Any(t => t.Name == nameof(IConvertible));
+        private static bool TryConvert(object value, out T result) {
+            result = default;
+            var baseType = value.GetType();
+            if (_cacheConvertible.TryGetValue(baseType, out var convertible) && !convertible) {
+                return convertible;
+            }
+            if (value is T value_) {
+                result = value_;
+                return _cacheConvertible[baseType] = true;
+            }
+
+            var targetType = typeof(T);
+            if (_isConvertible && value is IConvertible cvalue) {
+                result = (T)((IConvertible)Convert.ToDouble(cvalue)).ToType(targetType, CultureInfo.CurrentCulture);
+                return _cacheConvertible[baseType] = true;
+            }
+
+            var canImplicitConvert = baseType
+                .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .Any(m =>
+                    m.Name == "op_implicit" &&
+                    m.ReturnType == targetType &&
+                    m.GetParameters().FirstOrDefault() is ParameterInfo pi &&
+                    pi.ParameterType == baseType
+                );
+            if (canImplicitConvert) {
+                result = (T)Convert.ChangeType(value, targetType);
+            }
+            return _cacheConvertible[baseType] = canImplicitConvert;
         }
 
         private double TranslateRelativePointCore(AxisValue value, AxisValue min, AxisValue max) {

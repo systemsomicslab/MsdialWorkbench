@@ -123,9 +123,9 @@ namespace CompMs.Common.Lipidomics
                     factorHGain = 2.0;
                 }
 
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), factorHLoss * abundance, $"{chain} C{i + 1}-H") { SpectrumComment = speccomment });
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), factor * abundance, $"{chain} C{i + 1}") { SpectrumComment = speccomment });
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), factorHGain * abundance, $"{chain} C{i + 1}+H") { SpectrumComment = speccomment });
+                peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), (float)(factorHLoss * abundance), $"{chain} C{i + 1}-H") { SpectrumComment = speccomment });
+                peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + diffs[i]), (float)(factor * abundance), $"{chain} C{i + 1}") { SpectrumComment = speccomment });
+                peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), (float)(factorHGain * abundance), $"{chain} C{i + 1}+H") { SpectrumComment = speccomment });
             }
 
             return peaks;
@@ -163,9 +163,9 @@ namespace CompMs.Common.Lipidomics
             var peaks = new List<SpectrumPeak>();
             for (int i = 0; i < sphingo.CarbonCount - 3; i++)
             {
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{sphingo} C{i + 3}-H") { SpectrumComment = SpectrumComment.doublebond });
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i]), abundance, $"{sphingo} C{i + 3}") { SpectrumComment = SpectrumComment.doublebond });
-                peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), abundance * 0.5, $"{sphingo} C{i + 3}+H") { SpectrumComment = SpectrumComment.doublebond });
+                peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + diffs[i] - MassDiffDictionary.HydrogenMass), (float)abundance * 0.5f, $"{sphingo} C{i + 3}-H") { SpectrumComment = SpectrumComment.doublebond });
+                peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + diffs[i]), (float)abundance, $"{sphingo} C{i + 3}") { SpectrumComment = SpectrumComment.doublebond });
+                peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + diffs[i] + MassDiffDictionary.HydrogenMass), (float)abundance * 0.5f, $"{sphingo} C{i + 3}+H") { SpectrumComment = SpectrumComment.doublebond });
             }
 
             return peaks;
