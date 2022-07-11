@@ -18,6 +18,9 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
             if ((attributes & FileAttributes.Directory) == FileAttributes.Directory) {
                 Debug.WriteLine(String.Format("{0} is folder", input));
                 analysisFiles = AnalysisFilesParser.ReadFolderContents(input);
+            } else if (isCsv(input)) {
+                Debug.WriteLine(String.Format("{0} is CSV", input));
+                analysisFiles = AnalysisFilesParser.ReadCsvContents(input);
             }
             else {
                 Debug.WriteLine(String.Format("{0} is file", input));
@@ -57,6 +60,15 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
 
             if (extensions.Count > 1) return true;
             else return false;
+        }
+
+        public static bool isCsv(string input) {
+            if (System.IO.File.Exists(input)) {
+                var extension = System.IO.Path.GetExtension(input).ToLower();
+                return extension == ".csv";
+            } else {
+                return false;
+            }
         }
 
         public static List<AnalysisFileBean> ReadFolderContents(string folderpath)
@@ -113,6 +125,11 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                 counter++;
             }
             return analysisFiles;
+        }
+
+        public static List<AnalysisFileBean> ReadCsvContents(string folderpath)
+        {
+            return null; // todo: fill in
         }
 
         public static RdamPropertyBean GetRdamProperty(List<AnalysisFileBean> analysisFiles)
