@@ -127,9 +127,74 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
             return analysisFiles;
         }
 
-        public static List<AnalysisFileBean> ReadCsvContents(string folderpath)
+        public static List<AnalysisFileBean> ReadCsvContents(string filepath)
         {
-            return null; // todo: fill in
+            var analysisFiles = new List<AnalysisFileBean>();
+            var csvData = new List<string[]>();
+
+            using (var sr = new StreamReader(filepath, System.Text.Encoding.ASCII))
+            {
+                string[] searchHeaderNames = { "file_path", "file_name", "type", "class_id", "batch", "analytical_order", "inject_volume" };
+                var headerOrder = new List<int>();
+                while (!sr.EndOfStream)
+                {
+                    var header = sr.ReadLine();
+                    //if (header == null)
+                    //    break;
+                    // find first line that doesn't start with '#'
+                    if (header.StartsWith('#'))
+                        continue;
+
+                    Debug.WriteLine("Header: {0}", header, "");
+
+                    var splitHeader = header.Split(',');
+                    var headerFields = new List<string>();
+                    foreach (var h in splitHeader)
+                    {
+                        var h1 = h.ToLowerInvariant();
+                        var h2 = h1.Trim();
+                        var h3 = h2.Replace(' ', '_');
+                        headerFields.Add(h3);
+                    }
+
+                    for(var i = 0; i < searchHeaderNames.Length; i++)
+                    {
+                        var name = searchHeaderNames[i];
+                        var index = headerFields.IndexOf(name);
+                        Debug.WriteLine("  Index of {0}: {1}", name, index);
+                        headerOrder.Add(index);
+                    }
+
+                    break;
+                }
+                while (!sr.EndOfStream)
+                {
+                    var line = sr.ReadLine();
+                    //if (line == null)
+                    //    break;
+                    // skip lines that start with '#'
+                    if (line.StartsWith('#'))
+                        continue;
+
+                    var fields = new List<string>(line.Split(','));
+                    var data = new List<string>();
+                    for (var i = 0; i < searchHeaderNames.Length; i++)
+                    {
+                        var index = headerOrder[i];
+                        if (index < 0)
+                            data.Add(null);
+                        else if (fields.Count < index)
+                            data.Add(null);
+                        else
+                            data.Add(fields[index]);
+                    }
+                    csvData.Add(data.ToArray());
+                    Debug.WriteLine("File line: ->{0}<- converted to: ->{1}<-", line, string.Join(" <=> ", data));
+                }
+            }
+
+
+            return analysisFiles;
         }
 
         public static RdamPropertyBean GetRdamProperty(List<AnalysisFileBean> analysisFiles)
