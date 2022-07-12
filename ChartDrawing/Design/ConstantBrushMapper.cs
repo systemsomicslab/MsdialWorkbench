@@ -21,10 +21,22 @@ namespace CompMs.Graphics.Design
         public Brush Map(object key) => brush;
 
         public ConstantBrushMapper<U> As<U>() => new ConstantBrushMapper<U>(brush);
+
+        public static implicit operator ConstantBrushMapper<T>(ConstantBrushMapper brush) {
+            return brush.As<T>();
+        }
     }
     
-    public class ConstantBrushMapper : IBrushMapper
+    public class ConstantBrushMapper : IBrushMapper, IBrushMapper<object>
     {
+        public ConstantBrushMapper() {
+
+        }
+
+        public ConstantBrushMapper(Brush brush) {
+            Brush = brush;
+        }
+
         public Brush Brush { get; set; }
 
         public Brush Map(object key) => Brush;
