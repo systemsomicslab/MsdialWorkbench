@@ -207,21 +207,10 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                 var afFilename = line[1] ?? System.IO.Path.GetFileNameWithoutExtension(afFilepath);
 
                 AnalysisFileType afType;
-                switch ((line[2] ?? String.Empty).ToLowerInvariant())
-                {
-                    case "sample":
-                        afType = AnalysisFileType.Sample;
-                        break;
-                    case "standard":
-                        afType = AnalysisFileType.Standard;
-                        break;
-                    case "qc":
-                        afType = AnalysisFileType.QC;
-                        break;
-                    default:
-                        afType = AnalysisFileType.Blank;
-                        break;
-                }
+                var afTypeRes = Enum.TryParse(line[2], true, out afType);
+                if (!afTypeRes)
+                    afType = AnalysisFileType.Sample;
+                
                 var afClassId = line[3] ?? counter.ToString();
 
                 int afBatch;
