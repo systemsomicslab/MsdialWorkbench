@@ -50,21 +50,6 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
             };
 
             var analysisFiles = AnalysisFilesParser.ReadInput(inputFolder);
-
-            // START ADDED HC
-            foreach (var file in analysisFiles)
-            {
-                var afpb = file.AnalysisFilePropertyBean;
-                Console.WriteLine(String.Format("analysis file: AnalisysFileId {0}", afpb.AnalysisFileId));
-                Console.WriteLine(String.Format("analysis file: AnalysisFileName {0}", afpb.AnalysisFileName));
-                Console.WriteLine(String.Format("analysis file: AnalisysFilePath {0}", afpb.AnalysisFilePath));
-                Console.WriteLine(String.Format("analysis file: AnalisysFileAnalyticalOrder {0}", afpb.AnalysisFileAnalyticalOrder));
-                Console.WriteLine(String.Format("analysis file: AnalisysFileClass {0}", afpb.AnalysisFileClass));
-                Console.WriteLine(String.Format("analysis file: AnalisysType {0}", afpb.AnalysisFileType));
-            }
-            return -1;
-            // END ADDED HC
-
             if (analysisFiles == null || analysisFiles.Count == 0) {
                 Console.WriteLine("There is no input file to be imported.");
                 return -1;
