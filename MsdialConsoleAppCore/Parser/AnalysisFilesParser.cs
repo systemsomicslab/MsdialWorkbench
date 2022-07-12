@@ -202,12 +202,12 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
             {
                 // 0          , 1          , 2     , 3         , 4      , 5,                , 6
                 // "file_path", "file_name", "type", "class_id", "batch", "analytical_order", "inject_volume"
-                var afFilepath = Path.GetFullPath(line[0], Path.GetDirectoryName(filepath));
+                var afFilepath = Path.GetFullPath(line[0], Path.GetDirectoryName(Path.GetFullPath(filepath)));
                 Debug.WriteLine("afFilepath: {0}", afFilepath, "");
                 var afFilename = line[1] ?? System.IO.Path.GetFileNameWithoutExtension(afFilepath);
 
                 AnalysisFileType afType;
-                switch (line[2].ToLowerInvariant())
+                switch ((line[2] ?? String.Empty).ToLowerInvariant())
                 {
                     case "sample":
                         afType = AnalysisFileType.Sample;
