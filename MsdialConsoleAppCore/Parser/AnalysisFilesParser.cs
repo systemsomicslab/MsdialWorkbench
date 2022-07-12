@@ -197,10 +197,13 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
             int counter = 0;
             var dt = DateTime.Now;
             var dtString = dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString();
+
             foreach (var line in csvData)
             {
+                // 0          , 1          , 2     , 3         , 4      , 5,                , 6
                 // "file_path", "file_name", "type", "class_id", "batch", "analytical_order", "inject_volume"
-                var afFilepath = line[0]; // TODO make path relative to csv file?
+                var afFilepath = Path.GetFullPath(line[0], Path.GetDirectoryName(filepath));
+                Debug.WriteLine("afFilepath: {0}", afFilepath, "");
                 var afFilename = line[1] ?? System.IO.Path.GetFileNameWithoutExtension(afFilepath);
 
                 AnalysisFileType afType;
@@ -236,7 +239,6 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                 if (!afInjectVolumeRes)
                     afInjectVolume = 1.0;
 
-                //var filename = System.IO.Path.GetFileNameWithoutExtension(afFilepath);
                 var fileDir = System.IO.Path.GetDirectoryName(afFilepath);
                 analysisFiles.Add(new AnalysisFileBean()
                 {
