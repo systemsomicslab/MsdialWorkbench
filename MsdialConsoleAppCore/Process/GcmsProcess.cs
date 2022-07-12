@@ -61,9 +61,8 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Process
                 Console.WriteLine(String.Format("analysis file: AnalisysFileAnalyticalOrder {0}", afpb.AnalysisFileAnalyticalOrder));
                 Console.WriteLine(String.Format("analysis file: AnalisysFileClass {0}", afpb.AnalysisFileClass));
                 Console.WriteLine(String.Format("analysis file: AnalisysType {0}", afpb.AnalysisFileType));
-
-                return -1;
             }
+            return -1;
             // END ADDED HC
 
             if (analysisFiles == null || analysisFiles.Count == 0) {

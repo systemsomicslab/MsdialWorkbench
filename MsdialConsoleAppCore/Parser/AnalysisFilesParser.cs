@@ -129,9 +129,8 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
 
         public static List<AnalysisFileBean> ReadCsvContents(string filepath)
         {
-            var analysisFiles = new List<AnalysisFileBean>();
             var csvData = new List<string[]>();
-
+            // read csv file
             using (var sr = new StreamReader(filepath, System.Text.Encoding.ASCII))
             {
                 string[] searchHeaderNames = { "file_path", "file_name", "type", "class_id", "batch", "analytical_order", "inject_volume" };
@@ -176,23 +175,88 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                     if (line.StartsWith('#'))
                         continue;
 
-                    var fields = new List<string>(line.Split(','));
+                    var fields = line.Split(',');
                     var data = new List<string>();
                     for (var i = 0; i < searchHeaderNames.Length; i++)
                     {
                         var index = headerOrder[i];
                         if (index < 0)
                             data.Add(null);
-                        else if (fields.Count < index)
+                        else if (index >= fields.Length)
                             data.Add(null);
                         else
                             data.Add(fields[index]);
                     }
                     csvData.Add(data.ToArray());
-                    Debug.WriteLine("File line: ->{0}<- converted to: ->{1}<-", line, string.Join(" <=> ", data));
+                    Debug.WriteLine("File line: ->{0}<- converted to: ->{1}<-", line, string.Join("<=>", data));
                 }
             }
 
+            // create list of AnalysisFileBeans as 'createAnalysisFileBeans' would do but with more options
+            var analysisFiles = new List<AnalysisFileBean>();
+            int counter = 0;
+            var dt = DateTime.Now;
+            var dtString = dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString();
+            foreach (var line in csvData)
+            {
+                // "file_path", "file_name", "type", "class_id", "batch", "analytical_order", "inject_volume"
+                var afFilepath = line[0]; // TODO make path relative to csv file?
+                var afFilename = line[1] ?? System.IO.Path.GetFileNameWithoutExtension(afFilepath);
+
+                AnalysisFileType afType;
+                switch (line[2].ToLowerInvariant())
+                {
+                    case "sample":
+                        afType = AnalysisFileType.Sample;
+                        break;
+                    case "standard":
+                        afType = AnalysisFileType.Standard;
+                        break;
+                    case "qc":
+                        afType = AnalysisFileType.QC;
+                        break;
+                    default:
+                        afType = AnalysisFileType.Blank;
+                        break;
+                }
+                var afClassId = line[3] ?? counter.ToString();
+
+                int afBatch;
+                var afBatchRes = int.TryParse(line[4], out afBatch);
+                if (!afBatchRes)
+                    afBatch = 1;
+
+                int afAnalyticalOrder;
+                var afAnalyticalOrderRes = int.TryParse(line[5], out afAnalyticalOrder);
+                if (!afAnalyticalOrderRes)
+                    afAnalyticalOrder = counter + 1;
+
+                double afInjectVolume;
+                var afInjectVolumeRes = double.TryParse(line[6], out afInjectVolume);
+                if (!afInjectVolumeRes)
+                    afInjectVolume = 1.0;
+
+                //var filename = System.IO.Path.GetFileNameWithoutExtension(afFilepath);
+                var fileDir = System.IO.Path.GetDirectoryName(afFilepath);
+                analysisFiles.Add(new AnalysisFileBean()
+                {
+                    AnalysisFilePropertyBean = new AnalysisFilePropertyBean()
+                    {
+                        AnalysisFileId = counter,
+                        AnalysisFileIncluded = true,
+                        AnalysisFileName = afFilename,
+                        AnalysisFilePath = afFilepath,
+                        AnalysisFileAnalyticalOrder = afAnalyticalOrder,
+                        AnalysisFileClass = afClassId,
+                        AnalysisFileType = afType,
+                        DeconvolutionFilePath = Path.Combine(fileDir, afFilename + "_" + dtString + ".dcl"),
+                        PeakAreaBeanInformationFilePath = Path.Combine(fileDir, afFilename + "_" + dtString + ".pai"),
+                        AnalysisBatch = afBatch,
+                        InjectionVolume = afInjectVolume
+                    }
+                });
+                counter++;
+            }
 
             return analysisFiles;
         }
