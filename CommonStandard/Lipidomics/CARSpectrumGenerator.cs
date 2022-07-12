@@ -97,10 +97,10 @@ namespace CompMs.Common.Lipidomics
         {
             var spectrum = new List<SpectrumPeak>
             {
-                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass) -CHO2, 150d, "Precursor-CHO2") { SpectrumComment = SpectrumComment.metaboliteclass }, // M-45
-                new SpectrumPeak(adduct.ConvertToMz(C7H15NO3) , 150d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true }, //172
-                new SpectrumPeak(adduct.ConvertToMz(C7H15NO3 - H2O) , 150d, "Header-H2O") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true}, //144
+                new SpectrumPeak((float)(adduct.ConvertToMz(lipid.Mass)), 999f, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                new SpectrumPeak((float)(adduct.ConvertToMz(lipid.Mass) -CHO2), 150f, "Precursor-CHO2") { SpectrumComment = SpectrumComment.metaboliteclass }, // M-45
+                new SpectrumPeak((float)(adduct.ConvertToMz(C7H15NO3)), 150f, "Header") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true }, //172
+                new SpectrumPeak((float)(adduct.ConvertToMz(C7H15NO3 - H2O)), 150f, "Header-H2O") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true}, //144
             };
             return spectrum.ToArray();
         }
@@ -112,7 +112,7 @@ namespace CompMs.Common.Lipidomics
            (
                 new[]
                 {
-                        new SpectrumPeak(adduct.ConvertToMz(chainMass) , 50d, $"[Acyl]+"){ SpectrumComment = SpectrumComment.acylchain },
+                        new SpectrumPeak((float)adduct.ConvertToMz(chainMass), 50f, $"[Acyl]+"){ SpectrumComment = SpectrumComment.acylchain },
                 }
            );
             return spectrum.ToArray();

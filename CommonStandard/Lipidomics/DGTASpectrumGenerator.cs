@@ -111,13 +111,13 @@ namespace CompMs.Common.Lipidomics
         private SpectrumPeak[] GetDGTASpectrum(ILipid lipid, AdductIon adduct) {
             var spectrum = new List<SpectrumPeak>
             {
-                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - CHO2), 200d, "Precursor - CO2") { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak(adduct.ConvertToMz(C7H13NO2), 100d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
-                new SpectrumPeak(adduct.ConvertToMz(C7H13NO2+MassDiffDictionary.OxygenMass), 100d, "Header +O") { SpectrumComment = SpectrumComment.metaboliteclass},
-                new SpectrumPeak(adduct.ConvertToMz(C7H13NO2+H2O), 100d, "Header +H2O") { SpectrumComment = SpectrumComment.metaboliteclass},
-                new SpectrumPeak(adduct.ConvertToMz(Gly_C), 200d, "Gly-C")  { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true },
-                new SpectrumPeak(adduct.ConvertToMz(Gly_O), 200d, "Gly-O") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true },
+                new SpectrumPeak((float)(adduct.ConvertToMz(lipid.Mass)), 999f, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                new SpectrumPeak((float)(adduct.ConvertToMz(lipid.Mass - CHO2)), 200f, "Precursor - CO2") { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak((float)(adduct.ConvertToMz(C7H13NO2)), 100f, "Header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
+                new SpectrumPeak((float)(adduct.ConvertToMz(C7H13NO2+MassDiffDictionary.OxygenMass)), 100f, "Header +O") { SpectrumComment = SpectrumComment.metaboliteclass},
+                new SpectrumPeak((float)(adduct.ConvertToMz(C7H13NO2+H2O)), 100f, "Header +H2O") { SpectrumComment = SpectrumComment.metaboliteclass},
+                new SpectrumPeak((float)(adduct.ConvertToMz(Gly_C)), 200f, "Gly-C")  { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true },
+                new SpectrumPeak((float)(adduct.ConvertToMz(Gly_O)), 200f, "Gly-O") { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true },
             };
             return spectrum.ToArray();
         }
@@ -131,8 +131,8 @@ namespace CompMs.Common.Lipidomics
             var chainMass = acylChain.Mass - MassDiffDictionary.HydrogenMass;
             return new[]
             {
-                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass), 100d, $"-{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
-                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - H2O + MassDiffDictionary.HydrogenMass), 100d, $"-{acylChain}-O") { SpectrumComment = SpectrumComment.acylchain },
+                new SpectrumPeak((float)(adduct.ConvertToMz(lipidMass - chainMass)), 100f, $"-{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
+                new SpectrumPeak((float)(adduct.ConvertToMz(lipidMass - chainMass - H2O + MassDiffDictionary.HydrogenMass)), 100f, $"-{acylChain}-O") { SpectrumComment = SpectrumComment.acylchain },
             };
         }
 
@@ -141,7 +141,7 @@ namespace CompMs.Common.Lipidomics
             var chainMass = acylChain.Mass;
             return new[]
             {
-                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - MassDiffDictionary.OxygenMass - CH2), 100d, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak((float)(adduct.ConvertToMz(lipidMass - chainMass - MassDiffDictionary.OxygenMass - CH2)), 100f, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
             };
         }
 

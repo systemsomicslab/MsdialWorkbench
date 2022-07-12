@@ -77,7 +77,7 @@ namespace CompMs.Common.Components {
 
 
         public void AddPeak(double mass, double intensity, string comment = null) {
-            Spectrum.Add(new SpectrumPeak(mass, intensity, comment));
+            Spectrum.Add(new SpectrumPeak((float)mass, (float)intensity, comment));
         }
     }
 }

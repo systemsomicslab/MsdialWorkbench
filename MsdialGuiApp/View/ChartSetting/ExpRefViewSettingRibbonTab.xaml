@@ -12,7 +12,7 @@
         <RibbonComboBox Label="Spectrum id"
                         VerticalAlignment="Center">
             <RibbonGallery SelectedItem="{Binding SelectedMs2Id.Value}">
-                <RibbonGalleryCategory ItemsSource="{Binding Ms2IdList.Value}"/>
+                <RibbonGalleryCategory ItemsSource="{Binding Ms2IdList.Value, FallbackValue={x:Null}}"/>
             </RibbonGallery>
         </RibbonComboBox>
     </RibbonGroup>

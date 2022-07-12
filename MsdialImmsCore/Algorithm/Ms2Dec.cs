@@ -116,7 +116,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             var ms2ChromPeaksList = GetMs2PeaksList(
                 spectrumList,
-                precursorMz, curatedSpectra.Select(x => x.Mass).ToList(),
+                precursorMz, curatedSpectra.Select(x => (double)x.Mass).ToList(),
                 ms1Chromatogram, parameter, targetCE);
 
             if (ms2ChromPeaksList.IsEmptyOrNull()) {

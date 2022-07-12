@@ -212,9 +212,9 @@ namespace CompMs.MsdialCore.Parser {
             fs.Read(buffer, 0, buffer.Length);
             for (int j = 0; j < spectraNumber; j++) {
                 result.Spectrum.Add(new SpectrumPeak {
-                    Mass = BitConverter.ToDouble(buffer, specStepSize * j),
-                    Intensity = BitConverter.ToDouble(buffer, specStepSize * j + 8),
-                    PeakQuality = (PeakQuality)BitConverter.ToInt32(buffer, specStepSize * j + 16)
+                    Mass = BitConverter.ToSingle(buffer, specStepSize * j),
+                    Intensity = BitConverter.ToSingle(buffer, specStepSize * j + 4),
+                    PeakQuality = (PeakQuality)BitConverter.ToInt32(buffer, specStepSize * j + 8)
                 });
             }
 
