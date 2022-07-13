@@ -273,6 +273,7 @@
     <Compile Include="ViewModel\Core\IAlignmentResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IAnalysisResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IResultViewModel.cs" />
+    <Compile Include="ViewModel\DataObj\ProteinGroupViewModel.cs" />
     <Compile Include="ViewModel\Loader\BarItemsLoaderDataViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentPeakPlotViewModel.cs" />
@@ -382,6 +383,7 @@
     <Compile Include="ViewModel\Setting\ProjectSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\RetentionTimeCorrectionViewModelLegacy.cs" />
     <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
+    <Compile Include="ViewModel\Table\ProteinGroupTableViewModel.cs" />
     <Compile Include="View\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
     </Compile>
@@ -665,6 +667,9 @@
     </Compile>
     <Compile Include="View\Table\AlignmentSpotTable.xaml.cs">
       <DependentUpon>AlignmentSpotTable.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Table\ProteinGroupTable.xaml.cs">
+      <DependentUpon>ProteinGroupTable.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Table\ProteomicsSpotTable.xaml.cs">
       <DependentUpon>ProteomicsSpotTable.xaml</DependentUpon>
@@ -1068,6 +1073,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Table\AlignmentSpotTable.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Table\ProteinGroupTable.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

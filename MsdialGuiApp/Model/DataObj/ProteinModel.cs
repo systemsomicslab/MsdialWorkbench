@@ -9,15 +9,18 @@ namespace CompMs.App.Msdial.Model.DataObj
     internal sealed class ProteinModel : BindableBase
     {
         private readonly ObservableCollection<PeptideModel> _peptides;
+       
 
         public ProteinModel(ProteinMsResult proteinResult, IReadOnlyList<ChromatogramPeakFeatureModel> spots)
         {
             _peptides = new ObservableCollection<PeptideModel>(proteinResult.MatchedPeptideResults.Select(result => new PeptideModel(result, spots)));
+            //_databaseid = proteinResult.DatabaseID;
         }
 
         public ProteinModel(ProteinMsResult proteinResult, IReadOnlyList<AlignmentSpotPropertyModel> spots)
         {
             _peptides = new ObservableCollection<PeptideModel>(proteinResult.MatchedPeptideResults.Select(result => new PeptideModel(result, spots)));
+            //_databaseid = proteinResult.DatabaseID;
         }
     }
 }

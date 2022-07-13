@@ -16,6 +16,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         {
             _proteinGroup = proteinGroup ?? throw new System.ArgumentNullException(nameof(proteinGroup));
             _proteins = new ObservableCollection<ProteinModel>(proteinGroup.ProteinMsResults.Select(result => new ProteinModel(result, spots)));
+
         }
 
         public ProteinGroupModel(ProteinGroup proteinGroup, IReadOnlyList<AlignmentSpotPropertyModel> spots)
