@@ -43,7 +43,7 @@ namespace ChartDrawingUiTest.Chart
                 { 3, Brushes.Blue },
                 { 4, Brushes.Red },
             };
-            LinkerBrush = new DelegateBrushMapper<SpotLinker>(linker => linkPalette.TryGetValue(linker.Type, out var x) ? x : Brushes.Black);
+            LinkerBrush = new DelegateBrushMapper<ISpotLinker>(linker => linkPalette.TryGetValue(linker.Type, out var x) ? x : Brushes.Black);
             LinkLabelBrush = new ConstantBrushMapper(Brushes.DarkMagenta);
             SpotLabelBrush = new ConstantBrushMapper<SpotAnnotator>(Brushes.DarkGoldenrod);
         }
@@ -110,14 +110,14 @@ namespace ChartDrawingUiTest.Chart
             series_[0].X = 0;
             for (var i = 2; i <= n; i++) {
                 if (i % 2 == 0) {
-                    linkers.Add(new SpotLinker(series_[i - 1], series_[i / 2 - 1], "/2", 1) { LabelHorizontalOffset = -3d, ArrowHorizontalOffset = -30d, });
-                    linkers.Add(new SpotLinker(series_[i / 2 - 1], series_[i - 1], "/2", 2) { LabelHorizontalOffset = -3d });
+                    linkers.Add(new SpotLinker(series_[i - 1], series_[i / 2 - 1], "/2", 1) { LabelHorizontalOffset = -3d, ArrowHorizontalOffset = 30d, ArrowVerticalOffset = 10d,  Placement = LinkerLabelPlacementMode.MiddleLeft, });
+                    linkers.Add(new SpotLinker(series_[i / 2 - 1], series_[i - 1], "/2", 2) { LabelHorizontalOffset = -3d, ArrowHorizontalOffset = 30d, ArrowVerticalOffset = 10d, Placement = LinkerLabelPlacementMode.MiddleLeft, });
                     edges[i / 2].Add(i);
                 }
                 else {
                     if (i * 3 + 1 <= n) {
-                        linkers.Add(new SpotLinker(series_[i - 1], series_[i * 3], "x3+1", 3) { ArrowHorizontalOffset = -30d, });
-                        linkers.Add(new SpotLinker(series_[i * 3], series_[i - 1], "x3+1", 4));
+                        linkers.Add(new SpotLinker(series_[i - 1], series_[i * 3], "x3+1", 3) { LabelHorizontalOffset = 3d, ArrowHorizontalOffset = 30d, ArrowVerticalOffset = 10d, Placement = LinkerLabelPlacementMode.MiddleRight, });
+                        linkers.Add(new SpotLinker(series_[i * 3], series_[i - 1], "x3+1", 4) { LabelHorizontalOffset = 3d, ArrowHorizontalOffset = 30d, ArrowVerticalOffset = 10d, Placement = LinkerLabelPlacementMode.MiddleRight, });
                         edges[i * 3 + 1].Add(i);
                     }
                 }

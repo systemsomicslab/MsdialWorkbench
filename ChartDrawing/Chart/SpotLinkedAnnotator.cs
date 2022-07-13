@@ -14,9 +14,48 @@ using System.Collections.Specialized;
 
 namespace CompMs.Graphics.Chart
 {
-    public sealed class SpotLinker {
-        private static readonly double DEFAULT_ARROW_HORIZONTAL_OFFSET = 30d, DEFAULT_ARROW_VERTICAL_OFFSET = 10d;
+    public interface ISpotLinker {
+        object From { get; }
+        object To { get; }
+        string Label { get; }
+        int Type { get; }
+        bool CanDraw(Vector v);
+        (TextAlignment, Point) GetLabelPosition(Point src, Point dest, Size labelSize);
+        PathFigure GetLink(Point src, Point dest);
+    }
 
+    public enum LinkerLabelPlacementMode {
+        Absolute = 0,
+        MiddleLeft = 1,
+        MiddleCenter = 2,
+        MiddleRight = 3,
+        SourceCornerLeft = 4,
+        SourceCornerCenter = 5,
+        SourceCornerRight = 6,
+        TargetCornerLeft = 7,
+        TargetCornerCenter = 8,
+        TargetCornerRight = 9,
+        SourceTopLeft = 10,
+        SourceTopCenter = 11,
+        SourceTopRight = 12,
+        SourceMiddleLeft = 13,
+        SourceMiddleCenter = 14,
+        SourceMiddleRight = 15,
+        SourceBottomLeft = 16,
+        SourceBottomCenter = 17,
+        SourceBottomRight = 18,
+        TargetTopLeft = 19,
+        TargetTopCenter = 20,
+        TargetTopRight = 21,
+        TargetMiddleLeft = 22,
+        TargetMiddleCenter = 23,
+        TargetMiddleRight = 24,
+        TargetBottomLeft = 25,
+        TargetBottomCenter = 26,
+        TargetBottomRight = 27,
+    }
+
+    public sealed class SpotLinker : ISpotLinker {
         public SpotLinker(object from, object to, string label, int type) {
             From = from;
             To = to;
@@ -28,11 +67,96 @@ namespace CompMs.Graphics.Chart
         public object To { get; }
         public string Label { get; }
         public int Type { get; }
-        public double ArrowHorizontalOffset { get; set; } = DEFAULT_ARROW_HORIZONTAL_OFFSET;
-        public double ArrowVerticalOffset { get; set; } = DEFAULT_ARROW_VERTICAL_OFFSET;
+        public double ArrowHorizontalOffset { get; set; } = 0d;
+        public double ArrowVerticalOffset { get; set; } = 0d;
 
-        public double LabelHorizontalOffset { get; set; } = 3d;
+        public double LabelHorizontalOffset { get; set; } = 0d;
         public double LabelVerticalOffset { get; set; } = 0d;
+
+        public LinkerLabelPlacementMode Placement { get; set; } = LinkerLabelPlacementMode.MiddleRight;
+
+        public bool CanDraw(Vector v) {
+            return Math.Abs(v.Y) >= ArrowVerticalOffset * 2;
+        }
+
+        public (TextAlignment, Point) GetLabelPosition(Point src, Point dest, Size labelSize) {
+            var verticalCornerOffset = dest.Y > src.Y ? -ArrowVerticalOffset : ArrowVerticalOffset;
+            switch (Placement) {
+                case LinkerLabelPlacementMode.Absolute:
+                    return (TextAlignment.Left, new Point(LabelHorizontalOffset, LabelVerticalOffset));
+                case LinkerLabelPlacementMode.MiddleLeft:
+                    return (TextAlignment.Right, new Point(dest.X - ArrowHorizontalOffset + LabelHorizontalOffset, (src.Y + dest.Y) / 2 + LabelVerticalOffset - labelSize.Height / 2));
+                case LinkerLabelPlacementMode.MiddleCenter:
+                    return (TextAlignment.Center, new Point(dest.X - ArrowHorizontalOffset + LabelHorizontalOffset, (src.Y + dest.Y) / 2 + LabelVerticalOffset - labelSize.Height / 2));
+                case LinkerLabelPlacementMode.MiddleRight:
+                    return (TextAlignment.Left, new Point(dest.X - ArrowHorizontalOffset + LabelHorizontalOffset, (src.Y + dest.Y) / 2 + LabelVerticalOffset - labelSize.Height / 2));
+                case LinkerLabelPlacementMode.SourceCornerLeft:
+                    return (TextAlignment.Right, new Point(dest.X - ArrowHorizontalOffset + LabelHorizontalOffset, src.Y - verticalCornerOffset + LabelVerticalOffset - labelSize.Height / 2));
+                case LinkerLabelPlacementMode.SourceCornerCenter:
+                    return (TextAlignment.Center, new Point(dest.X - ArrowHorizontalOffset + LabelHorizontalOffset, src.Y - verticalCornerOffset + LabelVerticalOffset - labelSize.Height / 2));
+                case LinkerLabelPlacementMode.SourceCornerRight:
+                    return (TextAlignment.Left, new Point(dest.X - ArrowHorizontalOffset + LabelHorizontalOffset, src.Y - verticalCornerOffset + LabelVerticalOffset - labelSize.Height / 2));
+                case LinkerLabelPlacementMode.TargetCornerLeft:
+                    return (TextAlignment.Right, new Point(dest.X - ArrowHorizontalOffset + LabelHorizontalOffset, dest.Y + verticalCornerOffset + LabelVerticalOffset - labelSize.Height / 2));
+                case LinkerLabelPlacementMode.TargetCornerCenter:
+                    return (TextAlignment.Center, new Point(dest.X - ArrowHorizontalOffset + LabelHorizontalOffset, dest.Y + verticalCornerOffset + LabelVerticalOffset - labelSize.Height / 2));
+                case LinkerLabelPlacementMode.TargetCornerRight:
+                    return (TextAlignment.Left, new Point(dest.X - ArrowHorizontalOffset + LabelHorizontalOffset, dest.Y + verticalCornerOffset + LabelVerticalOffset - labelSize.Height / 2));
+                case LinkerLabelPlacementMode.SourceTopLeft:
+                    return (TextAlignment.Right, new Point(src.X + LabelHorizontalOffset, src.Y + LabelVerticalOffset - labelSize.Height));
+                case LinkerLabelPlacementMode.SourceTopCenter:
+                    return (TextAlignment.Center, new Point(src.X + LabelHorizontalOffset, src.Y + LabelVerticalOffset - labelSize.Height));
+                case LinkerLabelPlacementMode.SourceTopRight:
+                    return (TextAlignment.Left, new Point(src.X + LabelHorizontalOffset, src.Y + LabelVerticalOffset - labelSize.Height));
+                case LinkerLabelPlacementMode.SourceMiddleLeft:
+                    return (TextAlignment.Right, new Point(src.X + LabelHorizontalOffset, src.Y + LabelVerticalOffset - labelSize.Height / 2));
+                case LinkerLabelPlacementMode.SourceMiddleCenter:
+                    return (TextAlignment.Center, new Point(src.X + LabelHorizontalOffset, src.Y + LabelVerticalOffset - labelSize.Height / 2));
+                case LinkerLabelPlacementMode.SourceMiddleRight:
+                    return (TextAlignment.Left, new Point(src.X + LabelHorizontalOffset, src.Y + LabelVerticalOffset - labelSize.Height / 2));
+                case LinkerLabelPlacementMode.SourceBottomLeft:
+                    return (TextAlignment.Right, new Point(src.X + LabelHorizontalOffset, src.Y + LabelVerticalOffset));
+                case LinkerLabelPlacementMode.SourceBottomCenter:
+                    return (TextAlignment.Center, new Point(src.X + LabelHorizontalOffset, src.Y + LabelVerticalOffset));
+                case LinkerLabelPlacementMode.SourceBottomRight:
+                    return (TextAlignment.Left, new Point(src.X + LabelHorizontalOffset, src.Y + LabelVerticalOffset));
+                case LinkerLabelPlacementMode.TargetTopLeft:
+                    return (TextAlignment.Right, new Point(dest.X + LabelHorizontalOffset, dest.Y + LabelVerticalOffset - labelSize.Height));
+                case LinkerLabelPlacementMode.TargetTopCenter:
+                    return (TextAlignment.Center, new Point(dest.X + LabelHorizontalOffset, dest.Y + LabelVerticalOffset - labelSize.Height));
+                case LinkerLabelPlacementMode.TargetTopRight:
+                    return (TextAlignment.Left, new Point(dest.X + LabelHorizontalOffset, dest.Y + LabelVerticalOffset - labelSize.Height));
+                case LinkerLabelPlacementMode.TargetMiddleLeft:
+                    return (TextAlignment.Right, new Point(dest.X + LabelHorizontalOffset, dest.Y + LabelVerticalOffset - labelSize.Height / 2));
+                case LinkerLabelPlacementMode.TargetMiddleCenter:
+                    return (TextAlignment.Center, new Point(dest.X + LabelHorizontalOffset, dest.Y + LabelVerticalOffset - labelSize.Height / 2));
+                case LinkerLabelPlacementMode.TargetMiddleRight:
+                    return (TextAlignment.Left, new Point(dest.X + LabelHorizontalOffset, dest.Y + LabelVerticalOffset - labelSize.Height / 2));
+                case LinkerLabelPlacementMode.TargetBottomLeft:
+                    return (TextAlignment.Right, new Point(dest.X + LabelHorizontalOffset, dest.Y + LabelVerticalOffset));
+                case LinkerLabelPlacementMode.TargetBottomCenter:
+                    return (TextAlignment.Center, new Point(dest.X + LabelHorizontalOffset, dest.Y + LabelVerticalOffset));
+                case LinkerLabelPlacementMode.TargetBottomRight:
+                    return (TextAlignment.Left, new Point(dest.X + LabelHorizontalOffset, dest.Y + LabelVerticalOffset));
+            }
+            return (TextAlignment.Left, new Point(src.X + ArrowHorizontalOffset + LabelHorizontalOffset, (src.Y + dest.Y) / 2 + LabelVerticalOffset - labelSize.Height / 2));
+        }
+
+        public PathFigure GetLink(Point src, Point dest) {
+            var yOffset = dest.Y > src.Y ? -ArrowVerticalOffset : ArrowVerticalOffset;
+            var path = new PathFigure
+            {
+                StartPoint = src,
+                Segments = new PathSegmentCollection
+            {
+                new LineSegment { Point = new Point(dest.X - ArrowHorizontalOffset, src.Y - yOffset) },
+                new LineSegment { Point = new Point(dest.X - ArrowHorizontalOffset, dest.Y + yOffset) },
+                new LineSegment { Point = dest },
+            }
+            };
+            path.Freeze();
+            return path;
+        }
     }
 
     public sealed class SpotAnnotator {
@@ -105,26 +229,26 @@ namespace CompMs.Graphics.Chart
         public static readonly DependencyProperty LinksProperty =
             DependencyProperty.Register(
                 nameof(Links),
-                typeof(IEnumerable<SpotLinker>),
+                typeof(IEnumerable<ISpotLinker>),
                 typeof(SpotLinkedAnnotator),
                 new FrameworkPropertyMetadata(
                     null,
                     FrameworkPropertyMetadataOptions.AffectsRender,
                     OnLinksChanged));
 
-        public IEnumerable<SpotLinker> Links {
-            get => (IEnumerable<SpotLinker>)GetValue(LinksProperty);
+        public IEnumerable<ISpotLinker> Links {
+            get => (IEnumerable<ISpotLinker>)GetValue(LinksProperty);
             set => SetValue(LinksProperty, value);
         }
 
         private static void OnLinksChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             var annotator = (SpotLinkedAnnotator)d;
-            annotator.OnLinksChanged((IEnumerable<SpotLinker>)e.OldValue, (IEnumerable<SpotLinker>)e.NewValue);
+            annotator.OnLinksChanged((IEnumerable<ISpotLinker>)e.OldValue, (IEnumerable<ISpotLinker>)e.NewValue);
         }
 
         private ICollectionView _linksCollectionView;
 
-        private void OnLinksChanged(IEnumerable<SpotLinker> oldValue, IEnumerable<SpotLinker> newValue) {
+        private void OnLinksChanged(IEnumerable<ISpotLinker> oldValue, IEnumerable<ISpotLinker> newValue) {
             if (_linksCollectionView != null) {
                 _linksCollectionView.CollectionChanged -= OnLinksCollectionChanged;
             }
@@ -197,21 +321,21 @@ namespace CompMs.Graphics.Chart
             }
         }
 
-        private Lazy<Dictionary<object, List<SpotLinker>>> _graph;
+        private Lazy<Dictionary<object, List<ISpotLinker>>> _graph;
 
         private void CoerceGraph() {
             if (_linksCollectionView is null
                 || xLambda is null
                 || yLambda is null) {
-                _graph = new Lazy<Dictionary<object, List<SpotLinker>>>(() => new Dictionary<object, List<SpotLinker>>());
+                _graph = new Lazy<Dictionary<object, List<ISpotLinker>>>(() => new Dictionary<object, List<ISpotLinker>>());
                 return;
             }
 
             var xlambda = xLambda.Value;
             var ylambda = yLambda.Value;
 
-            _graph = new Lazy<Dictionary<object, List<SpotLinker>>>(() =>
-                _linksCollectionView.Cast<SpotLinker>().GroupBy(link => link.From).ToDictionary(group => group.Key, group => group.ToList())
+            _graph = new Lazy<Dictionary<object, List<ISpotLinker>>>(() =>
+                _linksCollectionView.Cast<ISpotLinker>().GroupBy(link => link.From).ToDictionary(group => group.Key, group => group.ToList())
             );
         }
 
@@ -404,28 +528,28 @@ namespace CompMs.Graphics.Chart
         public static readonly DependencyProperty LinkBrushProperty =
             DependencyProperty.Register(
                 nameof(LinkBrush),
-                typeof(IBrushMapper<SpotLinker>),
+                typeof(IBrushMapper<ISpotLinker>),
                 typeof(SpotLinkedAnnotator),
                 new FrameworkPropertyMetadata(
-                    new ConstantBrushMapper<SpotLinker>(Brushes.Black),
+                    new ConstantBrushMapper<ISpotLinker>(Brushes.Black),
                     FrameworkPropertyMetadataOptions.AffectsRender));
 
-        public IBrushMapper<SpotLinker> LinkBrush {
-            get => (IBrushMapper<SpotLinker>)GetValue(LinkBrushProperty);
+        public IBrushMapper<ISpotLinker> LinkBrush {
+            get => (IBrushMapper<ISpotLinker>)GetValue(LinkBrushProperty);
             set => SetValue(LinkBrushProperty, value);
         }
 
         public static readonly DependencyProperty LinkLabelBrushProperty =
             DependencyProperty.Register(
                 nameof(LinkLabelBrush),
-                typeof(IBrushMapper<SpotLinker>),
+                typeof(IBrushMapper<ISpotLinker>),
                 typeof(SpotLinkedAnnotator),
                 new FrameworkPropertyMetadata(
-                    new ConstantBrushMapper<SpotLinker>(Brushes.Gray),
+                    new ConstantBrushMapper<ISpotLinker>(Brushes.Gray),
                     FrameworkPropertyMetadataOptions.AffectsRender));
 
-        public IBrushMapper<SpotLinker> LinkLabelBrush {
-            get => (IBrushMapper<SpotLinker>)GetValue(LinkLabelBrushProperty);
+        public IBrushMapper<ISpotLinker> LinkLabelBrush {
+            get => (IBrushMapper<ISpotLinker>)GetValue(LinkLabelBrushProperty);
             set => SetValue(LinkLabelBrushProperty, value);
         }
 
@@ -445,7 +569,6 @@ namespace CompMs.Graphics.Chart
 
         protected override void OnRender(DrawingContext drawingContext) {
             base.OnRender(drawingContext);
-
             if (Target != null && HorizontalAxis is IAxisManager haxis && VerticalAxis is IAxisManager vaxis) {
                 var hr = haxis.Range;
                 var vr = vaxis.Range;
@@ -458,48 +581,37 @@ namespace CompMs.Graphics.Chart
                 var dpiInfo = VisualTreeHelper.GetDpi(this);
                 var x = haxis.TranslateToRenderPoint(xLambda.Value(Target, haxis), flippedX, actualWidth);
                 var y = vaxis.TranslateToRenderPoint(yLambda.Value(Target, vaxis), flippedY, actualHeight);
+                var src = new Point(x, y);
 
                 if (_graph != null && _graph.Value.TryGetValue(Target, out var links)) {
-                    var linkBrush = LinkBrush ?? new ConstantBrushMapper<SpotLinker>(Brushes.Black);
-                    var labelBrush = LinkLabelBrush ?? new ConstantBrushMapper<SpotLinker>(Brushes.Gray);
+                    var linkBrush = LinkBrush ?? new ConstantBrushMapper<ISpotLinker>(Brushes.Black);
+                    var labelBrush = LinkLabelBrush ?? new ConstantBrushMapper<ISpotLinker>(Brushes.Gray);
                     var spots = links.Select(link => link.To).ToList();
                     var groups = links.GroupBy(link => linkBrush.Map(link));
                     foreach (var group in groups) {
                         var innerGeometries = new GeometryGroup();
                         var outerGeometries = new GeometryGroup();
-                        innerGeometries.Children.Add(new EllipseGeometry(new Point(x, y), radius, radius));
-                        outerGeometries.Children.Add(new EllipseGeometry(new Point(x, y), radius + lineThickness, radius + lineThickness));
+                        innerGeometries.Children.Add(new EllipseGeometry(src, radius, radius));
+                        outerGeometries.Children.Add(new EllipseGeometry(src, radius + lineThickness, radius + lineThickness));
                         var pathGeometry = new PathGeometry();
                         foreach (var link in group) {
                             var x_ = haxis.TranslateToRenderPoint(xLambda.Value(link.To, haxis), flippedX, actualWidth);
                             var y_ = vaxis.TranslateToRenderPoint(yLambda.Value(link.To, vaxis), flippedY, actualHeight);
-                            innerGeometries.Children.Add(new EllipseGeometry(new Point(x_, y_), radius, radius));
-                            outerGeometries.Children.Add(new EllipseGeometry(new Point(x_, y_), radius + lineThickness, radius + lineThickness));
+                            var dest = new Point(x_, y_);
+                            innerGeometries.Children.Add(new EllipseGeometry(dest, radius, radius));
+                            outerGeometries.Children.Add(new EllipseGeometry(dest, radius + lineThickness, radius + lineThickness));
 
-                            if (Math.Abs(y_ - y) >= link.ArrowVerticalOffset * 2) {
-                                var yOffset = y_ > y ? -link.ArrowVerticalOffset : link.ArrowVerticalOffset;
-                                var path = new PathFigure
-                                {
-                                    StartPoint = new Point(x, y),
-                                    Segments = new PathSegmentCollection
-                                {
-                                    new LineSegment { Point = new Point(x + link.ArrowHorizontalOffset, y - yOffset) },
-                                    new LineSegment { Point = new Point(x + link.ArrowHorizontalOffset, y_ + yOffset) },
-                                    new LineSegment { Point = new Point(x_, y_) },
-                                }
-                                };
-                                path.Freeze();
-                                pathGeometry.Figures.Add(path);
+                            if (link.CanDraw(dest - src)) {
+                                pathGeometry.Figures.Add(link.GetLink(src, dest));
 
                                 var text = new FormattedText(
                                     link.Label,
                                     System.Globalization.CultureInfo.GetCultureInfo("en-us"),
                                     FlowDirection.LeftToRight, new Typeface("Calibri"), fontsize,
-                                    labelBrush.Map(link), dpiInfo.PixelsPerDip)
-                                {
-                                    TextAlignment = link.LabelHorizontalOffset >= 0 ? TextAlignment.Left : TextAlignment.Right,
-                                };
-                                drawingContext.DrawText(text, new Point(x + link.ArrowHorizontalOffset + link.LabelHorizontalOffset, (y + y_) / 2 + link.LabelVerticalOffset - text.Height / 2));
+                                    labelBrush.Map(link), dpiInfo.PixelsPerDip);
+                                var (alignment, point) = link.GetLabelPosition(src, dest, new Size(text.Width, text.Height));
+                                text.TextAlignment = alignment;
+                                drawingContext.DrawText(text, point);
                             }
                         }
                         var geometry = new CombinedGeometry(GeometryCombineMode.Exclude, outerGeometries, innerGeometries);
@@ -522,7 +634,7 @@ namespace CompMs.Graphics.Chart
                             FlowDirection.LeftToRight, new Typeface("Calibri"), fontsize,
                             labelBrush.Map(node), dpiInfo.PixelsPerDip)
                         {
-                            TextAlignment = TextAlignment.Center,
+                            TextAlignment = node.LabelHorizontalOffset > 0 ? TextAlignment.Left : node.LabelHorizontalOffset < 0 ? TextAlignment.Right : TextAlignment.Center,
                         };
                         drawingContext.DrawText(text, new Point(x + node.LabelHorizontalOffset, y + node.LabelVerticalOffset - text.Height / 2));
                     }
