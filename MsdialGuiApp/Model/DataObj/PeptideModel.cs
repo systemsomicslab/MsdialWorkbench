@@ -11,15 +11,15 @@ namespace CompMs.App.Msdial.Model.DataObj
         public PeptideModel(PeptideMsResult peptideMsResult, IReadOnlyList<ChromatogramPeakFeatureModel> spots)
         {
             AnnotatedSpot = spots.FirstOrDefault(spot => spot.InnerModel == peptideMsResult.ChromatogramPeakFeature);
-            results = PeptideMsResult;
-            Console.WriteLine(results);
+            //results = PeptideMsResult;
+            //Console.WriteLine(results);
         }
 
         public PeptideModel(PeptideMsResult peptideMsResult, IReadOnlyList<AlignmentSpotPropertyModel> spots)
         {
             AnnotatedSpot = spots.FirstOrDefault(spot => spot.innerModel == peptideMsResult.AlignmentSpotProperty);
-            results = PeptideMsResult;
-            Console.WriteLine(results);
+            //results = PeptideMsResult;
+            //Console.WriteLine(results);
         }
     }
 }

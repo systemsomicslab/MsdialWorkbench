@@ -1,4 +1,5 @@
-﻿using CompMs.MsdialCore.DataObj;
+﻿using CompMs.CommonMVVM;
+using CompMs.MsdialCore.DataObj;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -6,7 +7,6 @@ using System.Linq;
 namespace CompMs.App.Msdial.Model.DataObj
 {
     internal sealed class ProteinGroupModel : BindableBase
-    {
     {
         private readonly ObservableCollection<ProteinModel> _proteins;
         private readonly ObservableCollection<PeptideModel> _peptides;
