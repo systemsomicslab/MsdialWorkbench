@@ -86,7 +86,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
             return new AlignmentEicModel(
                 source,
-                source.Do(_ => Console.WriteLine("Target changed")).Select(loader.LoadEicAsObservable).Do(_ => Console.WriteLine("Observable changed")).Switch(),
+                source.Select(loader.LoadEicAsObservable).Switch(),
                 AnalysisFiles,
                 Param,
                 horizontalSelector, verticalSelector
