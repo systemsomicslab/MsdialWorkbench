@@ -1,23 +1,23 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
-using System;
-using System.Collections.Generic;
+using Reactive.Bindings;
+using Reactive.Bindings.Notifiers;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace CompMs.App.Msdial.ViewModel.Table
 {
-    internal class ProteinGroupTableViewModel : ViewModelBase
-    {
-        ProteinGroupTableViewModel(ProteinGroupModel model) {
-            GroupId = model.GroupID;
-
-        }
+    //internal class ProteinGroupTableViewModel : MethodViewModel {
+    internal class ProteinGroupTableViewModel {
+        private readonly ProteinGroupModel model;
+        private readonly IMessageBroker _broker;
 
         public int GroupId { get; }
-        public ReadOnlyObservableCollection<ProteinGroupViewModel> Groups { get; }
+        public ReadOnlyObservableCollection<ProteinGroupViewModel> Groups { get; }        
+
     }
 }
