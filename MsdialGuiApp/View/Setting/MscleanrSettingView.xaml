@@ -18,6 +18,15 @@
                 <Setter Property="HorizontalContentAlignment" Value="Right"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
             </Style>
+            <Style TargetType="TextBlock" x:Key="AlignedTextBlock">
+                <Setter Property="Width" Value="120"/>
+            </Style>
+            <Style TargetType="TextBox" x:Key="AlignedTextBox" BasedOn="{StaticResource ToolTipErrorStyle}">
+                <Setter Property="Width" Value="64"/>
+            </Style>
+            <Style TargetType="CheckBox" x:Key="AlignedCheckBox">
+                <Setter Property="Width" Value="188"/>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -30,10 +39,11 @@
                 <CheckBox Content="Blank ratio" IsChecked="{Binding BlankRatioChecked}" d:IsChecked="True"/>
                 <WrapPanel Visibility="{Binding BlankRatioChecked, Converter={StaticResource BooleanToVisibility}}" Grid.Column="1">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Minimum blank ratio"/>
-                        <TextBox Text="{Binding BlankRatioMinimum}" Width="64" Margin="8,0"/>
+                        <TextBlock Text="Minimum blank ratio" Style="{StaticResource AlignedTextBlock}"/>
+                        <TextBox Text="{Binding BlankRatioMinimum}" Style="{StaticResource AlignedTextBox}"/>
                     </StackPanel>
-                    <CheckBox Content="Delete ghost peaks?" IsChecked="{Binding DeleteGhostPeaksChecked}" d:IsChecked="True"/>
+                    <CheckBox Content="Delete ghost peaks?" IsChecked="{Binding DeleteGhostPeaksChecked}" d:IsChecked="True"
+                              Style="{StaticResource AlignedCheckBox}"/>
                 </WrapPanel>
             </Grid>
             <Grid>
@@ -51,8 +61,8 @@
                 <CheckBox Content="Relative Standard Deviation" IsChecked="{Binding RSDChecked}" d:IsChecked="True"/>
                 <WrapPanel Visibility="{Binding RSDChecked, Converter={StaticResource BooleanToVisibility}}" Grid.Column="1">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Maximum RSD"/>
-                        <TextBox Text="{Binding RSDMaximum}" Width="64" Margin="8,0"/>
+                        <TextBlock Text="Maximum RSD" Style="{StaticResource AlignedTextBlock}"/>
+                        <TextBox Text="{Binding RSDMaximum}" Style="{StaticResource AlignedTextBox}"/>
                     </StackPanel>
                 </WrapPanel>
             </Grid>
@@ -73,9 +83,21 @@
                     </StackPanel>
                 </WrapPanel>
             </Grid>
-            <Button Content="Apply MS-CleanR filter"
-                    Command="{Binding MscleanrFilterCommand}"
-                    Height="25" Width="140" HorizontalAlignment="Center"/>
+            <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="8,4"
+                    Grid.Row="2">
+                <StackPanel.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Margin" Value="8,4"/>
+                        <Setter Property="Height" Value="24"/>
+                        <Setter Property="Width" Value="80"/>
+                    </Style>
+                </StackPanel.Resources>
+                <Button Content="Apply" Command="{Binding MscleanrFilterCommand}"/>
+                <Button Content="Cancel" Command="Close"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>
