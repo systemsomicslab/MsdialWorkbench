@@ -10034,7 +10034,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
-            if (adduct.AdductIonName == "[M-H]-")
+            if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M-2H]2-")
             {
                 // seek [C11H17NO8-H]-  as 306.078
                 var threshold1 = 0.01;

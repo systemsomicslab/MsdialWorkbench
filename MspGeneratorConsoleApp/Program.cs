@@ -27,18 +27,18 @@ namespace CompMs.MspGenerator
 
 
             /// RTCCS Prediction
-            var workingDirectry = @"d:\mikikot\Desktop\Tsugawa-san_work\20220309_NAA\NewNA_msp\RTCCSPrediction\";//作業用フォルダ
-            var toPredictFileName = workingDirectry + @"\txt\New_NAA_InChIKey-smiles.txt"; // 計算させたいInChIKeyとSMILESのリスト
+            //var workingDirectry = @"d:\mikikot\Desktop\Tsugawa-san_work\20220309_NAA\NewNA_msp\RTCCSPrediction\";//作業用フォルダ
+            //var toPredictFileName = workingDirectry + @"\txt\New_NAA_InChIKey-smiles.txt"; // 計算させたいInChIKeyとSMILESのリスト
 
-            var predictionWorkingDirectry = @"F:\takahashi\RTprediction\~from_MSP\setting\";
-            var padelDescriptortypes = predictionWorkingDirectry + @"\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
-            var descriptorSelecerRTFile = predictionWorkingDirectry + @"\para_RT152.txt"; // RT予測に使用するdescriptorのリスト
-            var descriptorSelecerCSSFile = predictionWorkingDirectry + @"\para_ccs327.txt"; // CCS予測に使用するdescriptorのリスト
-            var rScriptAvdModelPath = @predictionWorkingDirectry;// masterRT.csvとmasterCCS.csvとmodelingファイルの入っているフォルダのpath
-            var rtModelingRdsFile = rScriptAvdModelPath + "xgb_padel_evaluation_RT_2020-06-15.rds";
-            var ccsModelingRdsFile = rScriptAvdModelPath + "xgb_padel_evaluation_CCS_2020-06-15.rds";
-            var padelProgramPath = @"F:\takahashi\RTprediction\~from_MSP\PaDEL-Descriptor\";//PaDELのフォルダパス
-            var rLocationPath = @"D:\Program Files\R\R-4.1.3\bin\x64"; // Rのpath
+            //var predictionWorkingDirectry = @"F:\takahashi\RTprediction\~from_MSP\setting\";
+            //var padelDescriptortypes = predictionWorkingDirectry + @"\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
+            //var descriptorSelecerRTFile = predictionWorkingDirectry + @"\para_RT152.txt"; // RT予測に使用するdescriptorのリスト
+            //var descriptorSelecerCSSFile = predictionWorkingDirectry + @"\para_ccs327.txt"; // CCS予測に使用するdescriptorのリスト
+            //var rScriptAvdModelPath = @predictionWorkingDirectry;// masterRT.csvとmasterCCS.csvとmodelingファイルの入っているフォルダのpath
+            //var rtModelingRdsFile = rScriptAvdModelPath + "xgb_padel_evaluation_RT_2020-06-15.rds";
+            //var ccsModelingRdsFile = rScriptAvdModelPath + "xgb_padel_evaluation_CCS_2020-06-15.rds";
+            //var padelProgramPath = @"F:\takahashi\RTprediction\~from_MSP\PaDEL-Descriptor\";//PaDELのフォルダパス
+            //var rLocationPath = @"D:\Program Files\R\R-4.1.3\bin\x64"; // Rのpath
 
 
             //RtCcsPredictManager.smilesToSdfOnNCDK(workingDirectry, toPredictFileName);
@@ -68,8 +68,8 @@ namespace CompMs.MspGenerator
             //MergeRTandCCSintoMsp.generateDicOfPredictVs2(predictedFilesDirectry, dbFileName);
 
 
-            var outputResultFolderPath = workingDirectry + "\\mergeToMsp\\";　// mergeした結果の出力フォルダ
-            var mspFilePath = @"D:\takahashi\desktop\Tsugawa-san_work\20210315_addLibrary_ganglioside\predict3" + @"\msp\Msp20210326132118.jointedmsp"; //mergeするmspファイル
+            //var outputResultFolderPath = workingDirectry + "\\mergeToMsp\\";　// mergeした結果の出力フォルダ
+            //var mspFilePath = @"D:\takahashi\desktop\Tsugawa-san_work\20210315_addLibrary_ganglioside\predict3" + @"\msp\Msp20210326132118.jointedmsp"; //mergeするmspファイル
 
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMspVs2(mspFilePath, dbFileName, outputResultFolderPath);
 
@@ -77,9 +77,9 @@ namespace CompMs.MspGenerator
 
             //////フォルダ連続処理
             /////
-            workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20210315_addLibrary_ganglioside\predict\";
-            var toGenarateSdfDirectry = workingDirectry + "\\txt\\"; // sdfを作成するInChIKey-SMILESのリスト（テキスト）の入っているフォルダ
-            var toPadelDirectry = toGenarateSdfDirectry + "\\sdf\\"; // 作成したsdfを保存するフォルダ
+            //workingDirectry = @"D:\takahashi\desktop\Tsugawa-san_work\20210315_addLibrary_ganglioside\predict\";
+            //var toGenarateSdfDirectry = workingDirectry + "\\txt\\"; // sdfを作成するInChIKey-SMILESのリスト（テキスト）の入っているフォルダ
+            //var toPadelDirectry = toGenarateSdfDirectry + "\\sdf\\"; // 作成したsdfを保存するフォルダ
 
             //RtCcsPredictManager.generateSdfsOnNCDK(toGenarateSdfDirectry);
             //RtCcsPredictManager.runFoldersToPaDEL(toPadelDirectry, padelDescriptortypes, padelProgramPath); //これを使うより直接PaDELを利用したほうが早いです
@@ -104,20 +104,20 @@ namespace CompMs.MspGenerator
 
             //////// mtb-info上で最終的なmspを出力
             ////// 指定のフォルダの中にある.mspファイルを結合します。
-            //var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
+            var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
             //var exportFileName = "Msp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedmsp";
 
             //Common.jointMspFiles(mspFolder, exportFileName);
             ////////////結合したファイルを下記フォルダに移動
-            //workingDirectry = mspFolder + @"\LBM\";
+            var workingDirectry = mspFolder + @"\LBM\";
             //System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
             //////////
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + exportFileName,
             //     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20220318.txt", workingDirectry);
 
             ////////上書き用
-            //////MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + @"Msp20210426080355_2.jointedmsp",
-            //////     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20210329.txt", workingDirectry);
+            //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + @"Msp20220322084048.jointedmsp",
+            //     mspFolder + @"RT_CCS_predictedFile\predictedRTCCSAll_20220318.txt", workingDirectry);
 
 
             ///mspファイル生成ツール
@@ -722,7 +722,7 @@ namespace CompMs.MspGenerator
 
             }
             {
-                SmilesInchikeyGenerator.run(@"d:\mikikot\Desktop\Tsugawa-san_work\~SCIEX_EAD\20220624_EIEIO\result\all\generateSmilesAndInChIKey.txt");
+                //SmilesInchikeyGenerator.run(@"d:\mikikot\Desktop\Tsugawa-san_work\~SCIEX_EAD\20220624_EIEIO\result\all\generateSmilesAndInChIKey.txt");
 
                 // SmilesInChIKeygen test
                 //var alkyl = new AlkylChain(18, DoubleBond.CreateFromPosition(1, 12), new Oxidized(0));
