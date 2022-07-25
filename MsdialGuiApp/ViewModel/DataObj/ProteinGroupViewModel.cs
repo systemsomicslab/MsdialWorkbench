@@ -9,7 +9,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         }
 
         public int GroupId { get; }
-        private readonly ProteinGroupModel model;
+        private readonly ProteinGroupModel _model;
     }
 
 }
