@@ -35,6 +35,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -53,6 +54,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
         private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly IMessageBroker _broker;
+        private readonly Subject<ProteinResultContainerModel> _proteinResultContainerModelSubject;
         private IAnnotationProcess annotationProcess;
 
         public LcmsMethodModel(
@@ -74,6 +76,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
+            _proteinResultContainerModelSubject = new Subject<ProteinResultContainerModel>().AddTo(Disposables);
         }
 
         public IMsdialDataStorage<MsdialLcmsParameter> Storage { get; }
@@ -81,6 +84,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         private FacadeMatchResultEvaluator matchResultEvaluator;
 
         public PeakFilterModel PeakFilterModel { get; }
+
+        public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable => _proteinResultContainerModelSubject;
 
         public LcmsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -126,6 +131,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.Parameter,
                 _projectBaseParameter,
                 Storage.AnalysisFiles,
+                _proteinResultContainerModelSubject,
                 _broker)
             .AddTo(Disposables);
         }

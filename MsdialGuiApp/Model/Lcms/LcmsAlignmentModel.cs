@@ -57,6 +57,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             MsdialLcmsParameter parameter,
             ProjectBaseParameterModel projectBaseParameter,
             List<AnalysisFileBean> files,
+            IObserver<ProteinResultContainerModel> proteinResultContainerModelObserver,
             IMessageBroker messageBroker)
             : base(alignmentFileBean.FilePath) {
             if (databases is null) {
@@ -67,6 +68,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 throw new ArgumentNullException(nameof(projectBaseParameter));
             }
 
+
             _alignmentFile = alignmentFileBean;
             Parameter = parameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
@@ -74,6 +76,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             _compoundSearchers = ConvertToCompoundSearchers(databases);
 
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
+
+            var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(alignmentFileBean.ProteinAssembledResultFilePath);
+            var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Spots);
+            proteinResultContainerModelObserver.OnNext(proteinResultContainerModel);
 
             NormalizationSetModel = new NormalizationSetModel(Container, files, mapper, evaluator, parameter, messageBroker).AddTo(Disposables);
 

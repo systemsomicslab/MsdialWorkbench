@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Lcms;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Search;
@@ -48,7 +49,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .AddTo(Disposables);
             PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilterModel).AddTo(Disposables);
 
-            var _proteinGroupTableViewModel = (ProteinGroupTableViewModel)null; //new ProteinGroupTableViewModel();
+            var _proteinGroupTableViewModel = new ProteinGroupTableViewModel(model.ProteinResultContainerAsObservable).AddTo(Disposables);
             ShowProteinGroupTableCommand = new ReactiveCommand().AddTo(Disposables);
             ShowProteinGroupTableCommand.Subscribe(() => broker.Publish(_proteinGroupTableViewModel)).AddTo(Disposables);
         }
