@@ -4,6 +4,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,20 +12,20 @@ namespace CompMs.MsdialCore.DataObj
 {
     public class RawSpectra
     {
-        private readonly Dictionary<ChromXType, IChromatogramTypedSpectra> _spectraImpls;
+        private readonly ConcurrentDictionary<(ChromXType, ChromXUnit), IChromatogramTypedSpectra> _spectraImpls;
         private readonly IReadOnlyList<RawSpectrum> _spectra;
         private readonly IonMode _ionMode;
 
         public RawSpectra(IReadOnlyList<RawSpectrum> spectra, IonMode ionMode) {
             _spectra = spectra;
             _ionMode = ionMode;
-            _spectraImpls = new Dictionary<ChromXType, IChromatogramTypedSpectra>();
+            _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), IChromatogramTypedSpectra>();
         }
 
         public RawSpectra(IReadOnlyList<RawSpectrum> spectra, IonMode ionMode, AcquisitionType acquisitionType) {
             _spectra = spectra;
             _ionMode = ionMode;
-            _spectraImpls = new Dictionary<ChromXType, IChromatogramTypedSpectra>();
+            _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), IChromatogramTypedSpectra>();
         }
 
         public Chromatogram GetMs1ExtractedChromatogram(double mz, double tolerance, ChromatogramRange chromatogramRange) {
@@ -108,10 +109,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         private IChromatogramTypedSpectra BuildIfNotExists(ChromXType type, ChromXUnit unit) {
-            if (!_spectraImpls.TryGetValue(type, out var impl)) {
-                impl = _spectraImpls[type] = BuildTypedSpectra(_spectra, type, unit, _ionMode);
-            }
-            return impl;
+            return _spectraImpls.GetOrAdd((type, unit), pair => BuildTypedSpectra(_spectra, pair.Item1, pair.Item2, _ionMode));
         }
 
         private static IChromatogramTypedSpectra BuildTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXType type, ChromXUnit unit, IonMode ionMode) {

@@ -16,10 +16,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm
     {
         static readonly IComparer<IMSScanProperty> Comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
 
-        public override ChromatogramPeakInfo AccumulateChromatogram(
-            AlignmentChromPeakFeature peak,
-            AlignmentSpotProperty spot,
-            IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
+        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
             var detected = spot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
             //var peaklist = DataAccess.GetMs1Peaklist(
             //    spectrum, (float)peak.Mass, 
@@ -35,7 +32,6 @@ namespace CompMs.MsdialLcMsApi.Algorithm
                 tLeftRt = spot.TimesCenter.Value + 2.5;
             }
 
-            var ms1Spectra = new Ms1Spectra(spectrum, peak.IonMode);
             var chromatogramRange = new ChromatogramRange(tLeftRt, tRightRt, ChromXType.RT, ChromXUnit.Min);
             var peaklist = ms1Spectra.GetMs1ExtractedChromatogram(peak.Mass, ms1MassTolerance, chromatogramRange);
             return new ChromatogramPeakInfo(

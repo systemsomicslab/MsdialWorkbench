@@ -117,6 +117,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
             }
+
             return AlignmentModel = new LcmsAlignmentModel(
                 alignmentFile,
                 matchResultEvaluator,
@@ -227,7 +228,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
 
             pbmcw.Loaded += async (s, e) => {
-                var sem = new SemaphoreSlim(3);
+                var sem = new SemaphoreSlim(Math.Max(2, storage.Parameter.NumThreads / 2));
                 var tasks = new List<Task>();
                 var current = 0;
                 foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
@@ -248,12 +249,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 }
                 await Task.WhenAll(tasks.ToArray());
 
+                pbmcw.DialogResult = true;
                 pbmcw.Close();
             };
 
-            pbmcw.ShowDialog();
-
-            return true;
+            return pbmcw.ShowDialog() ?? false;
         }
 
         public bool ProcessSeccondAnnotaion4ShotgunProteomics(Window owner, IMsdialDataStorage<MsdialLcmsParameter> storage) {

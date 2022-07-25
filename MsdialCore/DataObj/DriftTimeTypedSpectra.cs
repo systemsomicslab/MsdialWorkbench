@@ -46,7 +46,7 @@ namespace CompMs.MsdialCore.DataObj
                     continue;
                 }
                 var (basePeakMz, basePeakIntensity, _) = new Spectrum(_spectra[i].Spectrum).RetrieveTotalIntensity();
-                results.Add(new ChromatogramPeak(i, basePeakMz, basePeakIntensity, _idToDriftTime[i]));
+                results.Add(ChromatogramPeak.Create(i, basePeakMz, basePeakIntensity, _idToDriftTime[i]));
             }
             return new Chromatogram(results, ChromXType.Drift, _unit);
         }
@@ -61,7 +61,7 @@ namespace CompMs.MsdialCore.DataObj
                     continue;
                 }
                 var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveBin(mz, tolerance);
-                results.Add(new ChromatogramPeak(i, basePeakMz, summedIntensity, _idToDriftTime[i]));
+                results.Add(ChromatogramPeak.Create(i, basePeakMz, summedIntensity, _idToDriftTime[i]));
             }
             return new Chromatogram(results, ChromXType.Drift, _unit);
         }
@@ -76,7 +76,7 @@ namespace CompMs.MsdialCore.DataObj
                     continue;
                 }
                 var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveTotalIntensity();
-                results.Add(new ChromatogramPeak(i, basePeakMz, summedIntensity, _idToDriftTime[i]));
+                results.Add(ChromatogramPeak.Create(i, basePeakMz, summedIntensity, _idToDriftTime[i]));
             }
             return new Chromatogram(results, ChromXType.Drift, _unit);
         }

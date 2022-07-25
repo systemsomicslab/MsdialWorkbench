@@ -235,7 +235,7 @@ namespace CompMs.MsdialCore.Utility {
                 var mz = spectrum[i].Mz;
                 var intensity = spectrum[i].Intensity;
                 if (mz < minMz || mz > maxMz) continue;
-                chromPeaks.Add(new ChromatogramPeak(i, mz, intensity, new MzValue(mz)));
+                chromPeaks.Add(ChromatogramPeak.Create(i, mz, intensity, new MzValue(mz)));
             }
             return chromPeaks;
         }

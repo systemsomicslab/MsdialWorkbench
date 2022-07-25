@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using CompMs.Common.Interfaces;
 using MessagePack;
 
@@ -19,11 +17,28 @@ namespace CompMs.Common.Components
         public ChromXs ChromXs { get; set; }
 
         public ChromatogramPeak() { }
-        public ChromatogramPeak(int id, double mass, double intensity, ChromX time) {
+        public ChromatogramPeak(int id, double mass, double intensity, IChromX time) {
             ID = id;
             Mass = mass;
             Intensity = intensity;
             ChromXs = new ChromXs(time);
+        }
+
+        public ChromatogramPeak(int id, double mass, double intensity, ChromXs chromXs) {
+            ID = id;
+            Mass = mass;
+            Intensity = intensity;
+            ChromXs = chromXs;
+        }
+
+        public static ChromatogramPeak Create<T>(int id, double mass, double intensity, T time) where T: IChromX {
+            return new ChromatogramPeak
+            {
+                ID = id,
+                Mass = mass,
+                Intensity = intensity,
+                ChromXs = ChromXs.Create(time),
+            };
         }
     }
 }

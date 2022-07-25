@@ -120,7 +120,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         /// <param name="spectrumList"></param>
         /// <param name="fileID"></param>
         /// <returns></returns>
-        protected override List<ChromatogramPeak> GetPeaks(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
+        protected override List<ChromatogramPeak> GetPeaks(Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
 
             var centralRT = center.RT.Value;
             var maxRt = centralRT + peakWidth * 0.5; // temp
@@ -187,7 +187,7 @@ namespace CompMs.MsdialGcMsApi.Algorithm.Alignment
         /// <param name="spectrumList"></param>
         /// <param name="fileID"></param>
         /// <returns></returns>
-        protected override List<ChromatogramPeak> GetPeaks(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
+        protected override List<ChromatogramPeak> GetPeaks(Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
 
             var centralRT = center.RT.Value;
             var centralRI = center.RI.Value;

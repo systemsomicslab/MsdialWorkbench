@@ -16,10 +16,10 @@ namespace CompMs.MsdialDimsCore.Algorithm
         readonly IComparer<IMSScanProperty> Comparer = ChromXsComparer.MzComparer;
 
         public override ChromatogramPeakInfo AccumulateChromatogram(
-            AlignmentChromPeakFeature target, 
-            AlignmentSpotProperty spot, 
-            IReadOnlyList<RawSpectrum> spectrum, 
-            float ms1MassTolerance) {
+            AlignmentChromPeakFeature target,
+            AlignmentSpotProperty spot,
+            Ms1Spectra ms1Spectra,
+            IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
             var detected = spot.AlignedPeakProperties.Where(peak => peak.MasterPeakID >= 0).ToList();
             var lo = detected.Min(peak => peak.ChromXsLeft.Value);
             var hi = detected.Max(peak => peak.ChromXsRight.Value);
