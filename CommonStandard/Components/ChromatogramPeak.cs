@@ -8,7 +8,7 @@ namespace CompMs.Common.Components
     public class ChromatogramPeak: IChromatogramPeak
     {
         [Key(0)]
-        public int ID { get; set; }
+        public int ID { get; }
         [Key(1)]
         public double Mass { get; set; }
         [Key(2)]
@@ -24,6 +24,7 @@ namespace CompMs.Common.Components
             ChromXs = new ChromXs(time);
         }
 
+        [SerializationConstructor]
         public ChromatogramPeak(int id, double mass, double intensity, ChromXs chromXs) {
             ID = id;
             Mass = mass;
@@ -32,13 +33,7 @@ namespace CompMs.Common.Components
         }
 
         public static ChromatogramPeak Create<T>(int id, double mass, double intensity, T time) where T: IChromX {
-            return new ChromatogramPeak
-            {
-                ID = id,
-                Mass = mass,
-                Intensity = intensity,
-                ChromXs = ChromXs.Create(time),
-            };
+            return new ChromatogramPeak(id, mass, intensity, ChromXs.Create(time));
         }
     }
 }

@@ -25,12 +25,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing.Tests
                     else sum += peaklist[i + j].Intensity;
                 }
                 smoothedPeakIntensity = (double)(sum / normalizationValue);
-                var smoothedPeak = new ChromatogramPeak() {
-                    ID = i,
-                    ChromXs = peaklist[i].ChromXs,
-                    Mass = peaklist[i].Mass,
-                    Intensity = smoothedPeakIntensity
-                };
+                var smoothedPeak = new ChromatogramPeak(i, peaklist[i].Mass, smoothedPeakIntensity, peaklist[i].ChromXs);
                 smoothedPeaklist.Add(smoothedPeak);
             }
             return smoothedPeaklist;
@@ -56,9 +51,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing.Tests
                     else sum += peaklist[i + j].Intensity * (smoothingLevel - Math.Abs(j) + 1);
                 }
                 smoothedPeakIntensity = (double)(sum / lwmaNormalizationValue);
-                var smoothedPeak = new ChromatogramPeak() { 
-                    ID = i, ChromXs = peaklist[i].ChromXs, Mass = peaklist[i].Mass, Intensity = smoothedPeakIntensity 
-                };
+                var smoothedPeak = new ChromatogramPeak(i, peaklist[i].Mass, smoothedPeakIntensity, peaklist[i].ChromXs);
                 
                 smoothedPeaklist.Add(smoothedPeak);
             }
@@ -72,7 +65,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing.Tests
             var chrom = new List<ChromatogramPeak>(1000000);
 
             for (int i = 0; i < 1000000; i++) {
-                chrom.Add(new ChromatogramPeak { ID = i, ChromXs = new ChromXs(i / 100d), Mass = rand.NextDouble(), Intensity = rand.NextDouble() * 10000000 });
+                chrom.Add(new ChromatogramPeak(i, rand.NextDouble(), rand.NextDouble() * 10000000, new ChromXs(i / 100d)));
             }
 
             timer.Start();
@@ -99,18 +92,9 @@ namespace CompMs.Common.Algorithm.ChromSmoothing.Tests
         public void SimpleMovingAverageShortListTest() {
             var chrom = new List<ChromatogramPeak>
             {
-                new ChromatogramPeak
-                {
-                    ID = 0, ChromXs = new ChromXs(100), Mass = 200, Intensity = 1000000
-                },
-                new ChromatogramPeak
-                {
-                    ID = 1, ChromXs = new ChromXs(200), Mass = 200, Intensity = 5000000
-                },
-                new ChromatogramPeak
-                {
-                    ID = 2, ChromXs = new ChromXs(300), Mass = 200, Intensity = 3000000
-                },
+                new ChromatogramPeak(0, 200, 1000000, new ChromXs(100)),
+                new ChromatogramPeak(1, 200, 5000000, new ChromXs(200)),
+                new ChromatogramPeak(2, 200, 3000000, new ChromXs(300)),
             };
 
             var expected = Original_SimpleMovingAverage(chrom, 5);
@@ -131,7 +115,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing.Tests
             var chrom = new List<ChromatogramPeak>(1000000);
 
             for (int i = 0; i < 1000000; i++) {
-                chrom.Add(new ChromatogramPeak { ID = i, ChromXs = new ChromXs(i / 100d), Mass = rand.NextDouble(), Intensity = rand.NextDouble() * 10000000 });
+                chrom.Add(new ChromatogramPeak(i, rand.NextDouble(), rand.NextDouble() * 10000000, new ChromXs(i / 100d)));
             }
 
             timer.Start();
@@ -159,18 +143,9 @@ namespace CompMs.Common.Algorithm.ChromSmoothing.Tests
         public void LinearWeightedMovingAverageShortListTest() {
             var chrom = new List<ChromatogramPeak>
             {
-                new ChromatogramPeak
-                {
-                    ID = 0, ChromXs = new ChromXs(100), Mass = 200, Intensity = 1000000
-                },
-                new ChromatogramPeak
-                {
-                    ID = 1, ChromXs = new ChromXs(200), Mass = 200, Intensity = 5000000
-                },
-                new ChromatogramPeak
-                {
-                    ID = 2, ChromXs = new ChromXs(300), Mass = 200, Intensity = 3000000
-                },
+                new ChromatogramPeak(0, 200, 1000000, new ChromXs(100)),
+                new ChromatogramPeak(1, 200, 5000000, new ChromXs(200)),
+                new ChromatogramPeak(2, 200, 3000000, new ChromXs(300)),
             };
 
             var expected = Original_LinearWeightedMovingAverage(chrom, 5);

@@ -77,7 +77,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var minId = -1;
             var minDiff = double.MaxValue;
 
-            var start = SearchCollection.LowerBound(sPeaklist, new ChromatogramPeak { ChromXs = new ChromXs(centralAx - axTol) }, (a, b) => a.ChromXs.Value.CompareTo(b.ChromXs.Value));
+            var start = SearchCollection.LowerBound(sPeaklist, new ChromXs(centralAx - axTol), (a, b) => a.ChromXs.Value.CompareTo(b.Value));
             for (int i = start; i < sPeaklist.Count; i++) {
                 if (i - 2 < 0 || i + 2 >= sPeaklist.Count) continue;
                 if (sPeaklist[i].ChromXs.Value < centralAx - axTol) continue;
