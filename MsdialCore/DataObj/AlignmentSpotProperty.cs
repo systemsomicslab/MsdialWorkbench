@@ -337,7 +337,6 @@ namespace CompMs.MsdialCore.DataObj {
         // IChromatogramPeak
         int IChromatogramPeak.ID {
             get => MasterAlignmentID;
-            set => MasterAlignmentID = value;
         }
 
         ChromXs IChromatogramPeak.ChromXs {

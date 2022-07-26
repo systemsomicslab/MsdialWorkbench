@@ -15,7 +15,7 @@ namespace CompMs.Common.Components
         public List<SpectrumPeak> Spectrum { get; set; } = new List<SpectrumPeak>();
         
         public MSScanProperty() { }
-        public MSScanProperty(int id, double precursorMz, ChromX time, IonMode ionmode)
+        public MSScanProperty(int id, double precursorMz, IChromX time, IonMode ionmode)
         {
             ScanID = id;
             PrecursorMz = precursorMz;
@@ -25,7 +25,7 @@ namespace CompMs.Common.Components
 
         public void AddPeak(double mass, double intensity, string comment = null)
         {
-            Spectrum.Add(new SpectrumPeak(mass, intensity, comment));
+            Spectrum.Add(new SpectrumPeak((float)mass, (float)intensity, comment));
         }
     }
 }

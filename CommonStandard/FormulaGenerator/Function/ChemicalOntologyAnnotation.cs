@@ -160,7 +160,7 @@ namespace CompMs.Common.FormulaGenerator.Function {
 
             foreach (var ion in productIons) {
                 var revMz = (double)(ion.Mass % 1) + (double)(centerMz + (centerMz - ion.Mass) + shiftMass);
-                var peak = new SpectrumPeak() { Mass = revMz, Intensity = ion.Intensity, Comment = "M" };
+                var peak = new SpectrumPeak() { Mass = (float)revMz, Intensity = (float)ion.Intensity, Comment = "M" };
                 revSpectrum.Add(peak);
             }
             return revSpectrum;

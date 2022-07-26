@@ -37,8 +37,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public MsSpectrumModel(
             IObservable<List<SpectrumPeak>> upperSpectrum,
             IObservable<List<SpectrumPeak>> lowerSpectrum,
-            PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
-            PropertySelector<SpectrumPeak, double> verticalPropertySelector,
+            PropertySelector<SpectrumPeak, float> horizontalPropertySelector,
+            PropertySelector<SpectrumPeak, float> verticalPropertySelector,
             GraphLabels graphLabels,
             string hueProperty,
             IObservable<IBrushMapper> upperSpectrumBrush,
@@ -57,7 +57,7 @@ namespace CompMs.App.Msdial.Model.Chart
 
             var upperMsSpectrum = upperSpectrum.Select(spectrum => new MsSpectrum(spectrum));
             var upperVerticalRangeProperty = upperMsSpectrum
-                .Select(msSpectrum => msSpectrum.GetSpectrumRange(verticalPropertySelector.Selector));
+                .Select(msSpectrum => msSpectrum.GetSpectrumRange(spec => verticalPropertySelector.Selector(spec)));
             UpperVerticalRangeSource = upperVerticalRangeProperty;
             var upperContinuousVerticalAxis = upperVerticalRangeProperty
                 .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
@@ -74,12 +74,12 @@ namespace CompMs.App.Msdial.Model.Chart
 
             var lowerMsSpectrum = lowerSpectrum.Select(spectrum => new MsSpectrum(spectrum));
             var lowerVerticalRangeSource = lowerMsSpectrum
-                .Select(msSpectrum => msSpectrum.GetSpectrumRange(verticalPropertySelector.Selector));
+                .Select(msSpectrum => msSpectrum.GetSpectrumRange(spec => verticalPropertySelector.Selector(spec)));
 
             var horizontalRangeSource = new[]
             {
-                upperMsSpectrum.Select(msSpectrum => msSpectrum.GetSpectrumRange(horizontalPropertySelector.Selector)),
-                lowerMsSpectrum.Select(msSpectrum => msSpectrum.GetSpectrumRange(horizontalPropertySelector.Selector)),
+                upperMsSpectrum.Select(msSpectrum => msSpectrum.GetSpectrumRange(spec => horizontalPropertySelector.Selector(spec))),
+                lowerMsSpectrum.Select(msSpectrum => msSpectrum.GetSpectrumRange(spec => horizontalPropertySelector.Selector(spec))),
             }.CombineLatest(xs => xs.Aggregate((x, y) => x.Union(y)));
 
             var horizontalAxis = horizontalRangeSource.ToReactiveContinuousAxisManager<double>(new ConstantMargin(40)).AddTo(Disposables);
@@ -165,8 +165,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public GraphLabels GraphLabels { get; }
         public ReadOnlyReactivePropertySlim<bool> SpectrumLoaded { get; }
         public ReadOnlyReactivePropertySlim<bool> ReferenceHasSpectrumInfomation { get; }
-        public PropertySelector<SpectrumPeak, double> HorizontalPropertySelector { get; }
-        public PropertySelector<SpectrumPeak, double> VerticalPropertySelector { get; }
+        public PropertySelector<SpectrumPeak, float> HorizontalPropertySelector { get; }
+        public PropertySelector<SpectrumPeak, float> VerticalPropertySelector { get; }
 
         public IObservable<bool> CanSaveUpperSpectrum => UpperSpectrumModel.CanSave;
 
@@ -198,8 +198,8 @@ namespace CompMs.App.Msdial.Model.Chart
             IObservable<T> source,
             IMsSpectrumLoader<U> upperLoader,
             IMsSpectrumLoader<V> lowerLoader,
-            Func<SpectrumPeak, double> horizontalSelector,
-            Func<SpectrumPeak, double> verticalSelector,
+            Func<SpectrumPeak, float> horizontalSelector,
+            Func<SpectrumPeak, float> verticalSelector,
             string graphTitle,
             string horizontalTitle,
             string verticalTitle,
@@ -215,8 +215,8 @@ namespace CompMs.App.Msdial.Model.Chart
             return new MsSpectrumModel(
                 source.Select(src => upperLoader.LoadSpectrumAsObservable(src)).Switch(),
                 source.Select(src => lowerLoader.LoadSpectrumAsObservable(src)).Switch(),
-                new PropertySelector<SpectrumPeak, double>(horizontalProperty, horizontalSelector),
-                new PropertySelector<SpectrumPeak, double>(verticalProperty, verticalSelector),
+                new PropertySelector<SpectrumPeak, float>(horizontalProperty, horizontalSelector),
+                new PropertySelector<SpectrumPeak, float>(verticalProperty, verticalSelector),
                 new GraphLabels(graphTitle, horizontalTitle, verticalTitle, labelProperty, orderingProperty),
                 hueProperty,
                 upperBrush,

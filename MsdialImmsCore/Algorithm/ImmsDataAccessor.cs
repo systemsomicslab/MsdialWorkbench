@@ -19,7 +19,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         private readonly double massTolerance;
 
-        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
+        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
             var detected = spot.AlignedPeakProperties.Where(prop => prop.MasterPeakID >= 0).ToArray();
             if (!detected.Any()) {
                 throw new ArgumentException(nameof(spot));
@@ -74,7 +74,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 var massSpectra = spectrum.Spectrum;
                 //bin intensities for focused MZ +- ms1Tolerance
                 (double basepeakMz, double basepeakIntensity, double summedIntensity) = new Spectrum(massSpectra).RetrieveBin(targetMass, ms1Tolerance);
-                peaklist.Add(new ChromatogramPeak() { ID = spectrum.Index, ChromXs = new ChromXs(chromX, ChromXType.Drift, ChromXUnit.Msec), Mass = basepeakMz, Intensity = summedIntensity });
+                peaklist.Add(new ChromatogramPeak(spectrum.Index, basepeakMz, summedIntensity, new ChromXs(chromX, ChromXType.Drift, ChromXUnit.Msec)));
             }
 
             return peaklist;

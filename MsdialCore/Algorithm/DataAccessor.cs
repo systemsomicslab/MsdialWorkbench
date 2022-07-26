@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
+using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Algorithm
 {
     public abstract class DataAccessor {
         public abstract List<IMSScanProperty> GetMSScanProperties(AnalysisFileBean analysisFile);
-        public abstract ChromatogramPeakInfo AccumulateChromatogram(
-            AlignmentChromPeakFeature peak, 
-            AlignmentSpotProperty spot, 
-            IReadOnlyList<RawSpectrum> spectrum, 
-            float ms1MassTolerance);
+        public abstract ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance);
     }
 
     public class IDComparer : IComparer<IMSScanProperty>

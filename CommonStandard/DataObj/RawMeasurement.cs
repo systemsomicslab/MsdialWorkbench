@@ -278,7 +278,7 @@ namespace CompMs.Common.DataObj {
 
     public struct RawPeakElement
     {
-        public double Mz;
-        public double Intensity;
+        public float Mz;
+        public float Intensity;
     }
 }

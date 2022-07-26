@@ -92,7 +92,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             int topScanNum = minimumID;
             var smoothedMs2ChromPeaksList = new List<List<ChromatogramPeak>>();
             var ms2ChromPeaksList = DataAccess.GetMs2Peaklistlist(spectrumList, precursorMz, startScanNum, endScanNum,
-                curatedSpectra.Select(x => x.Mass).ToList(), param, targetCE);
+                curatedSpectra.Select(x => (double)x.Mass).ToList(), param, targetCE);
 
             foreach (var chromPeaks in ms2ChromPeaksList) {
                 var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);

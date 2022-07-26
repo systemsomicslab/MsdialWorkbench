@@ -98,7 +98,7 @@ namespace CompMs.Common.Lipidomics.Tests
         }
 
         public static MockSpectrumGenerator Create(LbmClass lipidClass, string adduct, double intensity) {
-            return new MockSpectrumGenerator(lipidClass, adduct, new MSScanProperty(0, 150, new MzValue(150), IonMode.Positive) { Spectrum = new List<SpectrumPeak> { new SpectrumPeak { Intensity  = intensity} } });
+            return new MockSpectrumGenerator(lipidClass, adduct, new MSScanProperty(0, 150, new MzValue(150), IonMode.Positive) { Spectrum = new List<SpectrumPeak> { new SpectrumPeak { Intensity  = (float)intensity} } });
         }
     }
 }

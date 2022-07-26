@@ -19,9 +19,6 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public SingleSpectrumViewModel(SingleSpectrumModel model) {
             this.model = model;
             Spectrum = this.model.Spectrum.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-#if DEBUG
-            Spectrum.Subscribe(s => Console.WriteLine($"spectrum changed. count: {s?.Count}"));
-#endif
             HorizontalAxis = this.model.HorizontalAxis.Cast<IAxisManager>().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             VerticalAxis = this.model.VerticalAxis.Cast<IAxisManager>().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Brush = this.model.Brush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);

@@ -212,9 +212,9 @@ namespace CompMs.MsdialCore.Parser {
             fs.Read(buffer, 0, buffer.Length);
             for (int j = 0; j < spectraNumber; j++) {
                 result.Spectrum.Add(new SpectrumPeak {
-                    Mass = BitConverter.ToDouble(buffer, specStepSize * j),
-                    Intensity = BitConverter.ToDouble(buffer, specStepSize * j + 8),
-                    PeakQuality = (PeakQuality)BitConverter.ToInt32(buffer, specStepSize * j + 16)
+                    Mass = BitConverter.ToSingle(buffer, specStepSize * j),
+                    Intensity = BitConverter.ToSingle(buffer, specStepSize * j + 4),
+                    PeakQuality = (PeakQuality)BitConverter.ToInt32(buffer, specStepSize * j + 8)
                 });
             }
 
@@ -225,12 +225,11 @@ namespace CompMs.MsdialCore.Parser {
             fs.Read(buffer, 0, buffer.Length);
 
             for (int j = 0; j < datapointNumber; j++) {
-                result.ModelPeakChromatogram.Add(new ChromatogramPeak() {
-                    ID = BitConverter.ToInt32(buffer, peakStepSize * j),
-                    ChromXs = new ChromXs(BitConverter.ToDouble(buffer, peakStepSize * j + 4)),
-                    Mass = BitConverter.ToSingle(buffer, peakStepSize * j + 12),
-                    Intensity = BitConverter.ToSingle(buffer, peakStepSize * j + 20)
-                });
+                var id = BitConverter.ToInt32(buffer, peakStepSize * j);
+                var chromXs = new ChromXs(BitConverter.ToDouble(buffer, peakStepSize * j + 4));
+                var mass = BitConverter.ToSingle(buffer, peakStepSize * j + 12);
+                var intensity = BitConverter.ToSingle(buffer, peakStepSize * j + 20);
+                result.ModelPeakChromatogram.Add(new ChromatogramPeak(id, mass, intensity, chromXs));
             }
 
             // reading model masses

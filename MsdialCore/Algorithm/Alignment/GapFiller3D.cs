@@ -48,7 +48,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         protected abstract double GetAveragePeakWidthFirst(IEnumerable<AlignmentChromPeakFeature> peaks);
         protected abstract double GetAveragePeakWidthSecond(IEnumerable<AlignmentChromPeakFeature> peaks);
 
-        protected override List<ChromatogramPeak> GetPeaks(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
+        protected override List<ChromatogramPeak> GetPeaks(Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
             return GetPeaksFirst(spectrum, center, peakWidth, fileID, smoothingMethod, smoothingLevel);
         }
         protected abstract List<ChromatogramPeak> GetPeaksFirst(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel);

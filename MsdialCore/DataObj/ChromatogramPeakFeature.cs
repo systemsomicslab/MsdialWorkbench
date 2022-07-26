@@ -112,7 +112,7 @@ namespace CompMs.MsdialCore.DataObj
         [Key(24)]
         public List<SpectrumPeak> Spectrum { get; set; } = new List<SpectrumPeak>();
         public void AddPeak(double mass, double intensity, string comment = null) {
-            Spectrum.Add(new SpectrumPeak(mass, intensity, comment));
+            Spectrum.Add(new SpectrumPeak((float)mass, (float)intensity, comment));
         }
 
         // set for IMoleculeProperty (for representative)
@@ -293,7 +293,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         [IgnoreMember]
-        public bool IsMsmsContained => MS2RawSpectrumID >= 0;
+        public bool IsMsmsContained => MSDecResultIdUsed >= 0 || MS2RawSpectrumID >= 0;
 
         [Key(38)]
         public string Comment { get; set; } = string.Empty;
@@ -395,7 +395,6 @@ namespace CompMs.MsdialCore.DataObj
         // IChromatogramPeak
         int IChromatogramPeak.ID {
             get => MasterPeakID;
-            set => MasterPeakID = value;
         }
 
         ChromXs IChromatogramPeak.ChromXs {

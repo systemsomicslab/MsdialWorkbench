@@ -101,6 +101,20 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).Chains[0], typeof(AlkylChain));
             Assert.IsInstanceOfType(((MolecularSpeciesLevelChains)actual).Chains[1], typeof(AcylChain));
 
+            actual = parser.Parse("19:0/O-17:0");
+            Assert.IsInstanceOfType(actual, typeof(PositionLevelChains));
+            Assert.AreEqual(36, actual.CarbonCount);
+            Assert.AreEqual(0, actual.DoubleBondCount);
+            Assert.AreEqual(0, actual.OxidizedCount);
+            Assert.IsInstanceOfType(((PositionLevelChains)actual).Chains[0], typeof(AcylChain));
+            Assert.AreEqual(19, ((PositionLevelChains)actual).Chains[0].CarbonCount);
+            Assert.AreEqual(0, ((PositionLevelChains)actual).Chains[0].DoubleBondCount);
+            Assert.AreEqual(0, ((PositionLevelChains)actual).Chains[0].OxidizedCount);
+            Assert.IsInstanceOfType(((PositionLevelChains)actual).Chains[1], typeof(AlkylChain));
+            Assert.AreEqual(17, ((PositionLevelChains)actual).Chains[1].CarbonCount);
+            Assert.AreEqual(0, ((PositionLevelChains)actual).Chains[1].DoubleBondCount);
+            Assert.AreEqual(0, ((PositionLevelChains)actual).Chains[1].OxidizedCount);
+
             actual = parser.Parse("O-16:0/O-18:2");
             Assert.IsInstanceOfType(actual, typeof(PositionLevelChains));
             Assert.AreEqual(34, actual.CarbonCount);

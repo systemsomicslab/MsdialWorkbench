@@ -532,7 +532,7 @@ namespace CompMs.MsdialCore.MSDec {
 
 				for (int j = 0; j < chromatogram.Count; j++) {
 					if (j == peakTopOfDeconvolutedChrom) {
-						ms1DecResult.Spectrum.Add(new SpectrumPeak(chromatogram[j].Mass, chromatogram[j].Intensity));
+						ms1DecResult.Spectrum.Add(new SpectrumPeak((float)chromatogram[j].Mass, (float)chromatogram[j].Intensity));
 						sumHeight += chromatogram[j].Intensity;
 
 						if (chromatogram[j].Intensity > ms1Chromatograms[i][peakTopOfOriginalChrom].Intensity)
@@ -583,13 +583,7 @@ namespace CompMs.MsdialCore.MSDec {
                 var intensity = coefficient * modelChromVector.TargetIntensityArray[i];
                 if (i == targetTop && intensity <= 0) return null;
                 
-                dPeaklist.Add(new ChromatogramPeak()
-                {
-                    ID = modelChromVector.RdamScanList[i],
-                    ChromXs = new ChromXs(new RetentionTime(modelChromVector.RtArray[i])),
-                    Mass = targetMz,
-                    Intensity = intensity,
-                });
+                dPeaklist.Add(new ChromatogramPeak(modelChromVector.RdamScanList[i], targetMz, intensity, new RetentionTime(modelChromVector.RtArray[i])));
             }
             return dPeaklist;
         }

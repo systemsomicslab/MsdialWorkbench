@@ -365,8 +365,11 @@ namespace CompMs.Common.Parser
                                         mzFill = false;
                                         numChar = string.Empty;
 
-                                        if (mspPeak.Comment == null)
+                                        if (mspPeak.Comment == null) {
+#if !DEBUG
                                             mspPeak.Comment = mspPeak.Mass.ToString();
+#endif
+                                        }
                                         mspPeaks.Add(mspPeak);
                                         mspPeak = new SpectrumPeak();
                                         pairCount++;
@@ -404,8 +407,11 @@ namespace CompMs.Common.Parser
                                     mzFill = false;
                                     numChar = string.Empty;
 
-                                    if (mspPeak.Comment == null)
+                                    if (mspPeak.Comment == null) {
+#if !DEBUG
                                         mspPeak.Comment = mspPeak.Mass.ToString();
+#endif
+                                    }
 
                                     mspPeaks.Add(mspPeak);
                                     mspPeak = new SpectrumPeak();

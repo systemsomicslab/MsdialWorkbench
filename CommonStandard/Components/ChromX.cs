@@ -10,8 +10,19 @@ namespace CompMs.Common.Components
     [Union(2, typeof(RetentionIndex))]
     [Union(3, typeof(MzValue))]
     [Union(4, typeof(DriftTime))]
+    public interface IChromX {
+        double Value { get; set; }
+        ChromXType Type { get; set; } 
+        ChromXUnit Unit { get; set; }
+    }
+
+    [Union(0, typeof(ChromXs))]
+    [Union(1, typeof(RetentionTime))]
+    [Union(2, typeof(RetentionIndex))]
+    [Union(3, typeof(MzValue))]
+    [Union(4, typeof(DriftTime))]
     [MessagePackObject]
-    public abstract class ChromX
+    public abstract class ChromX : IChromX
     {
         [Key(0)]
         public double Value { get; set; } = -1;
@@ -62,42 +73,218 @@ namespace CompMs.Common.Components
         }
     }
 
-    public class RetentionTime : ChromX
+    [MessagePackObject]
+    public sealed class RetentionTime : IChromX
     {
+        [Key(0)]
+        public double Value { get; set; } = -1;
+        [Key(1)]
+        public ChromXType Type { get; set; }
+        [Key(2)]
+        public ChromXUnit Unit { get; set; }
+
         public RetentionTime() { }
-        public RetentionTime(double retentionTime, ChromXUnit unit = ChromXUnit.Min) : base(retentionTime)
+        public RetentionTime(double retentionTime, ChromXUnit unit = ChromXUnit.Min)
         {
+            Value = retentionTime;
             Type = ChromXType.RT;
             Unit = unit;
         }
-    }
 
-    public class RetentionIndex : ChromX
-    {
-        public RetentionIndex() { }
-        public RetentionIndex(double retentionIndex, ChromXUnit unit = ChromXUnit.None) : base(retentionIndex)
+        public override string ToString()
         {
-            Type = ChromXType.RI;
-            Unit = unit;
+            switch (Type)
+            {
+                case ChromXType.RT:
+                    return $"RT: {Value:F3} {GetUnitString()}";
+                case ChromXType.RI:
+                    return $"RI: {Value:F3} {GetUnitString()}";
+                case ChromXType.Drift:
+                    return $"Drift: {Value:F3} {GetUnitString()}";
+                case ChromXType.Mz:
+                    return $"Mz: {Value:F3} {GetUnitString()}";
+                default:
+                    return "";
+            }
+        }
+        public string GetUnitString()
+        {
+            switch (Unit)
+            {
+                case ChromXUnit.Min:
+                    return "min";
+                case ChromXUnit.Sec:
+                    return "sec";
+                case ChromXUnit.None:
+                    return "";
+                case ChromXUnit.Mz:
+                    return "m/z";
+                case ChromXUnit.Msec:
+                    return "msec";
+                default:
+                    return "";
+            }
         }
     }
 
-    public class DriftTime : ChromX
+    [MessagePackObject]
+    public sealed class RetentionIndex : IChromX
     {
-        public DriftTime() { }
-        public DriftTime(double driftTime, ChromXUnit unit = ChromXUnit.Msec) : base(driftTime)
+        [Key(0)]
+        public double Value { get; set; } = -1;
+        [Key(1)]
+        public ChromXType Type { get; set; }
+        [Key(2)]
+        public ChromXUnit Unit { get; set; }
+
+        public RetentionIndex() { }
+        public RetentionIndex(double retentionIndex, ChromXUnit unit = ChromXUnit.None)
         {
+            Value = retentionIndex;
+            Type = ChromXType.RI;
+            Unit = unit;
+        }
+
+        public override string ToString()
+        {
+            switch (Type)
+            {
+                case ChromXType.RT:
+                    return $"RT: {Value:F3} {GetUnitString()}";
+                case ChromXType.RI:
+                    return $"RI: {Value:F3} {GetUnitString()}";
+                case ChromXType.Drift:
+                    return $"Drift: {Value:F3} {GetUnitString()}";
+                case ChromXType.Mz:
+                    return $"Mz: {Value:F3} {GetUnitString()}";
+                default:
+                    return "";
+            }
+        }
+        public string GetUnitString()
+        {
+            switch (Unit)
+            {
+                case ChromXUnit.Min:
+                    return "min";
+                case ChromXUnit.Sec:
+                    return "sec";
+                case ChromXUnit.None:
+                    return "";
+                case ChromXUnit.Mz:
+                    return "m/z";
+                case ChromXUnit.Msec:
+                    return "msec";
+                default:
+                    return "";
+            }
+        }
+    }
+
+    [MessagePackObject]
+    public sealed class DriftTime : IChromX
+    {
+        [Key(0)]
+        public double Value { get; set; } = -1;
+        [Key(1)]
+        public ChromXType Type { get; set; }
+        [Key(2)]
+        public ChromXUnit Unit { get; set; }
+
+        public DriftTime() { }
+        public DriftTime(double driftTime, ChromXUnit unit = ChromXUnit.Msec)
+        {
+            Value = driftTime;
             Type = ChromXType.Drift;
             Unit = unit;
         }
 
+        public override string ToString()
+        {
+            switch (Type)
+            {
+                case ChromXType.RT:
+                    return $"RT: {Value:F3} {GetUnitString()}";
+                case ChromXType.RI:
+                    return $"RI: {Value:F3} {GetUnitString()}";
+                case ChromXType.Drift:
+                    return $"Drift: {Value:F3} {GetUnitString()}";
+                case ChromXType.Mz:
+                    return $"Mz: {Value:F3} {GetUnitString()}";
+                default:
+                    return "";
+            }
+        }
+        public string GetUnitString()
+        {
+            switch (Unit)
+            {
+                case ChromXUnit.Min:
+                    return "min";
+                case ChromXUnit.Sec:
+                    return "sec";
+                case ChromXUnit.None:
+                    return "";
+                case ChromXUnit.Mz:
+                    return "m/z";
+                case ChromXUnit.Msec:
+                    return "msec";
+                default:
+                    return "";
+            }
+        }
+
     }
 
-    public class MzValue : ChromX {
+    [MessagePackObject]
+    public sealed class MzValue : IChromX {
+        [Key(0)]
+        public double Value { get; set; } = -1;
+        [Key(1)]
+        public ChromXType Type { get; set; }
+        [Key(2)]
+        public ChromXUnit Unit { get; set; }
+
         public MzValue() { }
-        public MzValue(double mz, ChromXUnit unit = ChromXUnit.Mz) : base(mz) {
+        public MzValue(double mz, ChromXUnit unit = ChromXUnit.Mz) {
+            Value = mz;
             Type = ChromXType.Mz;
             Unit = unit;
+        }
+
+        public override string ToString()
+        {
+            switch (Type)
+            {
+                case ChromXType.RT:
+                    return $"RT: {Value:F3} {GetUnitString()}";
+                case ChromXType.RI:
+                    return $"RI: {Value:F3} {GetUnitString()}";
+                case ChromXType.Drift:
+                    return $"Drift: {Value:F3} {GetUnitString()}";
+                case ChromXType.Mz:
+                    return $"Mz: {Value:F3} {GetUnitString()}";
+                default:
+                    return "";
+            }
+        }
+        public string GetUnitString()
+        {
+            switch (Unit)
+            {
+                case ChromXUnit.Min:
+                    return "min";
+                case ChromXUnit.Sec:
+                    return "sec";
+                case ChromXUnit.None:
+                    return "";
+                case ChromXUnit.Mz:
+                    return "m/z";
+                case ChromXUnit.Msec:
+                    return "msec";
+                default:
+                    return "";
+            }
         }
     }
 }

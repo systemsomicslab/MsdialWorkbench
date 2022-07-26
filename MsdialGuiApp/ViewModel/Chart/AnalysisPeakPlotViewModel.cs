@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Base;
+using CompMs.Graphics.Chart;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -16,6 +17,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         private readonly AnalysisPeakPlotModel _model;
 
         public AnalysisPeakPlotViewModel(AnalysisPeakPlotModel model, Action focus, IObservable<bool> isFocused) {
+            _model = model;
+
             Spots = model.Spots;
 
             HorizontalAxis = model.HorizontalAxis;
@@ -51,7 +54,12 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             LabelProperty = model.LabelSource
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            _model = model;
+
+            Links = new ReadOnlyObservableCollection<SpotLinker>(model.Links);
+            Annotations = new ReadOnlyObservableCollection<SpotAnnotator>(model.Annotations);
+            LinkerBrush = model.LinkerBrush;
+            SpotLabelBrush = model.SpotLabelBrush;
+
             Focus = focus;
             IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
@@ -85,5 +93,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public ReadOnlyReactivePropertySlim<string> VerticalProperty { get; }
 
         public ReadOnlyReactivePropertySlim<string> LabelProperty { get; }
+
+        public ReadOnlyObservableCollection<SpotLinker> Links { get; }
+        public ReadOnlyObservableCollection<SpotAnnotator> Annotations { get; }
+
+        public IBrushMapper<SpotLinker> LinkerBrush { get; }
+        public IBrushMapper<SpotAnnotator> SpotLabelBrush { get; }
     }
 }

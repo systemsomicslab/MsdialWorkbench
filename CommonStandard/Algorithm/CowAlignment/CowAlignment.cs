@@ -182,11 +182,11 @@ namespace CompMs.Common.Algorithm.CowAlignment {
                     if (positionEnd > sampleDatapointNumber - 1) positionEnd = sampleDatapointNumber - 1;
 
                     //Set
-                    var peakInformation = new ChromatogramPeak();
-                    peakInformation.ID = counter;
-                    peakInformation.ChromXs = referenceChromatogram[counter].ChromXs;
-                    peakInformation.Mass = (1 - fraction) * sampleChromatogram[positionFlont].ID + fraction * sampleChromatogram[positionEnd].ID;
-                    peakInformation.Intensity = (1 - fraction) * sampleChromatogram[positionFlont].Intensity + fraction * sampleChromatogram[positionEnd].Intensity;
+                    var peakInformation = new ChromatogramPeak(
+                        counter,
+                        (1 - fraction) * sampleChromatogram[positionFlont].ID + fraction * sampleChromatogram[positionEnd].ID,
+                        (1 - fraction) * sampleChromatogram[positionFlont].Intensity + fraction * sampleChromatogram[positionEnd].Intensity,
+                        referenceChromatogram[counter].ChromXs);
                     alignedChromatogram.Add(peakInformation);
                     counter++;
                 }
@@ -203,11 +203,11 @@ namespace CompMs.Common.Algorithm.CowAlignment {
                     positionEnd++;
                     if (positionEnd > sampleDatapointNumber - 1) positionEnd = sampleDatapointNumber - 1;
 
-                    var peakInformation = new ChromatogramPeak();
-                    peakInformation.ID = counter;
-                    peakInformation.ChromXs = referenceChromatogram[counter].ChromXs;
-                    peakInformation.Mass = sampleChromatogram[positionEnd].Mass;
-                    peakInformation.Intensity = sampleChromatogram[positionEnd].Intensity;
+                    var peakInformation = new ChromatogramPeak(
+                        counter,
+                        sampleChromatogram[positionEnd].Mass,
+                        sampleChromatogram[positionEnd].Intensity,
+                        referenceChromatogram[counter].ChromXs);
                     alignedChromatogram.Add(peakInformation);
                     counter++;
                 }

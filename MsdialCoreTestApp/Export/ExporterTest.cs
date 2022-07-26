@@ -41,7 +41,9 @@ namespace CompMs.App.MsdialConsole.Export
                     streamManager,
                     deserializer,
                     path => new DirectoryTreeStreamManager(path),
-                    async parameter => {
+                    projectDir,
+                    async parameter =>
+                    {
                         string result = null;
                         //await Application.Current.Dispatcher.InvokeAsync(() => {
                         //    var newofd = new OpenFileDialog {

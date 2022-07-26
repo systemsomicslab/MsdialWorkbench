@@ -84,6 +84,8 @@ namespace CompMs.App.Msdial.Model.Loader
 
         private IObservable<List<SpectrumPeak>> LoadSpectrumAsObservableCore(ChromatogramPeakFeatureModel target) {
             if (target.InnerModel.MS2RawSpectrumID2CE.Count == 0) {
+                _ms2List.OnNext(new List<MsSelectionItem>(0));
+                Ms2IdSelector.Value = null;
                 return Observable.Return(new List<SpectrumPeak>(0));
             }
             var items = target.InnerModel.MS2RawSpectrumID2CE.Select(pair => new MsSelectionItem(pair.Key, pair.Value)).ToList();

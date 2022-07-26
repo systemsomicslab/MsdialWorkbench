@@ -22,14 +22,15 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
 
         // imos method
         public static List<ChromatogramPeak> LinearWeightedMovingAverage(IReadOnlyList<IChromatogramPeak> peaklist, int smoothingLevel) {
-            var n = peaklist.Count;
+            var peaklist_ = peaklist as IChromatogramPeak[] ?? peaklist.ToArray();
+            var n = peaklist_.Length;
             var intensities = new double[n + smoothingLevel * 2 + 2];
             int normalizationValue = (smoothingLevel + 1) * (smoothingLevel + 1);
 
-            for (int i = 0; i < n; i++) {
-                intensities[i] += peaklist[i].Intensity;
-                intensities[i + smoothingLevel + 1] -= peaklist[i].Intensity * 2;
-                intensities[i + smoothingLevel * 2 + 2] += peaklist[i].Intensity;
+            for (int i = 0; i < peaklist_.Length; i++) {
+                intensities[i] += peaklist_[i].Intensity;
+                intensities[i + smoothingLevel + 1] -= peaklist_[i].Intensity * 2;
+                intensities[i + smoothingLevel * 2 + 2] += peaklist_[i].Intensity;
             }
 
             for (int i = 1; i < intensities.Length; i++) {
@@ -41,21 +42,16 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
             }
 
             for (int i = 0; i < Math.Min(smoothingLevel, n); i++) {
-                intensities[i + smoothingLevel] += peaklist[i].Intensity * ((smoothingLevel - i + 1) * (smoothingLevel - i) / 2);
+                intensities[i + smoothingLevel] += peaklist_[i].Intensity * ((smoothingLevel - i + 1) * (smoothingLevel - i) / 2);
             }
 
             for (int i = 0; i < Math.Min(smoothingLevel, n); i++) {
-                intensities[n - 1 - i + smoothingLevel] += peaklist[n - 1 - i].Intensity * ((smoothingLevel - i + 1) * (smoothingLevel - i) / 2);
+                intensities[n - 1 - i + smoothingLevel] += peaklist_[n - 1 - i].Intensity * ((smoothingLevel - i + 1) * (smoothingLevel - i) / 2);
             }
 
             var smoothedPeaklist = new List<ChromatogramPeak>(n);
-            for (int i = 0; i < n; i++) {
-                smoothedPeaklist.Add(new ChromatogramPeak {
-                    ID = i,
-                    ChromXs = peaklist[i].ChromXs,
-                    Mass = peaklist[i].Mass,
-                    Intensity = intensities[i + smoothingLevel] / normalizationValue
-                });
+            for (int i = 0; i < peaklist_.Length; i++) {
+                smoothedPeaklist.Add(new ChromatogramPeak(i, peaklist_[i].Mass, intensities[i + smoothingLevel], peaklist_[i].ChromXs));
             }
 
             return smoothedPeaklist;
@@ -91,8 +87,8 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
             var smoothedPeaklist = new List<SpectrumPeak>(n);
             for (int i = 0; i < n; i++) {
                 smoothedPeaklist.Add(new SpectrumPeak {
-                    Mass = peaklist[i].Mass,
-                    Intensity = intensities[i + smoothingLevel] / normalizationValue
+                    Mass = (float)peaklist[i].Mass,
+                    Intensity = (float)intensities[i + smoothingLevel] / normalizationValue
                 });
             }
 
@@ -106,7 +102,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
             var intensities = new double[n + smoothingLevel * 2 + 1];
             int normalizationValue = 2 * smoothingLevel + 1;
 
-            for (int i = 0; i < n; i++) {
+            for (int i = 0; i < peaklist.Count; i++) {
                 intensities[i] += peaklist[i].Intensity;
                 intensities[i + smoothingLevel * 2 + 1] -= peaklist[i].Intensity;
             }
@@ -124,13 +120,8 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
             }
 
             var smoothedPeaklist = new List<ChromatogramPeak>(n);
-            for (int i = 0; i < n; i++) {
-                smoothedPeaklist.Add(new ChromatogramPeak {
-                    ID = i,
-                    ChromXs = peaklist[i].ChromXs,
-                    Mass = peaklist[i].Mass,
-                    Intensity = intensities[i + smoothingLevel] / normalizationValue
-                });
+            for (int i = 0; i < peaklist.Count; i++) {
+                smoothedPeaklist.Add(new ChromatogramPeak(i, peaklist[i].Mass, intensities[i + smoothingLevel] / normalizationValue, peaklist[i].ChromXs));
             }
 
             return smoothedPeaklist;
@@ -169,9 +160,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
                     else sum += coefficientVector[j + smoothingLevel] * peaklist[i + j].Intensity;
                 }
                 smoothedPeakIntensity = sum;
-                var smoothedPeak = new ChromatogramPeak() {
-                    ID = i, ChromXs = peaklist[i].ChromXs, Mass = peaklist[i].Mass, Intensity = smoothedPeakIntensity
-                }; 
+                var smoothedPeak = new ChromatogramPeak(i, peaklist[i].Mass, smoothedPeakIntensity, peaklist[i].ChromXs); 
                 smoothedPeaklist.Add(smoothedPeak);
             }
             return smoothedPeaklist;
@@ -202,9 +191,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
                     else sum += coefficientVector[j + smoothingLevel] * peaklist[i + j].Intensity;
                 }
                 smoothedPeakIntensity = sum;
-                var smoothedPeak = new ChromatogramPeak() {
-                    ID = i, ChromXs = peaklist[i].ChromXs, Mass = peaklist[i].Mass, Intensity = smoothedPeakIntensity
-                }; 
+                var smoothedPeak = new ChromatogramPeak(i, peaklist[i].Mass, smoothedPeakIntensity, peaklist[i].ChromXs); 
                 smoothedPeaklist.Add(smoothedPeak);
             }
             return smoothedPeaklist;
@@ -266,9 +253,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
                 coefficientB = inverseMatrix[1, 0] * a + inverseMatrix[1, 1] * b;
                 smoothedPeakIntensity = coefficientB;
 
-                var smoothedPeak = new ChromatogramPeak() {
-                    ID = i, ChromXs = peaklist[i].ChromXs, Mass = peaklist[i].Mass, Intensity = smoothedPeakIntensity
-                }; 
+                var smoothedPeak = new ChromatogramPeak(i, peaklist[i].Mass, smoothedPeakIntensity, peaklist[i].ChromXs); 
                 smoothedPeaklist.Add(smoothedPeak);
             }
 
@@ -344,9 +329,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing {
                 coefficientC = inverseMatrix[2, 0] * a + inverseMatrix[2, 1] * b + inverseMatrix[2, 2] * c;
 
                 smoothedPeakIntensity = coefficientC;
-                var smoothedPeak = new ChromatogramPeak() {
-                    ID = i, ChromXs = peaklist[i].ChromXs, Mass = peaklist[i].Mass, Intensity = smoothedPeakIntensity
-                }; 
+                var smoothedPeak = new ChromatogramPeak(i, peaklist[i].Mass, smoothedPeakIntensity, peaklist[i].ChromXs); 
                 smoothedPeaklist.Add(smoothedPeak);
             }
 

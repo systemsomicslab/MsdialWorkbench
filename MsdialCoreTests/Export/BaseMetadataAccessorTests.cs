@@ -95,10 +95,10 @@ namespace CompMs.MsdialCore.Export.Tests
             {
                 Spectrum = new List<SpectrumPeak>
                 {
-                    new SpectrumPeak { Mass = 700.12345, Intensity = 999, },
-                    new SpectrumPeak { Mass = 600.12345, Intensity = 164, },
-                    new SpectrumPeak { Mass = 400.12345, Intensity = 190, },
-                    new SpectrumPeak { Mass = 300.12345, Intensity = 587, },
+                    new SpectrumPeak { Mass = 700.12345f, Intensity = 999, },
+                    new SpectrumPeak { Mass = 600.12345f, Intensity = 164, },
+                    new SpectrumPeak { Mass = 400.12345f, Intensity = 190, },
+                    new SpectrumPeak { Mass = 300.12345f, Intensity = 587, },
                 }
             };
 
