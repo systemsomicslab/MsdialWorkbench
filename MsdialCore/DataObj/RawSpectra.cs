@@ -33,6 +33,11 @@ namespace CompMs.MsdialCore.DataObj
             return impl.GetMs1ExtractedChromatogram(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End);
         }
 
+        public Chromatogram_temp GetMs1ExtractedChromatogram_temp(double mz, double tolerance, ChromatogramRange chromatogramRange) {
+            var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
+            return impl.GetMs1ExtractedChromatogram_temp(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End);
+        }
+
         public Chromatogram GetMs1TotalIonChromatogram(ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
             return impl.GetMs1TotalIonChromatogram(chromatogramRange.Begin, chromatogramRange.End);

@@ -370,6 +370,55 @@ namespace CompMs.MsdialCore.DataObj
             return peakFeature;
         }
 
+        public static ChromatogramPeakFeature FromPeakDetectionResult(PeakDetectionResult peakDetectionResult, Chromatogram_temp chromatogram, double mz) {
+            if (peakDetectionResult == null) {
+                return null;
+            }
+
+            var peakFeature = new ChromatogramPeakFeature() {
+
+                MasterPeakID = peakDetectionResult.PeakID,
+                PeakID = peakDetectionResult.PeakID,
+
+                ChromScanIdLeft = peakDetectionResult.ScanNumAtLeftPeakEdge,
+                ChromScanIdTop = peakDetectionResult.ScanNumAtPeakTop,
+                ChromScanIdRight = peakDetectionResult.ScanNumAtRightPeakEdge,
+
+                ChromXsLeft = chromatogram.PeakChromXs(peakDetectionResult.ChromXAxisAtLeftPeakEdge, mz),
+                ChromXsTop = chromatogram.PeakChromXs(peakDetectionResult.ChromXAxisAtPeakTop, mz),
+                ChromXsRight = chromatogram.PeakChromXs(peakDetectionResult.ChromXAxisAtRightPeakEdge, mz),
+
+                //assign the scan number of MS1 and MS/MS for precursor ion's peaks
+                MS1RawSpectrumIdTop = (int)chromatogram.Peaks[peakDetectionResult.ScanNumAtPeakTop][0],
+                MS1RawSpectrumIdLeft = (int)chromatogram.Peaks[peakDetectionResult.ScanNumAtLeftPeakEdge][0],
+                MS1RawSpectrumIdRight = (int)chromatogram.Peaks[peakDetectionResult.ScanNumAtRightPeakEdge][0],
+
+                PeakHeightLeft = peakDetectionResult.IntensityAtLeftPeakEdge,
+                PeakHeightTop = peakDetectionResult.IntensityAtPeakTop,
+                PeakHeightRight = peakDetectionResult.IntensityAtRightPeakEdge,
+
+                PeakAreaAboveZero = peakDetectionResult.AreaAboveZero,
+                PeakAreaAboveBaseline = peakDetectionResult.AreaAboveBaseline,
+
+                Mass = (double)mz,
+
+                PeakShape = new ChromatogramPeakShape() {
+                    SignalToNoise = peakDetectionResult.SignalToNoise,
+                    EstimatedNoise = peakDetectionResult.EstimatedNoise,
+                    BasePeakValue = peakDetectionResult.BasePeakValue,
+                    GaussianSimilarityValue = peakDetectionResult.GaussianSimilarityValue,
+                    IdealSlopeValue = peakDetectionResult.IdealSlopeValue,
+                    PeakPureValue = peakDetectionResult.PeakPureValue,
+                    ShapenessValue = peakDetectionResult.ShapnessValue,
+                    SymmetryValue = peakDetectionResult.SymmetryValue,
+                    AmplitudeOrderValue = peakDetectionResult.AmplitudeOrderValue,
+                    AmplitudeScoreValue = peakDetectionResult.AmplitudeScoreValue
+                }
+            };
+
+            return peakFeature;
+        }
+
         public void SetMs2SpectrumId(PeakMs2Spectra spectra) {
             if (spectra.IsEmpty) {
                 return;

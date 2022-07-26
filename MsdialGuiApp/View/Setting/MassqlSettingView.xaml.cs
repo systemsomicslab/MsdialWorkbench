@@ -20,11 +20,8 @@ namespace CompMs.App.Msdial.View.Setting {
         public MassqlSettingView()
         {
             InitializeComponent();
-        }
 
-        private void Button_Send_MassQL_Click(object sender, RoutedEventArgs e) {
-            DialogResult = true;
-            Close();
+            CommandBindings.Add(new CommandBinding(ApplicationCommands.Close, (s, e) => Close()));
         }
     }
 }

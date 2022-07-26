@@ -67,6 +67,36 @@ namespace CompMs.App.Msdial.ViewModel.Search
         }
         public bool EnableManuallyModified => EnabledFilter.All(DisplayFilter.ManuallyModified);
 
+        public bool MscleanrBlank {
+            get => ReadFilter(DisplayFilter.MscleanrBlank);
+            set => WriteFilter(DisplayFilter.MscleanrBlank, value);
+        }
+        public bool EnableMscleanrBlank => EnabledFilter.All(DisplayFilter.MscleanrBlank);
+
+        public bool MscleanrBlankGhost {
+            get => ReadFilter(DisplayFilter.MscleanrBlankGhost);
+            set => WriteFilter(DisplayFilter.MscleanrBlankGhost, value);
+        }
+        public bool EnableMscleanrBlankGhost => EnabledFilter.All(DisplayFilter.MscleanrBlankGhost);
+
+        public bool MscleanrIncorrectMass {
+            get => ReadFilter(DisplayFilter.MscleanrIncorrectMass);
+            set => WriteFilter(DisplayFilter.MscleanrIncorrectMass, value);
+        }
+        public bool EnableMscleanrIncorrectMass => EnabledFilter.All(DisplayFilter.MscleanrIncorrectMass);
+
+        public bool MscleanrRsd {
+            get => ReadFilter(DisplayFilter.MscleanrRsd);
+            set => WriteFilter(DisplayFilter.MscleanrRsd, value);
+        }
+        public bool EnableMscleanrRsd => EnabledFilter.All(DisplayFilter.MscleanrRsd);
+
+        public bool MscleanrRmd {
+            get => ReadFilter(DisplayFilter.MscleanrRmd);
+            set => WriteFilter(DisplayFilter.MscleanrRmd, value);
+        }
+        public bool EnableMscleanrRmd => EnabledFilter.All(DisplayFilter.MscleanrRmd);
+
         private bool ReadFilter(DisplayFilter flag) {
             return (flag & CheckedFilter.Value & EnabledFilter) != 0;
         }

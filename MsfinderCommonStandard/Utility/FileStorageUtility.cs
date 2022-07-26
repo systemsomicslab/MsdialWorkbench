@@ -48,18 +48,18 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
         }
 
         public static ObservableCollection<MsfinderQueryFile> GetAnalysisFileBeanCollection(string importFolderPath) {
-            ObservableCollection<MsfinderQueryFile> analysisFileBeanCollection = new ObservableCollection<MsfinderQueryFile>();
+            var files = new List<MsfinderQueryFile>();
 
             if (!Directory.Exists(importFolderPath)) return null;
 
             // get raw files (msp or map)
             foreach (var filePath in System.IO.Directory.GetFiles(importFolderPath, "*." + SaveFileFormat.mat, System.IO.SearchOption.TopDirectoryOnly)) {
                 var analysisFileBean = new MsfinderQueryFile() { RawDataFilePath = filePath, RawDataFileName = System.IO.Path.GetFileNameWithoutExtension(filePath) };
-                analysisFileBeanCollection.Add(analysisFileBean);
+                files.Add(analysisFileBean);
             }
             foreach (var filePath in System.IO.Directory.GetFiles(importFolderPath, "*." + SaveFileFormat.msp, System.IO.SearchOption.TopDirectoryOnly)) {
                 var analysisFileBean = new MsfinderQueryFile() { RawDataFilePath = filePath, RawDataFileName = System.IO.Path.GetFileNameWithoutExtension(filePath) };
-                analysisFileBeanCollection.Add(analysisFileBean);
+                files.Add(analysisFileBean);
             }
 
             // getting ismarked property
@@ -70,7 +70,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
             //}
 
             // set formula files and structure folder paths
-            foreach (var file in analysisFileBeanCollection) {
+            foreach (var file in files) {
                 var formulaFilePath = Path.Combine(importFolderPath, file.RawDataFileName + "." + SaveFileFormat.fgt);
                 file.FormulaFilePath = formulaFilePath;
                 file.FormulaFileName = file.RawDataFileName;
@@ -82,7 +82,7 @@ namespace Riken.Metabolomics.MsfinderCommon.Utility {
                     var di = System.IO.Directory.CreateDirectory(file.StructureFolderPath);
                 }
             }
-            return analysisFileBeanCollection;
+            return new ObservableCollection<MsfinderQueryFile>(files.OrderBy(n => n.RawDataFileName));
         }
 
         public static List<Formula> GetKyusyuUnivFormulaDB(AnalysisParamOfMsfinder analysisParam) {

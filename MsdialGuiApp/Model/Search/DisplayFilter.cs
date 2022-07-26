@@ -15,9 +15,14 @@ namespace CompMs.App.Msdial.Model.Search
         UniqueIons = 0x40,
         CcsMatched = 0x80,
         ManuallyModified = 0x100,
+        MscleanrBlank = 0x200,
+        MscleanrBlankGhost = 0x400,
+        MscleanrIncorrectMass = 0x800,
+        MscleanrRsd = 0x1000,
+        MscleanrRmd = 0x2000,
 
         Annotates = RefMatched | Suggested | Unknown | CcsMatched | ManuallyModified,
-        All = RefMatched | Suggested | Unknown | Ms2Acquired | MolecularIon | Blank | UniqueIons | CcsMatched | ManuallyModified,
+        All = RefMatched | Suggested | Unknown | Ms2Acquired | MolecularIon | Blank | UniqueIons | CcsMatched | ManuallyModified | MscleanrBlank | MscleanrBlankGhost | MscleanrIncorrectMass | MscleanrRsd | MscleanrRmd,
     }
 
     static class DisplayFilterExtention
