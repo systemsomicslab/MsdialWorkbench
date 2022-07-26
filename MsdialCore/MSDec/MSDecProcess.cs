@@ -583,13 +583,7 @@ namespace CompMs.MsdialCore.MSDec {
                 var intensity = coefficient * modelChromVector.TargetIntensityArray[i];
                 if (i == targetTop && intensity <= 0) return null;
                 
-                dPeaklist.Add(new ChromatogramPeak()
-                {
-                    ID = modelChromVector.RdamScanList[i],
-                    ChromXs = new ChromXs(new RetentionTime(modelChromVector.RtArray[i])),
-                    Mass = targetMz,
-                    Intensity = intensity,
-                });
+                dPeaklist.Add(new ChromatogramPeak(modelChromVector.RdamScanList[i], targetMz, intensity, new RetentionTime(modelChromVector.RtArray[i])));
             }
             return dPeaklist;
         }

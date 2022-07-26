@@ -323,10 +323,7 @@ namespace CompMs.MsdialCore.MSDec {
 
             double mzCount = modelChrom.ModelMzList.Count;
             foreach (var peak in peaklists[0]) {
-                modelChrom.Peaks.Add(new ChromatogramPeak() {
-                    Mass = peak.Mass, Intensity = peak.Intensity /= mzCount,
-                    ChromXs = peak.ChromXs, ID = peak.ID
-                });
+                modelChrom.Peaks.Add(new ChromatogramPeak(peak.ID, peak.Mass, peak.Intensity /= mzCount, peak.ChromXs));
             }
 
             if (peaklist.Count > 1) {
@@ -746,8 +743,7 @@ namespace CompMs.MsdialCore.MSDec {
 
             double mzCount = modelChrom.ModelMzList.Count;
             foreach (var peak in peaklists[0]) {
-                modelChrom.Peaks.Add(new ChromatogramPeak() { Mass = peak.Mass, Intensity = peak.Intensity /= mzCount, 
-                    ChromXs = peak.ChromXs, ID = peak.ID });
+                modelChrom.Peaks.Add(new ChromatogramPeak(peak.ID, peak.Mass, peak.Intensity /= mzCount, peak.ChromXs));
             }
             if (peaklist.Count > 1) {
                 for (int i = 1; i < peaklists.Count; i++) {
@@ -762,16 +758,11 @@ namespace CompMs.MsdialCore.MSDec {
         }
 
         private static List<ChromatogramPeak> getTrimedAndSmoothedPeaklist(IReadOnlyList<ChromatogramPeak> peaklist, int chromScanOfPeakLeft, int chromScanOfPeakRight) {
-            var mPeaklist = new List<ChromatogramPeak>();
+            var mPeaklist = new List<ChromatogramPeak>(chromScanOfPeakRight - chromScanOfPeakLeft + 1);
 
             for (int i = chromScanOfPeakLeft; i <= chromScanOfPeakRight; i++) {
-                var peak = new ChromatogramPeak() {
-                    ID = (int)peaklist[i].ID,
-                    ChromXs = peaklist[i].ChromXs,
-                    Mass = peaklist[i].Mass,
-                    Intensity = peaklist[i].Intensity
-                };
-
+                var p = peaklist[i];
+                var peak = new ChromatogramPeak(p.ID, p.Mass, p.Intensity, p.ChromXs);
                 mPeaklist.Add(peak);
             }
 
@@ -980,7 +971,7 @@ namespace CompMs.MsdialCore.MSDec {
                     }
                     else if (massSpectra[j].Mz >= focusedMass + massTol) break;
                 }
-                peaklist.Add(new ChromatogramPeak() { ID = spectrum.ScanNumber, ChromXs = new ChromXs(spectrum.ScanStartTime), Mass = maxMass, Intensity = sum });
+                peaklist.Add(new ChromatogramPeak(spectrum.ScanNumber, maxMass, sum, new ChromXs(spectrum.ScanStartTime)));
             }
 
             var smoothedPeaklist = new Chromatogram(peaklist, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
@@ -1016,9 +1007,9 @@ namespace CompMs.MsdialCore.MSDec {
             for (int i = 0; i < peaklist.Count; i++) {
                 correctedIntensity = peaklist[i].Intensity - (int)(coeff * peaklist[i].ChromXs.Value + intercept);
                 if (correctedIntensity >= 0)
-                    baselineCorrectedPeaklist.Add(new ChromatogramPeak() { ID = peaklist[i].ID, ChromXs = peaklist[i].ChromXs, Mass = peaklist[i].Mass, Intensity = correctedIntensity });
+                    baselineCorrectedPeaklist.Add(new ChromatogramPeak(peaklist[i].ID, peaklist[i].Mass, correctedIntensity, peaklist[i].ChromXs ));
                 else
-                    baselineCorrectedPeaklist.Add(new ChromatogramPeak() { ID = peaklist[i].ID, ChromXs = peaklist[i].ChromXs, Mass = peaklist[i].Mass, Intensity = 0 }); ;
+                    baselineCorrectedPeaklist.Add(new ChromatogramPeak(peaklist[i].ID, peaklist[i].Mass, 0, peaklist[i].ChromXs));
             }
 
             return baselineCorrectedPeaklist;

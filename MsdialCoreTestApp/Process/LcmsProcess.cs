@@ -6,14 +6,20 @@ using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
+using CompMs.MsdialIntegrate.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm.Alignment;
+using CompMs.MsdialLcMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcMsApi.DataObj;
 using CompMs.MsdialLcMsApi.Process;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.MsdialConsole.Process
@@ -33,22 +39,36 @@ namespace CompMs.App.MsdialConsole.Process
                 MspDB = mspDB, TextDB = txtDB, IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialLcmsParameter = param
             };
 
+            var projectDataStorage = new ProjectDataStorage(new ProjectParameter(DateTime.Now, outputFolder, param.ProjectParam.ProjectFileName + ".mdproject"));
+            projectDataStorage.AddStorage(container);
+
             Console.WriteLine("Start processing..");
-            return Execute(container, outputFolder, isProjectSaved);
+            return Execute(projectDataStorage, container, outputFolder, isProjectSaved);
         }
 
-        private int Execute(IMsdialDataStorage<MsdialLcmsParameter> storage, string outputFolder, bool isProjectSaved) {
+        private int Execute(ProjectDataStorage projectDataStorage, IMsdialDataStorage<MsdialLcmsParameter> storage, string outputFolder, bool isProjectSaved) {
             var files = storage.AnalysisFiles;
             var tasks = new Task[files.Count];
-            var evaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(storage.DataBaseMapper);
+            var evaluator = MsScanMatchResultEvaluator.CreateEvaluator(storage.Parameter.MspSearchParam);
+            var database = new MoleculeDataBase(storage.MspDB, storage.Parameter.MspFilePath, DataBaseSource.Msp, SourceType.MspDB);
+            var annotator = new LcmsMspAnnotator(database, storage.Parameter.MspSearchParam, storage.Parameter.TargetOmics, storage.Parameter.MspFilePath, 1);
+            var annotationProcess = new StandardAnnotationProcess<AnnotationQuery>(
+                new AnnotationQueryWithoutIsotopeFactory(annotator),
+                new IAnnotatorContainer<AnnotationQuery, MoleculeMsReference, MsScanMatchResult>[] {
+                    new AnnotatorContainer<AnnotationQuery, MoleculeMsReference, MsScanMatchResult>(annotator, storage.Parameter.MspSearchParam)
+                });
+            var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
             foreach ((var file, var idx) in files.WithIndex()) {
-                var provider = new StandardDataProvider(file, false, 5);
-                var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery>(
-                    storage.DataBaseMapper.MoleculeAnnotators.Select(annotator => (
-                        new AnnotationQueryFactory(annotator.Annotator, storage.Parameter.PeakPickBaseParam) as IAnnotationQueryFactory<IAnnotationQuery>,
-                        annotator as IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>
-                    )).ToList());
-                tasks[idx] = Task.Run(() => FileProcess.Run(file, provider, storage, annotationProcess, evaluator));
+                tasks[idx] = Task.Run(async () => {
+                    await sem.WaitAsync();
+                    try {
+                        var provider = new StandardDataProvider(file, false, 5);
+                        FileProcess.Run(file, provider, storage, annotationProcess, evaluator);
+                    }
+                    finally {
+                        sem.Release();
+                    }
+                });
             }
             Task.WaitAll(tasks);
 
@@ -59,9 +79,41 @@ namespace CompMs.App.MsdialConsole.Process
             var result = aligner.Alignment(files, alignmentFile, serializer);
 
             Common.MessagePack.MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
-            var streamManager = new DirectoryTreeStreamManager(storage.Parameter.ProjectFolderPath);
-            storage.SaveAsync(streamManager, storage.Parameter.ProjectFileName, string.Empty).Wait();
+            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList());
+
+            if (isProjectSaved) {
+                using (var stream = File.Open(projectDataStorage.ProjectParameter.FilePath, FileMode.Create))
+                using (var streamManager = new ZipStreamManager(stream, System.IO.Compression.ZipArchiveMode.Create)) {
+                    projectDataStorage.Save(streamManager, new MsdialIntegrateSerializer(), file => new DirectoryTreeStreamManager(file), parameter => Console.WriteLine($"Save {parameter.ProjectFileName} failed")).Wait();
+                }
+            }
             return 0;
+        }
+
+        private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcmsParameter> storage, IReadOnlyList<AlignmentSpotProperty> spots) {
+            var files = storage.AnalysisFiles;
+
+            var pointerss = new List<(int version, List<long> pointers, bool isAnnotationInfo)>();
+            foreach (var file in files) {
+                MsdecResultsReader.GetSeekPointers(file.DeconvolutionFilePath, out var version, out var pointers, out var isAnnotationInfo);
+                pointerss.Add((version, pointers, isAnnotationInfo));
+            }
+
+            var streams = new List<System.IO.FileStream>();
+            try {
+                streams = files.Select(file => System.IO.File.OpenRead(file.DeconvolutionFilePath)).ToList();
+                foreach (var spot in spots.OrEmptyIfNull()) {
+                    var repID = spot.RepresentativeFileID;
+                    var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
+                    var decResult = MsdecResultsReader.ReadMSDecResult(
+                        streams[repID], pointerss[repID].pointers[peakID],
+                        pointerss[repID].version, pointerss[repID].isAnnotationInfo);
+                    yield return decResult;
+                }
+            }
+            finally {
+                streams.ForEach(stream => stream.Close());
+            }
         }
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using CompMs.Common.Components;
+﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
 using CompMs.MsdialCore.DataObj;
@@ -12,29 +6,24 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.RawDataHandler.Core;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment
 {
     public class PeakAligner
     {
-        protected DataAccessor Accessor { get; set; }
-        protected IPeakJoiner Joiner { get; set; }
-        protected GapFiller Filler { get; set; }
-        protected IAlignmentRefiner Refiner { get; set; }
-        protected ParameterBase Param { get; set; }
-        protected List<MoleculeMsReference> MspDB { get; set; } = new List<MoleculeMsReference>();
+        protected DataAccessor Accessor { get; }
+        protected IPeakJoiner Joiner { get; }
+        protected GapFiller Filler { get; }
+        protected IAlignmentRefiner Refiner { get; }
+        protected ParameterBase Param { get; }
+        protected List<MoleculeMsReference> MspDB { get; } = new List<MoleculeMsReference>();
         public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; set; }
-
-
-        public PeakAligner(DataAccessor accessor, IPeakJoiner joiner, GapFiller filler, IAlignmentRefiner refiner, ParameterBase param, List<MoleculeMsReference> mspDB = null) {
-            Accessor = accessor;
-            Joiner = joiner;
-            Filler = filler;
-            Refiner = refiner;
-            Param = param;
-            if (mspDB != null)
-                MspDB = mspDB;
-        }
 
         public PeakAligner(AlignmentProcessFactory factory) {
             Accessor = factory.CreateDataAccessor();
@@ -125,17 +114,18 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     spectra = rawDataAccess.GetMeasurement()?.SpectrumList;
                 }
             }
+            var ms1Spectra = new Ms1Spectra(spectra, Param.IonMode);
             var peakInfos = peaks.Zip(spots)
                 .AsParallel()
                 .AsOrdered()
                 .Select(peakAndSpot => {
                     (var peak, var spot) = peakAndSpot;
                     if (spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0) {
-                        Filler.GapFill(spectra, spot, analysisFile.AnalysisFileId);
+                        Filler.GapFill(ms1Spectra, spectra, spot, analysisFile.AnalysisFileId);
                     }
 
                     // UNDONE: retrieve spectrum data
-                    return Accessor.AccumulateChromatogram(peak, spot, spectra, Param.CentroidMs1Tolerance);
+                    return Accessor.AccumulateChromatogram(peak, spot, ms1Spectra, spectra, Param.CentroidMs1Tolerance);
                 }).ToList();
 
             var file = Path.GetTempFileName();

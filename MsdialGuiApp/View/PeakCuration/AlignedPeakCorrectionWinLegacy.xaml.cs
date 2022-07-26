@@ -85,7 +85,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
             var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
 
             Parallel.For(0, chromatoramSource.Count, (i) => {
-                var brush = classnameToBrushes[files[i].AnalysisFileClass];
+                var brush = classnameToBrushes.TryGetValue(files[i].AnalysisFileClass, out var b) ? b : ChartBrushes.GetChartBrush(i);
                 var chromatogram = chromatoramSource[i].Convert();
                 var speaks = chromatogram.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
                 var peakProp = new PeakPropertyLegacy(model.AlignedPeakPropertiesModel[i], brush, speaks);

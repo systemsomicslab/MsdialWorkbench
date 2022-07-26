@@ -193,7 +193,7 @@ namespace CompMs.Graphics.AxisManager.Generic
         }
 
         private List<double> TranslateToRelativePoints(IEnumerable<T> values) {
-            double max = Max.Value, min = Min.Value;
+            AxisValue max = Max, min = Min;
             var result = new List<double>();
             foreach (var value in values) {
                 result.Add(TranslateRelativePointCore(TranslateToAxisValue(value), min, max));

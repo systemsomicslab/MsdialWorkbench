@@ -29,7 +29,6 @@ namespace CompMs.MsdialLcMsApi.Process
             var param = storage.Parameter;
             var mspDB = storage.MspDB;
             var textDB = storage.TextDB;
-            var annotatorContainers = storage.DataBaseMapper.MoleculeAnnotators;
             var isotopeTextDB = storage.IsotopeTextDB;
             var iupacDB = storage.IupacDatabase;
             var filepath = file.AnalysisFilePath;

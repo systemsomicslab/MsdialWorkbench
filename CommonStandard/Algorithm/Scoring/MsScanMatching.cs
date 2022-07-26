@@ -1762,7 +1762,7 @@ namespace CompMs.Common.Algorithm.Scoring {
             }
         }
 
-        public static double GetGaussianSimilarity(ChromX actual, ChromX reference, double tolerance, out bool isInTolerance) {
+        public static double GetGaussianSimilarity(IChromX actual, IChromX reference, double tolerance, out bool isInTolerance) {
             isInTolerance = false;
             if (actual == null || reference == null) return -1;
             if (actual.Value <= 0 || reference.Value <= 0) return -1;

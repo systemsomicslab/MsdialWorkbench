@@ -145,7 +145,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         double IFilterable.RelativeAmplitudeValue => innerModel.PeakShape.AmplitudeScoreValue;
 
         // IChromatogramPeak
-        int IChromatogramPeak.ID { get => ((IChromatogramPeak)innerModel).ID; set => ((IChromatogramPeak)innerModel).ID = value; }
+        int IChromatogramPeak.ID => ((IChromatogramPeak)innerModel).ID;
         ChromXs IChromatogramPeak.ChromXs { get => ((IChromatogramPeak)innerModel).ChromXs; set => ((IChromatogramPeak)innerModel).ChromXs = value; }
         double ISpectrumPeak.Mass { get => ((ISpectrumPeak)innerModel).Mass; set => ((ISpectrumPeak)innerModel).Mass = value; }
         double ISpectrumPeak.Intensity { get => ((ISpectrumPeak)innerModel).Intensity; set => ((ISpectrumPeak)innerModel).Intensity = value; }

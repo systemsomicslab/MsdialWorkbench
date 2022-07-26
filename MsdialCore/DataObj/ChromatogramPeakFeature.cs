@@ -395,7 +395,6 @@ namespace CompMs.MsdialCore.DataObj
         // IChromatogramPeak
         int IChromatogramPeak.ID {
             get => MasterPeakID;
-            set => MasterPeakID = value;
         }
 
         ChromXs IChromatogramPeak.ChromXs {

@@ -48,7 +48,7 @@ namespace CompMs.MsdialCore.Algorithm {
             foreach (var i in iStdLib) {
                 var startMass = i.PrecursorMz;
                 var endMass = i.PrecursorMz + i.MassTolerance;
-                var pabCollection = peakpickCore.GetChromatogramPeakFeatures(provider, (float)startMass, chromatogramRange);
+                var pabCollection = peakpickCore.GetChromatogramPeakFeatures(rawSpectra, provider, (float)startMass, chromatogramRange);
                 
                 ChromatogramPeakFeature pab = null;
                 if (pabCollection != null) {
@@ -63,7 +63,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 }
                 if (pab == null) pab = new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
                 var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(startMass, i.MassTolerance, chromatogramRange);
-                var peaklist = chromatogram.Peaks.Select(peak => new ChromatogramPeak(peak.ID, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
+                var peaklist = chromatogram.Peaks.Select(peak => ChromatogramPeak.Create(peak.ID, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
                 targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist });
             }
             /*   foreach(var t in targetList) {
@@ -169,7 +169,7 @@ namespace CompMs.MsdialCore.Algorithm {
         public static List<double> Smoothing(List<double> x, List<double> y) {
             var peaks = new List<ChromatogramPeak>();
             for (var i = 0; i < x.Count; i++) {
-                peaks.Add(new ChromatogramPeak(i, 0, y[i], new RetentionTime(x[i])));
+                peaks.Add(ChromatogramPeak.Create(i, 0, y[i], new RetentionTime(x[i])));
             }
             var speaklist = new Chromatogram(peaks, ChromXType.RT, ChromXUnit.Min).Smoothing(SmoothingMethod.SimpleMovingAverage, 50);
             return speaklist.Select(z => z.Intensity).ToList();

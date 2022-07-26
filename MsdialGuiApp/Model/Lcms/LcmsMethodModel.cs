@@ -117,6 +117,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 AlignmentModel.Dispose();
                 Disposables.Remove(AlignmentModel);
             }
+
             return AlignmentModel = new LcmsAlignmentModel(
                 alignmentFile,
                 matchResultEvaluator,
@@ -248,12 +249,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 }
                 await Task.WhenAll(tasks.ToArray());
 
+                pbmcw.DialogResult = true;
                 pbmcw.Close();
             };
 
-            pbmcw.ShowDialog();
-
-            return true;
+            return pbmcw.ShowDialog() ?? false;
         }
 
         public bool ProcessSeccondAnnotaion4ShotgunProteomics(Window owner, IMsdialDataStorage<MsdialLcmsParameter> storage) {

@@ -370,11 +370,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
             var ssPeaklist = Smoothing.LinearWeightedMovingAverage(Smoothing.LinearWeightedMovingAverage(peaklist, 1), 1);
             var baseline = Smoothing.SimpleMovingAverage(Smoothing.SimpleMovingAverage(peaklist, 10), 10);
             var baselineCorrectedPeaklist = Enumerable.Range(0, peaklist.Count)
-                .Select(i => new ChromatogramPeak {
-                    ID = peaklist[i].ID,
-                    ChromXs = peaklist[i].ChromXs,
-                    Mass = peaklist[i].Mass,
-                    Intensity = Math.Max(0, ssPeaklist[i].Intensity - baseline[i].Intensity) })
+                .Select(i => new ChromatogramPeak(peaklist[i].ID, peaklist[i].Mass, Math.Max(0, ssPeaklist[i].Intensity - baseline[i].Intensity), peaklist[i].ChromXs))
                 .ToList();
 
             var amplitudeDiffs = baselineCorrectedPeaklist
