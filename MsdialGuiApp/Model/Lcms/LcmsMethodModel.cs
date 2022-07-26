@@ -228,7 +228,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
 
             pbmcw.Loaded += async (s, e) => {
-                var sem = new SemaphoreSlim(3);
+                var sem = new SemaphoreSlim(1);
                 var tasks = new List<Task>();
                 var current = 0;
                 foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
