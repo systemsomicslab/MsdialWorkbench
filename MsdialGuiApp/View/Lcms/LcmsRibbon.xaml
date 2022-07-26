@@ -135,7 +135,7 @@
                           Command="{Binding ShowMscleanrFilterSettingCommand}"
                           KeyTip="T"/>
             <RibbonButton Label="Tree for Proteomics" LargeImageSource="{StaticResource TreeForProteomics_icon_is}"
-                          IsEnabled="False"
+                          IsEnabled="True"
                           Command="{Binding ShowProteinGroupTableCommand}"
                           KeyTip="T"/>
             <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"

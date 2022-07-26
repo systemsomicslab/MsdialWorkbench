@@ -16,6 +16,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -39,6 +40,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseMapper mapper,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             ParameterBase parameter,
+            IObserver<ProteinResultContainerModel> proteinResultContainerModelObserver,
             PeakFilterModel peakFilterModel)
             : base(analysisFile) {
             if (analysisFile is null) {
@@ -65,6 +67,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseMapper = mapper;
             Parameter = parameter;
             CompoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper, parameter.PeakPickBaseParam).Items;
+
+            var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(analysisFile.ProteinAssembledResultFilePath);
+            var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Peaks);
+            proteinResultContainerModelObserver.OnNext(proteinResultContainerModel);
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, useRtFilter: true);
 

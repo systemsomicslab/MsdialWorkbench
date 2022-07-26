@@ -113,6 +113,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.DataBaseMapper,
                 matchResultEvaluator,
                 Storage.Parameter,
+                _proteinResultContainerModelSubject,
                 PeakFilterModel)
             .AddTo(Disposables);
         }

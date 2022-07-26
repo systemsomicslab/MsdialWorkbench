@@ -86,6 +86,12 @@ namespace CompMs.Common.Proteomics.DataObj {
                 AnyNtermSite2VariableMod.IsEmptyOrNull() && ProteinCtermSite2VariableMod.IsEmptyOrNull() && ProteinNterm2VariableMod.IsEmptyOrNull();
         }
 
+        [SerializationConstructor]
+        public ModificationContainer()
+        {
+
+        }
+
         public ModificationContainer(List<Modification> modifications) {
             ProteinNtermFixedMods = modifications.Where(n => !n.IsVariable && n.Position == "proteinNterm").ToList(); 
             ProteinCtermFixedMods = modifications.Where(n => !n.IsVariable && n.Position == "proteinCterm").ToList(); 
