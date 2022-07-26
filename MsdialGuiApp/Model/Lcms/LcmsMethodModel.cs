@@ -313,7 +313,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     storage.Parameter);
             }
 
-            MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
+            result.Save(alignmentFile);
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList());
 
             pbw.Close();

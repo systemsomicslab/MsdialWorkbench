@@ -162,7 +162,7 @@ namespace CompMs.App.Msdial.Model.Imms
             aligner.ProviderFactory = ProviderFactory; // TODO: I'll remove this later.
             var alignmentFile = storage.AlignmentFiles.Last();
             var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
-            MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
+            result.Save(alignmentFile);
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
 
             pbw.Close();

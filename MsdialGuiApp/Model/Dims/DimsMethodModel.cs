@@ -137,7 +137,7 @@ namespace CompMs.App.Msdial.Model.Dims
             var aligner = aFactory.CreatePeakAligner();
             aligner.ProviderFactory = ProviderFactory;
             var result = aligner.Alignment(Storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
-            MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
+            result.Save(alignmentFile);
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(Storage, result.AlignmentSpotProperties).ToList());
         }
 

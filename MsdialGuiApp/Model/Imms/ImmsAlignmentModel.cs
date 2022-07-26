@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Imms
             DataBaseMapper mapper,
             ParameterBase parameter,
             List<AnalysisFileBean> files)
-            : base(alignmentFileBean.FilePath) {
+            : base(alignmentFileBean, alignmentFileBean.FilePath) {
 
             AlignmentFile = alignmentFileBean;
             ResultFile = alignmentFileBean.FilePath;
