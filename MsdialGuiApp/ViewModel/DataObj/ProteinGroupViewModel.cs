@@ -6,6 +6,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
     {
         public ProteinGroupViewModel(ProteinGroupModel model) {
             _model = model;
+            GroupId = model.GroupID;
         }
 
         public int GroupId { get; }

@@ -5,23 +5,36 @@ using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
-
+using System.Linq;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Table
 {
     //internal class ProteinGroupTableViewModel : MethodViewModel {
     internal class ProteinGroupTableViewModel : ViewModelBase {
-        private readonly IObservable<ProteinResultContainerModel> _model;
+        private readonly ReadOnlyReactivePropertySlim<ProteinResultContainerModel> _modelProperty;
+        private readonly ReactiveCollection<ProteinGroupViewModel> _groups;
 
         public ProteinGroupTableViewModel(IObservable<ProteinResultContainerModel> model)
         {
-            _model = model;
+            _modelProperty = new ReadOnlyReactivePropertySlim<ProteinResultContainerModel>(model).AddTo(Disposables);
+
+            _groups = new ReactiveCollection<ProteinGroupViewModel>().AddTo(Disposables);
+            Groups = _groups.ToReadOnlyReactiveCollection().AddTo(Disposables);
+
+            _modelProperty.Select(m => m?.ProteinGroups.Select(group => new ProteinGroupViewModel(group)).ToArray() ?? new ProteinGroupViewModel[0])
+                .Subscribe(groups =>
+                {
+                    _groups.ClearOnScheduler();
+                    _groups.AddRangeOnScheduler(groups);
+                }).AddTo(Disposables);
         }
 
-        public ReadOnlyObservableCollection<ProteinGroupViewModel> Groups { get; }
+        public ReadOnlyReactiveCollection<ProteinGroupViewModel> Groups { get; }
 
     }
 }

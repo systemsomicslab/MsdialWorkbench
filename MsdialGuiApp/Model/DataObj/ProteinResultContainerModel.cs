@@ -23,5 +23,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             _resultContainer = resultContainer;
             _proteinGroups = new ObservableCollection<ProteinGroupModel>(resultContainer.ProteinGroups.Select(group => new ProteinGroupModel(group, spots)));
         }
+
+        public ReadOnlyObservableCollection<ProteinGroupModel> ProteinGroups => new ReadOnlyObservableCollection<ProteinGroupModel>(_proteinGroups);
     }
 }
