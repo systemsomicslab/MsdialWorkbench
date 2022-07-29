@@ -126,11 +126,13 @@
                             <TextBlock>
                                 Type 2:<LineBreak />
                                 When you analyze a data set from data independent MS/MS, select this option. <LineBreak />
+                                <!--
                                 Moreover, you have to import the experiment information including <LineBreak />
                                 &quot;Experiment ID&quot;, &quot;Scan or Swath&quot;, and &quot;Mass range&quot;.<LineBreak />
                                 Please see the downloadable format.<LineBreak />
                                 For SWATH users, utilize &quot;Sample Information&quot; of PeakView software.<LineBreak />
                                 It's quite easy to get that kind of information.
+                                -->
                             </TextBlock>
                         </ToolTipService.ToolTip>
                     </RadioButton>
@@ -144,9 +146,11 @@
                             <TextBlock>
                                 Type 3:<LineBreak />
                                 When you analyze a data set from data independent MS/MS, select this option.<LineBreak />
+                                <!--
                                 Moreover, you have to import the experiment information including<LineBreak />
                                 &quot;Experiment ID&quot;, &quot;Scan or AIF&quot;, &quot;Mass range&quot;, &quot;Name&quot; and &quot;Deconvolution Target (1:Yes, 0:No)&quot;.<LineBreak />
                                 Please see the downloadable format..
+                                -->
                             </TextBlock>
                         </ToolTipService.ToolTip>
                     </RadioButton>

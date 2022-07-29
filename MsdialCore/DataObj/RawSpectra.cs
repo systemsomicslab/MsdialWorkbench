@@ -12,20 +12,23 @@ namespace CompMs.MsdialCore.DataObj
 {
     public class RawSpectra
     {
-        private readonly ConcurrentDictionary<(ChromXType, ChromXUnit), IChromatogramTypedSpectra> _spectraImpls;
+        //private readonly ConcurrentDictionary<(ChromXType, ChromXUnit), IChromatogramTypedSpectra> _spectraImpls;
+        private readonly ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>> _spectraImplsZZZ;
         private readonly IReadOnlyList<RawSpectrum> _spectra;
         private readonly IonMode _ionMode;
 
         public RawSpectra(IReadOnlyList<RawSpectrum> spectra, IonMode ionMode) {
             _spectra = spectra;
             _ionMode = ionMode;
-            _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), IChromatogramTypedSpectra>();
+            //_spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), IChromatogramTypedSpectra>();
+            _spectraImplsZZZ = new ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>>();
         }
 
         public RawSpectra(IReadOnlyList<RawSpectrum> spectra, IonMode ionMode, AcquisitionType acquisitionType) {
             _spectra = spectra;
             _ionMode = ionMode;
-            _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), IChromatogramTypedSpectra>();
+            //_spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), IChromatogramTypedSpectra>();
+            _spectraImplsZZZ = new ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>>();
         }
 
         public Chromatogram GetMs1ExtractedChromatogram(double mz, double tolerance, ChromatogramRange chromatogramRange) {
@@ -36,6 +39,11 @@ namespace CompMs.MsdialCore.DataObj
         public Chromatogram_temp GetMs1ExtractedChromatogram_temp(double mz, double tolerance, ChromatogramRange chromatogramRange) {
             var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
             return impl.GetMs1ExtractedChromatogram_temp(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End);
+        }
+
+        public Chromatogram_temp2 GetMs1ExtractedChromatogram_temp2(double mz, double tolerance, ChromatogramRange chromatogramRange) {
+            var impl = BuildIfNotExists(chromatogramRange.Type, chromatogramRange.Unit);
+            return impl.GetMs1ExtractedChromatogram_temp2(mz, tolerance, chromatogramRange.Begin, chromatogramRange.End);
         }
 
         public Chromatogram GetMs1TotalIonChromatogram(ChromatogramRange chromatogramRange) {
@@ -108,7 +116,8 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         private IChromatogramTypedSpectra BuildIfNotExists(ChromXType type, ChromXUnit unit) {
-            return _spectraImpls.GetOrAdd((type, unit), pair => BuildTypedSpectra(_spectra, pair.Item1, pair.Item2, _ionMode));
+            return _spectraImplsZZZ.GetOrAdd((type, unit), pair => new Lazy<IChromatogramTypedSpectra>(() => BuildTypedSpectra(_spectra, pair.Item1, pair.Item2, _ionMode))).Value;
+            //return _spectraImpls.GetOrAdd((type, unit), pair => BuildTypedSpectra(_spectra, pair.Item1, pair.Item2, _ionMode));
         }
 
         private static IChromatogramTypedSpectra BuildTypedSpectra(IReadOnlyList<RawSpectrum> spectra, ChromXType type, ChromXUnit unit, IonMode ionMode) {

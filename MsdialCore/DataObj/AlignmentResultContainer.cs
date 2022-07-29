@@ -25,8 +25,8 @@ namespace CompMs.MsdialCore.DataObj {
 
         public void Save(AlignmentFileBean file) {
             var containerFile = file.FilePath;
-            var chromatogramPeakFile = Path.GetFileNameWithoutExtension(file.FilePath) + "_PeakProperties" + Path.GetExtension(file.FilePath);
-            var driftSpotFile = Path.GetFileNameWithoutExtension(file.FilePath) + "_DriftSopts" + Path.GetExtension(file.FilePath);
+            var chromatogramPeakFile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_PeakProperties" + Path.GetExtension(file.FilePath));
+            var driftSpotFile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_DriftSopts" + Path.GetExtension(file.FilePath));
 
             var collection = AlignmentSpotProperties;
 
@@ -53,8 +53,8 @@ namespace CompMs.MsdialCore.DataObj {
         public static AlignmentResultContainer Load(AlignmentFileBean file)
         {
             var containerFile = file.FilePath;
-            var chromatogramPeakFile = Path.GetFileNameWithoutExtension(file.FilePath) + "_PeakProperties" + Path.GetExtension(file.FilePath);
-            var driftSpotFile = Path.GetFileNameWithoutExtension(file.FilePath) + "_DriftSopts" + Path.GetExtension(file.FilePath);
+            var chromatogramPeakFile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_PeakProperties" + Path.GetExtension(file.FilePath));
+            var driftSpotFile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_DriftSopts" + Path.GetExtension(file.FilePath));
 
             var result = MessagePackDefaultHandler.LoadFromFile<AlignmentResultContainer>(containerFile);
             if (result is null) {
