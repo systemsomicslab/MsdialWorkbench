@@ -228,12 +228,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
 
             pbmcw.Loaded += async (s, e) => {
-                var sem = new SemaphoreSlim(1);
+                var sem = new SemaphoreSlim(10);
                 var tasks = new List<Task>();
                 var current = 0;
                 foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                    var task = Task.Run(async () =>
-                    {
+                    var task = Task.Run(async () => {
                         await sem.WaitAsync().ConfigureAwait(false);
                         try {
                             var provider = providerFactory.Create(analysisfile);

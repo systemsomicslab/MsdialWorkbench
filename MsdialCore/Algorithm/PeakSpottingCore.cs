@@ -119,7 +119,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 .AsParallel()
                 .AsOrdered()
                 .WithCancellation(token)
-                .WithDegreeOfParallelism(numThreads)
+                .WithDegreeOfParallelism(2)
                 .Select(targetMass => {
                     //var chromPeakFeatures = GetChromatogramPeakFeatures(rawSpectra, provider, targetMass, chromatogramRange);
                     var chromPeakFeatures = GetChromatogramPeakFeatures_Temp(rawSpectra, provider, targetMass, chromatogramRange);
