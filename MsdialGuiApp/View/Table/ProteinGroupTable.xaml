@@ -10,16 +10,24 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type={x:Type pgvm:ProteinGroupTableViewModel}}"
         Title="ProtainGroupTable" Height="450" Width="800">
-    <ListBox ItemsSource="{Binding Groups}">
+    <TabControl>
+        <TabItem Header="Protein Groups">
+    <DataGrid x:Name="CustomerGrid" ItemsSource="{Binding Groups}" AlternatingRowBackground="LightBlue" AlternationCount="2" />
+            
+        </TabItem>
+        <TabItem Header="Peptide Groups"/>
+    </TabControl>
+
+    <!--<ListBox ItemsSource="{Binding Groups}">
         <ListBox.ItemTemplate>
             <DataTemplate DataType="{x:Type pgtvm:ProteinGroupViewModel}">
                 <TextBlock Text="{Binding Path=GroupId, StringFormat=Protein Group {0}}"></TextBlock>
             </DataTemplate>
         </ListBox.ItemTemplate>
-        <!--<ContentControl.Resources>
+        --><!--<ContentControl.Resources>
             --><!--<DataTemplate DataType="{x:Type pgvm:ProteinGroupTableViewModel}">
                 
             </DataTemplate>--><!--
-        </ContentControl.Resources>-->
-    </ListBox>
+        </ContentControl.Resources>--><!--
+    </ListBox>-->
 </Window>

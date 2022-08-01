@@ -7,10 +7,16 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public ProteinGroupViewModel(ProteinGroupModel model) {
             _model = model;
             GroupId = model.GroupID;
+            NumberOfProteins = model.NoOfProteins;
+            NumberOfUniquePeptides = model.NoOfUniquePeptides;
+            NumberOfPeptides = model.NoOfPeptides;
         }
 
         public int GroupId { get; }
         private readonly ProteinGroupModel _model;
+        public int NumberOfProteins { get; }
+        public int NumberOfUniquePeptides { get; }
+        public int NumberOfPeptides { get; }
     }
 
 }
