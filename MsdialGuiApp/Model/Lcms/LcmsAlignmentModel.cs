@@ -59,7 +59,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             List<AnalysisFileBean> files,
             IObserver<ProteinResultContainerModel> proteinResultContainerModelObserver,
             IMessageBroker messageBroker)
-            : base(alignmentFileBean.FilePath) {
+            : base(alignmentFileBean, alignmentFileBean.FilePath) {
             if (databases is null) {
                 throw new ArgumentNullException(nameof(databases));
             }

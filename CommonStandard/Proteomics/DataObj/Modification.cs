@@ -374,7 +374,7 @@ namespace CompMs.Common.Proteomics.DataObj {
         }
 
 
-        public static List<Peptide> GetModifiedPeptides(List<Peptide> peptides, ModificationContainer modContainer, int maxNumberOfModificationsPerPeptide = 5, double maxPeptideMass = 4600) {
+        public static List<Peptide> GetModifiedPeptides(List<Peptide> peptides, ModificationContainer modContainer, int maxNumberOfModificationsPerPeptide = 2, double maxPeptideMass = 4600) {
             var mPeptides = new List<Peptide>();
             foreach (var peptide in peptides) {
                 var results = PeptideCalc.Sequence2Peptides(peptide, modContainer, maxNumberOfModificationsPerPeptide, maxPeptideMass);

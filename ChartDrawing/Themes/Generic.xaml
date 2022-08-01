@@ -314,6 +314,7 @@
                         <ContentPresenter Grid.Column="1"/>
                         <Button Content="{TemplateBinding ButtonContent}"
                                 Width="{TemplateBinding ButtonWidth}"
+                                Height="{TemplateBinding ButtonHeight}"
                                 Command="{TemplateBinding Command}"
                                 CommandParameter="{TemplateBinding CommandParameter}"
                                 IsEnabled="{TemplateBinding CommandIsEnabled}"

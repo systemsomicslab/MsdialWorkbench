@@ -850,7 +850,7 @@ namespace CompMs.MsdialCore.Parameter {
         [Key(9)]
         public float FalseDiscoveryRateForProtein { get; set; } = 1.0F; //%
         [Key(10)]
-        public int MaxNumberOfModificationsPerPeptide { get; set; } = 5;
+        public int MaxNumberOfModificationsPerPeptide { get; set; } = 2;
         [Key(11)]
         public int MaxMissedCleavage { get; set; } = 2;
         [Key(12)]
