@@ -1,16 +1,22 @@
 ﻿using CompMs.Common.DataObj;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
+using CompMs.RawDataHandler.Core;
 
 namespace CompMs.MsdialLcImMsApi.Algorithm
 {
     public class LcimmsAccumulateDataProvider : BaseDataProvider
     {
-        public LcimmsAccumulateDataProvider(AnalysisFileBean file, bool isGuiProcess = false, int retry = 5) : base(LoadMeasurement(file, false, isGuiProcess, retry).AccumulatedSpectrumList) {
+        public LcimmsAccumulateDataProvider(AnalysisFileBean file, bool isGuiProcess = false, int retry = 5) : 
+            base(SpectrumParser.GetAccumulatedMs1Spectrum(LoadMeasurement(file, false, isGuiProcess, retry).SpectrumList)) {
             
         }
 
-        public LcimmsAccumulateDataProvider(RawMeasurement rawObj) : base(rawObj.AccumulatedSpectrumList) {
+        //public LcimmsAccumulateDataProvider(RawMeasurement rawObj) : base(rawObj.AccumulatedSpectrumList) {
+
+        //}
+
+        public LcimmsAccumulateDataProvider(RawMeasurement rawObj) : base(SpectrumParser.GetAccumulatedMs1Spectrum(rawObj.SpectrumList)) {
 
         }
     }
