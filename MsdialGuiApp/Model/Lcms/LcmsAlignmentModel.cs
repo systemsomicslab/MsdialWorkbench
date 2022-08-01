@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             ProjectBaseParameterModel projectBaseParameter,
             List<AnalysisFileBean> files,
             IMessageBroker messageBroker)
-            : base(alignmentFileBean.FilePath) {
+            : base(alignmentFileBean, alignmentFileBean.FilePath) {
             if (databases is null) {
                 throw new ArgumentNullException(nameof(databases));
             }

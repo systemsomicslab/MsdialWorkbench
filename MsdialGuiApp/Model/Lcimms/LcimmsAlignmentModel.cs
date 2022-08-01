@@ -36,7 +36,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             ParameterBase parameter,
             List<AnalysisFileBean> files,
             PeakFilterModel peakFilterModel)
-            : base(alignmentFileBean.FilePath) {
+            : base(alignmentFileBean, alignmentFileBean.FilePath) {
             Parameter = parameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
             AlignmentFile = alignmentFileBean;

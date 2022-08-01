@@ -55,7 +55,7 @@ namespace CompMs.App.Msdial.Model.Dims
             List<AnalysisFileBean> files,
             PeakFilterModel peakFilterModel,
             IMessageBroker broker)
-            : base(alignmentFileBean.FilePath) {
+            : base(alignmentFileBean, alignmentFileBean.FilePath) {
 
             _alignmentFile = alignmentFileBean;
 

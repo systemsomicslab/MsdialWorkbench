@@ -20,7 +20,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
         protected override string CollectAlignmentPeaks(
             AnalysisFileBean analysisFile, List<AlignmentChromPeakFeature> peaks, List<AlignmentSpotProperty> spots,
-            ChromatogramSerializer<ChromatogramPeakInfo> serializer = null) {
+            string tempFile, ChromatogramSerializer<ChromatogramPeakInfo> serializer = null) {
 
             var peakInfos = new List<ChromatogramPeakInfo>();
             DataAccess.GetAllSpectraWithAccumulatedMS1(analysisFile.AnalysisFilePath, out var spectra, out var accumulated);
@@ -60,9 +60,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     peakInfos.Add(dpeakInfo);
                 }
             }
-            var file = Path.GetTempFileName();
-            serializer?.SerializeAllToFile(file, peakInfos);
-            return file;
+            serializer?.SerializeAllToFile(tempFile, peakInfos);
+            return tempFile;
         }
     }
 }

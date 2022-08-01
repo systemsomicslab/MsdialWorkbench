@@ -228,12 +228,29 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
 
             pbmcw.Loaded += async (s, e) => {
-                var sem = new SemaphoreSlim(10);
+
+                var timer = new System.Diagnostics.Stopwatch();
+                timer.Start();
                 var tasks = new List<Task>();
                 var current = 0;
+                ThreadPool.GetMinThreads(out var minThreads, out _);
+                ThreadPool.GetAvailableThreads(out var availableThreads, out _);
+                Console.WriteLine($"Min/Available: {minThreads}/{availableThreads}");
+                var processor = new MsdialLcMsApi.Process.FileProcess(providerFactory, storage, annotationProcess, matchResultEvaluator);
+                await processor.RunAllAsync(
+                    storage.AnalysisFiles,
+                    vm.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
+                    10,
+                    () => { Interlocked.Increment(ref current); vm.CurrentValue = current; });
+                /*
+                var sem = new SemaphoreSlim(2, 2);
                 foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                    var task = Task.Run(async () => {
+                    var task = Task.Run(async () =>
+                    //var task = Task.Run(() =>
+                    {
                         await sem.WaitAsync().ConfigureAwait(false);
+                        ThreadPool.GetAvailableThreads(out var localAvailable, out _);
+                        Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} Start: {timer.ElapsedMilliseconds}ms Available: {localAvailable}");
                         try {
                             var provider = providerFactory.Create(analysisfile);
                             MsdialLcMsApi.Process.FileProcess.Run(analysisfile, provider, storage, annotationProcess, matchResultEvaluator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v);
@@ -243,11 +260,14 @@ namespace CompMs.App.Msdial.Model.Lcms
                         finally {
                             sem.Release();
                         }
+                        Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} Finish: {timer.ElapsedMilliseconds}ms");
                     });
                     tasks.Add(task);
                 }
                 await Task.WhenAll(tasks.ToArray());
+                */
 
+                Console.WriteLine($"Ellapsed time: {timer.ElapsedMilliseconds / 1000d}s");
                 pbmcw.DialogResult = true;
                 pbmcw.Close();
             };
@@ -312,7 +332,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     storage.Parameter);
             }
 
-            MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
+            result.Save(alignmentFile);
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList());
 
             pbw.Close();
