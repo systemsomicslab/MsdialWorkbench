@@ -10,13 +10,30 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type={x:Type pgvm:ProteinGroupTableViewModel}}"
         Title="ProtainGroupTable" Height="450" Width="800">
-    <TabControl>
-        <TabItem Header="Protein Groups">
-    <DataGrid x:Name="CustomerGrid" ItemsSource="{Binding Groups}" AlternatingRowBackground="LightBlue" AlternationCount="2" />
-            
-        </TabItem>
-        <TabItem Header="Peptide Groups"/>
-    </TabControl>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TabControl Grid.Row="0">
+            <TabItem Header="Protein Groups">
+                <GroupBox Header="aaaaaa">
+                <DataGrid x:Name="CustomerGrid" Margin="8" ItemsSource="{Binding Groups}" IsSynchronizedWithCurrentItem="True" AlternatingRowBackground="LightBlue" AlternationCount="2" />
+                    
+                </GroupBox>
+            </TabItem>
+            <!--<TabItem Header="Peptide Groups"/>-->
+        </TabControl>
+        <TabControl Grid.Row="1">
+            <TabItem Header="Protein Groups" Visibility="Visible">
+                <StackPanel DataContext="{Binding Groups/}">
+                    <TextBlock Text="{Binding NumberOfPeptides,StringFormat={}# peptides {0}}"/>
+                </StackPanel>
+            </TabItem>
+            <!--<TabItem Header="Peptide Groups"/>-->
+        </TabControl>
+        <GridSplitter Grid.Row="1" Height="1" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+    </Grid>
 
     <!--<ListBox ItemsSource="{Binding Groups}">
         <ListBox.ItemTemplate>
