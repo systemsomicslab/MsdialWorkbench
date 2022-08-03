@@ -15,20 +15,26 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TabControl Grid.Row="0">
-            <TabItem Header="Protein Groups">
-                <GroupBox Header="aaaaaa">
+        <!--<TabControl Grid.Row="0">
+            <TabItem Header="Protein Groups">-->
+                <GroupBox Header="Protein Groups">
                 <DataGrid x:Name="CustomerGrid" Margin="8" ItemsSource="{Binding Groups}" IsSynchronizedWithCurrentItem="True" AlternatingRowBackground="LightBlue" AlternationCount="2" />
                     
                 </GroupBox>
-            </TabItem>
-            <!--<TabItem Header="Peptide Groups"/>-->
-        </TabControl>
+            <!--</TabItem>
+            --><!--<TabItem Header="Peptide Groups"/>--><!--
+        </TabControl>-->
         <TabControl Grid.Row="1">
-            <TabItem Header="Protein Groups" Visibility="Visible">
+            <TabItem Header="Proteins" Visibility="Visible">
                 <StackPanel DataContext="{Binding Groups/}">
+
+                    <!--<DataGrid x:Name="CustomerGrid" Margin="8" ItemsSource="{Binding NumberOfPeptides}" IsSynchronizedWithCurrentItem="True" />-->
                     <TextBlock Text="{Binding NumberOfPeptides,StringFormat={}# peptides {0}}"/>
+                    
                 </StackPanel>
+            </TabItem>
+            <TabItem Header="Peptide Groups">
+                
             </TabItem>
             <!--<TabItem Header="Peptide Groups"/>-->
         </TabControl>
