@@ -228,6 +228,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
 
             pbmcw.Loaded += async (s, e) => {
+
                 var timer = new System.Diagnostics.Stopwatch();
                 timer.Start();
                 var tasks = new List<Task>();

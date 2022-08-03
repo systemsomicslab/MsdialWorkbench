@@ -63,7 +63,7 @@ namespace CompMs.App.Msdial.Model.Imms
             get => driftTolerance;
             set => SetProperty(ref driftTolerance, value);
         }
-        private double driftTolerance = 0.02;
+        private double driftTolerance = 0.002;
 
         public MsdialImmsParameter Parameter { get; }
         public ProcessBaseParameter ProcessParameter { get; }
