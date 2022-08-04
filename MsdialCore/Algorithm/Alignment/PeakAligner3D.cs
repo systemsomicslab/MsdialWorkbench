@@ -14,7 +14,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
     {
         protected GapFiller3D Filler3d { get; set; }
 
-        public PeakAligner3D(AlignmentProcessFactory factory) : base(factory) {
+        public PeakAligner3D(AlignmentProcessFactory factory) : base(factory, null) {
             Filler3d = factory.CreateGapFiller() as GapFiller3D;
         }
 

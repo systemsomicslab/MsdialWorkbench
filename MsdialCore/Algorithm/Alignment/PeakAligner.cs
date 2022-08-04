@@ -15,8 +15,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment
 {
-    public class PeakAligner
-    {
+    public class PeakAligner {
         protected DataAccessor Accessor { get; }
         protected IPeakJoiner Joiner { get; }
         protected GapFiller Filler { get; }
@@ -24,13 +23,16 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         protected ParameterBase Param { get; }
         protected List<MoleculeMsReference> MspDB { get; } = new List<MoleculeMsReference>();
         public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; set; }
+        private Action<int> reportAction { get; set; }
 
-        public PeakAligner(AlignmentProcessFactory factory) {
+        public PeakAligner(AlignmentProcessFactory factory, Action<int> report) {
             Accessor = factory.CreateDataAccessor();
             Joiner = factory.CreatePeakJoiner();
             Filler = factory.CreateGapFiller();
             Refiner = factory.CreateAlignmentRefiner();
             Param = factory.Parameter;
+            reportAction = report;
+                
         }
 
         public AlignmentResultContainer Alignment(
@@ -93,14 +95,20 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             ChromatogramSerializer<ChromatogramPeakInfo> chromPeakInfoSerializer,
             string[] tempFiles) {
 
+            // from 40 to 80
+            var counter = 0;
             foreach (var (analysisFile, file_) in analysisFiles.Zip(tempFiles)) {
                 var peaks = new List<AlignmentChromPeakFeature>(spots.Count);
                 foreach (var spot in spots)
                     peaks.Add(spot.AlignedPeakProperties.FirstOrDefault(peak => peak.FileID == analysisFile.AnalysisFileId));
                 var file = CollectAlignmentPeaks(analysisFile, peaks, spots, file_, chromPeakInfoSerializer);
+
+                counter++;
+                ReportProgress.Show(40.0, 40.0, counter, analysisFiles.Count - 1, reportAction);
             }
-            foreach (var spot in spots)
+            foreach (var spot in spots) {
                 PackingSpot(spot);
+            }
             var id2idx = FlattenSpots(spots)
                 .Select((spot, idx) => Tuple.Create(spot, idx))
                 .ToDictionary(pair => pair.Item1.MasterAlignmentID, pair => pair.Item2);
