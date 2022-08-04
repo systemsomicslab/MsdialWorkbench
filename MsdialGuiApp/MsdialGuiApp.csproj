@@ -356,7 +356,7 @@
     <Compile Include="ViewModel\Imms\ImmsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Imms\MsdialImmsParameterViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsAlignmentViewModel.cs" />
-    <Compile Include="ViewModel\Lcimms\AnalysisLcimmsVM.cs" />
+    <Compile Include="ViewModel\Lcimms\LcimmsAnalysisViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\LcimmsMethodViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsAnnotatorSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsPeakSpotTableViewModel.cs" />
