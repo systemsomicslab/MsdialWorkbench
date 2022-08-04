@@ -240,7 +240,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 await processor.RunAllAsync(
                     storage.AnalysisFiles,
                     vm.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
-                    10,
+                    2,
                     () => { Interlocked.Increment(ref current); vm.CurrentValue = current; });
                 /*
                 var sem = new SemaphoreSlim(2, 2);

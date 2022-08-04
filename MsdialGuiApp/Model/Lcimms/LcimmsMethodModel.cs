@@ -176,6 +176,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
                         streams[repID], pointerss[repID].pointers[peakID],
                         pointerss[repID].version, pointerss[repID].isAnnotationInfo);
                     yield return decResult;
+                    foreach (var dSpot in spot.AlignmentDriftSpotFeatures) {
+                        var dRepID = dSpot.RepresentativeFileID;
+                        var dPeakID = dSpot.AlignedPeakProperties[dRepID].MasterPeakID;
+                        var dDecResult = MsdecResultsReader.ReadMSDecResult(
+                            streams[dRepID], pointerss[dRepID].pointers[dPeakID],
+                            pointerss[dRepID].version, pointerss[dRepID].isAnnotationInfo);
+                        yield return dDecResult;
+                    }
                 }
             }
             finally {

@@ -10,8 +10,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 {
     public abstract class GapFiller3D : GapFiller
     {
-        protected abstract double AxTolFirst { get; }
-        protected abstract double AxTolSecond { get; }
+        public abstract double AxTolFirst { get; }
+        public abstract double AxTolSecond { get; }
 
         public GapFiller3D(SmoothingMethod smoothingMethod, int smoothingLevel, bool isForceInsert) : base(smoothingMethod, smoothingLevel, isForceInsert) { }
         public GapFiller3D(ParameterBase param) : base(param) { }

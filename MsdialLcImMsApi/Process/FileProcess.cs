@@ -124,8 +124,8 @@ namespace CompMs.MsdialLcImMsApi.Process
                 coeff = null;
             }
 
-            var chromPeakFeatures = new PeakSpotting(0, 30, parameter).Execute4DFeatureDetection(spectrumProvider, accSpectrumProvider, 
-                parameter, parameter.NumThreads, token, reportAction);
+            var chromPeakFeatures = new PeakSpotting(0, 30, parameter).Execute4DFeatureDetection(spectrumProvider, accSpectrumProvider,
+                parameter.NumThreads, token, reportAction);
             var iupacDB = storage.IupacDatabase;
             IsotopeEstimator.Process(chromPeakFeatures, parameter, iupacDB);
             CcsEstimator.Process(chromPeakFeatures, parameter, parameter.IonMobilityType, coeff, parameter.IsAllCalibrantDataImported);
