@@ -1,6 +1,6 @@
 ﻿namespace CompMs.Common.Components
 {
-    public struct ValuePeak
+    public readonly struct ValuePeak
     {
         public ValuePeak(int id, double time, double mz, double intensity) {
             Id = id;
@@ -9,9 +9,9 @@
             Intensity = intensity;
         }
 
-        public int Id;
-        public double Mz;
-        public double Intensity;
-        public double Time;
+        public readonly int Id;
+        public readonly double Mz;
+        public readonly double Intensity;
+        public readonly double Time;
     }
 }

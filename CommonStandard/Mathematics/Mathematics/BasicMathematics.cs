@@ -140,6 +140,17 @@ namespace CompMs.Common.Mathematics.Basic {
             return sortArray[midArrayNumber];
         }
 
+        public static double InplaceSortMedian(double[] array)
+        {
+            if (array == null || array.Length == 0) {
+                return 0;
+            }
+
+            int midArrayNumber = array.Length / 2;
+            Array.Sort(array);
+            return array[midArrayNumber];
+        }
+
         public static void BoxPlotProperties(double[] array, out double minvalue, out double twentyfive, 
             out double median, out double seventyfive, out double maxvalue) {
             if (array == null) {
