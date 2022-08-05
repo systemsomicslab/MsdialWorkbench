@@ -12412,10 +12412,10 @@ AdductIon adduct)
             { // negative ion mode 
                 if (adduct.AdductIonName == "[M-H]-")
                 {
-                    // seek 225.0069 [C6H9O8S]-
+                    // seek [C6H9O8S]-
                     var threshold1 = 0.1;
                     var diagnosticMz1 = 241.0024;
-                    // seek 225.0069 [H2SO4-H]-
+                    // seek  [H2SO4-H]-
                     var threshold2 = 0.1;
                     var diagnosticMz2 = 96.9601;
 
