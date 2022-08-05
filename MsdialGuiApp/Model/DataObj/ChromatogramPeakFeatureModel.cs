@@ -136,11 +136,16 @@ namespace CompMs.App.Msdial.Model.DataObj
         bool IFilterable.IsBaseIsotopeIon => innerModel.PeakCharacter.IsotopeWeightNumber == 0;
         bool IFilterable.IsBlankFiltered => innerModel.FeatureFilterStatus.IsBlankFiltered;
         bool IFilterable.IsManuallyModifiedForAnnotation => innerModel.IsManuallyModifiedForAnnotation;
+        bool IFilterable.IsBlankFilteredByPostCurator => true;
+        bool IFilterable.IsBlankGhostFilteredByPostCurator => true;
+        bool IFilterable.IsMzFilteredByPostCurator => true;
+        bool IFilterable.IsRmdFilteredByPostCurator => true;
+        bool IFilterable.IsRsdFilteredByPostCurator => true;
 
         double IFilterable.RelativeAmplitudeValue => innerModel.PeakShape.AmplitudeScoreValue;
 
         // IChromatogramPeak
-        int IChromatogramPeak.ID { get => ((IChromatogramPeak)innerModel).ID; set => ((IChromatogramPeak)innerModel).ID = value; }
+        int IChromatogramPeak.ID => ((IChromatogramPeak)innerModel).ID;
         ChromXs IChromatogramPeak.ChromXs { get => ((IChromatogramPeak)innerModel).ChromXs; set => ((IChromatogramPeak)innerModel).ChromXs = value; }
         double ISpectrumPeak.Mass { get => ((ISpectrumPeak)innerModel).Mass; set => ((ISpectrumPeak)innerModel).Mass = value; }
         double ISpectrumPeak.Intensity { get => ((ISpectrumPeak)innerModel).Intensity; set => ((ISpectrumPeak)innerModel).Intensity = value; }

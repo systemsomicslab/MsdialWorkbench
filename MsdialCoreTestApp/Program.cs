@@ -32,17 +32,17 @@ namespace CompMs.App.MsdialConsole {
             // };
 
             // lcms
-            // args = new string[]
-            // {
-            //     "lcms"
-            //     , "-i"
-            //     , @"D:\test_data\wine\"
-            //     , "-o"
-            //     , @"D:\test_data\wine\"
-            //     , "-m"
-            //     , @"D:\test_data\wine\lcms_param.txt"
-            //     , "-p"
-            // };
+            args = new string[]
+            {
+                "lcms"
+                , "-i"
+                , @"D:\BugReport\20220718_Failed_to_load\Brain atlas files_CSHneg"
+                , "-o"
+                , @"D:\BugReport\20220718_Failed_to_load\Brain atlas files_CSHneg"
+                , "-m"
+                , @"D:\BugReport\20220718_Failed_to_load\lcms_param.txt"
+                , "-p"
+            };
 
             // dims
             // args = new string[]
@@ -82,7 +82,7 @@ namespace CompMs.App.MsdialConsole {
             //    , "-p"
             //};
 
-            //MainProcess.Run(args);
+            // MainProcess.Run(args);
 
             var lcmsfile = @"D:\msdial_test\Msdial\out\wine\0717_kinetex_wine_50_4min_pos_IDA_A1.abf";
             var dimsfile = @"D:\msdial_test\Msdial\out\MSMSALL_Positive\20200717_Posi_MSMSALL_Liver1.abf";
@@ -126,12 +126,32 @@ namespace CompMs.App.MsdialConsole {
             //         .Select(lipid => lipid.GenerateSpectrum(spectrumGenerator, adduct))
             //         .Cast<Common.Components.MoleculeMsReference>());
 
+            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG\2022_08_03_14_10_58.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG_MSP");
+
+            MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS\2022_08_03_14_17_26.mdproject",
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS_MSP");
+
+            MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS\2022_08_03_14_17_26.mdproject",
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP");
+
+            MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG\2022_08_03_14_31_34.mdproject",
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG_MSP");
+
 #if DEBUG
             //var projectPath = @"C:\Users\lab\Desktop\dropmet\20140809_MSDIAL_DemoFiles_Swath\neg\hoge20220427.mtd3";
             //var output = new MemoryStream();
-           // using var output = File.Open(@"C:\Users\lab\Desktop\dropmet\output.tsv", FileMode.Create);
-            var tester = new Export.ExporterTest();
-            var curator = new PostCurator();
+            // using var output = File.Open(@"C:\Users\lab\Desktop\dropmet\output.tsv", FileMode.Create);
+            // var tester = new Export.ExporterTest();
+            // var curator = new PostCurator();
             //var curator = (PostCurator)null; // new PostCurator();
             //tester.Export(projectPath, output, curator);
             //Console.WriteLine(Encoding.UTF8.GetString(output.ToArray()));
@@ -151,11 +171,11 @@ namespace CompMs.App.MsdialConsole {
             //    @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\MSMS-Pos-Vaniya-Fiehn_Natural_Products_Library_20200109.msp",
             //    @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeySmilesRtList.txt");
 
-            ParseArpanaDatabase.CreatInChIKeySmilesList(
-                @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\MsfinderStructureDB-VS15.esd",
-                @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\MSMS-RIKEN-Neg-VS15.msp",
-                @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\MSMS-RIKEN-Pos-VS15.msp",
-                @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\RIKEN_All_Smiles.txt");
+            // ParseArpanaDatabase.CreatInChIKeySmilesList(
+            //     @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\MsfinderStructureDB-VS15.esd",
+            //     @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\MSMS-RIKEN-Neg-VS15.msp",
+            //     @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\MSMS-RIKEN-Pos-VS15.msp",
+            //     @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\RIKEN_All_Smiles.txt");
 
 
             //MspCurator.WriteRtMzInChIKey(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Neg-VS15_PfppRT.msp");

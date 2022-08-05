@@ -12,6 +12,7 @@ using CompMs.MsdialCore.Parameter;
 using System.Linq;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.Common.DataObj.Database;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
 {
@@ -85,11 +86,47 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
         }
 
         PeakAligner CreateAligner(DataAccessor accessor, ParameterBase parameter) {
-            var iupac = new Common.DataObj.Database.IupacDatabase();
+            var iupac = new IupacDatabase();
             var joiner = new MockJoiner();
             var filler = new MockFiller(parameter);
             var refiner = new MockRefiner(iupac, new FacadeMatchResultEvaluator());
-            return new PeakAligner(accessor, joiner, filler, refiner, parameter);
+            var factory = new FakeFactory(parameter, iupac, joiner, filler, refiner, accessor);
+            return factory.CreatePeakAligner();
+        }
+    }
+
+    sealed class FakeFactory : AlignmentProcessFactory
+    {
+        private readonly MockJoiner _joiner;
+        private readonly MockFiller _filler;
+        private readonly MockRefiner _refiner;
+        private readonly DataAccessor _accessor;
+
+        public FakeFactory(ParameterBase param, IupacDatabase iupac, MockJoiner joiner, MockFiller filler, MockRefiner refiner, DataAccessor accessor) : base(param, iupac) {
+            _joiner = joiner;
+            _filler = filler;
+            _refiner = refiner;
+            _accessor = accessor;
+        }
+
+        public override IAlignmentRefiner CreateAlignmentRefiner() {
+            return _refiner;
+        }
+
+        public override DataAccessor CreateDataAccessor() {
+            return _accessor;
+        }
+
+        public override GapFiller CreateGapFiller() {
+            return _filler;
+        }
+
+        public override PeakAligner CreatePeakAligner() {
+            return new PeakAligner(this, null);
+        }
+
+        public override IPeakJoiner CreatePeakJoiner() {
+            return _joiner;
         }
     }
 
@@ -98,7 +135,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
         private List<List<IMSScanProperty>> scans;
         public MockAccessor(List<List<IMSScanProperty>> scans) { this.scans = scans; }
 
-        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
+        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
             return new ChromatogramPeakInfo(-1, null, -1, -1, -1);
         }
 
@@ -138,7 +175,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
             };
         }
 
-        protected override List<ChromatogramPeak> GetPeaks(IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
+        protected override List<ChromatogramPeak> GetPeaks(Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel) {
             return new List<ChromatogramPeak> {
                 new ChromatogramPeak(0, 50, 100, new RetentionTime(0.5)),
                 new ChromatogramPeak(0, 70, 120, new RetentionTime(1)),

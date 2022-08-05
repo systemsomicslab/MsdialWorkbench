@@ -54,7 +54,7 @@ namespace CompMs.Common.Proteomics.Function {
             return peptide;
         }
 
-        public static List<Peptide> Sequence2Peptides(Peptide peptide, ModificationContainer container, int maxNumberOfModificationsPerPeptide = 5, double maxPeptideMass = 4600) {
+        public static List<Peptide> Sequence2Peptides(Peptide peptide, ModificationContainer container, int maxNumberOfModificationsPerPeptide = 2, double maxPeptideMass = 4600) {
             var fmPeptide = Sequence2PeptideByFixedModifications(peptide, container, maxPeptideMass);
             if (fmPeptide == null) return null;
             return Sequence2PeptidesByVariableModifications(peptide, container, maxNumberOfModificationsPerPeptide, maxPeptideMass);
@@ -154,7 +154,7 @@ namespace CompMs.Common.Proteomics.Function {
         /// <param name="container"></param>
         /// <param name="maxNumberOfModificationsPerPeptide"></param>
         /// <returns></returns>
-        public static List<Peptide> Sequence2PeptidesByVariableModifications(Peptide peptide, ModificationContainer container, int maxNumberOfModificationsPerPeptide = 5, double maxPeptideMass = 4600) {
+        public static List<Peptide> Sequence2PeptidesByVariableModifications(Peptide peptide, ModificationContainer container, int maxNumberOfModificationsPerPeptide = 2, double maxPeptideMass = 4600) {
             //var sequence = peptide.Sequence;
             if (container.IsEmptyOrNull()) return new List<Peptide>() { Sequence2Peptide(peptide) };
 

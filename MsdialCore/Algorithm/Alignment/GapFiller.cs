@@ -27,16 +27,16 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
         public GapFiller(ParameterBase param) : this(param.SmoothingMethod, param.SmoothingLevel, param.IsForceInsertForGapFilling) { }
 
-        public void GapFill(IDataProvider provider, AlignmentSpotProperty spot, int fileID) {
-            GapFill(provider.LoadMs1Spectrums(), spot, fileID);
+        public void GapFill(Ms1Spectra ms1Spectra, IDataProvider provider, AlignmentSpotProperty spot, int fileID) {
+            GapFill(ms1Spectra, provider.LoadMs1Spectrums(), spot, fileID);
         }
 
-        public void GapFill(IReadOnlyList<RawSpectrum> spectra, AlignmentSpotProperty spot, int fileID) {
+        public void GapFill(Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectra, AlignmentSpotProperty spot, int fileID) {
             var peaks = spot.AlignedPeakProperties;
             var filtered = peaks.Where(peak => peak.PeakID >= 0);
             var chromXCenter = GetCenter(filtered);
             var peakWidth = GetPeakWidth(filtered);
-            var peaklist = GetPeaks(spectra, chromXCenter, peakWidth, fileID, smoothingMethod, smoothingLevel);
+            var peaklist = GetPeaks(ms1Spectra, spectra, chromXCenter, peakWidth, fileID, smoothingMethod, smoothingLevel);
 
             var target = peaks.First(peak => peak?.FileID == fileID);
             GapFillCore(peaklist, chromXCenter, AxTol, target);
@@ -70,16 +70,14 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             SetAlignmentChromPeakFeature(result, center, peaklist, id, leftId, rightId);
         }
 
-        protected abstract List<ChromatogramPeak> GetPeaks(
-            IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID,
-            SmoothingMethod smoothingMethod, int smoothingLevel);
+        protected abstract List<ChromatogramPeak> GetPeaks(Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel);
 
         protected virtual (List<ChromatogramPeak>, int) GetPeakTopCandidates(List<ChromatogramPeak> sPeaklist, double centralAx, double axTol) {
             var candidates = new List<ChromatogramPeak>();
             var minId = -1;
             var minDiff = double.MaxValue;
 
-            var start = SearchCollection.LowerBound(sPeaklist, new ChromatogramPeak { ChromXs = new ChromXs(centralAx - axTol) }, (a, b) => a.ChromXs.Value.CompareTo(b.ChromXs.Value));
+            var start = SearchCollection.LowerBound(sPeaklist, new ChromXs(centralAx - axTol), (a, b) => a.ChromXs.Value.CompareTo(b.Value));
             for (int i = start; i < sPeaklist.Count; i++) {
                 if (i - 2 < 0 || i + 2 >= sPeaklist.Count) continue;
                 if (sPeaklist[i].ChromXs.Value < centralAx - axTol) continue;

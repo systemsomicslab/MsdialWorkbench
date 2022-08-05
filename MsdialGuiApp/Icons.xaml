@@ -1933,6 +1933,134 @@
         </Canvas>
     </Viewbox>
 
+    <Viewbox x:Key="TreeForProteomics_icon">
+        <Canvas Name="svg2369" Width="921600" Height="291600">
+            <Canvas.RenderTransform>
+                <TranslateTransform X="0" Y="0"/>
+            </Canvas.RenderTransform>
+            <Canvas.Resources>
+                <PathGeometry xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="p.0" Figures="M 0 0 H 960 V 540 H 0 Z" FillRule="NonZero"/>
+            </Canvas.Resources>
+            <!--Unknown tag: sodipodi:namedview-->
+            <Canvas Name="g2367" Clip="{StaticResource p.0}">
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path2301" Fill="#FFA4C2F4" StrokeMiterLimit="10" StrokeStartLineCap="Square" StrokeEndLineCap="Square">
+                    <Path.Data>
+                        <PathGeometry Figures="M 98.519684 60.065617 H 223.90814 V 101.66142 H 98.519684 Z" FillRule="NonZero"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path2303" Fill="#FFA4C2F4" StrokeMiterLimit="10" StrokeStartLineCap="Square" StrokeEndLineCap="Square">
+                    <Path.Data>
+                        <PathGeometry Figures="M 98.519684 101.66142 H 223.90814 v 41.5958 H 98.519684 Z" FillRule="NonZero"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path2305" Fill="#FFA4C2F4" StrokeMiterLimit="10" StrokeStartLineCap="Square" StrokeEndLineCap="Square">
+                    <Path.Data>
+                        <PathGeometry Figures="M 98.519684 143.25722 H 223.90814 v 41.59579 H 98.519684 Z" FillRule="NonZero"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path2307" Fill="#FF1155CC" StrokeMiterLimit="10" StrokeStartLineCap="Square" StrokeEndLineCap="Square">
+                    <Path.Data>
+                        <PathGeometry Figures="M 98.519684 184.85301 H 223.90814 v 41.59581 H 98.519684 Z" FillRule="NonZero"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path2317" StrokeThickness="1" Stroke="#FF9E9E9E" StrokeMiterLimit="10" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+                    <Path.Data>
+                        <PathGeometry Figures="M 98.020996 143.25722 H 224.40683" FillRule="NonZero"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path2323" Fill="#FF1155CC" StrokeMiterLimit="10" StrokeStartLineCap="Square" StrokeEndLineCap="Square">
+                    <Path.Data>
+                        <PathGeometry Figures="M 147.62204 275.6614 H 273.0105 v 41.59582 H 147.62204 Z" FillRule="NonZero"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path2325" Fill="#FF4285F4" StrokeMiterLimit="10" StrokeStartLineCap="Square" StrokeEndLineCap="Square">
+                    <Path.Data>
+                        <PathGeometry Figures="M 147.62204 317.25723 H 273.0105 v 41.59579 H 147.62204 Z" FillRule="NonZero"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path2339" StrokeThickness="1.0" Stroke="#FF595959" StrokeMiterLimit="10" StrokeLineJoin="Round" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+                    <Path.Data>
+                        <PathGeometry Figures="m 158.1336 225.36112 56.2496 50.54702" FillRule="EvenOdd"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path2341" Fill="#FF1155CC" StrokeMiterLimit="10" StrokeStartLineCap="Square" StrokeEndLineCap="Square">
+                    <Path.Data>
+                        <PathGeometry Figures="M 354.61154 270 H 480 v 41.59579 H 354.61154 Z" FillRule="NonZero"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path2343" Fill="#FF4285F4" StrokeMiterLimit="10" StrokeStartLineCap="Square" StrokeEndLineCap="Square">
+                    <Path.Data>
+                        <PathGeometry Figures="M 354.61154 311.5958 H 480 v 41.59579 H 354.61154 Z" FillRule="NonZero"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path2345" Fill="#FFA4C2F4" StrokeMiterLimit="10" StrokeStartLineCap="Square" StrokeEndLineCap="Square">
+                    <Path.Data>
+                        <PathGeometry Figures="M 354.61154 353.1916 H 480 v 41.59582 H 354.61154 Z" FillRule="NonZero"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path2361" StrokeThickness="1.0" Stroke="#FF595959" StrokeMiterLimit="10" StrokeLineJoin="Round" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+                    <Path.Data>
+                        <PathGeometry Figures="m 224.29921 199.10236 c 32.60631 0 48.90944 22.8504 65.2126 45.70079 16.30316 22.85039 32.60629 45.70079 65.21258 45.70079" FillRule="EvenOdd"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path2365" StrokeThickness="1.0" Stroke="#FF595959" StrokeMiterLimit="10" StrokeLineJoin="Round" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+                    <Path.Data>
+                        <PathGeometry Figures="m 273.70602 334.9685 81.03937 0.97638" FillRule="EvenOdd"/>
+                    </Path.Data>
+                </Path>
+            </Canvas>
+        </Canvas>
+    </Viewbox>
+
+    <Viewbox x:Key="MsCleanR_icon">
+        <Canvas Name="svg81" Width="921600" Height="291600">
+            <Canvas.RenderTransform>
+                <TranslateTransform X="0" Y="0"/>
+            </Canvas.RenderTransform>
+            <Canvas.Resources>
+                <PathGeometry xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="p.0" Figures="M 0 0 H 960 V 540 H 0 Z" FillRule="NonZero"/>
+            </Canvas.Resources>
+            <!--Unknown tag: sodipodi:namedview-->
+            <Canvas Name="g79" Clip="{StaticResource p.0}">
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path53" Fill="#FF4285F4" StrokeMiterLimit="10" StrokeStartLineCap="Square" StrokeEndLineCap="Square">
+                    <Path.Data>
+                        <PathGeometry Figures="m 138.87138 106.45145 h 49.82678 v 213.85828 h -49.82678 z" FillRule="EvenOdd"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path57" Fill="#FF4285F4" StrokeMiterLimit="10" StrokeStartLineCap="Square" StrokeEndLineCap="Square">
+                    <Path.Data>
+                        <PathGeometry Figures="m 204.70866 171.54855 h 49.82677 v 148.56693 h -49.82677 z" FillRule="EvenOdd"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path61" Fill="#FF4285F4" StrokeMiterLimit="10" StrokeStartLineCap="Square" StrokeEndLineCap="Square">
+                    <Path.Data>
+                        <PathGeometry Figures="m 276.83728 249.67717 h 49.82675 v 70.42519 h -49.82675 z" FillRule="EvenOdd"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path67" StrokeThickness="8" Stroke="#FF4285F4" StrokeMiterLimit="10" StrokeLineJoin="Round" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+                    <Path.Data>
+                        <PathGeometry Figures="m 207.58005 108.38583 85.1001 82.67827" FillRule="EvenOdd"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path69" Fill="#FF4285F4" StrokeThickness="8" Stroke="#FF4285F4" StrokeMiterLimit="10" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+                    <Path.Data>
+                        <PathGeometry Figures="m 283.47238 200.5416 35.24698 15.82066 -16.83142 -34.77565 z" FillRule="EvenOdd"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path73" StrokeThickness="4" Stroke="#FF4285F4" StrokeMiterLimit="10" StrokeLineJoin="Round" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+                    <Path.Data>
+                        <PathGeometry Figures="m 125.80577 107.41995 0.97638 225.48031" FillRule="EvenOdd"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path77" StrokeThickness="4" Stroke="#FF4285F4" StrokeMiterLimit="10" StrokeLineJoin="Round" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+                    <Path.Data>
+                        <PathGeometry Figures="m 124.8399 333.38583 210.48819 -0.47244" FillRule="EvenOdd"/>
+                    </Path.Data>
+                </Path>
+            </Canvas>
+        </Canvas>
+    </Viewbox>
+
     <Viewbox x:Key="MassQL_icon">
         <Canvas Name="svg860" Width="171" Height="322">
             <Canvas.RenderTransform>
@@ -2441,16 +2569,24 @@
         <DrawingImage.Drawing>
             <GeometryDrawing>
                 <GeometryDrawing.Geometry>
-                <GeometryGroup>
-                    <LineGeometry StartPoint="0, 0" EndPoint="200,0"/>
-                    <RectangleGeometry Rect="0,200,200,300"/>
-                </GeometryGroup>
-            </GeometryDrawing.Geometry>
+                    <RectangleGeometry Rect="0,0,255,255"/>
+                </GeometryDrawing.Geometry>
                 <GeometryDrawing.Brush>
-                    <SolidColorBrush Color="Red"></SolidColorBrush>
+                    <VisualBrush Stretch="Uniform" Visual="{StaticResource MsCleanR_icon}"/>
                 </GeometryDrawing.Brush>
             </GeometryDrawing>
-            
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="TreeForProteomics_icon_is">
+        <DrawingImage.Drawing>
+            <GeometryDrawing>
+                <GeometryDrawing.Geometry>
+                    <RectangleGeometry Rect="0,0,255,255"/>
+                </GeometryDrawing.Geometry>
+                <GeometryDrawing.Brush>
+                    <VisualBrush Stretch="Uniform" Visual="{StaticResource TreeForProteomics_icon}"/>
+                </GeometryDrawing.Brush>
+            </GeometryDrawing>
         </DrawingImage.Drawing>
     </DrawingImage>
 

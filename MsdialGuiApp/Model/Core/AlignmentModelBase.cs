@@ -11,9 +11,9 @@ namespace CompMs.App.Msdial.Model.Core
 {
     public class AlignmentModelBase : BindableBase, IAlignmentModel, IDisposable
     {
-        public AlignmentModelBase(string resultFile) {
+        public AlignmentModelBase(AlignmentFileBean file, string resultFile) {
             alignmentResultFile = resultFile;
-            Container = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(AlignmentResultFile);
+            Container = AlignmentResultContainer.Load(file);
             if (Container == null) {
                 MessageBox.Show("No aligned spot information."); // TODO: Move to view.
                 Container = new AlignmentResultContainer

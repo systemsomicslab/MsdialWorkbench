@@ -33,6 +33,7 @@ using System.Windows;
 using System.Windows.Media;
 using Reactive.Bindings.Notifiers;
 using System.Threading;
+using CompMs.Common.DataObj;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
@@ -52,7 +53,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var parameter = Storage.Parameter;
             if (parameter.ProviderFactoryParameter is null) {
-                parameter.ProviderFactoryParameter = new ImmsAverageDataProviderFactoryParameter(0.01, 0.02, 0, 100);
+                parameter.ProviderFactoryParameter = new ImmsAverageDataProviderFactoryParameter(0.01, 0.002, 0, 100);
             }
             ProviderFactory = parameter?.ProviderFactoryParameter.Create(5, true);
         }
@@ -88,7 +89,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public void Load() {
             var parameter = Storage.Parameter;
             if (parameter.ProviderFactoryParameter is null) {
-                parameter.ProviderFactoryParameter = new ImmsAverageDataProviderFactoryParameter(0.01, 0.02, 0, 100);
+                parameter.ProviderFactoryParameter = new ImmsAverageDataProviderFactoryParameter(0.01, 0.002, 0, 100);
             }
             ProviderFactory = parameter?.ProviderFactoryParameter.Create(5, true);
         }
@@ -132,7 +133,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             pbmcw.Loaded += async (s, e) => {
                 foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                    await Task.Run(() => FileProcess.Run(analysisfile, storage, null, null, ProviderFactory, matchResultEvaluator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
+                    await Task.Run(() => FileProcess.Run(analysisfile, storage, null, null, (IDataProviderFactory<RawMeasurement>)ProviderFactory, matchResultEvaluator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
                     vm.CurrentValue++;
                 }
                 pbmcw.Close();
@@ -162,7 +163,7 @@ namespace CompMs.App.Msdial.Model.Imms
             aligner.ProviderFactory = ProviderFactory; // TODO: I'll remove this later.
             var alignmentFile = storage.AlignmentFiles.Last();
             var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
-            MessagePackHandler.SaveToFile(result, alignmentFile.FilePath);
+            result.Save(alignmentFile);
             MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
 
             pbw.Close();

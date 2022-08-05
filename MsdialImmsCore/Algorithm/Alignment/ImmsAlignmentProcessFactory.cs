@@ -19,7 +19,7 @@ namespace CompMs.MsdialImmsCore.Algorithm.Alignment
         }
 
         public override PeakAligner CreatePeakAligner() {
-            return new PeakAligner(this);
+            return new PeakAligner(this, null);
         }
 
         public override DataAccessor CreateDataAccessor() {

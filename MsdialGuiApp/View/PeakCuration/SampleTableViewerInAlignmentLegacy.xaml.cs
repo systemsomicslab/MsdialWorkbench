@@ -210,7 +210,7 @@ namespace CompMs.App.Msdial.View.PeakCuration {
                 var speaks = chromatograms[i].Convert().Smoothing(param.SmoothingMethod, param.SmoothingLevel);
                 var chromatogramBean = new ChromatogramBeanLegacy(
                     true, 
-                    classnameToBrushes[files[i].AnalysisFileClass], 
+                    classnameToBrushes.TryGetValue(files[i].AnalysisFileClass, out var b) ? b : ChartBrushes.GetChartBrush(i), 
                     1.0, 
                     files[i].AnalysisFileName,
                     (float)targetMz, 

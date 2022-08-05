@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Interfaces;
 using MessagePack;
+using System;
 
 namespace CompMs.Common.Components
 {
@@ -7,34 +8,37 @@ namespace CompMs.Common.Components
     public class ChromXs: IChromXs
     {
         [Key(0)]
-        public ChromX InnerRT { get; set; } = new RetentionTime(-1);
+        public IChromX InnerRT {
+            get => RT;
+            set => RT = (RetentionTime)value;
+        }
         [Key(1)]
-        public ChromX InnerRI { get; set; } = new RetentionIndex(-1);
+        public IChromX InnerRI {
+            get => RI;
+            set => RI = (RetentionIndex)value;
+        }
         [Key(2)]
-        public ChromX InnerDrift { get; set; } = new DriftTime(-1);
+        public IChromX InnerDrift {
+            get => Drift;
+            set => Drift = (DriftTime)value;
+        }
         [Key(3)]
-        public ChromX InnerMz { get; set; } = new MzValue(-1);
+        public IChromX InnerMz {
+            get => Mz;
+            set => Mz = (MzValue)value;
+        }
 
         [IgnoreMember]
-        public RetentionTime RT {
-            get => (RetentionTime)InnerRT;
-            set => InnerRT = value;
-        }
+        public RetentionTime RT { get; set; } = new RetentionTime(-1);
+
         [IgnoreMember]
-        public RetentionIndex RI {
-            get => (RetentionIndex)InnerRI;
-            set => InnerRI = value;
-        }
+        public RetentionIndex RI { get; set; } = new RetentionIndex(-1);
+
         [IgnoreMember]
-        public DriftTime Drift {
-            get => (DriftTime)InnerDrift;
-            set => InnerDrift = value;
-        }
+        public DriftTime Drift { get; set; } = new DriftTime(-1);
+
         [IgnoreMember]
-        public MzValue Mz {
-            get => (MzValue)InnerMz;
-            set => InnerMz = value;
-        }
+        public MzValue Mz { get; set; } = new MzValue(-1);
 
         [Key(4)]
         public ChromXType MainType { get; set; } = ChromXType.RT;
@@ -59,7 +63,7 @@ namespace CompMs.Common.Components
             MainType = type;
         }
 
-        public ChromXs(ChromX chromX)
+        public ChromXs(IChromX chromX)
         {
             switch (chromX) {
                 case RetentionTime rt:
@@ -80,7 +84,31 @@ namespace CompMs.Common.Components
             MainType = chromX.Type;
         }
    
-        public ChromX GetRepresentativeXAxis()
+        public ChromXs(RetentionTime retentionTime)
+        {
+            RT = retentionTime;
+            MainType = retentionTime.Type;
+        }
+   
+        public ChromXs(RetentionIndex retentionIndex)
+        {
+            RI = retentionIndex;
+            MainType = retentionIndex.Type;
+        }
+   
+        public ChromXs(DriftTime driftTime)
+        {
+            Drift = driftTime;
+            MainType = driftTime.Type;
+        }
+   
+        public ChromXs(MzValue mz)
+        {
+            Mz = mz;
+            MainType = mz.Type;
+        }
+   
+        public IChromX GetRepresentativeXAxis()
         {
             switch (MainType)
             {
@@ -172,6 +200,32 @@ namespace CompMs.Common.Components
             if (Drift == null) return false;
             if (Drift.Value < 0) return false;
             return true;
+        }
+
+        public static ChromXs Create<T>(T time) where T : IChromX {
+            return ChromXBuilder<T>.action(time);
+        }
+
+        static class ChromXBuilder<T> where T : IChromX {
+            public static readonly Func<T, ChromXs> action;
+
+            static ChromXBuilder() {
+                if (typeof(T) == typeof(RetentionTime)) {
+                    action = chrom => new ChromXs(chrom as RetentionTime);
+                }
+                else if (typeof(T) == typeof(RetentionIndex)) {
+                    action = chrom => new ChromXs(chrom as RetentionIndex);
+                }
+                else if (typeof(T) == typeof(DriftTime)) {
+                    action = chrom => new ChromXs(chrom as DriftTime);
+                }
+                else if (typeof(T) == typeof(MzValue)) {
+                    action = chrom => new ChromXs(chrom as MzValue);
+                }
+                else {
+                    action = chrom => new ChromXs(chrom);
+                }
+            }
         }
     }
 }

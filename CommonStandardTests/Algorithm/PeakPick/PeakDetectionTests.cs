@@ -41,7 +41,7 @@ namespace CompMs.Common.Algorithm.PeakPick.Tests
 
         private ChromatogramPeak[] BuildPeak(int start, int radian, double mass, double baseIntensity, double topIntensity, double baseTime)
         {
-            var results = Enumerable.Range(start, radian * 2 + 1).Select(i => new ChromatogramPeak(i, mass, baseIntensity, new RetentionTime(baseTime + i * 0.002))).ToArray();
+            var results = Enumerable.Range(start, radian * 2 + 1).Select(i => ChromatogramPeak.Create(i, mass, baseIntensity, new RetentionTime(baseTime + i * 0.002))).ToArray();
             for (int i = 0; i <= radian; i++) {
                 results[radian - i].Intensity = results[radian + i].Intensity = baseIntensity + (topIntensity - baseIntensity) / (i + 1) / (i + 1);
             }

@@ -154,6 +154,60 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
+        public bool IsBlankFilteredByPostCurator {
+            get => innerModel.IsBlankFilteredByPostCurator;
+            set
+            {
+                if (innerModel.IsBlankFilteredByPostCurator != value) {
+                    innerModel.IsBlankFilteredByPostCurator = value;
+                    OnPropertyChanged(nameof(IsBlankFilteredByPostCurator));
+                }
+            }
+        }
+        public bool IsBlankGhostFilteredByPostCurator {
+            get => innerModel.IsBlankGhostFilteredByPostCurator;
+            set
+            {
+                if (innerModel.IsBlankGhostFilteredByPostCurator != value) {
+                    innerModel.IsBlankGhostFilteredByPostCurator = value;
+                    OnPropertyChanged(nameof(IsBlankGhostFilteredByPostCurator));
+                }
+            }
+        }
+
+        public bool IsMzFilteredByPostCurator {
+            get => innerModel.IsMzFilteredByPostCurator;
+            set
+            {
+                if (innerModel.IsMzFilteredByPostCurator != value) {
+                    innerModel.IsMzFilteredByPostCurator = value;
+                    OnPropertyChanged(nameof(IsMzFilteredByPostCurator));
+                }
+            }
+        }
+
+        public bool IsRsdFilteredByPostCurator {
+            get => innerModel.IsRsdFilteredByPostCurator;
+            set
+            {
+                if (innerModel.IsRsdFilteredByPostCurator != value) {
+                    innerModel.IsRsdFilteredByPostCurator = value;
+                    OnPropertyChanged(nameof(IsRsdFilteredByPostCurator));
+                }
+            }
+        }
+
+        public bool IsRmdFilteredByPostCurator {
+            get => innerModel.IsRmdFilteredByPostCurator;
+            set
+            {
+                if (innerModel.IsRmdFilteredByPostCurator != value) {
+                    innerModel.IsRmdFilteredByPostCurator = value;
+                    OnPropertyChanged(nameof(IsRmdFilteredByPostCurator));
+                }
+            }
+        }
+
         public BarItemCollection BarItemCollection { get; }
 
         internal readonly AlignmentSpotProperty innerModel;
@@ -187,7 +241,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
 
         // IChromatogramPeak
-        int IChromatogramPeak.ID { get => ((IChromatogramPeak)innerModel).ID; set => ((IChromatogramPeak)innerModel).ID = value; }
+        int IChromatogramPeak.ID => ((IChromatogramPeak)innerModel).ID;
         ChromXs IChromatogramPeak.ChromXs { get => ((IChromatogramPeak)innerModel).ChromXs; set => ((IChromatogramPeak)innerModel).ChromXs = value; }
         double ISpectrumPeak.Mass { get => ((ISpectrumPeak)innerModel).Mass; set => ((ISpectrumPeak)innerModel).Mass = value; }
         double ISpectrumPeak.Intensity { get => ((ISpectrumPeak)innerModel).Intensity; set => ((ISpectrumPeak)innerModel).Intensity = value; }

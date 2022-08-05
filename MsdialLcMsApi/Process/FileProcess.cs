@@ -9,14 +9,48 @@ using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm;
 using CompMs.RawDataHandler.Core;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialLcMsApi.Process
 {
-    public static class FileProcess {
+    public sealed class FileProcess {
+        private readonly IDataProviderFactory<AnalysisFileBean> _factory;
+        private readonly IMsdialDataStorage<MsdialLcmsParameter> _storage;
+        private readonly IAnnotationProcess _annotationProcess;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+
+        public FileProcess(IDataProviderFactory<AnalysisFileBean> factory, IMsdialDataStorage<MsdialLcmsParameter> storage, IAnnotationProcess annotationProcess, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
+            _storage = storage ?? throw new ArgumentNullException(nameof(storage));
+            _annotationProcess = annotationProcess ?? throw new ArgumentNullException(nameof(annotationProcess));
+            _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
+        }       
+
+        public Task RunAllAsync(IEnumerable<AnalysisFileBean> files, IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token = default) {
+            var queue = new ConcurrentQueue<(AnalysisFileBean, Action<int>)>(files.Zip(reportActions, (file, report) => (file, report)));
+            var tasks = new Task[numParallel];
+            for (int i = 0; i < numParallel; i++) {
+                tasks[i] = Task.Run(() => Consume(queue, afterEachRun, token));
+            }
+            return Task.WhenAll(tasks);
+        }
+
+        private void Consume(ConcurrentQueue<(AnalysisFileBean File, Action<int> Report)> queue, Action afterEachRun, CancellationToken token) {
+            while (queue.TryDequeue(out var pair)) {
+                Run(pair.File, pair.Report, token);
+                afterEachRun?.Invoke();
+            }
+        }
+
+        public void Run(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
+            Run(file, _factory.Create(file), _storage, _annotationProcess, _evaluator, true, reportAction, token);
+        }
+
         public static void Run(
             AnalysisFileBean file,
             IDataProvider provider,
@@ -29,7 +63,6 @@ namespace CompMs.MsdialLcMsApi.Process
             var param = storage.Parameter;
             var mspDB = storage.MspDB;
             var textDB = storage.TextDB;
-            var annotatorContainers = storage.DataBaseMapper.MoleculeAnnotators;
             var isotopeTextDB = storage.IsotopeTextDB;
             var iupacDB = storage.IupacDatabase;
             var filepath = file.AnalysisFilePath;

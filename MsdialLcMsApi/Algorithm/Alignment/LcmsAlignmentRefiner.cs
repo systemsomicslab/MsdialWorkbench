@@ -9,6 +9,7 @@ using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcmsApi.Parameter;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
 {
     public class LcmsAlignmentRefiner : AlignmentRefiner
     {
-        public LcmsAlignmentRefiner(MsdialLcmsParameter param, IupacDatabase iupac, IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(param, iupac, evaluator) { }
+        private Action<int> reportAction { get; set; }
+        public LcmsAlignmentRefiner(MsdialLcmsParameter param, IupacDatabase iupac, IMatchResultEvaluator<MsScanMatchResult> evaluator, Action<int> report) : base(param, iupac, evaluator) {
+            reportAction = report;
+        }
 
         protected override List<AlignmentSpotProperty> GetCleanedSpots(List<AlignmentSpotProperty> alignments) {
             var cSpots = new List<AlignmentSpotProperty>();
@@ -27,20 +31,24 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
             foreach (var spot in alignments.Where(spot => spot.MspID >= 0 && spot.IsReferenceMatched(evaluator)).OrderByDescending(n => n.MspBasedMatchResult.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
+            ReportProgress.Show(80.0, 5.0, 1, 1, reportAction);
 
             foreach (var spot in alignments.Where(spot => spot.IsReferenceMatched(evaluator)).OrderByDescending(spot => spot.MatchResults.Representative.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
+            ReportProgress.Show(85.0, 5.0, 1, 1, reportAction);
 
             foreach (var spot in alignments.Where(spot => spot.TextDbID >= 0 && spot.IsReferenceMatched(evaluator)).OrderByDescending(n => n.TextDbBasedMatchResult.TotalScore)) {
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
+            ReportProgress.Show(90.0, 5.0, 1, 1, reportAction);
 
             foreach (var spot in alignments.OrderByDescending(n => n.HeightAverage)) {
                 if (spot.IsReferenceMatched(evaluator)) continue;
                 if (spot.PeakCharacter.IsotopeWeightNumber > 0) continue;
                 TryMergeToMaster(spot, cSpots, donelist, _param);
             }
+            ReportProgress.Show(95.0, 5.0, 1, 1, reportAction);
 
             return cSpots;
         }

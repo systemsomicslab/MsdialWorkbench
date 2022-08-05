@@ -1,8 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using Rfx.Riken.OsakaUniv;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.IO;
-using Rfx.Riken.OsakaUniv;
-using System.Collections.Generic;
 
 namespace CompMs.Common.MessagePack
 {

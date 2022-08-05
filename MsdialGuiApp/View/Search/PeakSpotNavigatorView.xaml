@@ -65,16 +65,16 @@
         </StackPanel>
 
         <StackPanel>
+            <StackPanel.Resources>
+                <Style TargetType="CheckBox">
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                    <Setter Property="Margin" Value="3"/>
+                </Style>
+            </StackPanel.Resources>
             <Label Content="Display filter" Height="24" VerticalAlignment="Top" Margin="8,0" />
 
             <UniformGrid Columns="2">
-                <UniformGrid.Resources>
-                    <Style TargetType="CheckBox">
-                        <Setter Property="VerticalContentAlignment" Value="Center"/>
-                        <Setter Property="HorizontalAlignment" Value="Left"/>
-                        <Setter Property="Margin" Value="3"/>
-                    </Style>
-                </UniformGrid.Resources>
                 <CheckBox Name="CheckBox_PlotIdentifiedOnly" 
                           Content="Ref. matched"
                           d:IsChecked="True"
@@ -125,7 +125,52 @@
                           IsChecked="{Binding PeakFilterViewModel.UniqueIons}"
                           IsEnabled="{Binding PeakFilterViewModel.EnableUniqueIons, Mode=OneTime}"
                           ToolTip="Display precursor ions having searched fragments"/>
+
             </UniformGrid>
+
+            <ToggleButton>
+                <StackPanel>
+                    <TextBlock Text="MS-CleanR filterdddd"/>
+                    <Popup IsOpen="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}}">
+                        <Border Background="White" BorderThickness="1">
+                            <StackPanel Orientation="Vertical" Grid.Column="1">
+
+                                <CheckBox Name="CheckBox_IsMscleanrBlankPassed" 
+                          Content="Blank"
+                          IsChecked="{Binding PeakFilterViewModel.MscleanrBlank}"
+                          IsEnabled="{Binding PeakFilterViewModel.EnableMsclearBlank, Mode=OneTime}"
+                          ToolTip="Display peaks passing MS-CleanR blank filter"/>
+
+                                <CheckBox Name="CheckBox_IsMscleanrBlankGhostPassed" 
+                              Content="Ghost"
+                              IsChecked="{Binding PeakFilterViewModel.MssleanrBlankGhost}"
+                              IsEnabled="{Binding PeakFilterViewModel.EnableMsclearBlankGhost, Mode=OneTime}"
+                              ToolTip="Display peaks passing MS-CleanR blank-ghost filter"/>
+
+                                <CheckBox Name="CheckBox_IsMscleanrIncorrectMassPassed" 
+                              Content="Incorrect mass"
+                              IsChecked="{Binding PeakFilterViewModel.MscleanrIncorrectMass}"
+                              IsEnabled="{Binding PeakFilterViewModel.EnableMsclearIncorrectMass, Mode=OneTime}"
+                              ToolTip="Display peaks passing MS-CleanR Incorrect mass filter"/>
+
+                                <CheckBox Name="CheckBox_IsMscleanrRsdPassed"
+                              Content="RSD"
+                              IsChecked="{Binding PeakFilterViewModel.MscleanrRsd}"
+                              IsEnabled="{Binding PeakFilterViewModel.EnableMsclearRsd, Mode=OneTime}"
+                              ToolTip="Display peaks passing MS-CleanR Relative Standard Deviation filter"/>
+
+                                <CheckBox Name="CheckBox_IsMscleanrRmdPassed"
+                              Content="RMD"
+                              IsChecked="{Binding PeakFilterViewModel.MscleanrRmd}"
+                              IsEnabled="{Binding PeakFilterViewModel.EnableMsclearRmd, Mode=OneTime}"
+                              ToolTip="Display peaks passing MS-CleanR Relative Mass Defect filter"/>
+
+                            </StackPanel>
+
+                        </Border>
+                    </Popup>
+                </StackPanel>
+            </ToggleButton>
         </StackPanel>
     </StackPanel>
 </UserControl>

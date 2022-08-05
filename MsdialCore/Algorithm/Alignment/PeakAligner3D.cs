@@ -1,32 +1,26 @@
-﻿using System;
+﻿using CompMs.Common.Components;
+using CompMs.Common.Extension;
+using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parser;
+using CompMs.MsdialCore.Utility;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CompMs.Common.Components;
-using CompMs.Common.DataObj.Database;
-using CompMs.Common.Enum;
-using CompMs.Common.Extension;
-using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Parser;
-using CompMs.MsdialCore.Utility;
 
 namespace CompMs.MsdialCore.Algorithm.Alignment
 {
     public class PeakAligner3D : PeakAligner
     {
         protected GapFiller3D Filler3d { get; set; }
-        public PeakAligner3D(DataAccessor accessor, PeakJoiner joiner, GapFiller3D filler, AlignmentRefiner refiner, ParameterBase param) : base(accessor, joiner, filler, refiner, param) {
-            Filler3d = filler;
-        }
 
-        public PeakAligner3D(AlignmentProcessFactory factory) : base(factory) {
+        public PeakAligner3D(AlignmentProcessFactory factory) : base(factory, null) {
             Filler3d = factory.CreateGapFiller() as GapFiller3D;
         }
 
         protected override string CollectAlignmentPeaks(
             AnalysisFileBean analysisFile, List<AlignmentChromPeakFeature> peaks, List<AlignmentSpotProperty> spots,
-            ChromatogramSerializer<ChromatogramPeakInfo> serializer = null) {
+            string tempFile, ChromatogramSerializer<ChromatogramPeakInfo> serializer = null) {
 
             var peakInfos = new List<ChromatogramPeakInfo>();
             DataAccess.GetAllSpectraWithAccumulatedMS1(analysisFile.AnalysisFilePath, out var spectra, out var accumulated);
@@ -66,9 +60,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     peakInfos.Add(dpeakInfo);
                 }
             }
-            var file = Path.GetTempFileName();
-            serializer?.SerializeAllToFile(file, peakInfos);
-            return file;
+            serializer?.SerializeAllToFile(tempFile, peakInfos);
+            return tempFile;
         }
     }
 }

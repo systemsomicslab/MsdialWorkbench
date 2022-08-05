@@ -37,10 +37,7 @@ namespace MsdialCoreTests.Parser
         }
 
         public static ChromatogramPeak CreateChromatogramPeak(double axis, double intensity, ChromXType mainType) {
-            return new ChromatogramPeak() {
-                ChromXs = new ChromXs(axis, mainType),
-                Intensity = intensity,
-            };
+            return new ChromatogramPeak(0, 0d, intensity, new ChromXs(axis, mainType));
         }
 
         public static ChromatogramPeak CreateChromatogramPeak(double axis, double intensity) =>

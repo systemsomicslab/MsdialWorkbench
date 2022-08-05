@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>netcoreapp3.0;net472</TargetFrameworks>
+    <RootNamespace>CompMs.App.MsdialConsole</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
+    <ProjectReference Include="..\MsdialCore\MsdialCore.csproj" />
+    <ProjectReference Include="..\MsdialDimsCore\MsdialDimsCore.csproj" />
+    <ProjectReference Include="..\MsdialGcMsApi\MsdialGcMsApi.csproj" />
+    <ProjectReference Include="..\MsdialImmsCore\MsdialImmsCore.csproj" />
+    <ProjectReference Include="..\MsdialIntegrate\MsdialIntegrate.csproj" />
+    <ProjectReference Include="..\MsdialLcImMsApi\MsdialLcImMsApi.csproj" />
+    <ProjectReference Include="..\MsdialLcMsApi\MsdialLcMsApi.csproj" />
+  </ItemGroup>
+
+</Project>
