@@ -145,6 +145,7 @@
     <Compile Include="External Applications\MsDialIniParcer.cs" />
     <Compile Include="External Applications\MsDialToExternalApps.cs" />
     <Compile Include="Model\Chart\MsSpectrum.cs" />
+    <Compile Include="Model\DataObj\PeptideGroupModel.cs" />
     <Compile Include="Model\DataObj\ProteinResultContainerModel.cs" />
     <Compile Include="Model\Core\IAlignmentModel.cs" />
     <Compile Include="Model\Core\IAnalysisModel.cs" />
@@ -273,7 +274,9 @@
     <Compile Include="ViewModel\Core\IAlignmentResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IAnalysisResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IResultViewModel.cs" />
+    <Compile Include="ViewModel\DataObj\PeptideGroupViewModel.cs" />
     <Compile Include="ViewModel\DataObj\ProteinGroupViewModel.cs" />
+    <Compile Include="ViewModel\DataObj\ProteinViewModel.cs" />
     <Compile Include="ViewModel\Loader\BarItemsLoaderDataViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentPeakPlotViewModel.cs" />

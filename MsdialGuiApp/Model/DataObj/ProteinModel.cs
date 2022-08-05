@@ -8,22 +8,24 @@ namespace CompMs.App.Msdial.Model.DataObj
 {
     internal sealed class ProteinModel : BindableBase
     {
-        private readonly ObservableCollection<PeptideModel> _peptides;
+        //private readonly ObservableCollection<PeptideModel> _peptides;
         public ObservableCollection<PeptideModel> UniquePeptides { get; }
         public ObservableCollection<PeptideModel> Peptides { get; }
+        public string DatabaseId { get; }
+        
 
         public ProteinModel(ProteinMsResult proteinResult, IReadOnlyList<ChromatogramPeakFeatureModel> spots)
         {
             UniquePeptides = new ObservableCollection<PeptideModel>(proteinResult.GetUniquePeptides().Select(result => new PeptideModel(result, spots)));
             Peptides = new ObservableCollection<PeptideModel>(proteinResult.MatchedPeptideResults.Select(result => new PeptideModel(result, spots)));
-            //_databaseid = proteinResult.DatabaseID;
+            DatabaseId = proteinResult.DatabaseID;
         }
 
         public ProteinModel(ProteinMsResult proteinResult, IReadOnlyList<AlignmentSpotPropertyModel> spots)
         {
             UniquePeptides = new ObservableCollection<PeptideModel>(proteinResult.GetUniquePeptides().Select(result => new PeptideModel(result, spots)));
             Peptides = new ObservableCollection<PeptideModel>(proteinResult.MatchedPeptideResults.Select(result => new PeptideModel(result, spots)));
-            //_databaseid = proteinResult.DatabaseID;
+            DatabaseId = proteinResult.DatabaseID;
         }
     }
 }

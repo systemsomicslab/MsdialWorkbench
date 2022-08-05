@@ -28,8 +28,8 @@
             <TabItem Header="Proteins" Visibility="Visible">
                 <StackPanel DataContext="{Binding Groups/}">
 
-                    <!--<DataGrid x:Name="CustomerGrid" Margin="8" ItemsSource="{Binding NumberOfPeptides}" IsSynchronizedWithCurrentItem="True" />-->
-                    <TextBlock Text="{Binding NumberOfPeptides,StringFormat={}# peptides {0}}"/>
+                    <DataGrid Margin="8" ItemsSource="{Binding ProteinViewModels}" IsSynchronizedWithCurrentItem="True" />
+                    <!--<TextBlock Text="{Binding NumberOfPeptides,StringFormat={}# peptides {0}}"/>-->
                     
                 </StackPanel>
             </TabItem>

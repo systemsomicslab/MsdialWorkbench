@@ -43,5 +43,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public int NoOfProteins => _proteins.Count;
         public int NoOfUniquePeptides => _uniquePeptides.Count;
         public int NoOfPeptides => _peptides.Count;
+        public ObservableCollection<ProteinModel> ProteinModels => _proteins;
+
     }
 }

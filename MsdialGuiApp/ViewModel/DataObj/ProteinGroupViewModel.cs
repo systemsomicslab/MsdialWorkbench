@@ -1,4 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.DataObj
 {
@@ -10,6 +12,8 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
             NumberOfProteins = model.NoOfProteins;
             NumberOfUniquePeptides = model.NoOfUniquePeptides;
             NumberOfPeptides = model.NoOfPeptides;
+            //ProteinViewModels = model.ProteinModels
+            ProteinViewModels = new ObservableCollection<ProteinViewModel>(model.ProteinModels.Select(protein => new ProteinViewModel(protein)));
         }
 
         public int GroupId { get; }
@@ -17,6 +21,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public int NumberOfProteins { get; }
         public int NumberOfUniquePeptides { get; }
         public int NumberOfPeptides { get; }
+        public ObservableCollection<ProteinViewModel> ProteinViewModels { get; }
     }
 
 }
