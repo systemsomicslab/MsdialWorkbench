@@ -55,6 +55,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             accProviderFactory = new LcimmsAccumulateDataProviderFactory();
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
+            AccumulatedPeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
         }
 
         private FacadeMatchResultEvaluator matchResultEvaluator;
@@ -78,6 +79,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly IDataProviderFactory<RawMeasurement> providerFactory;
         private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
 
+        public PeakFilterModel AccumulatedPeakFilterModel { get; }
         public PeakFilterModel PeakFilterModel { get; }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
@@ -93,7 +95,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
-                PeakFilterModel)
+                PeakFilterModel,
+                AccumulatedPeakFilterModel)
             .AddTo(Disposables);
         }
 
