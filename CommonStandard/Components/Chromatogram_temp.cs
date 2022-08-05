@@ -49,11 +49,13 @@ namespace CompMs.Common.Components {
         private readonly IReadOnlyList<ValuePeak> _peaks;
         private readonly ChromXType _type;
         private readonly ChromXUnit _unit;
+        private readonly Algorithm.ChromSmoothing.Smoothing _smoother;
 
         public Chromatogram_temp2(IReadOnlyList<ValuePeak> peaks, ChromXType type, ChromXUnit unit) {
             _peaks = peaks ?? throw new ArgumentNullException(nameof(peaks));
             _type = type;
             _unit = unit;
+            _smoother = new Algorithm.ChromSmoothing.Smoothing();
         }
 
         public IReadOnlyList<ValuePeak> Peaks => _peaks;
@@ -68,21 +70,21 @@ namespace CompMs.Common.Components {
 
         public bool IsEmpty => _peaks.Count == 0;
 
-        public List<ValuePeak> Smoothing(SmoothingMethod method, int level) {
+        public ValuePeak[] Smoothing(SmoothingMethod method, int level) {
             switch (method) {
                 case SmoothingMethod.SimpleMovingAverage:
-                    return Algorithm.ChromSmoothing.Smoothing.SimpleMovingAverage(_peaks, level);
+                    return Algorithm.ChromSmoothing.Smoothing.SimpleMovingAverage(_peaks, level).ToArray();
                 case SmoothingMethod.SavitzkyGolayFilter:
-                    return Algorithm.ChromSmoothing.Smoothing.SavitxkyGolayFilter(_peaks, level);
+                    return Algorithm.ChromSmoothing.Smoothing.SavitxkyGolayFilter(_peaks, level).ToArray();
                 case SmoothingMethod.BinomialFilter:
-                    return Algorithm.ChromSmoothing.Smoothing.BinomialFilter(_peaks, level);
+                    return Algorithm.ChromSmoothing.Smoothing.BinomialFilter(_peaks, level).ToArray();
                 case SmoothingMethod.LowessFilter:
-                    return Algorithm.ChromSmoothing.Smoothing.LowessFilter(_peaks, level);
+                    return Algorithm.ChromSmoothing.Smoothing.LowessFilter(_peaks, level).ToArray();
                 case SmoothingMethod.LoessFilter:
-                    return Algorithm.ChromSmoothing.Smoothing.LoessFilter(_peaks, level);
+                    return Algorithm.ChromSmoothing.Smoothing.LoessFilter(_peaks, level).ToArray();
                 case SmoothingMethod.LinearWeightedMovingAverage:
                 default:
-                    return Algorithm.ChromSmoothing.Smoothing.LinearWeightedMovingAverage(_peaks, level);
+                    return _smoother.LinearWeightedMovingAverageXXX(_peaks, level);
             }
         }
     }
