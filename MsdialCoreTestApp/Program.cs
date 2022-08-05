@@ -131,13 +131,13 @@ namespace CompMs.App.MsdialConsole {
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG_MSP");
 
-            MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS\2022_08_03_14_17_26.mdproject",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS_MSP");
+            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS\2022_08_03_14_17_26.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS_MSP");
 
             MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS\2022_08_03_14_17_26.mdproject",
+                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS\2022_08_03_14_54_00.mdproject",
                 @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
                 @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP");
 
