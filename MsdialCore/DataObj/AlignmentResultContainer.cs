@@ -39,7 +39,7 @@ namespace CompMs.MsdialCore.DataObj {
                 b.AlignmentDriftSpotFeatures = null;
             }
 
-            MessagePackDefaultHandler.SaveToFile(this, containerFile);
+            MessagePackHandler.SaveToFile(this, containerFile);
             MessagePackDefaultHandler.SaveLargeListToFile(peakProperty, chromatogramPeakFile);
             MessagePackDefaultHandler.SaveLargeListToFile(driftProperty, driftSpotFile);
 
@@ -56,7 +56,7 @@ namespace CompMs.MsdialCore.DataObj {
             var chromatogramPeakFile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_PeakProperties" + Path.GetExtension(file.FilePath));
             var driftSpotFile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_DriftSopts" + Path.GetExtension(file.FilePath));
 
-            var result = MessagePackDefaultHandler.LoadFromFile<AlignmentResultContainer>(containerFile);
+            var result = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(containerFile);
             if (result is null) {
                 return null;
             }

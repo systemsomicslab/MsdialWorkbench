@@ -27,11 +27,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public MsScanMatchResult Annotate(IAnnotationQuery query) {
-            return FindCandidatesCore(query, Parameter).FirstOrDefault();
+            return FindCandidatesCore(query, query.Parameter ?? Parameter).FirstOrDefault();
         }
 
         public List<MsScanMatchResult> FindCandidates(IAnnotationQuery query) {
-            return FindCandidatesCore(query, Parameter);
+            return FindCandidatesCore(query, query.Parameter ?? Parameter);
         }
 
         private List<MsScanMatchResult> FindCandidatesCore(IAnnotationQuery query, MsRefSearchParameterBase parameter) {

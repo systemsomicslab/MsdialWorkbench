@@ -159,5 +159,41 @@ namespace CompMs.Common.Algorithm.ChromSmoothing.Tests
             }
         }
 
+        [TestMethod()]
+        public void ApplySimpleTwiceEqualsToLinearWeightedTest() {
+            var rand = new Random(4869);
+            var timer = new Stopwatch();
+            var chrom = new List<ChromatogramPeak>(1000000);
+            var width = 3;
+
+            for (int i = 0; i < 1000000; i++) {
+                chrom.Add(new ChromatogramPeak(i, rand.NextDouble(), rand.NextDouble() * 10000000, new ChromXs(i / 100d)));
+            }
+
+            timer.Start();
+            var expected = Smoothing.SimpleMovingAverage(Smoothing.SimpleMovingAverage(chrom, width), width);
+            timer.Stop();
+            Console.WriteLine($"original method: {timer.ElapsedMilliseconds}");
+            timer.Reset();
+
+            timer.Start();
+            var actual = Smoothing.LinearWeightedMovingAverage(chrom, width * 2);
+            timer.Stop();
+            Console.WriteLine($"new method: {timer.ElapsedMilliseconds}");
+            timer.Reset();
+
+            for (int i = 0; i < 10; i++) {
+                Console.WriteLine("{0} {1}", expected[i].Intensity, actual[i].Intensity);
+            }
+
+            // Simple width ∘ Simple width equals to LinearWeighted (width * 2) except at the begins and ends width * 2.
+            foreach ((var peak1, var peak2) in expected.Zip(actual).Skip(width * 2).SkipLast(width * 2)) {
+                Assert.AreEqual(peak1.ID, peak2.ID);
+                Assert.AreEqual(peak1.ChromXs.Value, peak2.ChromXs.Value);
+                Assert.AreEqual(peak1.Mass, peak2.Mass);
+                Assert.AreEqual(peak1.Intensity, peak2.Intensity, 0.2);
+                // Assert.AreEqual(peak1.Intensity, peak2.Intensity, 0.01);
+            }
+        }
     }
 }
