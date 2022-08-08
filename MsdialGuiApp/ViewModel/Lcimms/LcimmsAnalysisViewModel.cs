@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -74,6 +75,31 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                         compoundSearchService.ShowDialog(vm);
                     }
                 }).AddTo(Disposables);
+
+            PeakInformationViewModel = model.PeakInformationModel
+                .Where(m => !(m is null))
+                .Select(m => new PeakInformationViewModel(m))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            CompoundDetailViewModel = model.CompoundDetailModel
+                .Where(m => !(m is null))
+                .Select(m => new CompoundDetailViewModel(m))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            var _peakDetailViewModels = new ReactiveCollection<ViewModelBase>().AddTo(Disposables);
+            new IReadOnlyReactiveProperty<ViewModelBase>[]
+            {
+                PeakInformationViewModel,
+                CompoundDetailViewModel,
+            }.CombineLatest()
+            .Subscribe(vms =>
+            {
+                _peakDetailViewModels.ClearOnScheduler();
+                _peakDetailViewModels.AddRangeOnScheduler(vms);
+            }).AddTo(Disposables);
+            PeakDetailViewModels = _peakDetailViewModels.ToReadOnlyReactiveCollection().AddTo(Disposables);
         }
 
         private readonly LcimmsAnalysisModel model;
@@ -87,6 +113,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public SurveyScanViewModel SurveyScanViewModel { get; private set; }
         public PeakFilterViewModel PeakFilterViewModel { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
+        public ReadOnlyReactivePropertySlim<PeakInformationViewModel> PeakInformationViewModel { get; }
+        public ReadOnlyReactivePropertySlim<CompoundDetailViewModel> CompoundDetailViewModel { get; }
+        public ReadOnlyReactiveCollection<ViewModelBase> PeakDetailViewModels { get; }
 
         public ReactiveCommand SearchCompoundCommand { get; }
 

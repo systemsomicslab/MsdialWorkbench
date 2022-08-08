@@ -15,39 +15,63 @@
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                <Setter Property="Height" Value="24" />
+                <Setter Property="Height" Value="16" />
             </Style>
             <Style TargetType="Label">
-                <Setter Property="Height" Value="24"/>
+                <Setter Property="Height" Value="16"/>
                 <Setter Property="Width" Value="120"/>
             </Style>
             <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource DetailContent}">
-                <Setter Property="Height" Value="24"/>
+                <Setter Property="Height" Value="16"/>
+                <Setter Property="Margin" Value="0,1"/>
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
     <StackPanel>
-        <ui:LabeledContent PrependLabel="Annotation:" Content="{Binding Annotation.Value}"/>
+        <ui:LabeledContent PrependLabel="Annotation:">
+            <TextBox Text="{Binding Annotation.Value, Mode=OneWay}"/>
+        </ui:LabeledContent>
 
         <ItemsControl ItemsSource="{Binding CompoundSimilarities}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type info:SimilarityScoreViewModel}">
-                    <ui:LabeledContent PrependLabel="{Binding Label}" Content="{Binding Score}"/>
+                    <ui:LabeledContent PrependLabel="{Binding Label, StringFormat={}{0}:}">
+                        <TextBox Text="{Binding Score, Mode=OneWay}"/>
+                    </ui:LabeledContent>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
         <ui:LabeledContent PrependLabel="Formula|Ontology:">
             <StackPanel Orientation="Horizontal">
-                <TextBox Text="{Binding Formula.Value.FormulaString, TargetNullValue=NA}"/>
-                <TextBox Text="|" />
-                <TextBox Text="{Binding Ontology.Value, TargetNullValue=NA}"/>
+                <TextBox>
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
+                            <Setter Property="Text" Value="{Binding Formula.Value.FormulaString, Mode=OneWay}"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Setter Property="Height" Value="16"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Formula.Value.FormulaString, TargetNullValue=''}" Value="" >
+                                    <Setter Property="Text" Value="NA"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <TextBox Text="|"/>
+                <TextBox Text="{Binding Ontology.Value, TargetNullValue=NA, Mode=OneWay}"/>
             </StackPanel>
         </ui:LabeledContent>
 
-        <ui:LabeledContent PrependLabel="SMILES:" Content="{Binding Smiles.Value, TargetNullValue=NA}"/>
-        <ui:LabeledContent PrependLabel="InChIKey:" Content="{Binding InChIKey.Value, TargetNullValue=NA}"/>
-        <ui:LabeledContent PrependLabel="AnnotatorID:" Content="{Binding AnnotatorId.Value, TargetNullValue=NA}"/>
+        <ui:LabeledContent PrependLabel="SMILES:">
+            <TextBox Text="{Binding Smiles.Value, TargetNullValue=NA, Mode=OneWay}"/>
+        </ui:LabeledContent>
+        <ui:LabeledContent PrependLabel="InChIKey:">
+            <TextBox Text="{Binding InChIKey.Value, TargetNullValue=NA, Mode=OneWay}"/>
+        </ui:LabeledContent>
+        <ui:LabeledContent PrependLabel="AnnotatorID:">
+            <TextBox Text="{Binding AnnotatorId.Value, TargetNullValue=NA, Mode=OneWay}"/>
+        </ui:LabeledContent>
     </StackPanel>
 </UserControl>

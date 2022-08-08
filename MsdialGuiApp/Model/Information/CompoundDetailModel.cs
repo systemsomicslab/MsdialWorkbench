@@ -133,6 +133,6 @@ namespace CompMs.App.Msdial.Model.Information
         }
 
         public string Label => SPECTRUMSIMILARITY_LABEL;
-        public string Score => $"(Dot){_dotScore * 1000:0d}|(Rev){_reverseScore * 1000:0d}";
+        public string Score => $"(Dot){_dotScore * 1000:F0}|(Rev){_reverseScore * 1000:F0}";
     }
 }

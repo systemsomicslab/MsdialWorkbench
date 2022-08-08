@@ -54,7 +54,6 @@ namespace CompMs.App.Msdial.Model.Information
 
         public string Annotation {
             get => string.IsNullOrEmpty(_annotation) ? "Unknown" : _annotation;
-
             private set => SetProperty(ref _annotation, value);
         }
         private string _annotation;

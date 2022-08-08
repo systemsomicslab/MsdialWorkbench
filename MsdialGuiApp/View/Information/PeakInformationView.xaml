@@ -15,38 +15,39 @@
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                <Setter Property="Height" Value="24"/>
+                <Setter Property="Height" Value="16"/>
             </Style>
             <Style TargetType="ui:LabeledContent" BasedOn="{StaticResource DetailContent}">
-                <Setter Property="Height" Value="24"/>
+                <Setter Property="Height" Value="16"/>
+                <Setter Property="Margin" Value="0,1"/>
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
     <StackPanel>
         <ui:LabeledContent PrependLabel="Annotation:">
-            <TextBox Text="{Binding Annotation.Value}"/>
+            <TextBox Text="{Binding Annotation.Value, Mode=OneWay}"/>
         </ui:LabeledContent>
 
         <ui:LabeledContent PrependLabel="Adduct type:">
-            <TextBox Text="{Binding AdductIonName.Value}"/>
+            <TextBox Text="{Binding AdductIonName.Value, Mode=OneWay}"/>
         </ui:LabeledContent>
 
-        <ItemsControl>
+        <ItemsControl ItemsSource="{Binding PeakPoints}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type info:PeakPointViewModel}">
-                    <ui:LabeledContent PrependLabel="{Binding Label.Value}">
-                        <TextBox Text="{Binding Point.Value, TargetNullValue=NA}"/>
+                    <ui:LabeledContent PrependLabel="{Binding Label.Value, StringFormat={}{0}:}">
+                        <TextBox Text="{Binding Point.Value, TargetNullValue=NA, Mode=OneWay}"/>
                     </ui:LabeledContent>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <ItemsControl>
+        <ItemsControl ItemsSource="{Binding PeakAmounts}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type info:PeakAmountViewModel}">
-                    <ui:LabeledContent PrependLabel="{Binding Label.Value}">
-                        <TextBox Text="{Binding Amount.Value, StringFormat=F0, TargetNullValue=NA}"/>
+                    <ui:LabeledContent PrependLabel="{Binding Label.Value, StringFormat={}{0}:}">
+                        <TextBox Text="{Binding Amount.Value, StringFormat=F0, TargetNullValue=NA, Mode=OneWay}"/>
                     </ui:LabeledContent>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
@@ -57,8 +58,9 @@
                 <TextBox>
                     <TextBox.Style>
                         <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                            <Setter Property="Text" Value="{Binding Formula.Value.FormulaString}"/>
-                            <Setter Property="Height" Value="24"/>
+                            <Setter Property="Text" Value="{Binding Formula.Value.FormulaString, Mode=OneWay}"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Setter Property="Height" Value="16"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Formula.Value.FormulaString, TargetNullValue=''}" Value="" >
                                     <Setter Property="Text" Value="NA"/>
@@ -68,16 +70,16 @@
                     </TextBox.Style>
                 </TextBox>
                 <TextBlock Text="|" />
-                <TextBox Text="{Binding Ontology.Value}"/>
+                <TextBox Text="{Binding Ontology.Value, Mode=OneWay}"/>
             </StackPanel>
         </ui:LabeledContent>
 
         <ui:LabeledContent PrependLabel="InChIKey:">
-            <TextBox Text="{Binding InChIKey.Value}"/>
+            <TextBox Text="{Binding InChIKey.Value, Mode=OneWay}"/>
         </ui:LabeledContent>
 
         <ui:LabeledContent PrependLabel="Comment:">
-            <TextBox Text="{Binding Comment.Value}"/>
+            <TextBox Text="{Binding Comment.Value, Mode=OneWay}"/>
         </ui:LabeledContent>
     </StackPanel>
 </UserControl>

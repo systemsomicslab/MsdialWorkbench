@@ -30,7 +30,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public MsScanMatchResult MspBasedMatchResult => innerModel.MspBasedMatchResult;
         public MsScanMatchResult TextDbBasedMatchResult => innerModel.TextDbBasedMatchResult;
         public MsScanMatchResult ScanMatchResult => innerModel.MatchResults?.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;
-        public string AdductIonName => innerModel.AdductType.AdductIonName;
+        public string AdductIonName => innerModel.AdductType?.AdductIonName;
         public string Name {
             get => ((IMoleculeProperty)innerModel).Name;
             set {

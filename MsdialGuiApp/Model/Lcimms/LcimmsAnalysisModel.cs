@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
@@ -170,7 +171,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 },
                 true);
             var spectraExporter = new NistSpectraExporter(target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
-            target = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
             var decLoader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
             var msdecResult = target.Where(t => !(t is null))
                 .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
@@ -251,6 +251,36 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }.CombineLatestValuesAreAllTrue()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
+
+            PeakInformationModel = target
+                .Where(t => !(t is null))
+                .Select(t => {
+                    var m = new PeakInformationModel(t);
+                    m.Add(new RtPoint(t.InnerModel.ChromXsTop.RT.Value));
+                    m.Add(new MzPoint(t.InnerModel.ChromXsTop.Mz.Value));
+                    m.Add(new DriftPoint(t.InnerModel.ChromXsTop.Drift.Value));
+                    m.Add(new CcsPoint(t.InnerModel.CollisionCrossSection));
+                    m.Add(new HeightAmount(t.Intensity));
+                    m.Add(new AreaAmount(t.PeakArea));
+                    return m;
+                })
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            CompoundDetailModel = target
+                .Where(t => !(t is null))
+                .Select(t => t.ScanMatchResult)
+                .Select(r => {
+                    var m = new CompoundDetailModel(r, mapper.MoleculeMsRefer(r));
+                    m.Add(new MzSimilarity(r.AcurateMassSimilarity));
+                    m.Add(new RtSimilarity(r.RtSimilarity));
+                    m.Add(new CcsSimilarity(r.CcsSimilarity));
+                    m.Add(new SpectrumSimilarity(r.WeightedDotProduct, r.ReverseDotProduct));
+                    return m;
+                })
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
         }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
@@ -265,6 +295,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public SurveyScanModel SurveyScanModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
+        public ReadOnlyReactivePropertySlim<PeakInformationModel> PeakInformationModel { get; }
+        public ReadOnlyReactivePropertySlim<CompoundDetailModel> CompoundDetailModel { get; }
 
         public IObservable<CompoundSearchModel<ChromatogramPeakFeature>> CompoundSearchModel { get; }
         public IObservable<bool> CanSearchCompound { get; }
