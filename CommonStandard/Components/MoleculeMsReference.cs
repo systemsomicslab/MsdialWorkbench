@@ -74,7 +74,8 @@ namespace CompMs.Common.Components {
         public float MinimumPeakHeight { get; set; } = 1000F; // used for text library searching
         [Key(26)]
         public bool IsTargetMolecule { get; set; } = true; // used for text library searching
-
+        [Key(28)]
+        public string FragmentationCondition { get; set; }
 
         public void AddPeak(double mass, double intensity, string comment = null) {
             Spectrum.Add(new SpectrumPeak((float)mass, (float)intensity, comment));

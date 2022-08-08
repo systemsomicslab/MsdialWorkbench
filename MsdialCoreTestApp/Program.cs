@@ -136,15 +136,45 @@ namespace CompMs.App.MsdialConsole {
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS_MSP");
 
-            MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS\2022_08_03_14_54_00.mdproject",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP");
+            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS\2022_08_03_14_54_00.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP");
 
-            MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG\2022_08_03_14_31_34.mdproject",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
-                @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG_MSP");
+            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG\2022_08_03_14_31_34.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG_MSP");
+
+            MspCurator.MergeMSPs(
+                @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\POS",
+                @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\POS_Private_MSP_list.txt",
+                @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\MSMS_Private_Pos_VS17.msp");
+
+            MspCurator.MergeMSPs(
+                @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\POS",
+                @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\POS_Public_MSP_exp_list.txt",
+                @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\MSMS_Public_EXP_Pos_VS17.msp");
+
+            MspCurator.MergeMSPs(
+                @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\POS",
+                @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\POS_Public_MSP_exp_bio_insilico_list.txt",
+                @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\MSMS_Public_ExpBioInsilico_Pos_VS17.msp");
+
+            MspCurator.MergeMSPs(
+               @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\NEG",
+               @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\NEG_Private_MSP_list.txt",
+               @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\MSMS_Private_NEG_VS17.msp");
+
+            MspCurator.MergeMSPs(
+                @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\NEG",
+                @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\NEG_Public_MSP_exp_list.txt",
+                @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\MSMS_Public_EXP_NEG_VS17.msp");
+
+            MspCurator.MergeMSPs(
+                @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\NEG",
+                @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\NEG_Public_MSP_exp_bio_insilico_list.txt",
+                @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\MSMS_Public_ExpBioInsilico_NEG_VS17.msp");
 
 #if DEBUG
             //var projectPath = @"C:\Users\lab\Desktop\dropmet\20140809_MSDIAL_DemoFiles_Swath\neg\hoge20220427.mtd3";
