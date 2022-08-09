@@ -65,11 +65,11 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                     var dRawSpectra = dRawSpectras[peak.IonMode].Value;
                     var dChromatogram = dRawSpectra.GetDriftChromatogramByScanRtMz(dpeak.MS1RawSpectrumIdTop, (float)peak.ChromXsTop.RT.Value, (float)Filler3d.AxTolFirst, (float)peak.Mass, (float)(detected.Max(x => x.Mass) - detected.Min(x => x.Mass)) * 1.5f);
                     var dpeakInfo = new ChromatogramPeakInfo(
-                        peak.FileID, dChromatogram.Peaks,
-                        (float)peak.ChromXsTop.Value,
-                        (float)peak.ChromXsLeft.Value,
-                        (float)peak.ChromXsRight.Value
-                        );
+                        dpeak.FileID, dChromatogram.Peaks,
+                        (float)dpeak.ChromXsTop.Value,
+                        (float)dpeak.ChromXsLeft.Value,
+                        (float)dpeak.ChromXsRight.Value
+                    );
                     peakInfos.Add(dpeakInfo);
                 }
             }
