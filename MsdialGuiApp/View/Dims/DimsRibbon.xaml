@@ -85,12 +85,12 @@
                 <RibbonButton.ToolTip>Reanalysis for all data processing.</RibbonButton.ToolTip>
             </RibbonButton>
             <RibbonButton Label="Identification" LargeImageSource="{StaticResource From_annotation_process_is}"
-                          IsEnabled="False"
+                          Command="{Binding DataContext.ExecuteIdentificationMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="I">
                 <RibbonButton.ToolTip>Reanalysis for peak identification.</RibbonButton.ToolTip>
             </RibbonButton>
             <RibbonButton Label="Alignment" LargeImageSource="{StaticResource From_alignment_process_is}"
-                          IsEnabled="False"
+                          Command="{Binding DataContext.ExecuteAlignmentMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="L">
                 <RibbonButton.ToolTip>Reanalysis for peak alignment.</RibbonButton.ToolTip>
             </RibbonButton>
