@@ -35,20 +35,30 @@
 
         <ItemsControl ItemsSource="{Binding PeakPoints}">
             <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type info:PeakPointViewModel}">
-                    <ui:LabeledContent PrependLabel="{Binding Label.Value, StringFormat={}{0}:}">
-                        <TextBox Text="{Binding Point.Value, TargetNullValue=NA, Mode=OneWay}"/>
-                    </ui:LabeledContent>
+                <DataTemplate>
+                    <DataTemplate.Resources>
+                        <DataTemplate DataType="{x:Type info:PeakPointViewModel}">
+                            <ui:LabeledContent PrependLabel="{Binding Label.Value, StringFormat={}{0}:}">
+                                <TextBox Text="{Binding Point.Value, TargetNullValue=NA, Mode=OneWay}"/>
+                            </ui:LabeledContent>
+                        </DataTemplate>
+                    </DataTemplate.Resources>
+                    <ContentControl Content="{Binding Value}"/>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
         <ItemsControl ItemsSource="{Binding PeakAmounts}">
             <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type info:PeakAmountViewModel}">
-                    <ui:LabeledContent PrependLabel="{Binding Label.Value, StringFormat={}{0}:}">
-                        <TextBox Text="{Binding Amount.Value, StringFormat=F0, TargetNullValue=NA, Mode=OneWay}"/>
-                    </ui:LabeledContent>
+                <DataTemplate>
+                    <DataTemplate.Resources>
+                        <DataTemplate DataType="{x:Type info:PeakAmountViewModel}">
+                            <ui:LabeledContent PrependLabel="{Binding Label.Value, StringFormat={}{0}:}">
+                                <TextBox Text="{Binding Amount.Value, StringFormat=F0, TargetNullValue=NA, Mode=OneWay}"/>
+                            </ui:LabeledContent>
+                        </DataTemplate>
+                    </DataTemplate.Resources>
+                    <ContentControl Content="{Binding Value}"/>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

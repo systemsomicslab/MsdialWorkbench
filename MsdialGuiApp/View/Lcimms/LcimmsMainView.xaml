@@ -289,14 +289,19 @@
                                     DataContext="{Binding SelectedViewModel.Value}"
                                     ItemsSource="{Binding PeakDetailViewModels}"
                                     Grid.Row="0">
-                            <TabControl.Resources>
-                                <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
-                                    <infoview:PeakInformationView/>
-                                </DataTemplate>                              
-                                <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
-                                    <infoview:CompoundDetailView/>
-                                </DataTemplate>                              
-                            </TabControl.Resources>
+                            <TabControl.ContentTemplate>
+                                <DataTemplate>
+                                    <DataTemplate.Resources>
+                                        <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
+                                            <infoview:PeakInformationView/>
+                                        </DataTemplate>                              
+                                        <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
+                                            <infoview:CompoundDetailView/>
+                                        </DataTemplate>                              
+                                    </DataTemplate.Resources>
+                                    <ContentControl Content="{Binding}"/>
+                                </DataTemplate>
+                            </TabControl.ContentTemplate>
                             <TabControl.ItemTemplate>
                                 <DataTemplate>
                                     <ContentControl Content="{Binding}">

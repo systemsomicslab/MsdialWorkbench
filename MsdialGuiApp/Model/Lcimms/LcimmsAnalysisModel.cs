@@ -252,19 +252,17 @@ namespace CompMs.App.Msdial.Model.Lcimms
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
-            PeakInformationModel = target
-                .Where(t => !(t is null))
-                .Select(t => {
-                    var m = new PeakInformationModel(t);
-                    m.Add(new RtPoint(t.InnerModel.ChromXsTop.RT.Value));
-                    m.Add(new MzPoint(t.InnerModel.ChromXsTop.Mz.Value));
-                    m.Add(new DriftPoint(t.InnerModel.ChromXsTop.Drift.Value));
-                    m.Add(new CcsPoint(t.InnerModel.CollisionCrossSection));
-                    m.Add(new HeightAmount(t.Intensity));
-                    m.Add(new AreaAmount(t.PeakArea));
-                    return m;
-                })
-                .DisposePreviousValue()
+            var peakInformationModel = new PeakInformationAnalysisModel(target).AddTo(Disposables);
+            peakInformationModel.Add(
+                t => new RtPoint(t.InnerModel.ChromXsTop.RT.Value),
+                t => new MzPoint(t.InnerModel.ChromXsTop.Mz.Value),
+                t => new DriftPoint(t.InnerModel.ChromXsTop.Drift.Value),
+                t => new CcsPoint(t.InnerModel.CollisionCrossSection));
+            peakInformationModel.Add(
+                t => new HeightAmount(t.Intensity),
+                t => new AreaAmount(t.PeakArea));
+            PeakInformationModelZZZ = peakInformationModel;
+            PeakInformationModel = Observable.Return(peakInformationModel)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             CompoundDetailModel = target
@@ -295,7 +293,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public SurveyScanModel SurveyScanModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
-        public ReadOnlyReactivePropertySlim<PeakInformationModel> PeakInformationModel { get; }
+        public PeakInformationAnalysisModel PeakInformationModelZZZ { get; }
+        public ReadOnlyReactivePropertySlim<PeakInformationAnalysisModel> PeakInformationModel { get; }
         public ReadOnlyReactivePropertySlim<CompoundDetailModel> CompoundDetailModel { get; }
 
         public IObservable<CompoundSearchModel<ChromatogramPeakFeature>> CompoundSearchModel { get; }
