@@ -142,7 +142,7 @@ namespace CompMs.MsdialCore.DataObj
                 storage.FixDatasetFolder(newProjectDir);
                 return storage;
             }
-            catch {
+            catch (FileNotFoundException) {
                 faultedHandle?.Invoke(projectParameter);
                 if (setNewPlacement is null) {
                     throw;
@@ -163,7 +163,7 @@ namespace CompMs.MsdialCore.DataObj
                 storage.FixDatasetFolder(projectDir);
                 return storage;
             }
-            catch {
+            catch (FileNotFoundException) {
                 faultedHandle?.Invoke(projectParameter);
                 throw;
             }
