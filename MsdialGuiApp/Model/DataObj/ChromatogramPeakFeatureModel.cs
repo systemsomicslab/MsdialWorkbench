@@ -18,8 +18,26 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double? ChromXLeftValue => innerModel.ChromXsLeft.Value;
         public double? ChromXRightValue => innerModel.ChromXsRight.Value;
         public double CollisionCrossSection => innerModel.CollisionCrossSection;
-        public double Mass => innerModel.Mass;
-        public double Intensity => innerModel.PeakHeightTop;
+        public double Mass {
+            get => innerModel.Mass;
+            set {
+                if (innerModel.Mass != value) {
+                    innerModel.Mass = value;
+                    OnPropertyChanged(nameof(Mass));
+                }
+            }
+        }
+
+        public double Intensity {
+            get => innerModel.PeakHeightTop;
+            set {
+                if (innerModel.PeakHeightTop != value) {
+                    innerModel.PeakHeightTop = value;
+                    OnPropertyChanged(nameof(Intensity));
+                }
+            }
+        }
+
         public double PeakArea => innerModel.PeakAreaAboveZero;
         public int MS1RawSpectrumIdTop => innerModel.MS1RawSpectrumIdTop;
         public int MS2RawSpectrumId => innerModel.MS2RawSpectrumID;
@@ -146,9 +164,27 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         // IChromatogramPeak
         int IChromatogramPeak.ID => ((IChromatogramPeak)innerModel).ID;
-        ChromXs IChromatogramPeak.ChromXs { get => ((IChromatogramPeak)innerModel).ChromXs; set => ((IChromatogramPeak)innerModel).ChromXs = value; }
-        double ISpectrumPeak.Mass { get => ((ISpectrumPeak)innerModel).Mass; set => ((ISpectrumPeak)innerModel).Mass = value; }
-        double ISpectrumPeak.Intensity { get => ((ISpectrumPeak)innerModel).Intensity; set => ((ISpectrumPeak)innerModel).Intensity = value; }
+        ChromXs IChromatogramPeak.ChromXs {
+            get => ((IChromatogramPeak)innerModel).ChromXs;
+            set {
+                ((IChromatogramPeak)innerModel).ChromXs = value;
+                OnPropertyChanged(nameof(ChromXValue));
+            }
+        }
+        double ISpectrumPeak.Mass {
+            get => ((ISpectrumPeak)innerModel).Mass;
+            set {
+                ((ISpectrumPeak)innerModel).Mass = value;
+                OnPropertyChanged(nameof(Mass));
+            }
+        }
+        double ISpectrumPeak.Intensity {
+            get => ((ISpectrumPeak)innerModel).Intensity;
+            set {
+                ((ISpectrumPeak)innerModel).Intensity = value;
+                OnPropertyChanged(nameof(Intensity));
+            }
+        }
 
         static ChromatogramPeakFeatureModel() {
             KMIupacUnit = AtomMass.hMass * 2 + AtomMass.cMass; // CH2

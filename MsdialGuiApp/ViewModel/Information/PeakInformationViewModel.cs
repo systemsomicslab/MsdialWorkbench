@@ -4,14 +4,15 @@ using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Information
 {
     internal sealed class PeakInformationViewModel : ViewModelBase
     {
-        private readonly PeakInformationModel _model;
+        private readonly IPeakInformationModel _model;
 
-        public PeakInformationViewModel(PeakInformationModel model) {
+        public PeakInformationViewModel(IPeakInformationModel model) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             Annotation = model.ObserveProperty(m => m.Annotation).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             AdductIonName = model.ObserveProperty(m => m.AdductIonName).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -19,8 +20,16 @@ namespace CompMs.App.Msdial.ViewModel.Information
             Ontology = model.ObserveProperty(m => m.Ontology).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             InChIKey = model.ObserveProperty(m => m.InChIKey).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Comment = model.ObserveProperty(m => m.Comment).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            PeakPoints = model.PeakPoint.ToReadOnlyReactiveCollection(m => new PeakPointViewModel(m)).AddTo(Disposables);
-            PeakAmounts = model.PeakAmount.ToReadOnlyReactiveCollection(m => new PeakAmountViewModel(m)).AddTo(Disposables);
+            PeakPoints = model.ObserveProperty(m => m.PeakPoints)
+                .Select(ps => ps.ToReadOnlyReactiveCollection(m => new PeakPointViewModel(m)))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            PeakAmounts = model.ObserveProperty(m => m.PeakAmounts)
+                .Select(ps => ps.ToReadOnlyReactiveCollection(m => new PeakAmountViewModel(m)))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<string> Annotation { get; }
@@ -29,8 +38,8 @@ namespace CompMs.App.Msdial.ViewModel.Information
         public ReadOnlyReactivePropertySlim<string> Ontology { get; }
         public ReadOnlyReactivePropertySlim<string> InChIKey { get; }
         public ReadOnlyReactivePropertySlim<string> Comment { get; }
-        public ReadOnlyReactiveCollection<PeakPointViewModel> PeakPoints { get; }
-        public ReadOnlyReactiveCollection<PeakAmountViewModel> PeakAmounts { get; }
+        public ReadOnlyReactivePropertySlim<ReadOnlyReactiveCollection<PeakPointViewModel>> PeakPoints { get; }
+        public ReadOnlyReactivePropertySlim<ReadOnlyReactiveCollection<PeakAmountViewModel>> PeakAmounts { get; }
     }
 
     internal sealed class PeakPointViewModel : ViewModelBase
