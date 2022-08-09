@@ -79,8 +79,7 @@
                KeyTip="P">
         <RibbonGroup Header="Data">
             <RibbonButton Label="All processing (from peak detection)" LargeImageSource="{StaticResource All_process_is}"
-                          Command="{Binding DataContext.RunProcessAllCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                          Command="{Binding DataContext.ExecuteAllMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="A">
                 <RibbonButton.ToolTip>Reanalysis for all data processing.</RibbonButton.ToolTip>
             </RibbonButton>
