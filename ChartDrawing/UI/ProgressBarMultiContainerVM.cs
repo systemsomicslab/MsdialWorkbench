@@ -31,5 +31,24 @@ namespace CompMs.Graphics.UI.ProgressBar
         public ProgressBarMultiContainerVM() {
             ProgressBarVMs = new ObservableCollection<ProgressBarVM>();
         }
+
+        private List<Func<Task>> _actions = new List<Func<Task>>();
+        public void AddAction(Func<Task> action) {
+            _actions.Add(action);
+        }
+
+        public Task RunAsync() {
+            var tasks = new List<Task>();
+            foreach (var action in _actions) {
+                tasks.Add(action?.Invoke() ?? Task.CompletedTask);
+            }
+            return Task.WhenAll(tasks);
+        }
+
+        public bool? Result {
+            get => _result;
+            set => SetProperty(ref _result, value);
+        }
+        private bool? _result = null;
     }
 }
