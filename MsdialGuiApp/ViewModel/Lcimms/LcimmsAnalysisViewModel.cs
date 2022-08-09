@@ -76,32 +76,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                     }
                 }).AddTo(Disposables);
 
-            PeakInformationViewModelZZZ = new PeakInformationViewModel(model.PeakInformationModelZZZ).AddTo(Disposables);
-            PeakInformationViewModel = model.PeakInformationModel
-                .Where(m => !(m is null))
-                .Select(m => new PeakInformationViewModel(m))
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            CompoundDetailViewModel = model.CompoundDetailModel
-                .Where(m => !(m is null))
-                .Select(m => new CompoundDetailViewModel(m))
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
+            PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
+            CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             var _peakDetailViewModels = new ReactiveCollection<ViewModelBase>().AddTo(Disposables);
-            // new IReadOnlyReactiveProperty<ViewModelBase>[]
-            // {
-            //     PeakInformationViewModel,
-            //     CompoundDetailViewModel,
-            // }.CombineLatest()
-            // .Subscribe(vms =>
-            // {
-            //     _peakDetailViewModels.ClearOnScheduler();
-            //     _peakDetailViewModels.AddRangeOnScheduler(vms);
-            // }).AddTo(Disposables);
-            // PeakDetailViewModels = _peakDetailViewModels.ToReadOnlyReactiveCollection().AddTo(Disposables);
-            PeakDetailViewModels = new object[] { PeakInformationViewModelZZZ };
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
         private readonly LcimmsAnalysisModel model;
@@ -115,10 +93,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public SurveyScanViewModel SurveyScanViewModel { get; private set; }
         public PeakFilterViewModel PeakFilterViewModel { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
-        public PeakInformationViewModel PeakInformationViewModelZZZ { get; }
-        public ReadOnlyReactivePropertySlim<PeakInformationViewModel> PeakInformationViewModel { get; }
-        public ReadOnlyReactivePropertySlim<CompoundDetailViewModel> CompoundDetailViewModel { get; }
-        public object[] PeakDetailViewModels { get; }
+        public PeakInformationViewModel PeakInformationViewModel { get; }
+        public CompoundDetailViewModel CompoundDetailViewModel { get; }
+        public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ReactiveCommand SearchCompoundCommand { get; }
 

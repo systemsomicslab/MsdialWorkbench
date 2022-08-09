@@ -181,6 +181,7 @@
                                             </chart:AlignmentPeakPlotView>
                                         </DataTemplate>
                                     </ContentControl.Resources>
+
                                 </ContentControl>
                             </DataTemplate>
                         </TabControl.ContentTemplate>
@@ -299,27 +300,25 @@
                                             <infoview:CompoundDetailView/>
                                         </DataTemplate>                              
                                     </DataTemplate.Resources>
-                                    <ContentControl Content="{Binding}"/>
+                                    <ContentPresenter Content="{Binding}"/>
                                 </DataTemplate>
                             </TabControl.ContentTemplate>
                             <TabControl.ItemTemplate>
                                 <DataTemplate>
-                                    <ContentControl Content="{Binding}">
-                                        <ContentControl.Resources>
-                                            <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
-                                                <TextBlock Text="Basic peak property"
-                                                           VerticalAlignment="Stretch"/>
-                                            </DataTemplate>
-                                            <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
-                                                <TextBlock Text="Compund detail"
-                                                           VerticalAlignment="Stretch"/>
-                                            </DataTemplate>
-                                        </ContentControl.Resources>
-                                    </ContentControl>
+                                    <DataTemplate.Resources>
+                                        <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
+                                            <TextBlock Text="Basic peak property"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
+                                            <TextBlock Text="Compund detail"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                    </DataTemplate.Resources>
+                                    <ContentPresenter Content="{Binding}"/>
                                 </DataTemplate>
                             </TabControl.ItemTemplate>
                         </TabControl>
-
                     </Grid>
 
                     <TabControl x:Name="TabControl_MS2Viewer"

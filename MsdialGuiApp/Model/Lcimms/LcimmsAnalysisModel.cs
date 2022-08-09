@@ -254,31 +254,21 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var peakInformationModel = new PeakInformationAnalysisModel(target).AddTo(Disposables);
             peakInformationModel.Add(
-                t => new RtPoint(t.InnerModel.ChromXsTop.RT.Value),
-                t => new MzPoint(t.InnerModel.ChromXsTop.Mz.Value),
-                t => new DriftPoint(t.InnerModel.ChromXsTop.Drift.Value),
-                t => new CcsPoint(t.InnerModel.CollisionCrossSection));
+                t => new RtPoint(t?.InnerModel.ChromXsTop.RT.Value ?? 0d),
+                t => new MzPoint(t?.InnerModel.ChromXsTop.Mz.Value ?? 0d),
+                t => new DriftPoint(t?.InnerModel.ChromXsTop.Drift.Value ?? 0d),
+                t => new CcsPoint(t?.InnerModel.CollisionCrossSection ?? 0d));
             peakInformationModel.Add(
-                t => new HeightAmount(t.Intensity),
-                t => new AreaAmount(t.PeakArea));
-            PeakInformationModelZZZ = peakInformationModel;
-            PeakInformationModel = Observable.Return(peakInformationModel)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            CompoundDetailModel = target
-                .Where(t => !(t is null))
-                .Select(t => t.ScanMatchResult)
-                .Select(r => {
-                    var m = new CompoundDetailModel(r, mapper.MoleculeMsRefer(r));
-                    m.Add(new MzSimilarity(r.AcurateMassSimilarity));
-                    m.Add(new RtSimilarity(r.RtSimilarity));
-                    m.Add(new CcsSimilarity(r.CcsSimilarity));
-                    m.Add(new SpectrumSimilarity(r.WeightedDotProduct, r.ReverseDotProduct));
-                    return m;
-                })
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
+                t => new HeightAmount(t?.Intensity ?? 0d),
+                t => new AreaAmount(t?.PeakArea ?? 0d));
+            PeakInformationModel = peakInformationModel;
+            var compoundDetailModel = new CompoundDetailModel(target.Select(t => t?.ScanMatchResult), mapper).AddTo(Disposables);
+            compoundDetailModel.Add(
+                r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
+                r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
+                r_ => new CcsSimilarity(r_?.CcsSimilarity ?? 0d),
+                r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
+            CompoundDetailModel = compoundDetailModel;
         }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
@@ -293,9 +283,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public SurveyScanModel SurveyScanModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
-        public PeakInformationAnalysisModel PeakInformationModelZZZ { get; }
-        public ReadOnlyReactivePropertySlim<PeakInformationAnalysisModel> PeakInformationModel { get; }
-        public ReadOnlyReactivePropertySlim<CompoundDetailModel> CompoundDetailModel { get; }
+        public PeakInformationAnalysisModel PeakInformationModel { get; }
+        public CompoundDetailModel CompoundDetailModel { get; }
 
         public IObservable<CompoundSearchModel<ChromatogramPeakFeature>> CompoundSearchModel { get; }
         public IObservable<bool> CanSearchCompound { get; }

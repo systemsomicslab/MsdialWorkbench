@@ -2,30 +2,35 @@
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Annotation;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Information
 {
     internal sealed class CompoundDetailModel : DisposableModelBase
     {
-        private readonly MsScanMatchResult _result;
-        private readonly MoleculeMsReference _reference;
+        public CompoundDetailModel(IObservable<MsScanMatchResult> result, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            result.Subscribe(result_ => {
+                Annotation = result_?.Name;
+                AnnotatorId = result_?.AnnotatorID;
+                var reference_ = refer.Refer(result_);
+                Formula = reference_?.Formula;
+                Ontology = reference_?.Ontology ?? reference_?.CompoundClass;
+                Smiles = reference_?.SMILES;
+                InChIKey = reference_?.InChIKey;
+            }).AddTo(Disposables);
 
-        public CompoundDetailModel(MsScanMatchResult result, MoleculeMsReference reference) {
-            _result = result;
-            _reference = reference;
-
-            Annotation = result?.Name;
-            Formula = reference?.Formula;
-            Ontology = reference?.Ontology ?? reference?.CompoundClass;
-            Smiles = reference?.SMILES;
-            InChIKey = reference?.InChIKey;
-            AnnotatorId = result.AnnotatorID;
-
-            _compoundSimilarities = new ObservableCollection<ISimilarity>();
-            CompoundSimilarities = new ReadOnlyObservableCollection<ISimilarity>(_compoundSimilarities);
+            _compoundSimilaritiesMaps = new ObservableCollection<Func<MsScanMatchResult, ISimilarity>>();
+            var compoundSimilarites = result
+                .Select(r => _compoundSimilaritiesMaps.ToReadOnlyReactiveCollection(f => f(r)))
+                .DisposePreviousValue()
+                .Subscribe(cs => CompoundSimilarities = cs)
+                .AddTo(Disposables);
         }
 
         public string Annotation {
@@ -34,15 +39,17 @@ namespace CompMs.App.Msdial.Model.Information
         }
         private string _annotation;
 
-        public ReadOnlyObservableCollection<ISimilarity> CompoundSimilarities { get; }
-        private readonly ObservableCollection<ISimilarity> _compoundSimilarities;
-
-        public void Add(ISimilarity similarityScore) {
-            _compoundSimilarities.Add(similarityScore);
+        public ReadOnlyObservableCollection<ISimilarity> CompoundSimilarities {
+            get => _compoundSimilarities;
+            private set => SetProperty(ref _compoundSimilarities, value);
         }
+        private ReadOnlyObservableCollection<ISimilarity> _compoundSimilarities;
 
-        public void Add(Func<MsScanMatchResult, ISimilarity> map) {
-            _compoundSimilarities.Add(map(_result));
+        private readonly ObservableCollection<Func<MsScanMatchResult, ISimilarity>> _compoundSimilaritiesMaps;
+        public void Add(params Func<MsScanMatchResult, ISimilarity>[] maps) {
+            foreach (var map in maps) {
+                _compoundSimilaritiesMaps.Add(map);
+            }
         }
 
         public Formula Formula {
