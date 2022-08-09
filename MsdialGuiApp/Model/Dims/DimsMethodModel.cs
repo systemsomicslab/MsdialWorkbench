@@ -4,7 +4,9 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.Parameter;
+using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -19,6 +21,7 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -82,16 +85,6 @@ namespace CompMs.App.Msdial.Model.Dims
             ProviderFactory = Storage.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
         }
 
-        private DataBaseMapper BuildDataBaseMapper(DataBaseStorage storage) {
-            var mapper = new DataBaseMapper();
-            foreach (var db in storage.MetabolomicsDataBases) {
-                foreach (var pair in db.Pairs) {
-                    mapper.Add(pair.SerializableAnnotator, db.DataBase);
-                }
-            }
-            return mapper;
-        }
-
         private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage) {
             var containers = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
             foreach (var annotators in storage.MetabolomicsDataBases) {
@@ -130,11 +123,9 @@ namespace CompMs.App.Msdial.Model.Dims
             var processOption = option;
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                var tasks = new List<Task>();
-                foreach (var analysisfile in Storage.AnalysisFiles) {
-                    tasks.Add(RunAnnotationProcessAsync(analysisfile, null));
+                if (!RunAnnotationAll(Storage.AnalysisFiles)) {
+                    return;
                 }
-                await Task.WhenAll(tasks).ConfigureAwait(false);
             }
 
             // Run Alignment
@@ -145,8 +136,27 @@ namespace CompMs.App.Msdial.Model.Dims
             await LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
-        public Task RunAnnotationProcessAsync(AnalysisFileBean analysisfile, Action<int> action) {
-            return Task.Run(() => ProcessFile.Run(analysisfile, ProviderFactory, Storage, annotationProcess, matchResultEvaluator, reportAction: action));
+        private bool RunAnnotationAll(List<AnalysisFileBean> analysisFiles) {
+            var vm = new ProgressBarMultiContainerVM
+            {
+                MaxValue = analysisFiles.Count,
+                CurrentValue = 0,
+                ProgressBarVMs = new ObservableCollection<ProgressBarVM>(analysisFiles.Select(file => new ProgressBarVM { Label = file.AnalysisFileName, })),
+            };
+
+            var tasks = new List<Task>();
+            var current = 0;
+            foreach ((var analysisfile, var pb) in Storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
+                Task task() => Task.Run(() =>
+                {
+                    ProcessFile.Run(analysisfile, ProviderFactory, Storage, annotationProcess, matchResultEvaluator, reportAction: (int v) => pb.CurrentValue = v);
+                    Interlocked.Increment(ref current);
+                    vm.CurrentValue = current;
+                });
+                vm.AddAction(task);
+            }
+            _broker.Publish(vm);
+            return vm.Result ?? false;
         }
 
         public void RunAlignmentProcess() {
