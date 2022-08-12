@@ -17,7 +17,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    internal sealed class DimsAlignmentViewModel : AlignmentFileViewModel, IAlignmentResultViewModel
+    internal sealed class DimsAlignmentViewModel : ViewModelBase, IAlignmentResultViewModel
     {
         private readonly DimsAlignmentModel _model;
         private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
@@ -29,8 +29,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker broker,
-            FocusControlManager focusControlManager)
-            : base(model) {
+            FocusControlManager focusControlManager) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
@@ -77,7 +76,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
 
         public ICollectionView Ms1Spots { get; }
-        public override ICollectionView PeakSpotsView => Ms1Spots;
+        public ICollectionView PeakSpotsView => Ms1Spots;
 
         public Chart.AlignmentPeakPlotViewModel PlotViewModel { get; }
         public Chart.MsSpectrumViewModel Ms2SpectrumViewModel { get; }

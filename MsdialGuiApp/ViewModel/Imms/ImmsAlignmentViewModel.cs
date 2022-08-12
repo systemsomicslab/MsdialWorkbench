@@ -20,15 +20,14 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    internal sealed class ImmsAlignmentViewModel : AlignmentFileViewModel, IAlignmentResultViewModel
+    internal sealed class ImmsAlignmentViewModel : ViewModelBase, IAlignmentResultViewModel
     {
         public ImmsAlignmentViewModel(
             ImmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker messageBroker,
-            FocusControlManager focusControlManager)
-            : base(model) {
+            FocusControlManager focusControlManager) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
@@ -158,7 +157,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
         private ICollectionView ms1Spots;
 
-        public override ICollectionView PeakSpotsView => ms1Spots;
+        public ICollectionView PeakSpotsView => ms1Spots;
 
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 

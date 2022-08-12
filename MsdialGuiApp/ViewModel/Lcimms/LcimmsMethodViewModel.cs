@@ -28,7 +28,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private LcimmsMethodViewModel(
             LcimmsMethodModel model,
             IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisViewModelAsObservable,
-            IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentViewModelAsObservable,
+            IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentViewModelAsObservable,
             FocusControlManager focusControlManager)
             : base(model, analysisViewModelAsObservable, alignmentViewModelAsObservable) {
 

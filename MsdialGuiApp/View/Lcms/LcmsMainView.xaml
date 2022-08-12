@@ -217,7 +217,7 @@
                                                        VerticalAlignment="Stretch"
                                                        DataContextChanged="TabItem_RtMzPairwisePlotPeakView_DataContextChanged"/>
                                         </DataTemplate>
-                                        <DataTemplate DataType="{x:Type vmcore:AlignmentFileViewModel}">
+                                        <DataTemplate DataType="{x:Type vm:LcmsAlignmentViewModel}">
                                             <TextBlock Name="TabItem_RtMzPairwisePlotAlignmentView"
                                                        Text="Alignment spot viewer"
                                                        VerticalAlignment="Stretch"
@@ -251,7 +251,7 @@
                                                 </chart:PeakView.LabelTemplate>
                                             </chart:PeakView>
                                         </DataTemplate>
-                                        <DataTemplate DataType="{x:Type vmcore:AlignmentFileViewModel}">
+                                        <DataTemplate DataType="{x:Type vm:LcmsAlignmentViewModel}">
                                             <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
                                                 <chart:AlignmentPeakPlotView.LabelTemplate>
                                                     <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">

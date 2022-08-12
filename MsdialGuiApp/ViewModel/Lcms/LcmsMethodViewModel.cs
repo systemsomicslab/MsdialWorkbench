@@ -104,7 +104,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand<Window> mscleanrFilterSettingCommand;
 
         private void FragmentSearchSettingMethod(Window obj) {
-            if (SelectedViewModel.Value is AlignmentFileViewModel) {
+            if (SelectedViewModel.Value is IAlignmentResultViewModel) {
                 model.ShowShowFragmentSearchSettingView(obj, true);
             }
             else {
@@ -113,7 +113,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         private void MassqlSearchSettingMethod(Window obj) {
-            if (SelectedViewModel.Value is AlignmentFileViewModel) {
+            if (SelectedViewModel.Value is IAlignmentResultViewModel) {
                 model.ShowShowMassqlSearchSettingView(obj, true);
             }
             else {
@@ -122,7 +122,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         private void MscleanrFilterSettingMethod(Window obj) {
-            if (SelectedViewModel.Value is AlignmentFileViewModel) {
+            if (SelectedViewModel.Value is IAlignmentResultViewModel) {
                 model.ShowShowMscleanrFilterSettingView(obj, true);
             }
             else {
@@ -136,7 +136,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand goToMsfinderCommand;
 
         private void GoToMsfinderMethod() {
-            if (SelectedViewModel.Value is AlignmentFileViewModel) {
+            if (SelectedViewModel.Value is IAlignmentResultViewModel) {
                 model.GoToMsfinderMethod(true);
             }
             else {

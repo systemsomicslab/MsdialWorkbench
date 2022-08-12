@@ -100,7 +100,7 @@
                                                        Text="Peak spot viewer"
                                                        VerticalAlignment="Stretch"/>
                                         </DataTemplate>
-                                        <DataTemplate DataType="{x:Type vmcore:AlignmentFileViewModel}">
+                                        <DataTemplate DataType="{x:Type vm:LcimmsAlignmentViewModel}">
                                             <TextBlock Name="TabItem_RtMzPairwisePlotAlignmentView"
                                                        Text="Alignment spot viewer"
                                                        VerticalAlignment="Stretch"/>
@@ -159,7 +159,7 @@
                                                 </chart:PeakView>
                                             </Grid>
                                         </DataTemplate>
-                                        <DataTemplate DataType="{x:Type vmcore:AlignmentFileViewModel}">
+                                        <DataTemplate DataType="{x:Type vm:LcimmsAlignmentViewModel}">
                                             <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}"
                                                                          commonbehavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"
                                                                          d:DataContext="{d:DesignInstance Type={x:Type vmchart:AlignmentPeakPlotViewModel}}">

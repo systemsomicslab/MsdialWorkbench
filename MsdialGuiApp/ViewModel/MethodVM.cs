@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.ViewModel
 {
     internal abstract class MethodViewModel : ViewModelBase
     {
-        public MethodViewModel(IMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisFileViewModel, IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels) {
+        public MethodViewModel(IMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisFileViewModel, IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels) {
             Model = model;
             var analysisFilesView = model.AnalysisFiles.ToReadOnlyReactiveCollection(file => new AnalysisFileBeanViewModel(file));
             AnalysisFilesView = CollectionViewSource.GetDefaultView(analysisFilesView);
@@ -106,7 +106,7 @@ namespace CompMs.App.Msdial.ViewModel
             .AddTo(Disposables);
         }
 
-        public MethodViewModel(IMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisFileViewModel, IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentFileViewModel) {
+        public MethodViewModel(IMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisFileViewModel, IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentFileViewModel) {
             Model = model;
             var analysisFilesView = model.AnalysisFiles.ToReadOnlyReactiveCollection(file => new AnalysisFileBeanViewModel(file));
             AnalysisFilesView = CollectionViewSource.GetDefaultView(analysisFilesView);
@@ -217,7 +217,7 @@ namespace CompMs.App.Msdial.ViewModel
 
         public IReadOnlyReactiveProperty<IAnalysisResultViewModel> AnalysisViewModel { get; }
 
-        public IReadOnlyReactiveProperty<AlignmentFileViewModel> AlignmentViewModel { get; }
+        public IReadOnlyReactiveProperty<IAlignmentResultViewModel> AlignmentViewModel { get; }
 
         public ReadOnlyCollection<IReadOnlyReactiveProperty<IResultViewModel>> ResultViewModels { get; }
         private readonly List<IReadOnlyReactiveProperty<IResultViewModel>> resultViewModels;

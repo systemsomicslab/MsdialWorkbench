@@ -20,7 +20,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    internal sealed class LcmsAlignmentViewModel : AlignmentFileViewModel, IAlignmentResultViewModel
+    internal sealed class LcmsAlignmentViewModel : ViewModelBase, IAlignmentResultViewModel
     {
         private readonly LcmsAlignmentModel _model;
         private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
@@ -34,8 +34,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
             IMessageBroker broker,
-            FocusControlManager focusControlManager)
-            : base(model) {
+            FocusControlManager focusControlManager) {
             if (focusControlManager is null) {
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
@@ -94,7 +93,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public PeakFilterViewModel PeakFilterViewModel { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public ICollectionView Ms1Spots { get; }
-        public override ICollectionView PeakSpotsView => Ms1Spots;
+        public ICollectionView PeakSpotsView => Ms1Spots;
 
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 

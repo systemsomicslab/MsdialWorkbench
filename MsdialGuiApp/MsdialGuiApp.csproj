@@ -563,7 +563,6 @@
       <DependentUpon>AnalysisFilePropertySetWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utility\ParameterFactory.cs" />
-    <Compile Include="ViewModel\AlignmentFileVM.cs" />
     <Compile Include="ViewModel\Dims\DimsAlignmentViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsAnalysisViewModel.cs" />
     <Compile Include="ViewModel\CompoundSearchVM.cs" />

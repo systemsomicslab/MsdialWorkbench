@@ -18,14 +18,13 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
-    internal sealed class LcimmsAlignmentViewModel : AlignmentFileViewModel, IAlignmentResultViewModel
+    internal sealed class LcimmsAlignmentViewModel : ViewModelBase, IAlignmentResultViewModel
     {
         public LcimmsAlignmentViewModel(
             LcimmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            FocusControlManager focusControlManager)
-            : base(model) {
+            FocusControlManager focusControlManager) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
@@ -121,7 +120,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         }
         private ICollectionView ms1Spots;
 
-        public override ICollectionView PeakSpotsView => ms1Spots;
+        public ICollectionView PeakSpotsView => ms1Spots;
 
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 

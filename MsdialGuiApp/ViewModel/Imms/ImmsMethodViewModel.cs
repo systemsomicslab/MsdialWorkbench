@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private readonly ImmsMethodModel model;
         private readonly FocusControlManager _focusControlManager;
 
-        private ImmsMethodViewModel(ImmsMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisViewModelAsObservable, IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentViewModelAsObservable, FocusControlManager focusControlmanager)
+        private ImmsMethodViewModel(ImmsMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisViewModelAsObservable, IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentViewModelAsObservable, FocusControlManager focusControlmanager)
             : base(model, analysisViewModelAsObservable, alignmentViewModelAsObservable) {
 
             this.model = model;
