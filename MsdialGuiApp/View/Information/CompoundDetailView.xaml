@@ -33,7 +33,7 @@
             <TextBox Text="{Binding Annotation.Value, Mode=OneWay}"/>
         </ui:LabeledContent>
 
-        <ItemsControl ItemsSource="{Binding CompoundSimilarities}">
+        <ItemsControl ItemsSource="{Binding CompoundSimilarities.Value}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type info:SimilarityScoreViewModel}">
                     <ui:LabeledContent PrependLabel="{Binding Label, StringFormat={}{0}:}">
@@ -45,20 +45,7 @@
 
         <ui:LabeledContent PrependLabel="Formula|Ontology:">
             <StackPanel Orientation="Horizontal">
-                <TextBox>
-                    <TextBox.Style>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                            <Setter Property="Text" Value="{Binding Formula.Value.FormulaString, Mode=OneWay}"/>
-                            <Setter Property="VerticalContentAlignment" Value="Center"/>
-                            <Setter Property="Height" Value="16"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Formula.Value.FormulaString, TargetNullValue=''}" Value="" >
-                                    <Setter Property="Text" Value="NA"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
+                <TextBox Text="{Binding Formula.Value, TargetNullValue=NA, Mode=OneWay}"/>
                 <TextBox Text="|"/>
                 <TextBox Text="{Binding Ontology.Value, TargetNullValue=NA, Mode=OneWay}"/>
             </StackPanel>

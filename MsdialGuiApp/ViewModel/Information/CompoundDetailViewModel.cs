@@ -4,6 +4,9 @@ using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Information
 {
@@ -16,12 +19,17 @@ namespace CompMs.App.Msdial.ViewModel.Information
             Smiles = model.ObserveProperty(m => m.Smiles).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             InChIKey = model.ObserveProperty(m => m.InChIKey).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             AnnotatorId = model.ObserveProperty(m => m.AnnotatorId).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            CompoundSimilarities = model.CompoundSimilarities.ToReadOnlyReactiveCollection(m => new SimilarityScoreViewModel(m)).AddTo(Disposables);
+            CompoundSimilarities = model
+                .ObserveProperty(m => m.CompoundSimilarities)
+                .Select(cs => cs.ToReadOnlyReactiveCollection(m => new SimilarityScoreViewModel(m)))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<string> Annotation { get; }
-        public ReadOnlyReactiveCollection<SimilarityScoreViewModel> CompoundSimilarities { get; }
-        public ReadOnlyReactivePropertySlim<Formula> Formula { get; }
+        public ReadOnlyReactivePropertySlim<ReadOnlyReactiveCollection<SimilarityScoreViewModel>> CompoundSimilarities { get; }
+        public ReadOnlyReactivePropertySlim<string> Formula { get; }
         public ReadOnlyReactivePropertySlim<string> Ontology { get; }
         public ReadOnlyReactivePropertySlim<string> Smiles { get; }
         public ReadOnlyReactivePropertySlim<string> InChIKey { get; }

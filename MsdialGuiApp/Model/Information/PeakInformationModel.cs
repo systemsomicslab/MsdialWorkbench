@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.Common.DataObj.Property;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -14,7 +13,7 @@ namespace CompMs.App.Msdial.Model.Information
     {
         string Annotation { get; }
         string AdductIonName { get; }
-        Formula Formula { get; }
+        string Formula { get; }
         string Ontology { get; }
         string InChIKey { get; }
         string Comment { get; }
@@ -27,7 +26,7 @@ namespace CompMs.App.Msdial.Model.Information
         public PeakInformationAnalysisModel(IObservable<ChromatogramPeakFeatureModel> model) {
             model.Select(m => m.ObserveProperty(m_ => m_.Name)).Switch().Subscribe(m => Annotation = m).AddTo(Disposables);
             model.Select(m => m.ObserveProperty(m_ => m_.AdductIonName)).Switch().Subscribe(m => AdductIonName = m).AddTo(Disposables);
-            model.Select(m => m.ObserveProperty(m_ => m_.Formula)).Switch().Subscribe(m => Formula = m).AddTo(Disposables);
+            model.Select(m => m.ObserveProperty(m_ => m_.Formula)).Switch().Subscribe(m => Formula = m?.FormulaString).AddTo(Disposables);
             model.Select(m => m.ObserveProperty(m_ => m_.Ontology)).Switch().Subscribe(m => Ontology = m).AddTo(Disposables);
             model.Select(m => m.ObserveProperty(m_ => m_.InChIKey)).Switch().Subscribe(m => InChIKey = m).AddTo(Disposables);
             model.Select(m => m.ObserveProperty(m_ => m_.Comment)).Switch().Subscribe(m => Comment = m).AddTo(Disposables);
@@ -59,11 +58,11 @@ namespace CompMs.App.Msdial.Model.Information
         }
         private string _adductIonName;
 
-        public Formula Formula {
-            get => _formula;
+        public string Formula {
+            get => string.IsNullOrEmpty(_formula) ? "NA" : _formula;
             private set => SetProperty(ref _formula, value);
         }
-        private Formula _formula;
+        private string _formula;
 
         public string Ontology {
             get => string.IsNullOrEmpty(_ontology) ? "NA" : _ontology;
