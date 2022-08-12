@@ -7,14 +7,11 @@ using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.Graphics.Core.Base;
-using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
-using System.Linq;
 using System.Reactive.Linq;
-using System.Windows;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
@@ -24,11 +21,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private readonly DimsAnalysisModel _model;
         private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
+        private readonly IMessageBroker _broker;
 
         public DimsAnalysisViewModel(
             DimsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IMessageBroker broker,
             FocusControlManager focusControlManager) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
@@ -44,7 +43,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             _model = model;
             _compoundSearchService = compoundSearchService;
             _peakSpotTableService = peakSpotTableService;
-
+            _broker = broker ?? throw new ArgumentNullException(nameof(broker));
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
             var (focusAction, focused) = focusControlManager.Request();
@@ -68,6 +67,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
 
+            FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
+
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             var _peakDetailViewModels = new ReactiveCollection<ViewModelBase>().AddTo(Disposables);
@@ -83,36 +84,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public DimsAnalysisPeakTableViewModel PeakTableViewModel { get; }
 
-        public int FocusID {
-            get => focusID;
-            set => SetProperty(ref focusID, value);
-        }
-        private int focusID;
+        public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
 
-        public double FocusMz {
-            get => focusMz;
-            set => SetProperty(ref focusMz, value);
-        }
-        private double focusMz;
-
-        public DelegateCommand<IAxisManager> FocusByIDCommand => focusByIDCommand ?? (focusByIDCommand = new DelegateCommand<IAxisManager>(FocusByID));
-        private DelegateCommand<IAxisManager> focusByIDCommand;
-
-        private void FocusByID(IAxisManager axis) {
-            _model.FocusById(axis, FocusID);
-        }
-
-        public DelegateCommand<IAxisManager> FocusByMzCommand => focusByMzCommand ?? (focusByMzCommand = new DelegateCommand<IAxisManager>(FocusByMz));
-        private DelegateCommand<IAxisManager> focusByMzCommand;
-
-        private void FocusByMz(IAxisManager axis) {
-            _model.FocusByMz(axis, FocusMz);
-        }
-
-        public ReactiveCommand SearchCompoundCommand { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
+        public ViewModelBase[] PeakDetailViewModels { get; }
 
+        public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
             using (var model = _model.BuildCompoundSearchModel())
             using (var vm = new CompoundSearchVM(model)) {
@@ -127,35 +105,28 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             _peakSpotTableService.Show(PeakTableViewModel);
         }
 
-        public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
-        private DelegateCommand<Window> saveMs2SpectrumCommand;
+        public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ?? (_saveMs2SpectrumCommand = new DelegateCommand(SaveSpectra, CanSaveSpectra));
+        private DelegateCommand _saveMs2SpectrumCommand;
 
-        private void SaveSpectra(Window owner)
+        private void SaveSpectra()
         {
-            var sfd = new SaveFileDialog
+            var request = new SaveFileNameRequest(_model.SaveSpectra)
             {
                 Title = "Save spectra",
-                Filter = "NIST format(*.msp)|*.msp|MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf|MSFINDER format(*.mat)|*.mat;|SIRIUS format(*.ms)|*.ms", 
+                Filter = "NIST format(*.msp)|*.msp|MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf|MSFINDER format(*.mat)|*.mat;|SIRIUS format(*.ms)|*.ms",
                 RestoreDirectory = true,
                 AddExtension = true,
             };
-
-            if (sfd.ShowDialog(owner) == true)
-            {
-                var filename = sfd.FileName;
-                _model.SaveSpectra(filename);
-            }
+            _broker.Publish(request);
         }
 
-        private bool CanSaveSpectra(Window owner)
+        private bool CanSaveSpectra()
         {
             return _model.CanSaveSpectra();
         }
 
-        public DelegateCommand CopyMs2SpectrumCommand => copyMs2SpectrumCommand ?? (copyMs2SpectrumCommand = new DelegateCommand(_model.CopySpectrum, _model.CanSaveSpectra));
+        public DelegateCommand CopyMs2SpectrumCommand => _copyMs2SpectrumCommand ?? (_copyMs2SpectrumCommand = new DelegateCommand(_model.CopySpectrum, _model.CanSaveSpectra));
+        private DelegateCommand _copyMs2SpectrumCommand;
 
-        public ViewModelBase[] PeakDetailViewModels { get; }
-
-        private DelegateCommand copyMs2SpectrumCommand;
     }
 }

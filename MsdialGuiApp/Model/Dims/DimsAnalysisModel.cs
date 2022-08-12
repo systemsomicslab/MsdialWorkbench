@@ -7,6 +7,7 @@ using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
@@ -29,6 +30,8 @@ using System.Windows.Media;
 namespace CompMs.App.Msdial.Model.Dims
 {
     internal sealed class DimsAnalysisModel : AnalysisModelBase {
+        private static readonly double MZ_TOLERANCE = 20;
+
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly IDataProvider _provider;
@@ -77,7 +80,7 @@ namespace CompMs.App.Msdial.Model.Dims
                             (byte)(255 * (1 - Math.Abs(peak.InnerModel.PeakShape.AmplitudeScoreValue - 0.5))),
                             (byte)(255 - 255 * peak.InnerModel.PeakShape.AmplitudeScoreValue)),
                         enableCache: true),
-                    "Ontology");
+                    "Intensity");
             var brushes = new[] { intensityBrush, ontologyBrush, };
             BrushMapData<ChromatogramPeakFeatureModel> selectedBrush;
             switch (parameter.TargetOmics) {
@@ -90,7 +93,6 @@ namespace CompMs.App.Msdial.Model.Dims
                     selectedBrush = intensityBrush;
                     break;
             }
-            Brush = selectedBrush.Mapper;
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var vAxis = Observable.Return(new Range(-0.5, 0.5))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
@@ -138,9 +140,10 @@ namespace CompMs.App.Msdial.Model.Dims
                 },
                 true);
             var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
+            var rawLoader = new MultiMsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
-                new MsRawSpectrumLoader(provider, _parameter),
+                rawLoader,
                 new MsDecSpectrumLoader(decLoader, Ms1Peaks),
                 new MsRefSpectrumLoader(mapper),
                 new PropertySelector<SpectrumPeak, float>(peak => peak.Mass),
@@ -155,6 +158,15 @@ namespace CompMs.App.Msdial.Model.Dims
 
             EicLoader = DimsEicLoader.BuildForPeakTable(provider, parameter);
             PeakTableModel = new DimsAnalysisPeakTableModel(Ms1Peaks, Target, Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d, Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d).AddTo(Disposables);
+
+            var mzSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, MZ_TOLERANCE, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
+            var idSpotFocus = new IdSpotFocus<ChromatogramPeakFeatureModel>(
+                Target,
+                id => Ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id)),
+                Target.Select(t => t?.MasterPeakID ?? 0d),
+                "Region focus by ID",
+                (mzSpotFocus, peak => peak.Mass)).AddTo(Disposables);
+            FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, mzSpotFocus);
 
             var peakInformationModel = new PeakInformationAnalysisModel(Target).AddTo(Disposables);
             peakInformationModel.Add(t => new MzPoint(t?.InnerModel.ChromXsTop.Mz.Value ?? 0d));
@@ -179,29 +191,17 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public DimsAnalysisPeakTableModel PeakTableModel { get; }
 
-        public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
-
         public EicLoader EicLoader { get; }
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
+        public FocusNavigatorModel FocusNavigatorModel { get; }
 
-        private static readonly double MZ_TOLERANCE = 20;
-        public void FocusByMz(IAxisManager axis, double mz) {
-            axis?.Focus(mz - MZ_TOLERANCE, mz + MZ_TOLERANCE);
-        }       
-
-        public void FocusById(IAxisManager mzAxis, int id) {
-            var focus = Ms1Peaks.FirstOrDefault(peak => peak.InnerModel.MasterPeakID == id);
-            Target.Value = focus;
-            FocusByMz(mzAxis, focus.Mass);
-        }
-
-        public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
 
         public CompoundSearchModel<ChromatogramPeakFeature> BuildCompoundSearchModel() {
             return new CompoundSearchModel<ChromatogramPeakFeature>(AnalysisFile, Target.Value.InnerModel, MsdecResult.Value, _compoundSearchers.Items);
         }
 
+        public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;
         public void SaveSpectra(Stream stream, ExportSpectraFileFormat format) {
             SpectraExport.SaveSpectraTable(
                 format,

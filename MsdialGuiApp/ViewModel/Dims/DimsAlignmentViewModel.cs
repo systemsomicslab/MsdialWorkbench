@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.View.Normalize;
+using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Normalize;
@@ -12,9 +13,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.ComponentModel;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
@@ -50,16 +49,14 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
-            Ms1Spots = CollectionViewSource.GetDefaultView(_model.Ms1Spots);
-
             var (peakPlotViewFocusAction, peakPlotViewFocused) = focusControlManager.Request();
-            PlotViewModel = new Chart.AlignmentPeakPlotViewModel(_model.PlotModel, focus: peakPlotViewFocusAction, isFocused: peakPlotViewFocused).AddTo(Disposables);
+            PlotViewModel = new AlignmentPeakPlotViewModel(_model.PlotModel, focus: peakPlotViewFocusAction, isFocused: peakPlotViewFocused).AddTo(Disposables);
 
-            Ms2SpectrumViewModel = new Chart.MsSpectrumViewModel(_model.Ms2SpectrumModel).AddTo(Disposables);
-            AlignmentEicViewModel = new Chart.AlignmentEicViewModel(_model.AlignmentEicModel).AddTo(Disposables);
+            Ms2SpectrumViewModel = new MsSpectrumViewModel(_model.Ms2SpectrumModel).AddTo(Disposables);
+            AlignmentEicViewModel = new AlignmentEicViewModel(_model.AlignmentEicModel).AddTo(Disposables);
 
             var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
-            BarChartViewModel = new Chart.BarChartViewModel(_model.BarChartModel, focusAction: barChartViewFocusAction, isFocused: barChartViewFocused).AddTo(Disposables);
+            BarChartViewModel = new BarChartViewModel(_model.BarChartModel, focusAction: barChartViewFocusAction, isFocused: barChartViewFocused).AddTo(Disposables);
             AlignmentSpotTableViewModel = new DimsAlignmentSpotTableViewModel(
                     _model.AlignmentSpotTableModel,
                     PeakSpotNavigatorViewModel.MzLowerValue,
@@ -74,33 +71,30 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
 
+            FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
+
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
-
-        public ICollectionView Ms1Spots { get; }
-        public ICollectionView PeakSpotsView => Ms1Spots;
-
-        public Chart.AlignmentPeakPlotViewModel PlotViewModel { get; }
-        public Chart.MsSpectrumViewModel Ms2SpectrumViewModel { get; }
-        public Chart.AlignmentEicViewModel AlignmentEicViewModel { get; }
-        public Chart.BarChartViewModel BarChartViewModel { get; }
+        public AlignmentPeakPlotViewModel PlotViewModel { get; }
+        public MsSpectrumViewModel Ms2SpectrumViewModel { get; }
+        public AlignmentEicViewModel AlignmentEicViewModel { get; }
+        public BarChartViewModel BarChartViewModel { get; }
         public DimsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
-
-        public ReactiveCommand SearchCompoundCommand { get; }
+        public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
 
+        public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
             using (var model = _model.BuildCompoundSearchModel())
             using (var vm = new CompoundSearchVM(model)) {
                 if (_compoundSearchService.ShowDialog(vm) == true) {
                     _model.Target.Value.RaisePropertyChanged();
-                    Ms1Spots?.Refresh();
                 }
             }
         }
