@@ -1,6 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System.Collections.Generic;
@@ -11,12 +13,14 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel
 {
-    public abstract class AnalysisFileViewModel : ResultVM
+    public abstract class AnalysisFileViewModel : ViewModelBase, IResultViewModel
     {
-        public AnalysisFileViewModel(IAnalysisModel model) : base(model) {
+        public AnalysisFileViewModel(IAnalysisModel model) {
             if (model is null) {
                 throw new System.ArgumentNullException(nameof(model));
             }
+
+            Model = model;
 
             Target = model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
@@ -40,12 +44,15 @@ namespace CompMs.App.Msdial.ViewModel
             DisplayLabel = model.ToReactivePropertySlimAsSynchronized(m => m.DisplayLabel).AddTo(Disposables);
         }
 
+        public object Model { get; }
+
+        public virtual ICollectionView PeakSpotsView => ms1PeaksView;
+
         public ICollectionView Ms1PeaksView {
             get => ms1PeaksView;
             private set => SetProperty(ref ms1PeaksView, value);
         }
         private ICollectionView ms1PeaksView;
-        public override ICollectionView PeakSpotsView => ms1PeaksView;
 
         public ReadOnlyReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
 

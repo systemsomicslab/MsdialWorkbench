@@ -18,7 +18,7 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel
 {
-    public abstract class MethodViewModel : ViewModelBase
+    internal abstract class MethodViewModel : ViewModelBase
     {
         public MethodViewModel(IMethodModel model, IReadOnlyReactiveProperty<AnalysisFileViewModel> analysisFileViewModel, IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels) {
             Model = model;
@@ -70,7 +70,7 @@ namespace CompMs.App.Msdial.ViewModel
 
             AnalysisViewModel = analysisFileViewModel.AddTo(Disposables);
             AlignmentViewModel = alignmentFileViewModel.AddTo(Disposables);
-            resultViewModels = new List<IReadOnlyReactiveProperty<ResultVM>> { AnalysisViewModel, AlignmentViewModel, };
+            resultViewModels = new List<IReadOnlyReactiveProperty<IResultViewModel>> { AnalysisViewModel, AlignmentViewModel, };
             ResultViewModels = resultViewModels.AsReadOnly();
 
             viewModelChanged = new Subject<Unit>().AddTo(Disposables);
@@ -93,7 +93,7 @@ namespace CompMs.App.Msdial.ViewModel
                     chromatogramViewModels.SelectAlignmentFile();
                     massSpectrumViewModels.SelectAlignmentFile();
                 }).AddTo(Disposables);
-            new IObservable<IReadOnlyReactiveProperty<ResultVM>>[]
+            new IObservable<IReadOnlyReactiveProperty<IResultViewModel>>[]
             {
                 SelectedAnalysisFile
                     .Where(file => !(file is null))
@@ -159,7 +159,7 @@ namespace CompMs.App.Msdial.ViewModel
 
             AnalysisViewModel = analysisFileViewModel.AddTo(Disposables);
             AlignmentViewModel = alignmentFileViewModel.AddTo(Disposables);
-            resultViewModels = new List<IReadOnlyReactiveProperty<ResultVM>> { AnalysisViewModel, AlignmentViewModel, };
+            resultViewModels = new List<IReadOnlyReactiveProperty<IResultViewModel>> { AnalysisViewModel, AlignmentViewModel, };
             ResultViewModels = resultViewModels.AsReadOnly();
             viewModelChanged = new Subject<Unit>().AddTo(Disposables);
             SelectedViewModel = AnalysisViewModel;
@@ -219,11 +219,11 @@ namespace CompMs.App.Msdial.ViewModel
 
         public IReadOnlyReactiveProperty<AlignmentFileViewModel> AlignmentViewModel { get; }
 
-        public ReadOnlyCollection<IReadOnlyReactiveProperty<ResultVM>> ResultViewModels { get; }
-        private readonly List<IReadOnlyReactiveProperty<ResultVM>> resultViewModels;
+        public ReadOnlyCollection<IReadOnlyReactiveProperty<IResultViewModel>> ResultViewModels { get; }
+        private readonly List<IReadOnlyReactiveProperty<IResultViewModel>> resultViewModels;
 
         private readonly Subject<Unit> viewModelChanged;
-        public IReadOnlyReactiveProperty<ResultVM> SelectedViewModel {
+        public IReadOnlyReactiveProperty<IResultViewModel> SelectedViewModel {
             get => selectedViewModel;
             set {
                 if (SetProperty(ref selectedViewModel, value)) {
@@ -231,7 +231,7 @@ namespace CompMs.App.Msdial.ViewModel
                 }
             }
         }
-        private IReadOnlyReactiveProperty<ResultVM> selectedViewModel;
+        private IReadOnlyReactiveProperty<IResultViewModel> selectedViewModel;
 
         public ViewModelSwitcher ChromatogramViewModels { get; }
         public ViewModelSwitcher MassSpectrumViewModels { get; }

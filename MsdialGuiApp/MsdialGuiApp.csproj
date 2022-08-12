@@ -588,7 +588,6 @@
     <Compile Include="ViewModel\MethodVM.cs" />
     <Compile Include="ViewModel\ParameterBaseVM.cs" />
     <Compile Include="Model\DataObj\PeakItem.cs" />
-    <Compile Include="ViewModel\ResultVM.cs" />
     <Compile Include="Model\DataObj\SpectrumPeakWrapper.cs" />
     <Compile Include="View\Dims\AlignmentClassBar.xaml.cs">
       <DependentUpon>AlignmentClassBar.xaml</DependentUpon>
