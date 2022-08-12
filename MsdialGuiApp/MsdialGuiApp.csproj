@@ -577,7 +577,6 @@
     <Compile Include="ViewModel\MzSearchQueryVM.cs" />
     <Compile Include="ViewModel\MsRefSearchParameterBaseVM.cs" />
     <Compile Include="ViewModel\Lcms\LcmsAlignmentViewModel.cs" />
-    <Compile Include="ViewModel\AnalysisFileVM.cs" />
     <Compile Include="ViewModel\Lcms\LcmsAnalysisViewModel.cs" />
     <Compile Include="Model\DataObj\BarItem.cs" />
     <Compile Include="Model\DataObj\Chromatogram.cs" />

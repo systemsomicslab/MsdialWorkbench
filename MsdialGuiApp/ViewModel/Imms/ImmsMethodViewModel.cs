@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -23,12 +24,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private readonly ImmsMethodModel model;
         private readonly FocusControlManager _focusControlManager;
 
-        private ImmsMethodViewModel(ImmsMethodModel model, IReadOnlyReactiveProperty<AnalysisFileViewModel> analysisViewModelAsObservable, IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentViewModelAsObservable, FocusControlManager focusControlmanager)
+        private ImmsMethodViewModel(ImmsMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisViewModelAsObservable, IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentViewModelAsObservable, FocusControlManager focusControlmanager)
             : base(model, analysisViewModelAsObservable, alignmentViewModelAsObservable) {
 
             this.model = model;
             _focusControlManager = focusControlmanager.AddTo(Disposables);
-            PropertyChanged += OnDisplayFiltersChanged;
         }
 
         public bool RefMatchedChecked {
@@ -68,15 +68,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             set => WriteDisplayFilter(DisplayFilter.ManuallyModified, value);
         }
         private DisplayFilter displayFilters = DisplayFilter.Unset;
-
-        void OnDisplayFiltersChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(displayFilters)) {
-                if (AnalysisViewModel.Value != null)
-                    AnalysisViewModel.Value.DisplayFilters = displayFilters;
-                // if (AlignmentViewModel.Value != null)
-                //     AlignmentViewModel.Value.DisplayFilters = displayFilters;
-            }
-        }
 
         private bool ReadDisplayFilter(DisplayFilter flag) {
             return displayFilters.Read(flag);

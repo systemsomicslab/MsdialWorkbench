@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.ViewModel
 {
     internal abstract class MethodViewModel : ViewModelBase
     {
-        public MethodViewModel(IMethodModel model, IReadOnlyReactiveProperty<AnalysisFileViewModel> analysisFileViewModel, IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels) {
+        public MethodViewModel(IMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisFileViewModel, IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels) {
             Model = model;
             var analysisFilesView = model.AnalysisFiles.ToReadOnlyReactiveCollection(file => new AnalysisFileBeanViewModel(file));
             AnalysisFilesView = CollectionViewSource.GetDefaultView(analysisFilesView);
@@ -106,7 +106,7 @@ namespace CompMs.App.Msdial.ViewModel
             .AddTo(Disposables);
         }
 
-        public MethodViewModel(IMethodModel model, IReadOnlyReactiveProperty<AnalysisFileViewModel> analysisFileViewModel, IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentFileViewModel) {
+        public MethodViewModel(IMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisFileViewModel, IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentFileViewModel) {
             Model = model;
             var analysisFilesView = model.AnalysisFiles.ToReadOnlyReactiveCollection(file => new AnalysisFileBeanViewModel(file));
             AnalysisFilesView = CollectionViewSource.GetDefaultView(analysisFilesView);
@@ -215,7 +215,7 @@ namespace CompMs.App.Msdial.ViewModel
 
         protected abstract Task LoadAlignmentFileCoreAsync(AlignmentFileBeanViewModel alignmentFile, CancellationToken token);
 
-        public IReadOnlyReactiveProperty<AnalysisFileViewModel> AnalysisViewModel { get; }
+        public IReadOnlyReactiveProperty<IAnalysisResultViewModel> AnalysisViewModel { get; }
 
         public IReadOnlyReactiveProperty<AlignmentFileViewModel> AlignmentViewModel { get; }
 

@@ -2,9 +2,11 @@
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
@@ -28,14 +30,18 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
-    class ImmsAnalysisModel : AnalysisModelBase {
+    internal sealed class ImmsAnalysisModel : AnalysisModelBase {
+        private static readonly double MZ_TOLELANCE = 20;
+        private static readonly double DT_TOLELANCE = 0.01;
+
         public ImmsAnalysisModel(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
             DataBaseMapper mapper,
-            ParameterBase parameter)
+            ParameterBase parameter,
+            PeakFilterModel peakFilterModel)
             : base(analysisFile) {
 
             this.provider = provider;
@@ -45,6 +51,8 @@ namespace CompMs.App.Msdial.Model.Imms
             this.parameter = parameter as MsdialImmsParameter;
 
             FileName = analysisFile.AnalysisFileName;
+
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, useRtFilter: false, useDtFilter: true);
 
             AmplitudeOrderMin = Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0;
             AmplitudeOrderMax = Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0;
@@ -77,7 +85,7 @@ namespace CompMs.App.Msdial.Model.Imms
                     break;
             }
             Brush = selectedBrush.Mapper;
-            var labelsource = this.ObserveProperty(m => m.DisplayLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var labelsource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource, selectedBrush, brushes)
             {
                 HorizontalTitle = "Drift time [1/k0]",
@@ -162,7 +170,18 @@ namespace CompMs.App.Msdial.Model.Imms
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
 
-            Target.Subscribe(t => OnTargetChanged(t));
+            Target.Subscribe(t => OnTargetChanged(t)).AddTo(Disposables);
+
+            var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MZ_TOLELANCE, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
+            var dtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, DT_TOLELANCE, Target.Select(t => t?.ChromXValue ?? 0d), "F3", "Drift time(1/k0)", isItalic: false).AddTo(Disposables);
+            var idSpotFocus = new IdSpotFocus<ChromatogramPeakFeatureModel>(
+                Target,
+                id => Ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id)),
+                Target.Select(t => t?.MasterPeakID ?? 0d),
+                "Region focus by ID",
+                (dtSpotFocus, peak => peak.ChromXValue ?? 0d),
+                (mzSpotFocus, peak => peak.Mass)).AddTo(Disposables);
+            FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, dtSpotFocus, mzSpotFocus);
         }
 
         public MsdialImmsParameter parameter { get; }
@@ -176,7 +195,11 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public SurveyScanModel SurveyScanModel { get; }
 
+        public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
+
         public ImmsAnalysisPeakTableModel PeakTableModel { get; }
+
+        public FocusNavigatorModel FocusNavigatorModel { get; }
 
         public string RawSplashKey {
             get => rawSplashKey;

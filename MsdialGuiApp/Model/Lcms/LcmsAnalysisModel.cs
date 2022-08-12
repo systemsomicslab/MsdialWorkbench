@@ -223,14 +223,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Peak table
             PeakTableModel = new LcmsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax, ChromMin, ChromMax).AddTo(Disposables);
 
-            CanSearchCompound = new[]
-            {
-                Target.Select(t => t is null || t.InnerModel is null),
-                MsdecResult.Select(r => r is null),
-            }.CombineLatestValuesAreAllFalse()
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposables);
-
             var rtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, RtTol, Target.Select(t => t?.ChromXValue ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MzTol, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
             Func<double, ChromatogramPeakFeatureModel> yyy(IReadOnlyList<ChromatogramPeakFeatureModel> ms1Peaks) {
@@ -284,8 +276,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         public double ChromMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.ChromXValue) ?? 0d;
         public double MassMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d;
         public double MassMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d;
-
-        public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 
         public CompoundSearchModel<ChromatogramPeakFeature> CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {

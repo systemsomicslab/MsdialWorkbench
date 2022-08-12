@@ -95,7 +95,7 @@
                             <DataTemplate>
                                 <ContentControl Content="{Binding Value}">
                                     <ContentControl.Resources>
-                                        <DataTemplate DataType="{x:Type vmcore:AnalysisFileViewModel}">
+                                        <DataTemplate DataType="{x:Type vm:LcimmsAnalysisViewModel}">
                                             <TextBlock Name="TabItem_RtMzPairwisePlotPeakView"
                                                        Text="Peak spot viewer"
                                                        VerticalAlignment="Stretch"/>
@@ -113,7 +113,7 @@
                             <DataTemplate>
                                 <ContentControl Content="{Binding Value}">
                                     <ContentControl.Resources>
-                                        <DataTemplate DataType="{x:Type vmcore:AnalysisFileViewModel}">
+                                        <DataTemplate DataType="{x:Type vm:LcimmsAnalysisViewModel}">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition/>

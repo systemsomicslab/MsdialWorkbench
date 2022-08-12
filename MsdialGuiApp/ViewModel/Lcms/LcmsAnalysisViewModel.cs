@@ -22,15 +22,14 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    internal sealed class LcmsAnalysisViewModel : AnalysisFileViewModel, IAnalysisResultViewModel
+    internal sealed class LcmsAnalysisViewModel : ViewModelBase, IAnalysisResultViewModel
     {
         public LcmsAnalysisViewModel(
             LcmsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
-            FocusControlManager focusControlManager)
-            : base(model) {
+            FocusControlManager focusControlManager) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }

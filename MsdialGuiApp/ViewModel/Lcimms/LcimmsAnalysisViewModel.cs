@@ -14,14 +14,13 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
-    internal sealed class LcimmsAnalysisViewModel : AnalysisFileViewModel, IAnalysisResultViewModel
+    internal sealed class LcimmsAnalysisViewModel : ViewModelBase, IAnalysisResultViewModel
     {
         public LcimmsAnalysisViewModel(
             LcimmsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            FocusControlManager focusControlManager)
-            : base(model) {
+            FocusControlManager focusControlManager) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }

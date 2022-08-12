@@ -211,7 +211,7 @@
                             <DataTemplate>
                                 <ContentControl Content="{Binding Value}">
                                     <ContentControl.Resources>
-                                        <DataTemplate DataType="{x:Type vmcore:AnalysisFileViewModel}">
+                                        <DataTemplate DataType="{x:Type vm:LcmsAnalysisViewModel}">
                                             <TextBlock Name="TabItem_RtMzPairwisePlotPeakView"
                                                        Text="Peak spot viewer"
                                                        VerticalAlignment="Stretch"
@@ -231,7 +231,7 @@
                             <DataTemplate>
                                 <ContentControl Content="{Binding Value}">
                                     <ContentControl.Resources>
-                                        <DataTemplate DataType="{x:Type vmcore:AnalysisFileViewModel}">
+                                        <DataTemplate DataType="{x:Type vm:LcmsAnalysisViewModel}">
                                             <chart:PeakView x:Name="PeakView" DataContext="{Binding PlotViewModel}">
                                                 <chart:PeakView.LabelTemplate>
                                                     <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">

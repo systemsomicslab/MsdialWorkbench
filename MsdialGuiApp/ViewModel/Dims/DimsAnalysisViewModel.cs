@@ -17,7 +17,7 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    internal sealed class DimsAnalysisViewModel : AnalysisFileViewModel, IAnalysisResultViewModel
+    internal sealed class DimsAnalysisViewModel : ViewModelBase, IAnalysisResultViewModel
     {
         private readonly DimsAnalysisModel _model;
         private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
@@ -27,8 +27,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             DimsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            FocusControlManager focusControlManager)
-            : base(model) {
+            FocusControlManager focusControlManager) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
@@ -62,14 +61,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
 
-            SearchCompoundCommand = new[]
-            {
-                Target.Select(t => t?.InnerModel != null),
-                _model.MsdecResult.Select(r => r != null),
-            }.CombineLatestValuesAreAllTrue()
-            .ToReactiveCommand()
-            .WithSubscribe(SearchCompound)
-            .AddTo(Disposables);
+            SearchCompoundCommand = model.CanSearchCompound
+                .ToReactiveCommand()
+                .WithSubscribe(SearchCompound)
+                .AddTo(Disposables);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -112,10 +107,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private void SearchCompound() {
             using (var model = _model.BuildCompoundSearchModel())
             using (var vm = new CompoundSearchVM(model)) {
-                if (_compoundSearchService.ShowDialog(vm) == true) {
-                    _model.Target.Value.RaisePropertyChanged();
-                    Ms1PeaksView?.Refresh();
-                }
+                _compoundSearchService.ShowDialog(vm);
             }
         }
 
