@@ -16,6 +16,13 @@ namespace CompMs.App.Msdial.Model.DataObj
         public Range Position { get; }
         public double ExactMass { get; }
         public Formula Formula { get; }
+        public bool IsProteinNterminal { get; }
+        public bool IsProteinCterminal { get; }
+        public bool IsDecoy { get; }
+        public int MissedCleavages { get; }
+        public int SamePeptideNumberInSearchedProteins { get; }
+        public int CountModifiedAminoAcids { get; }
+
 
         //public object PeptideSeq { get; }
         private readonly PeptideMsResult _peptideMsResult;
@@ -30,6 +37,12 @@ namespace CompMs.App.Msdial.Model.DataObj
             Formula = peptideMsResult.Peptide.Formula;
             Position = peptideMsResult.Peptide.Position;
             ExactMass = peptideMsResult.Peptide.ExactMass;
+            IsProteinNterminal = peptideMsResult.Peptide.IsProteinNterminal;
+            IsProteinCterminal = peptideMsResult.Peptide.IsProteinCterminal;
+            IsDecoy = peptideMsResult.Peptide.IsDecoy;
+            MissedCleavages = peptideMsResult.Peptide.MissedCleavages;
+            SamePeptideNumberInSearchedProteins = peptideMsResult.Peptide.SamePeptideNumberInSearchedProteins;
+            CountModifiedAminoAcids = peptideMsResult.Peptide.CountModifiedAminoAcids();
         }
 
         public PeptideModel(PeptideMsResult peptideMsResult, IReadOnlyList<AlignmentSpotPropertyModel> spots)
@@ -42,6 +55,12 @@ namespace CompMs.App.Msdial.Model.DataObj
             Formula = peptideMsResult.Peptide.Formula;
             Position = peptideMsResult.Peptide.Position;
             ExactMass = peptideMsResult.Peptide.ExactMass;
+            IsProteinNterminal = peptideMsResult.Peptide.IsProteinNterminal;
+            IsProteinCterminal = peptideMsResult.Peptide.IsProteinCterminal;
+            IsDecoy = peptideMsResult.Peptide.IsDecoy;
+            MissedCleavages = peptideMsResult.Peptide.MissedCleavages;
+            SamePeptideNumberInSearchedProteins = peptideMsResult.Peptide.SamePeptideNumberInSearchedProteins;
+            CountModifiedAminoAcids = peptideMsResult.Peptide.CountModifiedAminoAcids();
         }
 
     }
