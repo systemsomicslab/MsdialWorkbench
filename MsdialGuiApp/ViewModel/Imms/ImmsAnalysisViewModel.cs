@@ -12,6 +12,7 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Reactive.Linq;
 using System.Windows;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
@@ -114,9 +115,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
         }
 
-        public DelegateCommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
+        public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
 
-        private DelegateCommand showIonTableCommand;
+        private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {
             peakSpotTableService.Show(PeakTableViewModel);

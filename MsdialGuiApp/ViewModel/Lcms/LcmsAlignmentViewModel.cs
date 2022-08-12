@@ -17,6 +17,7 @@ using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
@@ -119,7 +120,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
-        public DelegateCommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
+        public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
         private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {

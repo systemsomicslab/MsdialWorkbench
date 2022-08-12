@@ -14,6 +14,7 @@ using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
@@ -114,7 +115,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public DelegateCommand CopyMs2SpectrumCommand => _copyMs2SpectrumCommand ?? (_copyMs2SpectrumCommand = new DelegateCommand(_model.CopySpectrum, _model.CanSaveSpectra));
         private DelegateCommand _copyMs2SpectrumCommand;
 
-        public DelegateCommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
+        public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
         private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {

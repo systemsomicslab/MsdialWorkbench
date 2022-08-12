@@ -17,6 +17,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
@@ -349,7 +350,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
         }
 
-        public DelegateCommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
+        public ICommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
         private DelegateCommand showIonTableCommand;
 
         private void ShowIonTable() {

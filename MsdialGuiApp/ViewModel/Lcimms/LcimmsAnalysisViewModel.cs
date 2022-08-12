@@ -11,6 +11,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Reactive.Linq;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
@@ -97,8 +98,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         public ReactiveCommand SearchCompoundCommand { get; }
 
-        public DelegateCommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
-        private DelegateCommand showIonTableCommand;
+        public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
+        private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {
             // peakSpotTableService.Show(PeakTableViewModel);

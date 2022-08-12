@@ -14,6 +14,7 @@ using System;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
@@ -111,8 +112,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             }
         }
 
-        public DelegateCommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
-        private DelegateCommand showIonTableCommand;
+        public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
+        private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {
             _peakSpotTableService.Show(PeakTableViewModel);

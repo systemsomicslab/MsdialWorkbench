@@ -18,6 +18,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
@@ -181,8 +182,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
-        public DelegateCommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
-        private DelegateCommand showIonTableCommand;
+        public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
+        private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {
             if (model.Parameter.TargetOmics == CompMs.Common.Enum.TargetOmics.Proteomics) {
