@@ -37,11 +37,11 @@ namespace CompMs.MsdialImmsCore.Parser
         }
 
         public ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Visit(ShotgunProteomicsRestorationKey key, ShotgunProteomicsDB database) {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Visit(EadLipidDatabaseRestorationKey key, EadLipidDatabase database) {
-            throw new NotImplementedException();
+            return new EadLipidAnnotator(database, key.Key, key.Priority, key.MsRefSearchParameter);
         }
     }
 }

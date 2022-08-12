@@ -8,7 +8,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/View/Setting/AnnotationSettingStyle.xaml"/>
     </ResourceDictionary.MergedDictionaries>
-    <DataTemplate DataType="{x:Type localVM:DimsMetabolomicsUseMs2AnnotatorSettingViewModel}">
+    <DataTemplate x:Key="DimsAnnotatorTemplate">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -47,6 +47,10 @@
             </Expander>
         </Grid>
     </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type localVM:DimsMetabolomicsUseMs2AnnotatorSettingViewModel}">
+        <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource DimsAnnotatorTemplate}"/>
+    </DataTemplate>
 
     <DataTemplate DataType="{x:Type localVM:DimsMetabolomicsAnnotatorSettingViewModel}">
         <Grid>
@@ -69,6 +73,10 @@
                                 Margin="8"/>
             </GroupBox>
         </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type localVM:DimsEadLipidAnnotatorSettingViewModel}">
+        <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource DimsAnnotatorTemplate}"/>
     </DataTemplate>
     
     <DataTemplate DataType="{x:Type vm:CompoundSearchVM}"

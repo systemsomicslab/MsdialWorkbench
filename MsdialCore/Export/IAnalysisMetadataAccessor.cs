@@ -36,7 +36,7 @@ namespace CompMs.MsdialCore.Export
 
         public Dictionary<string, string> GetContent(ChromatogramPeakFeature feature, MSDecResult msdec, IDataProvider provider) {
             var matchResult = NullIfUnknown(feature.MatchResults.Representative);
-            var reference = refer.Refer(matchResult);
+            var reference = matchResult is null ? null : refer.Refer(matchResult);
             return GetContentCore(feature, msdec, reference, matchResult, provider.LoadMs1Spectrums());
         }
 
@@ -90,7 +90,7 @@ namespace CompMs.MsdialCore.Export
                 { "Adduct",  feature.AdductType?.AdductIonName ?? "null" },
                 { "Isotope",  feature.PeakCharacter.IsotopeWeightNumber.ToString() },
                 { "Comment",  feature.Comment},
-                { "Formula", reference?.Formula.FormulaString ?? "null" },
+                { "Formula", reference?.Formula?.FormulaString ?? "null" },
                 { "Ontology", !string.IsNullOrEmpty(reference?.CompoundClass)  ? reference.CompoundClass
                                                                                : ValueOrNull(reference?.Ontology) },
                 { "InChIKey", reference?.InChIKey ?? "null" },

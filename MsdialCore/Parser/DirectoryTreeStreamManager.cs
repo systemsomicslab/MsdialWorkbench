@@ -23,7 +23,7 @@ namespace CompMs.MsdialCore.Parser
         public Task<Stream> Get(string key) {
             var file = Path.Combine(RootDirectory, key);
             if (!File.Exists(file)) {
-                throw new ArgumentException(nameof(key));
+                throw new FileNotFoundException(file);
             }
             var stream = File.Open(file, FileMode.Open);
             return Task.FromResult<Stream>(stream);

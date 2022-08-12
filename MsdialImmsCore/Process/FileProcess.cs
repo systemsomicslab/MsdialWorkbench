@@ -42,7 +42,7 @@ namespace CompMs.MsdialImmsCore.Process
             IMsdialDataStorage<MsdialImmsParameter> storage,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
-            IDataProviderFactory<AnalysisFileBean> providerFactory,
+            IDataProviderFactory<RawMeasurement> providerFactory,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             bool isGuiProcess = false,
             Action<int> reportAction = null,
@@ -53,7 +53,8 @@ namespace CompMs.MsdialImmsCore.Process
             var annotatorContainers = storage.DataBaseMapper.MoleculeAnnotators;
 
             var rawObj = LoadMeasurement(file, isGuiProcess);
-            var provider = providerFactory.Create(file);
+            //var provider = providerFactory.Create(file);
+            var provider = providerFactory.Create(rawObj);
 
             Console.WriteLine("Peak picking started");
             parameter.FileID2CcsCoefficients.TryGetValue(file.AnalysisFileId, out var coeff);

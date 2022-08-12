@@ -12,6 +12,8 @@
              xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:vmcore="clr-namespace:CompMs.App.Msdial.ViewModel"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
+             xmlns:info="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
+             xmlns:infoview="clr-namespace:CompMs.App.Msdial.View.Information"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:commonbehavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
@@ -179,6 +181,7 @@
                                             </chart:AlignmentPeakPlotView>
                                         </DataTemplate>
                                     </ContentControl.Resources>
+
                                 </ContentControl>
                             </DataTemplate>
                         </TabControl.ContentTemplate>
@@ -284,29 +287,38 @@
 
                         <TabControl Name="TabControl_PeakCharacter"
                                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                    DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
+                                    DataContext="{Binding SelectedViewModel.Value}"
+                                    ItemsSource="{Binding PeakDetailViewModels}"
                                     Grid.Row="0">
-
-                            <TabItem Header="Basic peak property" 
-                                 Name="TabItem_BasicProperty" 
-                                 Height="25"
-                                 Background="{StaticResource MainThemeColor}">
-                                 <!--
-                                <local:PeakPropertyView DataContext="{Binding Target}"/>
-                                -->
-                            </TabItem>
-
-                            <TabItem Header="Compound detail" 
-                                 Name="TabItem_CompoundDetail" 
-                                 Height="25"
-                                 Background="{StaticResource MainThemeColor}">
-                                 <!--
-                                <local:CompoundDetailView DataContext="{Binding Target}"/>
-                                -->
-                            </TabItem>
-                         
+                            <TabControl.ContentTemplate>
+                                <DataTemplate>
+                                    <DataTemplate.Resources>
+                                        <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
+                                            <infoview:PeakInformationView/>
+                                        </DataTemplate>                              
+                                        <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
+                                            <infoview:CompoundDetailView/>
+                                        </DataTemplate>                              
+                                    </DataTemplate.Resources>
+                                    <ContentPresenter Content="{Binding}"/>
+                                </DataTemplate>
+                            </TabControl.ContentTemplate>
+                            <TabControl.ItemTemplate>
+                                <DataTemplate>
+                                    <DataTemplate.Resources>
+                                        <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
+                                            <TextBlock Text="Basic peak property"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
+                                            <TextBlock Text="Compund detail"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                    </DataTemplate.Resources>
+                                    <ContentPresenter Content="{Binding}"/>
+                                </DataTemplate>
+                            </TabControl.ItemTemplate>
                         </TabControl>
-
                     </Grid>
 
                     <TabControl x:Name="TabControl_MS2Viewer"

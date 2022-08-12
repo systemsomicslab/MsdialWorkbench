@@ -49,9 +49,9 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             var ms1Spectrum = provider.LoadMs1Spectrums();
 
-            var mzRange = DataAccess.GetMs1Range(ms1Spectrum, param.IonMode);
-            var startMass = Math.Max(mzRange[0], param.MassRangeBegin);
-            var endMass = Math.Min(mzRange[1], param.MassRangeEnd);
+            var mzRange = provider.GetMs1Range(param.IonMode);
+            var startMass = Math.Max(mzRange.Min, param.MassRangeBegin);
+            var endMass = Math.Min(mzRange.Max, param.MassRangeEnd);
             var massStep = param.AccuracyType == AccuracyType.IsNominal ? 1f : param.MassSliceWidth;
 
             var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();

@@ -47,13 +47,13 @@
     <Ribbon.QuickAccessToolBar>
         <RibbonQuickAccessToolBar>
             <RibbonButton SmallImageSource="{StaticResource New_project_is}"
-                          Command="{Binding CreateNewProjectCommand}"
+                          Command="{Binding DataContext.CreateNewProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
             <RibbonButton SmallImageSource="{StaticResource Open_is}"
-                          Command="{Binding OpenProjectCommand}"
+                          Command="{Binding DataContext.OpenProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
             <RibbonButton SmallImageSource="{StaticResource Save_is}"
-                          Command="{Binding SaveProjectCommand}"
+                          Command="{Binding DataContext.SaveProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
         </RibbonQuickAccessToolBar>
     </Ribbon.QuickAccessToolBar>
@@ -64,21 +64,21 @@
         <RibbonApplicationMenu SmallImageSource="{StaticResource New_project_is}"
                                KeyTip="F" Background="{StaticResource SubThemeColor}" BorderBrush="{StaticResource SubThemeColor}" Margin="1,1,1,1" >
             <RibbonApplicationMenuItem Header="New project" ImageSource="{StaticResource New_project_is}"
-                                       Command="{Binding CreateNewProjectCommand}"
+                                       Command="{Binding DataContext.CreateNewProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                        KeyTip="N"/>
             <RibbonApplicationMenuItem Header="Open project" ImageSource="{StaticResource Open_is}"
-                                       Command="{Binding OpenProjectCommand}"
+                                       Command="{Binding OpenProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                                        KeyTip="O"/>
             <RibbonApplicationSplitMenuItem Header="Save" ImageSource="{StaticResource Save_is}"
-                                            Command="{Binding SaveProjectCommand}"
+                                            Command="{Binding SaveProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                             KeyTip="S">
             <RibbonApplicationMenuItem Header="Save as..." ImageSource="{StaticResource Save_as_is}"
-                                       Command="{Binding SaveAsProjectCommand}"
+                                       Command="{Binding SaveAsProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                        KeyTip="A"/>
             <RibbonApplicationMenuItem Header="Save parameter as..."
-                                       Command="{Binding SaveParameterCommand}" />
+                                       Command="{Binding SaveParameterCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
             </RibbonApplicationSplitMenuItem>
         </RibbonApplicationMenu>
     </Ribbon.ApplicationMenu>
@@ -95,12 +95,12 @@
                 <RibbonButton.ToolTip>Reanalysis for all data processing.</RibbonButton.ToolTip>
             </RibbonButton>
             <RibbonButton Label="Identification" LargeImageSource="{StaticResource From_annotation_process_is}"
-                          IsEnabled="False"
+                          Command="{Binding DataContext.ExecuteIdentificationMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="I">
                 <RibbonButton.ToolTip>Reanalysis for peak identification.</RibbonButton.ToolTip>
             </RibbonButton>
             <RibbonButton Label="Alignment" LargeImageSource="{StaticResource From_alignment_process_is}"
-                          IsEnabled="False"
+                          Command="{Binding DataContext.ExecuteAlignmentMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="L">
                 <RibbonButton.ToolTip>Reanalysis for peak alignment.</RibbonButton.ToolTip>
             </RibbonButton>

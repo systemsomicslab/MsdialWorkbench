@@ -17,8 +17,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
         protected readonly double rtTol, mzTol, dtTol;
         protected readonly MsdialLcImMsParameter param;
         protected override double AxTol => AxTolFirst;
-        protected override double AxTolFirst => rtTol;
-        protected override double AxTolSecond => dtTol;
+        public override double AxTolFirst => rtTol;
+        public override double AxTolSecond => dtTol;
 
         public LcimmsGapFiller(MsdialLcImMsParameter param) : base(param) {
             rtTol = param.AccumulatedRtRange;
