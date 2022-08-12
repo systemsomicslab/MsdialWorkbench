@@ -26,10 +26,8 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         }
         private readonly PeptideModel _model;
         public string PeptideSeq { get; }
-        public string DatabaseOrigin { get; }
-
         public string ModifiedSequence { get; }
-
+        public string DatabaseOrigin { get; }
         public int DatabaseOriginID { get; }
         public Formula Formula { get; }
         public double ExactMass { get; }
