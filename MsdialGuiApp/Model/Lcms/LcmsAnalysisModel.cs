@@ -70,7 +70,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             // These 3 lines must be moved to somewhere for swithcing/updating the alignment result
             var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(analysisFile.ProteinAssembledResultFilePath);
-            var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Peaks);
+            var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Peaks, Target);
             proteinResultContainerModelObserver.OnNext(proteinResultContainerModel);
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, useRtFilter: true);

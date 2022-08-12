@@ -96,7 +96,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, barItemsLoaderProperty)));
            
             var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(alignmentFileBean.ProteinAssembledResultFilePath);
-            var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Spots);
+            var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Spots, Target);
             proteinResultContainerModelObserver.OnNext(proteinResultContainerModel);
 
             _decLoader = new MSDecLoader(_alignmentFile.SpectraFilePath);

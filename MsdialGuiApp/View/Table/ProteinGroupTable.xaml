@@ -35,7 +35,10 @@
             </TabItem>
             <TabItem Header="Peptide Groups">
                 <StackPanel DataContext="{Binding Groups/}">
-                    <DataGrid Margin="8" ItemsSource="{Binding PeptideViewModels}" IsSynchronizedWithCurrentItem="True" />
+                    <DataGrid Margin="8" ItemsSource="{Binding PeptideViewModels}"
+                              Tag="{Binding DataContext.Target, RelativeSource={RelativeSource AncestorType=Window}}"
+                              SelectedValuePath="AnnotatedSpot"
+                              SelectedValue="{Binding Tag.Value, Mode=OneWayToSource, RelativeSource={RelativeSource Self}}" />
                 </StackPanel>
                 
             </TabItem>

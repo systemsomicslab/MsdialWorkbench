@@ -14,5 +14,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public string PeptideSeq { get; }
         public string DatabaseOrigin { get; }
 
+        public object AnnotatedSpot => _model.AnnotatedSpot;
+
     }
 }

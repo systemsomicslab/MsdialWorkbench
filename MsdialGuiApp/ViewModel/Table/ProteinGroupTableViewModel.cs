@@ -32,9 +32,17 @@ namespace CompMs.App.Msdial.ViewModel.Table
                     _groups.ClearOnScheduler();
                     _groups.AddRangeOnScheduler(groups);
                 }).AddTo(Disposables);
+            _modelProperty.Subscribe(m => Target = m?.Target).AddTo(Disposables);
         }
 
         public ReadOnlyReactiveCollection<ProteinGroupViewModel> Groups { get; }
+
+        public IReactiveProperty<object> Target
+        {
+            get => _target;
+            set => SetProperty(ref _target, value);
+        }
+        private IReactiveProperty<object> _target;
 
     }
 }

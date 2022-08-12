@@ -17,14 +17,14 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public PeptideModel(PeptideMsResult peptideMsResult, IReadOnlyList<ChromatogramPeakFeatureModel> spots)
         {
-            AnnotatedSpot = spots.FirstOrDefault(spot => spot.InnerModel == peptideMsResult.ChromatogramPeakFeature);
+            AnnotatedSpot = spots.FirstOrDefault(spot => spot.InnerModel.MasterPeakID == peptideMsResult.ChromatogramPeakFeature.MasterPeakID);
             PeptideSeq = peptideMsResult.Peptide.Sequence;
             DatabaseOrigin = peptideMsResult.Peptide.DatabaseOrigin;
         }
 
         public PeptideModel(PeptideMsResult peptideMsResult, IReadOnlyList<AlignmentSpotPropertyModel> spots)
         {
-            AnnotatedSpot = spots.FirstOrDefault(spot => spot.innerModel == peptideMsResult.AlignmentSpotProperty);
+            AnnotatedSpot = spots.FirstOrDefault(spot => spot.innerModel.MasterAlignmentID == peptideMsResult.AlignmentSpotProperty.MasterAlignmentID);
             PeptideSeq = peptideMsResult.Peptide.Sequence;
             DatabaseOrigin = peptideMsResult.Peptide.DatabaseOrigin;
         }
