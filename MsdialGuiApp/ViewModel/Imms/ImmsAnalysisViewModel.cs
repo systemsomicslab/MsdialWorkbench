@@ -7,22 +7,27 @@ using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Reactive.Linq;
-using System.Windows;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
     internal sealed class ImmsAnalysisViewModel : ViewModelBase, IAnalysisResultViewModel
     {
+        private readonly ImmsAnalysisModel _model;
+        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
+        private readonly IMessageBroker _broker;
+
         public ImmsAnalysisViewModel(
             ImmsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IMessageBroker broker,
             FocusControlManager focusControlManager) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
@@ -35,23 +40,23 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
 
-            this.model = model;
-            this.compoundSearchService = compoundSearchService;
-            this.peakSpotTableService = peakSpotTableService;
-
+            _model = model;
+            _compoundSearchService = compoundSearchService;
+            _peakSpotTableService = peakSpotTableService;
+            _broker = broker;
             var (focusAction, focused) = focusControlManager.Request();
-            PlotViewModel = new AnalysisPeakPlotViewModel(this.model.PlotModel, focusAction, focused).AddTo(Disposables);
-            EicViewModel = new EicViewModel(this.model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(_model.PlotModel, focusAction, focused).AddTo(Disposables);
+            EicViewModel = new EicViewModel(_model.EicModel, horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
 
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
             PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
 
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
-            SurveyScanViewModel = new SurveyScanViewModel(this.model.SurveyScanModel, horizontalAxis: PlotViewModel.VerticalAxis).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(_model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
+            SurveyScanViewModel = new SurveyScanViewModel(_model.SurveyScanModel, horizontalAxis: PlotViewModel.VerticalAxis).AddTo(Disposables);
             PeakTableViewModel = new ImmsAnalysisPeakTableViewModel(
-                this.model.PeakTableModel,
-                Observable.Return(this.model.EicLoader),
+                _model.PeakTableModel,
+                Observable.Return(_model.EicLoader),
                 PeakSpotNavigatorViewModel.MzLowerValue,
                 PeakSpotNavigatorViewModel.MzUpperValue,
                 PeakSpotNavigatorViewModel.DtLowerValue,
@@ -61,7 +66,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
 
-            SearchCompoundCommand = this.model.CanSearchCompound
+            SearchCompoundCommand = model.CanSearchCompound
                 .ToReactiveCommand()
                 .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
@@ -72,53 +77,26 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
-        private readonly ImmsAnalysisModel model;
-        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
-        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
-
-        public AnalysisPeakPlotViewModel PlotViewModel {
-            get => plotViewModel;
-            set => SetProperty(ref plotViewModel, value);
-        }
-        private AnalysisPeakPlotViewModel plotViewModel;
-
-        public EicViewModel EicViewModel {
-            get => eicViewModel;
-            set => SetProperty(ref eicViewModel, value);
-        }
-        private EicViewModel eicViewModel;
-
-        public RawDecSpectrumsViewModel RawDecSpectrumsViewModel {
-            get => ms2ViewModel;
-            set => SetProperty(ref ms2ViewModel, value);
-        }
-        private RawDecSpectrumsViewModel ms2ViewModel;
-
-        public SurveyScanViewModel SurveyScanViewModel {
-            get => surveyScanViewModel;
-            set => SetProperty(ref surveyScanViewModel, value);
-        }
-        private SurveyScanViewModel surveyScanViewModel;
-
-        public ImmsAnalysisPeakTableViewModel PeakTableViewModel {
-            get => peakTableViewModel;
-            set => SetProperty(ref peakTableViewModel, value);
-        }
-        private ImmsAnalysisPeakTableViewModel peakTableViewModel;
-
+        public AnalysisPeakPlotViewModel PlotViewModel { get; }
+        public EicViewModel EicViewModel { get; }
+        public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
+        public SurveyScanViewModel SurveyScanViewModel { get; }
+        public ImmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public PeakFilterViewModel PeakFilterViewModel { get; }
+        public CompoundDetailViewModel CompoundDetailViewModel { get; }
+        public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ReactiveCommand SearchCompoundCommand { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
 
         private void SearchCompound() {
-            using (var csm = model.CreateCompoundSearchModel()) {
+            using (var csm = _model.CreateCompoundSearchModel()) {
                 if (csm is null) {
                     return;
                 }
                 using (var vm = new ImmsCompoundSearchVM(csm)) {
-                    compoundSearchService.ShowDialog(vm);
+                    _compoundSearchService.ShowDialog(vm);
                 }
             }
         }
@@ -128,32 +106,25 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {
-            peakSpotTableService.Show(PeakTableViewModel);
+            _peakSpotTableService.Show(PeakTableViewModel);
         }
 
-        public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
+        public DelegateCommand SaveMs2SpectrumCommand => _saveMs2SpectrumCommand ?? (_saveMs2SpectrumCommand = new DelegateCommand(SaveSpectra, CanSaveSpectra));
+        private DelegateCommand _saveMs2SpectrumCommand;
 
-        public CompoundDetailViewModel CompoundDetailViewModel { get; }
-        public ViewModelBase[] PeakDetailViewModels { get; }
-
-        private DelegateCommand<Window> saveMs2SpectrumCommand;
-
-        private void SaveSpectra(Window owner) {
-            var sfd = new SaveFileDialog {
+        private void SaveSpectra() {
+            var request = new SaveFileNameRequest(_model.SaveSpectra)
+            {
                 Title = "Save spectra",
                 Filter = "NIST format(*.msp)|*.msp", // MassBank format(*.txt)|*.txt;|MASCOT format(*.mgf)|*.mgf;
                 RestoreDirectory = true,
                 AddExtension = true,
             };
-
-            if (sfd.ShowDialog(owner) == true) {
-                var filename = sfd.FileName;
-                this.model.SaveSpectra(filename);
-            }
+            _broker.Publish(request);
         }
 
-        private bool CanSaveSpectra(Window owner) {
-            return this.model.CanSaveSpectra();
+        private bool CanSaveSpectra() {
+            return _model.CanSaveSpectra();
         }
     }
 }

@@ -35,6 +35,13 @@ namespace CompMs.App.Msdial.Model.Imms
         private static readonly double MZ_TOLELANCE = 20;
         private static readonly double DT_TOLELANCE = 0.01;
 
+        private readonly MsdialImmsParameter _parameter;
+        private readonly IDataProvider _provider;
+        private readonly DataBaseMapper _dataBaseMapper;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> _matchResultEvaluator;
+        private readonly IBrushMapper<ChromatogramPeakFeatureModel> _brush;
+        private readonly IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> _annotatorContainers;
+
         public ImmsAnalysisModel(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
@@ -45,18 +52,13 @@ namespace CompMs.App.Msdial.Model.Imms
             PeakFilterModel peakFilterModel)
             : base(analysisFile) {
 
-            this.provider = provider;
-            DataBaseMapper = mapper;
-            MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
-            AnnotatorContainers = annotatorContainers;
-            this.parameter = parameter as MsdialImmsParameter;
-
-            FileName = analysisFile.AnalysisFileName;
+            _provider = provider;
+            _dataBaseMapper = mapper;
+            _matchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
+            _annotatorContainers = annotatorContainers;
+            _parameter = parameter as MsdialImmsParameter;
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, useRtFilter: false, useDtFilter: true);
-
-            AmplitudeOrderMin = Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.AmplitudeOrderValue) ?? 0;
-            AmplitudeOrderMax = Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.AmplitudeOrderValue) ?? 0;
 
             var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
                     new KeyBrushMapper<ChromatogramPeakFeatureModel, string>(
@@ -85,7 +87,7 @@ namespace CompMs.App.Msdial.Model.Imms
                     selectedBrush = intensityBrush;
                     break;
             }
-            Brush = selectedBrush.Mapper;
+            _brush = selectedBrush.Mapper;
             var labelsource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource, selectedBrush, brushes)
             {
@@ -101,8 +103,8 @@ namespace CompMs.App.Msdial.Model.Imms
                         : $"Spot ID: {t.InnerModel.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.InnerModel.Mass:N5}"))
                 .Subscribe(title => PlotModel.GraphTitle = title);
 
-            var eicLoader = EicLoader.BuildForAllRange(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd);
-            EicLoader = EicLoader.BuildForPeakRange(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this.parameter.DriftTimeBegin, this.parameter.DriftTimeEnd);
+            var eicLoader = EicLoader.BuildForAllRange(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this._parameter.DriftTimeBegin, this._parameter.DriftTimeEnd);
+            EicLoader = EicLoader.BuildForPeakRange(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this._parameter.DriftTimeBegin, this._parameter.DriftTimeEnd);
             EicModel = new EicModel(Target, eicLoader)
             {
                 HorizontalTitle = PlotModel.HorizontalTitle,
@@ -163,16 +165,6 @@ namespace CompMs.App.Msdial.Model.Imms
 
             PeakTableModel = new ImmsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax, ChromMin, ChromMax).AddTo(Disposables);
 
-            CanSearchCompound = new[]
-            {
-                Target.Select(t => t is null || t.InnerModel is null),
-                MsdecResult.Select(r => r is null),
-            }.CombineLatestValuesAreAllFalse()
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposables);
-
-            Target.Subscribe(t => OnTargetChanged(t)).AddTo(Disposables);
-
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MZ_TOLELANCE, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
             var dtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, DT_TOLELANCE, Target.Select(t => t?.ChromXValue ?? 0d), "F3", "Drift time(1/k0)", isItalic: false).AddTo(Disposables);
             var idSpotFocus = new IdSpotFocus<ChromatogramPeakFeatureModel>(
@@ -201,9 +193,6 @@ namespace CompMs.App.Msdial.Model.Imms
             CompoundDetailModel = compoundDetailModel;
         }
 
-        public MsdialImmsParameter parameter { get; }
-        private readonly IDataProvider provider;
-
         public AnalysisPeakPlotModel PlotModel { get; }
 
         public EicModel EicModel { get; }
@@ -218,61 +207,15 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
-        public string RawSplashKey {
-            get => rawSplashKey;
-            set => SetProperty(ref rawSplashKey, value);
-        }
-        private string rawSplashKey = string.Empty;
-
-        public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
+        public PeakInformationAnalysisModel PeakInformationModel { get; }
+        public CompoundDetailModel CompoundDetailModel { get; }
 
         public EicLoader EicLoader { get; }
-
-        public string FileName {
-            get => fileName;
-            set => SetProperty(ref fileName, value);
-        }
-        private string fileName;
-
-        public double AmplitudeOrderMin { get; }
-        public double AmplitudeOrderMax { get; }
-
-        public int FocusID {
-            get => focusID;
-            set => SetProperty(ref focusID, value);
-        }
-        private int focusID;
-
-        public double FocusDt {
-            get => focusDt;
-            set => SetProperty(ref focusDt, value);
-        }
-        private double focusDt;
-
-        public double FocusMz {
-            get => focusMz;
-            set => SetProperty(ref focusMz, value);
-        }
-        private double focusMz;
 
         public double ChromMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.ChromXValue) ?? 0d;
         public double ChromMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.ChromXValue) ?? 0d;
         public double MassMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d;
         public double MassMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d;
-        public double IntensityMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Intensity) ?? 0d;
-        public double IntensityMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Intensity) ?? 0d;
-
-        public DataBaseMapper DataBaseMapper { get; }
-        public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
-        public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
-
-        void OnTargetChanged(ChromatogramPeakFeatureModel target) {
-            if (target != null) {
-                FocusID = target.InnerModel.MasterPeakID;
-                FocusDt = target.ChromXValue ?? 0;
-                FocusMz = target.Mass;
-            }
-        }
 
         private Task<List<SpectrumPeakWrapper>> LoadMs1SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             if (target is null || target.MS1RawSpectrumIdTop < 0) {
@@ -281,17 +224,13 @@ namespace CompMs.App.Msdial.Model.Imms
 
             return Task.Run(async () =>
             {
-                var ms1Spectra = await provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
+                var ms1Spectra = await _provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
                 token.ThrowIfCancellationRequested();
-                var spectra = DataAccess.GetCentroidMassSpectra(ms1Spectra[target.MS1RawSpectrumIdTop], parameter.MSDataType, 0, float.MinValue, float.MaxValue);
+                var spectra = DataAccess.GetCentroidMassSpectra(ms1Spectra[target.MS1RawSpectrumIdTop], _parameter.MSDataType, 0, float.MinValue, float.MaxValue);
                 token.ThrowIfCancellationRequested();
                 return spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
             }, token);
         }
-
-        public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
-        public PeakInformationAnalysisModel PeakInformationModel { get; }
-        public CompoundDetailModel CompoundDetailModel { get; }
 
         public ImmsCompoundSearchModel<ChromatogramPeakFeature> CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
@@ -303,7 +242,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 Target.Value.InnerModel,
                 MsdecResult.Value,
                 null,
-                AnnotatorContainers);
+                _annotatorContainers);
         }
 
         public void SaveSpectra(string filename) {
@@ -313,9 +252,9 @@ namespace CompMs.App.Msdial.Model.Imms
                     file,
                     Target.Value.InnerModel,
                     MsdecResult.Value,
-                    provider.LoadMs1Spectrums(),
-                    DataBaseMapper,
-                    parameter);
+                    _provider.LoadMs1Spectrums(),
+                    _dataBaseMapper,
+                    _parameter);
             }
         }
 

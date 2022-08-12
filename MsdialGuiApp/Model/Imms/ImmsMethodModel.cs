@@ -232,6 +232,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 Storage.DataBaseMapper.MoleculeAnnotators,
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
+                PeakFilterModel,
                 Storage.Parameter,
                 Storage.AnalysisFiles)
             .AddTo(Disposables);
