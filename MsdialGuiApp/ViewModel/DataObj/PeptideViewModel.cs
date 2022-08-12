@@ -9,6 +9,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public PeptideViewModel(PeptideModel model)
         {
             _model = model;
+            AnnotatedSpot = model.AnnotatedSpot;
             PeptideSeq = model.PeptideSeq;
             DatabaseOrigin = model.DatabaseOrigin;
             DatabaseOriginID = model.DatabaseOriginID;
@@ -27,8 +28,6 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public string PeptideSeq { get; }
         public string DatabaseOrigin { get; }
 
-        public object AnnotatedSpot => _model.AnnotatedSpot;
-
         public string ModifiedSequence { get; }
 
         public int DatabaseOriginID { get; }
@@ -41,5 +40,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public int MissedCleavages { get; }
         public int SamePeptideNumberInSearchedProteins { get; }
 
+        //public object AnnotatedSpot => _model.AnnotatedSpot;
+        public object AnnotatedSpot { get; }
     }
 }
