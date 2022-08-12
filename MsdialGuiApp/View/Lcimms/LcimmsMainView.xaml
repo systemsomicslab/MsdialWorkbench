@@ -283,44 +283,46 @@
                         <RowDefinition Height="*" MinHeight="300" />
                     </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0">
-
-                        <TabControl Name="TabControl_PeakCharacter"
-                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                    DataContext="{Binding SelectedViewModel.Value}"
-                                    ItemsSource="{Binding PeakDetailViewModels}"
-                                    SelectedIndex="0"
-                                    Grid.Row="0">
-                            <TabControl.ContentTemplate>
-                                <DataTemplate>
-                                    <DataTemplate.Resources>
-                                        <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
-                                            <infoview:PeakInformationView/>
-                                        </DataTemplate>                              
-                                        <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
-                                            <infoview:CompoundDetailView/>
-                                        </DataTemplate>                              
-                                    </DataTemplate.Resources>
-                                    <ContentPresenter Content="{Binding}"/>
-                                </DataTemplate>
-                            </TabControl.ContentTemplate>
-                            <TabControl.ItemTemplate>
-                                <DataTemplate>
-                                    <DataTemplate.Resources>
-                                        <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
-                                            <TextBlock Text="Basic peak property"
-                                                       VerticalAlignment="Stretch"/>
-                                        </DataTemplate>
-                                        <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
-                                            <TextBlock Text="Compund detail"
-                                                       VerticalAlignment="Stretch"/>
-                                        </DataTemplate>
-                                    </DataTemplate.Resources>
-                                    <ContentPresenter Content="{Binding}"/>
-                                </DataTemplate>
-                            </TabControl.ItemTemplate>
-                        </TabControl>
-                    </Grid>
+                    <TabControl Name="TabControl_PeakCharacter"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                DataContext="{Binding SelectedViewModel.Value}"
+                                ItemsSource="{Binding PeakDetailViewModels}"
+                                SelectedIndex="0"
+                                Grid.Row="0">
+                        <TabControl.Resources>
+                            <Style TargetType="TabItem">
+                                <Setter Property="Background" Value="{StaticResource MainThemeColor}"/>
+                            </Style>
+                        </TabControl.Resources>
+                        <TabControl.ContentTemplate>
+                            <DataTemplate>
+                                <DataTemplate.Resources>
+                                    <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
+                                        <infoview:PeakInformationView/>
+                                    </DataTemplate>                              
+                                    <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
+                                        <infoview:CompoundDetailView/>
+                                    </DataTemplate>                              
+                                </DataTemplate.Resources>
+                                <ContentPresenter Content="{Binding}"/>
+                            </DataTemplate>
+                        </TabControl.ContentTemplate>
+                        <TabControl.ItemTemplate>
+                            <DataTemplate>
+                                <DataTemplate.Resources>
+                                    <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
+                                        <TextBlock Text="Basic peak property"
+                                                   VerticalAlignment="Stretch"/>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
+                                        <TextBlock Text="Compund detail"
+                                                   VerticalAlignment="Stretch"/>
+                                    </DataTemplate>
+                                </DataTemplate.Resources>
+                                <ContentPresenter Content="{Binding}"/>
+                            </DataTemplate>
+                        </TabControl.ItemTemplate>
+                    </TabControl>
 
                     <TabControl x:Name="TabControl_MS2Viewer"
                                 ItemsSource="{Binding MassSpectrumViewModels.ViewModels.Value}"

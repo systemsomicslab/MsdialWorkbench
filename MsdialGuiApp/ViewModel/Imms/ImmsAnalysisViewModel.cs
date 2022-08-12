@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -64,6 +65,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 .ToReactiveCommand()
                 .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
+
+            PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
+            CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
+            var _peakDetailViewModels = new ReactiveCollection<ViewModelBase>().AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
         private readonly ImmsAnalysisModel model;
@@ -104,6 +110,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public PeakFilterViewModel PeakFilterViewModel { get; }
 
         public ReactiveCommand SearchCompoundCommand { get; }
+        public PeakInformationViewModel PeakInformationViewModel { get; }
+
         private void SearchCompound() {
             using (var csm = model.CreateCompoundSearchModel()) {
                 if (csm is null) {
@@ -124,6 +132,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         public DelegateCommand<Window> SaveMs2SpectrumCommand => saveMs2SpectrumCommand ?? (saveMs2SpectrumCommand = new DelegateCommand<Window>(SaveSpectra, CanSaveSpectra));
+
+        public CompoundDetailViewModel CompoundDetailViewModel { get; }
+        public ViewModelBase[] PeakDetailViewModels { get; }
+
         private DelegateCommand<Window> saveMs2SpectrumCommand;
 
         private void SaveSpectra(Window owner) {

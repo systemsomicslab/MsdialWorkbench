@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
@@ -154,6 +155,18 @@ namespace CompMs.App.Msdial.Model.Dims
 
             EicLoader = DimsEicLoader.BuildForPeakTable(provider, parameter);
             PeakTableModel = new DimsAnalysisPeakTableModel(Ms1Peaks, Target, Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d, Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d).AddTo(Disposables);
+
+            var peakInformationModel = new PeakInformationAnalysisModel(Target).AddTo(Disposables);
+            peakInformationModel.Add(t => new MzPoint(t?.InnerModel.ChromXsTop.Mz.Value ?? 0d));
+            peakInformationModel.Add(
+                t => new HeightAmount(t?.Intensity ?? 0d),
+                t => new AreaAmount(t?.PeakArea ?? 0d));
+            PeakInformationModel = peakInformationModel;
+            var compoundDetailModel = new CompoundDetailModel(Target.Select(t => t?.ScanMatchResult), mapper).AddTo(Disposables);
+            compoundDetailModel.Add(
+                r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
+                r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
+            CompoundDetailModel = compoundDetailModel;
         }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
@@ -169,6 +182,8 @@ namespace CompMs.App.Msdial.Model.Dims
         public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
 
         public EicLoader EicLoader { get; }
+        public PeakInformationAnalysisModel PeakInformationModel { get; }
+        public CompoundDetailModel CompoundDetailModel { get; }
 
         private static readonly double MZ_TOLERANCE = 20;
         public void FocusByMz(IAxisManager axis, double mz) {

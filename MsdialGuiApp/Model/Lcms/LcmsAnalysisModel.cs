@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
@@ -240,6 +241,21 @@ namespace CompMs.App.Msdial.Model.Lcms
             CanSaveRawSpectra = Target.Select(t => t?.InnerModel != null)
                 .ToReadOnlyReactivePropertySlim(initialValue: false)
                 .AddTo(Disposables);
+
+            var peakInformationModel = new PeakInformationAnalysisModel(Target).AddTo(Disposables);
+            peakInformationModel.Add(
+                t => new RtPoint(t?.InnerModel.ChromXsTop.RT.Value ?? 0d),
+                t => new MzPoint(t?.InnerModel.ChromXsTop.Mz.Value ?? 0d));
+            peakInformationModel.Add(
+                t => new HeightAmount(t?.Intensity ?? 0d),
+                t => new AreaAmount(t?.PeakArea ?? 0d));
+            PeakInformationModel = peakInformationModel;
+            var compoundDetailModel = new CompoundDetailModel(Target.Select(t => t?.ScanMatchResult), mapper).AddTo(Disposables);
+            compoundDetailModel.Add(
+                r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
+                r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
+                r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
+            CompoundDetailModel = compoundDetailModel;
         }
 
         private static readonly double RtTol = 0.5;
@@ -333,6 +349,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public ReadOnlyReactivePropertySlim<bool> CanSaveRawSpectra { get; }
+        public PeakInformationAnalysisModel PeakInformationModel { get; }
+        public CompoundDetailModel CompoundDetailModel { get; }
 
         public void GoToMsfinderMethod() {
             MsDialToExternalApps.SendToMsFinderProgram(

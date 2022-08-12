@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -147,6 +148,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .ToAsyncReactiveCommand<Window>()
                 .WithSubscribe(SaveRawSpectraAsync)
                 .AddTo(Disposables);
+
+            PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
+            CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
+            var _peakDetailViewModels = new ReactiveCollection<ViewModelBase>().AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
         private readonly LcmsAnalysisModel model;
@@ -198,8 +204,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand<Window> saveMs2SpectrumCommand;
 
         public AsyncReactiveCommand<Window> SaveMs2RawSpectrumCommand { get; }
-
+        public PeakInformationViewModel PeakInformationViewModel { get; }
+        public CompoundDetailViewModel CompoundDetailViewModel { get; }
         public ReadOnlyReactivePropertySlim<ExperimentSpectrumViewModel> ExperimentSpectrumViewModel { get; }
+        public ViewModelBase[] PeakDetailViewModels { get; }
 
         private void SaveSpectra(Window owner) {
             var sfd = new SaveFileDialog {

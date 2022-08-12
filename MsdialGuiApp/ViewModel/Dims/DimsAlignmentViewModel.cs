@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
@@ -72,6 +73,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 .ToReactiveCommand()
                 .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
+
+            PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
+            CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -86,6 +91,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public DimsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
 
         public ReactiveCommand SearchCompoundCommand { get; }
+        public PeakInformationViewModel PeakInformationViewModel { get; }
+        public CompoundDetailViewModel CompoundDetailViewModel { get; }
+        public ViewModelBase[] PeakDetailViewModels { get; }
 
         private void SearchCompound() {
             using (var model = _model.BuildCompoundSearchModel())

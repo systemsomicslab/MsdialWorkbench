@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Search;
@@ -89,6 +90,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .AddTo(Disposables);
 
             FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
+            
+            PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
+            CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
         public PeakFilterViewModel PeakFilterViewModel { get; }
@@ -106,7 +111,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public LcmsProteomicsAlignmentTableViewModel ProteomicsAlignmentTableViewModel { get; }
         public AlignedChromatogramModificationViewModelLegacy AlignedChromatogramModificationViewModel { get; }
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
-
+        public PeakInformationViewModel PeakInformationViewModel { get; }
+        public CompoundDetailViewModel CompoundDetailViewModel { get; }
+        public ViewModelBase[] PeakDetailViewModels { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
 
         private void SearchCompound() {

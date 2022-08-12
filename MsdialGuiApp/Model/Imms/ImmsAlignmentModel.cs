@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -26,7 +27,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
-    class ImmsAlignmentModel : AlignmentModelBase
+    internal sealed class ImmsAlignmentModel : AlignmentModelBase
     {
         public ImmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
@@ -177,6 +178,21 @@ namespace CompMs.App.Msdial.Model.Imms
             }.CombineLatestValuesAreAllFalse()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
+
+            var peakInformationModel = new PeakInformationAlignmentModel(Target).AddTo(Disposables);
+            peakInformationModel.Add(
+                t => new MzPoint(t?.innerModel.TimesCenter.Mz.Value ?? 0d),
+                t => new DriftPoint(t?.innerModel.TimesCenter.Drift.Value ?? 0d),
+                t => new CcsPoint(t?.innerModel.CollisionCrossSection ?? 0d));
+            peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
+            PeakInformationModel = peakInformationModel;
+
+            var compoundDetailModel = new CompoundDetailModel(Target.Select(t => t?.ScanMatchResult), mapper).AddTo(Disposables);
+            compoundDetailModel.Add(
+                r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
+                r_ => new CcsSimilarity(r_?.CcsSimilarity ?? 0d),
+                r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
+            CompoundDetailModel = compoundDetailModel;
         }
 
         static ImmsAlignmentModel() {
@@ -247,7 +263,9 @@ namespace CompMs.App.Msdial.Model.Imms
         public DataBaseMapper DataBaseMapper { get; }
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
         public IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> AnnotatorContainers { get; }
-        
+        public PeakInformationAlignmentModel PeakInformationModel { get; }
+        public CompoundDetailModel CompoundDetailModel { get; }
+
         public void SaveSpectra(string filename) {
             using (var file = File.Open(filename, FileMode.Create)) {
                 SpectraExport.SaveSpectraTable(

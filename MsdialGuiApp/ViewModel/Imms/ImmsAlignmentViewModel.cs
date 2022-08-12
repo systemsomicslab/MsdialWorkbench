@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -112,6 +113,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 .ToReactiveCommand()
                 .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
+
+            PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
+            CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
         private readonly ImmsAlignmentModel model;
@@ -334,6 +339,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         public ReactiveCommand SearchCompoundCommand { get; }
+        public PeakInformationViewModel PeakInformationViewModel { get; }
+        public CompoundDetailViewModel CompoundDetailViewModel { get; }
+        public ViewModelBase[] PeakDetailViewModels { get; }
 
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
