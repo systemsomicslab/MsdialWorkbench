@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -76,6 +77,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             SearchCompoundCommand.Subscribe(SearchCompound).AddTo(Disposables);
 
             FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
+
+            PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
+            CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
         public AlignmentPeakPlotViewModel PlotViewModel {
@@ -130,6 +135,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
+        public PeakInformationViewModel PeakInformationViewModel { get; }
+        public CompoundDetailViewModel CompoundDetailViewModel { get; }
+        public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ReactiveCommand SearchCompoundCommand { get; }
 
