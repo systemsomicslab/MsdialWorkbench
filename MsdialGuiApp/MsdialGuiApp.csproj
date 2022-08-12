@@ -274,7 +274,7 @@
     <Compile Include="ViewModel\Core\IAlignmentResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IAnalysisResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IResultViewModel.cs" />
-    <Compile Include="ViewModel\DataObj\PeptideGroupViewModel.cs" />
+    <Compile Include="ViewModel\DataObj\PeptideViewModel.cs" />
     <Compile Include="ViewModel\DataObj\ProteinGroupViewModel.cs" />
     <Compile Include="ViewModel\DataObj\ProteinViewModel.cs" />
     <Compile Include="ViewModel\Loader\BarItemsLoaderDataViewModel.cs" />

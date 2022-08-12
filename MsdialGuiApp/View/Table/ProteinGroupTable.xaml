@@ -34,6 +34,9 @@
                 </StackPanel>
             </TabItem>
             <TabItem Header="Peptide Groups">
+                <StackPanel DataContext="{Binding Groups/}">
+                    <DataGrid Margin="8" ItemsSource="{Binding PeptideViewModels}" IsSynchronizedWithCurrentItem="True" />
+                </StackPanel>
                 
             </TabItem>
             <!--<TabItem Header="Peptide Groups"/>-->

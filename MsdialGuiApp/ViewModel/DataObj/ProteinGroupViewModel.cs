@@ -14,6 +14,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
             NumberOfPeptides = model.NoOfPeptides;
             //ProteinViewModels = model.ProteinModels
             ProteinViewModels = new ObservableCollection<ProteinViewModel>(model.ProteinModels.Select(protein => new ProteinViewModel(protein)));
+            PeptideViewModels = new ObservableCollection<PeptideViewModel>(model.PeptideModels.Select(peptide => new PeptideViewModel(peptide)));
         }
 
         public int GroupId { get; }
@@ -22,6 +23,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         public int NumberOfUniquePeptides { get; }
         public int NumberOfPeptides { get; }
         public ObservableCollection<ProteinViewModel> ProteinViewModels { get; }
+        public ObservableCollection<PeptideViewModel> PeptideViewModels { get; }
     }
 
 }
