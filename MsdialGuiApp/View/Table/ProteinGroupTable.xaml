@@ -34,13 +34,12 @@
                 </StackPanel>
             </TabItem>
             <TabItem Header="Peptide Groups">
-                <StackPanel DataContext="{Binding Groups/}">
-                    <DataGrid Margin="8" ItemsSource="{Binding PeptideViewModels}"
-                              Tag="{Binding DataContext.Target, RelativeSource={RelativeSource AncestorType=Window}}"
+                <DataGrid ItemsSource="{Binding DataContext.Groups/PeptideViewModels, RelativeSource={RelativeSource AncestorType=Window}}"
+                              DataContext="{Binding Target}"
                               SelectedValuePath="AnnotatedSpot"
-                              SelectedValue="{Binding Tag.Value, Mode=OneWayToSource, RelativeSource={RelativeSource Self}}" />
-                </StackPanel>
-                
+                              SelectedValue="{Binding Value, Mode=OneWayToSource}"
+                              Margin="8"/>
+
             </TabItem>
             <!--<TabItem Header="Peptide Groups"/>-->
         </TabControl>
