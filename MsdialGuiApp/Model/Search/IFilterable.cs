@@ -11,6 +11,12 @@ namespace CompMs.App.Msdial.Model.Search
         bool IsFragmentQueryExisted { get; }
         bool IsManuallyModifiedForAnnotation { get; }
 
+        bool IsBlankFilteredByPostCurator { get; }
+        bool IsBlankGhostFilteredByPostCurator { get; }
+        bool IsMzFilteredByPostCurator { get; }
+        bool IsRsdFilteredByPostCurator { get; }
+        bool IsRmdFilteredByPostCurator { get; }
+
         string Comment { get; }
         string Protein { get; }
 

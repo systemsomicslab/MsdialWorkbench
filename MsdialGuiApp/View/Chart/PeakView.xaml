@@ -66,6 +66,16 @@
                              HorizontalPropertyName="{Binding HorizontalProperty.Value, Mode=OneWay}"
                              VerticalPropertyName="{Binding VerticalProperty.Value, Mode=OneWay}"
                              LabelPropertyName="{Binding LabelProperty.Value, Mode=OneWay}"/>
+            <chart:SpotLinkedAnnotator Spots="{Binding Spots, Mode=OneWay}"
+                                       Links="{Binding Links, Mode=OneWay}"
+                                       Annotators="{Binding Annotations, Mode=OneWay}"
+                                       DataType="{x:Type do:ChromatogramPeakFeatureModel}"
+                                       Target="{Binding Target.Value, Mode=OneWay}"
+                                       HorizontalProperty="{Binding HorizontalProperty.Value, Mode=OneWay}"
+                                       VerticalProperty="{Binding VerticalProperty.Value, Mode=OneWay}"
+                                       LinkBrush="{Binding LinkerBrush, Mode=OneWay}"
+                                       SpotLabelBrush="{Binding SpotLabelBrush, Mode=OneWay}"
+                                       Radius="5.5"/>
             <ContentControl Content="{Binding SelectedPoint, ElementName=analysisScatter}"
                             ContentTemplate="{DynamicResource FocusCross}"
                             IsHitTestVisible="False">

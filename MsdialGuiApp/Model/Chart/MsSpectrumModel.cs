@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;
@@ -36,8 +37,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public MsSpectrumModel(
             IObservable<List<SpectrumPeak>> upperSpectrum,
             IObservable<List<SpectrumPeak>> lowerSpectrum,
-            PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
-            PropertySelector<SpectrumPeak, double> verticalPropertySelector,
+            PropertySelector<SpectrumPeak, float> horizontalPropertySelector,
+            PropertySelector<SpectrumPeak, float> verticalPropertySelector,
             GraphLabels graphLabels,
             string hueProperty,
             IObservable<IBrushMapper> upperSpectrumBrush,
@@ -54,40 +55,34 @@ namespace CompMs.App.Msdial.Model.Chart
                 throw new ArgumentNullException(nameof(lowerSpectrum));
             }
 
-            var verticalSelector = verticalPropertySelector.Selector;
-            var upperEmpty = upperSpectrum.Where(spec => spec is null || !spec.Any());
-            var upperAny = upperSpectrum.Where(spec => spec?.Any() ?? false);
-            var upperVerticalRangeSource = upperAny
-                .Select(spec => new Range(spec.Min(verticalSelector), spec.Max(verticalSelector)))
-                .Merge(upperEmpty.Select(_ => new Range(0, 1)));
-            UpperVerticalRangeSource = upperVerticalRangeSource;
-            var upperContinuousVerticalAxis = upperVerticalRangeSource
-                .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent);
-            var upperLogVerticalAxis = upperVerticalRangeSource
+            var upperMsSpectrum = upperSpectrum.Select(spectrum => new MsSpectrum(spectrum));
+            var upperVerticalRangeProperty = upperMsSpectrum
+                .Select(msSpectrum => msSpectrum.GetSpectrumRange(spec => verticalPropertySelector.Selector(spec)));
+            UpperVerticalRangeSource = upperVerticalRangeProperty;
+            var upperContinuousVerticalAxis = upperVerticalRangeProperty
+                .ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent)
+                .AddTo(Disposables);
+            var upperLogVerticalAxis = upperVerticalRangeProperty
                 .Select(range => (range.Minimum.Value, range.Maximum.Value))
-                .ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d);
+                .ToReactiveLogScaleAxisManager(new ConstantMargin(0, 30), 1d, 1d)
+                .AddTo(Disposables);
             UpperVerticalAxisItemCollection = new ObservableCollection<AxisItemModel>(new[]
             {
                 new AxisItemModel(upperContinuousVerticalAxis, "Normal"),
                 new AxisItemModel(upperLogVerticalAxis, "Log10"),
             });
 
-            var lowerEmpty = lowerSpectrum.Where(spec => spec is null || !spec.Any());
-            var lowerAny = lowerSpectrum.Where(spec => spec?.Any() ?? false);
-            var lowerVerticalRangeSource = lowerAny
-                .Select(spec => new Range(spec.Min(verticalSelector), spec.Max(verticalSelector)))
-                .Merge(lowerEmpty.Select(_ => new Range(0, 1)));
+            var lowerMsSpectrum = lowerSpectrum.Select(spectrum => new MsSpectrum(spectrum));
+            var lowerVerticalRangeSource = lowerMsSpectrum
+                .Select(msSpectrum => msSpectrum.GetSpectrumRange(spec => verticalPropertySelector.Selector(spec)));
 
-            var horizontalSelector = horizontalPropertySelector.Selector;
             var horizontalRangeSource = new[]
             {
-                upperSpectrum.Where(spec => !(spec is null)).StartWith(new List<SpectrumPeak>(0)),
-                lowerSpectrum.Where(spec => !(spec is null)).StartWith(new List<SpectrumPeak>(0)),
-            }.CombineLatest(specs => specs.SelectMany(spec => spec))
-            .Where(spec => spec.Any())
-            .Select(spec => new Range(spec.Min(horizontalSelector), spec.Max(horizontalSelector)));
+                upperMsSpectrum.Select(msSpectrum => msSpectrum.GetSpectrumRange(spec => horizontalPropertySelector.Selector(spec))),
+                lowerMsSpectrum.Select(msSpectrum => msSpectrum.GetSpectrumRange(spec => horizontalPropertySelector.Selector(spec))),
+            }.CombineLatest(xs => xs.Aggregate((x, y) => x.Union(y)));
 
-            var horizontalAxis = horizontalRangeSource.ToReactiveContinuousAxisManager<double>(new ConstantMargin(40));
+            var horizontalAxis = horizontalRangeSource.ToReactiveContinuousAxisManager<double>(new ConstantMargin(40)).AddTo(Disposables);
             var horizontalAxisObservable = Observable.Return(horizontalAxis);
             var upperVerticalAxisObservable = new ReactivePropertySlim<AxisItemModel>(UpperVerticalAxisItemCollection[0]).AddTo(Disposables);
             var lowerVerticalAxis = lowerVerticalRangeSource.ToReactiveContinuousAxisManager<double>(new ConstantMargin(0, 30), new Range(0d, 0d), LabelType.Percent);
@@ -122,9 +117,42 @@ namespace CompMs.App.Msdial.Model.Chart
                 lowerSpectrumBrush, hueProperty,
                 graphLabels,
                 lowerSpectraExporter).AddTo(Disposables);
+
+            var productMsSpectrum = upperMsSpectrum.CombineLatest(lowerMsSpectrum, (upper, lower) => upper.Product(lower, 0.05d));
+            var upperProductSpectrumModel = new SingleSpectrumModel(
+                productMsSpectrum.Select(msSpectrum => msSpectrum.Spectrum),
+                horizontalAxisObservable, horizontalPropertySelector,
+                UpperVerticalAxis, verticalPropertySelector,
+                upperSpectrumBrush, hueProperty,
+                graphLabels,
+                upperSpectraExporter).AddTo(Disposables);
+            upperProductSpectrumModel.IsVisible.Value = false;
+            upperProductSpectrumModel.LineThickness.Value = 3d;
+            UpperProductSpectrumModel = upperProductSpectrumModel;
+            var differenceMsSpectrum = upperMsSpectrum.CombineLatest(lowerMsSpectrum, (upper, lower) => upper.Difference(lower, 0.05d));
+            var upperDifferenceSpectrumModel = new SingleSpectrumModel(
+                differenceMsSpectrum.Select(msSpectrum => msSpectrum.Spectrum),
+                horizontalAxisObservable, horizontalPropertySelector,
+                UpperVerticalAxis, verticalPropertySelector,
+                upperSpectrumBrush, hueProperty,
+                graphLabels,
+                upperSpectraExporter).AddTo(Disposables);
+            upperDifferenceSpectrumModel.IsVisible.Value = false;
+            upperDifferenceSpectrumModel.LineThickness.Value = 1d;
+            UpperDifferenceSpectrumModel = upperDifferenceSpectrumModel;
+            UpperSpectraModel = new ReactiveCollection<SingleSpectrumModel>
+            {
+                UpperSpectrumModel,
+                upperProductSpectrumModel,
+                upperDifferenceSpectrumModel,
+            };
         }
 
+        public ReactiveCollection<SingleSpectrumModel> UpperSpectraModel { get; }
         public SingleSpectrumModel UpperSpectrumModel { get; }
+        public SingleSpectrumModel UpperProductSpectrumModel { get; }
+        public SingleSpectrumModel UpperDifferenceSpectrumModel { get; }
+
         public SingleSpectrumModel LowerSpectrumModel { get; }
 
         public IObservable<IAxisManager<double>> HorizontalAxis { get; }
@@ -137,8 +165,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public GraphLabels GraphLabels { get; }
         public ReadOnlyReactivePropertySlim<bool> SpectrumLoaded { get; }
         public ReadOnlyReactivePropertySlim<bool> ReferenceHasSpectrumInfomation { get; }
-        public PropertySelector<SpectrumPeak, double> HorizontalPropertySelector { get; }
-        public PropertySelector<SpectrumPeak, double> VerticalPropertySelector { get; }
+        public PropertySelector<SpectrumPeak, float> HorizontalPropertySelector { get; }
+        public PropertySelector<SpectrumPeak, float> VerticalPropertySelector { get; }
 
         public IObservable<bool> CanSaveUpperSpectrum => UpperSpectrumModel.CanSave;
 
@@ -154,12 +182,24 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public IObservable<Range> UpperVerticalRangeSource { get; }
 
+        public void SwitchViewToAllSpectrum() {
+            UpperSpectrumModel.IsVisible.Value = true;
+            UpperDifferenceSpectrumModel.IsVisible.Value = false;
+            UpperProductSpectrumModel.IsVisible.Value = false;
+        }
+
+        public void SwitchViewToCompareSpectrum() {
+            UpperSpectrumModel.IsVisible.Value = false;
+            UpperDifferenceSpectrumModel.IsVisible.Value = true;
+            UpperProductSpectrumModel.IsVisible.Value = true;
+        }
+
         public static MsSpectrumModel Create<T, U, V>(
             IObservable<T> source,
             IMsSpectrumLoader<U> upperLoader,
             IMsSpectrumLoader<V> lowerLoader,
-            Func<SpectrumPeak, double> horizontalSelector,
-            Func<SpectrumPeak, double> verticalSelector,
+            Func<SpectrumPeak, float> horizontalSelector,
+            Func<SpectrumPeak, float> verticalSelector,
             string graphTitle,
             string horizontalTitle,
             string verticalTitle,
@@ -173,10 +213,10 @@ namespace CompMs.App.Msdial.Model.Chart
             where T: U, V {
 
             return new MsSpectrumModel(
-                source.Select(src => Observable.FromAsync(token => upperLoader.LoadSpectrumAsync(src, token))).Switch(),
-                source.Select(src => Observable.FromAsync(token => lowerLoader.LoadSpectrumAsync(src, token))).Switch(),
-                new PropertySelector<SpectrumPeak, double>(horizontalProperty, horizontalSelector),
-                new PropertySelector<SpectrumPeak, double>(verticalProperty, verticalSelector),
+                source.Select(src => upperLoader.LoadSpectrumAsObservable(src)).Switch(),
+                source.Select(src => lowerLoader.LoadSpectrumAsObservable(src)).Switch(),
+                new PropertySelector<SpectrumPeak, float>(horizontalProperty, horizontalSelector),
+                new PropertySelector<SpectrumPeak, float>(verticalProperty, verticalSelector),
                 new GraphLabels(graphTitle, horizontalTitle, verticalTitle, labelProperty, orderingProperty),
                 hueProperty,
                 upperBrush,

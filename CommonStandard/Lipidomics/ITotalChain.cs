@@ -105,7 +105,21 @@ namespace CompMs.Common.Lipidomics
         }
 
         public override string ToString() {
-            return string.Format("{0}:{1}{2}", CarbonCount, DoubleBondCount, OxidizeSymbol(OxidizedCount));
+            return string.Format("{0}{1}:{2}{3}", EtherSymbol(AlkylChainCount), CarbonCount, DoubleBondCount, OxidizeSymbol(OxidizedCount));
+        }
+
+        private static string EtherSymbol(int ether) {
+            switch (ether) {
+                case 0:
+                    return "";
+                case 2:
+                    return "dO-";
+                case 4:
+                    return "eO-";
+                case 1:
+                default:
+                    return "O-";
+            }
         }
 
         private static string OxidizeSymbol(int oxidize) {
@@ -115,7 +129,7 @@ namespace CompMs.Common.Lipidomics
             if (oxidize == 1) {
                 return ";O";
             }
-            return $";O{oxidize}";
+            return $";{oxidize}O";
         }
     }
 

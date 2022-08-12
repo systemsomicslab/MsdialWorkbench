@@ -413,7 +413,7 @@ namespace CompMs.MsdialCore.Algorithm {
                                 isFinished = true;
                             }
                             else if (isotopeTemps[j].PeakID == -1) {
-                                mzFocused += (double)c13_c12Diff / (double)predChargeNumber;
+                                mzFocused += (float)c13_c12Diff / predChargeNumber;
                             }
                             break;
                         }

@@ -47,6 +47,8 @@ namespace CompMs.App.Msdial.View.Core
 
             broker.ToObservable<ExperimentSpectrumViewModel>()
                 .Subscribe(OpenExperimentSpectrumView);
+            broker.ToObservable<ProteinGroupTableViewModel>()
+                .Subscribe(OpenProteinGroupTable);
             broker.ToObservable<SaveFileNameRequest>()
                 .Subscribe(GetSaveFilePath);
             broker.ToObservable<ErrorMessageBoxRequest>()
@@ -55,6 +57,9 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(CreateAlignedChromatogramModificationDialog);
             broker.ToObservable<SampleTableViewerInAlignmentViewModelLegacy>()
                 .Subscribe(CreateSampleTableViewerDialog);
+#if DEBUG
+            System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
+#endif
         }
 
         private readonly IMessageBroker broker;
@@ -72,6 +77,11 @@ namespace CompMs.App.Msdial.View.Core
 
         private void OpenExperimentSpectrumView(ExperimentSpectrumViewModel viewmodel) {
             var dialog = new ExperimentSpectrumView() { Owner = this, DataContext = viewmodel, };
+            dialog.Show();
+        }
+
+        private void OpenProteinGroupTable(ProteinGroupTableViewModel viewmodel) {
+            var dialog = new ProteinGroupTable() { Owner = this, DataContext = viewmodel, };
             dialog.Show();
         }
 

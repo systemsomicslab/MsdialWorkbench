@@ -144,14 +144,20 @@
     <Compile Include="External Applications\MsDialIniField.cs" />
     <Compile Include="External Applications\MsDialIniParcer.cs" />
     <Compile Include="External Applications\MsDialToExternalApps.cs" />
+    <Compile Include="Model\Chart\MsSpectrum.cs" />
+    <Compile Include="Model\DataObj\ProteinResultContainerModel.cs" />
     <Compile Include="Model\Core\IAlignmentModel.cs" />
     <Compile Include="Model\Core\IAnalysisModel.cs" />
     <Compile Include="Model\Core\IMethodModel.cs" />
+    <Compile Include="Model\DataObj\PeptideModel.cs" />
     <Compile Include="Model\DataObj\ProjectBaseParameterModel.cs" />
+    <Compile Include="Model\DataObj\ProteinGroupModel.cs" />
+    <Compile Include="Model\DataObj\ProteinModel.cs" />
     <Compile Include="Model\DataObj\StandardCompoundModel.cs" />
     <Compile Include="Model\DataObj\SurveyScanSpectrum.cs" />
     <Compile Include="Model\Imms\ImmsAnnotatorSettingModel.cs" />
     <Compile Include="Model\Loader\BarItemsLoaderData.cs" />
+    <Compile Include="Model\Loader\MsSelectionItem.cs" />
     <Compile Include="Model\Normalize\InternalStandardLowessNormalizeModel.cs" />
     <Compile Include="Model\Normalize\InternalStandardNormalizeModel.cs" />
     <Compile Include="Model\Normalize\IonAbundance.cs" />
@@ -267,6 +273,7 @@
     <Compile Include="ViewModel\Core\IAlignmentResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IAnalysisResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IResultViewModel.cs" />
+    <Compile Include="ViewModel\DataObj\ProteinGroupViewModel.cs" />
     <Compile Include="ViewModel\Loader\BarItemsLoaderDataViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentPeakPlotViewModel.cs" />
@@ -289,7 +296,7 @@
     <Compile Include="Model\Dims\DimsEicModel.cs" />
     <Compile Include="Model\Dims\DimsMethodModel.cs" />
     <Compile Include="Model\Imms\ImmsAnalysisModel.cs" />
-    <Compile Include="Model\IMsSpectrumLoader.cs" />
+    <Compile Include="Model\Loader\IMsSpectrumLoader.cs" />
     <Compile Include="Model\Lcimms\LcimmsAlignmentModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
@@ -376,11 +383,15 @@
     <Compile Include="ViewModel\Setting\ProjectSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\RetentionTimeCorrectionViewModelLegacy.cs" />
     <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
+    <Compile Include="ViewModel\Table\ProteinGroupTableViewModel.cs" />
     <Compile Include="View\AdductView.xaml.cs">
       <DependentUpon>AdductView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ChartSetting\BarChartOfAlignedSpotSettingRibbonTab.xaml.cs">
       <DependentUpon>BarChartOfAlignedSpotSettingRibbonTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ChartSetting\ExpRefViewSettingRibbonTab.xaml.cs">
+      <DependentUpon>ExpRefViewSettingRibbonTab.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\AlignmentEicView.xaml.cs">
       <DependentUpon>AlignmentEicView.xaml</DependentUpon>
@@ -657,6 +668,9 @@
     <Compile Include="View\Table\AlignmentSpotTable.xaml.cs">
       <DependentUpon>AlignmentSpotTable.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Table\ProteinGroupTable.xaml.cs">
+      <DependentUpon>ProteinGroupTable.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Table\ProteomicsSpotTable.xaml.cs">
       <DependentUpon>ProteomicsSpotTable.xaml</DependentUpon>
     </Compile>
@@ -703,6 +717,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Resource>
     <Page Include="View\ChartSetting\BarChartOfAlignedSpotSettingRibbonTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ChartSetting\ExpRefViewSettingRibbonTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1055,6 +1073,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Table\AlignmentSpotTable.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Table\ProteinGroupTable.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -554,7 +554,7 @@ namespace CompMs.MsdialCore.DataObj
 
             public static IEnumerable<SpectrumPeak> ParseSpectrum(SQLiteDataReader reader) {
                 while (reader.Read()) {
-                    yield return new SpectrumPeak(reader.GetDouble(2), reader.GetDouble(3), reader.GetString(4))
+                    yield return new SpectrumPeak((float)reader.GetDouble(2), (float)reader.GetDouble(3), reader.GetString(4))
                     {
                         Resolution = reader.GetDouble(5),
                         Charge = reader.GetInt32(6),
@@ -572,7 +572,7 @@ namespace CompMs.MsdialCore.DataObj
 
             public static IEnumerable<(SpectrumPeak, int)> ParseSpectrumAndId(SQLiteDataReader reader) {
                 while (reader.Read()) {
-                    yield return (new SpectrumPeak(reader.GetDouble(2), reader.GetDouble(3), reader.GetString(4))
+                    yield return (new SpectrumPeak((float)reader.GetDouble(2), (float)reader.GetDouble(3), reader.GetString(4))
                         {
                             Resolution = reader.GetDouble(5),
                             Charge = reader.GetInt32(6),

@@ -13,14 +13,14 @@ using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    public class SingleSpectrumModel : DisposableModelBase
+    public sealed class SingleSpectrumModel : DisposableModelBase
     {
         public SingleSpectrumModel(
             IObservable<List<SpectrumPeak>> spectrum,
             IObservable<IAxisManager<double>> horizontalAxis,
-            PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
+            PropertySelector<SpectrumPeak, float> horizontalPropertySelector,
             IObservable<IAxisManager<double>> verticalAxis,
-            PropertySelector<SpectrumPeak, double> verticalPropertySelector,
+            PropertySelector<SpectrumPeak, float> verticalPropertySelector,
             IObservable<IBrushMapper> brush,
             string hueProperty,
             GraphLabels labels,
@@ -50,16 +50,21 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Select(p => p.First != null && p.Second != null)
                 .ToReadOnlyReactivePropertySlim(false)
                 .AddTo(Disposables);
+
+            IsVisible = new ReactivePropertySlim<bool>(true).AddTo(Disposables);
+            LineThickness = new ReactivePropertySlim<double>(2d).AddTo(Disposables);
         }
 
         public IObservable<List<SpectrumPeak>> Spectrum { get; }
         public IObservable<IAxisManager<double>> HorizontalAxis { get; }
         public GraphLabels Labels { get; }
-        public PropertySelector<SpectrumPeak, double> HorizontalPropertySelector { get; }
+        public PropertySelector<SpectrumPeak, float> HorizontalPropertySelector { get; }
         public IObservable<IAxisManager<double>> VerticalAxis { get; }
-        public PropertySelector<SpectrumPeak, double> VerticalPropertySelector { get; }
+        public PropertySelector<SpectrumPeak, float> VerticalPropertySelector { get; }
         public IObservable<IBrushMapper> Brush { get; }
         public string HueProperty { get; }
+        public ReactivePropertySlim<bool> IsVisible { get; }
+        public ReactivePropertySlim<double> LineThickness { get; }
 
         private readonly Subject<Stream> SaveAsObservable;
 

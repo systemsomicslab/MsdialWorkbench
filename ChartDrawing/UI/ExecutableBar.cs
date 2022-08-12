@@ -79,6 +79,16 @@ namespace CompMs.Graphics.UI
             set => SetValue(ButtonWidthProperty, value);
         }
 
+        public static readonly DependencyProperty ButtonHeightProperty =
+            DependencyProperty.Register(
+                nameof(ButtonHeight), typeof(double), typeof(ExecutableBar),
+                new FrameworkPropertyMetadata(30d));
+
+        public double ButtonHeight {
+            get => (double)GetValue(ButtonHeightProperty);
+            set => SetValue(ButtonHeightProperty, value);
+        }
+
         public static readonly DependencyProperty CommandProperty =
             DependencyProperty.Register(
                 nameof(Command), typeof(ICommand), typeof(ExecutableBar),

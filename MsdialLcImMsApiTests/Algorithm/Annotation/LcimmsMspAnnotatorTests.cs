@@ -414,12 +414,12 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 AdductType = Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100 },
-                    new SpectrumPeak { Mass = 506.361, Intensity = 5 },
-                    new SpectrumPeak { Mass = 524.372, Intensity = 5 },
-                    new SpectrumPeak { Mass = 526.330, Intensity = 5 },
-                    new SpectrumPeak { Mass = 544.340, Intensity = 5 },
-                    new SpectrumPeak { Mass = 810.601, Intensity = 30 },
+                    new SpectrumPeak { Mass = 184.073f, Intensity = 100 },
+                    new SpectrumPeak { Mass = 506.361f, Intensity = 5 },
+                    new SpectrumPeak { Mass = 524.372f, Intensity = 5 },
+                    new SpectrumPeak { Mass = 526.330f, Intensity = 5 },
+                    new SpectrumPeak { Mass = 544.340f, Intensity = 5 },
+                    new SpectrumPeak { Mass = 810.601f, Intensity = 30 },
                 }
             };
             var parameter = new MsRefSearchParameterBase
@@ -436,10 +436,10 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
             var target = BuildPeak(810.604, 2, 102);
             target.Spectrum = new List<SpectrumPeak>
             {
-                new SpectrumPeak { Mass = 86.094, Intensity = 5, },
-                new SpectrumPeak { Mass = 184.073, Intensity = 100, },
-                new SpectrumPeak { Mass = 524.367, Intensity = 1, },
-                new SpectrumPeak { Mass = 810.604, Intensity = 25, },
+                new SpectrumPeak { Mass = 86.094f, Intensity = 5, },
+                new SpectrumPeak { Mass = 184.073f, Intensity = 100, },
+                new SpectrumPeak { Mass = 524.367f, Intensity = 1, },
+                new SpectrumPeak { Mass = 810.604f, Intensity = 25, },
             };
 
             var result = annotator.CalculateScore(BuildQuery(target, parameter, annotator), reference);
@@ -501,12 +501,12 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100 },
-                    new SpectrumPeak { Mass = 506.361, Intensity = 5 },
-                    new SpectrumPeak { Mass = 524.372, Intensity = 5 },
-                    new SpectrumPeak { Mass = 526.330, Intensity = 5 },
-                    new SpectrumPeak { Mass = 544.340, Intensity = 5 },
-                    new SpectrumPeak { Mass = 810.601, Intensity = 30 },
+                    new SpectrumPeak { Mass = 184.073f, Intensity = 100 },
+                    new SpectrumPeak { Mass = 506.361f, Intensity = 5 },
+                    new SpectrumPeak { Mass = 524.372f, Intensity = 5 },
+                    new SpectrumPeak { Mass = 526.330f, Intensity = 5 },
+                    new SpectrumPeak { Mass = 544.340f, Intensity = 5 },
+                    new SpectrumPeak { Mass = 810.601f, Intensity = 30 },
                 }
             };
             var parameter = new MsRefSearchParameterBase
@@ -524,10 +524,10 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation.Tests
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2, ChromXType.RT, ChromXUnit.Min), CollisionCrossSection = 102,
                 Spectrum = new List<SpectrumPeak>
                 {
-                    new SpectrumPeak { Mass = 86.094, Intensity = 5, },
-                    new SpectrumPeak { Mass = 184.073, Intensity = 100, },
-                    new SpectrumPeak { Mass = 524.367, Intensity = 1, },
-                    new SpectrumPeak { Mass = 810.604, Intensity = 25, },
+                    new SpectrumPeak { Mass = 86.094f, Intensity = 5, },
+                    new SpectrumPeak { Mass = 184.073f, Intensity = 100, },
+                    new SpectrumPeak { Mass = 524.367f, Intensity = 1, },
+                    new SpectrumPeak { Mass = 810.604f, Intensity = 25, },
                 }
             };
 

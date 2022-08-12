@@ -62,6 +62,23 @@
       <type>Standard</type>
       <terminus_type>none</terminus_type>
    </modification>
+  <modification title="Phospho (ST)" description="Phosphorylation" create_date="2010-01-19T22:34:50.0721008+09:00" last_modified_date="2010-01-20T04:39:28.1471599+09:00" user="neuhause" reporterCorrectionM2="0" reporterCorrectionM1="0" reporterCorrectionP1="0" reporterCorrectionP2="0" reporterCorrectionType="false" composition="H O(3) P">
+    <position>anywhere</position>
+    <modification_site site="S">
+      <neutralloss_collection>
+        <neutralloss name="H(3) O(4) P" shortname="H3 O4 P" composition="H(3) O(4) P" />
+      </neutralloss_collection>
+      <diagnostic_collection />
+    </modification_site>
+    <modification_site site="T">
+      <neutralloss_collection>
+        <neutralloss name="H(3) O(4) P" shortname="H3 O4 P" composition="H(3) O(4) P" />
+      </neutralloss_collection>
+      <diagnostic_collection />
+    </modification_site>
+    <type>Standard</type>
+    <terminus_type>none</terminus_type>
+  </modification>
   <modification title="4HNE (CHK)" description="4HNE modification" create_date="2021-11-13T10:00:00.1976309+09:00" last_modified_date="2021-11-13T10:00:00.1976309+09:00" user="htsugawa" reporterCorrectionM2="0" reporterCorrectionM1="0" reporterCorrectionP1="0" reporterCorrectionP2="0" reporterCorrectionType="false" composition="C(9) H(17) O(2)">
     <position>anywhere</position>
     <modification_site site="C">

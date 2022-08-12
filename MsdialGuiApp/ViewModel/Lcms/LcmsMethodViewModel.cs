@@ -47,6 +47,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .Subscribe(vm => broker.Publish(vm))
                 .AddTo(Disposables);
             PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilterModel).AddTo(Disposables);
+
+            var _proteinGroupTableViewModel = (ProteinGroupTableViewModel)null; //new ProteinGroupTableViewModel();
+            ShowProteinGroupTableCommand = new ReactiveCommand().AddTo(Disposables);
+            ShowProteinGroupTableCommand.Subscribe(() => broker.Publish(_proteinGroupTableViewModel)).AddTo(Disposables);
         }
 
         public PeakFilterViewModel PeakFilterViewModel { get; }
@@ -82,6 +86,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public DelegateCommand<Window> ShowEicCommand => showEicCommand ?? (showEicCommand = new DelegateCommand<Window>(model.ShowEIC));
         private DelegateCommand<Window> showEicCommand;
+
+        public ReactiveCommand ShowProteinGroupTableCommand { get; }
 
         public ReactiveCommand ShowExperimentSpectrumCommand { get; }
 
@@ -120,7 +126,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 model.ShowShowMscleanrFilterSettingView(obj, true);
             }
             else {
-                Console.WriteLine("Please select an item in Alignment navigator!!");
+                MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+                //Console.WriteLine("Please select an item in Alignment navigator!!");
             }
         }
 

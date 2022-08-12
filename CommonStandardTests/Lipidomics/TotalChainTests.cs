@@ -15,6 +15,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(0, chains.OxidizedCount);
             Assert.AreEqual(2, chains.ChainCount);
             Assert.AreEqual(530.5062805078201, chains.Mass, 1e-5);
+            Assert.AreEqual("36:2", chains.ToString());
             var mockGenerator = new FakeGenerator();
             var candidates = ((ITotalChain)chains).GetCandidateSets(mockGenerator);
             CollectionAssert.AreEqual(new ITotalChain[0], candidates.ToArray());
@@ -25,6 +26,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(0, chains.OxidizedCount);
             Assert.AreEqual(2, chains.ChainCount);
             Assert.AreEqual(516.5270163763599, chains.Mass, 1e-5);
+            Assert.AreEqual("O-36:2", chains.ToString());
 
             chains = new TotalChain(52, 3, 0, 3, 0, 0);
             Assert.AreEqual(52, chains.CarbonCount);
@@ -32,6 +34,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(0, chains.OxidizedCount);
             Assert.AreEqual(3, chains.ChainCount);
             Assert.AreEqual(767.7281206334501, chains.Mass, 1e-5);
+            Assert.AreEqual("52:3", chains.ToString());
 
             chains = new TotalChain(34, 1, 2, 1, 0, 1);
             Assert.AreEqual(34, chains.CarbonCount);
@@ -39,6 +42,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(2, chains.OxidizedCount);
             Assert.AreEqual(2, chains.ChainCount);
             Assert.AreEqual(537.5120937402901, chains.Mass, 1e-5);
+            Assert.AreEqual("34:1;2O", chains.ToString());
         }
 
         class FakeGenerator : ITotalChainVariationGenerator
