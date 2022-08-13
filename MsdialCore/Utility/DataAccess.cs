@@ -473,7 +473,7 @@ namespace CompMs.MsdialCore.Utility {
 
         public static double GetIonAbundanceOfMzInSpectrum(RawPeakElement[] massSpectra,
             float mz, float mztol, out double basepeakMz, out double basepeakIntensity) {
-            var startIndex = SearchCollection.LowerBound(massSpectra, new RawPeakElement() { Mz = mz - mztol }, (a, b) => a.Mz.CompareTo(b.Mz));
+            var startIndex = SearchCollection.LowerBound(massSpectra, mz - mztol, (a, b) => a.Mz.CompareTo(b));
             // var startIndex = GetMs1StartIndex(mz, mztol, massSpectra);
             double sum = 0, maxIntensityMz = 0.0, maxMass = mz;
 
@@ -1051,28 +1051,6 @@ namespace CompMs.MsdialCore.Utility {
                 }
             }
             return peaks.OrderBy(n => n.PeakID).ToList();
-        }
-
-        // get properties
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="spectrumList"></param>
-        /// <param name="ionmode"></param>
-        /// <returns>[0] min Mz [1] max Mz</returns>
-        public static float[] GetMs1Range(IReadOnlyList<RawSpectrum> spectrumList, IonMode ionmode) {
-            float minMz = float.MaxValue, maxMz = float.MinValue;
-            var scanPolarity = ionmode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
-
-            for (int i = 0; i < spectrumList.Count; i++) {
-                if (spectrumList[i].MsLevel > 1) continue;
-                if (spectrumList[i].ScanPolarity != scanPolarity) continue;
-                //if (spectrumCollection[i].DriftScanNumber > 0) continue;
-
-                if (spectrumList[i].LowestObservedMz < minMz) minMz = (float)spectrumList[i].LowestObservedMz;
-                if (spectrumList[i].HighestObservedMz > maxMz) maxMz = (float)spectrumList[i].HighestObservedMz;
-            }
-            return new float[] { minMz, maxMz };
         }
 
         // annotation

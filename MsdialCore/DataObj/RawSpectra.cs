@@ -63,30 +63,12 @@ namespace CompMs.MsdialCore.DataObj
             var driftBinToChromPeak = new Dictionary<int, ChromatogramPeak>();
             var driftBinToBasePeakIntensity = new Dictionary<int, double>();
 
-            void SetChromatogramPeak(RawSpectrum spectrum) {
-                var driftTime = spectrum.DriftTime;
-                var driftBin = (int)(driftTime * 1000);
-
-                var intensity = Utility.DataAccess.GetIonAbundanceOfMzInSpectrum(spectrum.Spectrum, mz, mztol, out double basepeakMz, out double basepeakIntensity);
-                if (driftBinToChromPeak.TryGetValue(driftBin, out var chromPeak)) {
-                    chromPeak.Intensity += intensity;
-                    if (driftBinToBasePeakIntensity[driftBin] < basepeakIntensity) {
-                        driftBinToBasePeakIntensity[driftBin] = basepeakIntensity;
-                        chromPeak.Mass = basepeakMz;
-                    }
-                }
-                else {
-                    driftBinToChromPeak[driftBin] = new ChromatogramPeak(spectrum.OriginalIndex, basepeakMz, intensity, new ChromXs(new DriftTime(driftTime, ChromXUnit.Msec)));
-                    driftBinToBasePeakIntensity[driftBin] = basepeakIntensity;
-                }
-            }
-
             //accumulating peaks from peak top to peak left
             for (int i = scanID + 1; i >= 0; i--) {
                 var spectrum = _spectra[i];
                 if (spectrum.MsLevel != 1) continue;
                 if (spectrum.ScanStartTime < rt - rtWidth * 0.5) break;
-                SetChromatogramPeak(spectrum);
+                SetChromatogramPeak(spectrum, mz, mztol, driftBinToChromPeak, driftBinToBasePeakIntensity);
             }
 
             //accumulating peaks from peak top to peak right
@@ -94,10 +76,28 @@ namespace CompMs.MsdialCore.DataObj
                 var spectrum = _spectra[i];
                 if (spectrum.MsLevel != 1) continue;
                 if (spectrum.ScanStartTime > rt + rtWidth * 0.5) break;
-                SetChromatogramPeak(spectrum);
+                SetChromatogramPeak(spectrum, mz, mztol, driftBinToChromPeak, driftBinToBasePeakIntensity);
             }
 
             return new Chromatogram(driftBinToChromPeak.Values.OrderBy(n => n.ChromXs.Value).ToList(), ChromXType.Drift, ChromXUnit.Msec);
+        }
+
+        private static void SetChromatogramPeak(RawSpectrum spectrum, float mz, float mztol, Dictionary<int, ChromatogramPeak> driftBinToChromPeak, Dictionary<int, double> driftBinToBasePeakIntensity) {
+            var driftTime = spectrum.DriftTime;
+            var driftBin = (int)(driftTime * 1000);
+
+            var intensity = Utility.DataAccess.GetIonAbundanceOfMzInSpectrum(spectrum.Spectrum, mz, mztol, out double basepeakMz, out double basepeakIntensity);
+            if (driftBinToChromPeak.TryGetValue(driftBin, out var chromPeak)) {
+                chromPeak.Intensity += intensity;
+                if (driftBinToBasePeakIntensity[driftBin] < basepeakIntensity) {
+                    driftBinToBasePeakIntensity[driftBin] = basepeakIntensity;
+                    chromPeak.Mass = basepeakMz;
+                }
+            }
+            else {
+                driftBinToChromPeak[driftBin] = new ChromatogramPeak(spectrum.OriginalIndex, basepeakMz, intensity, new ChromXs(new DriftTime(driftTime, ChromXUnit.Msec)));
+                driftBinToBasePeakIntensity[driftBin] = basepeakIntensity;
+            }
         }
 
         public PeakMs2Spectra GetPeakMs2Spectra(ChromatogramPeakFeature rtPeakFeature, double ms2Tolerance, AcquisitionType acquisitionType, DriftTime driftTime) {

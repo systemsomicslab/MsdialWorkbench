@@ -12,6 +12,7 @@ using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.UI.Message;
+using CompMs.Graphics.UI.ProgressBar;
 using Microsoft.Win32;
 using Reactive.Bindings.Notifiers;
 using System;
@@ -45,6 +46,8 @@ namespace CompMs.App.Msdial.View.Core
 
             broker = MessageBroker.Default;
 
+            broker.ToObservable<ProgressBarMultiContainerVM>()
+                .Subscribe(ShowProgressBar);
             broker.ToObservable<ExperimentSpectrumViewModel>()
                 .Subscribe(OpenExperimentSpectrumView);
             broker.ToObservable<ProteinGroupTableViewModel>()
@@ -73,6 +76,24 @@ namespace CompMs.App.Msdial.View.Core
                     }
                 }
             });
+        }
+
+        private void ShowProgressBar(ProgressBarMultiContainerVM viewmodel) {
+            var dialog = new ProgressBarMultiContainerWindow
+            {
+                DataContext = viewmodel,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            dialog.Loaded += async (s, e) =>
+            {
+                await viewmodel.RunAsync();
+                viewmodel.Result = true;
+
+                dialog.DialogResult = true;
+                dialog.Close();
+            };
+            dialog.ShowDialog();
         }
 
         private void OpenExperimentSpectrumView(ExperimentSpectrumViewModel viewmodel) {

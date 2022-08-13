@@ -74,7 +74,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         protected virtual void SaveDataBaseMapper(Stream stream) {
-            DataBaseMapper.Save(stream);
+            DataBaseMapper?.Save(stream);
         }
 
         protected virtual void SaveDataBases(Stream stream) {

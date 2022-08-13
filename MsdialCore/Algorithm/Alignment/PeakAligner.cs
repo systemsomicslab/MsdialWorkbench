@@ -148,7 +148,15 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         }
 
         private AlignmentResultContainer PackingSpots(List<AlignmentSpotProperty> alignmentSpots) {
-            if (alignmentSpots.IsEmptyOrNull()) return null;
+            if (alignmentSpots.IsEmptyOrNull()) {
+                return new AlignmentResultContainer
+                {
+                    Ionization = Param.Ionization,
+                    AlignmentResultFileID = -1,
+                    TotalAlignmentSpotCount = 0,
+                    AlignmentSpotProperties = new ObservableCollection<AlignmentSpotProperty>(alignmentSpots),
+                };
+            }
 
             var minInt = (double)alignmentSpots.Min(spot => spot.HeightMin);
             var maxInt = (double)alignmentSpots.Max(spot => spot.HeightMax);
