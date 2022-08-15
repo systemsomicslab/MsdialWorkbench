@@ -17,10 +17,21 @@
         </Grid.RowDefinitions>
         <!--<TabControl Grid.Row="0">
             <TabItem Header="Protein Groups">-->
-                <GroupBox Header="Protein Groups">
-                <DataGrid x:Name="CustomerGrid" Margin="8" ItemsSource="{Binding Groups}" IsSynchronizedWithCurrentItem="True" AlternatingRowBackground="LightBlue" AlternationCount="2" />
-                    
-                </GroupBox>
+        <GroupBox Header="Protein Groups">
+            <DataGrid x:Name="CustomerGrid"
+                      Margin="8"
+                      ItemsSource="{Binding Groups}"
+                      AutoGenerateColumns="False"
+                      IsSynchronizedWithCurrentItem="True" AlternatingRowBackground="LightBlue" AlternationCount="2">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="GroupID" Binding="{Binding GroupId}" />
+                    <DataGridTextColumn Header="NumberOfProteins" Binding="{Binding NumberOfProteins}" />
+                    <DataGridTextColumn Header="NumberOfUniquePeptides" Binding="{Binding NumberOfUniquePeptides}" />
+                    <DataGridTextColumn Header="NumberOfPeptides" Binding="{Binding NumberOfPeptides}" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+        </GroupBox>
             <!--</TabItem>
             --><!--<TabItem Header="Peptide Groups"/>--><!--
         </TabControl>-->
@@ -35,10 +46,26 @@
             </TabItem>
             <TabItem Header="Peptide Groups">
                 <DataGrid ItemsSource="{Binding DataContext.Groups/PeptideViewModels, RelativeSource={RelativeSource AncestorType=Window}}"
-                              DataContext="{Binding Target}"
-                              SelectedValuePath="AnnotatedSpot"
-                              SelectedValue="{Binding Value, Mode=OneWayToSource}"
-                              Margin="8"/>
+                          DataContext="{Binding Target}"
+                          SelectedValuePath="AnnotatedSpot"
+                          SelectedValue="{Binding Value, Mode=OneWayToSource}"
+                          AutoGenerateColumns="False"
+                          Margin="8">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="PeptideSeq" Binding="{Binding PeptideSeq}" />
+                        <DataGridTextColumn Header="DatabaseOrigin" Binding="{Binding DatabaseOrigin}" />
+                        <DataGridTextColumn Header="DatabaseOriginID" Binding="{Binding DatabaseOriginID}" />
+                        <DataGridTextColumn Header="ModifiedSequence" Binding="{Binding ModifiedSequence}" />
+                        <DataGridTextColumn Header="Position" Binding="{Binding Position}" />
+                        <DataGridTextColumn Header="Formula" Binding="{Binding Formula}" />
+                        <DataGridTextColumn Header="ExactMass" Binding="{Binding ExactMass}" />
+                        <DataGridTextColumn Header="IsProteinNterminal" Binding="{Binding IsProteinNterminal}" />
+                        <DataGridTextColumn Header="IsProteinCterminal" Binding="{Binding IsProteinCterminal}" />
+                        <DataGridTextColumn Header="IsDecoy" Binding="{Binding IsDecoy}" />
+                        <DataGridTextColumn Header="MissedCleavages" Binding="{Binding MissedCleavages}" />
+                        <DataGridTextColumn Header="SamePeptideNumberInSearchedProteins" Binding="{Binding SamePeptideNumberInSearchedProteins}" />                        
+                    </DataGrid.Columns>
+                </DataGrid>
 
             </TabItem>
             <!--<TabItem Header="Peptide Groups"/>-->
