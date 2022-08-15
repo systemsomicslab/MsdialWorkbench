@@ -137,9 +137,10 @@ namespace CompMs.App.Msdial.Model.Imms
                 },
                 true);
             var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
+            var rawLoader = new MultiMsRawSpectrumLoader(provider, parameter).AddTo(Disposables);
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
-                new MsRawSpectrumLoader(provider, parameter),
+                rawLoader,
                 new MsDecSpectrumLoader(decLoader, Ms1Peaks),
                 new MsRefSpectrumLoader(mapper),
                 new PropertySelector<SpectrumPeak, float>(peak => peak.Mass),

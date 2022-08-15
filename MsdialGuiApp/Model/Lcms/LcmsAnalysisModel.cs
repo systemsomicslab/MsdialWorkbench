@@ -84,7 +84,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                             (byte)(255 * (1 - Math.Abs(peak.InnerModel.PeakShape.AmplitudeScoreValue - 0.5))),
                             (byte)(255 - 255 * peak.InnerModel.PeakShape.AmplitudeScoreValue)),
                         enableCache: true),
-                    "Ontology");
+                    "Intensity");
             var brushes = new[] { intensityBrush, ontologyBrush, };
             BrushMapData<ChromatogramPeakFeatureModel> selectedBrush;
             switch (Parameter.TargetOmics) {
@@ -359,8 +359,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 MsdecResult.Value,
                 this.provider.LoadMs1Spectrums(),
                 DataBaseMapper,
-                Parameter
-                );
+                Parameter);
         }
     }
 }
