@@ -294,8 +294,12 @@ namespace CompMs.Common.Parser
                      return false;
 
                 case "collision_energy":
-                case "collisionenergy": mspObj.CollisionEnergy = float.TryParse(fieldValue, out float ce) ? ce : -1;  return false;
+                case "collisionenergy":
+                    mspObj.CollisionEnergy = float.TryParse(fieldValue, out float ce) ? ce : -1;
+                    mspObj.FragmentationCondition = fieldValue;
+                    return false;
 
+                case "fragmentationcondition": mspObj.FragmentationCondition = fieldValue; return false;
                 case "precursormz":
                 case "precursor_mz":
                 case "precursor_m/z":
@@ -437,7 +441,7 @@ namespace CompMs.Common.Parser
         public static void WriteAsMsp(Stream stream, IEnumerable<MoleculeMsReference> mspRecords) {
             using (var sw = new StreamWriter(stream, Encoding.ASCII, 512, leaveOpen: true)) {
                 foreach (var record in mspRecords) {
-                    writeMspFields(record, sw);
+                    WriteMspFields(record, sw);
                 }
             }
         }
@@ -459,13 +463,39 @@ namespace CompMs.Common.Parser
 
                 var filepath = Path.Combine(folderpath, counter.ToString("0000") + "_" + converted + ".msp");
                 using (var sw = new StreamWriter(filepath, false, Encoding.ASCII)) {
-                    writeMspFields(record, sw);
+                    WriteMspFields(record, sw);
                 }
                 counter++;
             }
         }
 
-        private static void writeMspFields(MoleculeMsReference record, StreamWriter sw) {
+        public static void WriteSpectrumAsMsp(MoleculeMsReference record, StreamWriter sw) {
+
+            sw.WriteLine("NAME: " + record.Name);
+            sw.WriteLine("PRECURSORMZ: " + record.PrecursorMz);
+            sw.WriteLine("PRECURSORTYPE: " + record.AdductType.AdductIonName);
+            sw.WriteLine("IONMODE: " + record.AdductType.IonMode);
+            if (record.ChromXs != null && record.ChromXs.RT.Value > 0)
+                sw.WriteLine("RETENTIONTIME: " + record.ChromXs.RT.Value);
+            if (record.CollisionCrossSection > 0)
+                sw.WriteLine("CCS: " + record.CollisionCrossSection);
+            sw.WriteLine("FORMULA: " + record.Formula);
+            sw.WriteLine("ONTOLOGY: " + record.Ontology);
+            sw.WriteLine("SMILES: " + record.SMILES);
+            sw.WriteLine("INCHIKEY: " + record.InChIKey);
+            if (record.InstrumentType != string.Empty)
+                sw.WriteLine("INSTRUMENTTYPE: " + record.InstrumentType);
+            if (record.FragmentationCondition != string.Empty)
+                sw.WriteLine("COLLISIONENERGY: " + record.FragmentationCondition);
+            sw.WriteLine("COMMENT: " + record.Comment);
+            sw.WriteLine("Num Peaks: " + record.Spectrum.Count);
+            foreach (var peak in record.Spectrum) {
+                sw.WriteLine(peak.Mass + "\t" + peak.Intensity);
+            }
+            sw.WriteLine();
+        }
+
+        public static void WriteMspFields(MoleculeMsReference record, StreamWriter sw) {
 
             var adducttype = string.Empty;
             if (record.AdductType == null || !record.AdductType.HasAdduct) {

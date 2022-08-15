@@ -31,7 +31,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
         }
 
         public override PeakAligner CreatePeakAligner() {
-            return new PeakAligner(this);
+            return new PeakAligner(this, null);
         }
 
         public override IPeakJoiner CreatePeakJoiner() {

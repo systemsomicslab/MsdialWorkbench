@@ -4,6 +4,7 @@ using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcmsApi.Parameter;
+using System;
 
 namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
 {
@@ -12,18 +13,21 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public MsdialLcmsParameter LcmsParameter { get; }
+        public Action<int> ReportAction { get; set; }
 
-        public LcmsAlignmentProcessFactory(IMsdialDataStorage<MsdialLcmsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(storage.Parameter, storage.IupacDatabase) {
+        public LcmsAlignmentProcessFactory(
+            IMsdialDataStorage<MsdialLcmsParameter> storage, 
+            IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(storage.Parameter, storage.IupacDatabase) {
             LcmsParameter = storage.Parameter;
             this.evaluator = evaluator ?? throw new System.ArgumentNullException(nameof(evaluator));
         }
 
         public override IAlignmentRefiner CreateAlignmentRefiner() {
-            return new LcmsAlignmentRefiner(LcmsParameter, Iupac, evaluator);
+            return new LcmsAlignmentRefiner(LcmsParameter, Iupac, evaluator, ReportAction);
         }
 
         public override DataAccessor CreateDataAccessor() {
-            return new LcmsDataAccessor();
+            return new LcmsDataAccessor(LcmsParameter);
         }
 
         public override GapFiller CreateGapFiller() {
@@ -31,13 +35,14 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
         }
 
         public override PeakAligner CreatePeakAligner() {
-            return new PeakAligner(this);
+            return new PeakAligner(this, ReportAction);
         }
 
         public override IPeakJoiner CreatePeakJoiner() {
             return new LcmsPeakJoiner(
                 LcmsParameter.RetentionTimeAlignmentTolerance, LcmsParameter.RetentionTimeAlignmentFactor,
-                LcmsParameter.Ms1AlignmentTolerance, LcmsParameter.Ms1AlignmentFactor
+                LcmsParameter.Ms1AlignmentTolerance, LcmsParameter.Ms1AlignmentFactor,
+                ReportAction
                 );
         }
     }

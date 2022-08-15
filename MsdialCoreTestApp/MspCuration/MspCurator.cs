@@ -11,6 +11,24 @@ namespace CompMs.App.MsdialConsole.MspCuration {
     public sealed class MspCurator {
         private MspCurator() { }
 
+        public static void MergeMSPs(string inputDir, string inputFileList, string output) {
+            var files = new List<string>();
+            using (var sr = new StreamReader(inputFileList)) {
+                while (sr.Peek() != -1) { 
+                    files.Add(sr.ReadLine());
+                }
+            }
+            using (var sw = new StreamWriter(output)) {
+                foreach (var file in files) {
+                    var filepath = Path.Combine(inputDir, file);
+                    var mspRecords = MspFileParser.MspFileReader(filepath);
+                    foreach (var mspRecord in mspRecords) {
+                        MspFileParser.WriteSpectrumAsMsp(mspRecord, sw);
+                    }
+                }
+            }
+        }
+
         public static void WriteRtMzInChIKey(string mspfile) {
             var mspRecords = MspFileParser.MspFileReader(mspfile);
             var filename = System.IO.Path.GetFileNameWithoutExtension(mspfile);
