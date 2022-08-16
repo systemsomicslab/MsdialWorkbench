@@ -179,7 +179,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var peakInformationModel = new PeakInformationAnalysisModel(Target).AddTo(Disposables);
             peakInformationModel.Add(
-                t => new MzPoint(t?.InnerModel.ChromXsTop.Mz.Value ?? 0d),
+                t => new MzPoint(t?.Mass ?? 0d),
                 t => new DriftPoint(t?.InnerModel.ChromXsTop.Drift.Value ?? 0d),
                 t => new CcsPoint(t?.InnerModel.CollisionCrossSection ?? 0d));
             peakInformationModel.Add(
