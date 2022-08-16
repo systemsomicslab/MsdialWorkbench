@@ -616,7 +616,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
             var mass = feature.Mass;
             var minDiff = int.MaxValue;
-            var ms1SpectrumList = provider.LoadMs1Spectrums();
+            var ms1SpectrumList = provider.LoadMsSpectrums();
             var ms2SpectrumList = provider.LoadMsNSpectrums(level:2);
             var ce2MinDiff = new Dictionary<double, double>(); // ce to diff
 

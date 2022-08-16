@@ -218,31 +218,46 @@ namespace CompMs.Common.Proteomics.Function {
                 }
             }
 
-            var combinations = new List<List<int>>();
+            var combinations = new List<List<List<int>>>();
+            for (int i = 0; i <= maxModifications - fixedModCount; i++) {
+                combinations.Add(new List<List<int>>());
+            }
+            diff2positions = diff2positions.OrderByDescending(x => x.Value.Count).ToDictionary(x => x.Key, x => x.Value);
+
             foreach (var item in diff2positions) {
                 var key = item.Key;
                 var values = item.Value;
-                foreach (var value in values) {
 
+                for (int i = combinations.Count - 1; i >= 0; i--) {
+                    List<int> candidateIDs = null;
+                    if (combinations[i].Count > 0) candidateIDs = combinations[i][combinations[i].Count - 1];
+                    else candidateIDs = new List<int>();
+
+                    for (int j = 0; j < values.Count; j++) {
+                        candidateIDs.Add(values[j]);
+                        if (candidateIDs.Count >= i) break;
+                    }
+
+                    combinations[i].Add(candidateIDs);
                 }
             }
 
-            for (int i = 1; i <= maxModifications - fixedModCount; i++) {
-                var mod = new List<int>();
-                foreach (var item in diff2positions) {
-                    var key = item.Key;
-                    var values = item.Value;
+            //for (int i = 1; i <= maxModifications - fixedModCount; i++) {
+            //    var mod = new List<int>();
+            //    foreach (var item in diff2positions) {
+            //        var key = item.Key;
+            //        var values = item.Value;
 
-                    foreach (var value in values) {
-                        mod.Add(value);
-                        if (mod.Count > i) {
-                            combinations.Add(mod);
-                            mod = new List<int>();
-                            break;
-                        }
-                    }
-                }
-            } 
+            //        foreach (var value in values) {
+            //            mod.Add(value);
+            //            if (mod.Count > i) {
+            //                combinations.Add(mod);
+            //                mod = new List<int>();
+            //                break;
+            //            }
+            //        }
+            //    }
+            //} 
 
         }
 

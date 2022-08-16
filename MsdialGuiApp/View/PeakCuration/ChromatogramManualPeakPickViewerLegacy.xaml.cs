@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Parser;
 using CompMs.Common.Utility;
 using CompMs.CommonMVVM;
@@ -243,7 +244,7 @@ namespace CompMs.App.Msdial.View.PeakCuration {
             OnPropertyChanged("SignalToNoise");
         }
 
-        private DrawVisualManualPeakModification getChromatogramDrawingVisual(string filename, List<ChromatogramPeak> peaklist,
+        private DrawVisualManualPeakModification getChromatogramDrawingVisual(string filename, IReadOnlyList<IChromatogramPeak> peaklist,
             double rtTop, double rtLeft, double rtRight, double estimatedNoise, double signalToNoise, double areaFactor) {
 
             var xTitle = "Retention time (min)";
