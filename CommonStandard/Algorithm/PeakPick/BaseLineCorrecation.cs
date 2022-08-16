@@ -103,9 +103,9 @@ namespace CompMs.Common.Algorithm.PeakPick {
                     correctedIntensity = coefficient * j + intercept;
                     if (correctedIntensity < 0) correctedIntensity = 0;
                     if (peaklist[j].Intensity - correctedIntensity > 0)
-                        correctedPeaklist.Add(new ChromatogramPeak(peaklist[j].ID, peaklist[j].Mass, peaklist[j].Intensity - correctedIntensity, peaklist[j].ChromXs));
+                        correctedPeaklist.Add(new ChromatogramPeak(peaklist[j].IDOrIndex, peaklist[j].Id, correctedPeaklist.Count, peaklist[j].Mass, peaklist[j].Intensity - correctedIntensity, peaklist[j].ChromXs));
                     else
-                        correctedPeaklist.Add(new ChromatogramPeak(peaklist[j].ID, peaklist[j].Mass, 0, peaklist[j].ChromXs));
+                        correctedPeaklist.Add(new ChromatogramPeak(peaklist[j].IDOrIndex, peaklist[j].Id, correctedPeaklist.Count, peaklist[j].Mass, 0, peaklist[j].ChromXs));
                 }
 
                 if (i == filledList.Count - 2)
@@ -113,9 +113,9 @@ namespace CompMs.Common.Algorithm.PeakPick {
                     correctedIntensity = coefficient * filledList[i + 1] + intercept;
                     if (correctedIntensity < 0) correctedIntensity = 0;
                     if (peaklist[peaklist.Count - 1].Intensity - correctedIntensity > 0)
-                        correctedPeaklist.Add(new ChromatogramPeak(peaklist[peaklist.Count - 1].ID, peaklist[peaklist.Count - 1].Mass, peaklist[peaklist.Count - 1].Intensity - correctedIntensity, peaklist[peaklist.Count - 1].ChromXs));
+                        correctedPeaklist.Add(new ChromatogramPeak(peaklist[peaklist.Count - 1].IDOrIndex, peaklist[peaklist.Count - 1].Id, correctedPeaklist.Count, peaklist[peaklist.Count - 1].Mass, peaklist[peaklist.Count - 1].Intensity - correctedIntensity, peaklist[peaklist.Count - 1].ChromXs));
                     else
-                        correctedPeaklist.Add(new ChromatogramPeak(peaklist[peaklist.Count - 1].ID, peaklist[peaklist.Count - 1].Mass, 0, peaklist[peaklist.Count - 1].ChromXs));
+                        correctedPeaklist.Add(new ChromatogramPeak(peaklist[peaklist.Count - 1].IDOrIndex, peaklist[peaklist.Count - 1].Id, correctedPeaklist.Count, peaklist[peaklist.Count - 1].Mass, 0, peaklist[peaklist.Count - 1].ChromXs));
                 }
             }
             return correctedPeaklist;

@@ -1009,9 +1009,9 @@ namespace CompMs.MsdialCore.Algorithm {
                 spot.PeakHeightLeft = sPeaklist[minLeftId].Intensity;
                 spot.PeakHeightRight = sPeaklist[minRightId].Intensity;
 
-                spot.ChromScanIdTop = sPeaklist[maxID].ID;
-                spot.ChromScanIdLeft = sPeaklist[minLeftId].ID;
-                spot.ChromScanIdRight = sPeaklist[minRightId].ID;
+                spot.ChromScanIdTop = sPeaklist[maxID].IDOrIndex;
+                spot.ChromScanIdLeft = sPeaklist[minLeftId].IDOrIndex;
+                spot.ChromScanIdRight = sPeaklist[minRightId].IDOrIndex;
 
                 spot.MS1RawSpectrumIdTop = chromatogram.Peaks[maxID].ID;
                 spot.MS1RawSpectrumIdLeft = chromatogram.Peaks[minLeftId].ID;

@@ -166,7 +166,7 @@ namespace CompMs.Graphics.Legacy {
             #region
             if (this.chromatogramXicViewModel.FillPeakArea && this.chromatogramXicViewModel.TargetRightRt - this.chromatogramXicViewModel.TargetLeftRt > 0.0001) {
                 for (int i = 0; i < chromatogramBean.ChromatogramDataPointCollection.Count; i++) {
-                    scanNumber = (int)chromatogramBean.ChromatogramDataPointCollection[i].ID;
+                    scanNumber = (int)chromatogramBean.ChromatogramDataPointCollection[i].IDOrIndex;
                     retentionTime = (float)chromatogramBean.ChromatogramDataPointCollection[i].ChromXs.Value;
                     intensity = (float)chromatogramBean.ChromatogramDataPointCollection[i].Intensity;
                     mzValue = (float)chromatogramBean.ChromatogramDataPointCollection[i].Mass;
@@ -205,7 +205,7 @@ namespace CompMs.Graphics.Legacy {
             }
             else {
                 for (int i = 0; i < chromatogramBean.ChromatogramDataPointCollection.Count; i++) {
-                    scanNumber = (int)chromatogramBean.ChromatogramDataPointCollection[i].ID;
+                    scanNumber = (int)chromatogramBean.ChromatogramDataPointCollection[i].IDOrIndex;
                     retentionTime = (float)chromatogramBean.ChromatogramDataPointCollection[i].ChromXs.Value;
                     intensity = (float)chromatogramBean.ChromatogramDataPointCollection[i].Intensity;
                     mzValue = (float)chromatogramBean.ChromatogramDataPointCollection[i].Mass;

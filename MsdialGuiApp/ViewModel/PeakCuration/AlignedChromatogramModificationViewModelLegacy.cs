@@ -161,14 +161,14 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
             AlignedPeakList = new List<ChromatogramPeak>();
             foreach (var p in SmoothedPeakList) {
                 var nChromXs = new ChromXs(p.ChromXs.Value - AlignOffset, p.ChromXs.Type, p.ChromXs.Unit);
-                AlignedPeakList.Add(new ChromatogramPeak(0, 0d, p.Intensity, nChromXs));
+                AlignedPeakList.Add(new ChromatogramPeak(0, p.Id, AlignedPeakList.Count, 0d, p.Intensity, nChromXs));
             }
         }
 
         public void ClearAlignedPeakList() {
             AlignedPeakList = new List<ChromatogramPeak>();
             foreach (var p in SmoothedPeakList) {
-                AlignedPeakList.Add(new ChromatogramPeak(0, 0d, p.Intensity, p.ChromXs));
+                AlignedPeakList.Add(new ChromatogramPeak(0, p.Id, AlignedPeakList.Count, 0d, p.Intensity, p.ChromXs));
             }
         }
 

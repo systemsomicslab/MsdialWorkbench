@@ -123,7 +123,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 }
             }
             else {
-                id = candidates.Argmin(cand => Math.Abs(cand.ChromXs.Value - centralAx)).ID;
+                id = candidates.Argmin(cand => Math.Abs(cand.ChromXs.Value - centralAx)).IDOrIndex;
 
                 var margin = 2;
 

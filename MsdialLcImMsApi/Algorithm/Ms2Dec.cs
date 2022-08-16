@@ -124,7 +124,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                     var diff = Math.Abs(tmpPeaklist.ChromXs.Value - dtChromPeak.ChromXs.Value);
                     if (diff < minDiff) {
                         minDiff = diff;
-                        minID = (int)(tmpPeaklist.ID);
+                        minID = (int)(tmpPeaklist.IDOrIndex);
                     }
                 }
                 topScanNum = minID;

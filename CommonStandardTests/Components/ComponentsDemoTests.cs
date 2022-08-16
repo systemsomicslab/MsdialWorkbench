@@ -101,7 +101,7 @@ namespace CompMs.Common.Components.Tests
             DemoChromatogram = new List<ChromatogramPeak>();
             for (var i = 0; i < 1000; i++)
             {
-                var chrom = new ChromatogramPeak(i, 200, i * 0.1, new RetentionTime(i * 0.05));
+                var chrom = new ChromatogramPeak(i, i, i, 200, i * 0.1, new RetentionTime(i * 0.05));
                 DemoChromatogram.Add(chrom);
             }
         }
@@ -161,7 +161,7 @@ namespace CompMs.Common.Components.Tests
                 Debug.Print($"Num Peaks: {DemoChromatogram.Count}");
                 foreach (var peak in DemoChromatogram)
                 {
-                    Debug.Print($"ID: {peak.ID}\tmz: {peak.Mass:F2}\tint: {peak.Intensity:F1}\t{peak.ChromXs.GetRepresentativeXAxis().ToString()}");
+                    Debug.Print($"ID: {peak.IDOrIndex}\tmz: {peak.Mass:F2}\tint: {peak.Intensity:F1}\t{peak.ChromXs.GetRepresentativeXAxis().ToString()}");
                     if (counter++ > 10) return;
                 }
             }
