@@ -5,6 +5,7 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Information
@@ -24,12 +25,20 @@ namespace CompMs.App.Msdial.Model.Information
     internal sealed class PeakInformationAnalysisModel : DisposableModelBase, IPeakInformationModel
     {
         public PeakInformationAnalysisModel(IObservable<ChromatogramPeakFeatureModel> model) {
-            model.Select(m => m.ObserveProperty(m_ => m_.Name)).Switch().Subscribe(m => Annotation = m).AddTo(Disposables);
-            model.Select(m => m.ObserveProperty(m_ => m_.AdductIonName)).Switch().Subscribe(m => AdductIonName = m).AddTo(Disposables);
-            model.Select(m => m.ObserveProperty(m_ => m_.Formula)).Switch().Subscribe(m => Formula = m?.FormulaString).AddTo(Disposables);
-            model.Select(m => m.ObserveProperty(m_ => m_.Ontology)).Switch().Subscribe(m => Ontology = m).AddTo(Disposables);
-            model.Select(m => m.ObserveProperty(m_ => m_.InChIKey)).Switch().Subscribe(m => InChIKey = m).AddTo(Disposables);
-            model.Select(m => m.ObserveProperty(m_ => m_.Comment)).Switch().Subscribe(m => Comment = m).AddTo(Disposables);
+            model.Where(m => !(m is null))
+                .Select(m =>
+                {
+                    var disposables = new CompositeDisposable();
+                    disposables.Add(m.ObserveProperty(m_ => m_.Name).Subscribe(m_ => Annotation = m_));
+                    disposables.Add(m.ObserveProperty(m_ => m_.AdductIonName).Subscribe(m_ => AdductIonName = m_));
+                    disposables.Add(m.ObserveProperty(m_ => m_.Formula).Subscribe(m_ => Formula = m_?.FormulaString));
+                    disposables.Add(m.ObserveProperty(m_ => m_.Ontology).Subscribe(m_ => Ontology = m_));
+                    disposables.Add(m.ObserveProperty(m_ => m_.InChIKey).Subscribe(m_ => InChIKey = m_));
+                    disposables.Add(m.ObserveProperty(m_ => m_.Comment).Subscribe(m_ => Comment = m_));
+                    return disposables;
+                }).DisposePreviousValue()
+                .Subscribe()
+                .AddTo(Disposables);
 
             _peakPointMaps = new ObservableCollection<Func<ChromatogramPeakFeatureModel, IPeakPoint>>();
             var peakPoints = model
@@ -114,12 +123,19 @@ namespace CompMs.App.Msdial.Model.Information
     internal sealed class PeakInformationAlignmentModel : DisposableModelBase, IPeakInformationModel
     {
         public PeakInformationAlignmentModel(IObservable<AlignmentSpotPropertyModel> model) {
-            model.Select(m => m.ObserveProperty(m_ => m_.Name)).Switch().Subscribe(m => Annotation = m).AddTo(Disposables);
-            model.Select(m => m.ObserveProperty(m_ => m_.AdductIonName)).Switch().Subscribe(m => AdductIonName = m).AddTo(Disposables);
-            model.Select(m => m.ObserveProperty(m_ => m_.Formula)).Switch().Subscribe(m => Formula = m?.FormulaString).AddTo(Disposables);
-            model.Select(m => m.ObserveProperty(m_ => m_.Ontology)).Switch().Subscribe(m => Ontology = m).AddTo(Disposables);
-            model.Select(m => m.ObserveProperty(m_ => m_.InChIKey)).Switch().Subscribe(m => InChIKey = m).AddTo(Disposables);
-            model.Select(m => m.ObserveProperty(m_ => m_.Comment)).Switch().Subscribe(m => Comment = m).AddTo(Disposables);
+            model.Where(m => !(m is null))
+                .Select(m => {
+                    var disposables = new CompositeDisposable();
+                    disposables.Add(m.ObserveProperty(m_ => m_.Name).Subscribe(m_ => Annotation = m_));
+                    disposables.Add(m.ObserveProperty(m_ => m_.AdductIonName).Subscribe(m_ => AdductIonName = m_));
+                    disposables.Add(m.ObserveProperty(m_ => m_.Formula).Subscribe(m_ => Formula = m_?.FormulaString));
+                    disposables.Add(m.ObserveProperty(m_ => m_.Ontology).Subscribe(m_ => Ontology = m_));
+                    disposables.Add(m.ObserveProperty(m_ => m_.InChIKey).Subscribe(m_ => InChIKey = m_));
+                    disposables.Add(m.ObserveProperty(m_ => m_.Comment).Subscribe(m_ => Comment = m_));
+                    return disposables;
+                }).DisposePreviousValue()
+                .Subscribe()
+                .AddTo(Disposables);
 
             _peakPointMaps = new ObservableCollection<Func<AlignmentSpotPropertyModel, IPeakPoint>>();
             var peakPoints = model

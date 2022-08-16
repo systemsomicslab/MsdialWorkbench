@@ -45,12 +45,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private readonly List<(IAnnotationQueryFactory<T> Factory, IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult> Container)> moleculeContainerPairs;
-        private readonly List<(IAnnotationQueryFactory<IAnnotationQueryZZZ<MsScanMatchResult>> Factory, IMatchResultEvaluator<MsScanMatchResult> Evaluator, MsRefSearchParameterBase Parameter)> eadAnnotationQueryFactories;
+        private readonly List<(IAnnotationQueryFactory<ICallableAnnotationQuery<MsScanMatchResult>> Factory, IMatchResultEvaluator<MsScanMatchResult> Evaluator, MsRefSearchParameterBase Parameter)> eadAnnotationQueryFactories;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
 
         public EadLipidomicsAnnotationProcess(
             List<(IAnnotationQueryFactory<T>, IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult>)> moleculeContainerPairs,
-            List<(IAnnotationQueryFactory<IAnnotationQueryZZZ<MsScanMatchResult>>, IMatchResultEvaluator<MsScanMatchResult>, MsRefSearchParameterBase)> eadAnnotationQueryFactories,
+            List<(IAnnotationQueryFactory<ICallableAnnotationQuery<MsScanMatchResult>>, IMatchResultEvaluator<MsScanMatchResult>, MsRefSearchParameterBase)> eadAnnotationQueryFactories,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) { 
             this.moleculeContainerPairs = moleculeContainerPairs ?? throw new ArgumentNullException(nameof(moleculeContainerPairs));
             this.eadAnnotationQueryFactories = eadAnnotationQueryFactories ?? throw new ArgumentNullException(nameof(eadAnnotationQueryFactories));

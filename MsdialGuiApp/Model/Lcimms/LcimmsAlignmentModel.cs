@@ -180,7 +180,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var peakInformationModel = new PeakInformationAlignmentModel(Target).AddTo(Disposables);
             peakInformationModel.Add(
                 t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d),
-                t => new MzPoint(t?.innerModel.TimesCenter.Mz.Value ?? 0d),
+                t => new MzPoint(t?.MassCenter ?? 0d),
                 t => new DriftPoint(t?.innerModel.TimesCenter.Drift.Value ?? 0d),
                 t => new CcsPoint(t?.innerModel.CollisionCrossSection ?? 0d));
             peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
