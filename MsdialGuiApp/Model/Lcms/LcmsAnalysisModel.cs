@@ -145,24 +145,20 @@ namespace CompMs.App.Msdial.Model.Lcms
                ),
                item => item.ToString(),
                Colors.Blue);
-            Func<SpectrumComment, Color> zzz(ProjectBaseParameter projectParameter)
-            {
-                Color f(SpectrumComment comment) {
-                    var commentString = comment.ToString();
-                    if (projectParameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
-                        return Color.FromRgb(color[0], color[1], color[2]);
-                    }
-                    else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
-                        && projectParameter.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
-                        return Color.FromRgb(color[0], color[1], color[2]);
-                    }
-                    else {
-                        return Colors.Red;
-                    }
+            Color mapToColor(SpectrumComment comment) {
+                var commentString = comment.ToString();
+                if (Parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
+                    return Color.FromRgb(color[0], color[1], color[2]);
                 }
-                return f;
-            };
-            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(zzz(Parameter.ProjectParam), true);
+                else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
+                    && Parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
+                    return Color.FromRgb(color[0], color[1], color[2]);
+                }
+                else {
+                    return Colors.Red;
+                }
+            }
+            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(mapToColor, true);
             var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, Parameter).AddTo(Disposables);
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,

@@ -110,7 +110,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 if (model.DataBaseModels.Count == 0) {
                     if (parameter.CollistionType == CollisionType.EIEIO
                         && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EadLipid)) {
-                        var databaseModel = model.AddDataBaseZZZ();
+                        var databaseModel = model.AddDataBase();
                         databaseModel.DBSource = DataBaseSource.EadLipid;
                     }
 
@@ -119,7 +119,7 @@ namespace CompMs.App.Msdial.Model.Setting
                     var lbmFile = lbmFiles.FirstOrDefault();
                     if (!(lbmFile is null)
                         && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.Msp)) {
-                        var databaseModel = model.AddDataBaseZZZ();
+                        var databaseModel = model.AddDataBase();
                         databaseModel.DataBasePath = lbmFile;
                     }
                 }
@@ -198,7 +198,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 if (model.DataBaseModels.Count == 0) {
                     if (parameter.CollistionType == CollisionType.EIEIO
                         && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EadLipid)) {
-                        var databaseModel = model.AddDataBaseZZZ();
+                        var databaseModel = model.AddDataBase();
                         databaseModel.DBSource = DataBaseSource.EadLipid;
                     }
 
@@ -207,7 +207,7 @@ namespace CompMs.App.Msdial.Model.Setting
                     var lbmFile = lbmFiles.FirstOrDefault();
                     if (!(lbmFile is null)
                         && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.Msp)) {
-                        var databaseModel = model.AddDataBaseZZZ();
+                        var databaseModel = model.AddDataBase();
                         databaseModel.DataBasePath = lbmFile;
                     }
                 }
@@ -271,7 +271,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 if (model.DataBaseModels.Count == 0) {
                     if (parameter.CollistionType == CollisionType.EIEIO
                         && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EadLipid)) {
-                        var databaseModel = model.AddDataBaseZZZ();
+                        var databaseModel = model.AddDataBase();
                         databaseModel.DBSource = DataBaseSource.EadLipid;
                     }
 
@@ -280,7 +280,7 @@ namespace CompMs.App.Msdial.Model.Setting
                     var lbmFile = lbmFiles.FirstOrDefault();
                     if (!(lbmFile is null)
                         && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.Msp)) {
-                        var databaseModel = model.AddDataBaseZZZ();
+                        var databaseModel = model.AddDataBase();
                         databaseModel.DataBasePath = lbmFile;
                     }
                 }
@@ -343,7 +343,7 @@ namespace CompMs.App.Msdial.Model.Setting
                 if (model.DataBaseModels.Count == 0) {
                     if (parameter.CollistionType == CollisionType.EIEIO
                         && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EadLipid)) {
-                        var databaseModel = model.AddDataBaseZZZ();
+                        var databaseModel = model.AddDataBase();
                         databaseModel.DBSource = DataBaseSource.EadLipid;
                     }
 
@@ -352,7 +352,7 @@ namespace CompMs.App.Msdial.Model.Setting
                     var lbmFile = lbmFiles.FirstOrDefault();
                     if (!(lbmFile is null)
                         && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.Msp)) {
-                        var databaseModel = model.AddDataBaseZZZ();
+                        var databaseModel = model.AddDataBase();
                         databaseModel.DataBasePath = lbmFile;
                     }
                 }

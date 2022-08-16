@@ -20,22 +20,22 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
             var viewmodel = BuildViewModel(model);
 
             // DB1 and Annotator1
-            model.AddDataBaseZZZ();
+            model.AddDataBase();
             model.DataBaseModel = model.DataBaseModels.Last();
             model.DataBaseModel.DBSource = DataBaseSource.Msp;
-            model.AddAnnotatorZZZ(model.DataBaseModel);
+            model.AddAnnotator(model.DataBaseModel);
 
             // DB2 and Annotator2
-            model.AddDataBaseZZZ();
+            model.AddDataBase();
             model.DataBaseModel = model.DataBaseModels.Last();
             model.DataBaseModel.DBSource = DataBaseSource.Text;
-            model.AddAnnotatorZZZ(model.DataBaseModel);
+            model.AddAnnotator(model.DataBaseModel);
 
             // Select DB2 and Annotator2
             viewmodel.DataBaseViewModel.Value = viewmodel.DataBaseViewModels.Last();
             viewmodel.AnnotatorViewModel.Value = viewmodel.AnnotatorViewModels.Last();
 
-            model.RemoveAnnotatorZZZ(viewmodel.AnnotatorViewModel.Value.Model);
+            model.RemoveAnnotator(viewmodel.AnnotatorViewModel.Value.Model);
             Assert.AreEqual(viewmodel.AnnotatorViewModels[0], viewmodel.AnnotatorViewModel.Value);
             Assert.AreEqual(viewmodel.DataBaseViewModels[0], viewmodel.DataBaseViewModel.Value);
         }
@@ -46,22 +46,22 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
             var viewmodel = BuildViewModel(model);
 
             // DB1 and Annotator1
-            model.AddDataBaseZZZ();
+            model.AddDataBase();
             model.DataBaseModel = model.DataBaseModels.Last();
             model.DataBaseModel.DBSource = DataBaseSource.Msp;
-            model.AddAnnotatorZZZ(model.DataBaseModel);
+            model.AddAnnotator(model.DataBaseModel);
 
             // DB2 and Annotator2
-            model.AddDataBaseZZZ();
+            model.AddDataBase();
             model.DataBaseModel = model.DataBaseModels.Last();
             model.DataBaseModel.DBSource = DataBaseSource.Text;
-            model.AddAnnotatorZZZ(model.DataBaseModel);
+            model.AddAnnotator(model.DataBaseModel);
 
             // Select DB2 and Annotator2
             viewmodel.DataBaseViewModel.Value = viewmodel.DataBaseViewModels.Last();
             viewmodel.AnnotatorViewModel.Value = viewmodel.AnnotatorViewModels.Last();
 
-            model.RemoveDataBaseZZZ(viewmodel.DataBaseViewModel.Value.Model);
+            model.RemoveDataBase(viewmodel.DataBaseViewModel.Value.Model);
             Assert.AreEqual(viewmodel.AnnotatorViewModels[0], viewmodel.AnnotatorViewModel.Value);
             Assert.AreEqual(viewmodel.DataBaseViewModels[0], viewmodel.DataBaseViewModel.Value);
         }
@@ -72,16 +72,16 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
             var viewmodel = BuildViewModel(model);
 
             // DB1 and Annotator1
-            model.AddDataBaseZZZ();
+            model.AddDataBase();
             model.DataBaseModel = model.DataBaseModels.Last();
             model.DataBaseModel.DBSource = DataBaseSource.Msp;
-            model.AddAnnotatorZZZ(model.DataBaseModel);
+            model.AddAnnotator(model.DataBaseModel);
 
             // DB2 and Annotator2
-            model.AddDataBaseZZZ();
+            model.AddDataBase();
             model.DataBaseModel = model.DataBaseModels.Last();
             model.DataBaseModel.DBSource = DataBaseSource.Text;
-            model.AddAnnotatorZZZ(model.DataBaseModel);
+            model.AddAnnotator(model.DataBaseModel);
 
             // Select DB2 and Annotator2
             viewmodel.DataBaseViewModel.Value = viewmodel.DataBaseViewModels.Last();
@@ -98,16 +98,16 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
             var viewmodel = BuildViewModel(model);
 
             // DB1 and Annotator1
-            model.AddDataBaseZZZ();
+            model.AddDataBase();
             model.DataBaseModel = model.DataBaseModels.Last();
             model.DataBaseModel.DBSource = DataBaseSource.Msp;
-            model.AddAnnotatorZZZ(model.DataBaseModel);
+            model.AddAnnotator(model.DataBaseModel);
 
             // DB2 and Annotator2
-            model.AddDataBaseZZZ();
+            model.AddDataBase();
             model.DataBaseModel = model.DataBaseModels.Last();
             model.DataBaseModel.DBSource = DataBaseSource.Text;
-            model.AddAnnotatorZZZ(model.DataBaseModel);
+            model.AddAnnotator(model.DataBaseModel);
 
             // Select DB2 and Annotator2
             viewmodel.DataBaseViewModel.Value = viewmodel.DataBaseViewModels.Last();

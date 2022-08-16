@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public interface IAnnotationQueryZZZ<out TResult>
+    public interface ICallableAnnotationQuery<out TResult>
     {
         IMSIonProperty Property { get; }
         IMSScanProperty Scan { get; }
