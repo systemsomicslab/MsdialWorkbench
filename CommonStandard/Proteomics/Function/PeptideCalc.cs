@@ -176,7 +176,6 @@ namespace CompMs.Common.Proteomics.Function {
                 peptides.Add(nPep);
             }
 
-
             return peptides;
         }
 
@@ -189,6 +188,62 @@ namespace CompMs.Common.Proteomics.Function {
                 }
             }
             return dict;
+        }
+
+        public void GetPeptideTempListByMidifications(Peptide pep, ModificationContainer container, int fixedModCount, int maxModifications) {
+            var seq = pep.SequenceObj;
+            var dict = new Dictionary<int, AminoAcid>();
+            var diff2positions = new Dictionary<int, List<int>>();
+            for (int i = 0; i < seq.Count; i++) {
+                if (seq[i].IsModified()) {
+                    dict[i] = seq[i];
+                }
+                else {
+                    var originAA = pep.SequenceObj[i];
+                    var mod = originAA.Modifications.IsEmptyOrNull() ? new List<Modification>() : originAA.Modifications.ToList();
+                    var modifiedAA = GetAminoAcidByVariableModifications(pep, mod, container, i);
+
+                    var diff = modifiedAA.ExactMass() - originAA.ExactMass();
+                    if (diff > 0) {
+                        var key = (int)diff * 1000000;
+                        if (diff2positions.ContainsKey(key)) {
+                            diff2positions[key].Add(i);
+                        }
+                        else {
+                            diff2positions[key] = new List<int>() { i };
+
+                        }
+                    }
+                    dict[i] = modifiedAA;
+                }
+            }
+
+            var combinations = new List<List<int>>();
+            foreach (var item in diff2positions) {
+                var key = item.Key;
+                var values = item.Value;
+                foreach (var value in values) {
+
+                }
+            }
+
+            for (int i = 1; i <= maxModifications - fixedModCount; i++) {
+                var mod = new List<int>();
+                foreach (var item in diff2positions) {
+                    var key = item.Key;
+                    var values = item.Value;
+
+                    foreach (var value in values) {
+                        mod.Add(value);
+                        if (mod.Count > i) {
+                            combinations.Add(mod);
+                            mod = new List<int>();
+                            break;
+                        }
+                    }
+                }
+            } 
+
         }
 
         static void EnumerateModifications(Peptide pep, ModificationContainer container, int index, int numModifications, int maxModifications, 
