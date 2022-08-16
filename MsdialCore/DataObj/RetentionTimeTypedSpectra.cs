@@ -105,7 +105,8 @@ namespace CompMs.MsdialCore.DataObj
                 }
                 var spectrum = _lazySpectra.GetOrAdd(i, index => new Lazy<Spectrum>(() => new Spectrum(_spectra[index].Spectrum))).Value;
                 var (basePeakMz, _, summedIntensity) = spectrum.RetrieveBin(mz, tolerance);
-                results[idc++] = new ValuePeak(i, _idToRetentionTime[i].Value, basePeakMz, summedIntensity);
+                results[idc] = new ValuePeak(_spectra[i].Index, idc, i, _idToRetentionTime[i].Value, basePeakMz, summedIntensity);
+                idc++;
                 // results.Add(new ValuePeak (i, _idToRetentionTime[i].Value, basePeakMz, summedIntensity));
             }
             return new Chromatogram_temp2(results, ChromXType.RT, _unit);

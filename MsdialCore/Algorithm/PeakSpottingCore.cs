@@ -540,13 +540,13 @@ namespace CompMs.MsdialCore.Algorithm {
             var chromTopID = feature.ChromScanIdTop;
             var chromRightID = feature.ChromScanIdRight;
 
-            feature.MS1AccumulatedMs1RawSpectrumIdLeft = peaklist[chromLeftID].Id;
-            feature.MS1AccumulatedMs1RawSpectrumIdTop = peaklist[chromTopID].Id;
-            feature.MS1AccumulatedMs1RawSpectrumIdRight = peaklist[chromRightID].Id;
+            feature.MS1AccumulatedMs1RawSpectrumIdLeft = peaklist[chromLeftID].IdOrIndex;
+            feature.MS1AccumulatedMs1RawSpectrumIdTop = peaklist[chromTopID].IdOrIndex;
+            feature.MS1AccumulatedMs1RawSpectrumIdRight = peaklist[chromRightID].IdOrIndex;
 
-            feature.MS1RawSpectrumIdLeft = provider.LoadMsSpectrumFromIndex(peaklist[chromLeftID].Id).OriginalIndex;
-            feature.MS1RawSpectrumIdTop = provider.LoadMsSpectrumFromIndex(peaklist[chromTopID].Id).OriginalIndex;
-            feature.MS1RawSpectrumIdRight = provider.LoadMsSpectrumFromIndex(peaklist[chromRightID].Id).OriginalIndex;
+            feature.MS1RawSpectrumIdLeft = provider.LoadMsSpectrumFromIndex(peaklist[chromLeftID].IdOrIndex).OriginalIndex;
+            feature.MS1RawSpectrumIdTop = provider.LoadMsSpectrumFromIndex(peaklist[chromTopID].IdOrIndex).OriginalIndex;
+            feature.MS1RawSpectrumIdRight = provider.LoadMsSpectrumFromIndex(peaklist[chromRightID].IdOrIndex).OriginalIndex;
 
             feature.MS2RawSpectrumID = -1; // at this moment, zero must be inserted for deconvolution process
         }
@@ -605,9 +605,9 @@ namespace CompMs.MsdialCore.Algorithm {
             var chromTopID = feature.ChromScanIdTop;
             var chromRightID = feature.ChromScanIdRight;
 
-            feature.MS1RawSpectrumIdLeft = peaklist[chromLeftID].Id;
-            feature.MS1RawSpectrumIdTop = peaklist[chromTopID].Id;
-            feature.MS1RawSpectrumIdRight = peaklist[chromRightID].Id;
+            feature.MS1RawSpectrumIdLeft = peaklist[chromLeftID].IdOrIndex;
+            feature.MS1RawSpectrumIdTop = peaklist[chromTopID].IdOrIndex;
+            feature.MS1RawSpectrumIdRight = peaklist[chromRightID].IdOrIndex;
 
             SetMS2RawSpectrumIDs2ChromatogramPeakFeature(feature, provider, feature.MS1RawSpectrumIdLeft, feature.MS1RawSpectrumIdTop, feature.MS1RawSpectrumIdRight);
         }
