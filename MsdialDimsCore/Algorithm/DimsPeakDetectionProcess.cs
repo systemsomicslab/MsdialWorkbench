@@ -34,12 +34,12 @@ namespace CompMs.MsdialDimsCore.Algorithm
             if (peakPickResults.IsEmptyOrNull()) {
                 return new List<ChromatogramPeakFeature>();
             }
-            return ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, provider.LoadMsSpectrums(), projectParameter.AcquisitionType);
+            return ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, provider, projectParameter.AcquisitionType);
         }
 
-        private static List<ChromatogramPeakFeature> ConvertPeaksToPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, IReadOnlyList<RawSpectrum> allSpectra, AcquisitionType type) {
+        private static List<ChromatogramPeakFeature> ConvertPeaksToPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, IDataProvider provider, AcquisitionType type) {
             var peakFeatures = new List<ChromatogramPeakFeature>();
-            var ms2SpecObjects = allSpectra
+            var ms2SpecObjects = provider.LoadMsNSpectrums(level: 2)
                 .Where(spectra => spectra.MsLevel == 2 && spectra.Precursor != null)
                 .OrderBy(spectra => spectra.Precursor.SelectedIonMz).ToList();
 
@@ -64,7 +64,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
                     default:
                         throw new NotSupportedException(nameof(type));
                 }
-                peakFeature.MS2RawSpectrumID = GetRepresentativeMS2RawSpectrumID(peakFeature.MS2RawSpectrumID2CE, allSpectra);
+                peakFeature.MS2RawSpectrumID = GetRepresentativeMS2RawSpectrumID(peakFeature.MS2RawSpectrumID2CE, provider);
                 peakFeatures.Add(peakFeature);
             }
 
@@ -123,9 +123,9 @@ namespace CompMs.MsdialDimsCore.Algorithm
             return ID2CE;
         }
 
-        private static int GetRepresentativeMS2RawSpectrumID(Dictionary<int, double> ms2RawSpectrumID2CE, IReadOnlyList<RawSpectrum> allSpectra) {
+        private static int GetRepresentativeMS2RawSpectrumID(Dictionary<int, double> ms2RawSpectrumID2CE, IDataProvider provider) {
             if (ms2RawSpectrumID2CE.Count == 0) return -1;
-            return ms2RawSpectrumID2CE.Argmax(kvp => allSpectra[kvp.Key].TotalIonCurrent).Key;
+            return ms2RawSpectrumID2CE.Argmax(kvp => provider.LoadMsSpectrumFromIndex(kvp.Key).TotalIonCurrent).Key;
         }
     }
 

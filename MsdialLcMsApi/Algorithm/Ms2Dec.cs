@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Extension;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
@@ -21,13 +22,13 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             this.ProgressMax = ProgressMax;
         }
        
-        public List<MSDecResult> GetMS2DecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
+        public List<MSDecResult> GetMS2DecResults(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary, IupacDatabase iupac,
             Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
 
             var msdecResults = new List<MSDecResult>();
             foreach (var spot in chromPeakFeatures) {
-                var result = GetMS2DecResult(spectrumList, spot, param, summary, iupac, targetCE);
+                var result = GetMS2DecResult(provider, spot, param, summary, iupac, targetCE);
                 result.ScanID = spot.PeakID;
                 msdecResults.Add(result);
                 ReportProgress.Show(InitialProgress, ProgressMax, result.ScanID, chromPeakFeatures.Count(), reportAction);
@@ -35,7 +36,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             return msdecResults;
         }
 
-        public MSDecResult GetMS2DecResult(IReadOnlyList<RawSpectrum> spectrumList,
+        public MSDecResult GetMS2DecResult(IDataProvider provider,
             ChromatogramPeakFeature chromPeakFeature, MsdialLcmsParameter param,
             ChromatogramPeaksDataSummary summary, IupacDatabase iupac,
             double targetCE = -1) { // targetCE is used in multiple CEs option
@@ -44,7 +45,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
 
             //first, the MS/MS spectrum at the scan point of peak top is stored.
-            var cSpectrum = DataAccess.GetCentroidMassSpectra(spectrumList, param.MS2DataType, targetSpecID, 
+            if (targetSpecID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
+            var cSpectrum = DataAccess.GetCentroidMassSpectra(provider.LoadMsSpectrumFromIndex(targetSpecID), param.MS2DataType,
                 param.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
             if (cSpectrum.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
@@ -73,7 +75,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
 
             //preparing MS1 and MS/MS chromatograms
             //note that the MS1 chromatogram trace (i.e. EIC) is also used as the candidate of model chromatogram
-            var rawSpectrum = new RawSpectra(spectrumList, param.IonMode, param.AcquisitionType);
+            var rawSpectrum = new RawSpectra(provider, param.IonMode, param.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min);
             var ms1Peaklist = rawSpectrum.GetMs1ExtractedChromatogram(precursorMz, param.CentroidMs1Tolerance, chromatogramRange).Peaks;
 
@@ -91,8 +93,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             }
             int topScanNum = minimumID;
             var smoothedMs2ChromPeaksList = new List<List<ChromatogramPeak>>();
-            var ms2ChromPeaksList = DataAccess.GetMs2Peaklistlist(spectrumList, precursorMz, startScanNum, endScanNum,
-                curatedSpectra.Select(x => (double)x.Mass).ToList(), param, targetCE);
+            var ms2ChromPeaksList = DataAccess.GetMs2Peaklistlist(provider, precursorMz, startScanNum, endScanNum, curatedSpectra.Select(x => (double)x.Mass).ToList(), param, targetCE);
 
             foreach (var chromPeaks in ms2ChromPeaksList) {
                 var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);

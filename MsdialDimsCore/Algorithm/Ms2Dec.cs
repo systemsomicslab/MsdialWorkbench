@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
@@ -22,14 +23,14 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
 
         public List<MSDecResult> GetMS2DecResults(
-            IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
+            IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialDimsParameter param, ChromatogramPeaksDataSummaryDto summary,
             double targetCE = -1,
             Action<int> reportAction = null, System.Threading.CancellationToken token = default) {
 
             var msdecResults = new List<MSDecResult>();
             foreach (var peak in chromPeakFeatures) {
-                var result = GetMS2DecResult(spectrumList, peak, param, summary, targetCE);
+                var result = GetMS2DecResult(provider, peak, param, summary, targetCE);
                 result.ScanID = peak.PeakID;
                 msdecResults.Add(result);
                 ReportProgress.Show(initialProgress, progressMax, result.ScanID, chromPeakFeatures.Count, reportAction);
@@ -38,15 +39,14 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
 
         private static MSDecResult GetMS2DecResult(
-            IReadOnlyList<RawSpectrum> spectrumList, ChromatogramPeakFeature chromPeakFeature,
+            IDataProvider provider, ChromatogramPeakFeature chromPeakFeature,
             MsdialDimsParameter param, ChromatogramPeaksDataSummaryDto summary,
             double targetCE = -1) {
 
             var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(chromPeakFeature, targetCE);
 
-            var cSpectrum = DataAccess.GetCentroidMassSpectra(
-                spectrumList, param.MS2DataType, targetSpecID, param.AmplitudeCutoff,
-                param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
+            if (targetSpecID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
+            var cSpectrum = DataAccess.GetCentroidMassSpectra(provider.LoadMsSpectrumFromIndex(targetSpecID), param.MS2DataType, param.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
             if (cSpectrum.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
 
             var curatedSpectra = new List<SpectrumPeak>();

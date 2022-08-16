@@ -61,7 +61,7 @@ namespace CompMs.MsdialImmsCore.Process
             var chromPeakFeatures = PeakSpotting(provider, parameter, iupacDB, coeff, reportAction);
 
             var spectrumList = rawObj.SpectrumList;
-            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures);
+            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures);
             file.ChromPeakFeaturesSummary = summary;
 
             Console.WriteLine("Deconvolution started");
@@ -115,7 +115,6 @@ namespace CompMs.MsdialImmsCore.Process
             Action<int> reportAction,
             CancellationToken token) {
 
-            var spectrumList = provider.LoadMsSpectrums();
             var targetCE2MSDecResults = new Dictionary<double, List<MSDecResult>>();
             var initial_msdec = 30.0;
             var max_msdec = 30.0;
@@ -130,13 +129,13 @@ namespace CompMs.MsdialImmsCore.Process
                     var max_msdec_aif = max_msdec / ceList.Count;
                     var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
                     targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
-                        spectrumList, provider, chromPeakFeatures, parameter, summary, iupac, targetCE, reportAction, parameter.NumThreads, token);
+                        provider, chromPeakFeatures, parameter, summary, iupac, targetCE, reportAction, parameter.NumThreads, token);
                 }
             }
             else {
                 var targetCE = rawObj.CollisionEnergyTargets.IsEmptyOrNull() ? -1 : Math.Round(rawObj.CollisionEnergyTargets[0], 2);
                 targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
-                       spectrumList, provider, chromPeakFeatures, parameter, summary, iupac, -1, reportAction, parameter.NumThreads, token);
+                    provider, chromPeakFeatures, parameter, summary, iupac, -1, reportAction, parameter.NumThreads, token);
             }
             return targetCE2MSDecResults;
         }
@@ -174,9 +173,9 @@ namespace CompMs.MsdialImmsCore.Process
             MsdialImmsParameter parameter,
             Action<int> reportAction) {
 
-            new PeakCharacterEstimator(90, 10).Process(provider.LoadMsSpectrums(), chromPeakFeatures,
-                targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
-                evaluator, parameter, reportAction);
+            new PeakCharacterEstimator(90, 10).Process(provider, chromPeakFeatures, targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
+                evaluator,
+                parameter, reportAction);
         }
 
         private static void SaveToFile(

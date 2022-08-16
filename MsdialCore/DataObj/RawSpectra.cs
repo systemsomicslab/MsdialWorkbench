@@ -3,6 +3,7 @@ using CompMs.Common.DataObj;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
+using CompMs.MsdialCore.Algorithm;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -16,8 +17,8 @@ namespace CompMs.MsdialCore.DataObj
         private readonly IReadOnlyList<RawSpectrum> _spectra;
         private readonly IonMode _ionMode;
 
-        public RawSpectra(IReadOnlyList<RawSpectrum> spectra, IonMode ionMode) {
-            _spectra = spectra;
+        public RawSpectra(IDataProvider provider, IonMode ionMode, AcquisitionType acquisitionType) {
+            _spectra = provider.LoadMsSpectrums();
             _ionMode = ionMode;
             _spectraImpls = new ConcurrentDictionary<(ChromXType, ChromXUnit), Lazy<IChromatogramTypedSpectra>>();
         }

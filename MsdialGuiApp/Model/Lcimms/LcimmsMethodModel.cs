@@ -150,7 +150,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public void RunAlignmentProcess() {
-            AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage, matchResultEvaluator);
+            Func<AnalysisFileBean, RawMeasurement> map = (AnalysisFileBean file) => DataAccess.LoadMeasurement(file, true, 5, 1000);
+            AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage, matchResultEvaluator, providerFactory.ContraMap(map), accProviderFactory.ContraMap(map));
             var alignmentFile = Storage.AlignmentFiles.Last();
             var aligner = aFactory.CreatePeakAligner();
             var result = aligner.Alignment(Storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);

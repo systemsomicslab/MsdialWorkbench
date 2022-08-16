@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj;
 using CompMs.Common.Extension;
 using CompMs.Common.Mathematics.Basic;
+using CompMs.MsdialCore.Algorithm;
 using MessagePack;
 using System.Collections.Generic;
 using System.Linq;
@@ -110,14 +111,18 @@ namespace CompMs.MsdialCore.DataObj {
             _driftTimeSummary.SetToDto(dto);
         }
 
-        public static RawSpectraSummary Summarize(IReadOnlyList<RawSpectrum> spectra) {
-            spectra = spectra.DefaultIfEmpty().ToList();
+        public static RawSpectraSummary Summarize(IDataProvider provider) {
+            var (firstNo, lastNo) = provider.GetScanNumberRange();
+            var (minRt, maxRt) = provider.GetRetentionTimeRange();
+            var (minMz, maxMz) = provider.GetMassRange();
+            var (minInt, maxInt) = provider.GetIntensityRange();
+            var (minDt, maxDt) = provider.GetDriftTimeRange();
             return new RawSpectraSummary(
-                new ScanNumberSummary(spectra.FirstOrDefault()?.ScanNumber ?? 0, spectra.LastOrDefault()?.ScanNumber ?? 0),
-                new RetentionTimeSummary((float)(spectra.FirstOrDefault()?.ScanStartTime ?? 0d), (float)(spectra.LastOrDefault()?.ScanStartTime ?? 0d)),
-                new MassSummary((float)(spectra.Min(spectrum => spectrum?.LowestObservedMz) ?? 0d), (float)(spectra.Max(spectrum => spectrum?.HighestObservedMz) ?? 0d)),
-                new IntensitySummary((float)(spectra.Min(spectrum => spectrum?.MinIntensity) ?? 0d), (float)(spectra.Max(spectrum => spectrum?.BasePeakIntensity) ?? 0d)),
-                new DriftTimeSummary((float)(spectra.Min(spectrum => spectrum?.DriftTime) ?? 0d), (float)(spectra.Max(spectrum => spectrum?.DriftTime) ?? 0d)));
+                new ScanNumberSummary(firstNo, lastNo),
+                new RetentionTimeSummary((float)minRt, (float)maxRt),
+                new MassSummary((float)minMz, (float)maxMz),
+                new IntensitySummary((float)minInt, (float)maxInt),
+                new DriftTimeSummary((float)minDt, (float)maxDt));
         }
     }
 
@@ -388,8 +393,8 @@ namespace CompMs.MsdialCore.DataObj {
             return (startRt, endRt);
         }
 
-        public static ChromatogramPeaksDataSummary Summarize(IReadOnlyList<RawSpectrum> spectrumList, IReadOnlyList<ChromatogramPeakFeature> chromatogramPeakFeatures) {
-            var rawSpectraSummary = RawSpectraSummary.Summarize(spectrumList);
+        public static ChromatogramPeaksDataSummary Summarize(IDataProvider provider, IReadOnlyList<ChromatogramPeakFeature> chromatogramPeakFeatures) {
+            var rawSpectraSummary = RawSpectraSummary.Summarize(provider);
             var rtChromatogramPeakSummary = RtChromatogramPeakSummary.Summarize(chromatogramPeakFeatures);
             var dtChromatogramPeakSummary = DtChromatogramPeakSummary.Summarize(chromatogramPeakFeatures);
             return new ChromatogramPeaksDataSummary(rawSpectraSummary, rtChromatogramPeakSummary, dtChromatogramPeakSummary);

@@ -1,9 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CompMs.MsdialImmsCore.Algorithm;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using CompMs.Common.DataObj;
+﻿using CompMs.Common.DataObj;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 
 namespace CompMs.MsdialImmsCore.Algorithm.Tests

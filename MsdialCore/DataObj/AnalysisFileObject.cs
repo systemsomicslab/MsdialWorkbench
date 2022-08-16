@@ -23,7 +23,7 @@ namespace CompMs.MsdialCore.DataObj
 
         public async Task SetChromatogramPeakFeaturesSummaryAsync(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures, CancellationToken token) {
             var spectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
-            _instance.ChromPeakFeaturesSummary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectra, chromPeakFeatures);
+            _instance.ChromPeakFeaturesSummary = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures);
         }
 
         public Dictionary<int, float> GetRiDictionary(Dictionary<int, RiDictionaryInfo> riDictionaries) {

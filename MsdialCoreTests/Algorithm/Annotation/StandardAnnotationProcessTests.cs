@@ -149,7 +149,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             }
 
             public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token) {
-                return Task.FromResult(LoadMsSpectrums());
+                return Task.FromResult(new List<RawSpectrum> { new RawSpectrum() }.AsReadOnly());
             }
         }
 
