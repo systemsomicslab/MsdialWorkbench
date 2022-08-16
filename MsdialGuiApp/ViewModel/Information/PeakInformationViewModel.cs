@@ -34,7 +34,7 @@ namespace CompMs.App.Msdial.ViewModel.Information
 
         public ReadOnlyReactivePropertySlim<string> Annotation { get; }
         public ReadOnlyReactivePropertySlim<string> AdductIonName { get; }
-        public ReadOnlyReactivePropertySlim<Formula> Formula { get; }
+        public ReadOnlyReactivePropertySlim<string> Formula { get; }
         public ReadOnlyReactivePropertySlim<string> Ontology { get; }
         public ReadOnlyReactivePropertySlim<string> InChIKey { get; }
         public ReadOnlyReactivePropertySlim<string> Comment { get; }

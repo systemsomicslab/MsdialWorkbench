@@ -34,7 +34,7 @@ namespace CompMs.MsdialCore.Algorithm
         }
         public List<AdductIon> SearchedAdducts { get; set; } = new List<AdductIon>();
 
-        public void Process(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
+        public void Process(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures,
             List<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase parameter, Action<int> reportAction) {
             
             // some adduct features are automatically insearted even if users did not select any type of adduct
@@ -62,7 +62,9 @@ namespace CompMs.MsdialCore.Algorithm
                         }
                     }
 
-                    // CharacterAssigner(searchedPeakSpots, spectrumList, msdecResults, evaluator, param); // TODO: temporarily comment out. fix algorithm. Don't delete!
+#if false
+                    CharacterAssigner(searchedPeakSpots, provider, msdecResults, evaluator, parameter); // TODO: temporarily comment out. fix algorithm. Don't delete!
+#endif
                     ReportProgress.Show(InitialProgress, ProgressMax, i, chromPeakFeatures.Count, reportAction);
                 }
             }
@@ -239,7 +241,7 @@ namespace CompMs.MsdialCore.Algorithm
         // here, each peak is evaluated.
         // the purpose is to group the ions which are recognized as the same metabolite
         private void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures,
-            IReadOnlyList<RawSpectrum> spectrumList, List<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
+            IDataProvider provider, List<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return;
 
             // if the first inchikey is same, it's recognized as the same metabolite.
@@ -258,7 +260,7 @@ namespace CompMs.MsdialCore.Algorithm
             assignLinksBasedOnAdductPairingMethod(chromPeakFeatures, param);
 
             // linkage by chromatogram correlations
-            assignLinksBasedOnChromatogramCorrelation(chromPeakFeatures, spectrumList, param);
+            assignLinksBasedOnChromatogramCorrelation(chromPeakFeatures, provider, param);
 
             // linked by partial matching of MS1 and MS2
             if (param.AcquisitionType == AcquisitionType.AIF || param.AcquisitionType == AcquisitionType.SWATH) return;
@@ -372,9 +374,9 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         // currently, only pure peaks are evaluated by this way.
-        private void assignLinksBasedOnChromatogramCorrelation(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<RawSpectrum> spectrumList, ParameterBase param) {
+        private void assignLinksBasedOnChromatogramCorrelation(List<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, ParameterBase param) {
             if (chromPeakFeatures[0].ChromXs.RT.Value < 0) return;
-            RawSpectra rawSpectra = new RawSpectra(spectrumList, param.IonMode, param.AcquisitionType);
+            RawSpectra rawSpectra = new RawSpectra(provider, param.IonMode, param.AcquisitionType);
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0 && n.PeakShape.PeakPureValue >= 0.9)) {
                 
                 var tTopRt = peak.ChromXsTop.RT.Value;

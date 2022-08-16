@@ -93,7 +93,7 @@ namespace CompMs.MsdialCore.DataObj
                 }
                 var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveBin(mz, tolerance);
                 var time = _idToDriftTime.GetOrAdd(i, j => new Lazy<DriftTime>(() => new DriftTime(_spectra[j].DriftTime)));
-                results.Add(new ValuePeak(i, time.Value.Value, basePeakMz, summedIntensity));
+                results.Add(new ValuePeak(_spectra[i].Index, time.Value.Value, basePeakMz, summedIntensity));
             }
             return new Chromatogram_temp2(results, ChromXType.Drift, _unit);
         }

@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -18,19 +19,19 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    internal sealed class LcmsAnalysisViewModel : AnalysisFileViewModel, IAnalysisResultViewModel
+    internal sealed class LcmsAnalysisViewModel : ViewModelBase, IAnalysisResultViewModel
     {
         public LcmsAnalysisViewModel(
             LcmsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
-            FocusControlManager focusControlManager)
-            : base(model) {
+            FocusControlManager focusControlManager) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -147,6 +148,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .ToAsyncReactiveCommand<Window>()
                 .WithSubscribe(SaveRawSpectraAsync)
                 .AddTo(Disposables);
+
+            PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
+            CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
+            var _peakDetailViewModels = new ReactiveCollection<ViewModelBase>().AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
         private readonly LcmsAnalysisModel model;
@@ -182,8 +188,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
-        public DelegateCommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
-        private DelegateCommand showIonTableCommand;
+        public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
+        private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {
             if (model.Parameter.TargetOmics == CompMs.Common.Enum.TargetOmics.Proteomics) {
@@ -198,8 +204,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand<Window> saveMs2SpectrumCommand;
 
         public AsyncReactiveCommand<Window> SaveMs2RawSpectrumCommand { get; }
-
+        public PeakInformationViewModel PeakInformationViewModel { get; }
+        public CompoundDetailViewModel CompoundDetailViewModel { get; }
         public ReadOnlyReactivePropertySlim<ExperimentSpectrumViewModel> ExperimentSpectrumViewModel { get; }
+        public ViewModelBase[] PeakDetailViewModels { get; }
 
         private void SaveSpectra(Window owner) {
             var sfd = new SaveFileDialog {

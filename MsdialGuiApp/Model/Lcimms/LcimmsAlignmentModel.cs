@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
@@ -9,7 +10,6 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM.ChemView;
-using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -176,6 +176,23 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 (rtSpotFocus, spot => spot.TimesCenter),
                 (dtSpotFocus, spot => spot.TimesCenter)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, mzSpotFocus, rtSpotFocus, dtSpotFocus);
+
+            var peakInformationModel = new PeakInformationAlignmentModel(Target).AddTo(Disposables);
+            peakInformationModel.Add(
+                t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d),
+                t => new MzPoint(t?.innerModel.TimesCenter.Mz.Value ?? 0d),
+                t => new DriftPoint(t?.innerModel.TimesCenter.Drift.Value ?? 0d),
+                t => new CcsPoint(t?.innerModel.CollisionCrossSection ?? 0d));
+            peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
+            PeakInformationModel = peakInformationModel;
+
+            var compoundDetailModel = new CompoundDetailModel(Target.Select(t => t?.ScanMatchResult), mapper).AddTo(Disposables);
+            compoundDetailModel.Add(
+                r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
+                r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
+                r_ => new CcsSimilarity(r_?.CcsSimilarity ?? 0d),
+                r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
+            CompoundDetailModel = compoundDetailModel;
         }
 
         private static readonly double RtTol = 0.5;
@@ -209,6 +226,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
+        public PeakInformationAlignmentModel PeakInformationModel { get; }
+
+        public CompoundDetailModel CompoundDetailModel { get; }
+
         // public LcimmsAlignmentSpotTableModel AlignmentSpotTableModel { get; }
 
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
@@ -223,6 +244,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             get => barItemsLoader;
             set => SetProperty(ref barItemsLoader, value);
         }
+
         private IBarItemsLoader barItemsLoader;
 
         public CompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {

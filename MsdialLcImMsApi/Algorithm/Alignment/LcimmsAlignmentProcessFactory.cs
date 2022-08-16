@@ -9,17 +9,21 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
 {
     public class LcimmsAlignmentProcessFactory : AlignmentProcessFactory
     {
-        private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+        private readonly IDataProviderFactory<AnalysisFileBean> _rawDataProvider;
+        private readonly IDataProviderFactory<AnalysisFileBean> _accumulatedDataProvider;
 
         public MsdialLcImMsParameter LcimmsParameter { get; }
 
-        public LcimmsAlignmentProcessFactory(IMsdialDataStorage<MsdialLcImMsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(storage.Parameter, storage.IupacDatabase) {
+        public LcimmsAlignmentProcessFactory(IMsdialDataStorage<MsdialLcImMsParameter> storage, IMatchResultEvaluator<MsScanMatchResult> evaluator, IDataProviderFactory<AnalysisFileBean> rawDataProvider, IDataProviderFactory<AnalysisFileBean> accumulatedDataProvider) : base(storage.Parameter, storage.IupacDatabase) {
             LcimmsParameter = storage.Parameter;
-            this.evaluator = evaluator ?? throw new System.ArgumentNullException(nameof(evaluator));
+            _evaluator = evaluator ?? throw new System.ArgumentNullException(nameof(evaluator));
+            _rawDataProvider = rawDataProvider ?? throw new System.ArgumentNullException(nameof(rawDataProvider));
+            _accumulatedDataProvider = accumulatedDataProvider ?? throw new System.ArgumentNullException(nameof(accumulatedDataProvider));
         }
 
         public override IAlignmentRefiner CreateAlignmentRefiner() {
-            return new LcimmsAlignmentRefiner(LcimmsParameter, Iupac, evaluator);
+            return new LcimmsAlignmentRefiner(LcimmsParameter, Iupac, _evaluator);
         }
 
         public override DataAccessor CreateDataAccessor() {
@@ -31,7 +35,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
         }
 
         public override PeakAligner CreatePeakAligner() {
-            return new PeakAligner3D(this);
+            return new PeakAligner3D(this, _rawDataProvider, _accumulatedDataProvider);
         }
 
         public override IPeakJoiner CreatePeakJoiner() {

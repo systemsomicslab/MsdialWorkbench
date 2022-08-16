@@ -5,14 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imms"
              xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
+             xmlns:search="clr-namespace:CompMs.App.Msdial.View.Search"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              mc:Ignorable="d" 
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
-             xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
-             xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
-             xmlns:commonbehavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
+             xmlns:info="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
+             xmlns:infoview="clr-namespace:CompMs.App.Msdial.View.Information"
              behavior:SuppressContextMenuBehavior.IsEnabled="True"
              d:DataContext="{d:DesignInstance Type=vm:ImmsMethodViewModel}"
              Name="MainControl"
@@ -187,65 +187,84 @@
                         <RowDefinition Height="*" MinHeight="200" />
                     </Grid.RowDefinitions>
 
-                    <commonview:PeakSpotNavigator DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
+                    <search:PeakSpotNavigatorView DataContext="{Binding SelectedViewModel.Value.PeakSpotNavigatorViewModel}"
                                                   Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"/>
 
                     <chart:SurveyScanView DataContext="{Binding AnalysisViewModel.Value.SurveyScanViewModel}"
                                           Grid.Row="2" Grid.Column="0"/>
 
-                    <TabControl Name="TabControl_PairwisePlotViewer" Grid.Row="2" Grid.Column="1" 
-                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-
-                        <TabItem Header="Peak spot viewer" 
-                                 Name="TabItem_RtMzPairwisePlotPeakView" 
-                                 Height="25"
-                                 DataContext="{Binding AnalysisViewModel.Value}"
-                                 Background="{StaticResource MainThemeColor}">
-                            <chart:PeakView DataContext="{Binding PlotViewModel}">
-                                <chart:PeakView.LabelTemplate>
-                                    <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
-                                        <StackPanel Orientation="Horizontal">
-                                            <StackPanel.Resources>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="FontSize" Value="9"/>
-                                                    <Setter Property="Foreground" Value="Gray"/>
-                                                </Style>
-                                            </StackPanel.Resources>
-                                            <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime, StringFormat=Spot ID: {0}; }"/>
-                                            <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime, StringFormat=Scan #: {0}; }"/>
-                                            <TextBlock Text="{Binding InnerModel.ChromXs.Value, Mode=OneTime, StringFormat=DT[1/k0]: {0:N4}; }"/>
-                                            <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
-                                        </StackPanel>
+                    <TabControl x:Name="TabControl_PairwisePlotViewer"
+                                ItemsSource="{Binding ResultViewModels}"
+                                SelectedItem="{Binding SelectedViewModel}"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                Grid.Row="2" Grid.Column="1">
+                        <TabControl.ItemContainerStyle>
+                            <Style TargetType="TabItem">
+                                <Setter Property="Background" Value="{StaticResource MainThemeColor}"/>
+                                <Setter Property="Height" Value="24"/>
+                                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="8,0"/>
+                            </Style>
+                        </TabControl.ItemContainerStyle>
+                        <TabControl.ItemTemplate>
+                            <DataTemplate>
+                                <DataTemplate.Resources>
+                                    <DataTemplate DataType="{x:Type vm:ImmsAnalysisViewModel}">
+                                        <TextBlock x:Name="TabItem_DtMzPairwisePlotPeakView" Text="Peak spot viewer" VerticalAlignment="Stretch"/>
                                     </DataTemplate>
-                                </chart:PeakView.LabelTemplate>
-                            </chart:PeakView>
-                        </TabItem>
-
-                        <TabItem Header="Alignment spot viewer" 
-                                 Name="TabItem_RtMzPairwisePlotAlignmentView" 
-                                 Height="25"
-                                 DataContext="{Binding AlignmentViewModel.Value}"
-                                 Background="{StaticResource MainThemeColor}">
-
-                            <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
-                                <chart:AlignmentPeakPlotView.LabelTemplate>
-                                    <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
-                                        <StackPanel Orientation="Horizontal">
-                                            <StackPanel.Resources>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="FontSize" Value="9"/>
-                                                    <Setter Property="Foreground" Value="Gray"/>
-                                                </Style>
-                                            </StackPanel.Resources>
-                                            <TextBlock Text="{Binding AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
-                                            <TextBlock Text="{Binding TimesCenter, Mode=OneTime, StringFormat=DT[1/k0]: {0:N4}; }"/>
-                                            <TextBlock Text="{Binding MassCenter, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
-                                        </StackPanel>
+                                    <DataTemplate DataType="{x:Type vm:ImmsAlignmentViewModel}">
+                                        <TextBlock x:Name="TabItem_DtMzPairwisePlotAlignmentView" Text="Alignment spot viewer" VerticalAlignment="Stretch"/>
                                     </DataTemplate>
-                                </chart:AlignmentPeakPlotView.LabelTemplate>
-                            </chart:AlignmentPeakPlotView>
-                        </TabItem>
-
+                                </DataTemplate.Resources>
+                                <ContentPresenter Content="{Binding Value}"/>
+                            </DataTemplate>
+                        </TabControl.ItemTemplate>
+                        <TabControl.ContentTemplate>
+                            <DataTemplate>
+                                <DataTemplate.Resources>
+                                    <DataTemplate DataType="{x:Type vm:ImmsAnalysisViewModel}">
+                                        <chart:PeakView DataContext="{Binding PlotViewModel}">
+                                            <chart:PeakView.LabelTemplate>
+                                                <DataTemplate DataType="{x:Type do:ChromatogramPeakFeatureModel}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <StackPanel.Resources>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="9"/>
+                                                                <Setter Property="Foreground" Value="Gray"/>
+                                                            </Style>
+                                                        </StackPanel.Resources>
+                                                        <TextBlock Text="{Binding InnerModel.MasterPeakID, Mode=OneTime, StringFormat=Spot ID: {0}; }"/>
+                                                        <TextBlock Text="{Binding InnerModel.MS1RawSpectrumIdTop, Mode=OneTime, StringFormat=Scan #: {0}; }"/>
+                                                        <TextBlock Text="{Binding InnerModel.ChromXs.Value, Mode=OneTime, StringFormat=DT[1/k0]: {0:N4}; }"/>
+                                                        <TextBlock Text="{Binding InnerModel.Mass, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </chart:PeakView.LabelTemplate>
+                                        </chart:PeakView>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vm:ImmsAlignmentViewModel}">
+                                        <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}">
+                                            <chart:AlignmentPeakPlotView.LabelTemplate>
+                                                <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <StackPanel.Resources>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="FontSize" Value="9"/>
+                                                                <Setter Property="Foreground" Value="Gray"/>
+                                                            </Style>
+                                                        </StackPanel.Resources>
+                                                        <TextBlock Text="{Binding AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
+                                                        <TextBlock Text="{Binding TimesCenter, Mode=OneTime, StringFormat=DT[1/k0]: {0:N4}; }"/>
+                                                        <TextBlock Text="{Binding MassCenter, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </chart:AlignmentPeakPlotView.LabelTemplate>
+                                        </chart:AlignmentPeakPlotView>
+                                    </DataTemplate>
+                                </DataTemplate.Resources>
+                                <ContentPresenter Content="{Binding}"/>
+                            </DataTemplate>
+                        </TabControl.ContentTemplate>
                     </TabControl>
 
                     <TabControl Name="TabControl_EicViewAndBarChart"
@@ -276,7 +295,7 @@
                     <Grid Grid.Row="2" Grid.Column="1">
 
                         <Button Name="Button_TableViewer"
-                                DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
+                                DataContext="{Binding SelectedViewModel.Value, Mode=OneWay}"
                                 Command="{Binding ShowIonTableCommand, Mode=OneWay}"
                                 Background="AliceBlue"
                                 Margin="0,2,0,0" 
@@ -315,28 +334,46 @@
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0">
-
                         <TabControl Name="TabControl_PeakCharacter"
                                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                    DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
+                                    DataContext="{Binding SelectedViewModel.Value}"
+                                    ItemsSource="{Binding PeakDetailViewModels}"
+                                    SelectedIndex="0"
                                     Grid.Row="0">
-
-                            <TabItem Header="Basic peak property" 
-                                 Name="TabItem_BasicProperty" 
-                                 Height="25"
-                                 Background="{StaticResource MainThemeColor}">
-                                <local:PeakPropertyView DataContext="{Binding Target.Value}"/>
-                            </TabItem>
-
-                            <TabItem Header="Compound detail" 
-                                 Name="TabItem_CompoundDetail" 
-                                 Height="25"
-                                 Background="{StaticResource MainThemeColor}">
-                                <local:CompoundDetailView DataContext="{Binding Target.Value}"/>
-                            </TabItem>
-                         
+                            <TabControl.Resources>
+                                <Style TargetType="TabItem">
+                                    <Setter Property="Background" Value="{StaticResource MainThemeColor}"/>
+                                </Style>
+                            </TabControl.Resources>
+                            <TabControl.ContentTemplate>
+                                <DataTemplate>
+                                    <DataTemplate.Resources>
+                                        <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
+                                            <infoview:PeakInformationView/>
+                                        </DataTemplate>                              
+                                        <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
+                                            <infoview:CompoundDetailView/>
+                                        </DataTemplate>                              
+                                    </DataTemplate.Resources>
+                                    <ContentPresenter Content="{Binding}"/>
+                                </DataTemplate>
+                            </TabControl.ContentTemplate>
+                            <TabControl.ItemTemplate>
+                                <DataTemplate>
+                                    <DataTemplate.Resources>
+                                        <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
+                                            <TextBlock Text="Basic peak property"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
+                                            <TextBlock Text="Compund detail"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                    </DataTemplate.Resources>
+                                    <ContentPresenter Content="{Binding}"/>
+                                </DataTemplate>
+                            </TabControl.ItemTemplate>
                         </TabControl>
-
                     </Grid>
 
                     <TabControl Name="TabControl_MS2Viewer"
@@ -409,11 +446,9 @@
 
             </Grid>
         </Grid>
-        <!--
-        <local:Footer DataContext="{Binding AnalysisViewModel.Value}"
-                      ChromAxis="{StaticResource ChromAxis}" MassAxis="{StaticResource MassAxis}"
-                      Grid.Row="2" Grid.Column="1"/>
-                      -->
+
+        <search:FocusNavigatorView DataContext="{Binding SelectedViewModel.Value.FocusNavigatorViewModel, Mode=OneWay}"
+                                   Grid.Row="2" Grid.Column="1"/>
 
         <GridSplitter Margin="0,0,0,0" 
                     Height="2" ResizeDirection="Rows" ResizeBehavior="CurrentAndNext" 

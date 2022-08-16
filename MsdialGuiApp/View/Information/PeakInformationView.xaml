@@ -33,7 +33,7 @@
             <TextBox Text="{Binding AdductIonName.Value, Mode=OneWay}"/>
         </ui:LabeledContent>
 
-        <ItemsControl ItemsSource="{Binding PeakPoints}">
+        <ItemsControl ItemsSource="{Binding PeakPoints.Value}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <DataTemplate.Resources>
@@ -43,12 +43,12 @@
                             </ui:LabeledContent>
                         </DataTemplate>
                     </DataTemplate.Resources>
-                    <ContentControl Content="{Binding Value}"/>
+                    <ContentPresenter Content="{Binding}"/>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <ItemsControl ItemsSource="{Binding PeakAmounts}">
+        <ItemsControl ItemsSource="{Binding PeakAmounts.Value}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <DataTemplate.Resources>
@@ -58,28 +58,15 @@
                             </ui:LabeledContent>
                         </DataTemplate>
                     </DataTemplate.Resources>
-                    <ContentControl Content="{Binding Value}"/>
+                    <ContentPresenter Content="{Binding}"/>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
         <ui:LabeledContent PrependLabel="Formula|Ontology:">
             <StackPanel Orientation="Horizontal">
-                <TextBox>
-                    <TextBox.Style>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource ReadOnlyTextBox}">
-                            <Setter Property="Text" Value="{Binding Formula.Value.FormulaString, Mode=OneWay}"/>
-                            <Setter Property="VerticalContentAlignment" Value="Center"/>
-                            <Setter Property="Height" Value="16"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Formula.Value.FormulaString, TargetNullValue=''}" Value="" >
-                                    <Setter Property="Text" Value="NA"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
-                <TextBlock Text="|" />
+                <TextBox Text="{Binding Formula.Value, Mode=OneWay}"/>
+                <TextBlock Text="|"/>
                 <TextBox Text="{Binding Ontology.Value, Mode=OneWay}"/>
             </StackPanel>
         </ui:LabeledContent>

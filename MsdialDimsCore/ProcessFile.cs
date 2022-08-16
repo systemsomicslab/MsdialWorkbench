@@ -33,7 +33,6 @@ namespace CompMs.MsdialDimsCore
 
             // parse raw data
             Console.WriteLine("Loading spectral information");
-            var spectrumList = provider.LoadMsSpectrums();
 
             // faeture detections
             Console.WriteLine("Peak picking started");
@@ -43,27 +42,27 @@ namespace CompMs.MsdialDimsCore
 
             var peakPickResults = PeakDetection.PeakDetectionVS1(sChromPeaks, param.MinimumDatapoints, param.MinimumAmplitude);
             if (peakPickResults.IsEmptyOrNull()) return;
-            var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, spectrumList, param.AcquisitionType);
+            var peakFeatures = ConvertPeaksToPeakFeatures(peakPickResults, ms1Spectrum, provider, param.AcquisitionType);
 
             if (peakFeatures.Count == 0) return;
             // IsotopeEstimator.Process(peakFeatures, param, iupacDB); // in dims, skip the isotope estimation process.
             SetIsotopes(peakFeatures);
-            SetSpectrumPeaks(peakFeatures, spectrumList);
+            SetSpectrumPeaks(peakFeatures, provider);
 
             // chrom deconvolutions
             Console.WriteLine("Deconvolution started");
-            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, peakFeatures);
+            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, peakFeatures);
             var initial_msdec = 30.0;
             var max_msdec = 30.0;
             var msdecProcess = new Algorithm.Ms2Dec(initial_msdec, max_msdec);
-            var targetCE = spectrumList.Select(spec => (double?)Math.Round(spec.CollisionEnergy, 2)).Distinct().Min() ?? -1;
-            var msdecResults = msdecProcess.GetMS2DecResults(spectrumList, peakFeatures, param, summary, targetCE, reportAction, token);
+            var targetCE = Math.Round(provider.GetMinimumCollisionEnergy(), 2);
+            var msdecResults = msdecProcess.GetMS2DecResults(provider, peakFeatures, param, summary, targetCE, reportAction, token);
 
             Console.WriteLine("Annotation started");
             annotationProcess.RunAnnotation(peakFeatures, msdecResults, provider, param.NumThreads, token, v => reportAction?.Invoke((int)v));
 
             var characterEstimator = new Algorithm.PeakCharacterEstimator(90, 10);
-            characterEstimator.Process(spectrumList, peakFeatures, msdecResults, evaluator, param, reportAction);
+            characterEstimator.Process(peakFeatures, msdecResults, evaluator, param, reportAction, provider);
 
             MsdialPeakSerializer.SaveChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath, peakFeatures);
             MsdecResultsWriter.Write(file.DeconvolutionFilePath, msdecResults);
@@ -71,9 +70,9 @@ namespace CompMs.MsdialDimsCore
             reportAction?.Invoke(100);
         }
 
-        public static List<ChromatogramPeakFeature> ConvertPeaksToPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, IReadOnlyList<RawSpectrum> allSpectra, AcquisitionType type) {
+        public static List<ChromatogramPeakFeature> ConvertPeaksToPeakFeatures(List<PeakDetectionResult> peakPickResults, RawSpectrum ms1Spectrum, IDataProvider provider, AcquisitionType type) {
             var peakFeatures = new List<ChromatogramPeakFeature>();
-            var ms2SpecObjects = allSpectra
+            var ms2SpecObjects = provider.LoadMsNSpectrums(level: 2)
                 .Where(spectra => spectra.MsLevel == 2 && spectra.Precursor != null)
                 .OrderBy(spectra => spectra.Precursor.SelectedIonMz).ToList();
 
@@ -98,7 +97,7 @@ namespace CompMs.MsdialDimsCore
                     default:
                         throw new NotSupportedException(nameof(type));
                 }
-                peakFeature.MS2RawSpectrumID = GetRepresentativeMS2RawSpectrumID(peakFeature.MS2RawSpectrumID2CE, allSpectra);
+                peakFeature.MS2RawSpectrumID = GetRepresentativeMS2RawSpectrumID(peakFeature.MS2RawSpectrumID2CE, provider);
                 peakFeatures.Add(peakFeature);
 
 #if DEBUG
@@ -162,9 +161,9 @@ namespace CompMs.MsdialDimsCore
             return ID2CE;
         }
 
-        private static int GetRepresentativeMS2RawSpectrumID(Dictionary<int, double> ms2RawSpectrumID2CE, IReadOnlyList<RawSpectrum> allSpectra) {
+        private static int GetRepresentativeMS2RawSpectrumID(Dictionary<int, double> ms2RawSpectrumID2CE, IDataProvider provider) {
             if (ms2RawSpectrumID2CE.Count == 0) return -1;
-            return ms2RawSpectrumID2CE.Argmax(kvp => allSpectra[kvp.Key].TotalIonCurrent).Key;
+            return ms2RawSpectrumID2CE.Argmax(kvp => provider.LoadMsSpectrumFromIndex(kvp.Key).TotalIonCurrent).Key;
         }
 
         private static void SetIsotopes(List<ChromatogramPeakFeature> chromFeatures) {
@@ -173,10 +172,11 @@ namespace CompMs.MsdialDimsCore
             }
         }
 
-        private static void SetSpectrumPeaks(List<ChromatogramPeakFeature> chromFeatures, IReadOnlyList<RawSpectrum> spectra) {
+        private static void SetSpectrumPeaks(List<ChromatogramPeakFeature> chromFeatures, IDataProvider provider) {
+            var count = provider.Count();
             foreach (var feature in chromFeatures) {
-                if (feature.MS2RawSpectrumID >= 0 && feature.MS2RawSpectrumID < spectra.Count) {
-                    var peakElements = spectra[feature.MS2RawSpectrumID].Spectrum;
+                if (feature.MS2RawSpectrumID >= 0 && feature.MS2RawSpectrumID < count) {
+                    var peakElements = provider.LoadMsSpectrumFromIndex(feature.MS2RawSpectrumID).Spectrum;
                     var spectrumPeaks = DataAccess.ConvertToSpectrumPeaks(peakElements);
                     //var centroidSpec = SpectralCentroiding.Centroid(spectrumPeaks);
                     var centroidSpec = SpectralCentroiding.CentroidByLocalMaximumMethod(spectrumPeaks);

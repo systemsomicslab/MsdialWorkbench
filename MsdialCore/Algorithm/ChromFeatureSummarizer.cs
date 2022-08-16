@@ -9,8 +9,8 @@ namespace CompMs.MsdialCore.Algorithm
 
         }
 
-        public ChromatogramPeaksDataSummary Summarize(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures) {
-            return ChromatogramPeaksDataSummary.Summarize(spectrumList, chromPeakFeatures ?? new List<ChromatogramPeakFeature>(0));
+        public ChromatogramPeaksDataSummary Summarize(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures) {
+            return ChromatogramPeaksDataSummary.Summarize(provider, chromPeakFeatures ?? new List<ChromatogramPeakFeature>(0));
         }
 
         /// <summary>
@@ -18,8 +18,8 @@ namespace CompMs.MsdialCore.Algorithm
         /// 1) to get the summary of peak detections including the average peak width, retention time, height, etc..
         /// 2) to get the 'insurance' model peak which will be used as the model peak in MS2Dec algorithm in the case that any model peaks cannot be found from the focused MS/MS spectrum.
         /// </summary>
-        public static ChromatogramPeaksDataSummaryDto GetChromFeaturesSummary(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures) {
-            return new ChromFeatureSummarizer().Summarize(spectrumList, chromPeakFeatures).ConvertToDto();
+        public static ChromatogramPeaksDataSummaryDto GetChromFeaturesSummary(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures) {
+            return new ChromFeatureSummarizer().Summarize(provider, chromPeakFeatures).ConvertToDto();
         }
     }
 }

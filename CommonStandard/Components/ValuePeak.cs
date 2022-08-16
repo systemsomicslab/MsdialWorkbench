@@ -9,7 +9,7 @@
             Intensity = intensity;
         }
 
-        public readonly int Id;
+        public readonly int Id; // means RawSpectrum.Index
         public readonly double Mz;
         public readonly double Intensity;
         public readonly double Time;

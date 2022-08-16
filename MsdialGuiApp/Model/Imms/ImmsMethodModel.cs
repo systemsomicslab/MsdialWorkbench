@@ -34,6 +34,7 @@ using System.Windows.Media;
 using Reactive.Bindings.Notifiers;
 using System.Threading;
 using CompMs.Common.DataObj;
+using CompMs.App.Msdial.Model.Search;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
@@ -56,6 +57,8 @@ namespace CompMs.App.Msdial.Model.Imms
                 parameter.ProviderFactoryParameter = new ImmsAverageDataProviderFactoryParameter(0.01, 0.002, 0, 100);
             }
             ProviderFactory = parameter?.ProviderFactoryParameter.Create(5, true);
+
+            PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
         }
 
         private FacadeMatchResultEvaluator matchResultEvaluator;
@@ -81,6 +84,8 @@ namespace CompMs.App.Msdial.Model.Imms
             }
         }
         private ImmsAlignmentModel alignmentModel;
+
+        public PeakFilterModel PeakFilterModel { get; }
 
         public IMsdialDataStorage<MsdialImmsParameter> Storage { get; }
 
@@ -210,7 +215,8 @@ namespace CompMs.App.Msdial.Model.Imms
                 matchResultEvaluator,
                 Storage.DataBaseMapper.MoleculeAnnotators,
                 Storage.DataBaseMapper,
-                Storage.Parameter)
+                Storage.Parameter,
+                PeakFilterModel)
             .AddTo(Disposables);
             return AnalysisModel;
         }
@@ -226,6 +232,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 Storage.DataBaseMapper.MoleculeAnnotators,
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
+                PeakFilterModel,
                 Storage.Parameter,
                 Storage.AnalysisFiles)
             .AddTo(Disposables);
