@@ -83,7 +83,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
             for (int i = margin; i < ssPeaklist.Length - margin; i++) {
                 if (IsPeakStarted(i, firstDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria)) {
                     var datapoints = new List<ChromatogramDataPoint>();
-                    datapoints.Add(new ChromatogramDataPoint(peaklist[i].Index, peaklist[i].Time, peaklist[i].Mz, peaklist[i].Intensity, firstDiffPeaklist[i], secondDiffPeaklist[i]));
+                    datapoints.Add(new ChromatogramDataPoint(i, peaklist[i].Time, peaklist[i].Mz, peaklist[i].Intensity, firstDiffPeaklist[i], secondDiffPeaklist[i]));
                     searchRealLeftEdge(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist);
                     i = searchRightEdgeCandidate(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria, amplitudeNoise, peaktopNoise, _minimumDatapointCriteria);
                     i = searchRealRightEdge(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, ref infinitLoopCheck, ref infinitLoopID, out var isBreak);
@@ -485,7 +485,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
                     if (i + j + 1 > ssPeaklist.Count - 1) break;
                     if (ssPeaklist[i + j].Intensity <= ssPeaklist[i + j + 1].Intensity) break;
                     if (ssPeaklist[i + j].Intensity > ssPeaklist[i + j + 1].Intensity) {
-                        datapoints.Add(new ChromatogramDataPoint(peaklist[i + j + 1].Index, peaklist[i + j + 1].Time, peaklist[i + j + 1].Mz,
+                        datapoints.Add(new ChromatogramDataPoint(i + j + 1, peaklist[i + j + 1].Time, peaklist[i + j + 1].Mz,
                                     peaklist[i + j + 1].Intensity, firstDiffPeaklist[i + j + 1], secondDiffPeaklist[i + j + 1]));
                         rightCheck = true;
                         trackcounter++;
@@ -635,7 +635,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
                 if (i + 2 == ssPeaklist.Count - 1) break;
 
                 i++;
-                datapoints.Add(new ChromatogramDataPoint(peaklist[i].Index, peaklist[i].Time, peaklist[i].Mz, peaklist[i].Intensity,
+                datapoints.Add(new ChromatogramDataPoint(i, peaklist[i].Time, peaklist[i].Mz, peaklist[i].Intensity,
                             firstDiffPeaklist[i], secondDiffPeaklist[i]));
 
                 // peak top check
@@ -723,7 +723,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
                 if (i - j - 1 < 0) break;
                 if (ssPeaklist[i - j].Intensity <= ssPeaklist[i - j - 1].Intensity) break;
                 if (ssPeaklist[i - j].Intensity > ssPeaklist[i - j - 1].Intensity)
-                    datapoints.Insert(0, new ChromatogramDataPoint(peaklist[i - j - 1].Index, peaklist[i - j - 1].Time,
+                    datapoints.Insert(0, new ChromatogramDataPoint(i - j - 1, peaklist[i - j - 1].Time,
                                 peaklist[i - j - 1].Mz, peaklist[i - j - 1].Intensity, firstDiffPeaklist[i - j - 1], secondDiffPeaklist[i - j - 1]));
             }
         }
@@ -1008,7 +1008,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
             }
             var baselineCorrectedPeaklist = new ValuePeak[peaklist.Count];
             for (int i = 0; i < peaklist.Count; i++) {
-                baselineCorrectedPeaklist[i] = new ValuePeak(peaklist[i].Id, i, peaklist[i].Time, peaklist[i].Mz, Math.Max(0, ssPeaklist[i].Intensity - baseline[i].Intensity));
+                baselineCorrectedPeaklist[i] = new ValuePeak(peaklist[i].Id, peaklist[i].Time, peaklist[i].Mz, Math.Max(0, ssPeaklist[i].Intensity - baseline[i].Intensity));
             }
             // baselineCorrectedPeaklist = Enumerable.Range(0, peaklist.Count)
             //     .Select(i => new ValuePeak(peaklist[i].Id, peaklist[i].Time, peaklist[i].Mz, Math.Max(0, ssPeaklist[i].Intensity - baseline[i].Intensity)))
