@@ -64,7 +64,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing
 
                 var smoothedPeaklist = new ValuePeak[n];
                 for (int i = 0; i < peaklist_.Length; i++) {
-                    smoothedPeaklist[i] = new ValuePeak(peaklist_[i].Id, i, i, peaklist_[i].Time, peaklist_[i].Mz, intensities[i + smoothingLevel] / normalizationValue);
+                    smoothedPeaklist[i] = new ValuePeak(peaklist_[i].Id, i, peaklist_[i].Time, peaklist_[i].Mz, intensities[i + smoothingLevel] / normalizationValue);
                 }
                 return smoothedPeaklist;
             }
@@ -100,7 +100,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing
 
             var smoothedPeaklist = new ValuePeak[n];
             for (int i = 0; i < peaklist_.Length; i++) {
-                smoothedPeaklist[i] = new ValuePeak(peaklist_[i].Id, i, i, peaklist_[i].Time, peaklist_[i].Mz, intensities[i + smoothingLevel] / normalizationValue);
+                smoothedPeaklist[i] = new ValuePeak(peaklist_[i].Id, i, peaklist_[i].Time, peaklist_[i].Mz, intensities[i + smoothingLevel] / normalizationValue);
             }
 
             return smoothedPeaklist;
@@ -211,7 +211,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing
 
             var smoothedPeaklist = new List<ValuePeak>(n);
             for (int i = 0; i < peaklist_.Length; i++) {
-                smoothedPeaklist.Add(new ValuePeak(peaklist_[i].Id, i, i, peaklist_[i].Time, peaklist_[i].Mz, intensities[i + smoothingLevel] / normalizationValue));
+                smoothedPeaklist.Add(new ValuePeak(peaklist_[i].Id, i, peaklist_[i].Time, peaklist_[i].Mz, intensities[i + smoothingLevel] / normalizationValue));
             }
 
             return smoothedPeaklist;
@@ -349,7 +349,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing
 
             var smoothedPeaklist = new List<ValuePeak>(n);
             for (int i = 0; i < peaklist.Count; i++) {
-                smoothedPeaklist.Add(new ValuePeak(peaklist[i].Id, i, i, peaklist[i].Time, peaklist[i].Mz, intensities[i + smoothingLevel] / normalizationValue));
+                smoothedPeaklist.Add(new ValuePeak(peaklist[i].Id, i, peaklist[i].Time, peaklist[i].Mz, intensities[i + smoothingLevel] / normalizationValue));
             }
 
             return smoothedPeaklist;
@@ -493,7 +493,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing
                     else sum += coefficientVector[j + smoothingLevel] * peaklist[i + j].Intensity;
                 }
                 smoothedPeakIntensity = sum;
-                var smoothedPeak = new ValuePeak(peaklist[i].Id, i, i, peaklist[i].Time, peaklist[i].Mz, smoothedPeakIntensity); 
+                var smoothedPeak = new ValuePeak(peaklist[i].Id, i, peaklist[i].Time, peaklist[i].Mz, smoothedPeakIntensity); 
                 smoothedPeaklist.Add(smoothedPeak);
             }
             return smoothedPeaklist;
@@ -582,7 +582,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing
                     else sum += coefficientVector[j + smoothingLevel] * peaklist[i + j].Intensity;
                 }
                 smoothedPeakIntensity = sum;
-                var smoothedPeak = new ValuePeak(peaklist[i].Id, i, i, peaklist[i].Time, peaklist[i].Mz, smoothedPeakIntensity); 
+                var smoothedPeak = new ValuePeak(peaklist[i].Id, i, peaklist[i].Time, peaklist[i].Mz, smoothedPeakIntensity); 
                 smoothedPeaklist.Add(smoothedPeak);
             }
             return smoothedPeaklist;
@@ -763,7 +763,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing
                 coefficientB = inverseMatrix[1, 0] * a + inverseMatrix[1, 1] * b;
                 smoothedPeakIntensity = coefficientB;
 
-                var smoothedPeak = new ValuePeak(peaklist[i].Id, i, i, peaklist[i].Time, peaklist[i].Mz, smoothedPeakIntensity); 
+                var smoothedPeak = new ValuePeak(peaklist[i].Id, i, peaklist[i].Time, peaklist[i].Mz, smoothedPeakIntensity); 
                 smoothedPeaklist.Add(smoothedPeak);
             }
 
@@ -984,7 +984,7 @@ namespace CompMs.Common.Algorithm.ChromSmoothing
                 coefficientC = inverseMatrix[2, 0] * a + inverseMatrix[2, 1] * b + inverseMatrix[2, 2] * c;
 
                 smoothedPeakIntensity = coefficientC;
-                var smoothedPeak = new ValuePeak(peaklist[i].Id, i, i, peaklist[i].Time, peaklist[i].Mz, smoothedPeakIntensity); 
+                var smoothedPeak = new ValuePeak(peaklist[i].Id, i, peaklist[i].Time, peaklist[i].Mz, smoothedPeakIntensity); 
                 smoothedPeaklist.Add(smoothedPeak);
             }
 

@@ -438,9 +438,9 @@ namespace CompMs.MsdialCore.DataObj
                 ChromXsRight = chromatogram.PeakChromXs(peakDetectionResult.ChromXAxisAtRightPeakEdge, mz),
 
                 //assign the scan number of MS1 and MS/MS for precursor ion's peaks
-                MS1RawSpectrumIdTop = chromatogram.Peaks[peakDetectionResult.ScanNumAtPeakTop].IdOrIndex,
-                MS1RawSpectrumIdLeft = chromatogram.Peaks[peakDetectionResult.ScanNumAtLeftPeakEdge].IdOrIndex,
-                MS1RawSpectrumIdRight = chromatogram.Peaks[peakDetectionResult.ScanNumAtRightPeakEdge].IdOrIndex,
+                MS1RawSpectrumIdTop = chromatogram.Peaks[peakDetectionResult.ScanNumAtPeakTop].Id,
+                MS1RawSpectrumIdLeft = chromatogram.Peaks[peakDetectionResult.ScanNumAtLeftPeakEdge].Id,
+                MS1RawSpectrumIdRight = chromatogram.Peaks[peakDetectionResult.ScanNumAtRightPeakEdge].Id,
 
                 PeakHeightLeft = peakDetectionResult.IntensityAtLeftPeakEdge,
                 PeakHeightTop = peakDetectionResult.IntensityAtPeakTop,
