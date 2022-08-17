@@ -29,7 +29,7 @@ namespace CompMs.MsdialCore.DataObj
             //var end = elements.UpperBound((float)(mz + tolerance), (elem, target) => elem.Mz.CompareTo(target));
             var summedIntensity = 0d;
             var basepeakIntensity = 0d;
-            var basepeakMz = 0d;
+            var basepeakMz = mz;
             for (int i = start; i < elements.Length; i++) {
                 var peak = elements[i];
                 if (peak.Mz > mz + tolerance) break;

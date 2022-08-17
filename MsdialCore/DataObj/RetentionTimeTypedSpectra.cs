@@ -38,7 +38,7 @@ namespace CompMs.MsdialCore.DataObj
             _lazySpectra = new ConcurrentDictionary<int, Lazy<Spectrum>>();
             for (int i = 0; i < _spectra.Count; i++) {
                 _idToRetentionTime[i] = new RetentionTime(_spectra[i].ScanStartTime, unit);
-                if (_spectra[i].MsLevel == 1) {
+                if (_spectra[i].MsLevel == 1 && _spectra[i].ScanPolarity == _polarity) {
                     _ms1Counts[i + 1]++;
                 }
             }
