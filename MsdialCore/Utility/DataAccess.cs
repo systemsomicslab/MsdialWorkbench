@@ -254,7 +254,8 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         public static List<ChromatogramPeak> GetMs2Peaklist(IDataProvider provider,
-            double precursorMz, double productMz, int startID, int endID, ParameterBase param, double targetCE, ChromXType type, ChromXUnit unit) {
+            double precursorMz, double productMz, int startID, int endID, ParameterBase param, 
+            double targetCE, ChromXType type, ChromXUnit unit) {
             var chromPeaks = new List<ChromatogramPeak>();
             for (int i = startID; i <= endID; i++) {
                 var spec = provider.LoadMsSpectrumFromIndex(i);
@@ -270,6 +271,69 @@ namespace CompMs.MsdialCore.Utility {
                 }
             }
             return chromPeaks;
+        }
+
+        
+        public static List<ValuePeak[]> GetMs2ValuePeaks(IDataProvider provider, double precursorMz,
+            int startScanID, int endScanID, IReadOnlyList<double> pMzValues, ParameterBase param, double targetCE = -1,
+            ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
+
+            var counter = 0;
+            var arrayLength = GetTargetArrayLength(provider, startScanID, endScanID, precursorMz, targetCE, param);
+            var valuePeakArrayList = new List<ValuePeak[]>();
+            foreach (var mzValue in pMzValues) valuePeakArrayList.Add(new ValuePeak[arrayLength]);
+
+            for (int i = startScanID; i <= endScanID; i++) {
+                var spec = provider.LoadMsSpectrumFromIndex(i);
+                if (spec.MsLevel == 2 && spec.Precursor != null) {
+                    if (targetCE >= 0 && spec.CollisionEnergy >= 0 && Math.Abs(targetCE - spec.CollisionEnergy) > 1) continue; // for AIF mode
+
+                    if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, param.AcquisitionType)) {
+                        var chromX = type == ChromXType.Drift ? spec.DriftTime : spec.ScanStartTime;
+                        var id = type == ChromXType.Drift ? spec.OriginalIndex : spec.Index;
+                        var intensities = RetrieveIntensitiesFromMzValues(pMzValues, spec.Spectrum, param.CentroidMs2Tolerance);
+
+                        for (int j = 0; j < pMzValues.Count; j++) { 
+                            valuePeakArrayList[j][counter] = new ValuePeak(id, chromX, pMzValues[j], intensities[j]);
+                        }
+                        counter++;
+                    }
+                }
+            }
+            return valuePeakArrayList;
+        }
+
+        private static int GetTargetArrayLength(IDataProvider provider, int startScanID, int endScanID, double precursorMz, double targetCE, ParameterBase param) {
+            var counter = 0;
+            for (int i = startScanID; i <= endScanID; i++) {
+                var spec = provider.LoadMsSpectrumFromIndex(i);
+                if (spec.MsLevel == 2 && spec.Precursor != null) {
+                    if (targetCE >= 0 && spec.CollisionEnergy >= 0 && Math.Abs(targetCE - spec.CollisionEnergy) > 1) continue; // for AIF mode
+                    if (IsInMassWindow(precursorMz, spec, param.CentroidMs1Tolerance, param.AcquisitionType)) {
+                        counter++;
+                    }
+                }
+            }
+            return counter;
+        }
+
+        public static double[] RetrieveIntensitiesFromMzValues(IReadOnlyList<double> mzValues, IReadOnlyList<RawPeakElement> peaks, double bin) {
+            double[] searchedPeaks = new double[mzValues.Count];
+            int remaindIndexM = 0;
+            for (int i = 0; i < mzValues.Count; i++) {
+                var mz = mzValues[i];
+                var sumintensity = 0.0;
+                for (int j = remaindIndexM; j < peaks.Count; j++) {
+                    if (peaks[j].Mz < mz - bin) continue;
+                    else if (Math.Abs(mz - peaks[j].Mz) < bin) {
+                        sumintensity += peaks[j].Intensity;
+                    }
+                    else { remaindIndexM = j; break; }
+                }
+                searchedPeaks[i] = sumintensity;
+                if (remaindIndexM == peaks.Count - 1) break;
+            }
+            return searchedPeaks;
         }
 
         private static bool IsInMassWindow(double mass, RawSpectrum spec, double msTol, AcquisitionType type) {
