@@ -114,7 +114,7 @@ namespace CompMs.MsdialLcMsApi.Process
                         chromPeakFeatures,
                         msdecResults,
                         provider,
-                        param.NumThreads,
+                        param.NumThreads == 1 ? 1 : 2,
                         token,
                         v => reportAction?.Invoke((int)(initial_annotation_local + v * max_annotation_local)));
                 }

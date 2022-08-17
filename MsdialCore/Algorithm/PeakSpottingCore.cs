@@ -149,7 +149,15 @@ namespace CompMs.MsdialCore.Algorithm {
             return FinalizePeakSpottingResult(chromPeakFeaturesArray, massStep, provider);
         }
 
-        private void ConsumeQueue(RawSpectra rawSpectra, IDataProvider provider, ChromatogramRange range, PeakDetection detector, Action report, List<float> targetMasses, List<ChromatogramPeakFeature>[] chromPeakFeaturesArray, ConcurrentQueue<(float, int)> queue) {
+        private void ConsumeQueue(
+            RawSpectra rawSpectra, 
+            IDataProvider provider, 
+            ChromatogramRange range, 
+            PeakDetection detector, 
+            Action report, 
+            List<float> targetMasses, 
+            List<ChromatogramPeakFeature>[] chromPeakFeaturesArray, 
+            ConcurrentQueue<(float, int)> queue) {
             System.Diagnostics.Debug.Assert(targetMasses.Count == chromPeakFeaturesArray.Length);
             while (queue.TryDequeue(out var pair)) {
                 var (targetMass, index) = pair;
@@ -558,6 +566,10 @@ namespace CompMs.MsdialCore.Algorithm {
             feature.MS1RawSpectrumIdLeft = peaklist[chromLeftID].Id;
             feature.MS1RawSpectrumIdTop = peaklist[chromTopID].Id;
             feature.MS1RawSpectrumIdRight = peaklist[chromRightID].Id;
+
+            //if (feature.MS1RawSpectrumIdRight == 0) {
+            //    Console.WriteLine();
+            //}
 
             SetMS2RawSpectrumIDs2ChromatogramPeakFeature(feature, provider, feature.MS1RawSpectrumIdLeft, feature.MS1RawSpectrumIdTop, feature.MS1RawSpectrumIdRight);
         }
