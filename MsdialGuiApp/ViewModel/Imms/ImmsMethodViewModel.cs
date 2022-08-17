@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -23,12 +24,11 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private readonly ImmsMethodModel model;
         private readonly FocusControlManager _focusControlManager;
 
-        private ImmsMethodViewModel(ImmsMethodModel model, IReadOnlyReactiveProperty<AnalysisFileViewModel> analysisViewModelAsObservable, IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentViewModelAsObservable, FocusControlManager focusControlmanager)
+        private ImmsMethodViewModel(ImmsMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisViewModelAsObservable, IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentViewModelAsObservable, FocusControlManager focusControlmanager)
             : base(model, analysisViewModelAsObservable, alignmentViewModelAsObservable) {
 
             this.model = model;
             _focusControlManager = focusControlmanager.AddTo(Disposables);
-            PropertyChanged += OnDisplayFiltersChanged;
         }
 
         public bool RefMatchedChecked {
@@ -68,15 +68,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             set => WriteDisplayFilter(DisplayFilter.ManuallyModified, value);
         }
         private DisplayFilter displayFilters = DisplayFilter.Unset;
-
-        void OnDisplayFiltersChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(displayFilters)) {
-                if (AnalysisViewModel.Value != null)
-                    AnalysisViewModel.Value.DisplayFilters = displayFilters;
-                // if (AlignmentViewModel.Value != null)
-                //     AlignmentViewModel.Value.DisplayFilters = displayFilters;
-            }
-        }
 
         private bool ReadDisplayFilter(DisplayFilter flag) {
             return displayFilters.Read(flag);
@@ -124,6 +115,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             ImmsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IMessageBroker messageBroker,
             FocusControlManager focusControlManager) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
@@ -134,7 +126,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             ReadOnlyReactivePropertySlim<ImmsAnalysisViewModel> result;
             using (var subject = new Subject<ImmsAnalysisModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new ImmsAnalysisViewModel(m, compoundSearchService, peakSpotTableService, focusControlManager))
+                    .Select(m => m is null ? null : new ImmsAnalysisViewModel(m, compoundSearchService, peakSpotTableService, messageBroker, focusControlManager))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AnalysisModel);
@@ -169,7 +161,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public static ImmsMethodViewModel Create(ImmsMethodModel model, IWindowService<CompoundSearchVM> compoundSearchService, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, IMessageBroker messageBroker) {
             var focusControlManager = new FocusControlManager();
 
-            var analysisViewModelAsObservable = ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService, focusControlManager);
+            var analysisViewModelAsObservable = ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService, messageBroker, focusControlManager);
             var alignmentViewModelAsObservable = ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, messageBroker, focusControlManager);
             return new ImmsMethodViewModel(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, focusControlManager);
         }

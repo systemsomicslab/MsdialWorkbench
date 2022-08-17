@@ -77,21 +77,6 @@ namespace CompMs.MsdialCore.DataObj
             return new Chromatogram(results, ChromXType.RT, _unit);
         }
 
-        public Chromatogram_temp GetMs1ExtractedChromatogram_temp(double mz, double tolerance, double start, double end) {
-            var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-            var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
-            var results = new List<double[]>();
-            for (int i = startIndex; i < endIndex; i++) {
-                if (_spectra[i].MsLevel != 1 ||
-                    _spectra[i].ScanPolarity != _polarity) {
-                    continue;
-                }
-                var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveBin(mz, tolerance);
-                results.Add(new double[] { i, _idToRetentionTime[i].Value, basePeakMz, summedIntensity });
-            }
-            return new Chromatogram_temp(results, ChromXType.RT, _unit);
-        }
-
         public Chromatogram_temp2 GetMs1ExtractedChromatogram_temp2(double mz, double tolerance, double start, double end) {
             var startIndex = _spectra.LowerBound(start, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
             var endIndex = _spectra.UpperBound(end, startIndex, _spectra.Count, (spectrum, target) => spectrum.ScanStartTime.CompareTo(target));
@@ -105,7 +90,7 @@ namespace CompMs.MsdialCore.DataObj
                 }
                 var spectrum = _lazySpectra.GetOrAdd(i, index => new Lazy<Spectrum>(() => new Spectrum(_spectra[index].Spectrum))).Value;
                 var (basePeakMz, _, summedIntensity) = spectrum.RetrieveBin(mz, tolerance);
-                results[idc++] = new ValuePeak(i, _idToRetentionTime[i].Value, basePeakMz, summedIntensity);
+                results[idc++] = new ValuePeak(_spectra[i].Index, _idToRetentionTime[i].Value, basePeakMz, summedIntensity);
                 // results.Add(new ValuePeak (i, _idToRetentionTime[i].Value, basePeakMz, summedIntensity));
             }
             return new Chromatogram_temp2(results, ChromXType.RT, _unit);

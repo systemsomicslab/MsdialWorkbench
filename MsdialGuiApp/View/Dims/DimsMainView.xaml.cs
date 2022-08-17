@@ -27,12 +27,12 @@ namespace CompMs.App.Msdial.View.Dims
         private void TabControl_PairwisePlotViewer_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (sender == TabControl_PairwisePlotViewer) {
                 var item = e.AddedItems[0];
-                if (item == TabItem_RtMzPairwisePlotPeakView) {
-                    OnAnalysisViewSelected();
-                }
-                if (item == TabItem_RtMzPairwisePlotAlignmentView) {
-                    OnAlignmentViewSelected();
-                }
+                // if (item == TabItem_RtMzPairwisePlotPeakView) {
+                //     OnAnalysisViewSelected();
+                // }
+                // if (item == TabItem_RtMzPairwisePlotAlignmentView) {
+                //     OnAlignmentViewSelected();
+                // }
             }
         }
 
@@ -59,8 +59,6 @@ namespace CompMs.App.Msdial.View.Dims
             if (TabItem_MeasurementVsReference != null) {
                 TabItem_MeasurementVsReference.IsSelected = true;
             }
-            RibbonMenu.IsAnalysisViewFocused = true;
-            RibbonMenu.IsAlignmentViewFocused = false;
         }
 
         private void OnAlignmentViewSelected() {
@@ -70,8 +68,6 @@ namespace CompMs.App.Msdial.View.Dims
             if (TabItem_RepresentativeVsReference != null) {
                 TabItem_RepresentativeVsReference.IsSelected = true;
             }
-            RibbonMenu.IsAnalysisViewFocused = false;
-            RibbonMenu.IsAlignmentViewFocused = true;
         }
 
         private Point mrStart;

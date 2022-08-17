@@ -1573,7 +1573,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
 
         #region builder
         LcmsAlignmentRefiner Create(MsdialLcmsParameter parameter, IupacDatabase iupac) {
-            return new LcmsAlignmentRefiner(parameter, iupac, new FacadeMatchResultEvaluator());
+            return new LcmsAlignmentRefiner(parameter, iupac, new FacadeMatchResultEvaluator(), null);
         }
 
         List<AlignmentSpotProperty> BatchBuildAlignmentSpotProperty(int n, double d_mass = 0, double d_time = 0) {

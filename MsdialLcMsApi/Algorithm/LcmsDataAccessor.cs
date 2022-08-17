@@ -1,11 +1,13 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj;
+using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
+using CompMs.MsdialLcmsApi.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +16,17 @@ namespace CompMs.MsdialLcMsApi.Algorithm
 {
     class LcmsDataAccessor : DataAccessor
     {
+
         static readonly IComparer<IMSScanProperty> Comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
 
-        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot, Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
+        private readonly MsdialLcmsParameter lcmsParameter;
+
+        public LcmsDataAccessor(MsdialLcmsParameter lcmsParameter) {
+            this.lcmsParameter = lcmsParameter;
+        }
+
+        public override ChromatogramPeakInfo AccumulateChromatogram(AlignmentChromPeakFeature peak, AlignmentSpotProperty spot,
+            Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, float ms1MassTolerance) {
             var detected = spot.AlignedPeakProperties.Where(x => x.MasterPeakID >= 0);
             //var peaklist = DataAccess.GetMs1Peaklist(
             //    spectrum, (float)peak.Mass, 
@@ -31,11 +41,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm
                 tRightRt = spot.TimesCenter.Value - 2.5;
                 tLeftRt = spot.TimesCenter.Value + 2.5;
             }
-
+            
             var chromatogramRange = new ChromatogramRange(tLeftRt, tRightRt, ChromXType.RT, ChromXUnit.Min);
             var peaklist = ms1Spectra.GetMs1ExtractedChromatogram(peak.Mass, ms1MassTolerance, chromatogramRange);
             return new ChromatogramPeakInfo(
-                peak.FileID, peaklist.Peaks,
+                peak.FileID, peaklist.Smoothing(this.lcmsParameter.SmoothingMethod, this.lcmsParameter.SmoothingLevel),
                 (float)peak.ChromXsTop.RT.Value, (float)peak.ChromXsLeft.RT.Value, (float)peak.ChromXsRight.RT.Value);
         }
 

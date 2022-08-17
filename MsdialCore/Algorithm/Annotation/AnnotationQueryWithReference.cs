@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class AnnotationQueryWithReference : IAnnotationQueryZZZ<MsScanMatchResult>
+    public class AnnotationQueryWithReference : ICallableAnnotationQuery<MsScanMatchResult>
     {
         private readonly MoleculeMsReference reference;
         private readonly IMatchResultFinder<(IAnnotationQuery, MoleculeMsReference), MsScanMatchResult> annotator;

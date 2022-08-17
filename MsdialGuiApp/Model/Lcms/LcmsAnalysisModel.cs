@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
@@ -90,7 +91,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                             (byte)(255 * (1 - Math.Abs(peak.InnerModel.PeakShape.AmplitudeScoreValue - 0.5))),
                             (byte)(255 - 255 * peak.InnerModel.PeakShape.AmplitudeScoreValue)),
                         enableCache: true),
-                    "Ontology");
+                    "Intensity");
             var brushes = new[] { intensityBrush, ontologyBrush, };
             BrushMapData<ChromatogramPeakFeatureModel> selectedBrush;
             switch (Parameter.TargetOmics) {
@@ -151,24 +152,20 @@ namespace CompMs.App.Msdial.Model.Lcms
                ),
                item => item.ToString(),
                Colors.Blue);
-            Func<SpectrumComment, Color> zzz(ProjectBaseParameter projectParameter)
-            {
-                Color f(SpectrumComment comment) {
-                    var commentString = comment.ToString();
-                    if (projectParameter.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
-                        return Color.FromRgb(color[0], color[1], color[2]);
-                    }
-                    else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
-                        && projectParameter.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
-                        return Color.FromRgb(color[0], color[1], color[2]);
-                    }
-                    else {
-                        return Colors.Red;
-                    }
+            Color mapToColor(SpectrumComment comment) {
+                var commentString = comment.ToString();
+                if (Parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(commentString, out var color)) {
+                    return Color.FromRgb(color[0], color[1], color[2]);
                 }
-                return f;
-            };
-            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(zzz(Parameter.ProjectParam), true);
+                else if ((comment & SpectrumComment.doublebond) == SpectrumComment.doublebond
+                    && Parameter.ProjectParam.SpectrumCommentToColorBytes.TryGetValue(SpectrumComment.doublebond.ToString(), out color)) {
+                    return Color.FromRgb(color[0], color[1], color[2]);
+                }
+                else {
+                    return Colors.Red;
+                }
+            }
+            var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(mapToColor, true);
             var spectraExporter = new NistSpectraExporter(Target.Select(t => t?.InnerModel), mapper, Parameter).AddTo(Disposables);
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 Target,
@@ -230,14 +227,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Peak table
             PeakTableModel = new LcmsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax, ChromMin, ChromMax).AddTo(Disposables);
 
-            CanSearchCompound = new[]
-            {
-                Target.Select(t => t is null || t.InnerModel is null),
-                MsdecResult.Select(r => r is null),
-            }.CombineLatestValuesAreAllFalse()
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposables);
-
             var rtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, RtTol, Target.Select(t => t?.ChromXValue ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MzTol, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
             Func<double, ChromatogramPeakFeatureModel> yyy(IReadOnlyList<ChromatogramPeakFeatureModel> ms1Peaks) {
@@ -255,6 +244,21 @@ namespace CompMs.App.Msdial.Model.Lcms
             CanSaveRawSpectra = Target.Select(t => t?.InnerModel != null)
                 .ToReadOnlyReactivePropertySlim(initialValue: false)
                 .AddTo(Disposables);
+
+            var peakInformationModel = new PeakInformationAnalysisModel(Target).AddTo(Disposables);
+            peakInformationModel.Add(
+                t => new RtPoint(t?.InnerModel.ChromXsTop.RT.Value ?? 0d),
+                t => new MzPoint(t?.Mass ?? 0d));
+            peakInformationModel.Add(
+                t => new HeightAmount(t?.Intensity ?? 0d),
+                t => new AreaAmount(t?.PeakArea ?? 0d));
+            PeakInformationModel = peakInformationModel;
+            var compoundDetailModel = new CompoundDetailModel(Target.Select(t => t?.ScanMatchResult), mapper).AddTo(Disposables);
+            compoundDetailModel.Add(
+                r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
+                r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
+                r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
+            CompoundDetailModel = compoundDetailModel;
         }
 
         private static readonly double RtTol = 0.5;
@@ -291,8 +295,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         public double ChromMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.ChromXValue) ?? 0d;
         public double MassMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d;
         public double MassMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d;
-
-        public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 
         public CompoundSearchModel<ChromatogramPeakFeature> CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
@@ -350,6 +352,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public ReadOnlyReactivePropertySlim<bool> CanSaveRawSpectra { get; }
+        public PeakInformationAnalysisModel PeakInformationModel { get; }
+        public CompoundDetailModel CompoundDetailModel { get; }
 
         public void GoToMsfinderMethod() {
             MsDialToExternalApps.SendToMsFinderProgram(
@@ -358,8 +362,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 MsdecResult.Value,
                 this.provider.LoadMs1Spectrums(),
                 DataBaseMapper,
-                Parameter
-                );
+                Parameter);
         }
     }
 }

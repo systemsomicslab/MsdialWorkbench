@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -19,15 +18,14 @@ namespace CompMs.App.Msdial.Model.Information
                 Annotation = result_?.Name;
                 AnnotatorId = result_?.AnnotatorID;
                 var reference_ = refer.Refer(result_);
-                Formula = reference_?.Formula;
+                Formula = reference_?.Formula?.FormulaString;
                 Ontology = reference_?.Ontology ?? reference_?.CompoundClass;
                 Smiles = reference_?.SMILES;
                 InChIKey = reference_?.InChIKey;
             }).AddTo(Disposables);
 
             _compoundSimilaritiesMaps = new ObservableCollection<Func<MsScanMatchResult, ISimilarity>>();
-            var compoundSimilarites = result
-                .Select(r => _compoundSimilaritiesMaps.ToReadOnlyReactiveCollection(f => f(r)))
+            result.Select(r => _compoundSimilaritiesMaps.ToReadOnlyReactiveCollection(f => f(r)))
                 .DisposePreviousValue()
                 .Subscribe(cs => CompoundSimilarities = cs)
                 .AddTo(Disposables);
@@ -52,32 +50,32 @@ namespace CompMs.App.Msdial.Model.Information
             }
         }
 
-        public Formula Formula {
-            get => _formula;
+        public string Formula {
+            get => string.IsNullOrEmpty(_formula) ? "NA" : _formula;
             private set => SetProperty(ref _formula, value);
         }
-        private Formula _formula;
+        private string _formula;
 
         public string Ontology {
-            get => _ontology;
+            get => string.IsNullOrEmpty(_ontology) ? "NA" : _ontology;
             private set => SetProperty(ref _ontology, value);
         }
         private string _ontology;
 
         public string Smiles {
-            get => _smiles;
+            get => string.IsNullOrEmpty(_smiles) ? "NA" : _smiles;
             private set => SetProperty(ref _smiles, value);
         }
         private string _smiles;
 
         public string InChIKey {
-            get => _inChIKey;
+            get => string.IsNullOrEmpty(_inChIKey) ? "NA" : _inChIKey;
             private set => SetProperty(ref _inChIKey, value);
         }
         private string _inChIKey;
 
         public string AnnotatorId {
-            get => _annotatorId;
+            get => string.IsNullOrEmpty(_annotatorId) ? "NA" : _annotatorId;
             private set => SetProperty(ref _annotatorId, value);
         }
         private string _annotatorId;

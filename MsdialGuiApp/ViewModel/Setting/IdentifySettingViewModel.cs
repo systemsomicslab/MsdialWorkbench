@@ -143,12 +143,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             // Commands
             AddDataBaseCommand = dataBasesDoesnotHaveError.ToReactiveCommand()
-                .WithSubscribe(() => this.model.AddDataBaseZZZ())
+                .WithSubscribe(() => this.model.AddDataBase())
                 .AddTo(Disposables);
             var dbIsNotNull = DataBaseViewModel.Select(m => !(m is null));
             RemoveDataBaseCommand = dbIsNotNull
                 .ToReactiveCommand()
-                .WithSubscribe(() => this.model.RemoveDataBaseZZZ(DataBaseViewModel.Value.Model))
+                .WithSubscribe(() => this.model.RemoveDataBase(DataBaseViewModel.Value.Model))
                 .AddTo(Disposables);
             AddAnnotatorCommand = new[]{
                 dbIsNotNull,
@@ -157,12 +157,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 annotatorsDoesnotHaveError,
             }.CombineLatestValuesAreAllTrue()
                 .ToReactiveCommand()
-                .WithSubscribe(() => this.model.AddAnnotatorZZZ(DataBaseViewModel.Value.Model))
+                .WithSubscribe(() => this.model.AddAnnotator(DataBaseViewModel.Value.Model))
                 .AddTo(Disposables);
             var annotatorIsNotNull = AnnotatorViewModel.Select(m => !(m is null));
             RemoveAnnotatorCommand = annotatorIsNotNull
                 .ToReactiveCommand()
-                .WithSubscribe(() => this.model.RemoveAnnotatorZZZ(AnnotatorViewModel.Value.Model))
+                .WithSubscribe(() => this.model.RemoveAnnotator(AnnotatorViewModel.Value.Model))
                 .AddTo(Disposables);
             var moveUpTrigger = new Subject<Unit>();
             var moveDownTrigger = new Subject<Unit>();
@@ -178,7 +178,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }.CombineLatestValuesAreAllTrue(),
             (fst, snd) => snd)
             .ToReactiveCommand()
-            .WithSubscribe(() => this.model.MoveUpAnnotatorZZZ(AnnotatorViewModel.Value.Model))
+            .WithSubscribe(() => this.model.MoveUpAnnotator(AnnotatorViewModel.Value.Model))
             .WithSubscribe(() => moveUpTrigger.OnNext(Unit.Default))
             .AddTo(Disposables);
             MoveDownAnnotatorCommand = new[]{
@@ -193,7 +193,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }.CombineLatestValuesAreAllTrue(),
             (fst, snd) => snd)
             .ToReactiveCommand()
-            .WithSubscribe(() => this.model.MoveDownAnnotatorZZZ(AnnotatorViewModel.Value.Model))
+            .WithSubscribe(() => this.model.MoveDownAnnotator(AnnotatorViewModel.Value.Model))
             .WithSubscribe(() => moveDownTrigger.OnNext(Unit.Default))
             .AddTo(Disposables);
 
@@ -207,7 +207,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                     .Where(_ => AnnotatorViewModels.All(avm => avm.Model.DataBaseSettingModel != vm.Model))
                     .Take(1)
                     .SelectMany(_ => Observable.Interval(TimeSpan.FromMilliseconds(100)))
-                    .Do(_ => this.model.AddAnnotatorZZZ(vm.Model))
+                    .Do(_ => this.model.AddAnnotator(vm.Model))
                     .Retry(5)
                     .Take(1)
                     .Catch((Exception ex) => Observable.Empty<long>()))

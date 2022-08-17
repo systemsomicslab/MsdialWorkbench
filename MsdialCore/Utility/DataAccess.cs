@@ -241,23 +241,23 @@ namespace CompMs.MsdialCore.Utility {
         }
 
 
-        public static List<List<ChromatogramPeak>> GetMs2Peaklistlist(IReadOnlyList<RawSpectrum> spectrumList, double precursorMz,
+        public static List<List<ChromatogramPeak>> GetMs2Peaklistlist(IDataProvider provider, double precursorMz,
             int startScanID, int endScanID, List<double> productMzList, ParameterBase param, double targetCE = -1,
             ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
             var chromPeakslist = new List<List<ChromatogramPeak>>();
 
             foreach (var productMz in productMzList) {
-                var chromPeaks = GetMs2Peaklist(spectrumList, precursorMz, productMz, startScanID, endScanID, param, targetCE, type, unit);
+                var chromPeaks = GetMs2Peaklist(provider, precursorMz, productMz, startScanID, endScanID, param, targetCE, type, unit);
                 chromPeakslist.Add(chromPeaks);
             }
             return chromPeakslist;
         }
 
-        public static List<ChromatogramPeak> GetMs2Peaklist(IReadOnlyList<RawSpectrum> spectrumList,
+        public static List<ChromatogramPeak> GetMs2Peaklist(IDataProvider provider,
             double precursorMz, double productMz, int startID, int endID, ParameterBase param, double targetCE, ChromXType type, ChromXUnit unit) {
             var chromPeaks = new List<ChromatogramPeak>();
             for (int i = startID; i <= endID; i++) {
-                var spec = spectrumList[i];
+                var spec = provider.LoadMsSpectrumFromIndex(i);
                 if (spec.MsLevel == 2 && spec.Precursor != null) {
                     if (targetCE >= 0 && spec.CollisionEnergy >= 0 && Math.Abs(targetCE - spec.CollisionEnergy) > 1) continue; // for AIF mode
 
@@ -605,7 +605,7 @@ namespace CompMs.MsdialCore.Utility {
             return peaks;
         }
 
-        public static List<List<ChromatogramPeak>> GetAccumulatedMs2PeakListList(IReadOnlyList<RawSpectrum> spectrumList,
+        public static List<List<ChromatogramPeak>> GetAccumulatedMs2PeakListList(IDataProvider provider,
              ChromatogramPeakFeature rtChromPeakFeature, List<SpectrumPeak> curatedSpectrum, double minDriftTime, double maxDriftTime, IonMode ionMode) {
             var ms2peaklistlist = new List<List<ChromatogramPeak>>();
             var scanPolarity = ionMode == IonMode.Positive ? ScanPolarity.Positive : ScanPolarity.Negative;
@@ -647,7 +647,7 @@ namespace CompMs.MsdialCore.Utility {
 
             //accumulating peaks from peak top to peak left
             for (int i = scanID; i >= 0; i--) {
-                var spectrum = spectrumList[i];
+                var spectrum = provider.LoadMsSpectrumFromIndex(i);
                 if (spectrum.ScanPolarity != scanPolarity) continue;
                 if (spectrum.MsLevel <= 1) continue;
                 if (spectrum.ScanStartTime < rtLeft) break;
@@ -683,8 +683,9 @@ namespace CompMs.MsdialCore.Utility {
                 }
             }
 
-            for (int i = scanID + 1; i < spectrumList.Count; i++) {
-                var spectrum = spectrumList[i];
+            var count = provider.Count();
+            for (int i = scanID + 1; i < count; i++) {
+                var spectrum = provider.LoadMsSpectrumFromIndex(i);
                 if (spectrum.ScanPolarity != scanPolarity) continue;
                 if (spectrum.MsLevel == 1) continue;
                 if (spectrum.DriftTime < minDriftTime || spectrum.DriftTime > maxDriftTime) continue;
@@ -857,9 +858,9 @@ namespace CompMs.MsdialCore.Utility {
             return AccumulateMS1Spectrum(spectra, double.MinValue, double.MaxValue, bin);
         }
 
-        public static List<SpectrumPeak> GetAccumulatedMs2Spectra(IReadOnlyList<RawSpectrum> spectrumList,
+        public static List<SpectrumPeak> GetAccumulatedMs2Spectra(IDataProvider provider,
            ChromatogramPeakFeature driftSpot, ChromatogramPeakFeature peakSpot, ParameterBase param) {
-            var massSpectrum = CalcAccumulatedMs2Spectra(spectrumList, peakSpot, driftSpot, param.CentroidMs1Tolerance);
+            var massSpectrum = CalcAccumulatedMs2Spectra(provider, peakSpot, driftSpot, param.CentroidMs1Tolerance);
             if (param.MS2DataType == MSDataType.Profile && massSpectrum.Count > 0) {
                 //return SpectralCentroiding.Centroid(massSpectrum);
                 return SpectralCentroiding.CentroidByLocalMaximumMethod(massSpectrum);
@@ -869,7 +870,7 @@ namespace CompMs.MsdialCore.Utility {
             }
         }
 
-        public static List<SpectrumPeak> CalcAccumulatedMs2Spectra(IReadOnlyList<RawSpectrum> spectrumList,
+        public static List<SpectrumPeak> CalcAccumulatedMs2Spectra(IDataProvider provider,
             ChromatogramPeakFeature rtChromFeature, ChromatogramPeakFeature dtChromFeature, double mzTol) {
             var rt = rtChromFeature.ChromXsTop.Value;
             var rtLeft = rtChromFeature.ChromXsLeft.Value;
@@ -893,7 +894,7 @@ namespace CompMs.MsdialCore.Utility {
             var spectrumBin = new Dictionary<int, double[]>();
             //accumulating peaks from peak top to peak left
             for (int i = scanID; i >= 0; i--) {
-                var spectrum = spectrumList[i];
+                var spectrum = provider.LoadMsSpectrumFromIndex(i);
                 if (spectrum.MsLevel == 1) continue;
 
                 var driftTime = spectrum.DriftTime;
@@ -919,8 +920,9 @@ namespace CompMs.MsdialCore.Utility {
                 }
             }
 
-            for (int i = scanID + 1; i < spectrumList.Count; i++) {
-                var spectrum = spectrumList[i];
+            var count = provider.Count();
+            for (int i = scanID + 1; i < count; i++) {
+                var spectrum = provider.LoadMsSpectrumFromIndex(i);
                 if (spectrum.MsLevel == 1) continue;
 
                 var driftTime = spectrum.DriftTime;

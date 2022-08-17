@@ -42,6 +42,14 @@ namespace CompMs.App.Msdial.Model.Core {
                 .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+
+            CanSearchCompound = new[]
+            {
+                Target.Select(t => t is null || t.InnerModel is null),
+                MsdecResult.Select(r => r is null),
+            }.CombineLatestValuesAreAllFalse()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
         }
 
         protected readonly MSDecLoader decLoader;
@@ -53,12 +61,13 @@ namespace CompMs.App.Msdial.Model.Core {
         public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
 
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
-
         public string DisplayLabel {
             get => displayLabel;
             set => SetProperty(ref displayLabel, value);
         }
         private string displayLabel = string.Empty;
+
+        public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 
         public Task SaveAsync(CancellationToken token) {
             return _peakCollection.SerializeAsync(AnalysisFile.PeakAreaBeanInformationFilePath, token);

@@ -155,19 +155,19 @@ namespace CompMs.App.Msdial.Model.Lcms
             var processOption = option;
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                if (!ProcessAnnotaion(null, Storage))
+                if (!ProcessAnnotaion(Application.Current.MainWindow, Storage))
                     return;
             }
 
             // Run second process
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                if (!ProcessSeccondAnnotaion4ShotgunProteomics(null, Storage))
+                if (!ProcessSeccondAnnotaion4ShotgunProteomics(Application.Current.MainWindow, Storage))
                     return;
             } 
-
+            
             // Run Alignment
             if (processOption.HasFlag(ProcessOption.Alignment)) {
-                if (!ProcessAlignment(null, Storage))
+                if (!ProcessAlignment(Application.Current.MainWindow, Storage))
                     return;
             }
 
@@ -211,9 +211,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             foreach (var annotators in storage.MetabolomicsDataBases) {
                 containerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<IAnnotationQuery>, annotator.ConvertToAnnotatorContainer())));
             }
-            var eadAnnotationQueryFactoryTriple = new List<(IAnnotationQueryFactory<IAnnotationQueryZZZ<MsScanMatchResult>>, IMatchResultEvaluator<MsScanMatchResult>, MsRefSearchParameterBase)>();
+            var eadAnnotationQueryFactoryTriple = new List<(IAnnotationQueryFactory<ICallableAnnotationQuery<MsScanMatchResult>>, IMatchResultEvaluator<MsScanMatchResult>, MsRefSearchParameterBase)>();
             foreach (var annotators in storage.EadLipidomicsDatabases) {
-                eadAnnotationQueryFactoryTriple.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryWithReferenceFactory(mapper, annotator.SerializableAnnotator, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<IAnnotationQueryZZZ<MsScanMatchResult>>, annotator.SerializableAnnotator as IMatchResultEvaluator<MsScanMatchResult>, annotator.SearchParameter)));
+                eadAnnotationQueryFactoryTriple.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryWithReferenceFactory(mapper, annotator.SerializableAnnotator, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<ICallableAnnotationQuery<MsScanMatchResult>>, annotator.SerializableAnnotator as IMatchResultEvaluator<MsScanMatchResult>, annotator.SearchParameter)));
             }
             return new EadLipidomicsAnnotationProcess<IAnnotationQuery>(containerPairs, eadAnnotationQueryFactoryTriple, mapper);
         }
@@ -279,10 +279,11 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public bool ProcessAlignment(Window owner, IMsdialDataStorage<MsdialLcmsParameter> storage) {
-            var vm = new ProgressBarVM
-            {
-                IsIndeterminate = true,
+            var vm = new ProgressBarVM {
+                IsIndeterminate = false,
                 Label = "Process alignment..",
+                CurrentValue = 0,
+                
             };
             var pbw = new ProgressBarWindow
             {
@@ -290,30 +291,62 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Owner = owner,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
-            pbw.Show();
 
-            var factory = new LcmsAlignmentProcessFactory(storage, matchResultEvaluator);
-            var aligner = factory.CreatePeakAligner();
-            aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
-            var alignmentFile = storage.AlignmentFiles.Last();
-            var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
+            pbw.Loaded += async (s, e) => {
 
-            if (!storage.DataBaseMapper.PeptideAnnotators.IsEmptyOrNull()) {
-                new ProteomeDataAnnotator().MappingToProteinDatabase(
-                    alignmentFile.ProteinAssembledResultFilePath,
-                    result,
-                    storage.DataBases.ProteomicsDataBases,
-                    storage.DataBaseMapper,
-                    matchResultEvaluator,
-                    storage.Parameter);
-            }
+                var factory = new LcmsAlignmentProcessFactory(storage, matchResultEvaluator);
+                factory.ReportAction = v => pbw.Dispatcher.BeginInvoke((Action)(() => vm.CurrentValue = v));
 
-            result.Save(alignmentFile);
-            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList());
+                var aligner = factory.CreatePeakAligner();
+                aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
 
-            pbw.Close();
+                var alignmentFile = storage.AlignmentFiles.Last();
+                var result = await Task.Run(() => aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer));
 
-            return true;
+                if (!storage.DataBaseMapper.PeptideAnnotators.IsEmptyOrNull()) {
+                    new ProteomeDataAnnotator().MappingToProteinDatabase(
+                        alignmentFile.ProteinAssembledResultFilePath,
+                        result,
+                        storage.DataBases.ProteomicsDataBases,
+                        storage.DataBaseMapper,
+                        matchResultEvaluator,
+                        storage.Parameter);
+                }
+
+                result.Save(alignmentFile);
+                MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList());
+
+                pbw.DialogResult = true;
+                pbw.Close();
+            };
+
+            return pbw.ShowDialog() ?? false;
+
+            //var factory = new LcmsAlignmentProcessFactory(storage, matchResultEvaluator);
+            //factory.ReportAction = v => pbw.Dispatcher.BeginInvoke((Action)(() => vm.CurrentValue = v));
+
+            //var aligner = factory.CreatePeakAligner();
+            //aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
+
+            //var alignmentFile = storage.AlignmentFiles.Last();
+            //var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
+
+            //if (!storage.DataBaseMapper.PeptideAnnotators.IsEmptyOrNull()) {
+            //    new ProteomeDataAnnotator().MappingToProteinDatabase(
+            //        alignmentFile.ProteinAssembledResultFilePath,
+            //        result,
+            //        storage.DataBases.ProteomicsDataBases,
+            //        storage.DataBaseMapper,
+            //        matchResultEvaluator,
+            //        storage.Parameter);
+            //}
+
+            //result.Save(alignmentFile);
+            //MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result?.AlignmentSpotProperties).ToList());
+
+            //pbw.Close();
+
+            //return true;
         }
 
         private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcmsParameter> storage, IReadOnlyList<AlignmentSpotProperty> spots) {

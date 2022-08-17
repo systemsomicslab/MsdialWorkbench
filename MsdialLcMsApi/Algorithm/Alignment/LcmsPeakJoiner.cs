@@ -25,6 +25,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
         private readonly double _rtbucket;
         private readonly int _mzwidth;
         private readonly int _rtwidth;
+        private Action<int> reportAction { get; set; }
 
         static LcmsPeakJoiner() {
             Comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
@@ -41,7 +42,9 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
             _mzwidth = (int)Math.Ceiling(_mztol / _mzbucket);
         }
 
-        public LcmsPeakJoiner(double rttol, double rtfactor, double mztol, double mzfactor) : this(rttol, rtfactor, rttol * 2, mztol, mzfactor, mztol * 2) { }
+        public LcmsPeakJoiner(double rttol, double rtfactor, double mztol, double mzfactor, Action<int> report = null) : this(rttol, rtfactor, rttol * 2, mztol, mzfactor, mztol * 2) {
+            reportAction = report;
+        }
 
         public LcmsPeakJoiner(double rttol, double mztol) : this(rttol, 1, mztol, 1) { }
 
@@ -56,7 +59,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
 
         public List<AlignmentSpotProperty> Join(IReadOnlyList<AnalysisFileBean> analysisFiles, int referenceId, DataAccessor accessor) {
 
+            // test process from 0 to 20
             var master = GetMasterList(analysisFiles, referenceId, accessor);
+
+            // test process from 20 to 40
             var spots = JoinAll(master, analysisFiles, accessor);
             return spots;
         }
@@ -70,7 +76,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
                                  .GroupBy(prop => ((int)Math.Ceiling(prop.ChromXs.RT.Value / _rtbucket), (int)Math.Ceiling(prop.PrecursorMz / _mzbucket)))
                                  .ToDictionary(group => group.Key, group => group.ToList());
 
+            var counter = 0;
             foreach (var analysisFile in analysisFiles) {
+                counter++;
+                ReportProgress.Show(0.0, 20.0, counter, analysisFiles.Count - 1, reportAction);
+
                 if (analysisFile.AnalysisFileId == referenceFile.AnalysisFileId)
                     continue;
                 var target = accessor.GetMSScanProperties(analysisFile);
@@ -109,8 +119,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
         public List<AlignmentSpotProperty> JoinAll(List<IMSScanProperty> master, IReadOnlyList<AnalysisFileBean> analysisFiles, DataAccessor accessor) {
             master = master.OrderBy(prop => (prop.PrecursorMz, prop.ChromXs.RT.Value)).ToList();
             var result = GetSpots(master, analysisFiles);
-            
+            var counter = 0;
             foreach (var analysisFile in analysisFiles) {
+                counter++;
+                ReportProgress.Show(20.0, 20.0, counter, analysisFiles.Count - 1, reportAction);
                 var chromatogram = accessor.GetMSScanProperties(analysisFile);
                 AlignPeaksToMaster(result, master, chromatogram, analysisFile.AnalysisFileId);
             }

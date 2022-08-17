@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Search;
@@ -17,10 +18,11 @@ using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    internal sealed class LcmsAlignmentViewModel : AlignmentFileViewModel, IAlignmentResultViewModel
+    internal sealed class LcmsAlignmentViewModel : ViewModelBase, IAlignmentResultViewModel
     {
         private readonly LcmsAlignmentModel _model;
         private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
@@ -34,8 +36,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
             IMessageBroker broker,
-            FocusControlManager focusControlManager)
-            : base(model) {
+            FocusControlManager focusControlManager) {
             if (focusControlManager is null) {
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
@@ -89,12 +90,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .AddTo(Disposables);
 
             FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
+            
+            PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
+            CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
         public PeakFilterViewModel PeakFilterViewModel { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public ICollectionView Ms1Spots { get; }
-        public override ICollectionView PeakSpotsView => Ms1Spots;
+        public ICollectionView PeakSpotsView => Ms1Spots;
 
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 
@@ -106,7 +111,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public LcmsProteomicsAlignmentTableViewModel ProteomicsAlignmentTableViewModel { get; }
         public AlignedChromatogramModificationViewModelLegacy AlignedChromatogramModificationViewModel { get; }
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
-
+        public PeakInformationViewModel PeakInformationViewModel { get; }
+        public CompoundDetailViewModel CompoundDetailViewModel { get; }
+        public ViewModelBase[] PeakDetailViewModels { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
 
         private void SearchCompound() {
@@ -120,7 +127,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
-        public DelegateCommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
+        public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
         private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {

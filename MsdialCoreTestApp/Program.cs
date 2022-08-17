@@ -1,5 +1,6 @@
 ﻿using CompMs.App.MsdialConsole.Casmi;
 using CompMs.App.MsdialConsole.DataObjTest;
+using CompMs.App.MsdialConsole.Export;
 using CompMs.App.MsdialConsole.MspCuration;
 using CompMs.App.MsdialConsole.Parser;
 using CompMs.App.MsdialConsole.Process;
@@ -82,7 +83,7 @@ namespace CompMs.App.MsdialConsole {
             //    , "-p"
             //};
 
-            MainProcess.Run(args);
+            // MainProcess.Run(args);
 
             var lcmsfile = @"D:\msdial_test\Msdial\out\wine\0717_kinetex_wine_50_4min_pos_IDA_A1.abf";
             var dimsfile = @"D:\msdial_test\Msdial\out\MSMSALL_Positive\20200717_Posi_MSMSALL_Liver1.abf";
@@ -126,10 +127,63 @@ namespace CompMs.App.MsdialConsole {
             //         .Select(lipid => lipid.GenerateSpectrum(spectrumGenerator, adduct))
             //         .Cast<Common.Components.MoleculeMsReference>());
 
+
+
+
+            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG\2022_08_03_14_10_58.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\NEG_MSP");
+
+            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS\2022_08_03_14_17_26.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\agc_compounds.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS_MSP");
+
+            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS\2022_08_03_14_54_00.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP");
+
+            //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG\2022_08_03_14_31_34.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\NEG_MSP");
+
+            //MspCurator.MergeMSPs(
+            //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\POS",
+            //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\POS_Private_MSP_list.txt",
+            //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\MSMS_Private_Pos_VS17.msp");
+
+            //MspCurator.MergeMSPs(
+            //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\POS",
+            //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\POS_Public_MSP_exp_list.txt",
+            //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\MSMS_Public_EXP_Pos_VS17.msp");
+
+            //MspCurator.MergeMSPs(
+            //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\POS",
+            //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\POS_Public_MSP_exp_bio_insilico_list.txt",
+            //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\MSMS_Public_ExpBioInsilico_Pos_VS17.msp");
+
+            //MspCurator.MergeMSPs(
+            //   @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\NEG",
+            //   @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\NEG_Private_MSP_list.txt",
+            //   @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\MSMS_Private_NEG_VS17.msp");
+
+            //MspCurator.MergeMSPs(
+            //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\NEG",
+            //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\NEG_Public_MSP_exp_list.txt",
+            //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\MSMS_Public_EXP_NEG_VS17.msp");
+
+            //MspCurator.MergeMSPs(
+            //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\NEG",
+            //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\NEG_Public_MSP_exp_bio_insilico_list.txt",
+            //    @"E:\7_MassSpecCuration\Distributed MSPs\20220715_msp_renew\msp\MSMS_Public_ExpBioInsilico_NEG_VS17.msp");
+
 #if DEBUG
             //var projectPath = @"C:\Users\lab\Desktop\dropmet\20140809_MSDIAL_DemoFiles_Swath\neg\hoge20220427.mtd3";
             //var output = new MemoryStream();
-           // using var output = File.Open(@"C:\Users\lab\Desktop\dropmet\output.tsv", FileMode.Create);
+            // using var output = File.Open(@"C:\Users\lab\Desktop\dropmet\output.tsv", FileMode.Create);
             // var tester = new Export.ExporterTest();
             // var curator = new PostCurator();
             //var curator = (PostCurator)null; // new PostCurator();
@@ -161,6 +215,15 @@ namespace CompMs.App.MsdialConsole {
             //MspCurator.WriteRtMzInChIKey(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Neg-VS15_PfppRT.msp");
             //MspCurator.AddRT2MspQueries(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Neg-VS15.msp", @"E:\6_Projects\2_metabolome_protocol\PFPP_NEG.txt");
             //MspCurator.AddRT2MspQueries(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Pos-VS15.msp", @"E:\6_Projects\2_metabolome_protocol\PFPP_POS.txt");
+
+            RnaSeqProcess.Convert2Csv4ViolinPlot(
+                @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\metabolome.csv",
+                @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\metabolome_violin.csv");
+
+            RnaSeqProcess.Convert2Csv4ViolinPlot(
+                @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\transcriptome.csv",
+                @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\transcriptome_violin.csv");
+
         }
 
         private static void DumpN(string file, int n) {

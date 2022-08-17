@@ -152,17 +152,6 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         }
         private string _RMDMaximum;
 
-        //public string BlankRatioMinimum {
-        //    get => _blankRatioMinimum;
-        //    set
-        //    {
-        //        if (SetProperty(ref _blankRatioMinimum, value)) {
-        //            model.BlankRatioMinimumZZZ = double.Parse(value);
-        //        }
-        //    }
-        //}
-        //private string _blankRatioMinimum;
-
         public DelegateCommand MscleanrFilterCommand => mscleanrFilterCommand ?? (mscleanrFilterCommand = new DelegateCommand(model.RunMscleanrFilter, () => !HasValidationErrors));//, Model.CanNormalize));
         private DelegateCommand mscleanrFilterCommand;
 

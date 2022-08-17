@@ -10,19 +10,18 @@ using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Linq;
 using System.Reactive.Linq;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
-    internal sealed class LcimmsAnalysisViewModel : AnalysisFileViewModel, IAnalysisResultViewModel
+    internal sealed class LcimmsAnalysisViewModel : ViewModelBase, IAnalysisResultViewModel
     {
         public LcimmsAnalysisViewModel(
             LcimmsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            FocusControlManager focusControlManager)
-            : base(model) {
+            FocusControlManager focusControlManager) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -99,8 +98,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         public ReactiveCommand SearchCompoundCommand { get; }
 
-        public DelegateCommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
-        private DelegateCommand showIonTableCommand;
+        public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
+        private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {
             // peakSpotTableService.Show(PeakTableViewModel);

@@ -11,7 +11,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Alignment
 {
     public class LcimmsAlignmentRefiner : LcmsAlignmentRefiner
     {
-        public LcimmsAlignmentRefiner(MsdialLcImMsParameter parameter, IupacDatabase iupac, IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(parameter, iupac, evaluator) { }
+        public LcimmsAlignmentRefiner(MsdialLcImMsParameter parameter, IupacDatabase iupac, IMatchResultEvaluator<MsScanMatchResult> evaluator) : base(parameter, iupac, evaluator, null) { }
 
         protected override List<int> SetAlignmentID(List<AlignmentSpotProperty> alignments) {
             alignments.Sort((x, y) => x.MassCenter.CompareTo(y.MassCenter));

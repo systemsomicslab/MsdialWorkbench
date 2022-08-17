@@ -60,8 +60,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             float endMass = Math.Min(mzRange.Max, _parameter.MassRangeEnd);
             float massStep = _parameter.MassSliceWidth;
 
-            var accSpectra = new RawSpectra(accSpectrumProvider.LoadMsSpectrums(), _parameter.IonMode, _parameter.AcquisitionType);
-            var rawSpectra = new RawSpectra(spectrumProvider.LoadMsSpectrums(), _parameter.IonMode, _parameter.AcquisitionType);
+            var accSpectra = new RawSpectra(accSpectrumProvider, _parameter.IonMode, _parameter.AcquisitionType);
+            var rawSpectra = new RawSpectra(spectrumProvider, _parameter.IonMode, _parameter.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(_parameter.RetentionTimeBegin, _parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             var peakDetector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
             for (var focusedMass = startMass; focusedMass < endMass; ReportProgress.Show(InitialProgress, ProgressMax, focusedMass += massStep, endMass, reportAction)) {
@@ -92,8 +92,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             }
 
             var targetMasses = _peakSpottingCore.GetFocusedMassList(startMass, endMass, massStep, _parameter.MassRangeBegin, _parameter.MassRangeEnd);
-            var rawSpectra = new RawSpectra(spectrumProvider.LoadMsSpectrums(), _parameter.IonMode, _parameter.AcquisitionType);
-            var accSpectra = new RawSpectra(accSpectrumProvider.LoadMsSpectrums(), _parameter.IonMode, _parameter.AcquisitionType);
+            var rawSpectra = new RawSpectra(spectrumProvider, _parameter.IonMode, _parameter.AcquisitionType);
+            var accSpectra = new RawSpectra(accSpectrumProvider, _parameter.IonMode, _parameter.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(_parameter.RetentionTimeBegin, _parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             var peakDetector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
             var syncObj = new object();
@@ -118,8 +118,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
         }
 
         private List<ChromatogramPeakFeature> Execute4DFeatureDetectionTargetMode(IDataProvider spectrumProvider, IDataProvider accSpectrumProvider) {
-            var rawSpectra = new RawSpectra(spectrumProvider.LoadMsSpectrums(), _parameter.IonMode, _parameter.AcquisitionType);
-            var accSpectra = new RawSpectra(accSpectrumProvider.LoadMsSpectrums(), _parameter.IonMode, _parameter.AcquisitionType);
+            var rawSpectra = new RawSpectra(spectrumProvider, _parameter.IonMode, _parameter.AcquisitionType);
+            var accSpectra = new RawSpectra(accSpectrumProvider, _parameter.IonMode, _parameter.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(_parameter.RetentionTimeBegin, _parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             var peakDetector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
             var chromPeakFeaturesList = _parameter.CompoundListInTargetMode
@@ -134,8 +134,8 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             CancellationToken token, Action<int> reportAction) {
             var targetedScans = _parameter.CompoundListInTargetMode;
             if (targetedScans.IsEmptyOrNull()) return null;
-            var rawSpectra = new RawSpectra(spectrumProvider.LoadMsSpectrums(), _parameter.IonMode, _parameter.AcquisitionType);
-            var accSpectra = new RawSpectra(accSpectrumProvider.LoadMsSpectrums(), _parameter.IonMode, _parameter.AcquisitionType);
+            var rawSpectra = new RawSpectra(spectrumProvider, _parameter.IonMode, _parameter.AcquisitionType);
+            var accSpectra = new RawSpectra(accSpectrumProvider, _parameter.IonMode, _parameter.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(_parameter.RetentionTimeBegin, _parameter.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             var peakDetector = new PeakDetection(_parameter.MinimumDatapoints, _parameter.MinimumAmplitude);
             var chromPeakFeaturesList = targetedScans
@@ -155,7 +155,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             if (chromatogram.IsEmpty) return null;
             var chromPeakFeatures = _peakSpottingCore.GetChromatogramPeakFeatures(chromatogram, peakDetector);
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
-            _peakSpottingCore.SetRawDataAccessID2ChromatogramPeakFeaturesFor4DChromData(chromPeakFeatures, accSpectrumProvider.LoadMsSpectrums(), chromatogram.Peaks);
+            _peakSpottingCore.SetRawDataAccessID2ChromatogramPeakFeaturesFor4DChromData(chromPeakFeatures, accSpectrumProvider, chromatogram.Peaks);
 
             //filtering out noise peaks considering smoothing effects and baseline effects
             var backgroundSubtracted = _peakSpottingCore.GetBackgroundSubtractedPeaks(chromPeakFeatures, chromatogram.Peaks);

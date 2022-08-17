@@ -78,12 +78,11 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             IReadOnlyList<MSDecResult> msdecResults,
             IDataProvider provider,
             Action<double> reportAction) {
-            var spectrums = provider.LoadMsSpectrums();
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
                 var msdecResult = msdecResults[i];
                 if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
-                    RunAnnotationCore(chromPeakFeature, msdecResult, spectrums);
+                    RunAnnotationCore(chromPeakFeature, msdecResult, provider);
                 }
                 reportAction?.Invoke((double)(i + 1) / chromPeakFeatures.Count);
             };
@@ -98,7 +97,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Action<double> reportAction) {
             var syncObj = new object();
             var counter = 0;
-            var spectrums = provider.LoadMsSpectrums();
             var totalCount = chromPeakFeatures.Count(n => n.PeakCharacter.IsotopeWeightNumber == 0);
             Enumerable.Range(0, chromPeakFeatures.Count)
                 .AsParallel()
@@ -108,7 +106,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     var chromPeakFeature = chromPeakFeatures[i];
                     var msdecResult = msdecResults[i];
                     if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
-                        RunAnnotationCore(chromPeakFeature, msdecResult, spectrums);
+                        RunAnnotationCore(chromPeakFeature, msdecResult, provider);
                         lock (syncObj) {
                             counter++;
                             reportAction?.Invoke((double)counter / (double)totalCount);
@@ -166,13 +164,13 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private void RunAnnotationCore(
             ChromatogramPeakFeature chromPeakFeature,
             MSDecResult msdecResult,
-            IReadOnlyList<RawSpectrum> msSpectrums) {
+            IDataProvider provider) {
 
             foreach (var containerPair in containerPairs) {
                 var query = containerPair.Factory.Create(
                     chromPeakFeature,
                     msdecResult,
-                    msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
+                    provider.LoadMsSpectrumFromIndex(chromPeakFeature.MS1RawSpectrumIdTop).Spectrum,
                     chromPeakFeature.PeakCharacter,
                     containerPair.Container.Parameter);
                 SetAnnotationResult(chromPeakFeature, query, containerPair.Container);

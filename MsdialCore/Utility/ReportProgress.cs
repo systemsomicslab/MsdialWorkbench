@@ -25,6 +25,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         public static void Show(double initial, double totalMax, double current, double localMax, Action<int> reportAction) {
+            if (localMax == 0) return;
             var progress = initial + current / localMax * totalMax;
             reportAction?.Invoke(((int)progress));
         }

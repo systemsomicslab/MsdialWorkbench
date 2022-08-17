@@ -30,29 +30,29 @@ namespace CompMs.App.Msdial.View.Imms
                 h => TabControl_PairwisePlotViewer.SelectionChanged += h,
                 h => TabControl_PairwisePlotViewer.SelectionChanged -= h);
 
-            var peakPlotSelect = tabChange
-                .Where(e => e.AddedItems[0] == TabItem_RtMzPairwisePlotPeakView)
-                .Select(_ => Unit.Default);
-            Observable.FromEvent<DependencyPropertyChangedEventHandler, DependencyPropertyChangedEventArgs>(
-                    h => (s, e) => h(e),
-                    h => TabItem_RtMzPairwisePlotPeakView.DataContextChanged += h,
-                    h => TabItem_RtMzPairwisePlotPeakView.DataContextChanged -= h)
-                .Do(_ => TabItem_RtMzPairwisePlotPeakView.IsSelected = true)
-                .Select(_ => Unit.Default)
-                .Merge(peakPlotSelect)
-                .Subscribe(_ => OnAnalysisViewSelected());
+            // var peakPlotSelect = tabChange
+            //     .Where(e => e.AddedItems[0] == TabItem_DtMzPairwisePlotPeakView)
+            //     .Select(_ => Unit.Default);
+            // Observable.FromEvent<DependencyPropertyChangedEventHandler, DependencyPropertyChangedEventArgs>(
+            //         h => (s, e) => h(e),
+            //         h => TabItem_DtMzPairwisePlotPeakView.DataContextChanged += h,
+            //         h => TabItem_DtMzPairwisePlotPeakView.DataContextChanged -= h)
+            //     .Do(_ => TabItem_DtMzPairwisePlotPeakView.IsSelected = true)
+            //     .Select(_ => Unit.Default)
+            //     .Merge(peakPlotSelect)
+            //     .Subscribe(_ => OnAnalysisViewSelected());
 
-            var alignmentPlotSelect = tabChange
-                .Where(e => e.AddedItems[0] == TabItem_RtMzPairwisePlotAlignmentView)
-                .Select(_ => Unit.Default);
-            Observable.FromEvent<DependencyPropertyChangedEventHandler, DependencyPropertyChangedEventArgs>(
-                    h => (s, e) => h(e),
-                    h => TabItem_RtMzPairwisePlotAlignmentView.DataContextChanged += h,
-                    h => TabItem_RtMzPairwisePlotAlignmentView.DataContextChanged -= h)
-                .Do(_ => TabItem_RtMzPairwisePlotAlignmentView.IsSelected = true)
-                .Select(_ => Unit.Default)
-                .Merge(alignmentPlotSelect)
-                .Subscribe(_ => OnAlignmentViewSelected());
+            // var alignmentPlotSelect = tabChange
+            //     .Where(e => e.AddedItems[0] == TabItem_DtMzPairwisePlotAlignmentView)
+            //     .Select(_ => Unit.Default);
+            // Observable.FromEvent<DependencyPropertyChangedEventHandler, DependencyPropertyChangedEventArgs>(
+            //         h => (s, e) => h(e),
+            //         h => TabItem_DtMzPairwisePlotAlignmentView.DataContextChanged += h,
+            //         h => TabItem_DtMzPairwisePlotAlignmentView.DataContextChanged -= h)
+            //     .Do(_ => TabItem_DtMzPairwisePlotAlignmentView.IsSelected = true)
+            //     .Select(_ => Unit.Default)
+            //     .Merge(alignmentPlotSelect)
+            //     .Subscribe(_ => OnAlignmentViewSelected());
 
             var mouseRDown = Observable.FromEvent<MouseButtonEventHandler, MouseButtonEventArgs>(
                 h => (s, e) => h(e),

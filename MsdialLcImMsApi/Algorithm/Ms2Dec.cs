@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Database;
 using CompMs.Common.Extension;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Utility;
@@ -22,7 +23,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             this.ProgressMax = ProgressMax;
         }
 
-        public List<MSDecResult> GetMS2DecResults(IReadOnlyList<RawSpectrum> spectrumList, List<ChromatogramPeakFeature> chromPeakFeatures,
+        public List<MSDecResult> GetMS2DecResults(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialLcImMsParameter param, ChromatogramPeaksDataSummaryDto summary, IupacDatabase iupac,
             Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
 
@@ -33,7 +34,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                 rtDecResult.ScanID = rtChromPeak.MasterPeakID;
                 msdecResults.Add(rtDecResult);
                 foreach (var dtChromPeak in rtChromPeak.DriftChromFeatures.OrEmptyIfNull()) {
-                    var result = GetMS2DecResult(spectrumList, rtChromPeak, dtChromPeak, param, summary, iupac, targetCE);
+                    var result = GetMS2DecResult(provider, rtChromPeak, dtChromPeak, param, summary, iupac, targetCE);
                     result.ScanID = dtChromPeak.MasterPeakID;
                     msdecResults.Add(result);
                 }
@@ -43,7 +44,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             return msdecResults;
         }
 
-        public MSDecResult GetMS2DecResult(IReadOnlyList<RawSpectrum> spectrumList, ChromatogramPeakFeature rtChromPeak, ChromatogramPeakFeature dtChromPeak,
+        public MSDecResult GetMS2DecResult(IDataProvider provider, ChromatogramPeakFeature rtChromPeak, ChromatogramPeakFeature dtChromPeak,
             MsdialLcImMsParameter param, ChromatogramPeaksDataSummaryDto summary, IupacDatabase iupac, double targetCE) {
             if (dtChromPeak.MS2RawSpectrumID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(dtChromPeak);
 
@@ -54,11 +55,15 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
 
             List<SpectrumPeak> cSpectrum = null;
             if (param.IsAccumulateMS2Spectra) {
-                cSpectrum = DataAccess.GetAccumulatedMs2Spectra(spectrumList, dtChromPeak, rtChromPeak, param);
+                cSpectrum = DataAccess.GetAccumulatedMs2Spectra(provider, dtChromPeak, rtChromPeak, param);
             }
             else {
-                cSpectrum = DataAccess.GetCentroidMassSpectra(spectrumList, param.MS2DataType, targetSpecID,
-                    param.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
+                if (targetSpecID < 0) {
+                    cSpectrum = new List<SpectrumPeak>();
+                }
+                else {
+                    cSpectrum = DataAccess.GetCentroidMassSpectra(provider.LoadMsSpectrumFromIndex(targetSpecID), param.MS2DataType, param.AmplitudeCutoff, param.Ms2MassRangeBegin, param.Ms2MassRangeEnd);
+                }
             }
             if (cSpectrum.IsEmptyOrNull()) return MSDecObjectHandler.GetDefaultMSDecResult(dtChromPeak);
 
@@ -81,7 +86,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             //    return MSDecObjectHandler.GetMSDecResultByRawSpectrum(dtChromPeak, curatedSpectra);
             //}
 
-            var ms2obj = spectrumList[dtChromPeak.MS2RawSpectrumID];
+            var ms2obj = provider.LoadMsSpectrumFromIndex(dtChromPeak.MS2RawSpectrumID);
             var isDiaPasef = Math.Max(ms2obj.Precursor.TimeEnd, ms2obj.Precursor.TimeBegin) > 0 ? true : false;
 
             if (isDiaPasef) {
@@ -101,7 +106,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             var minDT = (float)(dtChromPeak.ChromXsTop.Value - peakWidth * 1.5F);
             var maxDT = (float)(dtChromPeak.ChromXsTop.Value + peakWidth * 1.5F);
 
-            var ms2ChromPeaksList = DataAccess.GetAccumulatedMs2PeakListList(spectrumList, rtChromPeak, curatedSpectra, minDT, maxDT, param.IonMode);
+            var ms2ChromPeaksList = DataAccess.GetAccumulatedMs2PeakListList(provider, rtChromPeak, curatedSpectra, minDT, maxDT, param.IonMode);
             var smoothedMs2ChromPeaksList = new List<List<ChromatogramPeak>>();
 
             foreach (var chromPeaks in ms2ChromPeaksList) {
