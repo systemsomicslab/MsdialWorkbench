@@ -229,7 +229,7 @@ namespace CompMs.MsdialCore.Parser {
                 var chromXs = new ChromXs(BitConverter.ToDouble(buffer, peakStepSize * j + 4));
                 var mass = BitConverter.ToSingle(buffer, peakStepSize * j + 12);
                 var intensity = BitConverter.ToSingle(buffer, peakStepSize * j + 20);
-                result.ModelPeakChromatogram.Add(new ChromatogramPeak(id, result.ModelPeakChromatogram.Count, mass, intensity, chromXs));
+                result.ModelPeakChromatogram.Add(new ChromatogramPeak(id, mass, intensity, chromXs));
             }
 
             // reading model masses

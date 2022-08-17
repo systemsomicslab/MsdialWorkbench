@@ -69,7 +69,7 @@ namespace CompMs.MsdialCore.Parser {
         private static void SaveBasePeaks(FileStream fs, MSDecResult msdecResult) {
             for (int i = 0; i < msdecResult.ModelPeakChromatogram.Count; i++) {
                 var peak = msdecResult.ModelPeakChromatogram[i];
-                fs.Write(BitConverter.GetBytes(peak.Id), 0, ByteConvertion.ToByteCount(peak.Id));
+                fs.Write(BitConverter.GetBytes(peak.ID), 0, ByteConvertion.ToByteCount(peak.ID));
                 fs.Write(BitConverter.GetBytes(peak.ChromXs.Value), 0, ByteConvertion.ToByteCount(peak.ChromXs.Value));
                 fs.Write(BitConverter.GetBytes(peak.Mass), 0, ByteConvertion.ToByteCount(peak.Mass));
                 fs.Write(BitConverter.GetBytes(peak.Intensity), 0, ByteConvertion.ToByteCount(peak.Intensity));

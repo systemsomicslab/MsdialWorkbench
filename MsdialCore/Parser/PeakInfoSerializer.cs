@@ -59,7 +59,7 @@ namespace CompMs.MsdialCore.Parser
             for (int i = 0; i < length; i++) {
                 var chromXs = new ChromXs(BitConverter.ToSingle(buf, i * 8), ChromXType);
                 var intensity = BitConverter.ToSingle(buf, i * 8 + 4);
-                peaks.Add(new ChromatogramPeak(i, peaks.Count, -1, intensity, chromXs));
+                peaks.Add(new ChromatogramPeak(i, -1, intensity, chromXs));
             }
 
             return peaks;
