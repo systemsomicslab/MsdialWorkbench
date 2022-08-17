@@ -8,6 +8,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 {
     internal sealed class PeptideModel {
         public object AnnotatedSpot { get; }
+        public string AdductType { get; }
         //public string PeptideSeq => _peptideMsResult.Peptide.Sequence;
         public string PeptideSeq { get; }
         public string DatabaseOrigin { get; }
@@ -29,7 +30,9 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public PeptideModel(PeptideMsResult peptideMsResult, IReadOnlyList<ChromatogramPeakFeatureModel> spots)
         {
-            AnnotatedSpot = spots.FirstOrDefault(spot => spot.InnerModel.MasterPeakID == peptideMsResult.ChromatogramPeakFeature.MasterPeakID);
+            var peak = spots.FirstOrDefault(spot => spot.InnerModel.MasterPeakID == peptideMsResult.ChromatogramPeakFeature.MasterPeakID);
+            AnnotatedSpot = peak;
+            AdductType = peak.AdductIonName;
             PeptideSeq = peptideMsResult.Peptide.Sequence;
             DatabaseOrigin = peptideMsResult.Peptide.DatabaseOrigin;
             DatabaseOriginID = peptideMsResult.Peptide.DatabaseOriginID;
@@ -47,7 +50,9 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public PeptideModel(PeptideMsResult peptideMsResult, IReadOnlyList<AlignmentSpotPropertyModel> spots)
         {
-            AnnotatedSpot = spots.FirstOrDefault(spot => spot.innerModel.MasterAlignmentID == peptideMsResult.AlignmentSpotProperty.MasterAlignmentID);
+            var peak = spots.FirstOrDefault(spot => spot.innerModel.MasterAlignmentID == peptideMsResult.AlignmentSpotProperty.MasterAlignmentID);
+            AnnotatedSpot = peak;
+            AdductType = peak.AdductIonName;
             PeptideSeq = peptideMsResult.Peptide.Sequence;
             DatabaseOrigin = peptideMsResult.Peptide.DatabaseOrigin;
             DatabaseOriginID = peptideMsResult.Peptide.DatabaseOriginID;
@@ -62,6 +67,5 @@ namespace CompMs.App.Msdial.Model.DataObj
             SamePeptideNumberInSearchedProteins = peptideMsResult.Peptide.SamePeptideNumberInSearchedProteins;
             CountModifiedAminoAcids = peptideMsResult.Peptide.CountModifiedAminoAcids();
         }
-
     }
 }
