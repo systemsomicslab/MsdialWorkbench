@@ -566,7 +566,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
             var mass = feature.Mass;
             var minDiff = int.MaxValue;
-            var ms1SpectrumList = provider.LoadMsSpectrums();
+            var msSpectrumList = provider.LoadMsSpectrums();
             var ms2SpectrumList = provider.LoadMsNSpectrums(level:2);
             var ce2MinDiff = new Dictionary<double, double>(); // ce to diff
 
@@ -580,9 +580,9 @@ namespace CompMs.MsdialCore.Algorithm {
             }
             #endregion
 
-            var ms1Begin = SearchCollection.LowerBound(ms2SpectrumList, ms1SpectrumList[scanBegin], (a, b) => a.ScanNumber.CompareTo(b.ScanNumber));
-            var ms1End = SearchCollection.UpperBound(ms2SpectrumList, ms1SpectrumList[scanEnd], (a, b) => a.ScanNumber.CompareTo(b.ScanNumber));
-            var ms1TopScanNumber = ms1SpectrumList[scanTop].ScanNumber;
+            var ms1Begin = SearchCollection.LowerBound(ms2SpectrumList, provider.LoadMsSpectrumFromIndex(scanBegin), (a, b) => a.Index.CompareTo(b.Index));
+            var ms1End = SearchCollection.UpperBound(ms2SpectrumList, provider.LoadMsSpectrumFromIndex(scanEnd), (a, b) => a.Index.CompareTo(b.Index));
+            var ms1TopIndex = provider.LoadMsSpectrumFromIndex(scanTop).Index;
             for (int i = ms1Begin; i < ms1End; i++) {
                 var spec = ms2SpectrumList[i];
                 if (spec.MsLevel <= 1) continue;
@@ -592,18 +592,18 @@ namespace CompMs.MsdialCore.Algorithm {
 
                         if (_parameter.AcquisitionType == AcquisitionType.AIF) {
                             var ceRounded = Math.Round(ce, 2); // must be rounded by 2 decimal points
-                            if (!ce2MinDiff.ContainsKey(ceRounded) || ce2MinDiff[ceRounded] > Math.Abs(spec.ScanNumber - ms1TopScanNumber)) {
-                                ce2MinDiff[ceRounded] = Math.Abs(spec.ScanNumber - ms1TopScanNumber);
-                                feature.MS2RawSpectrumID2CE[spec.ScanNumber] = ce;
+                            if (!ce2MinDiff.ContainsKey(ceRounded) || ce2MinDiff[ceRounded] > Math.Abs(spec.Index - ms1TopIndex)) {
+                                ce2MinDiff[ceRounded] = Math.Abs(spec.Index - ms1TopIndex);
+                                feature.MS2RawSpectrumID2CE[spec.Index] = ce;
                             }
                         }
                         else {
-                            feature.MS2RawSpectrumID2CE[spec.ScanNumber] = ce;
+                            feature.MS2RawSpectrumID2CE[spec.Index] = ce;
                         }
 
-                        if (minDiff > Math.Abs(spec.ScanNumber - ms1TopScanNumber)) {
-                            minDiff = Math.Abs(spec.ScanNumber - ms1TopScanNumber);
-                            feature.MS2RawSpectrumID = spec.ScanNumber;
+                        if (minDiff > Math.Abs(spec.Index - ms1TopIndex)) {
+                            minDiff = Math.Abs(spec.Index - ms1TopIndex);
+                            feature.MS2RawSpectrumID = spec.Index;
                         }
                     }
                 }

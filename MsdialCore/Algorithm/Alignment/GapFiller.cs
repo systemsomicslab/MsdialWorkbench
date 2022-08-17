@@ -72,8 +72,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
         protected abstract List<ChromatogramPeak> GetPeaks(Ms1Spectra ms1Spectra, IReadOnlyList<RawSpectrum> spectrum, ChromXs center, double peakWidth, int fileID, SmoothingMethod smoothingMethod, int smoothingLevel);
 
-        protected virtual (List<ChromatogramPeak>, int) GetPeakTopCandidates(List<ChromatogramPeak> sPeaklist, double centralAx, double axTol) {
-            var candidates = new List<ChromatogramPeak>();
+        protected virtual (List<(ChromatogramPeak, int)>, int) GetPeakTopCandidates(List<ChromatogramPeak> sPeaklist, double centralAx, double axTol) {
+            var candidates = new List<(ChromatogramPeak, int)>();
             var minId = -1;
             var minDiff = double.MaxValue;
 
@@ -85,7 +85,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
 
                 if (   sPeaklist[i-2].Intensity <= sPeaklist[i-1].Intensity && sPeaklist[i-1].Intensity <= sPeaklist[i].Intensity && sPeaklist[i].Intensity > sPeaklist[i+1].Intensity
                     || sPeaklist[i-1].Intensity < sPeaklist[i].Intensity && sPeaklist[i].Intensity >= sPeaklist[i+1].Intensity && sPeaklist[i+1].Intensity >= sPeaklist[i+2].Intensity) {
-                    candidates.Add(sPeaklist[i]);
+                    candidates.Add((sPeaklist[i], i));
                 }
 
                 var diff = Math.Abs(sPeaklist[i].ChromXs.Value - centralAx);
@@ -100,7 +100,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             return (candidates, minId);
         }
 
-        protected virtual (int, int, int) GetPeakRange(List<ChromatogramPeak> candidates, List<ChromatogramPeak> sPeaklist, int minId, double centralAx, bool isForceInsert) {
+        protected virtual (int, int, int) GetPeakRange(List<(ChromatogramPeak Peak, int Index)> candidates, List<ChromatogramPeak> sPeaklist, int minId, double centralAx, bool isForceInsert) {
             int id, leftId, rightId;
 
             if (candidates.Count == 0) {
@@ -123,7 +123,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 }
             }
             else {
-                id = candidates.Argmin(cand => Math.Abs(cand.ChromXs.Value - centralAx)).ID;
+                id = candidates.Argmin(cand => Math.Abs(cand.Peak.ChromXs.Value - centralAx)).Index;
 
                 var margin = 2;
 

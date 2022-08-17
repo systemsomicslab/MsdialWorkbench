@@ -183,8 +183,8 @@ namespace CompMs.Common.Algorithm.CowAlignment {
 
                     //Set
                     var peakInformation = new ChromatogramPeak(
-                        counter,
-                        (1 - fraction) * sampleChromatogram[positionFlont].ID + fraction * sampleChromatogram[positionEnd].ID,
+                        referenceChromatogram[counter].ID,
+                        (1 - fraction) * sampleChromatogram[positionFlont].Mass + fraction * sampleChromatogram[positionEnd].Mass,
                         (1 - fraction) * sampleChromatogram[positionFlont].Intensity + fraction * sampleChromatogram[positionEnd].Intensity,
                         referenceChromatogram[counter].ChromXs);
                     alignedChromatogram.Add(peakInformation);
@@ -204,7 +204,7 @@ namespace CompMs.Common.Algorithm.CowAlignment {
                     if (positionEnd > sampleDatapointNumber - 1) positionEnd = sampleDatapointNumber - 1;
 
                     var peakInformation = new ChromatogramPeak(
-                        counter,
+                        referenceChromatogram[counter].ID,
                         sampleChromatogram[positionEnd].Mass,
                         sampleChromatogram[positionEnd].Intensity,
                         referenceChromatogram[counter].ChromXs);
