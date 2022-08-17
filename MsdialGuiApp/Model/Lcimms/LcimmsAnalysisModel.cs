@@ -192,7 +192,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Observable.Return(spectraExporter),
                 Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
-            var surveyScanSpectrum = new SurveyScanSpectrum(target, t => Observable.FromAsync(token => LoadMs1SpectrumAsync(t, token)))
+            var surveyScanSpectrum = new SurveyScanSpectrum(target, t => Observable.FromAsync(token => LoadMsSpectrumAsync(t, token)))
                 .AddTo(Disposables);
             SurveyScanModel = new SurveyScanModel(
                 surveyScanSpectrum,
@@ -294,16 +294,16 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public EicLoader EicLoader { get; } // TODO
 
-        private Task<List<SpectrumPeakWrapper>> LoadMs1SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        private Task<List<SpectrumPeakWrapper>> LoadMsSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             if (target is null || target.MS1RawSpectrumIdTop < 0) {
                 return Task.FromResult(new List<SpectrumPeakWrapper>(0));
             }
 
             return Task.Run(async () =>
             {
-                var ms1Spectra = await _spectrumProvider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
+                var msSpectra = await _spectrumProvider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
                 token.ThrowIfCancellationRequested();
-                var spectra = DataAccess.GetCentroidMassSpectra(ms1Spectra[target.MS1RawSpectrumIdTop], _parameter.MSDataType, 0, float.MinValue, float.MaxValue);
+                var spectra = DataAccess.GetCentroidMassSpectra(msSpectra[target.MS1RawSpectrumIdTop], _parameter.MSDataType, 0, float.MinValue, float.MaxValue);
                 token.ThrowIfCancellationRequested();
                 return spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
             }, token);

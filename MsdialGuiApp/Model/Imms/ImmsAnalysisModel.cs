@@ -153,7 +153,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 Observable.Return(spectraExporter),
                 Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
-            var surveyScanSpectrum = new SurveyScanSpectrum(Target, target => Observable.FromAsync(token => LoadMs1SpectrumAsync(target, token)))
+            var surveyScanSpectrum = new SurveyScanSpectrum(Target, target => Observable.FromAsync(token => LoadMsSpectrumAsync(target, token)))
                 .AddTo(Disposables);
             SurveyScanModel = new SurveyScanModel(
                 surveyScanSpectrum,
@@ -218,16 +218,16 @@ namespace CompMs.App.Msdial.Model.Imms
         public double MassMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d;
         public double MassMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d;
 
-        private Task<List<SpectrumPeakWrapper>> LoadMs1SpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        private Task<List<SpectrumPeakWrapper>> LoadMsSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             if (target is null || target.MS1RawSpectrumIdTop < 0) {
                 return Task.FromResult(new List<SpectrumPeakWrapper>(0));
             }
 
             return Task.Run(async () =>
             {
-                var ms1Spectra = await _provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
+                var msSpectra = await _provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
                 token.ThrowIfCancellationRequested();
-                var spectra = DataAccess.GetCentroidMassSpectra(ms1Spectra[target.MS1RawSpectrumIdTop], _parameter.MSDataType, 0, float.MinValue, float.MaxValue);
+                var spectra = DataAccess.GetCentroidMassSpectra(msSpectra[target.MS1RawSpectrumIdTop], _parameter.MSDataType, 0, float.MinValue, float.MaxValue);
                 token.ThrowIfCancellationRequested();
                 return spectra.Select(peak => new SpectrumPeakWrapper(peak)).ToList();
             }, token);
