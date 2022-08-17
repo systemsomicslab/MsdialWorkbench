@@ -319,7 +319,7 @@ namespace CompMs.MsdialCore.Utility {
                     }
                     else if (massSpectra[j].Mz >= quantMass + sliceWidth) break;
                 }
-                peaklist.Add(new ChromatogramPeak(spectrum.ScanNumber, maxMass, sum, new RetentionTime(spectrum.ScanStartTime)));
+                peaklist.Add(new ChromatogramPeak(spectrum.Index, maxMass, sum, new RetentionTime(spectrum.ScanStartTime)));
             }
 
             var minLeftIntensity = double.MaxValue;
@@ -391,7 +391,7 @@ namespace CompMs.MsdialCore.Utility {
                     }
                 }
                 else {
-                    driftBinToChromPeak[driftBin] = new ChromatogramPeak(spectrum.OriginalIndex, basepeakMz, intensity, new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec));
+                    driftBinToChromPeak[driftBin] = new ChromatogramPeak(spectrum.Index, basepeakMz, intensity, new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec));
                     driftBinToBasePeakIntensity[driftBin] = basepeakIntensity;
                 }
             }
@@ -450,7 +450,7 @@ namespace CompMs.MsdialCore.Utility {
                 var intensity = GetIonAbundanceOfMzInSpectrum(massSpectra, mz, mztol,
                     out basepeakMz, out basepeakIntensity);
                 if (!driftBinToPeak.ContainsKey(driftBin)) {
-                    driftBinToPeak[driftBin] = new ChromatogramPeak(driftScan, basepeakMz, intensity, new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec));
+                    driftBinToPeak[driftBin] = new ChromatogramPeak(spectrum.Index, basepeakMz, intensity, new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec));
                     driftBinToBasePeak[driftBin] = new SpectrumPeak() { Mass = (float)basepeakMz, Intensity = (float)basepeakIntensity };
                 }
                 else {
@@ -743,7 +743,8 @@ namespace CompMs.MsdialCore.Utility {
                 var sortedPeaklist = peaklist.OrderBy(n => n[1]).ToList();
                 var ms2peaklist = new List<ChromatogramPeak>();
                 foreach (var peaks in sortedPeaklist) {
-                    ms2peaklist.Add(new ChromatogramPeak(counter++, peaks[2], peaks[3], new ChromXs(peaks[1], ChromXType.Drift, ChromXUnit.Msec)));
+                    ms2peaklist.Add(new ChromatogramPeak(counter, peaks[2], peaks[3], new ChromXs(peaks[1], ChromXType.Drift, ChromXUnit.Msec)));
+                    counter++;
                 }
                 ms2peaklistlist.Add(ms2peaklist);
             }
