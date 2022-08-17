@@ -48,7 +48,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                 for (int i = 0; i < numThreads; i++) {
                     tasks[i] = Task.Run(() => { 
                         while (queue.TryDequeue(out var index)) {
-                            var spot = chromPeakFeatures[i];
+                            var spot = chromPeakFeatures[index];
                             var result = GetMS2DecResult(provider, spot, param, summary, iupac, targetCE);
                             result.ScanID = spot.PeakID;
                             msdecResultArray[index] = result;
