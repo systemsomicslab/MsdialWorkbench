@@ -521,9 +521,9 @@ namespace CompMs.MsdialImmsCore.Algorithm
             spot.PeakHeightLeft = sPeaklist[minLeftId].Intensity;
             spot.PeakHeightRight = sPeaklist[minRightId].Intensity;
 
-            spot.ChromScanIdTop = sPeaklist[maxID].IDOrIndex;
-            spot.ChromScanIdLeft = sPeaklist[minLeftId].IDOrIndex;
-            spot.ChromScanIdRight = sPeaklist[minRightId].IDOrIndex;
+            spot.ChromScanIdTop = sPeaklist[maxID].Id;
+            spot.ChromScanIdLeft = sPeaklist[minLeftId].Id;
+            spot.ChromScanIdRight = sPeaklist[minRightId].Id;
 
             var peakHeightFromBaseline = Math.Max(sPeaklist[maxID].Intensity - sPeaklist[minLeftId].Intensity, sPeaklist[maxID].Intensity - sPeaklist[minRightId].Intensity);
             spot.PeakShape.SignalToNoise = (float)(peakHeightFromBaseline / spot.PeakShape.EstimatedNoise);

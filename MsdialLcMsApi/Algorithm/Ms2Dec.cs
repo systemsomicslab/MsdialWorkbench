@@ -79,8 +79,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             var chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min);
             var ms1Peaklist = rawSpectrum.GetMs1ExtractedChromatogram(precursorMz, param.CentroidMs1Tolerance, chromatogramRange).Peaks;
 
-            var startScanNum = ms1Peaklist[0].ID;
-            var endScanNum = ms1Peaklist[ms1Peaklist.Count - 1].ID;
+            var startIndex = ms1Peaklist[0].ID;
+            var endIndex = ms1Peaklist[ms1Peaklist.Count - 1].ID;
             var minimumDiff = double.MaxValue;
             var minimumID = (int)(ms1Peaklist.Count / 2);
 
@@ -93,7 +93,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             }
             int topScanNum = minimumID;
             var smoothedMs2ChromPeaksList = new List<List<ChromatogramPeak>>();
-            var ms2ChromPeaksList = DataAccess.GetMs2Peaklistlist(provider, precursorMz, startScanNum, endScanNum, curatedSpectra.Select(x => (double)x.Mass).ToList(), param, targetCE);
+            var ms2ChromPeaksList = DataAccess.GetMs2Peaklistlist(provider, precursorMz, startIndex, endIndex, curatedSpectra.Select(x => (double)x.Mass).ToList(), param, targetCE);
 
             foreach (var chromPeaks in ms2ChromPeaksList) {
                 var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);

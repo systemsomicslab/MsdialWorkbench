@@ -8,10 +8,8 @@ namespace CompMs.Common.Components
     public class ChromatogramPeak: IChromatogramPeak
     {
         [Key(0)]
-        public int IDOrIndex { get; }
-        int IChromatogramPeak.ID => IDOrIndex;
-        [IgnoreMember]
         public int Id { get; } // RawSpectrum.Index
+        int IChromatogramPeak.ID => Id;
         [IgnoreMember]
         public int Index { get; } // Index of chromatogram
 
@@ -24,22 +22,21 @@ namespace CompMs.Common.Components
 
         [SerializationConstructor]
         public ChromatogramPeak(int id, double mass, double intensity, ChromXs chromXs) {
-            IDOrIndex = id;
+            Id = id;
+            Index = id;
             Mass = mass;
             Intensity = intensity;
             ChromXs = chromXs;
         }
 
-        public ChromatogramPeak(int idOrIndex, int id, int index, double mass, double intensity, ChromXs chromXs) {
-            IDOrIndex = idOrIndex;
+        public ChromatogramPeak(int id, int index, double mass, double intensity, ChromXs chromXs) {
             Id = id;
             Index = index;
             Mass = mass;
             Intensity = intensity;
             ChromXs = chromXs;
         }
-        public ChromatogramPeak(int idOrIndex, int id, int index, double mass, double intensity, IChromX time) {
-            IDOrIndex = idOrIndex;
+        public ChromatogramPeak(int id, int index, double mass, double intensity, IChromX time) {
             Id = id;
             Index = index;
             Mass = mass;
@@ -47,8 +44,8 @@ namespace CompMs.Common.Components
             ChromXs = new ChromXs(time);
         }
 
-        public static ChromatogramPeak Create<T>(int idOrIndex, int id, int index, double mass, double intensity, T time) where T: IChromX {
-            return new ChromatogramPeak(idOrIndex, id, index, mass, intensity, ChromXs.Create(time));
+        public static ChromatogramPeak Create<T>(int id, int index, double mass, double intensity, T time) where T: IChromX {
+            return new ChromatogramPeak(id, index, mass, intensity, ChromXs.Create(time));
         }
     }
 }

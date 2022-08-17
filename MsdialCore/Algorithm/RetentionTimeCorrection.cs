@@ -63,7 +63,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 }
                 if (pab == null) pab = new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
                 var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(startMass, i.MassTolerance, chromatogramRange);
-                var peaklist = chromatogram.Peaks.Select((peak, j) => ChromatogramPeak.Create(peak.ID, peak.ID, j, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
+                var peaklist = chromatogram.Peaks.Select((peak, j) => ChromatogramPeak.Create(peak.ID, j, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
                 targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist });
             }
             /*   foreach(var t in targetList) {
@@ -169,7 +169,7 @@ namespace CompMs.MsdialCore.Algorithm {
         public static List<double> Smoothing(List<double> x, List<double> y) {
             var peaks = new List<ChromatogramPeak>();
             for (var i = 0; i < x.Count; i++) {
-                peaks.Add(ChromatogramPeak.Create(i, i, i, 0, y[i], new RetentionTime(x[i])));
+                peaks.Add(ChromatogramPeak.Create(i, i, 0, y[i], new RetentionTime(x[i])));
             }
             var speaklist = new Chromatogram(peaks, ChromXType.RT, ChromXUnit.Min).Smoothing(SmoothingMethod.SimpleMovingAverage, 50);
             return speaklist.Select(z => z.Intensity).ToList();

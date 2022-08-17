@@ -323,7 +323,7 @@ namespace CompMs.MsdialCore.MSDec {
 
             double mzCount = modelChrom.ModelMzList.Count;
             foreach (var peak in peaklists[0]) {
-                modelChrom.Peaks.Add(new ChromatogramPeak(peak.IDOrIndex, peak.Id, modelChrom.Peaks.Count, peak.Mass, peak.Intensity /= mzCount, peak.ChromXs));
+                modelChrom.Peaks.Add(new ChromatogramPeak(peak.Id, modelChrom.Peaks.Count, peak.Mass, peak.Intensity /= mzCount, peak.ChromXs));
             }
 
             if (peaklist.Count > 1) {
@@ -395,7 +395,7 @@ namespace CompMs.MsdialCore.MSDec {
                     sw.WriteLine("ModelMZs: " + modelMzList);
                     sw.WriteLine("Num Peaks: " + chrom.Peaks.Count);
                     foreach (var peak in chrom.Peaks) {
-                        sw.WriteLine(peak.IDOrIndex + "\t" + peak.ChromXs.Value + "\t" + peak.Mass + "\t" + peak.Intensity);
+                        sw.WriteLine(peak.Id + "\t" + peak.ChromXs.Value + "\t" + peak.Mass + "\t" + peak.Intensity);
                     }
                     sw.WriteLine();
                 }
@@ -743,9 +743,9 @@ namespace CompMs.MsdialCore.MSDec {
 
             double mzCount = modelChrom.ModelMzList.Count;
             foreach (var peak in peaklists[0]) {
-                modelChrom.Peaks.Add(new ChromatogramPeak(peak.IDOrIndex, peak.Id, modelChrom.Peaks.Count, peak.Mass, peak.Intensity /= mzCount, peak.ChromXs));
+                modelChrom.Peaks.Add(new ChromatogramPeak(peak.Id, modelChrom.Peaks.Count, peak.Mass, peak.Intensity /= mzCount, peak.ChromXs));
             }
-            if (peaklist.Count > 1) {
+            if (peaklists.Count > 1) {
                 for (int i = 1; i < peaklists.Count; i++) {
                     for (int j = 0; j < peaklists[i].Count; j++) {
                         modelChrom.Peaks[j].Intensity += peaklists[i][j].Intensity /= mzCount;
@@ -762,7 +762,7 @@ namespace CompMs.MsdialCore.MSDec {
 
             for (int i = chromScanOfPeakLeft; i <= chromScanOfPeakRight; i++) {
                 var p = peaklist[i];
-                var peak = new ChromatogramPeak(p.IDOrIndex, p.Id, mPeaklist.Count, p.Mass, p.Intensity, p.ChromXs);
+                var peak = new ChromatogramPeak(p.Id, mPeaklist.Count, p.Mass, p.Intensity, p.ChromXs);
                 mPeaklist.Add(peak);
             }
 
@@ -971,7 +971,7 @@ namespace CompMs.MsdialCore.MSDec {
                     }
                     else if (massSpectra[j].Mz >= focusedMass + massTol) break;
                 }
-                peaklist.Add(new ChromatogramPeak(spectrum.ScanNumber, spectrum.Index, peaklist.Count, maxMass, sum, new ChromXs(spectrum.ScanStartTime)));
+                peaklist.Add(new ChromatogramPeak(spectrum.Index, peaklist.Count, maxMass, sum, new ChromXs(spectrum.ScanStartTime)));
             }
 
             var smoothedPeaklist = new Chromatogram(peaklist, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
@@ -1007,9 +1007,9 @@ namespace CompMs.MsdialCore.MSDec {
             for (int i = 0; i < peaklist.Count; i++) {
                 correctedIntensity = peaklist[i].Intensity - (int)(coeff * peaklist[i].ChromXs.Value + intercept);
                 if (correctedIntensity >= 0)
-                    baselineCorrectedPeaklist.Add(new ChromatogramPeak(peaklist[i].IDOrIndex, peaklist[i].Id, baselineCorrectedPeaklist.Count, peaklist[i].Mass, correctedIntensity, peaklist[i].ChromXs ));
+                    baselineCorrectedPeaklist.Add(new ChromatogramPeak(peaklist[i].Id, baselineCorrectedPeaklist.Count, peaklist[i].Mass, correctedIntensity, peaklist[i].ChromXs));
                 else
-                    baselineCorrectedPeaklist.Add(new ChromatogramPeak(peaklist[i].IDOrIndex, peaklist[i].Id, baselineCorrectedPeaklist.Count, peaklist[i].Mass, 0, peaklist[i].ChromXs));
+                    baselineCorrectedPeaklist.Add(new ChromatogramPeak(peaklist[i].Id, baselineCorrectedPeaklist.Count, peaklist[i].Mass, 0, peaklist[i].ChromXs));
             }
 
             return baselineCorrectedPeaklist;

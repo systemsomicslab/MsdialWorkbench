@@ -45,7 +45,7 @@ namespace CompMs.MsdialCore.DataObj
                 }
                 var (basePeakMz, basePeakIntensity, _) = new Spectrum(_spectra[i].Spectrum).RetrieveTotalIntensity();
                 var time = _idToDriftTime.GetOrAdd(i, j => new Lazy<DriftTime>(() => new DriftTime(_spectra[j].DriftTime)));
-                results.Add(ChromatogramPeak.Create(i, _spectra[i].Index, results.Count, basePeakMz, basePeakIntensity, time.Value));
+                results.Add(ChromatogramPeak.Create(_spectra[i].Index, results.Count, basePeakMz, basePeakIntensity, time.Value));
             }
             return new Chromatogram(results, ChromXType.Drift, _unit);
         }
@@ -61,7 +61,7 @@ namespace CompMs.MsdialCore.DataObj
                 }
                 var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveBin(mz, tolerance);
                 var time = _idToDriftTime.GetOrAdd(i, j => new Lazy<DriftTime>(() => new DriftTime(_spectra[j].DriftTime)));
-                results.Add(ChromatogramPeak.Create(i, _spectra[i].Index, results.Count, basePeakMz, summedIntensity, time.Value));
+                results.Add(ChromatogramPeak.Create(_spectra[i].Index, results.Count, basePeakMz, summedIntensity, time.Value));
             }
             return new Chromatogram(results, ChromXType.Drift, _unit);
         }
@@ -93,7 +93,7 @@ namespace CompMs.MsdialCore.DataObj
                 }
                 var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveTotalIntensity();
                 var time = _idToDriftTime.GetOrAdd(i, j => new Lazy<DriftTime>(() => new DriftTime(_spectra[j].DriftTime)));
-                results.Add(ChromatogramPeak.Create(i, _spectra[i].Index, results.Count, basePeakMz, summedIntensity, time.Value));
+                results.Add(ChromatogramPeak.Create(_spectra[i].Index, results.Count, basePeakMz, summedIntensity, time.Value));
             }
             return new Chromatogram(results, ChromXType.Drift, _unit);
         }

@@ -149,7 +149,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
             for (int i = margin; i < ssPeaklist.Count - margin; i++) {
                 if (IsPeakStarted(i, firstDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria)) {
                     var datapoints = new List<double[]>();
-                    datapoints.Add(new double[] { peaklist[i].IDOrIndex, peaklist[i].ChromXs.Value, peaklist[i].Mass, peaklist[i].Intensity, firstDiffPeaklist[i], secondDiffPeaklist[i] });
+                    datapoints.Add(new double[] { i, peaklist[i].ChromXs.Value, peaklist[i].Mass, peaklist[i].Intensity, firstDiffPeaklist[i], secondDiffPeaklist[i] });
                     searchRealLeftEdge(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist);
                     i = searchRightEdgeCandidate(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, slopeNoise, slopeNoiseFoldCriteria, amplitudeNoise, peaktopNoise, minimumDatapointCriteria);
                     i = searchRealRightEdge(i, datapoints, peaklist, ssPeaklist, firstDiffPeaklist, secondDiffPeaklist, ref infinitLoopCheck, ref infinitLoopID, out var isBreak);
@@ -330,7 +330,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
                     if (i + j + 1 > ssPeaklist.Count - 1) break;
                     if (ssPeaklist[i + j].Intensity <= ssPeaklist[i + j + 1].Intensity) break;
                     if (ssPeaklist[i + j].Intensity > ssPeaklist[i + j + 1].Intensity) {
-                        datapoints.Add(new double[] { peaklist[i + j + 1].IDOrIndex, peaklist[i + j + 1].ChromXs.Value, peaklist[i + j + 1].Mass,
+                        datapoints.Add(new double[] { i + j + 1, peaklist[i + j + 1].ChromXs.Value, peaklist[i + j + 1].Mass,
                                     peaklist[i + j + 1].Intensity, firstDiffPeaklist[i + j + 1], secondDiffPeaklist[i + j + 1] });
                         rightCheck = true;
                         trackcounter++;
@@ -440,7 +440,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
                 if (i + 2 == ssPeaklist.Count - 1) break;
 
                 i++;
-                datapoints.Add(new double[] { peaklist[i].IDOrIndex, peaklist[i].ChromXs.Value, peaklist[i].Mass, peaklist[i].Intensity,
+                datapoints.Add(new double[] { i, peaklist[i].ChromXs.Value, peaklist[i].Mass, peaklist[i].Intensity,
                             firstDiffPeaklist[i], secondDiffPeaklist[i] });
 
                 // peak top check
@@ -634,7 +634,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
                 if (i - j - 1 < 0) break;
                 if (ssPeaklist[i - j].Intensity <= ssPeaklist[i - j - 1].Intensity) break;
                 if (ssPeaklist[i - j].Intensity > ssPeaklist[i - j - 1].Intensity)
-                    datapoints.Insert(0, new double[] { peaklist[i - j - 1].IDOrIndex, peaklist[i - j - 1].ChromXs.Value,
+                    datapoints.Insert(0, new double[] { i - j - 1, peaklist[i - j - 1].ChromXs.Value,
                                 peaklist[i - j - 1].Mass, peaklist[i - j - 1].Intensity, firstDiffPeaklist[i - j - 1], secondDiffPeaklist[i - j - 1] });
             }
         }
@@ -882,7 +882,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
             var ssPeaklist = Smoothing.LinearWeightedMovingAverage(Smoothing.LinearWeightedMovingAverage(peaklist, 1), 1);
             var baseline = Smoothing.SimpleMovingAverage(Smoothing.SimpleMovingAverage(peaklist, 10), 10);
             var baselineCorrectedPeaklist = Enumerable.Range(0, peaklist.Count)
-                .Select(i => new ChromatogramPeak(peaklist[i].IDOrIndex, peaklist[i].Id, i, peaklist[i].Mass, Math.Max(0, ssPeaklist[i].Intensity - baseline[i].Intensity), peaklist[i].ChromXs))
+                .Select(i => new ChromatogramPeak(peaklist[i].Id, i, peaklist[i].Mass, Math.Max(0, ssPeaklist[i].Intensity - baseline[i].Intensity), peaklist[i].ChromXs))
                 .ToList();
 
             var amplitudeDiffs = baselineCorrectedPeaklist

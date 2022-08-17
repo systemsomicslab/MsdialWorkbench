@@ -235,7 +235,7 @@ namespace CompMs.MsdialCore.Utility {
                 var mz = spectrum[i].Mz;
                 var intensity = spectrum[i].Intensity;
                 if (mz < minMz || mz > maxMz) continue;
-                chromPeaks.Add(ChromatogramPeak.Create(i, i, chromPeaks.Count, mz, intensity, new MzValue(mz)));
+                chromPeaks.Add(ChromatogramPeak.Create(i, chromPeaks.Count, mz, intensity, new MzValue(mz)));
             }
             return chromPeaks;
         }
@@ -265,7 +265,7 @@ namespace CompMs.MsdialCore.Utility {
                         (double basepeakMz, _, double summedIntensity) = new Spectrum(spec.Spectrum).RetrieveBin(productMz, param.CentroidMs2Tolerance);
                         var chromX = type == ChromXType.Drift ? new ChromXs(spec.DriftTime, type, unit) : new ChromXs(spec.ScanStartTime, type, unit);
                         var id = type == ChromXType.Drift ? spec.OriginalIndex : spec.Index;
-                        chromPeaks.Add(new ChromatogramPeak(id, id, chromPeaks.Count, basepeakMz, summedIntensity, chromX));
+                        chromPeaks.Add(new ChromatogramPeak(id, chromPeaks.Count, basepeakMz, summedIntensity, chromX));
                     }
                 }
             }
@@ -319,7 +319,7 @@ namespace CompMs.MsdialCore.Utility {
                     }
                     else if (massSpectra[j].Mz >= quantMass + sliceWidth) break;
                 }
-                peaklist.Add(new ChromatogramPeak(spectrum.ScanNumber, spectrum.Index, peaklist.Count, maxMass, sum, new RetentionTime(spectrum.ScanStartTime)));
+                peaklist.Add(new ChromatogramPeak(spectrum.Index, peaklist.Count, maxMass, sum, new RetentionTime(spectrum.ScanStartTime)));
             }
 
             var minLeftIntensity = double.MaxValue;
@@ -365,9 +365,9 @@ namespace CompMs.MsdialCore.Utility {
             for (int i = 0; i < peaklist.Count; i++) {
                 correctedIntensity = peaklist[i].Intensity - (int)(coeff * peaklist[i].ChromXs.Value + intercept);
                 if (correctedIntensity >= 0)
-                    baselineCorrectedPeaklist.Add(new ChromatogramPeak(peaklist[i].IDOrIndex, peaklist[i].Id, baselineCorrectedPeaklist.Count, peaklist[i].Mass, correctedIntensity, peaklist[i].ChromXs));
+                    baselineCorrectedPeaklist.Add(new ChromatogramPeak(peaklist[i].Id, baselineCorrectedPeaklist.Count, peaklist[i].Mass, correctedIntensity, peaklist[i].ChromXs));
                 else
-                    baselineCorrectedPeaklist.Add(new ChromatogramPeak(peaklist[i].IDOrIndex, peaklist[i].Id, baselineCorrectedPeaklist.Count, peaklist[i].Mass, 0, peaklist[i].ChromXs));
+                    baselineCorrectedPeaklist.Add(new ChromatogramPeak(peaklist[i].Id, baselineCorrectedPeaklist.Count, peaklist[i].Mass, 0, peaklist[i].ChromXs));
             }
 
             return baselineCorrectedPeaklist;
@@ -391,7 +391,7 @@ namespace CompMs.MsdialCore.Utility {
                     }
                 }
                 else {
-                    driftBinToChromPeak[driftBin] = new ChromatogramPeak(spectrum.OriginalIndex, spectrum.Index, driftBin, basepeakMz, intensity, new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec));
+                    driftBinToChromPeak[driftBin] = new ChromatogramPeak(spectrum.Index, driftBin, basepeakMz, intensity, new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec));
                     driftBinToBasePeakIntensity[driftBin] = basepeakIntensity;
                 }
             }
@@ -450,7 +450,7 @@ namespace CompMs.MsdialCore.Utility {
                 var intensity = GetIonAbundanceOfMzInSpectrum(massSpectra, mz, mztol,
                     out basepeakMz, out basepeakIntensity);
                 if (!driftBinToPeak.ContainsKey(driftBin)) {
-                    driftBinToPeak[driftBin] = new ChromatogramPeak(driftScan, spectrum.Index, driftBin, basepeakMz, intensity, new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec));
+                    driftBinToPeak[driftBin] = new ChromatogramPeak(spectrum.Index, driftBin, basepeakMz, intensity, new ChromXs(driftTime, ChromXType.Drift, ChromXUnit.Msec));
                     driftBinToBasePeak[driftBin] = new SpectrumPeak() { Mass = (float)basepeakMz, Intensity = (float)basepeakIntensity };
                 }
                 else {
@@ -743,7 +743,7 @@ namespace CompMs.MsdialCore.Utility {
                 var sortedPeaklist = peaklist.OrderBy(n => n[1]).ToList();
                 var ms2peaklist = new List<ChromatogramPeak>();
                 foreach (var peaks in sortedPeaklist) {
-                    ms2peaklist.Add(new ChromatogramPeak(counter, counter, ms2peaklist.Count, peaks[2], peaks[3], new ChromXs(peaks[1], ChromXType.Drift, ChromXUnit.Msec)));
+                    ms2peaklist.Add(new ChromatogramPeak(counter, ms2peaklist.Count, peaks[2], peaks[3], new ChromXs(peaks[1], ChromXType.Drift, ChromXUnit.Msec)));
                     counter++;
                 }
                 ms2peaklistlist.Add(ms2peaklist);
