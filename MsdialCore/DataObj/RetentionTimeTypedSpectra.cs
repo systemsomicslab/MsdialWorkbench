@@ -38,7 +38,7 @@ namespace CompMs.MsdialCore.DataObj
             _lazySpectra = new ConcurrentDictionary<int, Lazy<Spectrum>>();
             for (int i = 0; i < _spectra.Count; i++) {
                 _idToRetentionTime[i] = new RetentionTime(_spectra[i].ScanStartTime, unit);
-                if (_spectra[i].MsLevel == 1) {
+                if (_spectra[i].MsLevel == 1 && _spectra[i].ScanPolarity == _polarity) {
                     _ms1Counts[i + 1]++;
                 }
             }
@@ -57,7 +57,7 @@ namespace CompMs.MsdialCore.DataObj
                     continue;
                 }
                 var (basePeakMz, basePeakIntensity, _) = new Spectrum(_spectra[i].Spectrum).RetrieveTotalIntensity();
-                results.Add(ChromatogramPeak.Create(i, basePeakMz, basePeakIntensity, _idToRetentionTime[i]));
+                results.Add(ChromatogramPeak.Create(_spectra[i].Index, basePeakMz, basePeakIntensity, _idToRetentionTime[i]));
             }
             return new Chromatogram(results, ChromXType.RT, _unit);
         }
@@ -72,7 +72,7 @@ namespace CompMs.MsdialCore.DataObj
                     continue;
                 }
                 var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveBin(mz, tolerance);
-                results.Add(ChromatogramPeak.Create(i, basePeakMz, summedIntensity, _idToRetentionTime[i]));
+                results.Add(ChromatogramPeak.Create(_spectra[i].Index, basePeakMz, summedIntensity, _idToRetentionTime[i]));
             }
             return new Chromatogram(results, ChromXType.RT, _unit);
         }
@@ -106,7 +106,7 @@ namespace CompMs.MsdialCore.DataObj
                     continue;
                 }
                 var (basePeakMz, _, summedIntensity) = new Spectrum(_spectra[i].Spectrum).RetrieveTotalIntensity();
-                results.Add(ChromatogramPeak.Create(i, basePeakMz, summedIntensity, _idToRetentionTime[i]));
+                results.Add(ChromatogramPeak.Create(_spectra[i].Index, basePeakMz, summedIntensity, _idToRetentionTime[i]));
             }
             return new Chromatogram(results, ChromXType.RT, _unit);
         }

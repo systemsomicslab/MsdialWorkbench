@@ -238,10 +238,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 var tasks = new List<Task>();
                 var current = 0;
                 var processor = new MsdialLcMsApi.Process.FileProcess(providerFactory, storage, annotationProcess, matchResultEvaluator);
+                var thread = GetNumberOfThreadToBeUsed(storage.Parameter.NumThreads);
                 await processor.RunAllAsync(
                     storage.AnalysisFiles,
                     vm.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
-                    2,
+                    thread == 1 ? 1 : (int)(thread * 0.5),
                     () => { Interlocked.Increment(ref current); vm.CurrentValue = current; });
 
                 pbmcw.DialogResult = true;

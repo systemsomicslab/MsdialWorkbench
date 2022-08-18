@@ -135,6 +135,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 .AsOrdered()
                 .Select(peakAndSpot => {
                     (var peak, var spot) = peakAndSpot;
+
                     if (spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0) {
                         Filler.GapFill(ms1Spectra, spectra, spot, analysisFile.AnalysisFileId);
                     }

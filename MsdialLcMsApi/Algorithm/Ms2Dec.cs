@@ -9,8 +9,11 @@ using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcmsApi.Parameter;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialLcMsApi.Algorithm {
     public class Ms2Dec {
@@ -27,13 +30,37 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
 
             var msdecResults = new List<MSDecResult>();
-            foreach (var spot in chromPeakFeatures) {
-                var result = GetMS2DecResult(provider, spot, param, summary, iupac, targetCE);
-                result.ScanID = spot.PeakID;
-                msdecResults.Add(result);
-                ReportProgress.Show(InitialProgress, ProgressMax, result.ScanID, chromPeakFeatures.Count(), reportAction);
+            var numThreads = param.NumThreads == 1 ? 1 : 2;
+            if (numThreads == 1) {
+                foreach (var spot in chromPeakFeatures) {
+                    var result = GetMS2DecResult(provider, spot, param, summary, iupac, targetCE);
+                    result.ScanID = spot.PeakID;
+                    msdecResults.Add(result);
+                    ReportProgress.Show(InitialProgress, ProgressMax, result.ScanID, chromPeakFeatures.Count(), reportAction);
+                }
+                return msdecResults;
             }
-            return msdecResults;
+            else {
+                var counter = 0;
+                var msdecResultArray = new MSDecResult[chromPeakFeatures.Count];
+                var queue = new ConcurrentQueue<int>(Enumerable.Range(0, chromPeakFeatures.Count));
+                var tasks = new Task[numThreads];
+                for (int i = 0; i < numThreads; i++) {
+                    tasks[i] = Task.Run(() => { 
+                        while (queue.TryDequeue(out var index)) {
+                            var spot = chromPeakFeatures[index];
+                            var result = GetMS2DecResult(provider, spot, param, summary, iupac, targetCE);
+                            result.ScanID = spot.PeakID;
+                            msdecResultArray[index] = result;
+                            Interlocked.Increment(ref counter);
+                            ReportProgress.Show(InitialProgress, ProgressMax, counter, chromPeakFeatures.Count(), reportAction);
+                        }
+                    });
+                }
+                Task.WaitAll(tasks);
+                return msdecResultArray.ToList();
+            }
+
         }
 
         public MSDecResult GetMS2DecResult(IDataProvider provider,
@@ -79,8 +106,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             var chromatogramRange = new ChromatogramRange(startRt, endRt, ChromXType.RT, ChromXUnit.Min);
             var ms1Peaklist = rawSpectrum.GetMs1ExtractedChromatogram(precursorMz, param.CentroidMs1Tolerance, chromatogramRange).Peaks;
 
-            var startScanNum = ms1Peaklist[0].ID;
-            var endScanNum = ms1Peaklist[ms1Peaklist.Count - 1].ID;
+            var startIndex = ms1Peaklist[0].ID;
+            var endIndex = ms1Peaklist[ms1Peaklist.Count - 1].ID;
             var minimumDiff = double.MaxValue;
             var minimumID = (int)(ms1Peaklist.Count / 2);
 
@@ -93,7 +120,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             }
             int topScanNum = minimumID;
             var smoothedMs2ChromPeaksList = new List<List<ChromatogramPeak>>();
-            var ms2ChromPeaksList = DataAccess.GetMs2Peaklistlist(provider, precursorMz, startScanNum, endScanNum, curatedSpectra.Select(x => (double)x.Mass).ToList(), param, targetCE);
+            var ms2ChromPeaksList = DataAccess.GetMs2Peaklistlist(provider, precursorMz, startIndex, endIndex, curatedSpectra.Select(x => (double)x.Mass).ToList(), param, targetCE);
 
             foreach (var chromPeaks in ms2ChromPeaksList) {
                 var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);

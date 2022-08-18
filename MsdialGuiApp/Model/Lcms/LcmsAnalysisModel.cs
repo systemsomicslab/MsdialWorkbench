@@ -209,7 +209,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 if (t is null) {
                     return Observable.Return(new List<SpectrumPeakWrapper>());
                 }
-                return Observable.FromAsync(provider.LoadMs1SpectrumsAsync)
+                return Observable.FromAsync(provider.LoadMsSpectrumsAsync)
                     .Select(spectrums =>
                         {
                             var spectra = DataAccess.GetCentroidMassSpectra(
