@@ -76,7 +76,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             IReadOnlyList<MSDecResult> msdecResults, 
             IDataProvider provider, 
             Action<double> reportAction) {
-            var spectrums = provider.LoadMs1Spectrums();
+            var spectrums = provider.LoadMsSpectrums();
             var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
 
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
@@ -105,7 +105,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private void RunByMultiThread(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, IDataProvider provider, int numThreads, CancellationToken token, Action<double> reportAction) {
-            var spectrums = provider.LoadMs1Spectrums();
+            var spectrums = provider.LoadMsSpectrums();
             var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
             var syncObj = new object();
             var counter = 0;
@@ -133,7 +133,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
              IDataProvider provider,
              CancellationToken token,
              Action<double> reportAction) {
-            var spectrums = provider.LoadMs1Spectrums();
+            var spectrums = provider.LoadMsSpectrums();
             var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
@@ -152,7 +152,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             int numThreads,
             CancellationToken token,
             Action<double> reportAction) {
-            var spectrums = provider.LoadMs1Spectrums();
+            var spectrums = provider.LoadMsSpectrums();
             var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
             using (var sem = new SemaphoreSlim(numThreads)) {
                 var annotationTasks = new List<Task>();
