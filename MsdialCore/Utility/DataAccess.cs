@@ -317,7 +317,9 @@ namespace CompMs.MsdialCore.Utility {
             return counter;
         }
 
-        public static double[] RetrieveIntensitiesFromMzValues(IReadOnlyList<double> mzValues, IReadOnlyList<RawPeakElement> peaks, double bin) {
+        public static double[] RetrieveIntensitiesFromMzValues(
+            IReadOnlyList<double> mzValues,
+            IReadOnlyList<RawPeakElement> peaks, double bin) {
             double[] searchedPeaks = new double[mzValues.Count];
             int remaindIndexM = 0;
             for (int i = 0; i < mzValues.Count; i++) {
