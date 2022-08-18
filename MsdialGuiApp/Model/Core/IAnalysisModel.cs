@@ -11,7 +11,7 @@ namespace CompMs.App.Msdial.Model.Core
     {
         ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 
-        ReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
+        IReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
 
         string DisplayLabel { get; set; }
 

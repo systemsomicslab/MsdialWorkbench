@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _annotatorContainers = annotatorContainers;
             _parameter = parameter as MsdialImmsParameter;
 
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, useRtFilter: false, useDtFilter: true);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, useRtFilter: false, useDtFilter: true).AddTo(Disposables);
 
             var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
                     new KeyBrushMapper<ChromatogramPeakFeatureModel, string>(
