@@ -59,9 +59,9 @@ namespace CompMs.App.Msdial.View.PeakCuration {
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-            foreach (var s in this.SampleTableViewerInAlignmentVM.Source) {
-                s.Image = null;
-            }
+            //foreach (var s in this.SampleTableViewerInAlignmentVM.Source) {
+            //    s.Image = null;
+            //}
             this.DataContext = null;
         }
 
