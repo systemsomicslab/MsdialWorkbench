@@ -50,7 +50,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilterModel).AddTo(Disposables);
 
             var _proteinGroupTableViewModel = new ProteinGroupTableViewModel(model.ProteinResultContainerAsObservable).AddTo(Disposables);
-            ShowProteinGroupTableCommand = new ReactiveCommand().AddTo(Disposables);
+            ShowProteinGroupTableCommand = model.CanShowProteinGroupTable.ToReactiveCommand().AddTo(Disposables);
             ShowProteinGroupTableCommand.Subscribe(() => broker.Publish(_proteinGroupTableViewModel)).AddTo(Disposables);
         }
 

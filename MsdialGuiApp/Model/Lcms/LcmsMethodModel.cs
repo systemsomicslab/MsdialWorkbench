@@ -35,6 +35,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
@@ -77,6 +78,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
             _proteinResultContainerModelSubject = new Subject<ProteinResultContainerModel>().AddTo(Disposables);
+            CanShowProteinGroupTable = Observable.Return(storage.Parameter.TargetOmics == TargetOmics.Proteomics);
         }
 
         public IMsdialDataStorage<MsdialLcmsParameter> Storage { get; }
@@ -85,6 +87,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public PeakFilterModel PeakFilterModel { get; }
 
+        public IObservable<bool> CanShowProteinGroupTable { get; }
         public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable => _proteinResultContainerModelSubject;
 
         public LcmsAnalysisModel AnalysisModel {
