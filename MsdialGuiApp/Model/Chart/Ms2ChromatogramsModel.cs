@@ -24,8 +24,10 @@ namespace CompMs.App.Msdial.Model.Chart
         private static readonly ReadOnlyCollection<Pen> RAW_PENS = ChartBrushes.GetSolidColorPenList(1d, DashStyles.Dash);
 
         public Ms2ChromatogramsModel(IObservable<ChromatogramPeakFeatureModel> peak, IObservable<MSDecResult> msScan, IMsSpectrumLoader<ChromatogramPeakFeatureModel> loader, IDataProvider provider, ParameterBase parameter) {
+            NumberOfChromatograms = new ReactiveProperty<int>(NUMBER_OF_CHROMATOGRAMS).AddTo(Disposables);
+
             var rawChromatograms = peak.Where(t => !(t is null))
-                .Select(t => loader.LoadSpectrumAsObservable(t).Select(spectrum => (t, spectrum: spectrum.OrderByDescending(peak_ => peak_.Intensity).Take(NUMBER_OF_CHROMATOGRAMS))))
+                .Select(t => loader.LoadSpectrumAsObservable(t).CombineLatest(NumberOfChromatograms, (spectrum, number) => (t, spectrum: spectrum.OrderByDescending(peak_ => peak_.Intensity).Take(number))))
                 .Switch()
                 .Select(pair => DataAccess.GetMs2ValuePeaks(provider, pair.t.Mass, pair.t.MS1RawSpectrumIdLeft, pair.t.MS1RawSpectrumIdRight, pair.spectrum.Select(peak_ => (double)peak_.Mass).ToArray(), parameter))
                 .Select(chromatograms => new ChromatogramsModel(
@@ -35,7 +37,7 @@ namespace CompMs.App.Msdial.Model.Chart
                     "Retention time [min]",
                     "Abundance"));
             var deconvolutedChromatograms = msScan.Where(t => !(t is null))
-                .Select(result => result.DecChromPeaks(NUMBER_OF_CHROMATOGRAMS))
+                .CombineLatest(NumberOfChromatograms, (result, number) => result.DecChromPeaks(number))
                 .Select(chromatograms => new ChromatogramsModel(
                     "Deconvoluted MS/MS chromatogram",
                     chromatograms.Zip(DECONVOLUTION_PENS, (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, title: chromatogram.FirstOrDefault()?.Mass.ToString("F5") ?? "NA")).ToList(),
@@ -75,6 +77,8 @@ namespace CompMs.App.Msdial.Model.Chart
         public ReadOnlyReactivePropertySlim<bool> IsRawEnabled { get; }
         public ReadOnlyReactivePropertySlim<bool> IsDeconvolutedEnabled { get; }
         public ReadOnlyReactivePropertySlim<bool> IsBothEnabled { get; }
+
+        public ReactiveProperty<int> NumberOfChromatograms { get; }
 
         public MultiMsRawSpectrumLoader Loader { get; }
     }

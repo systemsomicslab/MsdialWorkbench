@@ -4,6 +4,7 @@ using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reactive.Linq;
 
@@ -29,6 +30,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             FocusAction = focusAction;
             IsFocused = isFocused.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             MultiMsRawSpectrumLoaderViewModel = new MultiMsRawSpectrumLoaderViewModel(model.Loader);
+            NumberOfChromatograms = model.NumberOfChromatograms.SetValidateAttribute(() => NumberOfChromatograms);
         }
 
         public ReadOnlyReactivePropertySlim<ChromatogramsViewModel> ChromatogramsViewModel { get; }
@@ -43,5 +45,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public Action FocusAction { get; }
         public ReadOnlyReactivePropertySlim<bool> IsFocused { get; }
         public MultiMsRawSpectrumLoaderViewModel MultiMsRawSpectrumLoaderViewModel { get; }
+
+        [RegularExpression(@"\d+", ErrorMessage = "Invalid character is entered.")]
+        [Range(0, int.MaxValue, ErrorMessage = "Invalid value is requested.")]
+        public ReactiveProperty<int> NumberOfChromatograms { get; }
     }
 }

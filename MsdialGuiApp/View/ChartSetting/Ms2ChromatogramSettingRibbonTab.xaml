@@ -8,7 +8,7 @@
            Header="MS/MS chromatogram"
            d:DataContext="{d:DesignInstance Type={x:Type vmchart:Ms2ChromatogramsViewModel}}"
            d:DesignHeight="450" d:DesignWidth="800">
-    <RibbonGroup Header="Select raw MS/MS spectrum">
+    <RibbonGroup>
         <RibbonComboBox Label="Raw spectrum id"
                         DataContext="{Binding MultiMsRawSpectrumLoaderViewModel}"
                         VerticalAlignment="Center">
@@ -16,5 +16,8 @@
                 <RibbonGalleryCategory ItemsSource="{Binding Ms2IdList.Value, FallbackValue={x:Null}}"/>
             </RibbonGallery>
         </RibbonComboBox>
+
+        <RibbonTextBox Label="Number of chromatograms to display"
+                       Text="{Binding NumberOfChromatograms.Value}"/>
     </RibbonGroup>
 </RibbonTab>
