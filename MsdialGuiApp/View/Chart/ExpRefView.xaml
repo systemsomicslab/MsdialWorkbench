@@ -20,35 +20,10 @@
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <BooleanToVisibilityConverter x:Key="visconverter"/>
-            <Style TargetType="RadioButton" x:Key="IconRadioButton">
-                <Setter Property="Height" Value="30"/>
-                <Setter Property="Width" Value="30"/>
-                <Setter Property="Margin" Value="5,0,0,0"/>
-                <Setter Property="BorderBrush" Value="Aqua"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="RadioButton">
-                            <Border BorderBrush="{Binding Path=BorderBrush, RelativeSource={RelativeSource TemplatedParent}}"
-                                    BorderThickness="{Binding Path=BorderThickness, RelativeSource={RelativeSource TemplatedParent}}"
-                                    CornerRadius="1">
-                                <Image Source="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Style.Triggers>
-                    <Trigger Property="IsChecked" Value="False">
-                        <Setter Property="Opacity" Value="0.5"/>
-                        <Setter Property="BorderThickness" Value="0"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
             <Style TargetType="Button" x:Key="IconButton">
-                <Setter Property="Height" Value="30"/>
-                <Setter Property="Width" Value="30"/>
-                <Setter Property="Margin" Value="5,0,0,0"/>
+                <Setter Property="Height" Value="32"/>
+                <Setter Property="Width" Value="32"/>
+                <Setter Property="Margin" Value="4"/>
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="ContentTemplate">
@@ -63,11 +38,11 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Margin="10,5,0,5" Orientation="Horizontal">
+        <StackPanel Margin="8" Orientation="Horizontal">
 
             <RadioButton Name="Button_ShowCentroid"
                          Content="/Resources/RawChromatogram.ico"
@@ -111,7 +86,7 @@
                       DisplayMemberPath="Label"/>
         </StackPanel>
 
-        <Grid DataContext="{Binding RawDecSpectrumsViewModel}" Grid.Row="1" Margin="0,0,10,0"
+        <Grid DataContext="{Binding RawDecSpectrumsViewModel}" Grid.Row="1" Margin="0,0,8,0"
              xmlns:behavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
              behavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding FocusAction, Mode=OneWay}">
 

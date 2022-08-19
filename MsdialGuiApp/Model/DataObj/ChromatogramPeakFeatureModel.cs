@@ -40,6 +40,8 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public double PeakArea => innerModel.PeakAreaAboveZero;
         public int MS1RawSpectrumIdTop => innerModel.MS1RawSpectrumIdTop;
+        public int MS1RawSpectrumIdLeft => innerModel.MS1RawSpectrumIdLeft;
+        public int MS1RawSpectrumIdRight => innerModel.MS1RawSpectrumIdRight;
         public int MS2RawSpectrumId => innerModel.MS2RawSpectrumID;
         public MsScanMatchResultContainer MatchResults {
             get => innerModel.MatchResults;

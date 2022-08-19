@@ -47,9 +47,9 @@ namespace CompMs.MsdialCore.MSDec {
             var chroms = new List<ChromatogramPeak[]>(Spectrum.Count);
             var spectrum = Spectrum.OrderByDescending(n => n.Intensity).ToList();
             var modelPeaks = ModelPeakChromatogram;
-            var maxIntensity = modelPeaks.Max(n => n.Intensity);
+            var maxIntensity = modelPeaks.DefaultIfEmpty().Max(n => n?.Intensity) ?? 1e-10;
             for (int i = 0; i < spectrum.Count; i++) {
-                if (i > maxPeakNum) break;
+                if (i >= maxPeakNum) break;
                 var chrom = new ChromatogramPeak[ModelPeakChromatogram.Count];
                 for (int j = 0; j < ModelPeakChromatogram.Count; j++) {
                     chrom[j] = new ChromatogramPeak(modelPeaks[j].ID, spectrum[i].Mass, modelPeaks[j].Intensity * spectrum[i].Intensity / maxIntensity, modelPeaks[j].ChromXs);

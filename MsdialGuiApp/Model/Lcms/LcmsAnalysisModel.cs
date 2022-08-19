@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.ExternalApp;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.ExternalApp;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
@@ -179,7 +180,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Raw vs Purified spectrum model
             RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(
                 Target,
-                _rawSpectrumLoader,
+                rawSpectrumLoader,
                 decSpectrumLoader,
                 peak => peak.Mass,
                 peak => peak.Intensity) {
@@ -192,6 +193,30 @@ namespace CompMs.App.Msdial.Model.Lcms
                 OrderingProperty = nameof(SpectrumPeak.Intensity),
             }.AddTo(Disposables);
 
+            // Ms2 chromatogram
+            var decPens = ChartBrushes.GetSolidColorPenList(1d, DashStyles.Solid);
+            var rawPens = ChartBrushes.GetSolidColorPenList(1d, DashStyles.Dash);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(
+                Target.Where(t => !(t is null))
+                    .Select(t => rawSpectrumLoader.LoadSpectrumAsObservable(t).Select(spectrum => (t, spectrum: spectrum.OrderByDescending(peak => peak.Intensity).Take(10))))
+                    .Switch()
+                    .Select(pair => DataAccess.GetMs2ValuePeaks(provider, pair.t.Mass, pair.t.MS1RawSpectrumIdLeft, pair.t.MS1RawSpectrumIdRight, pair.spectrum.Select(peak => (double)peak.Mass).ToArray(), Parameter))
+                    .Select(chromatograms => new ChromatogramsModel(
+                        "Raw MS/MS chromatogram",
+                        chromatograms.Zip(rawPens, (chromatogram, pen) => new DisplayChromatogram(chromatogram.Select(peak => peak.ConvertToChromatogramPeak(ChromXType.RT, ChromXUnit.Min)).ToList(), linePen: pen, title: chromatogram.FirstOrDefault().Mz.ToString("F5"))).ToList(),
+                        "Raw MS/MS chromatogram",
+                        "Retention time [min]",
+                        "Abundance")),
+                MsdecResult.Where(t => !(t is null))
+                    .Select(result => result.DecChromPeaks(10))
+                    .Select(chromatograms => new ChromatogramsModel(
+                        "Deconvoluted MS/MS chromatogram",
+                        chromatograms.Zip(decPens, (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, title: chromatogram.FirstOrDefault()?.Mass.ToString("F5") ?? "NA")).ToList(),
+                        "Deconvoluted MS/MS chromatogram",
+                        "Retention time [min]",
+                        "Abundance")),
+                rawSpectrumLoader,
+                parameter.AcquisitionType == AcquisitionType.SWATH).AddTo(Disposables);
 
             // SurveyScan
             var msdataType = Parameter.MSDataType;
@@ -222,12 +247,9 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var rtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, RtTol, Target.Select(t => t?.ChromXValue ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MzTol, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
-            Func<double, ChromatogramPeakFeatureModel> yyy(IReadOnlyList<ChromatogramPeakFeatureModel> ms1Peaks) {
-                return id => ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id));
-            }
             var idSpotFocus = new IdSpotFocus<ChromatogramPeakFeatureModel>(
                 Target,
-                yyy(Ms1Peaks),
+                id => Ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id)),
                 Target.Select(t => t?.MasterPeakID ?? 0d),
                 "Region focus by ID",
                 (rtSpotFocus, peak => peak.ChromXValue ?? 0d),
@@ -273,7 +295,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public RawPurifiedSpectrumsModel RawPurifiedSpectrumsModel { get; }
-
+        public Ms2ChromatogramsModel Ms2ChromatogramsModel { get; }
         public SurveyScanModel SurveyScanModel { get; }
 
         public LcmsAnalysisPeakTableModel PeakTableModel { get; }

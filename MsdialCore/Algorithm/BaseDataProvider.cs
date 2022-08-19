@@ -70,12 +70,9 @@ namespace CompMs.MsdialCore.Algorithm
             return LoadMsSpectrumsAsync().Result;
         }
 
-        public Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token = default) {
-            return Task.Run(async () =>
-            {
-                var spectra = await _spectraTask.ConfigureAwait(false);
-                return new ReadOnlyCollection<RawSpectrum>(spectra);
-            }, token);
+        public async Task<ReadOnlyCollection<RawSpectrum>> LoadMsSpectrumsAsync(CancellationToken token = default) {
+            var spectra = await _spectraTask.ConfigureAwait(false);
+            return new ReadOnlyCollection<RawSpectrum>(spectra);
         }
 
         public Task<ReadOnlyCollection<RawSpectrum>> LoadMs1SpectrumsAsync(CancellationToken token = default) {
@@ -85,11 +82,11 @@ namespace CompMs.MsdialCore.Algorithm
         private ConcurrentDictionary<int, Lazy<Task<ReadOnlyCollection<RawSpectrum>>>> cache = new ConcurrentDictionary<int, Lazy<Task<ReadOnlyCollection<RawSpectrum>>>>();
         public Task<ReadOnlyCollection<RawSpectrum>> LoadMsNSpectrumsAsync(int level, CancellationToken token = default) {
             return cache.GetOrAdd(level,
-                i => new Lazy<Task<ReadOnlyCollection<RawSpectrum>>>(() => Task.Run(async () =>
+                i => new Lazy<Task<ReadOnlyCollection<RawSpectrum>>>(async () => 
                 {
                     var spectra = await _spectraTask.ConfigureAwait(false);
                     return spectra.Where(spectrum => spectrum.MsLevel == level).ToList().AsReadOnly();
-                }))).Value;
+                })).Value;
         }
     }
 }
