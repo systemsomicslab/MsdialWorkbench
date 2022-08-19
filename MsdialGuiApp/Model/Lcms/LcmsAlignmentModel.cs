@@ -279,6 +279,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
+        public ProteinResultContainerModel ProteinResultContainerModel { get; }
 
         public CompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {
             return new LcmsCompoundSearchModel<AlignmentSpotProperty>(

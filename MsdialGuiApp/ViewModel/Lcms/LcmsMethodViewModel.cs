@@ -49,7 +49,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .AddTo(Disposables);
             PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilterModel).AddTo(Disposables);
 
-            var _proteinGroupTableViewModel = new ProteinGroupTableViewModel(model.ProteinResultContainerAsObservable).AddTo(Disposables);
+            var proteinResultContainerAsObservable =
+                new[]
+                {
+                    SelectedViewModel.OfType<LcmsAnalysisViewModel>().Select(vm => vm.ProteinResultContainerAsObservable),
+                    SelectedViewModel.OfType<LcmsAlignmentViewModel>().Select(vm => vm.ProteinResultContainerAsObservable),
+
+                }.Merge().Switch();
+            var _proteinGroupTableViewModel = new ProteinGroupTableViewModel(proteinResultContainerAsObservable).AddTo(Disposables);
             ShowProteinGroupTableCommand = model.CanShowProteinGroupTable.ToReactiveCommand().AddTo(Disposables);
             ShowProteinGroupTableCommand.Subscribe(() => broker.Publish(_proteinGroupTableViewModel)).AddTo(Disposables);
         }

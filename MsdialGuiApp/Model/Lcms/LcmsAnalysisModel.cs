@@ -73,7 +73,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 // These 3 lines must be moved to somewhere for swithcing/updating the alignment result
                 var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(analysisFile.ProteinAssembledResultFilePath);
                 var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Peaks, Target);
-                proteinResultContainerModelObserver.OnNext(proteinResultContainerModel);
+                ProteinResultContainerModel = proteinResultContainerModel;
+                //proteinResultContainerModelObserver.OnNext(proteinResultContainerModel);
             }
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, useRtFilter: true);
@@ -356,6 +357,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ReadOnlyReactivePropertySlim<bool> CanSaveRawSpectra { get; }
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
+        public ProteinResultContainerModel ProteinResultContainerModel { get; }
 
         public void GoToMsfinderMethod() {
             MsDialToExternalApps.SendToMsFinderProgram(

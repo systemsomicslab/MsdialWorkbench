@@ -52,7 +52,7 @@
                           AutoGenerateColumns="False"
                           Margin="8">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="PeptideSeq" Binding="{Binding PeptideSeq}" />
+                        <DataGridTextColumn Header="PeptideSeq" Binding="{Binding PeptideSeq}" IsReadOnly="True"/>
                         <DataGridTextColumn Header="AdductType" Binding="{Binding AdductType}" />
                         <DataGridTextColumn Header="DatabaseOrigin" Binding="{Binding DatabaseOrigin}" />
                         <DataGridTextColumn Header="DatabaseOriginID" Binding="{Binding DatabaseOriginID}" />

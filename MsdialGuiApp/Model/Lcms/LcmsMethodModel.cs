@@ -88,7 +88,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         public PeakFilterModel PeakFilterModel { get; }
 
         public IObservable<bool> CanShowProteinGroupTable { get; }
-        public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable => _proteinResultContainerModelSubject;
 
         public LcmsAnalysisModel AnalysisModel {
             get => analysisModel;
