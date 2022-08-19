@@ -22,7 +22,6 @@ using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using Reactive.Bindings.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -193,9 +192,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
+            var rawLoader = new MsRawSpectrumLoader(spectrumProvider, parameter);
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 target,
-                new MsRawSpectrumLoader(spectrumProvider, parameter),
+                rawLoader,
                 new MsDecSpectrumLoader(decLoader, Ms1Peaks),
                 new MsRefSpectrumLoader(mapper),
                 new PropertySelector<SpectrumPeak, float>(peak => peak.Mass),
@@ -207,6 +207,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Observable.Return(spectraExporter),
                 Observable.Return(spectraExporter),
                 Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
+
+            // Ms2 chromatogram
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, Target.Select(t => decLoader.LoadMSDecResult(t.InnerModel.MSDecResultIdUsed)), rawLoader, spectrumProvider, parameter).AddTo(Disposables);
 
             var surveyScanSpectrum = new SurveyScanSpectrum(target, t => Observable.FromAsync(token => LoadMsSpectrumAsync(t, token)))
                 .AddTo(Disposables);
@@ -297,6 +300,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public EicLoader DtEicLoader { get; }
         public EicModel DtEicModel { get; }
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
+        public Ms2ChromatogramsModel Ms2ChromatogramsModel { get; }
         public SurveyScanModel SurveyScanModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
         public PeakInformationAnalysisModel PeakInformationModel { get; }

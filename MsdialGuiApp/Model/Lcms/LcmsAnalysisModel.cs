@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.ExternalApp;
+﻿using CompMs.App.Msdial.ExternalApp;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
@@ -194,29 +193,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             }.AddTo(Disposables);
 
             // Ms2 chromatogram
-            var decPens = ChartBrushes.GetSolidColorPenList(1d, DashStyles.Solid);
-            var rawPens = ChartBrushes.GetSolidColorPenList(1d, DashStyles.Dash);
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(
-                Target.Where(t => !(t is null))
-                    .Select(t => rawSpectrumLoader.LoadSpectrumAsObservable(t).Select(spectrum => (t, spectrum: spectrum.OrderByDescending(peak => peak.Intensity).Take(10))))
-                    .Switch()
-                    .Select(pair => DataAccess.GetMs2ValuePeaks(provider, pair.t.Mass, pair.t.MS1RawSpectrumIdLeft, pair.t.MS1RawSpectrumIdRight, pair.spectrum.Select(peak => (double)peak.Mass).ToArray(), Parameter))
-                    .Select(chromatograms => new ChromatogramsModel(
-                        "Raw MS/MS chromatogram",
-                        chromatograms.Zip(rawPens, (chromatogram, pen) => new DisplayChromatogram(chromatogram.Select(peak => peak.ConvertToChromatogramPeak(ChromXType.RT, ChromXUnit.Min)).ToList(), linePen: pen, title: chromatogram.FirstOrDefault().Mz.ToString("F5"))).ToList(),
-                        "Raw MS/MS chromatogram",
-                        "Retention time [min]",
-                        "Abundance")),
-                MsdecResult.Where(t => !(t is null))
-                    .Select(result => result.DecChromPeaks(10))
-                    .Select(chromatograms => new ChromatogramsModel(
-                        "Deconvoluted MS/MS chromatogram",
-                        chromatograms.Zip(decPens, (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, title: chromatogram.FirstOrDefault()?.Mass.ToString("F5") ?? "NA")).ToList(),
-                        "Deconvoluted MS/MS chromatogram",
-                        "Retention time [min]",
-                        "Abundance")),
-                rawSpectrumLoader,
-                parameter.AcquisitionType == AcquisitionType.SWATH).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawSpectrumLoader, provider, Parameter).AddTo(Disposables);
 
             // SurveyScan
             var msdataType = Parameter.MSDataType;

@@ -46,19 +46,23 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
             var (rtmzPeakFocusAction, rtmzPeakFocused) = focusControlManager.Request();
             var brush = Observable.Return(this.model.Brush);
-            RtMzPlotViewModel = new AnalysisPeakPlotViewModel(this.model.RtMzPlotModel, rtmzPeakFocusAction, rtmzPeakFocused).AddTo(Disposables);
+            RtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.RtMzPlotModel, rtmzPeakFocusAction, rtmzPeakFocused).AddTo(Disposables);
             RtEicViewModel = new EicViewModel(
                 this.model.RtEicModel,
                 horizontalAxis: RtMzPlotViewModel.HorizontalAxis).AddTo(Disposables);
 
             var (dtmzPeakFocusAction, dtmzPeakFocused) = focusControlManager.Request();
-            DtMzPlotViewModel = new AnalysisPeakPlotViewModel(this.model.DtMzPlotModel, dtmzPeakFocusAction, dtmzPeakFocused).AddTo(Disposables);
+            DtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.DtMzPlotModel, dtmzPeakFocusAction, dtmzPeakFocused).AddTo(Disposables);
             DtEicViewModel = new EicViewModel(
                 this.model.DtEicModel,
                 horizontalAxis: DtMzPlotViewModel.HorizontalAxis).AddTo(Disposables);
 
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
+
+            var (ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused) = focusControlManager.Request();
+            Ms2ChromatogramsViewModel = new Ms2ChromatogramsViewModel(model.Ms2ChromatogramsModel, ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused).AddTo(Disposables);
+
             SurveyScanViewModel = new SurveyScanViewModel(
                 this.model.SurveyScanModel,
                 horizontalAxis: RtMzPlotViewModel.VerticalAxis).AddTo(Disposables);
@@ -89,6 +93,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public AnalysisPeakPlotViewModel DtMzPlotViewModel { get; private set; }
         public EicViewModel DtEicViewModel { get; private set; }
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; private set; }
+        public Ms2ChromatogramsViewModel Ms2ChromatogramsViewModel { get; }
         public SurveyScanViewModel SurveyScanViewModel { get; private set; }
         public PeakFilterViewModel PeakFilterViewModel { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }

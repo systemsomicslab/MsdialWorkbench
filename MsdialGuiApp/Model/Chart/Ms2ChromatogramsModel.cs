@@ -1,17 +1,52 @@
-﻿using CompMs.App.Msdial.Model.Loader;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
+using CompMs.Common.Components;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Linq;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class Ms2ChromatogramsModel : DisposableModelBase
     {
-        public Ms2ChromatogramsModel(IObservable<ChromatogramsModel> rawChromatograms, IObservable<ChromatogramsModel> deconvolutedChromatograms, MultiMsRawSpectrumLoader loader, bool isSwath) {
+        private static readonly int NUMBER_OF_CHROMATOGRAMS = 10;
+        private static readonly ReadOnlyCollection<Pen> DECONVOLUTION_PENS = ChartBrushes.GetSolidColorPenList(1d, DashStyles.Solid);
+        private static readonly ReadOnlyCollection<Pen> RAW_PENS = ChartBrushes.GetSolidColorPenList(1d, DashStyles.Dash);
+
+        public Ms2ChromatogramsModel(IObservable<ChromatogramPeakFeatureModel> peak, IObservable<MSDecResult> msScan, IMsSpectrumLoader<ChromatogramPeakFeatureModel> loader, IDataProvider provider, ParameterBase parameter) {
+            var rawChromatograms = peak.Where(t => !(t is null))
+                .Select(t => loader.LoadSpectrumAsObservable(t).Select(spectrum => (t, spectrum: spectrum.OrderByDescending(peak_ => peak_.Intensity).Take(NUMBER_OF_CHROMATOGRAMS))))
+                .Switch()
+                .Select(pair => DataAccess.GetMs2ValuePeaks(provider, pair.t.Mass, pair.t.MS1RawSpectrumIdLeft, pair.t.MS1RawSpectrumIdRight, pair.spectrum.Select(peak_ => (double)peak_.Mass).ToArray(), parameter))
+                .Select(chromatograms => new ChromatogramsModel(
+                    "Raw MS/MS chromatogram",
+                    chromatograms.Zip(RAW_PENS, (chromatogram, pen) => new DisplayChromatogram(chromatogram.Select(peak_ => peak_.ConvertToChromatogramPeak(ChromXType.RT, ChromXUnit.Min)).ToList(), linePen: pen, title: chromatogram.FirstOrDefault().Mz.ToString("F5"))).ToList(),
+                    "Raw MS/MS chromatogram",
+                    "Retention time [min]",
+                    "Abundance"));
+            var deconvolutedChromatograms = msScan.Where(t => !(t is null))
+                .Select(result => result.DecChromPeaks(NUMBER_OF_CHROMATOGRAMS))
+                .Select(chromatograms => new ChromatogramsModel(
+                    "Deconvoluted MS/MS chromatogram",
+                    chromatograms.Zip(DECONVOLUTION_PENS, (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, title: chromatogram.FirstOrDefault()?.Mass.ToString("F5") ?? "NA")).ToList(),
+                    "Deconvoluted MS/MS chromatogram",
+                    "Retention time [min]",
+                    "Abundance"));
             var bothChromatograms = deconvolutedChromatograms.CombineLatest(rawChromatograms, (dec, raw) => dec.Merge(raw));
 
+            Loader = loader as MultiMsRawSpectrumLoader;
+
+            var isSwath = parameter.AcquisitionType == CompMs.Common.Enum.AcquisitionType.SWATH;
             IsRawSelected = new ReactivePropertySlim<bool>(!isSwath).AddTo(Disposables);
             IsDeconvolutedSelected = new ReactivePropertySlim<bool>(isSwath).AddTo(Disposables);
             IsBothSelected = new ReactivePropertySlim<bool>(false).AddTo(Disposables);
@@ -29,7 +64,6 @@ namespace CompMs.App.Msdial.Model.Chart
             .Switch()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
-            Loader = loader;
         }
 
         public ReadOnlyReactivePropertySlim<ChromatogramsModel> ChromatogramsModel { get; }

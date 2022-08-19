@@ -153,6 +153,9 @@ namespace CompMs.App.Msdial.Model.Imms
                 Observable.Return(spectraExporter),
                 Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
+            // Ms2 chromatogram
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter).AddTo(Disposables);
+
             var surveyScanSpectrum = new SurveyScanSpectrum(Target, target => Observable.FromAsync(token => LoadMsSpectrumAsync(target, token)))
                 .AddTo(Disposables);
             SurveyScanModel = new SurveyScanModel(
@@ -199,7 +202,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public EicModel EicModel { get; }
 
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
-
+        public Ms2ChromatogramsModel Ms2ChromatogramsModel { get; }
         public SurveyScanModel SurveyScanModel { get; }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
