@@ -119,17 +119,17 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                 }
             }
             int topScanNum = minimumID;
-            var smoothedMs2ChromPeaksList = new List<List<ChromatogramPeak>>();
-            var ms2ChromPeaksList = DataAccess.GetMs2Peaklistlist(provider, precursorMz, startIndex, endIndex, curatedSpectra.Select(x => (double)x.Mass).ToList(), param, targetCE);
 
-            foreach (var chromPeaks in ms2ChromPeaksList) {
-                var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
-                smoothedMs2ChromPeaksList.Add(sChromPeaks);
+            var ms2ValuePeaksList = DataAccess.GetMs2ValuePeaks(provider, precursorMz, startIndex, endIndex, curatedSpectra.Select(x => (double)x.Mass).ToList(), param, targetCE);
+            var sMs2ValuePeakList = new List<ValuePeak[]>();
+            foreach (var ms2Peaks in ms2ValuePeaksList) { 
+                var sMs2Peaks = new Chromatogram_temp2(ms2Peaks, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+                sMs2ValuePeakList.Add(sMs2Peaks);
             }
 
             //Do MS2Dec deconvolution
-            if (smoothedMs2ChromPeaksList.Count > 0) {
-                var msdecResult = MSDecHandler.GetMSDecResult(smoothedMs2ChromPeaksList, param, topScanNum);
+            if (sMs2ValuePeakList.Count > 0) {
+                var msdecResult = MSDecHandler.GetMSDecResult(sMs2ValuePeakList, param, topScanNum);
                 if (msdecResult == null) { //if null (any pure chromatogram is not found.)
                     if (param.IsDoAndromedaMs2Deconvolution)
                         return MSDecObjectHandler.GetAndromedaSpectrum(chromPeakFeature, curatedSpectra, param, iupac, Math.Abs(chromPeakFeature.PeakCharacter.Charge));
@@ -149,6 +149,37 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                 msdecResult.PrecursorMz = precursorMz;
                 return msdecResult;
             }
+
+            //var smoothedMs2ChromPeaksList = new List<List<ChromatogramPeak>>();
+            //var ms2ChromPeaksList = DataAccess.GetMs2Peaklistlist(provider, precursorMz, startIndex, endIndex, curatedSpectra.Select(x => (double)x.Mass).ToList(), param, targetCE);
+
+            //foreach (var chromPeaks in ms2ChromPeaksList) {
+            //    var sChromPeaks = new Chromatogram(chromPeaks, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+            //    smoothedMs2ChromPeaksList.Add(sChromPeaks);
+            //}
+
+            //Do MS2Dec deconvolution
+            //if (smoothedMs2ChromPeaksList.Count > 0) {
+            //    var msdecResult = MSDecHandler.GetMSDecResult(smoothedMs2ChromPeaksList, param, topScanNum);
+            //    if (msdecResult == null) { //if null (any pure chromatogram is not found.)
+            //        if (param.IsDoAndromedaMs2Deconvolution)
+            //            return MSDecObjectHandler.GetAndromedaSpectrum(chromPeakFeature, curatedSpectra, param, iupac, Math.Abs(chromPeakFeature.PeakCharacter.Charge));
+            //        else
+            //            return MSDecObjectHandler.GetMSDecResultByRawSpectrum(chromPeakFeature, curatedSpectra);
+            //    }
+            //    else {
+            //        if (param.IsDoAndromedaMs2Deconvolution) {
+            //            msdecResult.Spectrum = DataAccess.GetAndromedaMS2Spectrum(msdecResult.Spectrum, param, iupac, Math.Abs(chromPeakFeature.PeakCharacter.Charge));
+            //        }
+            //        if (param.KeepOriginalPrecursorIsotopes) { //replace deconvoluted precursor isotopic ions by the original precursor ions
+            //            msdecResult.Spectrum = MSDecObjectHandler.ReplaceDeconvolutedIsopicIonsToOriginalPrecursorIons(msdecResult, curatedSpectra, chromPeakFeature, param);
+            //        }
+            //    }
+            //    msdecResult.ChromXs = chromPeakFeature.ChromXs;
+            //    msdecResult.RawSpectrumID = targetSpecID;
+            //    msdecResult.PrecursorMz = precursorMz;
+            //    return msdecResult;
+            //}
             
             return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);
         }
