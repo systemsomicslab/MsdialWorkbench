@@ -78,6 +78,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Model\Information\PeakInformationAnalysisModelTests.cs" />
     <Compile Include="Model\Loader\MSDecLoaderTests.cs" />
     <Compile Include="Model\Core\MainWindowModelTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

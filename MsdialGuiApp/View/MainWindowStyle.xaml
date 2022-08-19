@@ -145,10 +145,10 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
 
-                        <Label Content="{TemplateBinding PrependLabel}"
-                               VerticalAlignment="Center" VerticalContentAlignment="Center"
-                               Margin="0,0,8,0"
-                               Grid.Column="0"/>
+                        <TextBlock Text="{TemplateBinding PrependLabel}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"
+                                   Grid.Column="0"/>
                         <ContentPresenter VerticalAlignment="Center"
                                           Grid.Column="1"/>
                     </Grid>

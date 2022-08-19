@@ -181,6 +181,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             DimsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
+            IMessageBroker broker,
             FocusControlManager focusControlManager) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
@@ -191,7 +192,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             ReadOnlyReactivePropertySlim<DimsAnalysisViewModel> result;
             using (var subject = new Subject<DimsAnalysisModel>()) {
                 result = subject.Concat(method.ObserveProperty(m => m.AnalysisModel, isPushCurrentValueAtFirst: false)) // If 'isPushCurrentValueAtFirst' = true or using 'StartWith', first value can't release.
-                    .Select(m => m is null ? null : new DimsAnalysisViewModel(m, compoundSearchService, peakSpotTableService, focusControlManager))
+                    .Select(m => m is null ? null : new DimsAnalysisViewModel(m, compoundSearchService, peakSpotTableService, broker, focusControlManager))
                     .DisposePreviousValue()
                     .ToReadOnlyReactivePropertySlim();
                 subject.OnNext(method.AnalysisModel);
@@ -230,7 +231,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IMessageBroker broker) {
             var focusControlManager = new FocusControlManager();
-            var analysisVM = ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService, focusControlManager);
+            var analysisVM = ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService, broker, focusControlManager);
             var alignmentVM = ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, broker, focusControlManager);
             var chromvms = PrepareChromatogramViewModels(analysisVM, alignmentVM);
             var msvms = PrepareMassSpectrumViewModels(analysisVM, alignmentVM);

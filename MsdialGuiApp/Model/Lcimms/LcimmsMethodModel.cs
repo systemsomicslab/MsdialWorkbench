@@ -12,12 +12,10 @@ using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Enum;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -55,6 +53,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             accProviderFactory = new LcimmsAccumulateDataProviderFactory();
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
+            AccumulatedPeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
         }
 
         private FacadeMatchResultEvaluator matchResultEvaluator;
@@ -78,6 +77,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly IDataProviderFactory<RawMeasurement> providerFactory;
         private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
 
+        public PeakFilterModel AccumulatedPeakFilterModel { get; }
         public PeakFilterModel PeakFilterModel { get; }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
@@ -93,7 +93,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
-                PeakFilterModel)
+                PeakFilterModel,
+                AccumulatedPeakFilterModel)
             .AddTo(Disposables);
         }
 
@@ -149,7 +150,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public void RunAlignmentProcess() {
-            AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage, matchResultEvaluator);
+            Func<AnalysisFileBean, RawMeasurement> map = (AnalysisFileBean file) => DataAccess.LoadMeasurement(file, true, 5, 1000);
+            AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage, matchResultEvaluator, providerFactory.ContraMap(map), accProviderFactory.ContraMap(map));
             var alignmentFile = Storage.AlignmentFiles.Last();
             var aligner = aFactory.CreatePeakAligner();
             var result = aligner.Alignment(Storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
@@ -176,6 +178,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
                         streams[repID], pointerss[repID].pointers[peakID],
                         pointerss[repID].version, pointerss[repID].isAnnotationInfo);
                     yield return decResult;
+                    foreach (var dSpot in spot.AlignmentDriftSpotFeatures) {
+                        var dRepID = dSpot.RepresentativeFileID;
+                        var dPeakID = dSpot.AlignedPeakProperties[dRepID].MasterPeakID;
+                        var dDecResult = MsdecResultsReader.ReadMSDecResult(
+                            streams[dRepID], pointerss[dRepID].pointers[dPeakID],
+                            pointerss[dRepID].version, pointerss[dRepID].isAnnotationInfo);
+                        yield return dDecResult;
+                    }
                 }
             }
             finally {

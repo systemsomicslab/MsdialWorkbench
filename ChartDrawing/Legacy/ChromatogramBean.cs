@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -69,7 +70,7 @@ namespace CompMs.Graphics.Legacy {
     public class ChromatogramBeanLegacy
     {
         private bool isVisible;
-        private List<ChromatogramPeak> Peaks;
+        private IReadOnlyList<IChromatogramPeak> Peaks;
         private SolidColorBrush displayBrush;
         private double lineTickness;
 
@@ -89,7 +90,7 @@ namespace CompMs.Graphics.Legacy {
         private string graphTitle;
 
         public ChromatogramBeanLegacy(bool isVisible, SolidColorBrush displayBrush, double lineTickness, string metaboliteName,
-            float mz, float massTolerance, List<ChromatogramPeak> Peaks) {
+            float mz, float massTolerance, IReadOnlyList<IChromatogramPeak> Peaks) {
             this.Peaks = Peaks;
             this.isVisible = isVisible;
             this.displayBrush = displayBrush;
@@ -175,7 +176,7 @@ namespace CompMs.Graphics.Legacy {
             set { displayBrush = value; }
         }
 
-        public List<ChromatogramPeak> ChromatogramDataPointCollection
+        public IReadOnlyList<IChromatogramPeak> ChromatogramDataPointCollection
         {
             get { return Peaks; }
             set { Peaks = value; }

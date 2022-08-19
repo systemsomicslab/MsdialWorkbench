@@ -46,21 +46,21 @@ namespace CompMs.Common.Components
         public float Intensity { get; set; }
         [Key(2)]
         public string Comment { get; set; }
-        [Key(3)]
+        [IgnoreMember]
         public double Resolution { get; set; }
-        [Key(4)]
+        [IgnoreMember]
         public int Charge { get; set; }
-        [Key(5)]
+        [IgnoreMember]
         public bool IsotopeFrag { get; set; }
         [Key(6)]
         public PeakQuality PeakQuality { get; set; }
         [Key(7)]
         public int PeakID { get; set; }
-        [Key(8)]
+        [IgnoreMember]
         public int IsotopeParentPeakID { get; set; } = -1;
-        [Key(9)]
+        [IgnoreMember]
         public int IsotopeWeightNumber { get; set; } = -1;
-        [Key(10)]
+        [IgnoreMember]
         public bool IsMatched { get; set; } = false;
         [Key(11)]
         public SpectrumComment SpectrumComment { get; set; }

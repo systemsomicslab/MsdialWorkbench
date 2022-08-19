@@ -1,15 +1,11 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.Mathematics.Basic;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace CompMs.Common.Algorithm.PeakPick {
-    public sealed class BaseLineCorrecation
+namespace CompMs.Common.Algorithm.PeakPick
+{
+    public static class BaseLineCorrecation
     {
-        private BaseLineCorrecation() { }
-
         /// <summary>
         /// This is the base line correction method. This method will return the baseline corrected peak list (list of double arrays).
         /// The first arg, List<ChromatogramPeak> peaklist, should be the list of ChromatogramPeak including scan number, retention time, m/z, and intensity.

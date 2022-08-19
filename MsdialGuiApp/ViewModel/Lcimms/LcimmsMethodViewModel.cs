@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Export;
+using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -26,8 +27,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         private LcimmsMethodViewModel(
             LcimmsMethodModel model,
-            IReadOnlyReactiveProperty<AnalysisFileViewModel> analysisViewModelAsObservable,
-            IReadOnlyReactiveProperty<AlignmentFileViewModel> alignmentViewModelAsObservable,
+            IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisViewModelAsObservable,
+            IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentViewModelAsObservable,
             FocusControlManager focusControlManager)
             : base(model, analysisViewModelAsObservable, alignmentViewModelAsObservable) {
 
@@ -36,7 +37,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             }
             this.model = model;
             _focusControlManager = focusControlManager.AddTo(Disposables);
-            PropertyChanged += OnDisplayFiltersChanged;
         }
 
         public bool RefMatchedChecked {
@@ -84,15 +84,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private void WriteDisplayFilter(DisplayFilter flag, bool set) {
             displayFilters.Write(flag, set);
             OnPropertyChanged(nameof(displayFilters));
-        }
-
-        void OnDisplayFiltersChanged(object sender, PropertyChangedEventArgs e) {
-            if (e.PropertyName == nameof(displayFilters)) {
-                if (AnalysisViewModel.Value != null)
-                    AnalysisViewModel.Value.DisplayFilters = displayFilters;
-                // if (AlignmentViewModel.Value != null)
-                //     AlignmentViewModel.Value.DisplayFilters = displayFilters;
-            }
         }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {

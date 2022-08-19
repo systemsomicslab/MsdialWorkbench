@@ -86,41 +86,13 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly object dbLock = new object();
         private readonly object annotatorLock = new object();
 
-        public void AddDataBase() {
-            lock (Lock) {
-                var db = new DataBaseSettingModel(parameter);
-                lock (dbLock) {
-                    DataBaseModels.Add(db);
-                }
-                DataBaseModel = db;
-            }
-        }
-
-        public DataBaseSettingModel AddDataBaseZZZ() {
+        public DataBaseSettingModel AddDataBase() {
             var db = new DataBaseSettingModel(parameter);
             DataBaseModels.Add(db);
             return db;
         }
 
-        public void RemoveDataBase() {
-            lock (Lock) {
-                var db = DataBaseModel;
-                if (!(db is null)) {
-                    lock (dbLock) {
-                        DataBaseModels.Remove(db);
-                    }
-                    var removeAnnotators = AnnotatorModels.Where(annotator => annotator.DataBaseSettingModel == db).ToArray();
-                    lock (annotatorLock) {
-                        foreach (var annotator in removeAnnotators) {
-                            AnnotatorModels.Remove(annotator);
-                        }
-                    }
-                    DataBaseModel = DataBaseModels.LastOrDefault();
-                }
-            }
-        }
-
-        public void RemoveDataBaseZZZ(DataBaseSettingModel db) {
+        public void RemoveDataBase(DataBaseSettingModel db) {
             if (!(db is null)) {
                 DataBaseModels.Remove(db);
                 var removeAnnotators = AnnotatorModels.Where(annotator => annotator.DataBaseSettingModel == db).ToArray();
@@ -130,20 +102,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
-        public void AddAnnotator() {
-            lock (Lock) {
-                var db = DataBaseModel;
-                if (!(db is null)) {
-                    var annotatorModel = annotatorFactory.Create(db, $"{db.DataBaseID}_{serialNumber++}", null);
-                    lock (annotatorLock) {
-                        AnnotatorModels.Add(annotatorModel);
-                    }
-                    AnnotatorModel = annotatorModel;
-                }
-            }
-        }
-
-        public IAnnotatorSettingModel AddAnnotatorZZZ(DataBaseSettingModel db) {
+        public IAnnotatorSettingModel AddAnnotator(DataBaseSettingModel db) {
             if (!(db is null)) {
                 var annotatorModel = annotatorFactory.Create(db, $"{db.DataBaseID}_{serialNumber++}", null);
                 lock (annotatorLock) {
@@ -154,40 +113,13 @@ namespace CompMs.App.Msdial.Model.Setting
             return null;
         }
 
-        public void RemoveAnnotator() {
-            lock (Lock) {
-                var annotatorModel = AnnotatorModel;
-                if (!(annotatorModel is null)) {
-                    lock (annotatorLock) {
-                        AnnotatorModels.Remove(annotatorModel);
-                    }
-                    AnnotatorModel = AnnotatorModels.LastOrDefault();
-                }
-            }
-        }
-
-        public void RemoveAnnotatorZZZ(IAnnotatorSettingModel annotator) {
+        public void RemoveAnnotator(IAnnotatorSettingModel annotator) {
             if (!(annotator is null)) {
                 AnnotatorModels.Remove(annotator);
             }
         }
 
-        public void MoveUpAnnotator() {
-            lock (Lock) {
-                var annotatorModel = AnnotatorModel;
-                if (!(annotatorModel is null)) {
-                    var index = AnnotatorModels.IndexOf(annotatorModel);
-                    if (index == 0) {
-                        return;
-                    }
-                    lock (annotatorLock) {
-                        AnnotatorModels.Move(index, index - 1);
-                    }
-                }
-            }
-        }
-
-        public void MoveUpAnnotatorZZZ(IAnnotatorSettingModel annotator) {
+        public void MoveUpAnnotator(IAnnotatorSettingModel annotator) {
             if (!(annotator is null)) {
                 var index = AnnotatorModels.IndexOf(annotator);
                 if (index <= 0 || index >= AnnotatorModels.Count) {
@@ -197,22 +129,7 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
-        public void MoveDownAnnotator() {
-            lock (Lock) {
-                var annotatorModel = AnnotatorModel;
-                if (!(annotatorModel is null)) {
-                    var index = AnnotatorModels.IndexOf(annotatorModel);
-                    if (index == AnnotatorModels.Count - 1) {
-                        return;
-                    }
-                    lock (annotatorLock) {
-                        AnnotatorModels.Move(index, index+1);
-                    }
-                }
-            }
-        }
-
-        public void MoveDownAnnotatorZZZ(IAnnotatorSettingModel annotator) {
+        public void MoveDownAnnotator(IAnnotatorSettingModel annotator) {
             if (!(annotator is null)) {
                 var index = AnnotatorModels.IndexOf(annotator);
                 if (index < 0 || index >= AnnotatorModels.Count - 1) {

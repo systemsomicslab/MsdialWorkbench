@@ -135,6 +135,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
                 .AsOrdered()
                 .Select(peakAndSpot => {
                     (var peak, var spot) = peakAndSpot;
+
                     if (spot.AlignedPeakProperties.First(p => p.FileID == analysisFile.AnalysisFileId).MasterPeakID < 0) {
                         Filler.GapFill(ms1Spectra, spectra, spot, analysisFile.AnalysisFileId);
                     }
@@ -148,7 +149,15 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
         }
 
         private AlignmentResultContainer PackingSpots(List<AlignmentSpotProperty> alignmentSpots) {
-            if (alignmentSpots.IsEmptyOrNull()) return null;
+            if (alignmentSpots.IsEmptyOrNull()) {
+                return new AlignmentResultContainer
+                {
+                    Ionization = Param.Ionization,
+                    AlignmentResultFileID = -1,
+                    TotalAlignmentSpotCount = 0,
+                    AlignmentSpotProperties = new ObservableCollection<AlignmentSpotProperty>(alignmentSpots),
+                };
+            }
 
             var minInt = (double)alignmentSpots.Min(spot => spot.HeightMin);
             var maxInt = (double)alignmentSpots.Max(spot => spot.HeightMax);

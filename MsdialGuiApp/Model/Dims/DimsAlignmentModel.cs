@@ -1,12 +1,14 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Normalize;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -32,10 +34,11 @@ namespace CompMs.App.Msdial.Model.Dims
     internal class DimsAlignmentModel : AlignmentModelBase
     {
         static DimsAlignmentModel() {
-            chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Mz);
+            CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Mz);
         }
 
-        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
+        private static readonly double MZ_TOLERANCE = 20d;
 
         private readonly AlignmentFileBean _alignmentFile;
         private readonly DataBaseMapper _dataBaseMapper;
@@ -170,7 +173,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
-            var eicLoader = new AlignmentEicLoader(chromatogramSpotSerializer, alignmentFileBean.EicFilePath, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor)).AddTo(Disposables);
+            var eicLoader = new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor)).AddTo(Disposables);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader,
                 files, parameter,
@@ -199,6 +202,27 @@ namespace CompMs.App.Msdial.Model.Dims
             }.CombineLatestValuesAreAllTrue()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
+
+            var mzSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, MZ_TOLERANCE, Target.Select(t => t?.MassCenter ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
+            var idSpotFocus = new IdSpotFocus<AlignmentSpotPropertyModel>(
+                Target,
+                id => Ms1Spots.Argmin(spot => Math.Abs(spot.MasterAlignmentID - id)),
+                Target.Select(t => t?.MasterAlignmentID ?? 0d),
+                "Region focus by ID",
+                (mzSpotFocus, spot => spot.MassCenter)).AddTo(Disposables);
+            FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, mzSpotFocus);
+
+            var peakInformationModel = new PeakInformationAlignmentModel(Target).AddTo(Disposables);
+            peakInformationModel.Add(
+                t => new MzPoint(t?.innerModel.TimesCenter.Mz.Value ?? 0d));
+            peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
+            PeakInformationModel = peakInformationModel;
+
+            var compoundDetailModel = new CompoundDetailModel(Target.Select(t => t?.ScanMatchResult), mapper).AddTo(Disposables);
+            compoundDetailModel.Add(
+                r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
+                r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
+            CompoundDetailModel = compoundDetailModel;
         }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
@@ -216,6 +240,9 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
         public ReadOnlyReactivePropertySlim<bool> CanSeachCompound { get; }
+        public FocusNavigatorModel FocusNavigatorModel { get; }
+        public PeakInformationAlignmentModel PeakInformationModel { get; }
+        public CompoundDetailModel CompoundDetailModel { get; }
 
         public CompoundSearchModel BuildCompoundSearchModel() {
             return new CompoundSearchModel<AlignmentSpotProperty>(_files[Target.Value.RepresentativeFileID], Target.Value.innerModel, _msdecResult.Value, _compoundSearchers.Items);

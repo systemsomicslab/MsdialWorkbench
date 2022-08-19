@@ -1,29 +1,27 @@
 ﻿using CompMs.App.Msdial.Model.Lcimms;
-using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
-using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Linq;
 using System.Reactive.Linq;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
-    internal sealed class LcimmsAnalysisViewModel : AnalysisFileViewModel, IAnalysisResultViewModel
+    internal sealed class LcimmsAnalysisViewModel : ViewModelBase, IAnalysisResultViewModel
     {
         public LcimmsAnalysisViewModel(
             LcimmsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            FocusControlManager focusControlManager)
-            : base(model) {
+            FocusControlManager focusControlManager) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -41,7 +39,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             }
 
             this.model = model;
-            this.compoundSearchService = compoundSearchService;
             this.peakSpotTableService = peakSpotTableService;
 
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
@@ -67,18 +64,24 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 horizontalAxis: RtMzPlotViewModel.VerticalAxis).AddTo(Disposables);
             // PeakSpotTableViewModelBase = new LcimmsAnalysisViewModel
 
-            SearchCompoundCommand = new[]
-            {
-                Target.Select(t => t?.InnerModel != null),
-                model.MsdecResult.Select(r => r != null),
-            }.CombineLatestValuesAreAllTrue()
-            .ToReactiveCommand()
-            .WithSubscribe(SearchCompound)
-            .AddTo(Disposables);
+            SearchCompoundCommand = model.CanSearchCompound
+                .ToReactiveCommand()
+                .AddTo(Disposables);
+            SearchCompoundCommand.WithLatestFrom(model.CompoundSearchModel)
+                .Subscribe(p =>
+                {
+                    using (var vm = new CompoundSearchVM(p.Second)) {
+                        compoundSearchService.ShowDialog(vm);
+                    }
+                }).AddTo(Disposables);
+
+            PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
+            CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
+            var _peakDetailViewModels = new ReactiveCollection<ViewModelBase>().AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
         private readonly LcimmsAnalysisModel model;
-        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 
         public AnalysisPeakPlotViewModel RtMzPlotViewModel { get; private set; }
@@ -89,23 +92,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public SurveyScanViewModel SurveyScanViewModel { get; private set; }
         public PeakFilterViewModel PeakFilterViewModel { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
+        public PeakInformationViewModel PeakInformationViewModel { get; }
+        public CompoundDetailViewModel CompoundDetailViewModel { get; }
+        public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ReactiveCommand SearchCompoundCommand { get; }
 
-        public void SearchCompound() {
-            using (var model = new CompoundSearchModel<ChromatogramPeakFeature>(
-                this.model.AnalysisFile,
-                Target.Value.InnerModel,
-                this.model.MsdecResult.Value,
-                null,
-                null))
-            using (var vm = new CompoundSearchVM(model)) {
-                compoundSearchService.ShowDialog(vm);
-            }
-        }
-
-        public DelegateCommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
-        private DelegateCommand showIonTableCommand;
+        public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
+        private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {
             // peakSpotTableService.Show(PeakTableViewModel);

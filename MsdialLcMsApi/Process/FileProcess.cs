@@ -68,14 +68,11 @@ namespace CompMs.MsdialLcMsApi.Process
             var filepath = file.AnalysisFilePath;
             var fileID = file.AnalysisFileId;
 
-
-            var spectrumList = provider.LoadMsSpectrums();
-
             // feature detections
             Console.WriteLine("Peak picking started");
             var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, param, token, reportAction);
             IsotopeEstimator.Process(chromPeakFeatures, param, iupacDB);
-            var summaryDto = ChromFeatureSummarizer.GetChromFeaturesSummary(spectrumList, chromPeakFeatures);
+            var summaryDto = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures);
             var summary = ChromatogramPeaksDataSummary.ConvertFromDto(summaryDto);
             file.ChromPeakFeaturesSummary = summaryDto;
 
@@ -84,7 +81,7 @@ namespace CompMs.MsdialLcMsApi.Process
             var targetCE2MSDecResults = new Dictionary<double, List<MSDecResult>>();
             var initial_msdec = 30.0;
             var max_msdec = 30.0;
-            var ceList = SpectrumParser.LoadCollisionEnergyTargets(spectrumList);
+            var ceList = provider.LoadCollisionEnergyTargets();
             if (storage.Parameter.AcquisitionType == Common.Enum.AcquisitionType.AIF) {
                 for (int i = 0; i < ceList.Count; i++) {
                     var targetCE = Math.Round(ceList[i], 2); // must be rounded by 2 decimal points
@@ -95,13 +92,13 @@ namespace CompMs.MsdialLcMsApi.Process
                     var max_msdec_aif = max_msdec / ceList.Count;
                     var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
                     targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
-                        spectrumList, chromPeakFeatures, storage.Parameter, summary, storage.IupacDatabase, reportAction, token, targetCE);
+                        provider, chromPeakFeatures, storage.Parameter, summary, storage.IupacDatabase, reportAction, token, targetCE);
                 }
             }
             else {
                 var targetCE = ceList.IsEmptyOrNull() ? -1 : ceList[0];
                 targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
-                        spectrumList, chromPeakFeatures, storage.Parameter, summary, storage.IupacDatabase, reportAction, token);
+                    provider, chromPeakFeatures, storage.Parameter, summary, storage.IupacDatabase, reportAction, token);
             }
 
                 // annotations
@@ -117,15 +114,15 @@ namespace CompMs.MsdialLcMsApi.Process
                         chromPeakFeatures,
                         msdecResults,
                         provider,
-                        param.NumThreads,
+                        param.NumThreads == 1 ? 1 : 2,
                         token,
                         v => reportAction?.Invoke((int)(initial_annotation_local + v * max_annotation_local)));
                 }
 
                 // characterizatin
-                new PeakCharacterEstimator(90, 10).Process(spectrumList, chromPeakFeatures,
-                    targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
-                    evaluator, param, reportAction);
+                new PeakCharacterEstimator(90, 10).Process(provider, chromPeakFeatures, targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
+                    evaluator,
+                    param, reportAction);
 
             // file save
             var paifile = file.PeakAreaBeanInformationFilePath;

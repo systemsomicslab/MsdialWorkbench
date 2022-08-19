@@ -41,8 +41,7 @@ namespace CompMs.MsdialCore.DataObj
         public ReadOnlyCollection<IChromatogramPeak> Chromatogram { get; }
 
         public ChromatogramPeakInfo(int id, IEnumerable<IChromatogramPeak> chromatogram, float chromTop, float chromLeft, float chromRight) {
-            var chroms = chromatogram?.ToList() ?? new List<IChromatogramPeak>();
-            chroms.Sort((a, b) => a.ChromXs.Value.CompareTo(b.ChromXs.Value));
+            var chroms = chromatogram?.OrderBy(x => x.ChromXs.Value).ToList() ?? new List<IChromatogramPeak>();
             Chromatogram = new ReadOnlyCollection<IChromatogramPeak>(chroms);
 
             FileID = id;
@@ -52,8 +51,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public ChromatogramPeakInfo(int id, IEnumerable<IChromatogramPeak> chromatogram, IChromX chromTop, IChromX chromLeft, IChromX chromRight) {
-            var chroms = chromatogram?.ToList() ?? new List<IChromatogramPeak>();
-            chroms.Sort((a, b) => a.ChromXs.Value.CompareTo(b.ChromXs.Value));
+            var chroms = chromatogram?.OrderBy(x => x.ChromXs.Value).ToList() ?? new List<IChromatogramPeak>();
             Chromatogram = new ReadOnlyCollection<IChromatogramPeak>(chroms);
 
             FileID = id;

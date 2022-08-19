@@ -22,7 +22,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm
         public List<ChromatogramPeakFeature> Run(IDataProvider provider, MsdialLcmsParameter param, CancellationToken token, Action<int> reportAction) {
             var coreProcess = new PeakSpottingCore(param);
             var chromatogramRange = new ChromatogramRange(param.RetentionTimeBegin, param.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
-            return coreProcess.Execute3DFeatureDetection(provider, param.NumThreads, token, reportAction?.FromRange(_initialProgress, _progressMax), chromatogramRange);
+            //return coreProcess.Execute3DFeatureDetection(provider, param.NumThreads, token, reportAction?.FromRange(_initialProgress, _progressMax), chromatogramRange);
+            return coreProcess.Execute3DFeatureDetection(provider, param.NumThreads == 1 ? 1 : 2, token, reportAction?.FromRange(_initialProgress, _progressMax), chromatogramRange);
         }
     }
 }

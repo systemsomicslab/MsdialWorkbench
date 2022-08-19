@@ -59,9 +59,9 @@ namespace CompMs.App.Msdial.View.PeakCuration {
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-            foreach (var s in this.SampleTableViewerInAlignmentVM.Source) {
-                s.Image = null;
-            }
+            //foreach (var s in this.SampleTableViewerInAlignmentVM.Source) {
+            //    s.Image = null;
+            //}
             this.DataContext = null;
         }
 
@@ -207,7 +207,8 @@ namespace CompMs.App.Msdial.View.PeakCuration {
 
             System.Threading.Tasks.Parallel.For(0, numAnalysisfiles, (i) => {
                 //for (int i = 0; i < numAnalysisfiles; i++) { // draw the included samples
-                var speaks = chromatograms[i].Convert().Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+                //var speaks = chromatograms[i].Convert().Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+                var speaks = chromatograms[i].Convert().Peaks;
                 var chromatogramBean = new ChromatogramBeanLegacy(
                     true, 
                     classnameToBrushes.TryGetValue(files[i].AnalysisFileClass, out var b) ? b : ChartBrushes.GetChartBrush(i), 

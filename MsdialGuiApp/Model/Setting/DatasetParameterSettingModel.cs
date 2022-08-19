@@ -209,6 +209,7 @@ namespace CompMs.App.Msdial.Model.Setting
             projectParameter.License = License;
             projectParameter.CollisionEnergy = CollisionEnergy;
             projectParameter.Comment = Comment;
+            parameter.IsDoMs2ChromDeconvolution = parameter.AcquisitionType != AcquisitionType.DDA;
 
             parameter.ProteomicsParam.CollistionType = CollisionType;
 

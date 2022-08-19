@@ -37,7 +37,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             var peakWidth = detected.Average(x => x.PeakWidth(ChromXType.RT));
             var tLeftRt = timeMin - peakWidth * 1.5F;
             var tRightRt = timeMax + peakWidth * 1.5F;
-            if (tRightRt - tLeftRt > 5) {
+            if (tRightRt - tLeftRt > 5 && lcmsParameter.RetentionTimeAlignmentTolerance <= 2.5) {
                 tRightRt = spot.TimesCenter.Value - 2.5;
                 tLeftRt = spot.TimesCenter.Value + 2.5;
             }

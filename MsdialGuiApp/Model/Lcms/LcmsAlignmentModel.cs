@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Normalize;
 using CompMs.App.Msdial.Model.Search;
@@ -239,6 +240,20 @@ namespace CompMs.App.Msdial.Model.Lcms
                 (rtSpotFocus, spot => spot.TimesCenter),
                 (mzSpotFocus, spot => spot.MassCenter)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus);
+
+            var peakInformationModel = new PeakInformationAlignmentModel(Target).AddTo(Disposables);
+            peakInformationModel.Add(
+                t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d),
+                t => new MzPoint(t?.MassCenter ?? 0d));
+            peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
+            PeakInformationModel = peakInformationModel;
+
+            var compoundDetailModel = new CompoundDetailModel(Target.Select(t => t?.ScanMatchResult), mapper).AddTo(Disposables);
+            compoundDetailModel.Add(
+                r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
+                r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
+                r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
+            CompoundDetailModel = compoundDetailModel;
         }
 
         public ParameterBase Parameter { get; }
@@ -256,6 +271,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         public NormalizationSetModel NormalizationSetModel { get; }
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
+        public PeakInformationAlignmentModel PeakInformationModel { get; }
+        public CompoundDetailModel CompoundDetailModel { get; }
 
         public CompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {
             return new LcmsCompoundSearchModel<AlignmentSpotProperty>(

@@ -12,6 +12,8 @@
              xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:vmcore="clr-namespace:CompMs.App.Msdial.ViewModel"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
+             xmlns:info="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
+             xmlns:infoview="clr-namespace:CompMs.App.Msdial.View.Information"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              xmlns:commonbehavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
@@ -93,12 +95,12 @@
                             <DataTemplate>
                                 <ContentControl Content="{Binding Value}">
                                     <ContentControl.Resources>
-                                        <DataTemplate DataType="{x:Type vmcore:AnalysisFileViewModel}">
+                                        <DataTemplate DataType="{x:Type vm:LcimmsAnalysisViewModel}">
                                             <TextBlock Name="TabItem_RtMzPairwisePlotPeakView"
                                                        Text="Peak spot viewer"
                                                        VerticalAlignment="Stretch"/>
                                         </DataTemplate>
-                                        <DataTemplate DataType="{x:Type vmcore:AlignmentFileViewModel}">
+                                        <DataTemplate DataType="{x:Type vm:LcimmsAlignmentViewModel}">
                                             <TextBlock Name="TabItem_RtMzPairwisePlotAlignmentView"
                                                        Text="Alignment spot viewer"
                                                        VerticalAlignment="Stretch"/>
@@ -111,7 +113,7 @@
                             <DataTemplate>
                                 <ContentControl Content="{Binding Value}">
                                     <ContentControl.Resources>
-                                        <DataTemplate DataType="{x:Type vmcore:AnalysisFileViewModel}">
+                                        <DataTemplate DataType="{x:Type vm:LcimmsAnalysisViewModel}">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition/>
@@ -157,7 +159,7 @@
                                                 </chart:PeakView>
                                             </Grid>
                                         </DataTemplate>
-                                        <DataTemplate DataType="{x:Type vmcore:AlignmentFileViewModel}">
+                                        <DataTemplate DataType="{x:Type vm:LcimmsAlignmentViewModel}">
                                             <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}"
                                                                          commonbehavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"
                                                                          d:DataContext="{d:DesignInstance Type={x:Type vmchart:AlignmentPeakPlotViewModel}}">
@@ -179,6 +181,7 @@
                                             </chart:AlignmentPeakPlotView>
                                         </DataTemplate>
                                     </ContentControl.Resources>
+
                                 </ContentControl>
                             </DataTemplate>
                         </TabControl.ContentTemplate>
@@ -280,34 +283,46 @@
                         <RowDefinition Height="*" MinHeight="300" />
                     </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0">
-
-                        <TabControl Name="TabControl_PeakCharacter"
-                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                    DataContext="{Binding SelectedItem.DataContext, ElementName=TabControl_PairwisePlotViewer, Mode=OneWay}"
-                                    Grid.Row="0">
-
-                            <TabItem Header="Basic peak property" 
-                                 Name="TabItem_BasicProperty" 
-                                 Height="25"
-                                 Background="{StaticResource MainThemeColor}">
-                                 <!--
-                                <local:PeakPropertyView DataContext="{Binding Target}"/>
-                                -->
-                            </TabItem>
-
-                            <TabItem Header="Compound detail" 
-                                 Name="TabItem_CompoundDetail" 
-                                 Height="25"
-                                 Background="{StaticResource MainThemeColor}">
-                                 <!--
-                                <local:CompoundDetailView DataContext="{Binding Target}"/>
-                                -->
-                            </TabItem>
-                         
-                        </TabControl>
-
-                    </Grid>
+                    <TabControl Name="TabControl_PeakCharacter"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                DataContext="{Binding SelectedViewModel.Value}"
+                                ItemsSource="{Binding PeakDetailViewModels}"
+                                SelectedIndex="0"
+                                Grid.Row="0">
+                        <TabControl.Resources>
+                            <Style TargetType="TabItem">
+                                <Setter Property="Background" Value="{StaticResource MainThemeColor}"/>
+                            </Style>
+                        </TabControl.Resources>
+                        <TabControl.ContentTemplate>
+                            <DataTemplate>
+                                <DataTemplate.Resources>
+                                    <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
+                                        <infoview:PeakInformationView/>
+                                    </DataTemplate>                              
+                                    <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
+                                        <infoview:CompoundDetailView/>
+                                    </DataTemplate>                              
+                                </DataTemplate.Resources>
+                                <ContentPresenter Content="{Binding}"/>
+                            </DataTemplate>
+                        </TabControl.ContentTemplate>
+                        <TabControl.ItemTemplate>
+                            <DataTemplate>
+                                <DataTemplate.Resources>
+                                    <DataTemplate DataType="{x:Type info:PeakInformationViewModel}">
+                                        <TextBlock Text="Basic peak property"
+                                                   VerticalAlignment="Stretch"/>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
+                                        <TextBlock Text="Compund detail"
+                                                   VerticalAlignment="Stretch"/>
+                                    </DataTemplate>
+                                </DataTemplate.Resources>
+                                <ContentPresenter Content="{Binding}"/>
+                            </DataTemplate>
+                        </TabControl.ItemTemplate>
+                    </TabControl>
 
                     <TabControl x:Name="TabControl_MS2Viewer"
                                 ItemsSource="{Binding MassSpectrumViewModels.ViewModels.Value}"

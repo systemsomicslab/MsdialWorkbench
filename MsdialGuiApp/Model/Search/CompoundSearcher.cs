@@ -14,11 +14,11 @@ namespace CompMs.App.Msdial.Model.Search
 {
     public class CompoundSearcher
     {
-        private readonly IAnnotationQueryFactory<IAnnotationQueryZZZ<MsScanMatchResult>> queryFactory;
+        private readonly IAnnotationQueryFactory<ICallableAnnotationQuery<MsScanMatchResult>> queryFactory;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
 
         public CompoundSearcher(
-            IAnnotationQueryFactory<IAnnotationQueryZZZ<MsScanMatchResult>> queryFactory,
+            IAnnotationQueryFactory<ICallableAnnotationQuery<MsScanMatchResult>> queryFactory,
             MsRefSearchParameterBase msRefSearchParameter,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             this.queryFactory = queryFactory ?? throw new ArgumentNullException(nameof(queryFactory));

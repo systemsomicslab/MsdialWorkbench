@@ -67,12 +67,10 @@ namespace CompMs.MsdialCore.Algorithm {
 
         private List<ChromatogramPeakFeature> Execute3DFeatureDetectionNormalModeBySingleThread(IDataProvider provider, ReportProgress reporter, ChromatogramRange chromatogramRange) {
 
-            var spectrumList = provider.LoadMs1Spectrums();
             var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
-
-            float[] mzRange = DataAccess.GetMs1Range(spectrumList, _parameter.IonMode);
-            float startMass = mzRange[0]; if (startMass < _parameter.MassRangeBegin) startMass = _parameter.MassRangeBegin;
-            float endMass = mzRange[1]; if (endMass > _parameter.MassRangeEnd) endMass = _parameter.MassRangeEnd;
+            (float startMass, float endMass) = provider.GetMs1Range(_parameter.IonMode);
+            if (startMass < _parameter.MassRangeBegin) startMass = _parameter.MassRangeBegin;
+            if (endMass > _parameter.MassRangeEnd) endMass = _parameter.MassRangeEnd;
             float focusedMass = startMass, massStep = _parameter.MassSliceWidth;
             if (_parameter.AccuracyType == AccuracyType.IsNominal) { massStep = 1.0F; }
             var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, _parameter.AcquisitionType);
@@ -106,24 +104,21 @@ namespace CompMs.MsdialCore.Algorithm {
 
         private List<ChromatogramPeakFeature> Execute3DFeatureDetectionNormalModeByMultiThread(IDataProvider provider, int numThreads, CancellationToken token, ReportProgress reporter, ChromatogramRange chromatogramRange) {
 
-            var spectrumList = provider.LoadMs1Spectrums();
-
-            float[] mzRange = DataAccess.GetMs1Range(spectrumList, _parameter.IonMode);
-            float startMass = mzRange[0]; if (startMass < _parameter.MassRangeBegin) startMass = _parameter.MassRangeBegin;
-            float endMass = mzRange[1]; if (endMass > _parameter.MassRangeEnd) endMass = _parameter.MassRangeEnd;
+            var mzRange = provider.GetMs1Range(_parameter.IonMode);
+            float startMass = mzRange.Min; if (startMass < _parameter.MassRangeBegin) startMass = _parameter.MassRangeBegin;
+            float endMass = mzRange.Max; if (endMass > _parameter.MassRangeEnd) endMass = _parameter.MassRangeEnd;
             float focusedMass = startMass, massStep = _parameter.MassSliceWidth;
 
             if (_parameter.AccuracyType == AccuracyType.IsNominal) { massStep = 1.0F; }
             var targetMasses = GetFocusedMassList(startMass, endMass, massStep, _parameter.MassRangeBegin, _parameter.MassRangeEnd);
             var syncObj = new object();
             var counter = 0;
-            var rawSpectra = new RawSpectra(spectrumList, _parameter.IonMode, _parameter.AcquisitionType);
-
+            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, _parameter.AcquisitionType);
             var chromPeakFeaturesArray = new List<ChromatogramPeakFeature>[targetMasses.Count];
             var queue = new ConcurrentQueue<(float, int)>(targetMasses.Select((targetMass, i) => (targetMass, i)));
             var tasks = new Task[numThreads];
             for (int i = 0; i < numThreads; i++) {
-                tasks[i] = Task.Run(() => zzz(
+                tasks[i] = Task.Run(() => ConsumeQueue(
                     rawSpectra,
                     provider,
                     chromatogramRange,
@@ -154,7 +149,15 @@ namespace CompMs.MsdialCore.Algorithm {
             return FinalizePeakSpottingResult(chromPeakFeaturesArray, massStep, provider);
         }
 
-        private void zzz(RawSpectra rawSpectra, IDataProvider provider, ChromatogramRange range, PeakDetection detector, Action report, List<float> targetMasses, List<ChromatogramPeakFeature>[] chromPeakFeaturesArray, ConcurrentQueue<(float, int)> queue) {
+        private void ConsumeQueue(
+            RawSpectra rawSpectra, 
+            IDataProvider provider, 
+            ChromatogramRange range, 
+            PeakDetection detector, 
+            Action report, 
+            List<float> targetMasses, 
+            List<ChromatogramPeakFeature>[] chromPeakFeaturesArray, 
+            ConcurrentQueue<(float, int)> queue) {
             System.Diagnostics.Debug.Assert(targetMasses.Count == chromPeakFeaturesArray.Length);
             while (queue.TryDequeue(out var pair)) {
                 var (targetMass, index) = pair;
@@ -166,11 +169,9 @@ namespace CompMs.MsdialCore.Algorithm {
 
         private async Task<List<ChromatogramPeakFeature>> Execute3DFeatureDetectionNormalModeByMultiThreadAsync(IDataProvider provider, int numThreads, CancellationToken token, ReportProgress reporter, ChromatogramRange chromatogramRange) {
 
-            var spectrumList = provider.LoadMs1Spectrums();
-
-            float[] mzRange = DataAccess.GetMs1Range(spectrumList, _parameter.IonMode);
-            float startMass = mzRange[0]; if (startMass < _parameter.MassRangeBegin) startMass = _parameter.MassRangeBegin;
-            float endMass = mzRange[1]; if (endMass > _parameter.MassRangeEnd) endMass = _parameter.MassRangeEnd;
+            var mzRange = provider.GetMs1Range(_parameter.IonMode);
+            float startMass = mzRange.Min; if (startMass < _parameter.MassRangeBegin) startMass = _parameter.MassRangeBegin;
+            float endMass = mzRange.Max; if (endMass > _parameter.MassRangeEnd) endMass = _parameter.MassRangeEnd;
             float focusedMass = startMass, massStep = _parameter.MassSliceWidth;
 
             if (_parameter.AccuracyType == AccuracyType.IsNominal) { massStep = 1.0F; }
@@ -319,24 +320,6 @@ namespace CompMs.MsdialCore.Algorithm {
             return chromPeakFeatures;
         }
 
-        public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures_Temp(RawSpectra rawSpectra, IDataProvider provider, float focusedMass, ChromatogramRange chromatogramRange) {
-
-            //get EIC chromatogram
-            var chromatogram = rawSpectra.GetMs1ExtractedChromatogram_temp(focusedMass, _parameter.MassSliceWidth, chromatogramRange);
-            if (chromatogram.IsEmpty) return null;
-
-            //get peak detection result
-            var chromPeakFeatures = GetChromatogramPeakFeatures(chromatogram);
-            if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
-            SetRawDataAccessID2ChromatogramPeakFeatures(chromPeakFeatures, provider, chromatogram.Peaks);
-
-            //filtering out noise peaks considering smoothing effects and baseline effects
-            chromPeakFeatures = GetBackgroundSubtractedPeaks(chromPeakFeatures, chromatogram.Peaks);
-            if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return null;
-
-            return chromPeakFeatures;
-        }
-
         public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures_Temp2(RawSpectra rawSpectra, IDataProvider provider, float focusedMass, ChromatogramRange chromatogramRange, PeakDetection detector) {
 
             //get EIC chromatogram
@@ -441,38 +424,6 @@ namespace CompMs.MsdialCore.Algorithm {
             return chromPeakFeatures;
         }
 
-        public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(Chromatogram_temp chromatogram) {
-            var smoothedPeaklist = chromatogram.Smoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel);
-            //var detectedPeaks = PeakDetection.GetDetectedPeakInformationCollectionFromDifferentialBasedPeakDetectionAlgorithm(analysisParametersBean.MinimumDatapoints, analysisParametersBean.MinimumAmplitude, analysisParametersBean.AmplitudeNoiseFactor, analysisParametersBean.SlopeNoiseFactor, analysisParametersBean.PeaktopNoiseFactor, smoothedPeaklist);
-            var minDatapoints = _parameter.MinimumDatapoints;
-            var minAmps = _parameter.MinimumAmplitude;
-            var detectedPeaks = PeakDetection.PeakDetectionVS1(smoothedPeaklist, minDatapoints, minAmps);
-            if (detectedPeaks == null || detectedPeaks.Count == 0) return null;
-
-            var chromPeakFeatures = new List<ChromatogramPeakFeature>();
-
-            foreach (var result in detectedPeaks) {
-                if (result.IntensityAtPeakTop <= 0) continue;
-                var mass = chromatogram.Peaks[result.ScanNumAtPeakTop][2];
-
-                //option
-                //this method is currently used in LC/MS project.
-                //Users can prepare their-own 'exclusion mass' list to exclude unwanted peak features
-                var excludeChecker = false;
-                foreach (var pair in _parameter.ExcludedMassList.OrEmptyIfNull()) {
-                    if (Math.Abs(pair.Mass - mass) < pair.MassTolerance) {
-                        excludeChecker = true;
-                        break;
-                    }
-                }
-                if (excludeChecker) continue;
-                var chromPeakFeature = ChromatogramPeakFeature.FromPeakDetectionResult(result, chromatogram, mass);
-                chromPeakFeature.IonMode = _parameter.IonMode;
-                chromPeakFeatures.Add(chromPeakFeature);
-            }
-            return chromPeakFeatures;
-        }
-
         public List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(Chromatogram_temp2 chromatogram, PeakDetection detector) {
             var smoothedPeaklist = chromatogram.Smoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel);
             //var detectedPeaks = PeakDetection.GetDetectedPeakInformationCollectionFromDifferentialBasedPeakDetectionAlgorithm(analysisParametersBean.MinimumDatapoints, analysisParametersBean.MinimumAmplitude, analysisParametersBean.AmplitudeNoiseFactor, analysisParametersBean.SlopeNoiseFactor, analysisParametersBean.PeaktopNoiseFactor, smoothedPeaklist);
@@ -518,6 +469,12 @@ namespace CompMs.MsdialCore.Algorithm {
             }
         }
 
+        public void SetRawDataAccessID2ChromatogramPeakFeaturesFor4DChromData(List<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, IReadOnlyList<ValuePeak> peaklist) {
+            foreach (var feature in chromPeakFeatures) {
+                SetRawDataAccessID2ChromatogramPeakFeatureFor4DChromData(feature, provider, peaklist);
+            }
+        }
+
         private void SetRawDataAccessID2ChromatogramPeakFeatureFor4DChromData(ChromatogramPeakFeature feature, IReadOnlyList<RawSpectrum> accSpecList, IReadOnlyList<IChromatogramPeak> peaklist) {
 
             var chromLeftID = feature.ChromScanIdLeft;
@@ -533,7 +490,23 @@ namespace CompMs.MsdialCore.Algorithm {
             feature.MS1RawSpectrumIdRight = accSpecList[peaklist[chromRightID].ID].OriginalIndex;
 
             feature.MS2RawSpectrumID = -1; // at this moment, zero must be inserted for deconvolution process
+        }
 
+        private void SetRawDataAccessID2ChromatogramPeakFeatureFor4DChromData(ChromatogramPeakFeature feature, IDataProvider provider, IReadOnlyList<ValuePeak> peaklist) {
+
+            var chromLeftID = feature.ChromScanIdLeft;
+            var chromTopID = feature.ChromScanIdTop;
+            var chromRightID = feature.ChromScanIdRight;
+
+            feature.MS1AccumulatedMs1RawSpectrumIdLeft = peaklist[chromLeftID].Id;
+            feature.MS1AccumulatedMs1RawSpectrumIdTop = peaklist[chromTopID].Id;
+            feature.MS1AccumulatedMs1RawSpectrumIdRight = peaklist[chromRightID].Id;
+
+            feature.MS1RawSpectrumIdLeft = provider.LoadMsSpectrumFromIndex(peaklist[chromLeftID].Id).OriginalIndex;
+            feature.MS1RawSpectrumIdTop = provider.LoadMsSpectrumFromIndex(peaklist[chromTopID].Id).OriginalIndex;
+            feature.MS1RawSpectrumIdRight = provider.LoadMsSpectrumFromIndex(peaklist[chromRightID].Id).OriginalIndex;
+
+            feature.MS2RawSpectrumID = -1; // at this moment, zero must be inserted for deconvolution process
         }
 
         /// <summary>
@@ -594,6 +567,10 @@ namespace CompMs.MsdialCore.Algorithm {
             feature.MS1RawSpectrumIdTop = peaklist[chromTopID].Id;
             feature.MS1RawSpectrumIdRight = peaklist[chromRightID].Id;
 
+            //if (feature.MS1RawSpectrumIdRight == 0) {
+            //    Console.WriteLine();
+            //}
+
             SetMS2RawSpectrumIDs2ChromatogramPeakFeature(feature, provider, feature.MS1RawSpectrumIdLeft, feature.MS1RawSpectrumIdTop, feature.MS1RawSpectrumIdRight);
         }
 
@@ -601,7 +578,7 @@ namespace CompMs.MsdialCore.Algorithm {
 
             var mass = feature.Mass;
             var minDiff = int.MaxValue;
-            var ms1SpectrumList = provider.LoadMs1Spectrums();
+            var msSpectrumList = provider.LoadMsSpectrums();
             var ms2SpectrumList = provider.LoadMsNSpectrums(level:2);
             var ce2MinDiff = new Dictionary<double, double>(); // ce to diff
 
@@ -615,9 +592,9 @@ namespace CompMs.MsdialCore.Algorithm {
             }
             #endregion
 
-            var ms1Begin = SearchCollection.LowerBound(ms2SpectrumList, ms1SpectrumList[scanBegin], (a, b) => a.ScanNumber.CompareTo(b.ScanNumber));
-            var ms1End = SearchCollection.UpperBound(ms2SpectrumList, ms1SpectrumList[scanEnd], (a, b) => a.ScanNumber.CompareTo(b.ScanNumber));
-            var ms1TopScanNumber = ms1SpectrumList[scanTop].ScanNumber;
+            var ms1Begin = SearchCollection.LowerBound(ms2SpectrumList, provider.LoadMsSpectrumFromIndex(scanBegin), (a, b) => a.Index.CompareTo(b.Index));
+            var ms1End = SearchCollection.UpperBound(ms2SpectrumList, provider.LoadMsSpectrumFromIndex(scanEnd), (a, b) => a.Index.CompareTo(b.Index));
+            var ms1TopIndex = provider.LoadMsSpectrumFromIndex(scanTop).Index;
             for (int i = ms1Begin; i < ms1End; i++) {
                 var spec = ms2SpectrumList[i];
                 if (spec.MsLevel <= 1) continue;
@@ -627,18 +604,18 @@ namespace CompMs.MsdialCore.Algorithm {
 
                         if (_parameter.AcquisitionType == AcquisitionType.AIF) {
                             var ceRounded = Math.Round(ce, 2); // must be rounded by 2 decimal points
-                            if (!ce2MinDiff.ContainsKey(ceRounded) || ce2MinDiff[ceRounded] > Math.Abs(spec.ScanNumber - ms1TopScanNumber)) {
-                                ce2MinDiff[ceRounded] = Math.Abs(spec.ScanNumber - ms1TopScanNumber);
-                                feature.MS2RawSpectrumID2CE[spec.ScanNumber] = ce;
+                            if (!ce2MinDiff.ContainsKey(ceRounded) || ce2MinDiff[ceRounded] > Math.Abs(spec.Index - ms1TopIndex)) {
+                                ce2MinDiff[ceRounded] = Math.Abs(spec.Index - ms1TopIndex);
+                                feature.MS2RawSpectrumID2CE[spec.Index] = ce;
                             }
                         }
                         else {
-                            feature.MS2RawSpectrumID2CE[spec.ScanNumber] = ce;
+                            feature.MS2RawSpectrumID2CE[spec.Index] = ce;
                         }
 
-                        if (minDiff > Math.Abs(spec.ScanNumber - ms1TopScanNumber)) {
-                            minDiff = Math.Abs(spec.ScanNumber - ms1TopScanNumber);
-                            feature.MS2RawSpectrumID = spec.ScanNumber;
+                        if (minDiff > Math.Abs(spec.Index - ms1TopIndex)) {
+                            minDiff = Math.Abs(spec.Index - ms1TopIndex);
+                            feature.MS2RawSpectrumID = spec.Index;
                         }
                     }
                 }
@@ -898,11 +875,10 @@ namespace CompMs.MsdialCore.Algorithm {
 
         public List<ChromatogramPeakFeature> GetRecalculatedChromPeakFeaturesByMs1MsTolerance(List<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider) {
             // var spectrumList = param.MachineCategory == MachineCategory.LCIMMS ? rawObj.AccumulatedSpectrumList : rawObj.SpectrumList;
-            var spectrumList = provider.LoadMs1Spectrums();
             var recalculatedPeakspots = new List<ChromatogramPeakFeature>();
             var minDatapoint = 3;
             // var counter = 0;
-            var rawSpectra = new RawSpectra(spectrumList, _parameter.IonMode, _parameter.AcquisitionType);
+            var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, _parameter.AcquisitionType);
             foreach (var spot in chromPeakFeatures) {
                 //get EIC chromatogram
                 var peakWidth = spot.PeakWidth();

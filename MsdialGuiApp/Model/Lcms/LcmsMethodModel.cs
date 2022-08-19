@@ -204,9 +204,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             foreach (var annotators in storage.MetabolomicsDataBases) {
                 containerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<IAnnotationQuery>, annotator.ConvertToAnnotatorContainer())));
             }
-            var eadAnnotationQueryFactoryTriple = new List<(IAnnotationQueryFactory<IAnnotationQueryZZZ<MsScanMatchResult>>, IMatchResultEvaluator<MsScanMatchResult>, MsRefSearchParameterBase)>();
+            var eadAnnotationQueryFactoryTriple = new List<(IAnnotationQueryFactory<ICallableAnnotationQuery<MsScanMatchResult>>, IMatchResultEvaluator<MsScanMatchResult>, MsRefSearchParameterBase)>();
             foreach (var annotators in storage.EadLipidomicsDatabases) {
-                eadAnnotationQueryFactoryTriple.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryWithReferenceFactory(mapper, annotator.SerializableAnnotator, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<IAnnotationQueryZZZ<MsScanMatchResult>>, annotator.SerializableAnnotator as IMatchResultEvaluator<MsScanMatchResult>, annotator.SearchParameter)));
+                eadAnnotationQueryFactoryTriple.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryWithReferenceFactory(mapper, annotator.SerializableAnnotator, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<ICallableAnnotationQuery<MsScanMatchResult>>, annotator.SerializableAnnotator as IMatchResultEvaluator<MsScanMatchResult>, annotator.SearchParameter)));
             }
             return new EadLipidomicsAnnotationProcess<IAnnotationQuery>(containerPairs, eadAnnotationQueryFactoryTriple, mapper);
         }
@@ -228,46 +228,16 @@ namespace CompMs.App.Msdial.Model.Lcms
             };
 
             pbmcw.Loaded += async (s, e) => {
-
-                var timer = new System.Diagnostics.Stopwatch();
-                timer.Start();
                 var tasks = new List<Task>();
                 var current = 0;
-                ThreadPool.GetMinThreads(out var minThreads, out _);
-                ThreadPool.GetAvailableThreads(out var availableThreads, out _);
-                Console.WriteLine($"Min/Available: {minThreads}/{availableThreads}");
                 var processor = new MsdialLcMsApi.Process.FileProcess(providerFactory, storage, annotationProcess, matchResultEvaluator);
+                var thread = GetNumberOfThreadToBeUsed(storage.Parameter.NumThreads);
                 await processor.RunAllAsync(
                     storage.AnalysisFiles,
                     vm.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
-                    10,
+                    thread == 1 ? 1 : (int)(thread * 0.5),
                     () => { Interlocked.Increment(ref current); vm.CurrentValue = current; });
-                /*
-                var sem = new SemaphoreSlim(2, 2);
-                foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                    var task = Task.Run(async () =>
-                    //var task = Task.Run(() =>
-                    {
-                        await sem.WaitAsync().ConfigureAwait(false);
-                        ThreadPool.GetAvailableThreads(out var localAvailable, out _);
-                        Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} Start: {timer.ElapsedMilliseconds}ms Available: {localAvailable}");
-                        try {
-                            var provider = providerFactory.Create(analysisfile);
-                            MsdialLcMsApi.Process.FileProcess.Run(analysisfile, provider, storage, annotationProcess, matchResultEvaluator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v);
-                            Interlocked.Increment(ref current);
-                            vm.CurrentValue = current;
-                        }
-                        finally {
-                            sem.Release();
-                        }
-                        Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} Finish: {timer.ElapsedMilliseconds}ms");
-                    });
-                    tasks.Add(task);
-                }
-                await Task.WhenAll(tasks.ToArray());
-                */
 
-                Console.WriteLine($"Ellapsed time: {timer.ElapsedMilliseconds / 1000d}s");
                 pbmcw.DialogResult = true;
                 pbmcw.Close();
             };

@@ -17,40 +17,38 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
     public class EadLipidomicsAnnotationProcess<T> : IAnnotationProcess where T : IAnnotationQuery
     {
         public void RunAnnotation(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, IDataProvider provider, int numThread = 1, CancellationToken token = default, Action<double> reportAction = null) {
-            var spectrums = provider.LoadMs1Spectrums();
             var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
 
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
                 if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                     var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults, parentID2IsotopePeakIDs);
-                    RunAnnotationCore(chromPeakFeature, msdecResult, spectrums);
+                    RunAnnotationCore(chromPeakFeature, msdecResult, provider);
                 }
                 reportAction?.Invoke((double)(i + 1) / chromPeakFeatures.Count);
             };
         }
 
         public async Task RunAnnotationAsync(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, IDataProvider provider, int numThread = 1, CancellationToken token = default, Action<double> reportAction = null) {
-            var spectrums = provider.LoadMs1Spectrums();
             var parentID2IsotopePeakIDs = GetParentID2IsotopePeakIDs(chromPeakFeatures);
 
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
                 if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                     var msdecResult = GetRepresentativeMSDecResult(chromPeakFeature, i, msdecResults, parentID2IsotopePeakIDs);
-                    await Task.Run(() => RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token), token).ConfigureAwait(false);
+                    await Task.Run(() => RunAnnotationCoreAsync(chromPeakFeature, msdecResult, provider, token), token).ConfigureAwait(false);
                 }
                 reportAction?.Invoke((double)(i + 1) / chromPeakFeatures.Count);
             };
         }
 
         private readonly List<(IAnnotationQueryFactory<T> Factory, IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult> Container)> moleculeContainerPairs;
-        private readonly List<(IAnnotationQueryFactory<IAnnotationQueryZZZ<MsScanMatchResult>> Factory, IMatchResultEvaluator<MsScanMatchResult> Evaluator, MsRefSearchParameterBase Parameter)> eadAnnotationQueryFactories;
+        private readonly List<(IAnnotationQueryFactory<ICallableAnnotationQuery<MsScanMatchResult>> Factory, IMatchResultEvaluator<MsScanMatchResult> Evaluator, MsRefSearchParameterBase Parameter)> eadAnnotationQueryFactories;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
 
         public EadLipidomicsAnnotationProcess(
             List<(IAnnotationQueryFactory<T>, IAnnotatorContainer<T, MoleculeMsReference, MsScanMatchResult>)> moleculeContainerPairs,
-            List<(IAnnotationQueryFactory<IAnnotationQueryZZZ<MsScanMatchResult>>, IMatchResultEvaluator<MsScanMatchResult>, MsRefSearchParameterBase)> eadAnnotationQueryFactories,
+            List<(IAnnotationQueryFactory<ICallableAnnotationQuery<MsScanMatchResult>>, IMatchResultEvaluator<MsScanMatchResult>, MsRefSearchParameterBase)> eadAnnotationQueryFactories,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) { 
             this.moleculeContainerPairs = moleculeContainerPairs ?? throw new ArgumentNullException(nameof(moleculeContainerPairs));
             this.eadAnnotationQueryFactories = eadAnnotationQueryFactories ?? throw new ArgumentNullException(nameof(eadAnnotationQueryFactories));
@@ -93,16 +91,17 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private void RunAnnotationCore(
              ChromatogramPeakFeature chromPeakFeature,
              MSDecResult msdecResult,
-             IReadOnlyList<RawSpectrum> msSpectrums) {
+             IDataProvider provider) {
 
             foreach (var containerPair in moleculeContainerPairs) {
+                var rawSpectrum = provider.LoadMsSpectrumFromIndex(chromPeakFeature.MS1RawSpectrumIdTop);
                 var query = containerPair.Factory.Create(
                     chromPeakFeature,
                     msdecResult,
-                    msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
+                    rawSpectrum.Spectrum,
                     chromPeakFeature.PeakCharacter,
                     containerPair.Container.Parameter);
-                SetAnnotationResult(chromPeakFeature, query, msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum, containerPair.Container);
+                SetAnnotationResult(chromPeakFeature, query, rawSpectrum.Spectrum, containerPair.Container);
             }
             SetRepresentativeProperty(chromPeakFeature);
         }
@@ -110,18 +109,19 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         private Task RunAnnotationCoreAsync(
              ChromatogramPeakFeature chromPeakFeature,
              MSDecResult msdecResult,
-             IReadOnlyList<RawSpectrum> msSpectrums,
+             IDataProvider provider,
              CancellationToken token = default) {
 
             foreach (var containerPair in moleculeContainerPairs) {
                 token.ThrowIfCancellationRequested();
+                var rawSpectrum = provider.LoadMsSpectrumFromIndex(chromPeakFeature.MS1RawSpectrumIdTop);
                 var query = containerPair.Factory.Create(
                     chromPeakFeature,
                     msdecResult,
-                    msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum,
+                    rawSpectrum.Spectrum,
                     chromPeakFeature.PeakCharacter,
                     containerPair.Container.Parameter);
-                SetAnnotationResult(chromPeakFeature, query, msSpectrums[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum, containerPair.Container);
+                SetAnnotationResult(chromPeakFeature, query, rawSpectrum.Spectrum, containerPair.Container);
             }
             token.ThrowIfCancellationRequested();
             SetRepresentativeProperty(chromPeakFeature);
