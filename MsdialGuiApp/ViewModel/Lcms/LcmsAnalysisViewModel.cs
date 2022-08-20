@@ -100,6 +100,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
                 lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
 
+            var (ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused) = focusControlManager.Request();
+            Ms2ChromatogramsViewModel = new Ms2ChromatogramsViewModel(model.Ms2ChromatogramsModel, ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused).AddTo(Disposables);
 
             SurveyScanViewModel = new SurveyScanViewModel(
                 this.model.SurveyScanModel,
@@ -166,6 +168,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public EicViewModel EicViewModel { get; }
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
         public RawPurifiedSpectrumsViewModel RawPurifiedSpectrumsViewModel { get; }
+        public Ms2ChromatogramsViewModel Ms2ChromatogramsViewModel { get; }
         public SurveyScanViewModel SurveyScanViewModel { get; }
         public LcmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
         public LcmsProteomicsPeakTableViewModel ProteomicsPeakTableViewModel { get; }

@@ -74,7 +74,7 @@ namespace CompMs.App.Msdial.Model.Dims
             var observableBarItemsLoader = Observable.Return(barItemsLoader);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, observableBarItemsLoader)));
 
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator).AddTo(Disposables);
 
             var ontologyBrush = new BrushMapData<AlignmentSpotPropertyModel>(
                     new KeyBrushMapper<AlignmentSpotPropertyModel, string>(

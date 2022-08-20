@@ -2,15 +2,18 @@
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    public sealed class PeakSpotNavigatorModel : BindableBase
+    public sealed class PeakSpotNavigatorModel : DisposableModelBase
     {
         public PeakSpotNavigatorModel(IReadOnlyList<IFilterable> peakSpots, PeakFilterModel peakFilterModel, IMatchResultEvaluator<MsScanMatchResult> evaluator, bool useRtFilter = false, bool useDtFilter = false) {
             PeakSpots = peakSpots ?? throw new System.ArgumentNullException(nameof(peakSpots));
@@ -26,6 +29,18 @@ namespace CompMs.App.Msdial.Model.Search
             RtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.RT.Value) ?? 1d;
             DtLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.Drift.Value) ?? 0d;
             DtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.Drift.Value) ?? 1d;
+            if (peakSpots is INotifyCollectionChanged notifyCollection) {
+                notifyCollection.CollectionChangedAsObservable()
+                    .Subscribe(_ =>
+                    {
+                        MzLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.Mass) ?? 0d;
+                        MzUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.Mass) ?? 1d;
+                        RtLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.RT.Value) ?? 0d;
+                        RtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.RT.Value) ?? 1d;
+                        DtLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.Drift.Value) ?? 0d;
+                        DtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.Drift.Value) ?? 1d;
+                    }).AddTo(Disposables);
+            }
             metaboliteFilterKeywords = new List<string>();
             MetaboliteFilterKeywords = metaboliteFilterKeywords.AsReadOnly();
             proteinFilterKeywords = new List<string>();

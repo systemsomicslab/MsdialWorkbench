@@ -15,7 +15,7 @@ using System.Linq;
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
-    public class ChromatogramPeakFeature : IChromatogramPeakFeature, IChromatogramPeak, IMoleculeMsProperty, IMSIonProperty, IAnnotatedObject
+    public sealed class ChromatogramPeakFeature : IChromatogramPeakFeature, IChromatogramPeak, IMoleculeMsProperty, IMSIonProperty, IAnnotatedObject
     {
 
         // basic property of IChromatogramPeakFeature

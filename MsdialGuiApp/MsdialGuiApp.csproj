@@ -144,6 +144,7 @@
     <Compile Include="External Applications\MsDialIniField.cs" />
     <Compile Include="External Applications\MsDialIniParcer.cs" />
     <Compile Include="External Applications\MsDialToExternalApps.cs" />
+    <Compile Include="Model\Chart\Ms2ChromatogramsModel.cs" />
     <Compile Include="Model\Chart\MsSpectrum.cs" />
     <Compile Include="Model\Information\CompoundDetailModel.cs" />
     <Compile Include="Model\Information\PeakInformationModel.cs" />
@@ -272,6 +273,7 @@
     <Compile Include="Model\Setting\MspAnnotationSettingModel.cs" />
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
     <Compile Include="Utility\ObservableExtensions.cs" />
+    <Compile Include="ViewModel\Chart\Ms2ChromatogramsViewModel.cs" />
     <Compile Include="ViewModel\Core\IAlignmentResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IAnalysisResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IResultViewModel.cs" />
@@ -328,6 +330,7 @@
     <Compile Include="ViewModel\Lcimms\LcimmsAnnotatorSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\MsdialLcimmsParameterViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsCompoundSearchViewModel.cs" />
+    <Compile Include="ViewModel\Loader\MultiMsRawSpectrumLoaderViewModel.cs" />
     <Compile Include="ViewModel\MsResult\SummarizedSpectrumViewModel.cs" />
     <Compile Include="Model\Search\PeakFilterModel.cs" />
     <Compile Include="ViewModel\Normalize\SplashProductViewModel.cs" />
@@ -397,6 +400,9 @@
     <Compile Include="View\ChartSetting\ExpRefViewSettingRibbonTab.xaml.cs">
       <DependentUpon>ExpRefViewSettingRibbonTab.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\ChartSetting\Ms2ChromatogramSettingRibbonTab.xaml.cs">
+      <DependentUpon>Ms2ChromatogramSettingRibbonTab.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Chart\AlignmentEicView.xaml.cs">
       <DependentUpon>AlignmentEicView.xaml</DependentUpon>
     </Compile>
@@ -414,6 +420,9 @@
     </Compile>
     <Compile Include="View\Chart\ExpRefView.xaml.cs">
       <DependentUpon>ExpRefView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\Ms2ChromatogramsView.xaml.cs">
+      <DependentUpon>Ms2ChromatogramsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\MsSpectrumView.xaml.cs">
       <DependentUpon>MsSpectrumView.xaml</DependentUpon>
@@ -731,6 +740,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\ChartSetting\Ms2ChromatogramSettingRibbonTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Chart\AlignmentEicView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -752,6 +765,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Chart\ExpRefView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\Ms2ChromatogramsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

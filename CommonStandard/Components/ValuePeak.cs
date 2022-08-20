@@ -13,5 +13,9 @@
         public readonly double Mz;
         public readonly double Intensity;
         public readonly double Time;
+
+        public ChromatogramPeak ConvertToChromatogramPeak(ChromXType type, ChromXUnit unit) {
+            return new ChromatogramPeak(Id, Mz, Intensity, new ChromXs(Time, type, unit));
+        }
     }
 }

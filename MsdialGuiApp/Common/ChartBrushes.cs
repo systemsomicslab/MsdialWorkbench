@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Common
@@ -23,6 +24,16 @@ namespace CompMs.App.Msdial.Common
                 Brushes.DarkGreen,      Brushes.Lime,           Brushes.MediumBlue
             }
         );
+
+        public static ReadOnlyCollection<Pen> GetSolidColorPenList(double thickness, DashStyle dash) =>
+            solidColorBrushList.Select(brush => {
+                var pen = new Pen(brush, thickness)
+                {
+                    DashStyle = dash,
+                };
+                pen.Freeze();
+                return pen;
+            }).ToList().AsReadOnly();
 
         public static SolidColorBrush GetChartBrush(int i) {
             var count = SolidColorBrushList.Count;

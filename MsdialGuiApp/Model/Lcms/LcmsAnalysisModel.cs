@@ -67,7 +67,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Parameter = parameter;
             CompoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper, parameter.PeakPickBaseParam).Items;
 
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, useRtFilter: true);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, useRtFilter: true).AddTo(Disposables);
 
             // Peak scatter plot
             var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
@@ -179,7 +179,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Raw vs Purified spectrum model
             RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(
                 Target,
-                _rawSpectrumLoader,
+                rawSpectrumLoader,
                 decSpectrumLoader,
                 peak => peak.Mass,
                 peak => peak.Intensity) {
@@ -192,6 +192,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 OrderingProperty = nameof(SpectrumPeak.Intensity),
             }.AddTo(Disposables);
 
+            // Ms2 chromatogram
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawSpectrumLoader, provider, Parameter).AddTo(Disposables);
 
             // SurveyScan
             var msdataType = Parameter.MSDataType;
@@ -222,12 +224,9 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var rtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, RtTol, Target.Select(t => t?.ChromXValue ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MzTol, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
-            Func<double, ChromatogramPeakFeatureModel> yyy(IReadOnlyList<ChromatogramPeakFeatureModel> ms1Peaks) {
-                return id => ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id));
-            }
             var idSpotFocus = new IdSpotFocus<ChromatogramPeakFeatureModel>(
                 Target,
-                yyy(Ms1Peaks),
+                id => Ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id)),
                 Target.Select(t => t?.MasterPeakID ?? 0d),
                 "Region focus by ID",
                 (rtSpotFocus, peak => peak.ChromXValue ?? 0d),
@@ -273,7 +272,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public RawPurifiedSpectrumsModel RawPurifiedSpectrumsModel { get; }
-
+        public Ms2ChromatogramsModel Ms2ChromatogramsModel { get; }
         public SurveyScanModel SurveyScanModel { get; }
 
         public LcmsAnalysisPeakTableModel PeakTableModel { get; }

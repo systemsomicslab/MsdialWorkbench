@@ -444,7 +444,7 @@
                                         <TextBlock Text="Exp. vs.Rep."
                                                    VerticalAlignment="Stretch"/>
                                     </DataTemplate>
-                                    <DataTemplate x:Key="MS2Chrom"> <!-- MS2 chrom. -->
+                                    <DataTemplate DataType="{x:Type vmchart:Ms2ChromatogramsViewModel}">
                                         <TextBlock Text="MS2 Chrom."
                                                    VerticalAlignment="Stretch"/>
                                     </DataTemplate>
@@ -491,8 +491,8 @@
                                             </chart:ExpRefView.ContextMenu>
                                         </chart:ExpRefView>
                                     </DataTemplate>
-                                    <DataTemplate x:Key="MS2Chrom"> <!-- MS2 chrom. -->
-                                        <TextBlock Text="MS2 Chrom." IsEnabled="False"/>
+                                    <DataTemplate DataType="{x:Type vmchart:Ms2ChromatogramsViewModel}">
+                                        <chart:Ms2ChromatogramsView/>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vmchart:RawPurifiedSpectrumsViewModel}">
                                         <chart:RawPurifiedView DataContext="{Binding DataContext.AnalysisViewModel.Value, ElementName=TabControl_MS2Viewer}"/>

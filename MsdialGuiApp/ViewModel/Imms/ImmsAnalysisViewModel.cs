@@ -53,6 +53,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
             RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(_model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
+
+            var (ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused) = focusControlManager.Request();
+            Ms2ChromatogramsViewModel = new Ms2ChromatogramsViewModel(model.Ms2ChromatogramsModel, ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused).AddTo(Disposables);
+
             SurveyScanViewModel = new SurveyScanViewModel(_model.SurveyScanModel, horizontalAxis: PlotViewModel.VerticalAxis).AddTo(Disposables);
             PeakTableViewModel = new ImmsAnalysisPeakTableViewModel(
                 _model.PeakTableModel,
@@ -80,6 +84,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public AnalysisPeakPlotViewModel PlotViewModel { get; }
         public EicViewModel EicViewModel { get; }
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
+        public Ms2ChromatogramsViewModel Ms2ChromatogramsViewModel { get; }
         public SurveyScanViewModel SurveyScanViewModel { get; }
         public ImmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }

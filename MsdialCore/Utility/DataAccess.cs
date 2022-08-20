@@ -280,8 +280,8 @@ namespace CompMs.MsdialCore.Utility {
 
             var counter = 0;
             var arrayLength = GetTargetArrayLength(provider, startScanID, endScanID, precursorMz, targetCE, param);
-            var valuePeakArrayList = new List<ValuePeak[]>();
-            foreach (var mzValue in pMzValues) valuePeakArrayList.Add(new ValuePeak[arrayLength]);
+            var valuePeakArrayList = new List<ValuePeak[]>(pMzValues.Count);
+            valuePeakArrayList.AddRange(pMzValues.Select(_ => new ValuePeak[arrayLength]));
 
             for (int i = startScanID; i <= endScanID; i++) {
                 var spec = provider.LoadMsSpectrumFromIndex(i);

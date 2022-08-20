@@ -59,6 +59,7 @@ namespace CompMs.App.Msdial.Model.Core {
         public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 
         public ReactivePropertySlim<ChromatogramPeakFeatureModel> Target { get; }
+        IReactiveProperty<ChromatogramPeakFeatureModel> IAnalysisModel.Target => Target;
 
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
         public string DisplayLabel {
