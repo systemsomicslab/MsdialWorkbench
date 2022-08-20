@@ -41,6 +41,36 @@ namespace CompMs.Common.Parser {
             return pepMsQueries;
         }
 
+        public static List<PeptideMsReference> GenerateFastPeptideMsObjcts(
+            string msfile, string pepfile, 
+            List<Peptide> peptides, Dictionary<string, int> Code2ID, 
+            double minMz, double maxMz, CollisionType type, out Stream fs) {
+            var pepMsQueries = new List<PeptideMsReference>();
+            var adduct = AdductIonParser.GetAdductIonBean("[M+H]+");
+
+            fs = File.Open(msfile, FileMode.Create, FileAccess.ReadWrite); // stream of ms file is retained by the main project
+            fs.Write(BitConverter.GetBytes(MSRefStorageFileVersionNumber), 0, 4);
+
+            using (var ps = File.Open(pepfile, FileMode.Create, FileAccess.ReadWrite)) {
+                var counter = 0;
+                foreach (var pep in peptides.OrderBy(n => n.ExactMass)) {
+                    var sp = fs.Position;
+                    var psp = ps.Position;
+                    var msObj = new PeptideMsReference(pep, fs, sp, adduct, counter);
+                    pepMsQueries.Add(msObj);
+
+                    WriteMsfData(fs, null);
+
+                    var aaIDs = GetIDs(pep, Code2ID);
+                    WritePepData(ps, aaIDs);
+
+                    counter++;
+                }
+            }
+
+            return pepMsQueries;
+        }
+
         public static void LoadPeptideInformation(string pepfile, List<PeptideMsReference> pepMsRefObjs, Dictionary<int, string> ID2Code,  Dictionary<string, AminoAcid> Code2AminoAcidObj) {
             // Prepare array to map ID to AminoAcid.
             var id2aa = new AminoAcid[ID2Code.Keys.DefaultIfEmpty().Max() + 1];
@@ -79,6 +109,7 @@ namespace CompMs.Common.Parser {
 
         private static void WriteMsfData(Stream fs, List<SpectrumPeak> spec) {
             fs.Write(BitConverter.GetBytes((int)spec.Count), 0, 4);
+            if (spec == null) return;
             foreach (var peak in spec) {
                 fs.Write(BitConverter.GetBytes((float)peak.Mass), 0, 4);
                 fs.Write(BitConverter.GetBytes((float)peak.Intensity), 0, 4);

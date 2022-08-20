@@ -21,6 +21,7 @@ using System.Linq;
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
     public class ShotgunProteomicsDB : IDisposable, IReferenceDataBase, IMatchResultRefer<PeptideMsReference, MsScanMatchResult> {
+        [Key(19)]
         private bool disposedValue;
 
         [Key(1)]
@@ -33,10 +34,16 @@ namespace CompMs.MsdialCore.DataObj {
         public string FastaQueryBinaryFile { get; set; }
         [Key(5)]
         public string PeptidesSerializeFile { get; set; }
+        [Key(20)]
+        public string FastPeptidesSerializeFile { get; set; }
         [Key(6)]
         public string PeptidesBinaryFile { get; set; }
+        [Key(22)]
+        public string FastPeptidesBinaryFile { get; set; }
         [IgnoreMember]
         public List<FastaProperty> FastaQueries { get; set; }
+        [IgnoreMember]
+        public List<PeptideMsReference> FastPeptideMsReference { get; set; }
         [IgnoreMember]
         public List<PeptideMsReference> PeptideMsRef { get; set; }
         [Key(7)]
@@ -58,8 +65,12 @@ namespace CompMs.MsdialCore.DataObj {
         public ProteomicsParameter ProteomicsParameter { get; set; }
         [Key(14)]
         public string PeptideMsFile { get; set; }
+        [Key(21)]
+        public string FastPeptideMsFile { get; set; }
         [IgnoreMember]
         public Stream PeptideMsStream { get; set; }
+        [IgnoreMember]
+        public Stream FastPeptideMsStream { get; set; }
         [Key(15)]
         public string DecoyMsFile { get; set; }
         [IgnoreMember]
@@ -125,18 +136,44 @@ namespace CompMs.MsdialCore.DataObj {
             var filetemp = Path.Combine(folderpath, filename);
             //var filetemp = filename;
             PeptideMsFile = filetemp + "." + MsdialDataStorageFormat.msf;
+            FastPeptideMsFile = filetemp + "_fast." + MsdialDataStorageFormat.msf;
             DecoyMsFile = filetemp + "_decoy." + MsdialDataStorageFormat.msf;
 
             FastaQueryBinaryFile = filetemp + "." + MsdialDataStorageFormat.bfasta;
             DecoyQueryBinaryFile = filetemp + "_decoy." + MsdialDataStorageFormat.bfasta;
 
             PeptidesSerializeFile = filetemp + "." + MsdialDataStorageFormat.spep;
+            FastPeptidesSerializeFile = filetemp + "_fast." + MsdialDataStorageFormat.spep;
             DecoyPeptidesSerializeFile = filetemp + "_decoy." + MsdialDataStorageFormat.spep;
 
             PeptidesBinaryFile = filetemp + "." + MsdialDataStorageFormat.bpep;
+            FastPeptidesBinaryFile = filetemp + "_fast." + MsdialDataStorageFormat.bpep;
             DecoyPeptidesBinaryFile = filetemp + "_decoy." + MsdialDataStorageFormat.bpep;
 
             Generate();
+            //Generate_v2();
+        }
+
+        public void Generate_v2() {
+            if (FastaFile == null || FastaFile == string.Empty || !System.IO.File.Exists(FastaFile)) return;
+            Console.WriteLine("Loading FASTA queries");
+
+            FastaQueries = FastaParser.ReadFastaUniProtKB(FastaFile);
+            DecoyQueries = DecoyCreator.Convert2DecoyQueries(FastaQueries);
+
+            CleavageSites = ProteinDigestion.GetCleavageSites(ProteomicsParameter.EnzymesForDigestion);
+            ModificationContainer = ModificationUtility.GetModificationContainer(ProteomicsParameter.FixedModifications, ProteomicsParameter.VariableModifications);
+
+            Console.WriteLine("Preparing peptide queries");
+            var peptides = LibraryHandler.GenerateFastTargetPeptideReference(FastaQueries, CleavageSites, ModificationContainer, ProteomicsParameter);
+            FastPeptideMsReference = MsfPepFileParser.GeneratePeptideMsObjcts(FastPeptideMsFile, FastPeptidesBinaryFile, peptides, ModificationContainer.Code2ID, MassRangeBegin, MassRangeEnd, CollisionType, out Stream pFS);
+
+            FastPeptideMsStream = pFS;
+            Console.WriteLine("Peptide count {0}", peptides.Count);
+            Console.WriteLine("Save");
+            Save_v2();
+
+            Console.WriteLine("Done");
         }
 
         public void Generate() {
@@ -181,7 +218,20 @@ namespace CompMs.MsdialCore.DataObj {
             Console.WriteLine("Done");
         }
 
-      
+        public void Save_v2() {
+            using (var fs = File.Open(FastaQueryBinaryFile, FileMode.Create)) {
+                LargeListMessagePack.Serialize(fs, FastaQueries);
+            }
+
+            using (var fs = File.Open(DecoyQueryBinaryFile, FileMode.Create)) {
+                LargeListMessagePack.Serialize(fs, DecoyQueries);
+            }
+            
+            using (var fs = File.Open(FastPeptidesSerializeFile, FileMode.Create)) {
+                LargeListMessagePack.Serialize(fs, FastPeptideMsReference);
+            }
+
+        }
 
         public void Save() {
             using (var fs = File.Open(FastaQueryBinaryFile, FileMode.Create)) {
@@ -263,6 +313,8 @@ namespace CompMs.MsdialCore.DataObj {
                         PeptideMsStream.Close();
                     if (DecoyMsStream != null)
                         DecoyMsStream.Close();
+                    if (FastPeptideMsStream != null)
+                        FastPeptideMsStream.Close();
                     // TODO: dispose managed state (managed objects)
                 }
 

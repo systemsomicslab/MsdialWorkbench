@@ -38,7 +38,7 @@ namespace CompMs.App.MsdialConsole.ProteomicsTest {
             var variableMods = new List<string> { "Acetyl (Protein N-term)", "Oxidation (M)", "4HNE (CHK)" };
 
             var enzymeList = new List<string>() { "Trypsin/P" };
-            var fasta_file = @"D:\chemproteomics_demo\keap1_mouse_human.fasta";
+            var fasta_file = @"E:\6_Projects\PROJECT_Proteomics\test\human_liver.fasta";
             var adduct = AdductIonParser.GetAdductIonBean("[M+H]+");
 
             var cleavageSites = ProteinDigestion.GetCleavageSites(this.Enzymes, enzymeList);
@@ -58,24 +58,23 @@ namespace CompMs.App.MsdialConsole.ProteomicsTest {
             var syncObj = new object();
             var queryCount = fastaQueries.Count;
             var error = string.Empty;
-
             Parallel.ForEach(fastaQueries, fQuery => {
                 if (fQuery.IsValidated) {
                     var sequence = fQuery.Sequence;
                     var digestedPeptides = ProteinDigestion.GetDigestedPeptideSequences(sequence, cleavageSites, char2AA, maxMissedCleavage, fQuery.UniqueIdentifier, fQuery.Index);
                     if (!digestedPeptides.IsEmptyOrNull()) {
-                        var mPeptides = ModificationUtility.GetModifiedPeptides(digestedPeptides, modContainer, maxNumberOfModificationsPerPeptide);
+                        var mPeptides = ModificationUtility.GetFastModifiedPeptides(digestedPeptides, modContainer, maxNumberOfModificationsPerPeptide);
                         lock (syncObj) {
                             foreach (var peptide in mPeptides.OrderByDescending(n => n.ExactMass)) {
                                 var mass = peptide.ExactMass;
                                 var precursorMz = adduct.ConvertToMz(mass);
-                                Console.WriteLine(mass + "\t" + peptide.ModifiedSequence);
+                                //Console.WriteLine(mass + "\t" + peptide.ModifiedSequence);
                                 //var refSpec = SequenceToSpec.Convert2SpecObj(peptide, adduct, Common.Enum.CollisionType.HCD);
                                 //refSpecs.Add(refSpec);
                                 queries.Add(peptide);
                             }
                             counter++;
-                            Console.WriteLine("Creation finished: {0} / {1} for total {2} peptides", counter, queryCount, queries.Count);
+                            //Console.WriteLine("Creation finished: {0} / {1} for total {2} peptides", counter, queryCount, queries.Count);
                         }
                     }
                 }
