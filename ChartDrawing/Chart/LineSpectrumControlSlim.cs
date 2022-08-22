@@ -39,8 +39,8 @@ namespace CompMs.Graphics.Chart
         private ICollectionView collectionView;
 
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var scatter = (LineSpectrumControlSlim)d;
-            scatter.OnItemsSourceChanged((IEnumerable)e.OldValue, (IEnumerable)e.NewValue);
+            var lineSpectrum = (LineSpectrumControlSlim)d;
+            lineSpectrum.OnItemsSourceChanged((IEnumerable)e.OldValue, (IEnumerable)e.NewValue);
         }
 
         private void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue) {
@@ -87,8 +87,8 @@ namespace CompMs.Graphics.Chart
                     OnDataTypeChanged));
 
         private static void OnDataTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var scatter = (LineSpectrumControlSlim)d;
-            scatter.OnDataTypeChanged((Type)e.OldValue, (Type)e.NewValue);
+            var lineSpectrum = (LineSpectrumControlSlim)d;
+            lineSpectrum.OnDataTypeChanged((Type)e.OldValue, (Type)e.NewValue);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
@@ -115,8 +115,8 @@ namespace CompMs.Graphics.Chart
                     OnHorizontalPropertyChanged));
 
         private static void OnHorizontalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var scatter = (LineSpectrumControlSlim)d;
-            scatter.OnHorizontalPropertyChanged((string)e.OldValue, (string)e.NewValue);
+            var lineSpectrum = (LineSpectrumControlSlim)d;
+            lineSpectrum.OnHorizontalPropertyChanged((string)e.OldValue, (string)e.NewValue);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
@@ -141,8 +141,8 @@ namespace CompMs.Graphics.Chart
                     OnVerticalPropertyChanged));
 
         private static void OnVerticalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var scatter = (LineSpectrumControlSlim)d;
-            scatter.OnVerticalPropertyChanged((string)e.OldValue, (string)e.NewValue);
+            var lineSpectrum = (LineSpectrumControlSlim)d;
+            lineSpectrum.OnVerticalPropertyChanged((string)e.OldValue, (string)e.NewValue);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
@@ -346,8 +346,8 @@ namespace CompMs.Graphics.Chart
                     OnSelectedItemChanged));
 
         private static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var scatter = (LineSpectrumControlSlim)d;
-            scatter.OnSelectedItemChanged(e.OldValue, e.NewValue);
+            var lineSpectrum = (LineSpectrumControlSlim)d;
+            lineSpectrum.OnSelectedItemChanged(e.OldValue, e.NewValue);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
@@ -400,8 +400,8 @@ namespace CompMs.Graphics.Chart
                     OnFocusedItemChanged));
 
         private static void OnFocusedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var scatter = (LineSpectrumControlSlim)d;
-            scatter.OnFocusedItemChanged(e.OldValue, e.NewValue);
+            var lineSpectrum = (LineSpectrumControlSlim)d;
+            lineSpectrum.OnFocusedItemChanged(e.OldValue, e.NewValue);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
