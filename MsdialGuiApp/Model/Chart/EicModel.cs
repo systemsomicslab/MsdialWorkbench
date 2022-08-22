@@ -36,17 +36,17 @@ namespace CompMs.App.Msdial.Model.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            ChromRangeSource = Chromatogram.Select(chromatogram => chromatogram.GetTimeRange())
+            ChromRangeSource = Chromatogram.Select(chromatogram => chromatogram?.GetTimeRange() ?? new Range(0d, 1d))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            AbundanceRangeSource = Chromatogram.Select(chromatogram => chromatogram.GetAbundanceRange())
+            AbundanceRangeSource = Chromatogram.Select(chromatogram => chromatogram?.GetAbundanceRange() ?? new Range(0d, 1d))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
             Chromatogram.Subscribe(chromatogram => GraphTitle = chromatogram?.Description ?? string.Empty).AddTo(Disposables);
         }
 
-        public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, EicLoader loader)
+        public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, IChromatogramLoader loader)
             : this(targetSource, loader, string.Empty, string.Empty, string.Empty) {
 
         }

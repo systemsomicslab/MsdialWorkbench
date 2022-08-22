@@ -210,7 +210,7 @@
                             <DataTemplate>
                                 <ContentControl Content="{Binding}">
                                     <ContentControl.Resources>
-                                        <DataTemplate DataType="{x:Type vmchart:EicViewModel}">
+                                        <DataTemplate DataType="{x:Type vm:LcimmsAnalysisViewModel}">
                                             <TextBlock Text="Eic of focused spot"
                                                        VerticalAlignment="Stretch"/>
                                         </DataTemplate>
@@ -230,8 +230,15 @@
                             <DataTemplate>
                                 <ContentControl Content="{Binding}">
                                     <ContentControl.Resources>
-                                        <DataTemplate DataType="{x:Type vmchart:EicViewModel}">
-                                            <chart:EicView/>
+                                        <DataTemplate DataType="{x:Type vm:LcimmsAnalysisViewModel}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <chart:EicView DataContext="{Binding RtEicViewModel}" Grid.Column="0"/>
+                                                <chart:EicView DataContext="{Binding DtEicViewModel}" Grid.Column="1"/>
+                                            </Grid>
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type vmchart:BarChartViewModel}">
                                             <chart:BarChartView/>

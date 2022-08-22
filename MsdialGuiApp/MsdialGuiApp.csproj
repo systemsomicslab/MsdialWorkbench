@@ -159,6 +159,7 @@
     <Compile Include="Model\DataObj\StandardCompoundModel.cs" />
     <Compile Include="Model\DataObj\SurveyScanSpectrum.cs" />
     <Compile Include="Model\Imms\ImmsAnnotatorSettingModel.cs" />
+    <Compile Include="Model\Lcimms\LcimmsEicLoader.cs" />
     <Compile Include="Model\Loader\BarItemsLoaderData.cs" />
     <Compile Include="Model\Loader\IChromatogramLoader.cs" />
     <Compile Include="Model\Loader\MsSelectionItem.cs" />
