@@ -97,7 +97,7 @@ namespace CompMs.App.MsdialConsole {
             //new ModificationsXmlRefParser().Read();
 
             //new TestProteomicsProcess().PDFTest();
-            //new TestProteomicsProcess().ProcessTest();
+            new TestProteomicsProcess().ProcessTest();
 
             //FormulaStringParcer.Convert2FormulaObjV2("C6H12O6");
             //FormulaStringParcer.Convert2FormulaObjV2("CH3COONa");
@@ -216,14 +216,17 @@ namespace CompMs.App.MsdialConsole {
             //MspCurator.AddRT2MspQueries(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Neg-VS15.msp", @"E:\6_Projects\2_metabolome_protocol\PFPP_NEG.txt");
             //MspCurator.AddRT2MspQueries(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Pos-VS15.msp", @"E:\6_Projects\2_metabolome_protocol\PFPP_POS.txt");
 
-            RnaSeqProcess.Convert2Csv4ViolinPlot(
-                @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\metabolome.csv",
-                @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\metabolome_violin.csv");
+            //RnaSeqProcess.Convert2Csv4ViolinPlot(
+            //    @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\metabolome.csv",
+            //    @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\metabolome_violin.csv");
 
-            RnaSeqProcess.Convert2Csv4ViolinPlot(
-                @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\transcriptome.csv",
-                @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\transcriptome_violin.csv");
+            //RnaSeqProcess.Convert2Csv4ViolinPlot(
+            //    @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\transcriptome.csv",
+            //    @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\transcriptome_violin.csv");
 
+            //CreateStatisticsInEieioProject.WriteSummary(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\20220818_EIEIO_checked_MT\results",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\20220818_EIEIO_checked_MT\result.txt");
         }
 
         private static void DumpN(string file, int n) {
