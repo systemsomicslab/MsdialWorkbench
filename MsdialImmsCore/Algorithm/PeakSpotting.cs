@@ -111,7 +111,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             var rawSpectra = new RawSpectra(spectrum, param.IonMode, param.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(chromBegin, chromEnd, ChromXType.Drift, ChromXUnit.Msec);
-            var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(focusedMass, param.MassSliceWidth, chromatogramRange);
+            var chromatogram = rawSpectra.GetMs1ExtractedChromatogram_temp2(focusedMass, param.MassSliceWidth, chromatogramRange);
             if (chromatogram.IsEmpty)
                 return new List<ChromatogramPeakFeature>();
 
@@ -151,6 +151,30 @@ namespace CompMs.MsdialImmsCore.Algorithm
             return chromPeakFeatures;
         }
 
+        private static List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(Chromatogram_temp2 chromatogram, MsdialImmsParameter param) {
+            var smoothedPeaklist = chromatogram.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
+            var detectedPeaks = PeakDetection.PeakDetectionVS1(smoothedPeaklist, param.MinimumDatapoints, param.MinimumAmplitude);
+            if (detectedPeaks.IsEmptyOrNull())
+                return new List<ChromatogramPeakFeature>();
+
+            var chromPeakFeatures = new List<ChromatogramPeakFeature>();
+            foreach (var result in detectedPeaks) {
+                if (result.IntensityAtPeakTop <= 0) continue;
+                var mass = chromatogram.Peaks[result.ScanNumAtPeakTop].Mz;
+
+                //option
+                //Users can prepare their-own 'exclusion mass' list to exclude unwanted peak features
+                if (ExistsSimilarMass(mass, param.ExcludedMassList.OrEmptyIfNull())) {
+                    continue;
+                }
+
+                var chromPeakFeature = DataAccess.GetChromatogramPeakFeature(result, ChromXType.Drift, ChromXUnit.Msec, mass);
+                chromPeakFeature.IonMode = param.IonMode;
+                chromPeakFeatures.Add(chromPeakFeature);
+            }
+            return chromPeakFeatures;
+        }
+
         private static bool ExistsSimilarMass(double mass, IEnumerable<MzSearchQuery> excludes) {
             foreach (var query in excludes) {
                 if (Math.Abs(query.Mass - mass) < query.MassTolerance) {
@@ -172,6 +196,18 @@ namespace CompMs.MsdialImmsCore.Algorithm
             }
         }
 
+        private static void SetRawDataAccessID2ChromatogramPeakFeatures(
+           List<ChromatogramPeakFeature> chromPeakFeatures,
+           IDataProvider provider,
+           IReadOnlyList<ValuePeak> peaklist,
+           MsdialImmsParameter param) {
+
+            foreach (var feature in chromPeakFeatures) {
+                SetRawDataAccessID2ChromatogramPeakFeature(feature, peaklist);
+                SetMs2RawSpectrumIDs2ChromatogramPeakFeature(feature, provider, param);
+            }
+        }
+
         private static void SetRawDataAccessID2ChromatogramPeakFeature(
             ChromatogramPeakFeature feature,
             IReadOnlyList<IChromatogramPeak> peaklist) {
@@ -183,6 +219,19 @@ namespace CompMs.MsdialImmsCore.Algorithm
             feature.MS1RawSpectrumIdLeft = peaklist[chromLeftID].ID;
             feature.MS1RawSpectrumIdTop = peaklist[chromTopID].ID;
             feature.MS1RawSpectrumIdRight = peaklist[chromRightID].ID;
+        }
+
+        private static void SetRawDataAccessID2ChromatogramPeakFeature(
+            ChromatogramPeakFeature feature,
+            IReadOnlyList<ValuePeak> peaklist) {
+
+            var chromLeftID = feature.ChromScanIdLeft;
+            var chromTopID = feature.ChromScanIdTop;
+            var chromRightID = feature.ChromScanIdRight;
+
+            feature.MS1RawSpectrumIdLeft = peaklist[chromLeftID].Id;
+            feature.MS1RawSpectrumIdTop = peaklist[chromTopID].Id;
+            feature.MS1RawSpectrumIdRight = peaklist[chromRightID].Id;
         }
 
         private static void SetMs2RawSpectrumIDs2ChromatogramPeakFeature(
@@ -285,6 +334,32 @@ namespace CompMs.MsdialImmsCore.Algorithm
             return sPeakAreaList;
         }
 
+        private static List<ChromatogramPeakFeature> GetBackgroundSubtractedPeaks(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<ValuePeak> peaklist) {
+            const int counterThreshold = 4;
+
+            var sPeakAreaList = new List<ChromatogramPeakFeature>();
+            foreach (var feature in chromPeakFeatures) {
+                var peakTop = feature.ChromScanIdTop;
+                var peakLeft = feature.ChromScanIdLeft;
+                var peakRight = feature.ChromScanIdRight;
+
+                if (peakTop - 1 < 0 || peakTop + 1 > peaklist.Count - 1
+                    || peaklist[peakTop - 1].Intensity <= 0 || peaklist[peakTop + 1].Intensity <= 0)
+                    continue;
+
+                var trackingNumber = Math.Min(10 * (peakRight - peakLeft), 50);
+                var ampDiff = Math.Max(feature.PeakHeightTop - feature.PeakHeightLeft, feature.PeakHeightTop - feature.PeakHeightRight);
+
+                var counter = 0;
+                counter += CountLargeIntensityChange(peaklist, ampDiff, peakLeft - trackingNumber, peakLeft);
+                counter += CountLargeIntensityChange(peaklist, ampDiff, peakRight, peakRight + trackingNumber);
+
+                if (counter < counterThreshold)
+                    sPeakAreaList.Add(feature);
+            }
+            return sPeakAreaList;
+        }
+
         private static int CountLargeIntensityChange(IReadOnlyList<IChromatogramPeak> peaklist, double threshold, int left, int right) {
             var leftBound = Math.Max(left, 1);
             var rightBound = Math.Min(right, peaklist.Count - 2);
@@ -309,6 +384,29 @@ namespace CompMs.MsdialImmsCore.Algorithm
             return counter;
         }
 
+        private static int CountLargeIntensityChange(IReadOnlyList<ValuePeak> peaklist, double threshold, int left, int right) {
+            var leftBound = Math.Max(left, 1);
+            var rightBound = Math.Min(right, peaklist.Count - 2);
+
+            var counter = 0;
+            double? spikeMax = null, spikeMin = null;
+            for (int i = leftBound; i <= rightBound; i++) {
+
+                if (IsPeak(peaklist[i - 1].Intensity, peaklist[i].Intensity, peaklist[i + 1].Intensity))
+                    spikeMax = peaklist[i].Intensity;
+                else if (IsBottom(peaklist[i - 1].Intensity, peaklist[i].Intensity, peaklist[i + 1].Intensity))
+                    spikeMin = peaklist[i].Intensity;
+
+                if (spikeMax.HasValue && spikeMin.HasValue) {
+                    var noise = 0.5 * Math.Abs(spikeMax.Value - spikeMin.Value);
+                    if (noise * 3 > threshold)
+                        counter++;
+                    spikeMax = null; spikeMin = null;
+                }
+            }
+
+            return counter;
+        }
         private static bool IsPeak(double left, double center, double right) {
             return left <= center && center >= right;
         }
