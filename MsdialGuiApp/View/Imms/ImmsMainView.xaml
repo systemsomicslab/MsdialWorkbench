@@ -262,7 +262,7 @@
                                         </chart:AlignmentPeakPlotView>
                                     </DataTemplate>
                                 </DataTemplate.Resources>
-                                <ContentPresenter Content="{Binding}"/>
+                                <ContentPresenter Content="{Binding Value}"/>
                             </DataTemplate>
                         </TabControl.ContentTemplate>
                     </TabControl>

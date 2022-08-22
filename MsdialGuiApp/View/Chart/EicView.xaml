@@ -4,7 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:design="clr-namespace:CompMs.Graphics.Design;assembly=ChartDrawing"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
@@ -58,29 +60,33 @@
                 </ContextMenu>
             </chart:MultiChart.ContextMenu>
             <chart:AreaChartControl x:Name="area"
-                                   ItemsSource="{Binding EicPeak.Value}"
-                                   HorizontalPropertyName="{Binding HorizontalProperty.Value}"
-                                   VerticalPropertyName="{Binding VerticalProperty.Value}">
+                                    DataContext="{Binding Chromatogram.Value}"
+                                    ItemsSource="{Binding PeakArea}"
+                                    HorizontalPropertyName="Time"
+                                    VerticalPropertyName="Intensity">
                 <chart:AreaChartControl.AreaBrush>
                     <SolidColorBrush Opacity="0.25" Color="Blue" PresentationOptions:Freeze="True"/>
                 </chart:AreaChartControl.AreaBrush>
             </chart:AreaChartControl>
             <chart:LineChartControl x:Name="line"
-                                   ItemsSource="{Binding Eic.Value}"
-                                   HorizontalPropertyName="{Binding HorizontalProperty.Value}"
-                                   VerticalPropertyName="{Binding VerticalProperty.Value}">
+                                    DataContext="{Binding Chromatogram.Value}"
+                                    ItemsSource="{Binding Peaks}"
+                                    HorizontalPropertyName="Time"
+                                    VerticalPropertyName="Intensity">
                 <chart:LineChartControl.LinePen>
                     <Pen Brush="Blue" PresentationOptions:Freeze="True"/>
                 </chart:LineChartControl.LinePen>
             </chart:LineChartControl>
-            <chart:LineSpectrumControl x:Name="spectrum"
-                                          ItemsSource="{Binding EicFocused.Value}"
-                                          HorizontalPropertyName="{Binding HorizontalProperty.Value}"
-                                          VerticalPropertyName="{Binding VerticalProperty.Value}">
-                <chart:LineSpectrumControl.LinePen>
-                    <Pen Brush="Red" Thickness="1.5" LineJoin="Miter" PresentationOptions:Freeze="True"/>
-                </chart:LineSpectrumControl.LinePen>
-            </chart:LineSpectrumControl>
+            <chart:VerticalLine DataContext="{Binding Chromatogram.Value}"
+                                Item="{Binding PeakTop}"
+                                DataType="{x:Type do:PeakItem}"
+                                HorizontalProperty="Time"
+                                VerticalProperty="Intensity"
+                                LineThickness="1.5">
+                <chart:VerticalLine.LineBrush>
+                    <design:ConstantBrushMapper Brush="Red"/>
+                </chart:VerticalLine.LineBrush>
+            </chart:VerticalLine>
             <StackPanel VerticalAlignment="Center">
                 <StackPanel.Style>
                     <Style TargetType="StackPanel">

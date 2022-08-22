@@ -87,6 +87,8 @@
     <Compile Include="Chart\SpotLinkedAnnotator.cs" />
     <Compile Include="Chart\RangeSelector.cs" />
     <Compile Include="Chart\ScatterControlSlim.cs" />
+    <Compile Include="Chart\VerticalLine.cs" />
+    <Compile Include="Converter\ColorToBrushMapperConverter.cs" />
     <Compile Include="Design\PenSelector.cs" />
     <Compile Include="Design\ConstantBrushMapper.cs" />
     <Compile Include="Design\DelegateBrushMapper.cs" />
@@ -145,6 +147,7 @@
     <Compile Include="Chart\HeatmapControl.cs" />
     <Compile Include="Chart\LineChartControl.cs" />
     <Compile Include="Chart\LineSpectrumControl.cs" />
+    <Compile Include="Helper\ExpressionHelper.cs" />
     <Compile Include="IO\CopyImageAsCommand.cs" />
     <Compile Include="IO\CopyImageAsDialog.xaml.cs">
       <DependentUpon>CopyImageAsDialog.xaml</DependentUpon>

@@ -6,6 +6,7 @@ using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.DataStructure;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
@@ -66,20 +67,49 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
             _peakCollection = new ChromatogramPeakFeatureCollection(peaks);
 
-            var peakMap = peaks.ToDictionary(peak => new ChromatogramPeakFeatureModel(peak), peak => peak.DriftChromFeatures.Select(dpeak => new ChromatogramPeakFeatureModel(dpeak)).ToArray());
+            var orderedPeaks = peaks.OrderBy(peak => peak.ChromXsTop.RT.Value).Select(peak => new ChromatogramPeakFeatureModel(peak)).ToArray();
+            var peakTree = new SegmentTree<IEnumerable<ChromatogramPeakFeatureModel>>(peaks.Count, Enumerable.Empty<ChromatogramPeakFeatureModel>(), (xs, ys) => xs.Concat(ys));
+            using (peakTree.LazyUpdate()) {
+                foreach (var (peak, index) in orderedPeaks.WithIndex()) {
+                    peakTree[index] = peak.InnerModel.DriftChromFeatures.Select(dpeak => new ChromatogramPeakFeatureModel(dpeak)).ToArray();
+                }
+            }
+            var peakRanges = new Dictionary<ChromatogramPeakFeatureModel, (int, int)>();
+            {
+                var j = 0;
+                var k = 0;
+                foreach (var orderedPeak in orderedPeaks) {
+                    while (j < orderedPeaks.Length && orderedPeaks[j].InnerModel.ChromXsTop.RT.Value < orderedPeak.InnerModel.ChromXsTop.RT.Value - parameter.AccumulatedRtRange / 2) {
+                        j++;
+                    }
+
+                    while (k < orderedPeaks.Length && orderedPeaks[k].InnerModel.ChromXsTop.RT.Value <= orderedPeak.InnerModel.ChromXsTop.RT.Value + parameter.AccumulatedRtRange / 2) {
+                        k++;
+                    }
+                    peakRanges[orderedPeak] = (j, k);
+                }
+            }
             var accumulatedTarget = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
             var target = accumulatedTarget.Where(t => !(t is null))
-                .Select(t => peakMap[t].FirstOrDefault())
+                .Delay(TimeSpan.FromSeconds(.1d))
+                .Select(t => {
+                    var idx = orderedPeaks.IndexOf(t);
+                    return peakTree.Query(idx, idx + 1).FirstOrDefault();
+                })
                 .ToReactiveProperty()
                 .AddTo(Disposables);
             Target = target;
 
-            var accumulatedPeakModels = new ObservableCollection<ChromatogramPeakFeatureModel>(peakMap.Keys);
+            var accumulatedPeakModels = new ObservableCollection<ChromatogramPeakFeatureModel>(orderedPeaks);
             var peakModels = new ReactiveCollection<ChromatogramPeakFeatureModel>().AddTo(Disposables);
             accumulatedTarget.Where(t => !(t is null))
-                .Subscribe(t => {
+                .Select(t => {
+                    var (lo, hi) = peakRanges[t];
+                    return peakTree.Query(lo, hi);
+                })
+                .Subscribe(peaks_ => {
                     peakModels.ClearOnScheduler();
-                    peakModels.AddRangeOnScheduler(peakMap[t]);
+                    peakModels.AddRangeOnScheduler(peaks_);
                 }).AddTo(Disposables);
             Ms1Peaks = peakModels;
 
@@ -152,7 +182,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .Subscribe(title => DtMzPlotModel.GraphTitle = title)
                 .AddTo(Disposables);
 
-            var dtEicLoader = EicLoader.BuildForAllRange(spectrumProvider, parameter, ChromXType.Drift, ChromXUnit.Msec, parameter.DriftTimeBegin, parameter.DriftTimeEnd);
+            var dtEicLoader = new LcimmsEicLoader(spectrumProvider, parameter);
             DtEicLoader = EicLoader.BuildForPeakRange(spectrumProvider, parameter, ChromXType.Drift, ChromXUnit.Msec, parameter.DriftTimeBegin, parameter.DriftTimeEnd);
             DtEicModel = new EicModel(target, dtEicLoader)
             {

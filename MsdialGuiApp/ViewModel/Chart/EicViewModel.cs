@@ -5,11 +5,10 @@ using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    class EicViewModel : ViewModelBase
+    internal sealed class EicViewModel : ViewModelBase
     {
         public EicViewModel(
             EicModel model,
@@ -18,13 +17,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
             ItemLoaded = model.ItemLoaded;
 
-            Eic = model.EicSource
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            EicPeak = model.EicPeakSource
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            EicFocused = model.EicFocusedSource
+            Chromatogram = model.Chromatogram
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -62,11 +55,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReadOnlyReactivePropertySlim<bool> ItemLoaded { get; }
 
-        public ReadOnlyReactivePropertySlim<List<ChromatogramPeakWrapper>> Eic { get; }
-
-        public ReadOnlyReactivePropertySlim<List<ChromatogramPeakWrapper>> EicPeak { get; }
-
-        public ReadOnlyReactivePropertySlim<List<ChromatogramPeakWrapper>> EicFocused { get; }
+        public ReadOnlyReactivePropertySlim<Chromatogram> Chromatogram { get; }
 
         public IAxisManager<double> HorizontalAxis { get; }
 

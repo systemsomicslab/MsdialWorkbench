@@ -122,8 +122,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 VerticalTitle = "Abundance",
             }.AddTo(Disposables);
 
-            ExperimentSpectrumModel = EicModel.EicSource
-                .Select(source => new DisplayChromatogram(source))
+            ExperimentSpectrumModel = EicModel.Chromatogram
+                .Select(chromatogram => chromatogram.ConvertToDisplayChromatogram())
                 .Select(chromatogram => new ChromatogramsModel("Experiment chromatogram", chromatogram))
                 .Select(chromatogram => new RangeSelectableChromatogramModel(chromatogram))
                 .CombineLatest(

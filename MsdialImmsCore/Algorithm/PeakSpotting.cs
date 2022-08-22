@@ -47,18 +47,19 @@ namespace CompMs.MsdialImmsCore.Algorithm
             Action<int> reportAction,
             System.Threading.CancellationToken token) {
 
-            var ms1Spectrum = provider.LoadMs1Spectrums();
 
             var mzRange = provider.GetMs1Range(param.IonMode);
             var startMass = Math.Max(mzRange.Min, param.MassRangeBegin);
             var endMass = Math.Min(mzRange.Max, param.MassRangeEnd);
             var massStep = param.AccuracyType == AccuracyType.IsNominal ? 1f : param.MassSliceWidth;
+            var rawSpectra = new RawSpectra(provider, param.IonMode, param.AcquisitionType);
+            var chromatogramRange = new ChromatogramRange(chromBegin, chromEnd, ChromXType.Drift, ChromXUnit.Msec);
 
             var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
             for (var focusedMass = startMass; focusedMass < endMass; focusedMass += massStep) {
                 ReportProgress.Show(initialProgress, progressMax, focusedMass, endMass, reportAction);
 
-                var chromPeakFeatures = GetChromatogramPeakFeatures(ms1Spectrum, provider, focusedMass, param, chromBegin, chromEnd);
+                var chromPeakFeatures = GetChromatogramPeakFeatures(rawSpectra, provider, focusedMass, param, chromatogramRange);
                 if (chromPeakFeatures.IsEmptyOrNull())
                     continue;
 
@@ -82,14 +83,15 @@ namespace CompMs.MsdialImmsCore.Algorithm
             MsdialImmsParameter param,
             float chromBegin, float chromEnd) {
 
-            var ms1Spectrum = provider.LoadMs1Spectrums();
             var chromPeakFeaturesList = new List<List<ChromatogramPeakFeature>>();
             var targetedScans = param.CompoundListInTargetMode;
             if (targetedScans.IsEmptyOrNull())
                 return new List<ChromatogramPeakFeature>();
 
+            var chromatogramRange = new ChromatogramRange(chromBegin, chromEnd, ChromXType.Drift, ChromXUnit.Msec);
+            var rawSpectra = new RawSpectra(provider, param.IonMode, param.AcquisitionType);
             foreach (var targetComp in targetedScans) {
-                var chromPeakFeatures = GetChromatogramPeakFeatures(ms1Spectrum, provider, (float)targetComp.PrecursorMz, param, chromBegin, chromEnd);
+                var chromPeakFeatures = GetChromatogramPeakFeatures(rawSpectra, provider, (float)targetComp.PrecursorMz, param, chromatogramRange);
                 if (!chromPeakFeatures.IsEmptyOrNull())
                     chromPeakFeaturesList.Add(chromPeakFeatures);
             }
@@ -103,14 +105,12 @@ namespace CompMs.MsdialImmsCore.Algorithm
         }
 
         private static List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(
-            IReadOnlyList<RawSpectrum> spectrum,
+            RawSpectra rawSpectra,
             IDataProvider provider,
             float focusedMass,
             MsdialImmsParameter param,
-            float chromBegin, float chromEnd) {
+            ChromatogramRange chromatogramRange) {
 
-            var rawSpectra = new RawSpectra(spectrum, param.IonMode, param.AcquisitionType);
-            var chromatogramRange = new ChromatogramRange(chromBegin, chromEnd, ChromXType.Drift, ChromXUnit.Msec);
             var chromatogram = rawSpectra.GetMs1ExtractedChromatogram_temp2(focusedMass, param.MassSliceWidth, chromatogramRange);
             if (chromatogram.IsEmpty)
                 return new List<ChromatogramPeakFeature>();
