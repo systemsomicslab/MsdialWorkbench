@@ -2,7 +2,7 @@
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class PeakItem
+    public sealed class PeakItem
     {
         public PeakItem(IChromatogramPeak chrom) {
             this.chrom = chrom;
@@ -12,5 +12,10 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public double Intensity => chrom.Intensity;
         public double Time => chrom.ChromXs.Value;
+
+        [System.Obsolete("Don't use ChromatogramPeakWrapper")]
+        public ChromatogramPeakWrapper ConvertToChromatogramPeakWrapper() {
+            return new ChromatogramPeakWrapper(chrom);
+        }
     }
 }

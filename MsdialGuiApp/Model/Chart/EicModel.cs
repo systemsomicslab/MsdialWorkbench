@@ -5,63 +5,45 @@ using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    public class EicModel : DisposableModelBase
+    public sealed class EicModel : DisposableModelBase
     {
-        public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, EicLoader loader, string graphTitle, string horizontalTitle, string verticalTitle) {
+        public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, IChromatogramLoader loader, string graphTitle, string horizontalTitle, string verticalTitle) {
 
             GraphTitle = graphTitle;
             HorizontalTitle = horizontalTitle;
             VerticalTitle = verticalTitle;
 
-            HorizontalProperty = nameof(ChromatogramPeakWrapper.ChromXValue);
-            VerticalProperty = nameof(ChromatogramPeakWrapper.Intensity);
+            HorizontalProperty = nameof(PeakItem.Time);
+            VerticalProperty = nameof(PeakItem.Intensity);
 
-            var sources = targetSource.Select(t => Observable.FromAsync(token => loader.LoadEicAsync(t, token))).Switch();
-            var sourcesProperty = sources
-                .ToReadOnlyReactivePropertySlim()
+            var sources = targetSource.Select(t => Observable.FromAsync(token => loader.LoadChromatogramAsync(t, token))).Switch();
+            var chromatogram_ = sources
+                .ToReactiveProperty()
                 .AddTo(Disposables);
+            Chromatogram = chromatogram_;
+
             ItemLoaded = new[]
                 {
                     targetSource.Select(_ => false),
-                    sources.Delay(TimeSpan.FromSeconds(.05d)).Select(_ => true),
+                    chromatogram_.Delay(TimeSpan.FromSeconds(.05d)).Select(_ => true),
                 }.Merge()
                 .Throttle(TimeSpan.FromSeconds(.1d))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            EicSource = sourcesProperty.Select(src => src.Item1)
+            ChromRangeSource = Chromatogram.Select(chromatogram => chromatogram.GetTimeRange())
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            EicPeakSource = sourcesProperty.Select(src => src.Item2)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            EicFocusedSource = sourcesProperty.Select(src => src.Item3)
+            AbundanceRangeSource = Chromatogram.Select(chromatogram => chromatogram.GetAbundanceRange())
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            MaxIntensitySource = EicPeakSource.Select(src => src.Any() ? src.Max(peak => peak.Intensity) : 0)
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            ChromRangeSource = EicSource.Select(src => src.Any() ? new Range(src.Min(peak => peak.ChromXValue) ?? 0, src.Max(peak => peak.ChromXValue) ?? 1) : new Range(0, 1))
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            AbundanceRangeSource = EicFocusedSource.Select(src => src.Any() ? new Range(0, src.Max(peak => peak.Intensity)) : new Range(0, 1))
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-
-            MaxIntensitySource.CombineLatest(
-                targetSource,
-                (i, t) => t is null
-                    ? string.Empty
-                    : $"EIC chromatogram of {t.Mass:N4} tolerance [Da]: {loader.MzTolerance:F} Max intensity: {i:F0}")
-                .Subscribe(title => GraphTitle = title)
-                .AddTo(Disposables);
+            Chromatogram.Subscribe(chromatogram => GraphTitle = chromatogram?.Description ?? string.Empty).AddTo(Disposables);
         }
 
         public EicModel(IObservable<ChromatogramPeakFeatureModel> targetSource, EicLoader loader)
@@ -71,13 +53,8 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public ReadOnlyReactivePropertySlim<bool> ItemLoaded { get; }
 
-        public IObservable<List<ChromatogramPeakWrapper>> EicSource { get; }
+        public IReadOnlyReactiveProperty<Chromatogram> Chromatogram { get; }
 
-        public IObservable<List<ChromatogramPeakWrapper>> EicPeakSource { get; }
-
-        public IObservable<List<ChromatogramPeakWrapper>> EicFocusedSource { get; }
-
-        public IObservable<double> MaxIntensitySource { get; }
         public IObservable<Range> ChromRangeSource { get; }
         public IObservable<Range> AbundanceRangeSource { get; }
 

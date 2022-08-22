@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
-    internal sealed class DimsEicLoader : EicLoader
+    internal sealed class DimsEicLoader : EicLoader, IChromatogramLoader
     {
         private static readonly double MZ_MARGIN = 10d;
 
