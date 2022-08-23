@@ -119,8 +119,8 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var massBins = new Dictionary<int, double[]>();
             foreach (var group in groups) {
                 var peaks = group.ToList();
-                //var accIntensity = peaks.Sum(peak => peak.Intensity) / numOfMeasurement;
-                var accIntensity = peaks.Sum(peak => peak.Intensity);
+                var accIntensity = peaks.Sum(peak => peak.Intensity) / numOfMeasurement;
+                //var accIntensity = peaks.Sum(peak => peak.Intensity);
                 var basepeak = peaks.Argmax(peak => peak.Intensity);
                 massBins[group.Key] = new double[] { basepeak.Mz, accIntensity, basepeak.Intensity };
             }
