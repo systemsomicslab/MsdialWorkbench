@@ -55,11 +55,11 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalProperty = string.Empty;
             VerticalProperty = string.Empty;
 
-            HorizontalAxis = horizontalAxis ?? Spots.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default)
+            HorizontalAxis = horizontalAxis ?? Spots.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default).Throttle(TimeSpan.FromSeconds(.01d))
                 .Select(_ => Spots.Any() ? new Range(Spots.Min(horizontalSelector), Spots.Max(horizontalSelector)) : new Range(0, 1))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
-            VerticalAxis = verticalAxis ?? Spots.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default)
+            VerticalAxis = verticalAxis ?? Spots.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default).Throttle(TimeSpan.FromSeconds(.01d))
                 .Select(_ => Spots.Any() ? new Range(Spots.Min(verticalSelector), Spots.Max(verticalSelector)) : new Range(0, 1))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
