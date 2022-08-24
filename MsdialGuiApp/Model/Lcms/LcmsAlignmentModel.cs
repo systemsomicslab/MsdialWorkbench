@@ -95,10 +95,12 @@ namespace CompMs.App.Msdial.Model.Lcms
             var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.Select(_ => normalizedHeightLoader).ToReactiveProperty(barItemLoaderDatas.First()).AddTo(Disposables);
             var barItemsLoaderProperty = barItemsLoaderDataProperty.Where(data => !(data is null)).Select(data => data.ObservableLoader).Switch().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, barItemsLoaderProperty)));
-           
-            var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(alignmentFileBean.ProteinAssembledResultFilePath);
-            var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Spots, Target);
-            proteinResultContainerModelObserver.OnNext(proteinResultContainerModel);
+
+            if (parameter.TargetOmics == TargetOmics.Proteomics) {
+                var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(alignmentFileBean.ProteinAssembledResultFilePath);
+                var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Spots, Target);
+                proteinResultContainerModelObserver.OnNext(proteinResultContainerModel);
+            }
 
             _decLoader = new MSDecLoader(_alignmentFile.SpectraFilePath);
             _msdecResult = Target.Where(t => t != null)
