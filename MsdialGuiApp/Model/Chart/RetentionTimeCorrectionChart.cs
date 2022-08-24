@@ -350,7 +350,7 @@ namespace CompMs.App.Msdial.Model.Chart {
         private static List<ChromatogramPeak> GetSmoothedRetentionTime(RetentionTimeCorrectionBean bean, ParameterBase param, IReadOnlyList<IChromatogramPeak> peaks) {
             var correctedPeakList = new List<ChromatogramPeak>();
             for (var i = 0; i < peaks.Count; i++) {
-                correctedPeakList.Add(ChromatogramPeak.Create(peaks[i].ID, peaks[i].Mass, peaks[i].Intensity, new RetentionTime(bean.PredictedRt[i])));
+                correctedPeakList.Add(ChromatogramPeak.Create(peaks[i].ID, peaks[i].Mass, peaks[i].Intensity, new RetentionTime(bean.PredictedRt[peaks[i].ID])));
             }
             return new Chromatogram(correctedPeakList, ChromXType.RT, ChromXUnit.Min).Smoothing(param.SmoothingMethod, param.SmoothingLevel);
         }
