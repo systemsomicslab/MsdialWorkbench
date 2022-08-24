@@ -54,10 +54,27 @@ namespace CompMs.Common.Proteomics.Function {
             return peptide;
         }
 
-        public static List<Peptide> Sequence2Peptides(Peptide peptide, ModificationContainer container, int maxNumberOfModificationsPerPeptide = 2, double maxPeptideMass = 4600) {
+        public static List<Peptide> Sequence2Peptides(
+            Peptide peptide, 
+            ModificationContainer container, 
+            int maxNumberOfModificationsPerPeptide = 2, 
+            double maxPeptideMass = 4600) {
             var fmPeptide = Sequence2PeptideByFixedModifications(peptide, container, maxPeptideMass);
             if (fmPeptide == null) return null;
+            if (fmPeptide.CountModifiedAminoAcids() > maxNumberOfModificationsPerPeptide) return null;
             return Sequence2PeptidesByVariableModifications(peptide, container, maxNumberOfModificationsPerPeptide, maxPeptideMass);
+        }
+
+        public static List<Peptide> Sequence2FastPeptides(
+            Peptide peptide,
+            ModificationContainer container,
+            int maxNumberOfModificationsPerPeptide = 2,
+            double minPeptideMass = 300,
+            double maxPeptideMass = 4600) {
+            var fmPeptide = Sequence2PeptideByFixedModifications(peptide, container, maxPeptideMass);
+            if (fmPeptide == null) return null;
+            if (fmPeptide.CountModifiedAminoAcids() > maxNumberOfModificationsPerPeptide) return null;
+            return Sequence2FastPeptidesByVariableModifications(peptide, container, fmPeptide.CountModifiedAminoAcids(), maxNumberOfModificationsPerPeptide, minPeptideMass, maxPeptideMass);
         }
 
         public static Peptide Sequence2PeptideByFixedModifications(Peptide peptide, ModificationContainer container, double maxPeptideMass = 4600) {
@@ -154,7 +171,10 @@ namespace CompMs.Common.Proteomics.Function {
         /// <param name="container"></param>
         /// <param name="maxNumberOfModificationsPerPeptide"></param>
         /// <returns></returns>
-        public static List<Peptide> Sequence2PeptidesByVariableModifications(Peptide peptide, ModificationContainer container, int maxNumberOfModificationsPerPeptide = 2, double maxPeptideMass = 4600) {
+        public static List<Peptide> Sequence2PeptidesByVariableModifications(Peptide peptide, 
+            ModificationContainer container,
+            int maxNumberOfModificationsPerPeptide = 2, 
+            double maxPeptideMass = 4600) {
             //var sequence = peptide.Sequence;
             if (container.IsEmptyOrNull()) return new List<Peptide>() { Sequence2Peptide(peptide) };
 
@@ -179,19 +199,16 @@ namespace CompMs.Common.Proteomics.Function {
             return peptides;
         }
 
-        private static Dictionary<int, int> GetResidueCodeIndexToModificationIndexDictionary(Peptide peptide, ModificationContainer container) {
-            var dict = new Dictionary<int, int>();
-            for (int i = 0; i < peptide.SequenceObj.Count(); i++) {
-                var aa = peptide.SequenceObj[i];
-                if (aa.IsModified()) {
-                    dict[i] = container.Code2ID[aa.Code()];
-                }
-            }
-            return dict;
-        }
-
-        public void GetPeptideTempListByMidifications(Peptide pep, ModificationContainer container, int fixedModCount, int maxModifications) {
-            var seq = pep.SequenceObj;
+        public static List<Peptide> Sequence2FastPeptidesByVariableModifications(
+            Peptide peptide, 
+            ModificationContainer container,
+            int fixedModCount,
+            int maxNumberOfModificationsPerPeptide = 2,
+            double minPeptideMass = 300,
+            double maxPeptideMass = 4600) {
+            
+            if (container.IsEmptyOrNull()) return new List<Peptide>() { Sequence2Peptide(peptide) };
+            var seq = peptide.SequenceObj;
             var dict = new Dictionary<int, AminoAcid>();
             var diff2positions = new Dictionary<int, List<int>>();
             for (int i = 0; i < seq.Count; i++) {
@@ -199,9 +216,9 @@ namespace CompMs.Common.Proteomics.Function {
                     dict[i] = seq[i];
                 }
                 else {
-                    var originAA = pep.SequenceObj[i];
+                    var originAA = peptide.SequenceObj[i];
                     var mod = originAA.Modifications.IsEmptyOrNull() ? new List<Modification>() : originAA.Modifications.ToList();
-                    var modifiedAA = GetAminoAcidByVariableModifications(pep, mod, container, i);
+                    var modifiedAA = GetAminoAcidByVariableModifications(peptide, mod, container, i);
 
                     var diff = modifiedAA.ExactMass() - originAA.ExactMass();
                     if (diff > 0) {
@@ -219,47 +236,67 @@ namespace CompMs.Common.Proteomics.Function {
             }
 
             var combinations = new List<List<List<int>>>();
-            for (int i = 0; i <= maxModifications - fixedModCount; i++) {
+            for (int i = 0; i <= maxNumberOfModificationsPerPeptide - fixedModCount; i++) {
                 combinations.Add(new List<List<int>>());
             }
-            diff2positions = diff2positions.OrderByDescending(x => x.Value.Count).ToDictionary(x => x.Key, x => x.Value);
+
+            combinations[0].Add(new List<int>());
 
             foreach (var item in diff2positions) {
                 var key = item.Key;
                 var values = item.Value;
-
                 for (int i = combinations.Count - 1; i >= 0; i--) {
-                    List<int> candidateIDs = null;
-                    if (combinations[i].Count > 0) candidateIDs = combinations[i][combinations[i].Count - 1];
-                    else candidateIDs = new List<int>();
-
-                    for (int j = 0; j < values.Count; j++) {
-                        candidateIDs.Add(values[j]);
-                        if (candidateIDs.Count >= i) break;
+                    var combination = combinations[i];
+                    for (int j = 0; j < combination.Count; j++) {
+                        for (int k = 0; k < values.Count; k++) {
+                            if (i + k + 1 > combinations.Count - 1) continue;
+                            combinations[i + k + 1].Add(combination[j].Concat(values.Take(k + 1)).ToList());
+                        }
                     }
-
-                    combinations[i].Add(candidateIDs);
                 }
             }
+            var peptides = new List<Peptide>();
+            if (peptide.ExactMass >= minPeptideMass && peptide.ExactMass <= maxPeptideMass) peptides.Add(peptide);
 
-            //for (int i = 1; i <= maxModifications - fixedModCount; i++) {
-            //    var mod = new List<int>();
-            //    foreach (var item in diff2positions) {
-            //        var key = item.Key;
-            //        var values = item.Value;
+            foreach (var item in combinations) {
+                foreach (var pair in item) {
+                    var result = new List<AminoAcid>(seq.Count);
+                    foreach (var aa in seq) result.Add(aa);
+                    for (int i = 0; i < pair.Count; i++) {
+                        result[pair[i]] = dict[pair[i]];
+                    }
 
-            //        foreach (var value in values) {
-            //            mod.Add(value);
-            //            if (mod.Count > i) {
-            //                combinations.Add(mod);
-            //                mod = new List<int>();
-            //                break;
-            //            }
-            //        }
-            //    }
-            //} 
+                    var nPep = new Peptide() {
+                        DatabaseOrigin = peptide.DatabaseOrigin, 
+                        DatabaseOriginID = peptide.DatabaseOriginID,
+                        SequenceObj = result,
+                        Position = new Range(peptide.Position.Start, peptide.Position.End), 
+                        IsProteinCterminal = peptide.IsProteinCterminal, 
+                        IsProteinNterminal = peptide.IsProteinNterminal
+                    };
 
+                    var formula = CalculatePeptideFormula(result);
+                    if (formula.Mass > maxPeptideMass || formula.Mass < minPeptideMass) continue;
+                    nPep.ExactMass = formula.Mass;
+                    nPep.ResidueCodeIndexToModificationIndex = GetResidueCodeIndexToModificationIndexDictionary(nPep, container);
+                    peptides.Add(nPep);
+                }
+            }
+            return peptides;
         }
+
+        private static Dictionary<int, int> GetResidueCodeIndexToModificationIndexDictionary(Peptide peptide, ModificationContainer container) {
+            var dict = new Dictionary<int, int>();
+            for (int i = 0; i < peptide.SequenceObj.Count(); i++) {
+                var aa = peptide.SequenceObj[i];
+                if (aa.IsModified()) {
+                    dict[i] = container.Code2ID[aa.Code()];
+                }
+            }
+            return dict;
+        }
+
+        
 
         static void EnumerateModifications(Peptide pep, ModificationContainer container, int index, int numModifications, int maxModifications, 
             List<AminoAcid> aminoacids, List<List<AminoAcid>> result) {

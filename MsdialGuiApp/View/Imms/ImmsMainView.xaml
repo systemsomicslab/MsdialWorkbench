@@ -262,7 +262,7 @@
                                         </chart:AlignmentPeakPlotView>
                                     </DataTemplate>
                                 </DataTemplate.Resources>
-                                <ContentPresenter Content="{Binding}"/>
+                                <ContentPresenter Content="{Binding Value}"/>
                             </DataTemplate>
                         </TabControl.ContentTemplate>
                     </TabControl>
@@ -397,11 +397,8 @@
                         <TabItem Header="MS2 Chrom." 
                                  Name="TabItem_MS2Chromatogram" 
                                  Height="25"
-                                 IsEnabled="False"
                                  Background="{StaticResource MainThemeColor}">
-                                 <!--
-                            <ms2:ChromatogramView />
-                            -->
+                            <chart:Ms2ChromatogramsView DataContext="{Binding AnalysisViewModel.Value.Ms2ChromatogramsViewModel}"/>
                         </TabItem>
 
                         <TabItem Header="Raw vs. Purified" 

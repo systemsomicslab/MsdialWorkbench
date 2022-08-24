@@ -10,7 +10,6 @@ using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -29,8 +28,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             LcimmsMethodModel model,
             IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisViewModelAsObservable,
             IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentViewModelAsObservable,
+            ViewModelSwitcher chromatogramViewModels,
+            ViewModelSwitcher massSpectrumViewModels,
             FocusControlManager focusControlManager)
-            : base(model, analysisViewModelAsObservable, alignmentViewModelAsObservable) {
+            : base(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, chromatogramViewModels, massSpectrumViewModels) {
 
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -176,7 +177,28 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             var analysisViewModelAsObservable = ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService, focusControlManager);
             var alignmentViewModelAsObservable = ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, focusControlManager);
 
-            return new LcimmsMethodViewModel(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, focusControlManager);
+            return new LcimmsMethodViewModel(
+                model,
+                analysisViewModelAsObservable,
+                alignmentViewModelAsObservable,
+                PrepareChromatogramViewModels(analysisViewModelAsObservable, alignmentViewModelAsObservable),
+                PrepareMassSpectrumViewModels(analysisViewModelAsObservable, alignmentViewModelAsObservable),
+                focusControlManager);
+        }
+
+        private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<LcimmsAnalysisViewModel> analysisAsObservable, IObservable<LcimmsAlignmentViewModel> alignmentAsObservable) {
+            var eic = analysisAsObservable;
+            var bar = alignmentAsObservable.Select(vm => vm?.BarChartViewModel);
+            var alignmentEic = alignmentAsObservable.Select(vm => vm?.AlignmentEicViewModel);
+            return new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase>[] { eic, bar, alignmentEic});
+        }
+
+        private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<LcimmsAnalysisViewModel> analysisAsObservable, IObservable<LcimmsAlignmentViewModel> alignmentAsObservable) {
+            var rawdec = analysisAsObservable.Select(vm => vm?.RawDecSpectrumsViewModel);
+            var rawpur = Observable.Return<ViewModelBase>(null); // analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
+            var ms2chrom = analysisAsObservable.Select(vm => vm?.Ms2ChromatogramsViewModel);
+            var repref = alignmentAsObservable.Select(vm => vm?.Ms2SpectrumViewModel);
+            return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase>[] { rawdec, ms2chrom, rawpur, repref});
         }
     }
 }

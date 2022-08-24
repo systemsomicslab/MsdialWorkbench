@@ -4,6 +4,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
 {
     internal interface IAnalysisResultViewModel : IResultViewModel
     {
-        RawDecSpectrumsViewModel  RawDecSpectrumsViewModel { get; }
+        RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
+        Ms2ChromatogramsViewModel Ms2ChromatogramsViewModel { get; }
     }
 }

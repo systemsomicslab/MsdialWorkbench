@@ -65,6 +65,7 @@ namespace CompMs.Common.Proteomics.DataObj {
         public AdductIon AdductType { get; set; }
         [Key(8)]
         public double CollisionCrossSection { get; set; }
-
+        [Key(9)]
+        public bool IsAnnotated { get; set; }
     }
 }

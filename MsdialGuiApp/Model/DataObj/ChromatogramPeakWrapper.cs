@@ -1,16 +1,19 @@
 ﻿using CompMs.Common.Components;
+using CompMs.Common.Interfaces;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class ChromatogramPeakWrapper
+    public sealed class ChromatogramPeakWrapper
     {
-        public double Intensity => innerModel.Intensity;
-        public double? ChromXValue => innerModel.ChromXs?.Value;
+        public double Intensity => _innerModel.Intensity;
+        public double? ChromXValue => _innerModel.ChromXs?.Value;
 
-        private readonly ChromatogramPeak innerModel;
-        public ChromatogramPeakWrapper(ChromatogramPeak peak) {
-            innerModel = peak;
+        private readonly IChromatogramPeak _innerModel;
+        public ChromatogramPeakWrapper(IChromatogramPeak peak) {
+            _innerModel = peak;
         }
+
+        public PeakItem ConvertToPeakItem() => new PeakItem(_innerModel);
     }
 
 }

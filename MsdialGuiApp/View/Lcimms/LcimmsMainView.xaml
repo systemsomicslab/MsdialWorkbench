@@ -210,7 +210,7 @@
                             <DataTemplate>
                                 <ContentControl Content="{Binding}">
                                     <ContentControl.Resources>
-                                        <DataTemplate DataType="{x:Type vmchart:EicViewModel}">
+                                        <DataTemplate DataType="{x:Type vm:LcimmsAnalysisViewModel}">
                                             <TextBlock Text="Eic of focused spot"
                                                        VerticalAlignment="Stretch"/>
                                         </DataTemplate>
@@ -230,8 +230,15 @@
                             <DataTemplate>
                                 <ContentControl Content="{Binding}">
                                     <ContentControl.Resources>
-                                        <DataTemplate DataType="{x:Type vmchart:EicViewModel}">
-                                            <chart:EicView/>
+                                        <DataTemplate DataType="{x:Type vm:LcimmsAnalysisViewModel}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <chart:EicView DataContext="{Binding RtEicViewModel}" Grid.Column="0"/>
+                                                <chart:EicView DataContext="{Binding DtEicViewModel}" Grid.Column="1"/>
+                                            </Grid>
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type vmchart:BarChartViewModel}">
                                             <chart:BarChartView/>
@@ -352,7 +359,7 @@
                                             <TextBlock Text="Exp. vs.Rep."
                                                        VerticalAlignment="Stretch"/>
                                         </DataTemplate>
-                                        <DataTemplate x:Key="MS2Chrom"> <!-- MS2 chrom. -->
+                                        <DataTemplate DataType="{x:Type vmchart:Ms2ChromatogramsViewModel}">
                                             <TextBlock Text="MS2 Chrom."
                                                        VerticalAlignment="Stretch"/>
                                         </DataTemplate>
@@ -401,7 +408,7 @@
                                             </chart:ExpRefView>
                                         </DataTemplate>
                                         <DataTemplate x:Key="MS2Chrom"> <!-- MS2 chrom. -->
-                                            <TextBlock Text="MS2 Chrom." IsEnabled="False"/>
+                                            <chart:Ms2ChromatogramsView DataContext="{Binding AnalysisViewModel.Value.Ms2ChromatogramsViewModel}"/>
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type vmchart:RawPurifiedSpectrumsViewModel}">
                                             <chart:RawPurifiedView DataContext="{Binding DataContext.AnalysisViewModel.Value, ElementName=TabControl_MS2Viewer}"/>

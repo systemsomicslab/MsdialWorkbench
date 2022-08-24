@@ -374,10 +374,26 @@ namespace CompMs.Common.Proteomics.DataObj {
         }
 
 
-        public static List<Peptide> GetModifiedPeptides(List<Peptide> peptides, ModificationContainer modContainer, int maxNumberOfModificationsPerPeptide = 2, double maxPeptideMass = 4600) {
+        public static List<Peptide> GetModifiedPeptides(List<Peptide> peptides, ModificationContainer modContainer,
+            int maxNumberOfModificationsPerPeptide = 2, double maxPeptideMass = 4600) {
             var mPeptides = new List<Peptide>();
             foreach (var peptide in peptides) {
                 var results = PeptideCalc.Sequence2Peptides(peptide, modContainer, maxNumberOfModificationsPerPeptide, maxPeptideMass);
+                foreach (var result in results.OrEmptyIfNull()) {
+                    mPeptides.Add(result);
+                }
+            }
+            return mPeptides;
+        }
+
+        public static List<Peptide> GetFastModifiedPeptides(List<Peptide> peptides, ModificationContainer modContainer,
+            int maxNumberOfModificationsPerPeptide = 2,
+            double minPeptideMass = 300,
+            double maxPeptideMass = 4600) {
+            var mPeptides = new List<Peptide>();
+            foreach (var peptide in peptides) {
+                if (peptide.ExactMass > maxPeptideMass) continue;
+                var results = PeptideCalc.Sequence2FastPeptides(peptide, modContainer, maxNumberOfModificationsPerPeptide, maxPeptideMass);
                 foreach (var result in results.OrEmptyIfNull()) {
                     mPeptides.Add(result);
                 }

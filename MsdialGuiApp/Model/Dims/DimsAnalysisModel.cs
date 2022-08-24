@@ -156,6 +156,9 @@ namespace CompMs.App.Msdial.Model.Dims
                 Observable.Return(spectraExporter),
                 Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
+            // Ms2 chromatogram
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter).AddTo(Disposables);
+
             EicLoader = DimsEicLoader.BuildForPeakTable(provider, parameter);
             PeakTableModel = new DimsAnalysisPeakTableModel(Ms1Peaks, Target, Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d, Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d).AddTo(Disposables);
 
@@ -188,7 +191,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public EicModel EicModel { get; }
 
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
-
+        public Ms2ChromatogramsModel Ms2ChromatogramsModel { get; }
         public DimsAnalysisPeakTableModel PeakTableModel { get; }
 
         public EicLoader EicLoader { get; }
