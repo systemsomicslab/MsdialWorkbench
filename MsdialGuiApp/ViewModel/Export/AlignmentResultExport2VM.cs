@@ -111,7 +111,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
             var task = TaskNotification.Start($"Exporting {alignmentFile.FileName}");
             _broker.Publish(task);
 
-            var resultContainer = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(alignmentFile.FilePath);
+            var resultContainer = AlignmentResultContainer.Load(alignmentFile);
             var msdecResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
 
             var exporter = Format.Exporter;
