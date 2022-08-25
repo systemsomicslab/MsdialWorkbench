@@ -14,7 +14,7 @@ using System.IO.Compression;
 namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
-    public class DataBaseMapper : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IMatchResultRefer<PeptideMsReference, MsScanMatchResult> {
+    public sealed class DataBaseMapper : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IMatchResultRefer<PeptideMsReference, MsScanMatchResult> {
         public DataBaseMapper() {
             MoleculeAnnotators = new List<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
             PeptideAnnotators = new List<ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>>();

@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class FacadeMatchResultEvaluator : IMatchResultEvaluator<MsScanMatchResult>
+    public sealed class FacadeMatchResultEvaluator : IMatchResultEvaluator<MsScanMatchResult>
     {
         public FacadeMatchResultEvaluator() {
             evaluators = new Dictionary<string, IMatchResultEvaluator<MsScanMatchResult>>();

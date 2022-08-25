@@ -185,7 +185,8 @@ namespace CompMs.Graphics.Chart
             }
 
             var expression = ExpressionHelper.GetConvertToAxisValueExpression(dataType, HorizontalPropertyName);
-            lazyDatas.LazyUpdateHorizontalValue(expression);
+            lazyDatas.UpdateHorizontalValue(expression);
+            lazyDatas.UpdateHorizontalAxis(HorizontalAxis);
             WriteCleanFlag(PropertyClean.Horizontal, true);
         }
 
@@ -216,7 +217,8 @@ namespace CompMs.Graphics.Chart
                 return;
             }
             var expression = ExpressionHelper.GetConvertToAxisValueExpression(dataType, VerticalPropertyName);
-            lazyDatas.LazyUpdateVerticalValue(expression);
+            lazyDatas.UpdateVerticalValue(expression);
+            lazyDatas.UpdateVerticalAxis(VerticalAxis);
             WriteCleanFlag(PropertyClean.Vertical, true);
         }
 
@@ -245,7 +247,7 @@ namespace CompMs.Graphics.Chart
 
             if (!string.IsNullOrEmpty(OrderingPropertyName) && dataType != null) {
                 var expression = ExpressionHelper.GetPropertyGetterExpression(dataType, OrderingPropertyName);
-                lazyDatas.LazyUpdateOrderValue(expression);
+                lazyDatas.UpdateOrderValue(expression);
             }
             else {
                 lazyDatas.ClearOrderValueUpdator();
@@ -280,7 +282,7 @@ namespace CompMs.Graphics.Chart
 
             if (dataType != null && !string.IsNullOrEmpty(LabelPropertyName)) {
                 var expression = ExpressionHelper.GetPropertyGetterExpression(dataType, LabelPropertyName);
-                lazyDatas.LazyUpdateLabelValue(expression, Format);
+                lazyDatas.UpdateLabelValue(expression, Format);
             }
             else {
                 lazyDatas.ClearLabelValueUpdator();
@@ -526,12 +528,22 @@ namespace CompMs.Graphics.Chart
 
             public bool IsEmpty => !_collectionView.Cast<object>().Any();
 
-            public void LazyUpdateHorizontalValue(Expression<Func<object, IAxisManager, AxisValue>> updator) {
+            public void UpdateHorizontalAxis(IAxisManager axis) {
+                _horizontalAxis = axis;
+                _datas = null;
+            }
+
+            public void UpdateVerticalAxis(IAxisManager axis) {
+                _verticalAxis = axis;
+                _datas = null;
+            }
+
+            public void UpdateHorizontalValue(Expression<Func<object, IAxisManager, AxisValue>> updator) {
                 _horizontalUpdator = updator;
                 _datas = null;
             }
 
-            public void LazyUpdateVerticalValue(Expression<Func<object, IAxisManager, AxisValue>> updator) {
+            public void UpdateVerticalValue(Expression<Func<object, IAxisManager, AxisValue>> updator) {
                 _verticalUpdator = updator;
                 _datas = null;
             }
@@ -541,7 +553,7 @@ namespace CompMs.Graphics.Chart
                 _datas = null;
             }
 
-            public void LazyUpdateOrderValue(Expression<Func<object, object>> updator) {
+            public void UpdateOrderValue(Expression<Func<object, object>> updator) {
                 _orderValueUpdator = updator;
                 _datas = null;
             }
@@ -551,7 +563,7 @@ namespace CompMs.Graphics.Chart
                 _datas = null;
             }
 
-            public void LazyUpdateLabelValue(Expression<Func<object, object>> updator, string format) {
+            public void UpdateLabelValue(Expression<Func<object, object>> updator, string format) {
                 _labelValueUpdator = updator;
                 _format = format;
                 _datas = null;

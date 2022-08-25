@@ -65,7 +65,7 @@ namespace CompMs.MsdialLcImMsApi.Process
 
             // annotations
             Console.WriteLine("Annotation started");
-            PeakAnnotation(annotationProcess, accSpectrumProvider, chromPeakFeatures, targetCE2MSDecResults, parameter, reportAction, token);
+            PeakAnnotation(annotationProcess, spectrumProvider, chromPeakFeatures, targetCE2MSDecResults, parameter, reportAction, token);
 
             // characterizatin
             PeakCharacterization(targetCE2MSDecResults, spectrumProvider, chromPeakFeatures, evaluator, parameter, reportAction);
@@ -167,7 +167,7 @@ namespace CompMs.MsdialLcImMsApi.Process
 
         private static void PeakAnnotation(
             IAnnotationProcess annotationProcess,
-            IDataProvider accSpectrumProvider,
+            IDataProvider provider,
             List<ChromatogramPeakFeature> chromPeakFeatures,
             Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
             MsdialLcImMsParameter parameter,
@@ -180,7 +180,7 @@ namespace CompMs.MsdialLcImMsApi.Process
             foreach (var (ce2msdecs, index) in targetCE2MSDecResults.WithIndex()) {
                 var msdecResults = ce2msdecs.Value;
                 var initial_annotation_local = initial_annotation + max_annotation_local * index;
-                annotationProcess.RunAnnotation(chromPeakFeatures, msdecResults, accSpectrumProvider, parameter.NumThreads - 1, token, v => ReportProgress.Show(initial_annotation_local, max_annotation_local, v, chromPeakFeatures.Count, reportAction));
+                annotationProcess.RunAnnotation(chromPeakFeatures, msdecResults, provider, parameter.NumThreads - 1, token, v => ReportProgress.Show(initial_annotation_local, max_annotation_local, v, chromPeakFeatures.Count, reportAction));
             }
         }
 

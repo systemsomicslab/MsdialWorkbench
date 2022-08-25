@@ -101,7 +101,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             Target = target;
 
             var accumulatedPeakModels = new ObservableCollection<ChromatogramPeakFeatureModel>(orderedPeaks);
-            var peakModels = new ReactiveCollection<ChromatogramPeakFeatureModel>().AddTo(Disposables);
+            var peakModels = new ReactiveCollection<ChromatogramPeakFeatureModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
             accumulatedTarget.Where(t => !(t is null))
                 .Select(t => {
                     var (lo, hi) = peakRanges[t];
@@ -222,7 +222,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            var rawLoader = new MsRawSpectrumLoader(spectrumProvider, parameter);
+            var rawLoader = new MultiMsRawSpectrumLoader(spectrumProvider, parameter);
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 target,
                 rawLoader,
@@ -239,7 +239,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
             // Ms2 chromatogram
-            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, Target.Select(t => decLoader.LoadMSDecResult(t.InnerModel.MSDecResultIdUsed)), rawLoader, spectrumProvider, parameter).AddTo(Disposables);
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(target, target.Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation)), rawLoader, spectrumProvider, parameter).AddTo(Disposables);
 
             var surveyScanSpectrum = new SurveyScanSpectrum(target, t => Observable.FromAsync(token => LoadMsSpectrumAsync(t, token)))
                 .AddTo(Disposables);

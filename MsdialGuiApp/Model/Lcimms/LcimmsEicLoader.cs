@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     .ToList();
                 var area = eic.Where(peak => target.ChromXLeftValue <= peak.Time && peak.Time <= target.ChromXRightValue).ToList();
                 var top = area.Argmin(peak => Math.Abs(target.ChromXValue.Value - peak.Time));
-                return new DataObj.Chromatogram(eic, area, top, string.Empty, Colors.Black, ChromXType.Drift, ChromXUnit.Msec, $"EIC chromatogram of {target.Mass:N4} tolerance [Da]: {_parameter.CentroidMs1Tolerance:F} RT [min]: {target.InnerModel.ChromXsTop.RT.Value} tolerance [min]: {_parameter.AccumulatedRtRange} Max intensity: {area.Max(peak => peak.Intensity):F0}");
+                return new DataObj.Chromatogram(eic, area, top, string.Empty, Colors.Black, ChromXType.Drift, ChromXUnit.Msec, $"EIC chromatogram of {target.Mass:N4} tolerance [Da]: {_parameter.CentroidMs1Tolerance:F} RT [min]: {target.InnerModel.ChromXsTop.RT.Value:F2} tolerance [min]: {_parameter.AccumulatedRtRange} Max intensity: {area.Max(peak => peak.Intensity):F0}");
             });
         }
     }
