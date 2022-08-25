@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class StandardAnnotationProcess<T> : IAnnotationProcess
+    public sealed class StandardAnnotationProcess<T> : IAnnotationProcess
     {
         public void RunAnnotation(
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,

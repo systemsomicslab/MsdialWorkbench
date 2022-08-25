@@ -83,9 +83,9 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
 
         private List<ChromatogramPeakFeature> Execute4DFeatureDetectionNormalModeByMultiThread(IDataProvider spectrumProvider, IDataProvider accSpectrumProvider, int numThreads, CancellationToken token, Action<int> reportAction) {
 
-            var mzRange = accSpectrumProvider.GetMs1Range(_parameter.IonMode);
-            float startMass = mzRange.Min < _parameter.MassRangeBegin ? _parameter.MassRangeBegin : mzRange.Min;
-            float endMass = mzRange.Max > _parameter.MassRangeEnd ? _parameter.MassRangeEnd : mzRange.Max;
+            var (mzMin, mzMax) = accSpectrumProvider.GetMs1Range(_parameter.IonMode);
+            float startMass = mzMin < _parameter.MassRangeBegin ? _parameter.MassRangeBegin : mzMin;
+            float endMass = mzMax > _parameter.MassRangeEnd ? _parameter.MassRangeEnd : mzMax;
             float focusedMass = startMass, massStep = _parameter.MassSliceWidth;
             if (_parameter.AccuracyType == AccuracyType.IsNominal) {
                 massStep = 1.0F;

@@ -134,7 +134,7 @@ namespace CompMs.Graphics.Chart
                 xLambda = null;
                 return;
             }
-            xLambda = new Lazy<Func<object, IAxisManager, AxisValue>>(() => (Func<object, IAxisManager, AxisValue>)ExpressionHelper.GetConvertToAxisValueExpression(type, hprop).Compile());
+            xLambda = new Lazy<Func<object, IAxisManager, AxisValue>>(() => ExpressionHelper.GetConvertToAxisValueExpression(type, hprop).Compile());
         }
 
         private void CoerceYProperty(Type type, string vprop) {
@@ -144,7 +144,7 @@ namespace CompMs.Graphics.Chart
                 yLambda = null;
                 return;
             }
-            yLambda = new Lazy<Func<object, IAxisManager, AxisValue>>(() => (Func<object, IAxisManager, AxisValue>)ExpressionHelper.GetConvertToAxisValueExpression(type, vprop).Compile());
+            yLambda = new Lazy<Func<object, IAxisManager, AxisValue>>(() => ExpressionHelper.GetConvertToAxisValueExpression(type, vprop).Compile());
         }
 
         public IBrushMapper LineBrush {

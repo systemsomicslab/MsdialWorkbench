@@ -27,7 +27,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
-    class LcimmsAlignmentModel : AlignmentModelBase
+    internal sealed class LcimmsAlignmentModel : AlignmentModelBase
     {
         public LcimmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,

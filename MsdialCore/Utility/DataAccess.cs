@@ -60,7 +60,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         public static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isGuiProcess, int retry, int sleepMilliSeconds) {
-            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, isGuiProcess)) {
+            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
                 for (var i = 0; i < retry; i++) {
                     var rawObj = access.GetMeasurement();
                     if (rawObj != null)

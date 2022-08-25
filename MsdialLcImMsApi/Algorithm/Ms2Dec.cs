@@ -39,7 +39,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
                     msdecResults.Add(result);
                 }
                 counter++;
-                ReportProgress.Show(InitialProgress, ProgressMax, counter, chromPeakFeatures.Count(), reportAction);
+                ReportProgress.Show(InitialProgress, ProgressMax, counter, chromPeakFeatures.Count, reportAction);
             }
             return msdecResults;
         }
@@ -47,8 +47,6 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
         public MSDecResult GetMS2DecResult(IDataProvider provider, ChromatogramPeakFeature rtChromPeak, ChromatogramPeakFeature dtChromPeak,
             MsdialLcImMsParameter param, ChromatogramPeaksDataSummaryDto summary, IupacDatabase iupac, double targetCE) {
             if (dtChromPeak.MS2RawSpectrumID < 0) return MSDecObjectHandler.GetDefaultMSDecResult(dtChromPeak);
-
-            rtChromPeak.MS2RawSpectrumID = 1; // needed for visualization
 
             // check target CE ID
             var targetSpecID = DataAccess.GetTargetCEIndexForMS2RawSpectrum(dtChromPeak, targetCE);
@@ -87,7 +85,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm {
             //}
 
             var ms2obj = provider.LoadMsSpectrumFromIndex(dtChromPeak.MS2RawSpectrumID);
-            var isDiaPasef = Math.Max(ms2obj.Precursor.TimeEnd, ms2obj.Precursor.TimeBegin) > 0 ? true : false;
+            var isDiaPasef = Math.Max(ms2obj.Precursor.TimeEnd, ms2obj.Precursor.TimeBegin) > 0;
 
             if (isDiaPasef) {
                 if (param.IsDoAndromedaMs2Deconvolution) {
