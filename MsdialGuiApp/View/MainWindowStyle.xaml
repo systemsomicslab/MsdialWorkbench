@@ -461,4 +461,25 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <ControlTemplate TargetType="ToggleButton" x:Key="ExpanderLikeToggleButton">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="&#xEA3A;" FontFamily="Segoe MDL2 Assets" Width="{Binding Height, RelativeSource={RelativeSource Self}}"
+                       VerticalAlignment="Center" HorizontalAlignment="Center"
+                       Grid.Column="0"/>
+            <ContentPresenter Grid.Column="1" Margin="4,0,0,0"/>
+            <TextBlock Text="&#xE96E;" FontFamily="Segoe MDL2 Assets" Width="{Binding Height, RelativeSource={RelativeSource Self}}"
+                       VerticalAlignment="Center" HorizontalAlignment="Center"
+                       Grid.Column="0">
+                <TextBlock.LayoutTransform>
+                    <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="0.7" ScaleY="0.7"/>
+                </TextBlock.LayoutTransform>
+            </TextBlock>
+            <ContentPresenter Grid.Column="1" Margin="4,0,0,0"/>
+        </Grid>
+    </ControlTemplate>
 </ResourceDictionary>
