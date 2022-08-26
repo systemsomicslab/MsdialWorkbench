@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    internal class CompoundSearcherCollection
+    internal sealed class CompoundSearcherCollection
     {
         private readonly IReadOnlyList<CompoundSearcher> _items;
 

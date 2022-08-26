@@ -46,7 +46,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly AlignmentFileBean _alignmentFile;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly List<AnalysisFileBean> _files;
-        private readonly List<CompoundSearcher> _compoundSearchers;
+        private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
         private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
 
         public LcmsAlignmentModel(
@@ -72,7 +72,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Parameter = parameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _dataBaseMapper = mapper;
-            _compoundSearchers = ConvertToCompoundSearchers(databases);
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam).Items;
 
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
 
@@ -316,24 +316,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 _msdecResult.Value,
                 _dataBaseMapper,
                 Parameter);
-        }
-
-        private List<CompoundSearcher> ConvertToCompoundSearchers(DataBaseStorage databases) {
-            var metabolomicsSearchers = databases
-                .MetabolomicsDataBases
-                .SelectMany(db => db.Pairs)
-                .Select(pair => new CompoundSearcher(
-                    new AnnotationQueryWithoutIsotopeFactory(pair.SerializableAnnotator),
-                    pair.SearchParameter,
-                    pair.SerializableAnnotator));
-            var lipidomicsSearchers = databases
-                .EadLipidomicsDatabases
-                .SelectMany(db => db.Pairs)
-                .Select(pair => new CompoundSearcher(
-                    new AnnotationQueryWithReferenceFactory(_dataBaseMapper, pair.SerializableAnnotator, Parameter.PeakPickBaseParam),
-                    pair.SearchParameter,
-                    pair.SerializableAnnotator));
-            return metabolomicsSearchers.Concat(lipidomicsSearchers).ToList();
         }
     }
 }

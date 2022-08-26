@@ -32,9 +32,9 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Select(pair => DataAccess.GetMs2ValuePeaks(provider, pair.t.Mass, pair.t.MS1RawSpectrumIdLeft, pair.t.MS1RawSpectrumIdRight, pair.spectrum.Select(peak_ => (double)peak_.Mass).ToArray(), parameter))
                 .Select(chromatograms => new ChromatogramsModel(
                     "Raw MS/MS chromatogram",
-                    chromatograms.Zip(RAW_PENS, (chromatogram, pen) => new DisplayChromatogram(chromatogram.Select(peak_ => peak_.ConvertToChromatogramPeak(ChromXType.RT, ChromXUnit.Min)).ToList(), linePen: pen, title: chromatogram.FirstOrDefault().Mz.ToString("F5"))).ToList(),
+                    chromatograms.Zip(RAW_PENS, (chromatogram, pen) => new DisplayChromatogram(chromatogram.Select(peak_ => peak_.ConvertToChromatogramPeak(ChromXType.RT, ChromXUnit.Min)).ToList(), linePen: pen, title: chromatogram.FirstOrDefault().Mz.ToString("F5"))).ToList(), // TODO: [magic number] ChromXType, ChromXUnit
                     "Raw MS/MS chromatogram",
-                    "Retention time [min]",
+                    "Retention time [min]", // TODO: [magic number] Retention time 
                     "Abundance"));
             var deconvolutedChromatograms = msScan.Where(t => !(t is null))
                 .CombineLatest(NumberOfChromatograms, (result, number) => result.DecChromPeaks(number))
@@ -42,7 +42,7 @@ namespace CompMs.App.Msdial.Model.Chart
                     "Deconvoluted MS/MS chromatogram",
                     chromatograms.Zip(DECONVOLUTION_PENS, (chromatogram, pen) => new DisplayChromatogram(chromatogram, linePen: pen, title: chromatogram.FirstOrDefault()?.Mass.ToString("F5") ?? "NA")).ToList(),
                     "Deconvoluted MS/MS chromatogram",
-                    "Retention time [min]",
+                    "Retention time [min]", // TODO: [magic number] Retention time 
                     "Abundance"));
             var bothChromatograms = deconvolutedChromatograms.CombineLatest(rawChromatograms, (dec, raw) => dec.Merge(raw));
 
