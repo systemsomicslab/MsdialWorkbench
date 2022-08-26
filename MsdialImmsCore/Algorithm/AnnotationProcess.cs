@@ -74,7 +74,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 return;
             }
 
-            var spectrumList = provider.LoadMs1Spectrums();
+            var spectrumList = provider.LoadMsSpectrums();
             Enumerable.Range(0, chromPeakFeatures.Count)
                 .AsParallel()
                 .WithCancellation(token)
