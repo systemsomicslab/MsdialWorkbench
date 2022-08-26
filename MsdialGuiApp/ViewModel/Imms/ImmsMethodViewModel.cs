@@ -24,8 +24,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private readonly ImmsMethodModel model;
         private readonly FocusControlManager _focusControlManager;
 
-        private ImmsMethodViewModel(ImmsMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisViewModelAsObservable, IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentViewModelAsObservable, FocusControlManager focusControlmanager)
-            : base(model, analysisViewModelAsObservable, alignmentViewModelAsObservable) {
+        private ImmsMethodViewModel(ImmsMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisViewModelAsObservable, IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentViewModelAsObservable, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels, FocusControlManager focusControlmanager)
+            : base(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, chromatogramViewModels, massSpectrumViewModels) {
 
             this.model = model;
             _focusControlManager = focusControlmanager.AddTo(Disposables);
@@ -158,12 +158,30 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
             return result;
         }
+
+        private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<ImmsAnalysisViewModel> analysisAsObservable, IObservable<ImmsAlignmentViewModel> alignmentAsObservable) {
+            var eic = analysisAsObservable.Select(vm => vm?.EicViewModel);
+            var bar = alignmentAsObservable.Select(vm => vm?.BarChartViewModel);
+            var alignmentEic = alignmentAsObservable.Select(vm => vm?.AlignmentEicViewModel);
+            return new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase>[] { eic, bar, alignmentEic});
+        }
+
+        private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<ImmsAnalysisViewModel> analysisAsObservable, IObservable<ImmsAlignmentViewModel> alignmentAsObservable) {
+            var rawdec = analysisAsObservable.Select(vm => vm?.RawDecSpectrumsViewModel);
+            var rawpur = Observable.Never<ViewModelBase>(); // analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
+            var ms2chrom = analysisAsObservable.Select(vm => vm?.Ms2ChromatogramsViewModel);
+            var repref = alignmentAsObservable.Select(vm => vm?.Ms2SpectrumViewModel);
+            return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase>[] { rawdec, ms2chrom, rawpur, repref});
+        }
+
         public static ImmsMethodViewModel Create(ImmsMethodModel model, IWindowService<CompoundSearchVM> compoundSearchService, IWindowService<PeakSpotTableViewModelBase> peakSpotTableService, IMessageBroker messageBroker) {
             var focusControlManager = new FocusControlManager();
 
             var analysisViewModelAsObservable = ConvertToAnalysisViewModel(model, compoundSearchService, peakSpotTableService, messageBroker, focusControlManager);
             var alignmentViewModelAsObservable = ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, messageBroker, focusControlManager);
-            return new ImmsMethodViewModel(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, focusControlManager);
+            var chromatogramViewSwitcher = PrepareChromatogramViewModels(analysisViewModelAsObservable, alignmentViewModelAsObservable);
+            var massSpectrumViewSwitcher =  PrepareMassSpectrumViewModels(analysisViewModelAsObservable, alignmentViewModelAsObservable);
+            return new ImmsMethodViewModel(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, chromatogramViewSwitcher, massSpectrumViewSwitcher, focusControlManager);
         }
     }
 }
