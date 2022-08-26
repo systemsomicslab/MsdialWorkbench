@@ -461,4 +461,12 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <Style TargetType="RibbonTab" x:Key="FocusWhenVisible">
+        <Style.Triggers>
+            <Trigger Property="Visibility" Value="Visible">
+                <Setter Property="IsSelected" Value="True"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>
