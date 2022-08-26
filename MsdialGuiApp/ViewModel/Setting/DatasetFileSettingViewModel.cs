@@ -118,11 +118,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
 
-        public void Next() {
+        public ISettingViewModel Next(ISettingViewModel selected) {
             foreach (var file in AnalysisFilePropertyCollection) {
                 file.Commit();
             }
             decide.OnNext(Unit.Default);
+            return null;
         }
 
         private static readonly string FileNameDuplicateErrorMessage = "File name duplicated.";
