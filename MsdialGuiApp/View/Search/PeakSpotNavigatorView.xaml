@@ -130,7 +130,7 @@
 
             <ToggleButton>
                 <StackPanel>
-                    <TextBlock Text="MS-CleanR filterdddd"/>
+                    <TextBlock Text="Display MS-CleanR filter"/>
                     <Popup IsOpen="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}}">
                         <Border Background="White" BorderThickness="1">
                             <StackPanel Orientation="Vertical" Grid.Column="1">
