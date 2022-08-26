@@ -7,6 +7,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.Utility;
 using MessagePack;
 using System;
 using System.Collections.Generic;
@@ -417,6 +418,23 @@ namespace CompMs.MsdialCore.DataObj
             };
 
             return peakFeature;
+        }
+
+        public void SetMatchResultProperty(MoleculeMsReference reference, MsScanMatchResult result, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+            if (result.IsUnknown) {
+                return;
+            }
+            if (evaluator.IsReferenceMatched(result)) {
+                DataAccess.SetMoleculeMsProperty(this, reference, result);
+            }
+            else if (evaluator.IsAnnotationSuggested(result)) {
+                DataAccess.SetMoleculeMsPropertyAsSuggested(this, reference, result);
+            }
+        }
+
+        public void SetMatchResultProperty(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+            var representative = MatchResults.Representative;
+            SetMatchResultProperty(refer.Refer(representative), representative, evaluator);
         }
 
         public void SetMs2SpectrumId(PeakMs2Spectra spectra) {

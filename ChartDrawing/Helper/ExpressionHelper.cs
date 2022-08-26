@@ -7,7 +7,7 @@ namespace CompMs.Graphics.Helper
 {
     internal static class ExpressionHelper
     {
-        public static LambdaExpression GetConvertToAxisValueExpression(Type type, string property) {
+        public static Expression<Func<object, IAxisManager, AxisValue>> GetConvertToAxisValueExpression(Type type, string property) {
             var parameter = Expression.Parameter(typeof(object));
             var casted = Expression.Convert(parameter, type);
             var getter = Expression.Property(casted, property);
@@ -26,6 +26,14 @@ namespace CompMs.Graphics.Helper
                 castedaxisvalue);
 
             return Expression.Lambda<Func<object, IAxisManager, AxisValue>>(val, parameter, axis);
+        }
+
+        public static Expression<Func<object, object>> GetPropertyGetterExpression(Type type, string property) {
+            var parameter = Expression.Parameter(typeof(object));
+            var casted = Expression.Convert(parameter, type);
+            var getter = Expression.Property(casted, property);
+            var prop = Expression.Convert(getter, typeof(object));
+            return Expression.Lambda<Func<object, object>>(prop, parameter);
         }
     }
 }

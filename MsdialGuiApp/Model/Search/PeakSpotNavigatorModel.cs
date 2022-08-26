@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,6 +32,7 @@ namespace CompMs.App.Msdial.Model.Search
             DtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.Drift.Value) ?? 1d;
             if (peakSpots is INotifyCollectionChanged notifyCollection) {
                 notifyCollection.CollectionChangedAsObservable()
+                    .Throttle(TimeSpan.FromSeconds(.1d))
                     .Subscribe(_ =>
                     {
                         MzLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.Mass) ?? 0d;

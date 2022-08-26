@@ -136,7 +136,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             ExperimentSpectrumModel = EicModel.Chromatogram
                 .Select(chromatogram => chromatogram.ConvertToDisplayChromatogram())
                 .Select(chromatogram => new ChromatogramsModel("Experiment chromatogram", chromatogram))
+                .DisposePreviousValue()
                 .Select(chromatogram => new RangeSelectableChromatogramModel(chromatogram))
+                .DisposePreviousValue()
                 .CombineLatest(
                     Target.Where(t => t != null),
                     (model, t) => new ExperimentSpectrumModel(model, AnalysisFile, provider, t.InnerModel, DataBaseMapper, Parameter))

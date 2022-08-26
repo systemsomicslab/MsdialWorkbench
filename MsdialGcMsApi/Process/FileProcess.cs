@@ -50,21 +50,21 @@ namespace CompMs.MsdialGcMsApi.Process
 
             // feature detections
             Console.WriteLine("Peak picking started");
-            var reportSpotting = _reportAction?.FromRange(PEAKSPOTTING_START, PEAKSPOTTING_END);
+            var reportSpotting = ReportProgress.FromRange(_reportAction, PEAKSPOTTING_START, PEAKSPOTTING_END);
             var chromPeakFeatures = _peakSpotting.Run(provider, reportSpotting, token);
             await analysisFileObject.SetChromatogramPeakFeaturesSummaryAsync(provider, chromPeakFeatures, token).ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
 
             // chrom deconvolutions
             Console.WriteLine("Deconvolution started");
-            var reportDeconvolution = _reportAction?.FromRange(DECONVOLUTION_START, DECONVOLUTION_END);
+            var reportDeconvolution = ReportProgress.FromRange(_reportAction, DECONVOLUTION_START, DECONVOLUTION_END);
             var spectra = await provider.LoadMsSpectrumsAsync(token).ConfigureAwait(false);
             var msdecResults = _ms1Deconvolution.GetMSDecResults(spectra, chromPeakFeatures, reportDeconvolution);
             token.ThrowIfCancellationRequested();
 
             // annotations
             Console.WriteLine("Annotation started");
-            var reportAnnotation = _reportAction?.FromRange(ANNOTATION_START, ANNOTATION_END);
+            var reportAnnotation = ReportProgress.FromRange(_reportAction, ANNOTATION_START, ANNOTATION_END);
             var carbon2RtDict = analysisFileObject.GetRiDictionary(_riDictionaryInfo);
             _annotation.MainProcess(msdecResults, carbon2RtDict, reportAnnotation);
             token.ThrowIfCancellationRequested();

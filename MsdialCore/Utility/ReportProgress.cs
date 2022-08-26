@@ -29,15 +29,39 @@ namespace CompMs.MsdialCore.Utility {
             var progress = initial + current / localMax * totalMax;
             reportAction?.Invoke(((int)progress));
         }
+
+        public static ReportProgress FromLength(Action<int> reportAction, double initialProgress, double progressLength) {
+            return new ReportProgress(initialProgress, progressLength, reportAction);
+        }
+
+        public static ReportProgress FromRange(Action<int> reportAction, double initialProgress, double endProgress) {
+            return new ReportProgress(initialProgress, endProgress - initialProgress, reportAction);
+        }
+
+        public static ReportProgress FromLength(Action<double> reportAction, double initialProgress, double progressLength) {
+            return new ReportProgress(initialProgress, progressLength, v => reportAction?.Invoke(v));
+        }
+
+        public static ReportProgress FromRange(Action<double> reportAction, double initialProgress, double endProgress) {
+            return new ReportProgress(initialProgress, endProgress - initialProgress, v => reportAction?.Invoke(v));
+        }
     }
 
     public static class ReportProgressExtensions {
-        public static ReportProgress FromLength(this Action<int> reportAction, double initialProgress, double progressMax) {
-            return new ReportProgress(initialProgress, progressMax, reportAction);
+        public static ReportProgress FromLength(this Action<int> reportAction, double initialProgress, double progressLength) {
+            return new ReportProgress(initialProgress, progressLength, reportAction);
         }
 
         public static ReportProgress FromRange(this Action<int> reportAction, double initialProgress, double endProgress) {
             return new ReportProgress(initialProgress, endProgress - initialProgress, reportAction);
+        }
+
+        public static ReportProgress FromLength(this Action<double> reportAction, double initialProgress, double progressLength) {
+            return new ReportProgress(initialProgress, progressLength, v => reportAction?.Invoke(v));
+        }
+
+        public static ReportProgress FromRange(this Action<double> reportAction, double initialProgress, double endProgress) {
+            return new ReportProgress(initialProgress, endProgress - initialProgress, v => reportAction?.Invoke(v));
         }
     }
 }

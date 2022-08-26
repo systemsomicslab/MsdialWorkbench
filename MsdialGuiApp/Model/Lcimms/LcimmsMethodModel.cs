@@ -22,6 +22,7 @@ using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Algorithm;
 using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
+using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Process;
 using Reactive.Bindings.Extensions;
@@ -36,7 +37,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
-    class LcimmsMethodModel : MethodModelBase
+    internal sealed class LcimmsMethodModel : MethodModelBase
     {
         static LcimmsMethodModel() {
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
@@ -134,19 +135,19 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
-            var containers = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
-            foreach (var annotators in storage.MetabolomicsDataBases) {
-                containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
+            var pairs = storage.MetabolomicsDataBases.SelectMany(db => db.Pairs).ToArray();
+            var factories = pairs.Select(pair => new AnnotationQueryFactory(pair.SerializableAnnotator, parameter)).ToArray();
+            var parameters = pairs.Select(pair => pair.SearchParameter).ToArray();
+            var evaluator = new FacadeMatchResultEvaluator();
+            var refer = storage.CreateDataBaseMapper();
+            foreach (var pair in pairs) {
+                evaluator.Add(pair.AnnotatorID, pair.SerializableAnnotator);
             }
-            return new StandardAnnotationProcess<IAnnotationQuery>(
-                containers.Select(container => (
-                    new AnnotationQueryFactory(container.Annotator, parameter) as IAnnotationQueryFactory<IAnnotationQuery>,
-                    container
-                )).ToList());
+            return new LcimmsStandardAnnotationProcess(factories, parameters, evaluator, refer);
         }
 
-        public async Task RunAnnotationProcess(AnalysisFileBean analysisfile, Action<int> action) {
-            await Task.Run(() => FileProcess.Run(analysisfile, providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true, reportAction: action)).ConfigureAwait(false);
+        public Task RunAnnotationProcess(AnalysisFileBean analysisfile, Action<int> action) {
+            return Task.Run(() => FileProcess.Run(analysisfile, providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true, reportAction: action));
         }
 
         public void RunAlignmentProcess() {
