@@ -17,6 +17,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -40,6 +41,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseMapper mapper,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             ParameterBase parameter,
+            IObserver<ProteinResultContainerModel> proteinResultContainerModelObserver,
             PeakFilterModel peakFilterModel)
             : base(analysisFile) {
             if (analysisFile is null) {
@@ -66,6 +68,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseMapper = mapper;
             Parameter = parameter;
             CompoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper, parameter.PeakPickBaseParam).Items;
+
+            if (parameter.TargetOmics == TargetOmics.Proteomics) {
+                // These 3 lines must be moved to somewhere for swithcing/updating the alignment result
+                var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(analysisFile.ProteinAssembledResultFilePath);
+                var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Peaks, Target);
+                ProteinResultContainerModel = proteinResultContainerModel;
+                //proteinResultContainerModelObserver.OnNext(proteinResultContainerModel);
+            }
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~FilterEnableStatus.Dt).AddTo(Disposables);
 
@@ -348,6 +358,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ReadOnlyReactivePropertySlim<bool> CanSaveRawSpectra { get; }
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
+        public ProteinResultContainerModel ProteinResultContainerModel { get; }
 
         public void GoToMsfinderMethod() {
             MsDialToExternalApps.SendToMsFinderProgram(

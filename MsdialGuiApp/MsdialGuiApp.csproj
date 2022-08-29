@@ -148,6 +148,7 @@
     <Compile Include="Model\Chart\MsSpectrum.cs" />
     <Compile Include="Model\Information\CompoundDetailModel.cs" />
     <Compile Include="Model\Information\PeakInformationModel.cs" />
+    <Compile Include="Model\DataObj\PeptideGroupModel.cs" />
     <Compile Include="Model\DataObj\ProteinResultContainerModel.cs" />
     <Compile Include="Model\Core\IAlignmentModel.cs" />
     <Compile Include="Model\Core\IAnalysisModel.cs" />
@@ -226,6 +227,7 @@
     <Compile Include="Model\Setting\MethodSettingModelFactory.cs" />
     <Compile Include="Model\Setting\MobilitySettingModel.cs" />
     <Compile Include="Model\Setting\MscleanrSettingModel.cs" />
+    <Compile Include="Model\Setting\PcaSettingModel.cs" />
     <Compile Include="Model\Setting\PeakDetectionSettingModel.cs" />
     <Compile Include="Model\Setting\ProjectParameterSettingModel.cs" />
     <Compile Include="Model\DataObj\DisplayChromatogram.cs" />
@@ -279,9 +281,11 @@
     <Compile Include="ViewModel\Core\IAlignmentResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IAnalysisResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IResultViewModel.cs" />
+    <Compile Include="ViewModel\DataObj\PeptideViewModel.cs" />
     <Compile Include="ViewModel\Information\CompoundDetailViewModel.cs" />
     <Compile Include="ViewModel\Information\PeakInformationViewModel.cs" />
     <Compile Include="ViewModel\DataObj\ProteinGroupViewModel.cs" />
+    <Compile Include="ViewModel\DataObj\ProteinViewModel.cs" />
     <Compile Include="ViewModel\Loader\BarItemsLoaderDataViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentPeakPlotViewModel.cs" />
@@ -384,6 +388,7 @@
     <Compile Include="ViewModel\Setting\ModificationSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\MscleanrSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\MzSearchQueryViewModel.cs" />
+    <Compile Include="ViewModel\Setting\PcaSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\PeakDetectionSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\PeakEqualityParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\PeakFeatureSearchValueViewModel.cs" />
@@ -670,6 +675,9 @@
     </Compile>
     <Compile Include="View\Setting\MscleanrSettingView.xaml.cs">
       <DependentUpon>MscleanrSettingView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Setting\PcaSettingView.xaml.cs">
+      <DependentUpon>PcaSettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Setting\PeakDetectionSettingView.xaml.cs">
       <DependentUpon>PeakDetectionSettingView.xaml</DependentUpon>
@@ -1089,6 +1097,10 @@
     <Page Include="View\Setting\MscleanrSettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\PcaSettingView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Setting\PeakDetectionSettingView.xaml">
       <SubType>Designer</SubType>

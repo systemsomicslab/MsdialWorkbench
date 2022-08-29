@@ -8,7 +8,7 @@ using System.Text;
 namespace CompMs.MsdialCore.Parser {
     public static class MsdialProteomicsSerializer {
         public static void SaveProteinResultContainer(string file, ProteinResultContainer container) {
-            MessagePackHandler.SaveToFile<ProteinResultContainer>(container, file);
+         MessagePackHandler.SaveToFile<ProteinResultContainer>(container, file);
         }
 
         public static ProteinResultContainer LoadProteinResultContainer(string file) {

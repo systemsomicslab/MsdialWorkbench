@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Lcms;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
@@ -154,6 +155,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             var _peakDetailViewModels = new ReactiveCollection<ViewModelBase>().AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
+
+            ProteinResultContainerAsObservable = Observable.Return(model.ProteinResultContainerModel);
         }
 
         private readonly LcmsAnalysisModel model;
@@ -208,6 +211,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
         public ReadOnlyReactivePropertySlim<ExperimentSpectrumViewModel> ExperimentSpectrumViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
+        public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable { get; }
 
         private void SaveSpectra(Window owner) {
             var sfd = new SaveFileDialog {

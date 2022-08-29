@@ -19,10 +19,10 @@ namespace CompMs.MsdialCore.DataObj {
         public ProteinResultContainer(
             ParameterBase parameter, 
             List<ProteinGroup> proteinGroups, 
-            Dictionary<string, ModificationContainer> db2ModificationContainer) {
+            Dictionary<string, ModificationContainer> dB2ModificationContainer) {
             this.Parameter = parameter;
             this.ProteinGroups = proteinGroups;
-            this.DB2ModificationContainer = db2ModificationContainer;
+            this.DB2ModificationContainer = dB2ModificationContainer;
         }
     }
 }

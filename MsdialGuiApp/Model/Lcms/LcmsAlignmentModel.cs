@@ -58,6 +58,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             MsdialLcmsParameter parameter,
             ProjectBaseParameterModel projectBaseParameter,
             List<AnalysisFileBean> files,
+            IObserver<ProteinResultContainerModel> proteinResultContainerModelObserver,
             IMessageBroker messageBroker)
             : base(alignmentFileBean, alignmentFileBean.FilePath) {
             if (databases is null) {
@@ -67,6 +68,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (projectBaseParameter is null) {
                 throw new ArgumentNullException(nameof(projectBaseParameter));
             }
+
 
             _alignmentFile = alignmentFileBean;
             Parameter = parameter;
@@ -93,7 +95,13 @@ namespace CompMs.App.Msdial.Model.Lcms
             var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.Select(_ => normalizedHeightLoader).ToReactiveProperty(barItemLoaderDatas.First()).AddTo(Disposables);
             var barItemsLoaderProperty = barItemsLoaderDataProperty.Where(data => !(data is null)).Select(data => data.ObservableLoader).Switch().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, barItemsLoaderProperty)));
-           
+
+            if (parameter.TargetOmics == TargetOmics.Proteomics) {
+                var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(alignmentFileBean.ProteinAssembledResultFilePath);
+                var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Spots, Target);
+                proteinResultContainerModelObserver.OnNext(proteinResultContainerModel);
+            }
+
             _decLoader = new MSDecLoader(_alignmentFile.SpectraFilePath);
             _msdecResult = Target.Where(t => t != null)
                 .Select(t => _decLoader.LoadMSDecResult(t.MasterAlignmentID))
@@ -273,6 +281,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
+        public ProteinResultContainerModel ProteinResultContainerModel { get; }
 
         public CompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {
             return new LcmsCompoundSearchModel<AlignmentSpotProperty>(

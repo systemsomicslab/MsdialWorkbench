@@ -9,6 +9,7 @@ namespace CompMs.App.Msdial.Model.DataObj
     internal sealed class ProteinGroupModel : BindableBase
     {
         private readonly ObservableCollection<ProteinModel> _proteins;
+        private readonly ObservableCollection<PeptideModel> _uniquePeptides;
         private readonly ObservableCollection<PeptideModel> _peptides;
         private readonly ProteinGroup _proteinGroup;
 
@@ -16,6 +17,20 @@ namespace CompMs.App.Msdial.Model.DataObj
         {
             _proteinGroup = proteinGroup ?? throw new System.ArgumentNullException(nameof(proteinGroup));
             _proteins = new ObservableCollection<ProteinModel>(proteinGroup.ProteinMsResults.Select(result => new ProteinModel(result, spots)));
+            //_peptides = new PeptideGroupModel(proteinGroup.ProteinMsResults.Select(result => new PeptideGroupModel(result, spots)));
+            _peptides = new ObservableCollection<PeptideModel>(_proteins.SelectMany(protein => protein.Peptides));
+
+            _uniquePeptides = new ObservableCollection<PeptideModel>(_proteins.SelectMany(protein => protein.UniquePeptides));
+            //_peptides = new ObservableCollection<PeptideGroupModel>(_proteins.SelectMany(protein => protein.Peptides));
+
+            //_peptides = new ObservableCollection<PeptideModel>();
+            //foreach(var protein in _proteins)
+            //{
+            //    foreach(var peptide in protein.Peptides)
+            //    {
+            //        _peptides.Add(peptide);
+            //    }
+            //}
 
         }
 
@@ -23,8 +38,18 @@ namespace CompMs.App.Msdial.Model.DataObj
         {
             _proteinGroup = proteinGroup ?? throw new System.ArgumentNullException(nameof(proteinGroup));
             _proteins = new ObservableCollection<ProteinModel>(proteinGroup.ProteinMsResults.Select(result => new ProteinModel(result, spots)));
+            _uniquePeptides = new ObservableCollection<PeptideModel>(_proteins.SelectMany(protein => protein.UniquePeptides));
+            //_peptides = new ObservableCollection<PeptideGroupModel>(_proteins.SelectMany(protein => protein.Peptides));
+            //_peptides = new ObservableCollection<PeptideModel>(proteinGroup.ProteinMsResults.Select(result => new PeptideGroupModel(result, spots).Peptides));
+            _peptides = new ObservableCollection<PeptideModel>(_proteins.SelectMany(protein => protein.Peptides));
         }
 
         public int GroupID => _proteinGroup.GroupID;
+        public int NoOfProteins => _proteins.Count;
+        public int NoOfUniquePeptides => _uniquePeptides.Count;
+        public int NoOfPeptides => _peptides.Count;
+        public ObservableCollection<ProteinModel> ProteinModels => _proteins;
+        public ObservableCollection<PeptideModel> PeptideModels => _peptides;
+
     }
 }

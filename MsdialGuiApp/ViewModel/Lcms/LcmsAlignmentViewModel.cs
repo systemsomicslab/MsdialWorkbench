@@ -16,6 +16,7 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.ComponentModel;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -93,6 +94,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
+
+            ProteinResultContainerAsObservable = Observable.Return(model.ProteinResultContainerModel);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -113,6 +116,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
+        public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable { get; }
 
         private void SearchCompound() {
             using (var csm = _model.CreateCompoundSearchModel()) {

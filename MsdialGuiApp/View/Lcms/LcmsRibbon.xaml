@@ -137,12 +137,13 @@
                           IsEnabled="True"
                           Command="{Binding ShowMscleanrFilterSettingCommand}"
                           KeyTip="T"/>
-            <RibbonButton Label="Tree for Proteomics" LargeImageSource="{StaticResource TreeForProteomics_icon_is}"
-                          IsEnabled="False"
+            <RibbonButton Label="Tables for Proteomics" LargeImageSource="{StaticResource TreeForProteomics_icon_is}"
+                          IsEnabled="True"
                           Command="{Binding ShowProteinGroupTableCommand}"
                           KeyTip="T"/>
             <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"
                           IsEnabled="False"
+                          Command="{Binding ShowPcaSettingCommand}"
                           KeyTip="P"/>
             <RibbonButton Label="Partial least squares" LargeImageSource="{StaticResource PLS_is}"
                           IsEnabled="False"

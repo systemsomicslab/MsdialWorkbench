@@ -8,7 +8,14 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Search"
              d:DataContext="{d:DesignInstance Type={x:Type vm:PeakSpotNavigatorViewModel}}"
              d:Background="White"
-             d:DesignHeight="235" d:DesignWidth="200">
+             d:DesignHeight="240" d:DesignWidth="200">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <StackPanel>
         <Label Content="Peak spot navigator" 
                Height="24" Foreground="Black" 
@@ -128,10 +135,11 @@
 
             </UniformGrid>
 
-            <ToggleButton>
+            <ToggleButton Template="{StaticResource ExpanderLikeToggleButton}" Margin="4">
                 <StackPanel>
-                    <TextBlock Text="MS-CleanR filterdddd"/>
-                    <Popup IsOpen="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}}">
+                    <TextBlock Text="Display MS-CleanR filter"/>
+                    <Popup IsOpen="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}}"
+                           Placement="Bottom">
                         <Border Background="White" BorderThickness="1">
                             <StackPanel Orientation="Vertical" Grid.Column="1">
 

@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Lcms;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Search;
@@ -47,8 +48,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .Subscribe(vm => broker.Publish(vm))
                 .AddTo(Disposables);
 
-            var _proteinGroupTableViewModel = (ProteinGroupTableViewModel)null; //new ProteinGroupTableViewModel();
-            ShowProteinGroupTableCommand = new ReactiveCommand().AddTo(Disposables);
+            var proteinResultContainerAsObservable =
+                new[]
+                {
+                    SelectedViewModel.OfType<LcmsAnalysisViewModel>().Select(vm => vm.ProteinResultContainerAsObservable),
+                    SelectedViewModel.OfType<LcmsAlignmentViewModel>().Select(vm => vm.ProteinResultContainerAsObservable),
+
+                }.Merge().Switch();
+            var _proteinGroupTableViewModel = new ProteinGroupTableViewModel(proteinResultContainerAsObservable).AddTo(Disposables);
+            ShowProteinGroupTableCommand = model.CanShowProteinGroupTable.ToReactiveCommand().AddTo(Disposables);
             ShowProteinGroupTableCommand.Subscribe(() => broker.Publish(_proteinGroupTableViewModel)).AddTo(Disposables);
         }
 
@@ -100,6 +108,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             (mscleanrFilterSettingCommand = new DelegateCommand<Window>(MscleanrFilterSettingMethod));
         private DelegateCommand<Window> mscleanrFilterSettingCommand;
 
+        public DelegateCommand<Window> ShowPcaSettingCommand => pcaSettingCommand ??
+            (pcaSettingCommand = new DelegateCommand<Window>(PcaSettingMethod));
+        private DelegateCommand<Window> pcaSettingCommand;
+
         private void FragmentSearchSettingMethod(Window obj) {
             if (SelectedViewModel.Value is IAlignmentResultViewModel) {
                 model.ShowShowFragmentSearchSettingView(obj, true);
@@ -123,6 +135,20 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 model.ShowShowMscleanrFilterSettingView(obj, true);
             }
             else {
+                MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+                //Console.WriteLine("Please select an item in Alignment navigator!!");
+            }
+        }
+
+        private void PcaSettingMethod(Window obj)
+        {
+            if (SelectedViewModel.Value is IAlignmentResultViewModel)
+            {
+                model.ShowPcaSettingView(obj, true);
+            }
+            else
+            {
                 MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
                 //Console.WriteLine("Please select an item in Alignment navigator!!");

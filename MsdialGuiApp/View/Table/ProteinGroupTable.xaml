@@ -10,16 +10,80 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type={x:Type pgvm:ProteinGroupTableViewModel}}"
         Title="ProtainGroupTable" Height="450" Width="800">
-    <ListBox ItemsSource="{Binding Groups}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <!--<TabControl Grid.Row="0">
+            <TabItem Header="Protein Groups">-->
+        <GroupBox Header="Protein Groups">
+            <DataGrid x:Name="CustomerGrid"
+                      Margin="8"
+                      ItemsSource="{Binding Groups}"
+                      AutoGenerateColumns="False"
+                      IsSynchronizedWithCurrentItem="True" AlternatingRowBackground="LightBlue" AlternationCount="2">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="GroupID" Binding="{Binding GroupId}" />
+                    <DataGridTextColumn Header="NumberOfProteins" Binding="{Binding NumberOfProteins}" />
+                    <DataGridTextColumn Header="NumberOfUniquePeptides" Binding="{Binding NumberOfUniquePeptides}" />
+                    <DataGridTextColumn Header="NumberOfPeptides" Binding="{Binding NumberOfPeptides}" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+        </GroupBox>
+            <!--</TabItem>
+            --><!--<TabItem Header="Peptide Groups"/>--><!--
+        </TabControl>-->
+        <TabControl Grid.Row="1">
+            <TabItem Header="Proteins" Visibility="Visible">
+                <StackPanel DataContext="{Binding Groups/}">
+
+                    <DataGrid Margin="8" ItemsSource="{Binding ProteinViewModels}" IsSynchronizedWithCurrentItem="True" />
+                    <!--<TextBlock Text="{Binding NumberOfPeptides,StringFormat={}# peptides {0}}"/>-->
+                    
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Peptide Groups">
+                <DataGrid ItemsSource="{Binding DataContext.Groups/PeptideViewModels, RelativeSource={RelativeSource AncestorType=Window}}"
+                          DataContext="{Binding Target}"
+                          SelectedValuePath="AnnotatedSpot"
+                          SelectedValue="{Binding Value, Mode=OneWayToSource}"
+                          AutoGenerateColumns="False"
+                          Margin="8">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="PeptideSeq" Binding="{Binding PeptideSeq}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="AdductType" Binding="{Binding AdductType}" />
+                        <DataGridTextColumn Header="DatabaseOrigin" Binding="{Binding DatabaseOrigin}" />
+                        <DataGridTextColumn Header="DatabaseOriginID" Binding="{Binding DatabaseOriginID}" />
+                        <DataGridTextColumn Header="ModifiedSequence" Binding="{Binding ModifiedSequence}" />
+                        <DataGridTextColumn Header="Position" Binding="{Binding Position}" />
+                        <DataGridTextColumn Header="Formula" Binding="{Binding Formula}" />
+                        <DataGridTextColumn Header="ExactMass" Binding="{Binding ExactMass}" />
+                        <DataGridTextColumn Header="IsProteinNterminal" Binding="{Binding IsProteinNterminal}" />
+                        <DataGridTextColumn Header="IsProteinCterminal" Binding="{Binding IsProteinCterminal}" />
+                        <DataGridTextColumn Header="IsDecoy" Binding="{Binding IsDecoy}" />
+                        <DataGridTextColumn Header="MissedCleavages" Binding="{Binding MissedCleavages}" />
+                        <DataGridTextColumn Header="SamePeptideNumberInSearchedProteins" Binding="{Binding SamePeptideNumberInSearchedProteins}" />                        
+                    </DataGrid.Columns>
+                </DataGrid>
+
+            </TabItem>
+            <!--<TabItem Header="Peptide Groups"/>-->
+        </TabControl>
+        <GridSplitter Grid.Row="1" Height="1" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+    </Grid>
+
+    <!--<ListBox ItemsSource="{Binding Groups}">
         <ListBox.ItemTemplate>
             <DataTemplate DataType="{x:Type pgtvm:ProteinGroupViewModel}">
                 <TextBlock Text="{Binding Path=GroupId, StringFormat=Protein Group {0}}"></TextBlock>
             </DataTemplate>
         </ListBox.ItemTemplate>
-        <!--<ContentControl.Resources>
+        --><!--<ContentControl.Resources>
             --><!--<DataTemplate DataType="{x:Type pgvm:ProteinGroupTableViewModel}">
                 
             </DataTemplate>--><!--
-        </ContentControl.Resources>-->
-    </ListBox>
+        </ContentControl.Resources>--><!--
+    </ListBox>-->
 </Window>
