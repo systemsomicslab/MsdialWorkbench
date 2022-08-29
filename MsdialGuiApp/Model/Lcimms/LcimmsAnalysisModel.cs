@@ -20,6 +20,7 @@ using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
+using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcImMsApi.Parameter;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -102,19 +103,23 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var accumulatedPeakModels = new ObservableCollection<ChromatogramPeakFeatureModel>(orderedPeaks);
             var peakModels = new ReactiveCollection<ChromatogramPeakFeatureModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
+            //peakModels.AddRangeOnScheduler(peakTree.Query(0, orderedPeaks.Length));
             accumulatedTarget.Where(t => !(t is null))
                 .Select(t => {
                     var (lo, hi) = peakRanges[t];
                     return peakTree.Query(lo, hi);
                 })
                 .Subscribe(peaks_ => {
-                    peakModels.ClearOnScheduler();
-                    peakModels.AddRangeOnScheduler(peaks_);
+                    using (System.Windows.Data.CollectionViewSource.GetDefaultView(peakModels).DeferRefresh()) {
+                        peakModels.ClearOnScheduler();
+                        peakModels.AddRangeOnScheduler(peaks_);
+                    }
                 }).AddTo(Disposables);
             Ms1Peaks = peakModels;
 
-            var accumulatedPeakSpotNavigator = new PeakSpotNavigatorModel(accumulatedPeakModels, accumulatedPeakFilterModel, evaluator, useRtFilter: true, useDtFilter: false).AddTo(Disposables);
-            var peakSpotNavigator = new PeakSpotNavigatorModel(peakModels, peakFilterModel, evaluator, useRtFilter: true, useDtFilter: true).AddTo(Disposables);
+            var peakSpotNavigator = new PeakSpotNavigatorModel(peakModels, peakFilterModel, evaluator, status: ~FilterEnableStatus.None).AddTo(Disposables);
+            var accEvaluator = new AccumulatedPeakEvaluator(evaluator);
+            peakSpotNavigator.AttachFilter(accumulatedPeakModels, accumulatedPeakFilterModel, status: FilterEnableStatus.None, evaluator: accEvaluator?.Contramap<IFilterable, ChromatogramPeakFeature>(filterable => ((ChromatogramPeakFeatureModel)filterable).InnerModel));
             PeakSpotNavigatorModel = peakSpotNavigator;
 
             var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
@@ -168,7 +173,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 VerticalTitle = "Abundance",
             }.AddTo(Disposables);
 
-            DtMzPlotModel = new AnalysisPeakPlotModel(peakModels, peak => peak.ChromXValue ?? 0, peak => peak.Mass, target, labelSource, selectedBrush, brushes, verticalAxis: RtMzPlotModel.VerticalAxis)
+            DtMzPlotModel = new AnalysisPeakPlotModel(peakModels, peak => peak?.ChromXValue ?? 0d, peak => peak?.Mass ?? 0d, target, labelSource, selectedBrush, brushes, verticalAxis: RtMzPlotModel.VerticalAxis)
             {
                 HorizontalTitle = "Drift time [1/k0]",
                 VerticalTitle = "m/z",
@@ -321,7 +326,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
-
         public IBrushMapper<ChromatogramPeakFeatureModel> Brush { get; }
         public AnalysisPeakPlotModel RtMzPlotModel { get; }
         public EicLoader RtEicLoader { get; }

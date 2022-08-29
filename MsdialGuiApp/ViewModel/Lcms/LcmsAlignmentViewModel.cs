@@ -49,7 +49,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             Target = _model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
-            PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
 
             Ms1Spots = CollectionViewSource.GetDefaultView(_model.Ms1Spots);
 
@@ -96,7 +95,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
-        public PeakFilterViewModel PeakFilterViewModel { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public ICollectionView Ms1Spots { get; }
         public ICollectionView PeakSpotsView => Ms1Spots;

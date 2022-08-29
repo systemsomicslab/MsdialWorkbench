@@ -58,7 +58,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             this.proteomicsTableService = proteomicsTableService;
 
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
-            PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
             PlotViewModel = new AnalysisPeakPlotViewModel(this.model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
@@ -161,8 +160,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
         private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
-
-        public PeakFilterViewModel PeakFilterViewModel { get; }
 
         public AnalysisPeakPlotViewModel PlotViewModel { get; }
         public EicViewModel EicViewModel { get; }

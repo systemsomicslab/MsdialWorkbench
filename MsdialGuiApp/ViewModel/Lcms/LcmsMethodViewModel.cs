@@ -46,14 +46,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .Switch()
                 .Subscribe(vm => broker.Publish(vm))
                 .AddTo(Disposables);
-            PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilterModel).AddTo(Disposables);
 
             var _proteinGroupTableViewModel = (ProteinGroupTableViewModel)null; //new ProteinGroupTableViewModel();
             ShowProteinGroupTableCommand = new ReactiveCommand().AddTo(Disposables);
             ShowProteinGroupTableCommand.Subscribe(() => broker.Publish(_proteinGroupTableViewModel)).AddTo(Disposables);
         }
-
-        public PeakFilterViewModel PeakFilterViewModel { get; }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
             if (analysisFile?.File == null || analysisFile.File == model.AnalysisFile) {

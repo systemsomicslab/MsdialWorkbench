@@ -1184,6 +1184,7 @@
     </EmbeddedResource>
     <None Include="Normalizations.cd" />
     <None Include="packages.config" />
+    <None Include="PeakFiltering.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

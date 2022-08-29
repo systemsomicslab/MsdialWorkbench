@@ -50,7 +50,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             SelectedBrush = model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
 
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
-            PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
 
             var (focusAction, focused) = focusControlManager.Request();
             PlotViewModel = new Chart.AlignmentPeakPlotViewModel(model.PlotModel, focusAction, focused).AddTo(Disposables);
@@ -115,7 +114,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
-        public PeakFilterViewModel PeakFilterViewModel { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }

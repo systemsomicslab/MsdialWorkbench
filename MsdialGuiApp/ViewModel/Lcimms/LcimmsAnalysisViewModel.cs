@@ -42,7 +42,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             this.peakSpotTableService = peakSpotTableService;
 
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
-            PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
 
             var (rtmzPeakFocusAction, rtmzPeakFocused) = focusControlManager.Request();
             var brush = Observable.Return(this.model.Brush);
@@ -95,7 +94,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; private set; }
         public Ms2ChromatogramsViewModel Ms2ChromatogramsViewModel { get; }
         public SurveyScanViewModel SurveyScanViewModel { get; private set; }
-        public PeakFilterViewModel PeakFilterViewModel { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }

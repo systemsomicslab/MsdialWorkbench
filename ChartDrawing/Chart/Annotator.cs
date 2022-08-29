@@ -1,17 +1,16 @@
 ﻿using CompMs.Graphics.Core.Base;
 using CompMs.Common.Extension;
 using System;
+using CompMs.Graphics.Helper;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Data;
-using CompMs.Graphics.Helper;
 using System.Linq.Expressions;
+using System.Windows;
+using System.Windows.Data;
+using System.Windows.Media;
 
 namespace CompMs.Graphics.Chart
 {
@@ -23,63 +22,41 @@ namespace CompMs.Graphics.Chart
             IsHitTestVisibleProperty.OverrideMetadata(typeof(Annotator), new FrameworkPropertyMetadata(false));
         }
 
-        public static readonly DependencyProperty DatasProperty =
-            DependencyProperty.Register(
-                nameof(Datas), typeof(LabelData[]), typeof(Annotator),
-                new FrameworkPropertyMetadata(
-                    null,
-                    FrameworkPropertyMetadataOptions.AffectsRender,
-                    OnDatasChanged,
-                    CoerceDatas));
-
-        private LabelData[] Datas {
-            get => (LabelData[])GetValue(DatasProperty);
-            set => SetValue(DatasProperty, value);
-        }
-
         private readonly LazyDatas _lazyDatas = new LazyDatas();
 
-        bool ShouldCoerceDatas = false;
-        static void OnDatasChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+        private bool ShouldCoerceDatas = false;
 
-        }
-
-        static object CoerceDatas(DependencyObject d, object value) {
-            var chart = (Annotator)d;
-            var datas = chart._lazyDatas.Datas;
-            var lazyDatas = chart._lazyDatas;
-
-            if (chart.ShouldCoerceDatas) {
-                if (!chart.ReadCleanFlag(PropertyClean.ItemsSource)) {
-                    chart.UpdateItemsSource(lazyDatas);
+        private void CoerceLazyDatas() {
+            if (ShouldCoerceDatas) {
+                var lazyDatas = _lazyDatas;
+                if (!ReadCleanFlag(PropertyClean.ItemsSource)) {
+                    UpdateItemsSource(lazyDatas);
                 }
-                if (!chart.ReadCleanFlag(PropertyClean.Item)) {
-                    chart.UpdateItem(lazyDatas);
+                if (!ReadCleanFlag(PropertyClean.Item)) {
+                    UpdateItem(lazyDatas);
                 }
-                if (!chart.ReadCleanFlag(PropertyClean.Horizontal)) {
-                    chart.UpdateHorizontalItems(lazyDatas);
+                if (!ReadCleanFlag(PropertyClean.Horizontal)) {
+                    UpdateHorizontalItems(lazyDatas);
                 }
-                if (!chart.ReadCleanFlag(PropertyClean.Vertical)) {
-                    chart.UpdateVerticalItems(lazyDatas);
+                if (!ReadCleanFlag(PropertyClean.Vertical)) {
+                    UpdateVerticalItems(lazyDatas);
                 }
-                if (!chart.ReadCleanFlag(PropertyClean.Order)) {
-                    chart.UpdateOrderItems(lazyDatas);
+                if (!ReadCleanFlag(PropertyClean.Order)) {
+                    UpdateOrderItems(lazyDatas);
                 }
-                if (!chart.ReadCleanFlag(PropertyClean.Label)) {
-                    chart.UpdateLabel(lazyDatas);
+                if (!ReadCleanFlag(PropertyClean.Label)) {
+                    UpdateLabel(lazyDatas);
                 }
-                chart.ShouldCoerceDatas = new[]
+                ShouldCoerceDatas = new[]
                 {
-                    !chart.ReadCleanFlag(PropertyClean.ItemsSource),
-                    !chart.ReadCleanFlag(PropertyClean.Item),
-                    !chart.ReadCleanFlag(PropertyClean.Horizontal),
-                    !chart.ReadCleanFlag(PropertyClean.Vertical),
-                    !chart.ReadCleanFlag(PropertyClean.Order),
-                    !chart.ReadCleanFlag(PropertyClean.Label),
+                    !ReadCleanFlag(PropertyClean.ItemsSource),
+                    !ReadCleanFlag(PropertyClean.Item),
+                    !ReadCleanFlag(PropertyClean.Horizontal),
+                    !ReadCleanFlag(PropertyClean.Vertical),
+                    !ReadCleanFlag(PropertyClean.Order),
+                    !ReadCleanFlag(PropertyClean.Label),
                 }.Any(b => b);
             }
-
-            return lazyDatas.Datas;
         }
 
         public static readonly DependencyProperty ItemsSourceProperty =
@@ -102,7 +79,7 @@ namespace CompMs.Graphics.Chart
 
             chart.ShouldCoerceDatas = true;
             chart.WriteCleanFlag(PropertyClean.ItemsSource, false);
-            chart.CoerceValue(DatasProperty);
+            chart.CoerceLazyDatas();
         }
 
         void OnItemsSourceChanged(System.Collections.IEnumerable newValue, System.Collections.IEnumerable oldValue) {
@@ -120,18 +97,18 @@ namespace CompMs.Graphics.Chart
         private void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
             ShouldCoerceDatas = true;
             WriteCleanFlag(PropertyClean.Item, false);
-            CoerceValue(DatasProperty);
+            CoerceLazyDatas();
         }
 
         private void UpdateItemsSource(LazyDatas lazyDatas) {
-            source = collectionView?.Cast<object>().ToList();
-            if (source == null || !source.Any()) {
+            var firstItem = collectionView?.Cast<object>().FirstOrDefault();
+            if (firstItem is null) {
                 WriteCleanFlag(PropertyClean.ItemsSource, true);
                 lazyDatas.SetSource(collectionView);
                 return;
             }
 
-            dataType = source.First().GetType();
+            dataType = firstItem.GetType();
             lazyDatas.SetSource(collectionView);
 
             WriteCleanFlag(PropertyClean.ItemsSource, true);
@@ -147,14 +124,14 @@ namespace CompMs.Graphics.Chart
             base.OnHorizontalAxisChanged(oldValue, newValue);
             WriteCleanFlag(PropertyClean.Horizontal, false);
             ShouldCoerceDatas = true;
-            CoerceValue(DatasProperty);
+            CoerceLazyDatas();
         }
 
         protected override void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             base.OnVerticalAxisChanged(oldValue, newValue);
             WriteCleanFlag(PropertyClean.Vertical, false);
             ShouldCoerceDatas = true;
-            CoerceValue(DatasProperty);
+            CoerceLazyDatas();
         }
 
         public static readonly DependencyProperty HorizontalPropertyNameProperty =
@@ -175,7 +152,7 @@ namespace CompMs.Graphics.Chart
             var chart = (Annotator)d;
             chart.WriteCleanFlag(PropertyClean.Horizontal, false);
             chart.ShouldCoerceDatas = true;
-            chart.CoerceValue(DatasProperty);
+            chart.CoerceLazyDatas();
         }
 
         private void UpdateHorizontalItems(LazyDatas lazyDatas) {
@@ -208,7 +185,7 @@ namespace CompMs.Graphics.Chart
             var chart = (Annotator)d;
             chart.WriteCleanFlag(PropertyClean.Vertical, false);
             chart.ShouldCoerceDatas = true;
-            chart.CoerceValue(DatasProperty);
+            chart.CoerceLazyDatas();
         }
 
         private void UpdateVerticalItems(LazyDatas lazyDatas) {
@@ -237,7 +214,7 @@ namespace CompMs.Graphics.Chart
             var chart = (Annotator)d;
             chart.WriteCleanFlag(PropertyClean.Order, false);
             chart.ShouldCoerceDatas = true;
-            chart.CoerceValue(DatasProperty);
+            chart.CoerceLazyDatas();
         }
 
         private void UpdateOrderItems(LazyDatas lazyDatas) {
@@ -272,7 +249,7 @@ namespace CompMs.Graphics.Chart
             var chart = (Annotator)d;
             chart.WriteCleanFlag(PropertyClean.Label, false);
             chart.ShouldCoerceDatas = true;
-            chart.CoerceValue(DatasProperty);
+            chart.CoerceLazyDatas();
         }
 
         private void UpdateLabel(LazyDatas lazyDatas) {
@@ -420,7 +397,6 @@ namespace CompMs.Graphics.Chart
         }
 
         private ICollectionView collectionView;
-        private List<object> source;
         private Type dataType;
         private static readonly CultureInfo culture;
         private static readonly Typeface typeFace;
