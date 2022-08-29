@@ -649,7 +649,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var spotprops = alignmentModel.Ms1Spots;
 
             PcaSettingModel model;
-            model = new PcaSettingModel(container.Parameter, spotprops);
+            model = new PcaSettingModel(container.Parameter, spotprops, matchResultEvaluator);
             var vm = new PcaSettingViewModel(model);
             var dialog = new PcaSettingView()
             {
