@@ -130,8 +130,7 @@
         <RibbonGroup>
             <RibbonButton Label="Normalization" LargeImageSource="{StaticResource Data_normalization_is}"
                           IsEnabled="True"
-                          Command="{Binding AlignmentViewModel.Value.NormalizeCommand}"
-                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                          Command="{Binding ShowNormalizationSettingCommand}"
                           KeyTip="N"/>
             <RibbonButton Label="MS-CleanR peak filtering" LargeImageSource="{StaticResource MsCleanR_icon_is}"
                           IsEnabled="True"
@@ -142,7 +141,6 @@
                           Command="{Binding ShowProteinGroupTableCommand}"
                           KeyTip="T"/>
             <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"
-                          IsEnabled="False"
                           Command="{Binding ShowPcaSettingCommand}"
                           KeyTip="P"/>
             <RibbonButton Label="Partial least squares" LargeImageSource="{StaticResource PLS_is}"

@@ -15,7 +15,6 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.MessagePack;
 using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Graphics.UI.ProgressBar;
@@ -639,27 +638,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             //param.FragmentSearchSettingValues = model.FragmentQuerySettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();
             //param.AndOrAtFragmentSearch = model.SearchOption.Value;
         }
-
-        public void ShowPcaSettingView(Window owner, bool isAlignmentViewSelected) {
-            var container = Storage;
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
-            var alignmentModel = AlignmentModel;
-            var param = container.Parameter;
-            var spotprops = alignmentModel.Ms1Spots;
-
-            PcaSettingModel model;
-            model = new PcaSettingModel(container.Parameter, spotprops, matchResultEvaluator);
-            var vm = new PcaSettingViewModel(model);
-            var dialog = new PcaSettingView()
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            dialog.Show();
-        }
-
 
         public void GoToMsfinderMethod(bool isAlignmentView) {
             if (isAlignmentView) {

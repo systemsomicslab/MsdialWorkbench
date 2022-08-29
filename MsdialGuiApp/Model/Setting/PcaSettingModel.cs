@@ -1,18 +1,24 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Lcms;
+using CompMs.Common.DataObj.Result;
 using CompMs.Common.Mathematics.Statistics;
 using CompMs.CommonMVVM;
-using CompMs.Graphics.Chart;
 using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialLcmsApi.Parameter;
-using System;
+using CompMs.MsdialCore.Parameter;
 using System.Collections.ObjectModel;
-using System.Data.Common;
-using System.Drawing.Text;
-using System.Linq;
 
-namespace CompMs.App.Msdial.Model.Setting {
+namespace CompMs.App.Msdial.Model.Setting
+{
     public class PcaSettingModel : BindableBase {
+        private readonly ParameterBase _parameter;
+        private readonly ObservableCollection<AlignmentSpotPropertyModel> _spotprops;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+
+        public PcaSettingModel(ParameterBase parameter, ObservableCollection<AlignmentSpotPropertyModel> spotprops, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+            _parameter = parameter ?? throw new System.ArgumentNullException(nameof(parameter));
+            _spotprops = spotprops ?? throw new System.ArgumentNullException(nameof(spotprops));
+            _evaluator = evaluator ?? throw new System.ArgumentNullException(nameof(evaluator));
+        }
+
         public int MaxPcNumber {
             get => maxPcNumber;
             set => SetProperty(ref maxPcNumber, value);
@@ -38,15 +44,6 @@ namespace CompMs.App.Msdial.Model.Setting {
             set => SetProperty(ref isUnknownImportedInStatistics, value);
         }
         private bool isUnknownImportedInStatistics;
-
-        private readonly MsdialLcmsParameter _parameter;
-        private readonly ObservableCollection<AlignmentSpotPropertyModel> _spotprops;
-        private readonly FacadeMatchResultEvaluator _evaluator;
-        public PcaSettingModel(MsdialLcmsParameter parameter, ObservableCollection<AlignmentSpotPropertyModel> spotprops, FacadeMatchResultEvaluator evaluator) {
-            _parameter = parameter;
-            _spotprops = spotprops;
-            _evaluator = evaluator;
-        }
 
         public void RunPca()
         {

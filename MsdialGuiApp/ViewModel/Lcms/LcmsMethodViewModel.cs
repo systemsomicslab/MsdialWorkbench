@@ -1,8 +1,6 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Lcms;
+﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
-using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -21,8 +19,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 {
     internal sealed class LcmsMethodViewModel : MethodViewModel {
         private readonly LcmsMethodModel model;
-        private readonly IMessageBroker _broker;
-        private readonly FocusControlManager _focusManager;
 
         private LcmsMethodViewModel(
             LcmsMethodModel model,
@@ -36,8 +32,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   PrepareMassSpectrumViewModels(analysisAsObservable, alignmentAsObservable)) {
 
             this.model = model;
-            _broker = broker;
-            _focusManager = focusControlManager.AddTo(Disposables);
+            Disposables.Add(focusControlManager);
 
             ShowExperimentSpectrumCommand = new ReactiveCommand().AddTo(Disposables);
 
@@ -58,6 +53,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             var _proteinGroupTableViewModel = new ProteinGroupTableViewModel(proteinResultContainerAsObservable).AddTo(Disposables);
             ShowProteinGroupTableCommand = model.CanShowProteinGroupTable.ToReactiveCommand().AddTo(Disposables);
             ShowProteinGroupTableCommand.Subscribe(() => broker.Publish(_proteinGroupTableViewModel)).AddTo(Disposables);
+
+            var isAlignmentViewModelExists = AlignmentViewModel.Select(vm => vm is LcmsAlignmentViewModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            ShowNormalizationSettingCommand = isAlignmentViewModelExists.ToReactiveCommand()
+                .WithSubscribe(() => broker.Publish(((LcmsAlignmentViewModel)AlignmentViewModel.Value).NormalizationSetViewModel))
+                .AddTo(Disposables);
+            ShowPcaSettingCommand = isAlignmentViewModelExists.ToReactiveCommand()
+                .WithSubscribe(() => broker.Publish(((LcmsAlignmentViewModel)AlignmentViewModel.Value).PcaSettingViewModel))
+                .AddTo(Disposables);
         }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
@@ -108,9 +111,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             (mscleanrFilterSettingCommand = new DelegateCommand<Window>(MscleanrFilterSettingMethod));
         private DelegateCommand<Window> mscleanrFilterSettingCommand;
 
-        public DelegateCommand<Window> ShowPcaSettingCommand => pcaSettingCommand ??
-            (pcaSettingCommand = new DelegateCommand<Window>(PcaSettingMethod));
-        private DelegateCommand<Window> pcaSettingCommand;
+        public ReactiveCommand ShowNormalizationSettingCommand { get; }
+        public ReactiveCommand ShowPcaSettingCommand { get; }
 
         private void FragmentSearchSettingMethod(Window obj) {
             if (SelectedViewModel.Value is IAlignmentResultViewModel) {
@@ -135,20 +137,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 model.ShowShowMscleanrFilterSettingView(obj, true);
             }
             else {
-                MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-                //Console.WriteLine("Please select an item in Alignment navigator!!");
-            }
-        }
-
-        private void PcaSettingMethod(Window obj)
-        {
-            if (SelectedViewModel.Value is IAlignmentResultViewModel)
-            {
-                model.ShowPcaSettingView(obj, true);
-            }
-            else
-            {
                 MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
                 //Console.WriteLine("Please select an item in Alignment navigator!!");

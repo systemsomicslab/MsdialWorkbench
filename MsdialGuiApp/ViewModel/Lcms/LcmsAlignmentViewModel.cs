@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcms;
-using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
@@ -8,6 +7,7 @@ using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -17,7 +17,6 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.ComponentModel;
 using System.Reactive.Linq;
-using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -96,6 +95,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
 
             ProteinResultContainerAsObservable = Observable.Return(model.ProteinResultContainerModel);
+
+            NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel).AddTo(Disposables);
+            PcaSettingViewModel = new PcaSettingViewModel(model.PcaSettingModel).AddTo(Disposables);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -117,6 +119,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ViewModelBase[] PeakDetailViewModels { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
         public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable { get; }
+        public NormalizationSetViewModel NormalizationSetViewModel { get; }
+        public PcaSettingViewModel PcaSettingViewModel { get; }
 
         private void SearchCompound() {
             using (var csm = _model.CreateCompoundSearchModel()) {
@@ -153,20 +157,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 AddExtension = true,
             };
             _broker.Publish(request);
-        }
-
-        public DelegateCommand<Window> NormalizeCommand => _normalizeCommand ?? (_normalizeCommand = new DelegateCommand<Window>(Normalize));
-        private DelegateCommand<Window> _normalizeCommand;
-
-        private void Normalize(Window owner) {
-            using (var vm = new NormalizationSetViewModel(_model.NormalizationSetModel)) {
-                var view = new NormalizationSetView {
-                    DataContext = vm,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-                view.ShowDialog();
-            }
         }
     }
 }

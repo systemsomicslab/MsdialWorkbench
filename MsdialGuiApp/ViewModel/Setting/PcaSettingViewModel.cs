@@ -1,6 +1,6 @@
-﻿using System;
+﻿using CompMs.App.Msdial.Model.Setting;
 using CompMs.CommonMVVM;
-using CompMs.App.Msdial.Model.Setting;
+using System;
 
 namespace CompMs.App.Msdial.ViewModel.Setting {
     class PcaSettingViewModel : ViewModelBase {

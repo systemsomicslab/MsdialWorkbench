@@ -6,6 +6,7 @@ using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Normalize;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -84,9 +85,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             var heightLoader = new BarItemsLoaderData("Peak height", Observable.Return("Height"), fileIdToClassNameAsObservable.Select(id2class => new HeightBarItemsLoader(id2class)), Observable.Return(true));
             var areaBaselineLoader = new BarItemsLoaderData("Peak area above base line", Observable.Return("Area"), fileIdToClassNameAsObservable.Select(id2class => new AreaAboveBaseLineBarItemsLoader(id2class)), Observable.Return(true));
             var areaZeroLoader = new BarItemsLoaderData("Peak area above zero", Observable.Return("Area"), fileIdToClassNameAsObservable.Select(id2class => new AreaAboveZeroBarItemsLoader(id2class)), Observable.Return(true));
-            var normalizedHeightLoader = new BarItemsLoaderData("Normalized peak height", Target.Select(t => t.IonAbundanceUnit.ToLabel()), fileIdToClassNameAsObservable.Select(id2class => new NormalizedHeightBarItemsLoader(id2class)), NormalizationSetModel.IsNormalized);
-            var normalizedAreaBaselineLoader = new BarItemsLoaderData("Normalized peak area above base line", Target.Select(t => t.IonAbundanceUnit.ToLabel()), fileIdToClassNameAsObservable.Select(id2class => new NormalizedAreaAboveBaseLineBarItemsLoader(id2class)), NormalizationSetModel.IsNormalized);
-            var normalizedAreaZeroLoader = new BarItemsLoaderData("Normalized peak area above zero", Target.Select(t => t.IonAbundanceUnit.ToLabel()), fileIdToClassNameAsObservable.Select(id2class => new NormalizedAreaAboveZeroBarItemsLoader(id2class)), NormalizationSetModel.IsNormalized);
+            var normalizedHeightLoader = new BarItemsLoaderData("Normalized peak height", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), fileIdToClassNameAsObservable.Select(id2class => new NormalizedHeightBarItemsLoader(id2class)), NormalizationSetModel.IsNormalized);
+            var normalizedAreaBaselineLoader = new BarItemsLoaderData("Normalized peak area above base line", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), fileIdToClassNameAsObservable.Select(id2class => new NormalizedAreaAboveBaseLineBarItemsLoader(id2class)), NormalizationSetModel.IsNormalized);
+            var normalizedAreaZeroLoader = new BarItemsLoaderData("Normalized peak area above zero", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), fileIdToClassNameAsObservable.Select(id2class => new NormalizedAreaAboveZeroBarItemsLoader(id2class)), NormalizationSetModel.IsNormalized);
             var barItemLoaderDatas = new[]
             {
                 heightLoader, areaBaselineLoader, areaZeroLoader,
@@ -262,6 +263,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
+
+            PcaSettingModel = new PcaSettingModel(parameter, Ms1Spots, evaluator);
         }
 
         public ParameterBase Parameter { get; }
@@ -277,6 +280,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public AlignmentEicModel AlignmentEicModel { get; }
         public LcmsAlignmentSpotTableModel AlignmentSpotTableModel { get; private set; }
         public NormalizationSetModel NormalizationSetModel { get; }
+        public PcaSettingModel PcaSettingModel { get; }
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
         public PeakInformationAlignmentModel PeakInformationModel { get; }
