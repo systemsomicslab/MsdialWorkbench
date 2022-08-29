@@ -7,30 +7,31 @@
         mc:Ignorable="d"
         Title="PcaSettingView" Height="450" Width="800">
     <Grid>
-        <Grid Grid.Row="0">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="120"/>
+			<RowDefinition Height="55"/>
+			<RowDefinition Height="40"/>
+		</Grid.RowDefinitions>
+		<Grid Grid.Row="0">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="3*" />
+				<ColumnDefinition Width="2*" />
+			</Grid.ColumnDefinitions>
+			<StackPanel Grid.Column="0" Orientation="Vertical" Margin="5,5,0,0">
+				<Label Content="Maximum principal component:" Height="25" Margin="5,5,5,5"/>
+			</StackPanel>
+			<StackPanel Grid.Column="1" Orientation="Vertical" Margin="5,5,0,0">
+				<TextBox Text="{Binding MaxPcNumber}"/>
+			</StackPanel>
+		</Grid>
+		
+		<Label Content="Metabolite selection" FontStyle="Italic" Grid.Row="1" Margin="10, 0, 0,0" />
+		<StackPanel Orientation="Horizontal" Grid.Row="1" Margin="20, 30,0,0">
+			<CheckBox Name="CheckBox_IsIdentified" Content="Ref. matched" Width="100" IsChecked="{Binding IsIdentifiedImportedInStatistics}"/>
+			<CheckBox Name="CheckBox_IsAnnotated" Content="Suggested" Width="100" IsChecked="{Binding IsAnnotatedImportedInStatistics}"/>
+			<CheckBox Content="Unknown" Width="90" IsChecked="{Binding IsUnknownImportedInStatistics}"/>
+		</StackPanel>
 
-            <!--<StackPanel Grid.Column="0" Orientation="Vertical" Margin="5,5,0,0">
-                <Label Content="Maximum principal component:" Height="25" Margin="5,5,5,5"/>
-                <Label Content="Scale method:" Height="25" Margin="5,5,5,5"/>
-                <Label Content="Transform method:" Height="25" Margin="5,5,5,5"/>
-            </StackPanel>-->
-
-            <!--<StackPanel Grid.Column="1" Orientation="Vertical" Margin="5,5,0,0">-->
-			<StackPanel>
-				<TextBlock Text="Maximum principal component:"/>
-                <TextBox Text="{Binding MaxPcNumber}"/>
-
-				<!--<StackPanel.Resources>
-					<Style TargetType="Button">
-						<Setter Property="Margin" Value="8,4"/>
-						<Setter Property="Height" Value="24"/>
-						<Setter Property="Width" Value="80"/>
-					</Style>
-				</StackPanel.Resources>-->
-				
-				<Button Content="Apply" Command="{Binding PcaCommand}"/>
-				<Button Content="Cancel" Command="Close"/>
-            </StackPanel>
-        </Grid>                
+		<Button Content="Done" Grid.Row="2" Command="{Binding PcaCommand}"/>		
     </Grid>
 </Window>
