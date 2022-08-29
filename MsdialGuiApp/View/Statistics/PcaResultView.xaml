@@ -1,0 +1,126 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Statistics.PcaResultView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
+             xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
+             mc:Ignorable="d" 
+             d:Background="White"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="ui:LabeledContent">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ui:LabeledContent">
+                            <Grid HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="144"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="AUto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Label Content="{TemplateBinding PrependLabel}"
+                                       VerticalAlignment="Center" VerticalContentAlignment="Center"
+                                       Margin="0,0,8,0"
+                                       Grid.Column="0"/>
+                                <ContentPresenter VerticalAlignment="Center"
+                                                  Grid.Column="1"/>
+                                <Label Content="{TemplateBinding AppendLabel}"
+                                       VerticalAlignment="Center" VerticalContentAlignment="Center"
+                                       Grid.Column="2"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0">
+            <StackPanel.Resources>
+                <Style TargetType="GroupBox">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Margin" Value="8"/>
+                </Style>
+                <Style TargetType="Button">
+                    <Setter Property="Margin" Value="4,8,4,0"/>
+                </Style>
+            </StackPanel.Resources>
+            <GroupBox>
+                <GroupBox.Header>
+                    <Run Text="Viewer option" FontStyle="Italic"/>
+                </GroupBox.Header>
+                <StackPanel>
+                    <ui:LabeledContent PrependLabel="X component number:">
+                        <ComboBox/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Y component number:">
+                        <ComboBox/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Label type (sample):">
+                        <ComboBox/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Label type (metabolite):">
+                        <ComboBox/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Plot size (sample):">
+                        <ComboBox/>
+                    </ui:LabeledContent>
+                    <ui:LabeledContent PrependLabel="Plot size (metabolite):">
+                        <ComboBox/>
+                    </ui:LabeledContent>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox>
+                <GroupBox.Header>
+                    <Run Text="Other plots" FontStyle="Italic"/>
+                </GroupBox.Header>
+                <StackPanel>
+                    <Button Content="Contributions" IsEnabled="False"/>
+                    <Button Content="Predicted vs Experiment" IsEnabled="False"/>
+                    <Button Content="VIP" IsEnabled="False"/>
+                    <Button Content="Coefficient" IsEnabled="False"/>
+                    <Button Content="S-plot" IsEnabled="False"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox>
+                <GroupBox.Header>
+                    <Run Text="Save" FontStyle="Italic"/>
+                </GroupBox.Header>
+                <StackPanel>
+                    <Button Content="Save plot properties" IsEnabled="False"/>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+
+        <Grid Margin="8" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <chart:MultiChart Grid.Row="0" Grid.Column="0"/>
+            <chart:MultiChart Grid.Row="0" Grid.Column="1"/>
+            <chart:MultiChart Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+            <chart:MultiChart Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"/>
+            <TextBlock Text="Red: positive correlation Blue: negative correlation" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"/>
+        </Grid>
+    </Grid>
+</UserControl>

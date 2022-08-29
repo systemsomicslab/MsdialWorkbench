@@ -691,6 +691,9 @@
     <Compile Include="View\Setting\RetentionTimeCorrectionWinLegacy.xaml.cs">
       <DependentUpon>RetentionTimeCorrectionWinLegacy.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Statistics\PcaResultView.xaml.cs">
+      <DependentUpon>PcaResultView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Table\AlignmentSpotTable.xaml.cs">
       <DependentUpon>AlignmentSpotTable.xaml</DependentUpon>
     </Compile>
@@ -1115,6 +1118,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\RetentionTimeCorrectionWinLegacy.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Statistics\PcaResultView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
