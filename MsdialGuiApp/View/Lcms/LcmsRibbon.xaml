@@ -140,6 +140,7 @@
                           KeyTip="T"/>
             <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"
                           IsEnabled="False"
+                          Command="{Binding ShowPcaSettingCommand}"
                           KeyTip="P"/>
             <RibbonButton Label="Partial least squares" LargeImageSource="{StaticResource PLS_is}"
                           IsEnabled="False"

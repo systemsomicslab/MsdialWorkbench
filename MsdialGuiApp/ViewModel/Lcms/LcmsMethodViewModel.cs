@@ -111,6 +111,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             (mscleanrFilterSettingCommand = new DelegateCommand<Window>(MscleanrFilterSettingMethod));
         private DelegateCommand<Window> mscleanrFilterSettingCommand;
 
+        public DelegateCommand<Window> ShowPcaSettingCommand => pcaSettingCommand ??
+            (pcaSettingCommand = new DelegateCommand<Window>(PcaSettingMethod));
+        private DelegateCommand<Window> pcaSettingCommand;
+
         private void FragmentSearchSettingMethod(Window obj) {
             if (SelectedViewModel.Value is IAlignmentResultViewModel) {
                 model.ShowShowFragmentSearchSettingView(obj, true);
@@ -134,6 +138,20 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 model.ShowShowMscleanrFilterSettingView(obj, true);
             }
             else {
+                MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+                //Console.WriteLine("Please select an item in Alignment navigator!!");
+            }
+        }
+
+        private void PcaSettingMethod(Window obj)
+        {
+            if (SelectedViewModel.Value is IAlignmentResultViewModel)
+            {
+                model.ShowPcaSettingView(obj, true);
+            }
+            else
+            {
                 MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
                 //Console.WriteLine("Please select an item in Alignment navigator!!");

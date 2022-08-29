@@ -640,6 +640,26 @@ namespace CompMs.App.Msdial.Model.Lcms
             //param.AndOrAtFragmentSearch = model.SearchOption.Value;
         }
 
+        public void ShowPcaSettingView(Window owner, bool isAlignmentViewSelected) {
+            var container = Storage;
+            var analysisModel = AnalysisModel;
+            if (analysisModel is null) return;
+            var alignmentModel = AlignmentModel;
+            var param = container.Parameter;
+            var spotprops = alignmentModel.Ms1Spots;
+
+            PcaSettingModel model;
+            model = new PcaSettingModel(container.Parameter, spotprops);
+            var vm = new PcaSettingViewModel(model);
+            var dialog = new PcaSettingView()
+            {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            dialog.Show();
+        }
+
 
         public void GoToMsfinderMethod(bool isAlignmentView) {
             if (isAlignmentView) {

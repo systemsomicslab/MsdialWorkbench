@@ -1,0 +1,36 @@
+﻿<Window x:Class="CompMs.App.Msdial.View.Setting.PcaSettingView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
+        mc:Ignorable="d"
+        Title="PcaSettingView" Height="450" Width="800">
+    <Grid>
+        <Grid Grid.Row="0">
+
+            <!--<StackPanel Grid.Column="0" Orientation="Vertical" Margin="5,5,0,0">
+                <Label Content="Maximum principal component:" Height="25" Margin="5,5,5,5"/>
+                <Label Content="Scale method:" Height="25" Margin="5,5,5,5"/>
+                <Label Content="Transform method:" Height="25" Margin="5,5,5,5"/>
+            </StackPanel>-->
+
+            <!--<StackPanel Grid.Column="1" Orientation="Vertical" Margin="5,5,0,0">-->
+			<StackPanel>
+				<TextBlock Text="Maximum principal component:"/>
+                <TextBox Text="{Binding MaxPcNumber}"/>
+
+				<!--<StackPanel.Resources>
+					<Style TargetType="Button">
+						<Setter Property="Margin" Value="8,4"/>
+						<Setter Property="Height" Value="24"/>
+						<Setter Property="Width" Value="80"/>
+					</Style>
+				</StackPanel.Resources>-->
+				
+				<Button Content="Apply" Command="{Binding PcaCommand}"/>
+				<Button Content="Cancel" Command="Close"/>
+            </StackPanel>
+        </Grid>                
+    </Grid>
+</Window>
