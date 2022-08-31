@@ -19,6 +19,7 @@ namespace CompMs.App.Msdial.Model.Setting
             _parameter = parameter ?? throw new System.ArgumentNullException(nameof(parameter));
             _spotprops = spotprops ?? throw new System.ArgumentNullException(nameof(spotprops));
             _evaluator = evaluator ?? throw new System.ArgumentNullException(nameof(evaluator));
+            maxPcNumber = 5;
         }
 
         public int MaxPcNumber {
