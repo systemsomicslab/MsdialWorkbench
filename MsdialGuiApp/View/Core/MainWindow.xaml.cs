@@ -1,14 +1,18 @@
 ﻿using CompMs.App.Msdial.Model.Notification;
 using CompMs.App.Msdial.View.Chart;
+using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.App.Msdial.View.Setting;
+using CompMs.App.Msdial.View.Statistics;
 using CompMs.App.Msdial.View.Table;
 using CompMs.App.Msdial.ViewModel;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
+using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.UI.Message;
@@ -60,6 +64,12 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(CreateAlignedChromatogramModificationDialog);
             broker.ToObservable<SampleTableViewerInAlignmentViewModelLegacy>()
                 .Subscribe(CreateSampleTableViewerDialog);
+            broker.ToObservable<NormalizationSetViewModel>()
+                .Subscribe(OpenNormalizationSetView);
+            broker.ToObservable<PcaSettingViewModel>()
+                .Subscribe(OpenPcaSettingView);
+            broker.ToObservable<PcaResultViewModel>()
+                .Subscribe(OpenPcaView);
 #if DEBUG
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
 #endif
@@ -103,6 +113,43 @@ namespace CompMs.App.Msdial.View.Core
 
         private void OpenProteinGroupTable(ProteinGroupTableViewModel viewmodel) {
             var dialog = new ProteinGroupTable() { Owner = this, DataContext = viewmodel, };
+            dialog.Show();
+        }
+
+        private void OpenNormalizationSetView(NormalizationSetViewModel viewmodel) {
+            if (viewmodel is null) {
+                return;
+            }
+            var view = new NormalizationSetView {
+                DataContext = viewmodel,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            view.ShowDialog();
+        }
+
+        private void OpenPcaSettingView(PcaSettingViewModel viewmodel) {
+            if (viewmodel is null) {
+                MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var dialog = new PcaSettingView()
+            {
+                DataContext = viewmodel,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            dialog.Show();
+        }
+
+        private void OpenPcaView(PcaResultViewModel viewmodel) {
+            var dialog = new Window
+            {
+                DataContext = viewmodel,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Content = new PcaResultView(),
+            };
             dialog.Show();
         }
 

@@ -351,7 +351,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 // accumulatedRtRange can be replaced by rtWidth actually, but for alignment results, we have to adjust the RT range to equally estimate the peaks on drift axis
                 var chromatogram = rawSpectra.GetDriftChromatogramByScanRtMz(peakSpot.MS1RawSpectrumIdTop, (float)peakSpot.ChromXs.Value, accumulatedRtRange, (float)peakSpot.Mass, _parameter.CentroidMs1Tolerance);
                 if (chromatogram.IsEmpty) continue;
-                var peaksOnDriftTime = GetPeakAreaBeanListOnDriftTimeAxis(chromatogram, peakSpot, rawSpectra);
+                var peaksOnDriftTime = GetPeakAreaBeanListOnDriftTimeAxis(chromatogram, peakSpot, rawSpectra, accumulatedRtRange);
                 if (peaksOnDriftTime == null || peaksOnDriftTime.Count == 0) continue;
                 peakSpot.DriftChromFeatures = peaksOnDriftTime;
                 newSpots.Add(peakSpot);
@@ -359,7 +359,7 @@ namespace CompMs.MsdialCore.Algorithm {
             return newSpots;
         }
 
-        private List<ChromatogramPeakFeature> GetPeakAreaBeanListOnDriftTimeAxis(Chromatogram chromatogram, ChromatogramPeakFeature rtPeakFeature, RawSpectra rawSpectra) {
+        private List<ChromatogramPeakFeature> GetPeakAreaBeanListOnDriftTimeAxis(Chromatogram chromatogram, ChromatogramPeakFeature rtPeakFeature, RawSpectra rawSpectra, double accumulatedRtRange) {
 
             var smoothedPeaklist = chromatogram.Smoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel);
             var detectedPeaks = PeakDetection.PeakDetectionVS1(smoothedPeaklist, _parameter.MinimumDatapoints, _parameter.MinimumAmplitude * 0.25) ?? new List<PeakDetectionResult>(0);
@@ -372,18 +372,21 @@ namespace CompMs.MsdialCore.Algorithm {
                     continue;
                 }
 
-                var driftFeature = BuildDriftPeakFeature(result, rtPeakFeature, counter, chromatogram, rawSpectra);
+                var driftFeature = BuildDriftPeakFeature(result, rtPeakFeature, counter, chromatogram, rawSpectra, accumulatedRtRange);
                 peaks.Add(driftFeature);
                 counter++;
             }
             return peaks;
         }
 
-        private ChromatogramPeakFeature BuildDriftPeakFeature(PeakDetectionResult result, ChromatogramPeakFeature rtPeakFeature, int peakId, Chromatogram chromatogram, RawSpectra rawSpectra) {
+        private ChromatogramPeakFeature BuildDriftPeakFeature(PeakDetectionResult result, ChromatogramPeakFeature rtPeakFeature, int peakId, Chromatogram chromatogram, RawSpectra rawSpectra, double accumulatedRtRange) {
             var driftFeature = ChromatogramPeakFeature.FromPeakDetectionResult(result, chromatogram, rtPeakFeature.Mass);
             driftFeature.PeakID = peakId;
             driftFeature.ParentPeakID = rtPeakFeature.PeakID;
             driftFeature.IonMode = rtPeakFeature.IonMode;
+            driftFeature.ChromXsLeft.RT.Value = rtPeakFeature.ChromXsTop.RT.Value - accumulatedRtRange * 0.5;
+            driftFeature.ChromXsTop.RT.Value = rtPeakFeature.ChromXsTop.RT.Value;
+            driftFeature.ChromXsRight.RT.Value = rtPeakFeature.ChromXsTop.RT.Value + accumulatedRtRange * 0.5;
             var ms2Tol = MolecularFormulaUtility.CalculateMassToleranceBasedOn500Da(_parameter.CentroidMs2Tolerance, rtPeakFeature.Mass);
             var spectra = rawSpectra.GetPeakMs2Spectra(rtPeakFeature, ms2Tol, _parameter.AcquisitionType, driftFeature.ChromXs.Drift);
             driftFeature.SetMs2SpectrumId(spectra);

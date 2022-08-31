@@ -5,9 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
+             xmlns:design="clr-namespace:CompMs.Graphics.Design;assembly=ChartDrawing"
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type={x:Type do:Chromatogram}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -25,36 +28,37 @@
             BorderThickness="1,0,0,1">
         <chart:MultiChart Style="{StaticResource OverlapChartOnly}">
             <chart:MultiChart.HorizontalAxis>
-                <manager:AutoContinuousAxisManager ItemsSource="{Binding Eic}"
-                                                   ValuePropertyName="ChromXValue"/>
+                <manager:AutoContinuousAxisManager ItemsSource="{Binding Peaks}"
+                                                   ValuePropertyName="Time"/>
             </chart:MultiChart.HorizontalAxis>
             <chart:MultiChart.VerticalAxis>
-                <manager:AutoContinuousAxisManager ItemsSource="{Binding Eic}"
+                <manager:AutoContinuousAxisManager ItemsSource="{Binding Peaks}"
                                                    ValuePropertyName="Intensity"
                                                    Bounds="0,0"
                                                    ChartMargin="0,0.10"/>
             </chart:MultiChart.VerticalAxis>
-            <chart:AreaChartControl ItemsSource="{Binding EicArea}"
-                                   HorizontalPropertyName="ChromXValue"
+            <chart:AreaChartControl ItemsSource="{Binding PeakArea}"
+                                   HorizontalPropertyName="Time"
                                    VerticalPropertyName="Intensity">
                 <chart:AreaChartControl.AreaBrush>
                     <SolidColorBrush Opacity="0.25" Color="Blue" PresentationOptions:Freeze="True"/>
                 </chart:AreaChartControl.AreaBrush>
             </chart:AreaChartControl>
-            <chart:LineChartControl ItemsSource="{Binding Eic}"
-                                   HorizontalPropertyName="ChromXValue"
+            <chart:LineChartControl ItemsSource="{Binding Peaks}"
+                                   HorizontalPropertyName="Time"
                                    VerticalPropertyName="Intensity">
                 <chart:LineChartControl.LinePen>
                     <Pen Brush="Blue" PresentationOptions:Freeze="True"/>
                 </chart:LineChartControl.LinePen>
             </chart:LineChartControl>
-            <chart:LineSpectrumControl ItemsSource="{Binding EicPeak}"
-                                          HorizontalPropertyName="ChromXValue"
-                                          VerticalPropertyName="Intensity">
-                <chart:LineSpectrumControl.LinePen>
-                    <Pen Brush="Red" Thickness="1" LineJoin="Miter" PresentationOptions:Freeze="True"/>
-                </chart:LineSpectrumControl.LinePen>
-            </chart:LineSpectrumControl>
+            <chart:VerticalLine Item="{Binding PeakTop}"
+                                HorizontalProperty="Time"
+                                VerticalProperty="Intensity"
+                                LineThickness="1">
+                <chart:VerticalLine.LineBrush>
+                    <design:ConstantBrushMapper Brush="Red"/>
+                </chart:VerticalLine.LineBrush>
+            </chart:VerticalLine>
         </chart:MultiChart>
     </Border>
 </UserControl>

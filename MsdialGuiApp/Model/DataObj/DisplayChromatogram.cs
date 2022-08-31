@@ -1,56 +1,46 @@
 ﻿using CompMs.Common.Components;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Core.Base;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class DisplayChromatogram : BindableBase {
+    public sealed class DisplayChromatogram : BindableBase {
 
-        public DisplayChromatogram(List<ChromatogramPeak> peaks, Pen linePen = null, string title = "na") {
-            if (peaks is null) {
-                ChromatogramPeaks = new List<ChromatogramPeakWrapper>();
-            }
-            else {
-                ChromatogramPeaks = peaks.Select(n => new ChromatogramPeakWrapper(n)).ToList();
-            }
-            if (linePen is null) {
-                LinePen = new Pen(Brushes.Black, 1.0);
-            }
-            else {
-                LinePen = linePen;
-            }
-            Name = title;
-            LinePen.Freeze();
+        public DisplayChromatogram(IEnumerable<ChromatogramPeak> peaks, Pen linePen = null, string title = "na")
+            : this(peaks?.Select(peak => new ChromatogramPeakWrapper(peak)).ToList() ?? new List<ChromatogramPeakWrapper>(), linePen, title) {
+
         }
 
         public DisplayChromatogram(List<ChromatogramPeakWrapper> peaks, Pen linePen = null, string title = "na") {
-            ChromatogramPeaks = peaks;
-            Name = title;
+            ChromatogramPeaks = peaks ?? throw new System.ArgumentNullException(nameof(peaks));
             if (linePen is null) {
-                LinePen = new Pen(Brushes.Black, 1.0);
+                linePen = new Pen(Brushes.Black, 1.0);
+                linePen.Freeze();
             }
-            else {
-                LinePen = linePen;
-            }
-            LinePen.Freeze();
+            LinePen = linePen;
+            Name = title;
         }
 
-        public List<ChromatogramPeakWrapper> ChromatogramPeaks { get; } = new List<ChromatogramPeakWrapper>();
+        public List<ChromatogramPeakWrapper> ChromatogramPeaks { get; }
+
         public string Name { get; }
 
         public bool Visible {
-            get => visible;
-            set => SetProperty(ref visible, value);
+            get => _visible;
+            set => SetProperty(ref _visible, value);
         }
-        private bool visible = true;
+        private bool _visible = true;
 
         public Pen LinePen { get; }
-        public SolidColorBrush LineBrush { get => (SolidColorBrush)LinePen.Brush; }
+        public Brush LineBrush => LinePen.Brush;
 
-        public double MaxIntensity { get => ChromatogramPeaks.Any() ? ChromatogramPeaks.Max(n => n.Intensity) : 0.0; }
-        public double MaxChromX { get => (double)(ChromatogramPeaks.Any() ? ChromatogramPeaks.Max(n => n.ChromXValue) : 1.0); }
-        public double MinChromX { get => (double)(ChromatogramPeaks.Any() ? ChromatogramPeaks.Min(n => n.ChromXValue) : 0.0); }
+        public double MaxIntensity => ChromatogramPeaks.DefaultIfEmpty().Max(chromatogramPeak => chromatogramPeak?.Intensity) ?? 0d;
+        public double MaxChromX => ChromatogramPeaks.DefaultIfEmpty().Max(chromatogramPeak => chromatogramPeak?.ChromXValue) ?? 1d;
+        public double MinChromX => ChromatogramPeaks.DefaultIfEmpty().Min(chromatogramPeak => chromatogramPeak?.ChromXValue) ?? 0d;
+
+        public Range ChromXRange => new Range(MinChromX, MaxChromX);
     }
 }

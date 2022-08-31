@@ -5,13 +5,14 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Search
 {
-    public class PeakSpotNavigatorViewModel : ViewModelBase
+    public sealed class PeakSpotNavigatorViewModel : ViewModelBase
     {
         private readonly PeakSpotNavigatorModel model;
 
@@ -20,7 +21,7 @@ namespace CompMs.App.Msdial.ViewModel.Search
             SelectedAnnotationLabel = model
                 .ToReactivePropertySlimAsSynchronized(m => m.SelectedAnnotationLabel)
                 .AddTo(Disposables);
-            PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilterModel).AddTo(Disposables);
+            PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilters.ToArray()).AddTo(Disposables);
 
             AmplitudeLowerValue = model
                 .ToReactivePropertyAsSynchronized(m => m.AmplitudeLowerValue)
@@ -80,7 +81,6 @@ namespace CompMs.App.Msdial.ViewModel.Search
             IsEditting = new ReactivePropertySlim<bool>().AddTo(Disposables);
 
             PeakSpotsView = CollectionViewSource.GetDefaultView(model.PeakSpots);
-            PeakSpotsView.Filter += PeakFilter;
 
             var needRefresh = new[]
             {
@@ -107,10 +107,12 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 .Throttle(TimeSpan.FromMilliseconds(500))
                 .ObserveOnUIDispatcher()
                 .SelectMany(_ => Observable.Defer(() => {
-                    PeakSpotsView?.Refresh();
+                    foreach (var view in model.PeakSpotsCollection) {
+                        view.Refresh();
+                    }
                     return Observable.Return(Unit.Default);
                 }))
-                .OnErrorRetry<Unit, InvalidOperationException>(_ => System.Diagnostics.Debug.WriteLine("Failed to refresh. Retry after 0.1 seconds."), retryCount: 5, delay: TimeSpan.FromSeconds(1))
+                .OnErrorRetry<Unit, InvalidOperationException>(_ => System.Diagnostics.Debug.WriteLine("Failed to refresh. Retry after 0.1 seconds."), retryCount: 5, delay: TimeSpan.FromSeconds(.1d))
                 .Catch<Unit, InvalidOperationException>(e => {
                     System.Diagnostics.Debug.WriteLine("Failed to refresh. CollectionView couldn't be refreshed.");
                     return Observable.Return(Unit.Default);
@@ -141,13 +143,9 @@ namespace CompMs.App.Msdial.ViewModel.Search
 
         public PeakFilterViewModel PeakFilterViewModel { get; }
 
-        private bool PeakFilter(object obj) {
-            return obj is IFilterable filterable && model.PeakFilter(filterable);
-        }
-
         protected override void Dispose(bool disposing) {
             if (disposing) {
-                PeakSpotsView.Filter -= PeakFilter;
+                // PeakSpotsView.Filter -= PeakFilter;
             }
             base.Dispose(disposing);
         }

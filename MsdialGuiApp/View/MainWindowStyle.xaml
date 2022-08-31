@@ -432,4 +432,62 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="RadioButton" x:Key="IconRadioButton">
+        <Setter Property="Height" Value="32"/>
+        <Setter Property="Width" Value="32"/>
+        <Setter Property="Margin" Value="4"/>
+        <Setter Property="Opacity" Value="1"/>
+        <Setter Property="BorderBrush" Value="Aqua"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border x:Name="Frame"
+                            BorderBrush="{Binding Path=BorderBrush, RelativeSource={RelativeSource TemplatedParent}}"
+                            BorderThickness="{Binding Path=BorderThickness, RelativeSource={RelativeSource TemplatedParent}}"
+                            CornerRadius="1">
+                        <Image x:Name="Icon" Source="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="False">
+                <Setter Property="BorderThickness" Value="0"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.3"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <ControlTemplate TargetType="ToggleButton" x:Key="ExpanderLikeToggleButton">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="&#xEA3A;" FontFamily="Segoe MDL2 Assets" Width="{Binding Height, RelativeSource={RelativeSource Self}}"
+                       VerticalAlignment="Center" HorizontalAlignment="Center"
+                       Grid.Column="0"/>
+            <ContentPresenter Grid.Column="1" Margin="4,0,0,0"/>
+            <TextBlock Text="&#xE96E;" FontFamily="Segoe MDL2 Assets" Width="{Binding Height, RelativeSource={RelativeSource Self}}"
+                       VerticalAlignment="Center" HorizontalAlignment="Center"
+                       Grid.Column="0">
+                <TextBlock.LayoutTransform>
+                    <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="0.7" ScaleY="0.7"/>
+                </TextBlock.LayoutTransform>
+            </TextBlock>
+            <ContentPresenter Grid.Column="1" Margin="4,0,0,0"/>
+        </Grid>
+    </ControlTemplate>
+
+    <Style TargetType="RibbonTab" x:Key="FocusWhenVisible">
+        <Style.Triggers>
+            <Trigger Property="Visibility" Value="Visible">
+                <Setter Property="IsSelected" Value="True"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>

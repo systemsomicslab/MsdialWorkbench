@@ -97,9 +97,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public IObservable<Unit> ObserveChanges { get; }
 
-        public void Next() {
+        public ISettingViewModel Next(ISettingViewModel selected) {
             Model.Build();
             decide.OnNext(Unit.Default);
+            return null;
         }
     }
 }

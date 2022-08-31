@@ -133,6 +133,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var peakInfos = peaks.Zip(spots)
                 .AsParallel()
                 .AsOrdered()
+                .WithDegreeOfParallelism(Param.NumThreads)
                 .Select(peakAndSpot => {
                     (var peak, var spot) = peakAndSpot;
 

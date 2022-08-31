@@ -27,7 +27,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
-    class LcimmsAlignmentModel : AlignmentModelBase
+    internal sealed class LcimmsAlignmentModel : AlignmentModelBase
     {
         public LcimmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
@@ -46,7 +46,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, observableBarItemsLoader)));
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, useRtFilter: true);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: ~FilterEnableStatus.None).AddTo(Disposables);
 
             Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
             {

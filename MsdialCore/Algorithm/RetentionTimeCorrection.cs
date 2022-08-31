@@ -29,7 +29,7 @@ namespace CompMs.MsdialCore.Algorithm {
             var stdList = GetStdPair(provider, param, iStdLib);
 
             // original RT array
-            var spectrumList = provider.LoadMs1Spectrums();
+            var spectrumList = provider.LoadMsSpectrums();
             var originalRTs = spectrumList.Select(x => x.ScanStartTime).ToArray();
             return new RetentionTimeCorrectionBean() { StandardList = stdList, OriginalRt = originalRTs.ToList() };
         }
@@ -37,13 +37,11 @@ namespace CompMs.MsdialCore.Algorithm {
         private static List<StandardPair> GetStdPair(
             IDataProvider provider,
             ParameterBase param, List<MoleculeMsReference> iStdLib) {
-            var targetList = new List<StandardPair>();
-            var spectrumList = provider.LoadMs1Spectrums();
-            var id2ChromXs = DataAccess.GetID2ChromXs(spectrumList, param.IonMode, ChromXType.RT, ChromXUnit.Min);
             if (iStdLib.IsEmptyOrNull()) return new List<StandardPair>();
 
+            var targetList = new List<StandardPair>();
             var peakpickCore = new PeakSpottingCore(param);
-            var rawSpectra = new RawSpectra(spectrumList, param.IonMode, param.AcquisitionType);
+            var rawSpectra = new RawSpectra(provider, param.IonMode, param.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(param.RetentionTimeBegin, param.RetentionTimeEnd, ChromXType.RT, ChromXUnit.Min);
             foreach (var i in iStdLib) {
                 var startMass = i.PrecursorMz;
@@ -63,7 +61,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 }
                 if (pab == null) pab = new ChromatogramPeakFeature() { PrecursorMz = i.PrecursorMz, ChromXs = new ChromXs(0) };
                 var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(startMass, i.MassTolerance, chromatogramRange);
-                var peaklist = chromatogram.Peaks.Select((peak, j) => ChromatogramPeak.Create(peak.ID, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
+                var peaklist = chromatogram.Peaks.Select(peak => ChromatogramPeak.Create(peak.ID, peak.Mass, peak.Intensity, peak.ChromXs.RT)).ToList();
                 targetList.Add(new StandardPair() { SamplePeakAreaBean = pab, Reference = i, Chromatogram = peaklist });
             }
             /*   foreach(var t in targetList) {

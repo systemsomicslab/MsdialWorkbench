@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcms;
-using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
@@ -8,6 +7,7 @@ using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -16,7 +16,7 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.ComponentModel;
-using System.Windows;
+using System.Reactive.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -49,7 +49,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             Target = _model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
-            PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
 
             Ms1Spots = CollectionViewSource.GetDefaultView(_model.Ms1Spots);
 
@@ -94,9 +93,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
+
+            ProteinResultContainerAsObservable = Observable.Return(model.ProteinResultContainerModel);
+
+            NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel).AddTo(Disposables);
+            PcaSettingViewModel = new PcaSettingViewModel(model.PcaSettingModel, broker).AddTo(Disposables);
         }
 
-        public PeakFilterViewModel PeakFilterViewModel { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public ICollectionView Ms1Spots { get; }
         public ICollectionView PeakSpotsView => Ms1Spots;
@@ -115,6 +118,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
+        public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable { get; }
+        public NormalizationSetViewModel NormalizationSetViewModel { get; }
+        public PcaSettingViewModel PcaSettingViewModel { get; }
 
         private void SearchCompound() {
             using (var csm = _model.CreateCompoundSearchModel()) {
@@ -151,20 +157,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 AddExtension = true,
             };
             _broker.Publish(request);
-        }
-
-        public DelegateCommand<Window> NormalizeCommand => _normalizeCommand ?? (_normalizeCommand = new DelegateCommand<Window>(Normalize));
-        private DelegateCommand<Window> _normalizeCommand;
-
-        private void Normalize(Window owner) {
-            using (var vm = new NormalizationSetViewModel(_model.NormalizationSetModel)) {
-                var view = new NormalizationSetView {
-                    DataContext = vm,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-                view.ShowDialog();
-            }
         }
     }
 }

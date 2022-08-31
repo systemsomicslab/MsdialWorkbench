@@ -11,8 +11,11 @@
         d:DataContext="{d:DesignInstance Type={x:Type vm:LcmsMethodViewModel}}"
         d:DesignHeight="450" d:DesignWidth="800">
     <Ribbon.Resources>
-        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
-
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
         <!--
         <Style TargetType="Ribbon">
             <Setter Property="BorderBrush" Value="LightGray" />
@@ -127,19 +130,18 @@
         <RibbonGroup>
             <RibbonButton Label="Normalization" LargeImageSource="{StaticResource Data_normalization_is}"
                           IsEnabled="True"
-                          Command="{Binding AlignmentViewModel.Value.NormalizeCommand}"
-                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                          Command="{Binding ShowNormalizationSettingCommand}"
                           KeyTip="N"/>
             <RibbonButton Label="MS-CleanR peak filtering" LargeImageSource="{StaticResource MsCleanR_icon_is}"
                           IsEnabled="True"
                           Command="{Binding ShowMscleanrFilterSettingCommand}"
                           KeyTip="T"/>
-            <RibbonButton Label="Tree for Proteomics" LargeImageSource="{StaticResource TreeForProteomics_icon_is}"
-                          IsEnabled="False"
+            <RibbonButton Label="Tables for Proteomics" LargeImageSource="{StaticResource TreeForProteomics_icon_is}"
+                          IsEnabled="True"
                           Command="{Binding ShowProteinGroupTableCommand}"
                           KeyTip="T"/>
             <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"
-                          IsEnabled="False"
+                          Command="{Binding ShowPcaSettingCommand}"
                           KeyTip="P"/>
             <RibbonButton Label="Partial least squares" LargeImageSource="{StaticResource PLS_is}"
                           IsEnabled="False"
@@ -298,9 +300,17 @@
     <chartSetting:ExpRefViewSettingRibbonTab ContextualTabGroupHeader="Graph tools"
                                              DataContext="{Binding AnalysisViewModel.Value.RawDecSpectrumsViewModel}"
                                              d:DataContext="{d:DesignInstance Type={x:Type vmchart:RawDecSpectrumsViewModel}}"
-                                             Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"/>
+                                             Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
+                                             Style="{StaticResource FocusWhenVisible}"/>
+
+    <chartSetting:Ms2ChromatogramSettingRibbonTab ContextualTabGroupHeader="Graph tools"
+                                                  DataContext="{Binding AnalysisViewModel.Value.Ms2ChromatogramsViewModel}"
+                                                  d:DataContext="{d:DesignInstance Type={x:Type vmchart:Ms2ChromatogramsViewModel}}"
+                                                  Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
+                                                  Style="{StaticResource FocusWhenVisible}"/>
     <chartSetting:BarChartOfAlignedSpotSettingRibbonTab ContextualTabGroupHeader="Graph tools"
                                                         DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"
                                                         d:DataContext="{d:DesignInstance Type={x:Type vmchart:BarChartViewModel}}"
-                                                        Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"/>
+                                                        Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
+                                                        Style="{StaticResource FocusWhenVisible}"/>
 </Ribbon>

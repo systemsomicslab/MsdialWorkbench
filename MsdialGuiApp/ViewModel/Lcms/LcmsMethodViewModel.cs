@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
-using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -20,8 +19,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 {
     internal sealed class LcmsMethodViewModel : MethodViewModel {
         private readonly LcmsMethodModel model;
-        private readonly IMessageBroker _broker;
-        private readonly FocusControlManager _focusManager;
 
         private LcmsMethodViewModel(
             LcmsMethodModel model,
@@ -35,8 +32,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   PrepareMassSpectrumViewModels(analysisAsObservable, alignmentAsObservable)) {
 
             this.model = model;
-            _broker = broker;
-            _focusManager = focusControlManager.AddTo(Disposables);
+            Disposables.Add(focusControlManager);
 
             ShowExperimentSpectrumCommand = new ReactiveCommand().AddTo(Disposables);
 
@@ -46,14 +42,26 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .Switch()
                 .Subscribe(vm => broker.Publish(vm))
                 .AddTo(Disposables);
-            PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilterModel).AddTo(Disposables);
 
-            var _proteinGroupTableViewModel = (ProteinGroupTableViewModel)null; //new ProteinGroupTableViewModel();
-            ShowProteinGroupTableCommand = new ReactiveCommand().AddTo(Disposables);
+            var proteinResultContainerAsObservable =
+                new[]
+                {
+                    SelectedViewModel.OfType<LcmsAnalysisViewModel>().Select(vm => vm.ProteinResultContainerAsObservable),
+                    SelectedViewModel.OfType<LcmsAlignmentViewModel>().Select(vm => vm.ProteinResultContainerAsObservable),
+
+                }.Merge().Switch();
+            var _proteinGroupTableViewModel = new ProteinGroupTableViewModel(proteinResultContainerAsObservable).AddTo(Disposables);
+            ShowProteinGroupTableCommand = model.CanShowProteinGroupTable.ToReactiveCommand().AddTo(Disposables);
             ShowProteinGroupTableCommand.Subscribe(() => broker.Publish(_proteinGroupTableViewModel)).AddTo(Disposables);
-        }
 
-        public PeakFilterViewModel PeakFilterViewModel { get; }
+            var isAlignmentViewModelExists = AlignmentViewModel.Select(vm => vm is LcmsAlignmentViewModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            ShowNormalizationSettingCommand = isAlignmentViewModelExists.ToReactiveCommand()
+                .WithSubscribe(() => broker.Publish(((LcmsAlignmentViewModel)AlignmentViewModel.Value).NormalizationSetViewModel))
+                .AddTo(Disposables);
+            ShowPcaSettingCommand = isAlignmentViewModelExists.ToReactiveCommand()
+                .WithSubscribe(() => broker.Publish(((LcmsAlignmentViewModel)AlignmentViewModel.Value).PcaSettingViewModel))
+                .AddTo(Disposables);
+        }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
             if (analysisFile?.File == null || analysisFile.File == model.AnalysisFile) {
@@ -102,6 +110,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public DelegateCommand<Window> ShowMscleanrFilterSettingCommand => mscleanrFilterSettingCommand ??
             (mscleanrFilterSettingCommand = new DelegateCommand<Window>(MscleanrFilterSettingMethod));
         private DelegateCommand<Window> mscleanrFilterSettingCommand;
+
+        public ReactiveCommand ShowNormalizationSettingCommand { get; }
+        public ReactiveCommand ShowPcaSettingCommand { get; }
 
         private void FragmentSearchSettingMethod(Window obj) {
             if (SelectedViewModel.Value is IAlignmentResultViewModel) {
@@ -231,7 +242,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<LcmsAnalysisViewModel> analysisAsObservable, IObservable<LcmsAlignmentViewModel> alignmentAsObservable) {
             var rawdec = analysisAsObservable.Select(vm => vm?.RawDecSpectrumsViewModel);
             var rawpur = analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
-            var ms2chrom = Observable.Return<ViewModelBase>(null); // ms2 chrom
+            var ms2chrom = analysisAsObservable.Select(vm => vm?.Ms2ChromatogramsViewModel);
             var repref = alignmentAsObservable.Select(vm => vm?.Ms2SpectrumViewModel);
             return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase>[] { rawdec, ms2chrom, rawpur, repref});
         }

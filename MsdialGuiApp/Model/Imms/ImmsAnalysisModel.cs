@@ -40,13 +40,13 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _matchResultEvaluator;
         private readonly IBrushMapper<ChromatogramPeakFeatureModel> _brush;
-        private readonly IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> _annotatorContainers;
+        private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
 
         public ImmsAnalysisModel(
             AnalysisFileBean analysisFile,
             IDataProvider provider,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
+            DataBaseStorage databases,
             DataBaseMapper mapper,
             ParameterBase parameter,
             PeakFilterModel peakFilterModel)
@@ -55,10 +55,10 @@ namespace CompMs.App.Msdial.Model.Imms
             _provider = provider;
             _dataBaseMapper = mapper;
             _matchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
-            _annotatorContainers = annotatorContainers;
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam).Items;
             _parameter = parameter as MsdialImmsParameter;
 
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, useRtFilter: false, useDtFilter: true);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~FilterEnableStatus.Rt).AddTo(Disposables);
 
             var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
                     new KeyBrushMapper<ChromatogramPeakFeatureModel, string>(
@@ -153,6 +153,9 @@ namespace CompMs.App.Msdial.Model.Imms
                 Observable.Return(spectraExporter),
                 Observable.Return((ISpectraExporter)null)).AddTo(Disposables);
 
+            // Ms2 chromatogram
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawLoader, provider, parameter).AddTo(Disposables);
+
             var surveyScanSpectrum = new SurveyScanSpectrum(Target, target => Observable.FromAsync(token => LoadMsSpectrumAsync(target, token)))
                 .AddTo(Disposables);
             SurveyScanModel = new SurveyScanModel(
@@ -199,7 +202,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public EicModel EicModel { get; }
 
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
-
+        public Ms2ChromatogramsModel Ms2ChromatogramsModel { get; }
         public SurveyScanModel SurveyScanModel { get; }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
@@ -242,8 +245,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 AnalysisFile,
                 Target.Value.InnerModel,
                 MsdecResult.Value,
-                null,
-                _annotatorContainers);
+                _compoundSearchers);
         }
 
         public void SaveSpectra(string filename) {

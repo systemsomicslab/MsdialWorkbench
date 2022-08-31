@@ -14,6 +14,8 @@ using CompMs.Common.Enum;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
 using System.Windows.Media;
+using System.Reactive.Linq;
+using System.Reactive;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
@@ -41,8 +43,8 @@ namespace CompMs.App.Msdial.Model.Chart
             }
 
             Spots = spots ?? throw new ArgumentNullException(nameof(spots));
-            HorizontalSelector = horizontalSelector ?? throw new ArgumentNullException(nameof(horizontalSelector));
-            VerticalSelector = verticalSelector ?? throw new ArgumentNullException(nameof(verticalSelector));
+            _horizontalSelector = horizontalSelector ?? throw new ArgumentNullException(nameof(horizontalSelector));
+            _verticalSelector = verticalSelector ?? throw new ArgumentNullException(nameof(verticalSelector));
             LabelSource = labelSource ?? throw new ArgumentNullException(nameof(labelSource));
             SelectedBrush = selectedBrush ?? throw new ArgumentNullException(nameof(selectedBrush));
             Brushes = new ReadOnlyCollection<BrushMapData<ChromatogramPeakFeatureModel>>(brushes);
@@ -53,10 +55,12 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalProperty = string.Empty;
             VerticalProperty = string.Empty;
 
-            HorizontalAxis = horizontalAxis ?? this.ObserveProperty(m => m.HorizontalRange)
+            HorizontalAxis = horizontalAxis ?? Spots.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default).Throttle(TimeSpan.FromSeconds(.01d))
+                .Select(_ => Spots.Any() ? new Range(Spots.Min(horizontalSelector), Spots.Max(horizontalSelector)) : new Range(0, 1))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
-            VerticalAxis = verticalAxis ?? this.ObserveProperty(m => m.VerticalRange)
+            VerticalAxis = verticalAxis ?? Spots.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default).Throttle(TimeSpan.FromSeconds(.01d))
+                .Select(_ => Spots.Any() ? new Range(Spots.Min(verticalSelector), Spots.Max(verticalSelector)) : new Range(0, 1))
                 .ToReactiveContinuousAxisManager<double>(new RelativeMargin(0.05))
                 .AddTo(Disposables);
 
@@ -134,22 +138,22 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public Range HorizontalRange {
             get {
-                if (!Spots.Any() || HorizontalSelector == null) {
+                if (!Spots.Any() || _horizontalSelector == null) {
                     return new Range(0, 1);
                 }
-                var minimum = Spots.Min(HorizontalSelector);
-                var maximum = Spots.Max(HorizontalSelector);
+                var minimum = Spots.Min(_horizontalSelector);
+                var maximum = Spots.Max(_horizontalSelector);
                 return new Range(minimum, maximum);
             }
         }
 
         public Range VerticalRange {
             get {
-                if (!Spots.Any() || VerticalSelector == null) {
+                if (!Spots.Any() || _verticalSelector == null) {
                     return new Range(0, 1);
                 }
-                var minimum = Spots.Min(VerticalSelector);
-                var maximum = Spots.Max(VerticalSelector);
+                var minimum = Spots.Min(_verticalSelector);
+                var maximum = Spots.Max(_verticalSelector);
                 return new Range(minimum, maximum);
             }
         }
@@ -160,25 +164,8 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public IReactiveProperty<ChromatogramPeakFeatureModel> TargetSource { get; }
 
-        public Func<ChromatogramPeakFeatureModel, double> HorizontalSelector {
-            get => horizontalSelector;
-            set {
-                if (SetProperty(ref horizontalSelector, value)) {
-                    OnPropertyChanged(nameof(HorizontalRange));
-                }
-            }
-        }
-        private Func<ChromatogramPeakFeatureModel, double> horizontalSelector;
-
-        public Func<ChromatogramPeakFeatureModel, double> VerticalSelector {
-            get => verticalSelector;
-            set {
-                if (SetProperty(ref verticalSelector, value)) {
-                    OnPropertyChanged(nameof(VerticalRange));
-                }
-            }
-        }
-        private Func<ChromatogramPeakFeatureModel, double> verticalSelector;
+        private readonly Func<ChromatogramPeakFeatureModel, double> _horizontalSelector;
+        private readonly Func<ChromatogramPeakFeatureModel, double> _verticalSelector;
 
         public string GraphTitle {
             get => graphTitle;

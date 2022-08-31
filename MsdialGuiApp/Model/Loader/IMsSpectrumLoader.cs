@@ -135,21 +135,26 @@ namespace CompMs.App.Msdial.Model.Loader
         }
 
         private List<SpectrumPeak> LoadSpectrumCore(object target) {
-            var idx = ms1Peaks.IndexOf(target);
-            if (target.GetType() == typeof(ChromatogramPeakFeatureModel)) {
-                var peak = (ChromatogramPeakFeatureModel)ms1Peaks[idx];
-                idx = peak.MSDecResultIDUsedForAnnotation;
+            if (target is ChromatogramPeakFeatureModel cpeak) {
+                var idx = cpeak.MSDecResultIDUsedForAnnotation;
+                var msdecResult = loader.LoadMSDecResult(idx);
+                Result = msdecResult;
+                return msdecResult?.Spectrum ?? new List<SpectrumPeak>(0);
             }
-            else if (target.GetType() == typeof(AlignmentSpotPropertyModel)) {
-                var peak = (AlignmentSpotPropertyModel)ms1Peaks[idx];
+            else if (target is AlignmentSpotPropertyModel) {
+                // var peak = (AlignmentSpotPropertyModel)ms1Peaks[idx];
                 //idx = peak.MSDecResultIDUsedForAnnotation;
+                var idx = ms1Peaks.IndexOf(target);
+                var msdecResult = loader.LoadMSDecResult(idx);
+                Result = msdecResult;
+                return msdecResult?.Spectrum ?? new List<SpectrumPeak>(0);
             }
             else {
-
+                var idx = ms1Peaks.IndexOf(target);
+                var msdecResult = loader.LoadMSDecResult(idx);
+                Result = msdecResult;
+                return msdecResult?.Spectrum ?? new List<SpectrumPeak>(0);
             }
-            var msdecResult = loader.LoadMSDecResult(idx);
-            Result = msdecResult;
-            return msdecResult?.Spectrum ?? new List<SpectrumPeak>(0);
         }
 
         public IObservable<List<SpectrumPeak>> LoadSpectrumAsObservable(object target) {

@@ -3,19 +3,32 @@ using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Linq;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Search
 {
-    public class PeakFilterViewModel : ViewModelBase
+    public sealed class PeakFilterViewModel : ViewModelBase
     {
-        private readonly PeakFilterModel model;
-
         public PeakFilterViewModel(PeakFilterModel model) {
-            this.model = model;
+            if (model is null) {
+                throw new ArgumentNullException(nameof(model));
+            }
+
             EnabledFilter = model.EnabledFilter;
             CheckedFilter = model.ObserveProperty(m => m.CheckedFilter).ToReactiveProperty().AddTo(Disposables);
-            CheckedFilter.Subscribe(filter => this.model.CheckedFilter = filter).AddTo(Disposables);
+            CheckedFilter.Subscribe(filter => model.CheckedFilter = filter).AddTo(Disposables);
+        }
+
+        public PeakFilterViewModel(params PeakFilterModel[] models) {
+            EnabledFilter = models.Aggregate(DisplayFilter.Unset, (f, m) => f | m.EnabledFilter);
+            CheckedFilter = models.Select(m => m.ObserveProperty(m_ => m_.CheckedFilter)).Merge().ToReactiveProperty().AddTo(Disposables);
+            CheckedFilter.Subscribe(filter =>
+            {
+                foreach (var m in models) {
+                    m.CheckedFilter = filter;
+                }
+            }).AddTo(Disposables);
         }
 
         public DisplayFilter EnabledFilter { get; }

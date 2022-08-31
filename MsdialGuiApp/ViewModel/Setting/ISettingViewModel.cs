@@ -5,7 +5,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 {
     public interface ISettingViewModel
     {
-        void Next();
+        ISettingViewModel Next(ISettingViewModel selected);
         // void Run();
 
         IObservable<bool> ObserveHasErrors { get; }

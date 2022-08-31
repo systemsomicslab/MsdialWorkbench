@@ -36,12 +36,12 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly List<AnalysisFileBean> _files;
         private readonly ParameterBase _parameter;
         private readonly DataBaseMapper _dataBaseMapper;
-        private readonly IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> _annotatorContainers;
+        private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
 
         public ImmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
-            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            DataBaseStorage databases,
             DataBaseMapper mapper,
             PeakFilterModel peakFilterModel,
             ParameterBase parameter,
@@ -53,7 +53,7 @@ namespace CompMs.App.Msdial.Model.Imms
             _files = files ?? throw new ArgumentNullException(nameof(files));
             _dataBaseMapper = mapper;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
-            _annotatorContainers = annotatorContainers;
+            _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam).Items;
 
             var BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
@@ -94,7 +94,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
 
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, useRtFilter: true);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: ~FilterEnableStatus.Rt).AddTo(Disposables);
 
             var fileName = alignmentFileBean.FileName;
             var labelSource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel);
@@ -246,8 +246,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 _files[Target.Value.RepresentativeFileID],
                 Target.Value.innerModel,
                 MsdecResult.Value,
-                null,
-                _annotatorContainers);
+                _compoundSearchers);
         }
 
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }

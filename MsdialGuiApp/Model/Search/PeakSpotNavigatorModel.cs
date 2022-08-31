@@ -2,36 +2,75 @@
 using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Data;
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    public sealed class PeakSpotNavigatorModel : BindableBase
+    [Flags]
+    public enum FilterEnableStatus {
+        None = 0x0,
+        Rt = 0x1,
+        Dt = 0x2,
+        Mz = 0x4,
+        Metabolite = 0x8,
+        Protein = 0x10,
+        Comment = 0x20,
+        Amplitude = 0x40,
+    }
+
+    public sealed class PeakSpotNavigatorModel : DisposableModelBase
     {
-        public PeakSpotNavigatorModel(IReadOnlyList<IFilterable> peakSpots, PeakFilterModel peakFilterModel, IMatchResultEvaluator<MsScanMatchResult> evaluator, bool useRtFilter = false, bool useDtFilter = false) {
-            PeakSpots = peakSpots ?? throw new System.ArgumentNullException(nameof(peakSpots));
-            PeakFilterModel = peakFilterModel ?? throw new System.ArgumentNullException(nameof(peakFilterModel));
-            this.evaluator = evaluator ?? throw new System.ArgumentNullException(nameof(evaluator));
-            UseRtFilter = useRtFilter;
-            UseDtFilter = useDtFilter;
+        public PeakSpotNavigatorModel(IReadOnlyList<IFilterable> peakSpots, PeakFilterModel peakFilterModel, IMatchResultEvaluator<MsScanMatchResult> evaluator, FilterEnableStatus status) {
+            if (evaluator is null) {
+                throw new ArgumentNullException(nameof(evaluator));
+            }
+
+            PeakSpots = peakSpots ?? throw new ArgumentNullException(nameof(peakSpots));
+            PeakFilterModel = peakFilterModel ?? throw new ArgumentNullException(nameof(peakFilterModel));
+            _evaluator = evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative);
             AmplitudeLowerValue = 0d;
             AmplitudeUpperValue = 1d;
-            MzLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.Mass) ?? 0d;
-            MzUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.Mass) ?? 1d;
-            RtLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.RT.Value) ?? 0d;
-            RtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.RT.Value) ?? 1d;
-            DtLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.Drift.Value) ?? 0d;
-            DtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.Drift.Value) ?? 1d;
+            if (peakSpots is INotifyCollectionChanged notifyCollection) {
+                notifyCollection.CollectionChangedAsObservable().ToUnit()
+                    .StartWith(Unit.Default)
+                    .Throttle(TimeSpan.FromSeconds(.1d))
+                    .Subscribe(_ =>
+                    {
+                        MzLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.Mass) ?? 0d;
+                        MzUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.Mass) ?? 1d;
+                        RtLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.RT.Value) ?? 0d;
+                        RtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.RT.Value) ?? 1d;
+                        DtLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.Drift.Value) ?? 0d;
+                        DtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.Drift.Value) ?? 1d;
+                    }).AddTo(Disposables);
+            }
+            else {
+                //MzLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.Mass) ?? 0d;
+                //MzUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.Mass) ?? 1d;
+                //RtLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.RT.Value) ?? 0d;
+                //RtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.RT.Value) ?? 1d;
+                //DtLowerValue = peakSpots.DefaultIfEmpty().Min(p => p?.ChromXs.Drift.Value) ?? 0d;
+                //DtUpperValue = peakSpots.DefaultIfEmpty().Max(p => p?.ChromXs.Drift.Value) ?? 1d;
+            }
             metaboliteFilterKeywords = new List<string>();
             MetaboliteFilterKeywords = metaboliteFilterKeywords.AsReadOnly();
             proteinFilterKeywords = new List<string>();
             ProteinFilterKeywords = proteinFilterKeywords.AsReadOnly();
             commentFilterKeywords = new List<string>();
             CommentFilterKeywords = commentFilterKeywords.AsReadOnly();
+
+            AttachFilter(peakSpots, peakFilterModel, status: status, evaluator: _evaluator);
         }
 
         public string SelectedAnnotationLabel {
@@ -41,6 +80,7 @@ namespace CompMs.App.Msdial.Model.Search
         private string selectedAnnotationLabel;
 
         public IReadOnlyList<IFilterable> PeakSpots { get; }
+        public ObservableCollection<ICollectionView> PeakSpotsCollection { get; } = new ObservableCollection<ICollectionView>();
 
         public double AmplitudeLowerValue {
             get => amplitudeLowerValue;
@@ -64,7 +104,6 @@ namespace CompMs.App.Msdial.Model.Search
         }
         private double mzUpperValue;
 
-        public bool UseRtFilter { get; }
         public double RtLowerValue {
             get => rtLowerValue;
             set => SetProperty(ref rtLowerValue, value);
@@ -76,7 +115,6 @@ namespace CompMs.App.Msdial.Model.Search
         }
         private double rtUpperValue;
 
-        public bool UseDtFilter { get; }
         public double DtLowerValue {
             get => dtLowerValue;
             set => SetProperty(ref dtLowerValue, value);
@@ -88,7 +126,7 @@ namespace CompMs.App.Msdial.Model.Search
         }
         private double dtUpperValue;
 
-        private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
+        private readonly IMatchResultEvaluator<IFilterable> _evaluator;
 
         public ReadOnlyCollection<string> MetaboliteFilterKeywords { get; }
         private readonly List<string> metaboliteFilterKeywords;
@@ -155,15 +193,80 @@ namespace CompMs.App.Msdial.Model.Search
 
         public PeakFilterModel PeakFilterModel { get; }
 
-        public bool PeakFilter(IFilterable peak) {
-            return PeakFilterModel.PeakFilter(peak, evaluator)
-                && MzFilter(peak)
-                && (!UseRtFilter || RtFilter(peak))
-                && (!UseDtFilter || DtFilter(peak))
-                && AmplitudeFilter(peak)
-                && ProteinFilter(peak, ProteinFilterKeywords)
-                && MetaboliteFilter(peak, MetaboliteFilterKeywords)
-                && CommentFilter(peak, CommentFilterKeywords);
+        private readonly Dictionary<ICollectionView, Predicate<object>> _viewToPredicate = new Dictionary<ICollectionView, Predicate<object>>();
+        private readonly Dictionary<ICollectionView, List<PeakFilterModel>> _viewToFilters = new Dictionary<ICollectionView, List<PeakFilterModel>>();
+        public ObservableCollection<PeakFilterModel> PeakFilters { get; } = new ObservableCollection<PeakFilterModel>();
+
+        public void AttachFilter(ICollectionView view, PeakFilterModel peakFilterModel, FilterEnableStatus status, IMatchResultEvaluator<IFilterable> evaluator = null) {
+            if (_viewToPredicate.ContainsKey(view)) {
+                view.Filter -= _viewToPredicate[view];
+                _viewToPredicate[view] += CreateFilter(peakFilterModel, status, evaluator ?? _evaluator);
+            }
+            else {
+                _viewToPredicate[view] = CreateFilter(peakFilterModel, status, evaluator ?? _evaluator);
+            }
+            view.Filter += _viewToPredicate[view];
+            if (!_viewToFilters.ContainsKey(view)) {
+                _viewToFilters.Add(view, new List<PeakFilterModel>());
+            }
+            _viewToFilters[view].Add(peakFilterModel);
+            PeakFilters.Add(peakFilterModel);
+            PeakSpotsCollection.Add(view);
+        }
+
+        public void AttachFilter(IEnumerable<IFilterable> peaks, PeakFilterModel peakFilterModel, FilterEnableStatus status = ~FilterEnableStatus.None, IMatchResultEvaluator<IFilterable> evaluator = null) {
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                ICollectionView collection = CollectionViewSource.GetDefaultView(peaks);
+                if (collection is ListCollectionView list) {
+                    list.IsLiveFiltering = true;
+                }
+                AttachFilter(collection, peakFilterModel, status, evaluator);
+            });
+        }
+
+        public void DetatchFilter(ICollectionView view) {
+            if (_viewToPredicate.ContainsKey(view)) {
+                view.Filter -= _viewToPredicate[view];
+                _viewToPredicate.Remove(view);
+                foreach (var filter in _viewToFilters[view]) {
+                    PeakFilters.Remove(filter);
+                }
+                _viewToFilters.Remove(view);
+                PeakSpotsCollection.Remove(view);
+            }
+        }
+
+        public void DetatchFilter(IEnumerable<IFilterable> peaks) {
+            DetatchFilter(CollectionViewSource.GetDefaultView(peaks));
+        }
+
+        private Predicate<object> CreateFilter(PeakFilterModel peakFilterModel, FilterEnableStatus status, IMatchResultEvaluator<IFilterable> evaluator) {
+            List<Predicate<IFilterable>> results = new List<Predicate<IFilterable>>();
+            results.Add(filterable => peakFilterModel.PeakFilter(filterable, evaluator));
+            if ((status & FilterEnableStatus.Rt) != FilterEnableStatus.None) {
+                results.Add(RtFilter);
+            }
+            if ((status & FilterEnableStatus.Dt) != FilterEnableStatus.None) {
+                results.Add(DtFilter);
+            }
+            if ((status & FilterEnableStatus.Mz) != FilterEnableStatus.None) {
+                results.Add(MzFilter);
+            }
+            if ((status & FilterEnableStatus.Amplitude) != FilterEnableStatus.None) {
+                results.Add(AmplitudeFilter);
+            }
+            if ((status & FilterEnableStatus.Metabolite) != FilterEnableStatus.None) {
+                results.Add(filterable => MetaboliteFilter(filterable, MetaboliteFilterKeywords));
+            }
+            if ((status & FilterEnableStatus.Protein) != FilterEnableStatus.None) {
+                results.Add(filterable => ProteinFilter(filterable, ProteinFilterKeywords));
+            }
+            if ((status & FilterEnableStatus.Comment) != FilterEnableStatus.None) {
+                results.Add(filterable => CommentFilter(filterable, CommentFilterKeywords));
+            }
+
+            return (object obj) => obj is IFilterable filterable && results.All(pred => pred(filterable));
         }
 
         private bool MzFilter(IChromatogramPeak peak) {
@@ -193,6 +296,19 @@ namespace CompMs.App.Msdial.Model.Search
         private bool AmplitudeFilter(IFilterable peak) {
             var relative = peak.RelativeAmplitudeValue;
             return AmplitudeLowerValue <= relative && relative <= AmplitudeUpperValue;
+        }
+
+        protected override void Dispose(bool disposing) {
+            if (disposing) {
+                var views = _viewToFilters.Keys.ToArray();
+                foreach (var view in views) {
+                    DetatchFilter(view);
+                }
+                _viewToFilters.Clear();
+                _viewToPredicate.Clear();
+                PeakFilters.Clear();
+            }
+            base.Dispose(disposing);
         }
     }
 }

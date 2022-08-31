@@ -380,7 +380,17 @@
                                     DataContext="{Binding SelectedViewModel.Value}"
                                     ItemsSource="{Binding PeakDetailViewModels}"
                                     SelectedIndex="0"
+                                    IsSynchronizedWithCurrentItem="True"
                                     Grid.Row="0">
+                            <TabControl.Style>
+                                <Style TargetType="TabControl">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding PeakDetailViewModels.Length}" Value="2">
+                                            <Setter Property="SelectedIndex" Value="0"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TabControl.Style>
                             <TabControl.Resources>
                                 <Style TargetType="TabItem">
                                     <Setter Property="Background" Value="{StaticResource MainThemeColor}"/>
@@ -444,7 +454,7 @@
                                         <TextBlock Text="Exp. vs.Rep."
                                                    VerticalAlignment="Stretch"/>
                                     </DataTemplate>
-                                    <DataTemplate x:Key="MS2Chrom"> <!-- MS2 chrom. -->
+                                    <DataTemplate DataType="{x:Type vmchart:Ms2ChromatogramsViewModel}">
                                         <TextBlock Text="MS2 Chrom."
                                                    VerticalAlignment="Stretch"/>
                                     </DataTemplate>
@@ -491,8 +501,8 @@
                                             </chart:ExpRefView.ContextMenu>
                                         </chart:ExpRefView>
                                     </DataTemplate>
-                                    <DataTemplate x:Key="MS2Chrom"> <!-- MS2 chrom. -->
-                                        <TextBlock Text="MS2 Chrom." IsEnabled="False"/>
+                                    <DataTemplate DataType="{x:Type vmchart:Ms2ChromatogramsViewModel}">
+                                        <chart:Ms2ChromatogramsView/>
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type vmchart:RawPurifiedSpectrumsViewModel}">
                                         <chart:RawPurifiedView DataContext="{Binding DataContext.AnalysisViewModel.Value, ElementName=TabControl_MS2Viewer}"/>
@@ -528,94 +538,6 @@
                             </DataTemplate>
                         </TabControl.ContentTemplate>
                     </TabControl>
-
-<!--
-                    <TabControl Name="TabControl_MS2Viewer"
-                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                Grid.Row="1" >
-                        <TabItem Name="TabItem_MeasurementVsReference" 
-                                 Header="Exp. vs. Ref."
-                                 DataContext="{Binding AnalysisViewModel.Value}"
-                                 Background="{StaticResource MainThemeColor}"
-                                 Height="25">
-                            <chart:ExpRefView>
-                                <chart:ExpRefView.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Save deconvoluted spectra table as.."
-                                                  Command="{Binding SaveMs2SpectrumCommand}"/>
-                                        <MenuItem Header="Save raw spectra table as.."
-                                                  Command="{Binding SaveMs2RawSpectrumCommand}"/>
-                                        <MenuItem Header="Save image as...">
-                                            <MenuItem Header="Save as emf"
-                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
-                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                            <MenuItem Header="Save as png"
-                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
-                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                        </MenuItem>
-                                        <MenuItem Header="Copy image as...">
-                                            <MenuItem Header="Copy as emf"
-                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
-                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                            <MenuItem Header="Copy as png"
-                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
-                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                        </MenuItem>
-                                    </ContextMenu>
-                                </chart:ExpRefView.ContextMenu>
-                            </chart:ExpRefView>
-                        </TabItem>
-
-                        <TabItem Header="MS2 Chrom." 
-                                 Name="TabItem_MS2Chromatogram" 
-                                 Height="25"
-                                 IsEnabled="False"
-                                 Background="{StaticResource MainThemeColor}">
-                        </TabItem>
-
-                        <TabItem Header="Raw vs. Purified" 
-                                 Name="TabItem_RawVsDeconvolution" 
-                                 DataContext="{Binding AnalysisViewModel.Value}"
-                                 Height="25"
-                                 IsEnabled="True"
-                                 Background="{StaticResource MainThemeColor}">
-                            <chart:RawPurifiedView/>
-                        </TabItem>
-
-                        <TabItem Name="TabItem_RepresentativeVsReference"
-                                 Header="Rep. vs. Ref."
-                                 DataContext="{Binding AlignmentViewModel.Value}"
-                                 Background="{StaticResource MainThemeColor}" 
-                                 Height="25">
-                            <chart:RepRefView>
-                                <chart:RepRefView.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Save spectra table as.."
-                                                  Command="{Binding SaveMs2SpectrumCommand}"/>
-                                        <MenuItem Header="Save image as...">
-                                            <MenuItem Header="Save as emf"
-                                                      Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
-                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                            <MenuItem Header="Save as png"
-                                                      Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
-                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                        </MenuItem>
-                                        <MenuItem Header="Copy image as...">
-                                            <MenuItem Header="Copy as emf"
-                                                      Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
-                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                            <MenuItem Header="Copy as png"
-                                                      Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
-                                                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                                        </MenuItem>
-                                    </ContextMenu>
-                                </chart:RepRefView.ContextMenu>
-                            </chart:RepRefView>
-                        </TabItem>
-
-                    </TabControl>
-                    -->
-
                     <GridSplitter Margin="0, 0, 0, -2" Height="2" 
                                   ResizeDirection="Rows"
                                   ResizeBehavior="CurrentAndNext" 

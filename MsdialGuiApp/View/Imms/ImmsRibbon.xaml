@@ -64,18 +64,17 @@
                KeyTip="P">
         <RibbonGroup Header="Data">
             <RibbonButton Label="All processing (from peak detection)" LargeImageSource="{StaticResource All_process_is}"
-                          Command="{Binding DataContext.RunProcessAllCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                          Command="{Binding DataContext.ExecuteAllMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="A">
                 <RibbonButton.ToolTip>Reanalysis for all data processing.</RibbonButton.ToolTip>
             </RibbonButton>
             <RibbonButton Label="Identification" LargeImageSource="{StaticResource From_annotation_process_is}"
-                          IsEnabled="False"
+                          Command="{Binding DataContext.ExecuteIdentificationMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="I">
                 <RibbonButton.ToolTip>Reanalysis for peak identification.</RibbonButton.ToolTip>
             </RibbonButton>
             <RibbonButton Label="Alignment" LargeImageSource="{StaticResource From_alignment_process_is}"
-                          IsEnabled="False"
+                          Command="{Binding DataContext.ExecuteAlignmentMethodProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="L">
                 <RibbonButton.ToolTip>Reanalysis for peak alignment.</RibbonButton.ToolTip>
             </RibbonButton>
@@ -277,9 +276,16 @@
     <chartSetting:ExpRefViewSettingRibbonTab ContextualTabGroupHeader="Graph tools"
                                              DataContext="{Binding AnalysisViewModel.Value.RawDecSpectrumsViewModel}"
                                              d:DataContext="{d:DesignInstance Type={x:Type vmchart:RawDecSpectrumsViewModel}}"
-                                             Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"/>
+                                             Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
+                                             Style="{StaticResource FocusWhenVisible}"/>
+    <chartSetting:Ms2ChromatogramSettingRibbonTab ContextualTabGroupHeader="Graph tools"
+                                                  DataContext="{Binding AnalysisViewModel.Value.Ms2ChromatogramsViewModel}"
+                                                  d:DataContext="{d:DesignInstance Type={x:Type vmchart:Ms2ChromatogramsViewModel}}"
+                                                  Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
+                                                  Style="{StaticResource FocusWhenVisible}"/>
     <chartSetting:BarChartOfAlignedSpotSettingRibbonTab ContextualTabGroupHeader="Graph tools"
                                                         DataContext="{Binding AlignmentViewModel.Value.BarChartViewModel}"
                                                         d:DataContext="{d:DesignInstance Type={x:Type vmchart:BarChartViewModel}}"
-                                                        Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"/>
+                                                        Visibility="{Binding IsFocused.Value, Converter={StaticResource BooleanToVisibility}, FallbackValue=Collapsed}"
+                                                        Style="{StaticResource FocusWhenVisible}"/>
 </Ribbon>

@@ -33,12 +33,12 @@
                     </Style>
                 </StackPanel.Resources>
                 <RadioButton Content="None" IsChecked="{Binding IsNormalizeNone.Value, Mode=TwoWay}" IsEnabled="True"/>
-                <RadioButton Content="Internal standard" IsChecked="{Binding IsNormalizeIS.Value, Mode=TwoWay}" IsEnabled="False"/>
-                <RadioButton Content="LOWESS" IsChecked="{Binding IsNormalizeLowess.Value, Mode=TwoWay}" IsEnabled="False"/>
-                <RadioButton Content="Internal standard + LOWESS" IsChecked="{Binding IsNormalizeIsLowess.Value, Mode=TwoWay}" IsEnabled="False"/>
+                <RadioButton Content="Internal standard" IsChecked="{Binding IsNormalizeIS.Value, Mode=TwoWay}" IsEnabled="True"/>
+                <RadioButton Content="LOWESS" IsChecked="{Binding IsNormalizeLowess.Value, Mode=TwoWay}" IsEnabled="True"/>
+                <RadioButton Content="Internal standard + LOWESS" IsChecked="{Binding IsNormalizeIsLowess.Value, Mode=TwoWay}" IsEnabled="True"/>
                 <RadioButton Content="SPLASH lipidomix" IsChecked="{Binding IsNormalizeSplash.Value, Mode=TwoWay}"/>
-                <RadioButton Content="Total ion chromatogram (TIC)" IsChecked="{Binding IsNormalizeTic.Value, Mode=TwoWay}" IsEnabled="False"/>
-                <RadioButton Content="mTIC: TIC of identified metabolites" IsChecked="{Binding IsNormalizeMTic.Value, Mode=TwoWay}" IsEnabled="False"/>
+                <RadioButton Content="Total ion chromatogram (TIC)" IsChecked="{Binding IsNormalizeTic.Value, Mode=TwoWay}" IsEnabled="True"/>
+                <RadioButton Content="mTIC: TIC of identified metabolites" IsChecked="{Binding IsNormalizeMTic.Value, Mode=TwoWay}" IsEnabled="True"/>
             </StackPanel>
         </GroupBox>
 

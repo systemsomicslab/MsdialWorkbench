@@ -10,6 +10,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         {
             _model = model;
             AnnotatedSpot = model.AnnotatedSpot;
+            AdductType = model.AdductType;
             PeptideSeq = model.PeptideSeq;
             DatabaseOrigin = model.DatabaseOrigin;
             DatabaseOriginID = model.DatabaseOriginID;
@@ -26,6 +27,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         }
         private readonly PeptideModel _model;
         public string PeptideSeq { get; }
+        public string AdductType { get; }
         public string ModifiedSequence { get; }
         public string DatabaseOrigin { get; }
         public int DatabaseOriginID { get; }

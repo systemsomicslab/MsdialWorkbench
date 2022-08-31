@@ -47,7 +47,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             SelectedBrush = this.model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
 
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
-            PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
 
             Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
 
@@ -127,7 +126,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         public ReactivePropertySlim<BrushMapData<AlignmentSpotPropertyModel>> SelectedBrush { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
-        public PeakFilterViewModel PeakFilterViewModel { get; }
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 
         private readonly LcimmsAlignmentModel model;

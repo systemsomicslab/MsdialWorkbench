@@ -15,7 +15,6 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.MessagePack;
 using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Graphics.UI.ProgressBar;
@@ -35,6 +34,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -53,6 +54,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
         private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly IMessageBroker _broker;
+        private readonly Subject<ProteinResultContainerModel> _proteinResultContainerModelSubject;
         private IAnnotationProcess annotationProcess;
 
         public LcmsMethodModel(
@@ -74,6 +76,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
+            _proteinResultContainerModelSubject = new Subject<ProteinResultContainerModel>().AddTo(Disposables);
+            CanShowProteinGroupTable = Observable.Return(storage.Parameter.TargetOmics == TargetOmics.Proteomics);
         }
 
         public IMsdialDataStorage<MsdialLcmsParameter> Storage { get; }
@@ -81,6 +85,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         private FacadeMatchResultEvaluator matchResultEvaluator;
 
         public PeakFilterModel PeakFilterModel { get; }
+
+        public IObservable<bool> CanShowProteinGroupTable { get; }
 
         public LcmsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -108,6 +114,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.DataBaseMapper,
                 matchResultEvaluator,
                 Storage.Parameter,
+                _proteinResultContainerModelSubject,
                 PeakFilterModel)
             .AddTo(Disposables);
         }
@@ -127,6 +134,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.Parameter,
                 _projectBaseParameter,
                 Storage.AnalysisFiles,
+                _proteinResultContainerModelSubject,
                 _broker)
             .AddTo(Disposables);
         }
@@ -384,6 +392,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     new ExportType2("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.Parameter), "NormalizedArea", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
                     new ExportType2("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.Parameter), "PeakID"),
                     new ExportType2("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.Parameter), "Mz"),
+                    new ExportType2("Retention time", metadataAccessor, new LegacyQuantValueAccessor("RT", container.Parameter), "Rt"),
                     new ExportType2("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.Parameter), "SN"),
                     new ExportType2("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.Parameter), "MsmsIncluded"),
                     new ExportType2("Protein assembled", metadataAccessor, new LegacyQuantValueAccessor("Protein", container.Parameter), "Protein"),
@@ -400,6 +409,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     new ExportType2("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.Parameter), "NormalizedHeight", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
                     new ExportType2("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.Parameter), "NormalizedArea", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
                     new ExportType2("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.Parameter), "PeakID"),
+                    new ExportType2("Retention time", metadataAccessor, new LegacyQuantValueAccessor("RT", container.Parameter), "Rt"),
                     new ExportType2("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.Parameter), "Mz"),
                     new ExportType2("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.Parameter), "SN"),
                     new ExportType2("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.Parameter), "MsmsIncluded"),
@@ -628,7 +638,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             //param.FragmentSearchSettingValues = model.FragmentQuerySettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();
             //param.AndOrAtFragmentSearch = model.SearchOption.Value;
         }
-
 
         public void GoToMsfinderMethod(bool isAlignmentView) {
             if (isAlignmentView) {

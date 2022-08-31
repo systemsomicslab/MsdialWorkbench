@@ -94,7 +94,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public void Load() {
             var parameter = Storage.Parameter;
             if (parameter.ProviderFactoryParameter is null) {
-                parameter.ProviderFactoryParameter = new ImmsAverageDataProviderFactoryParameter(0.01, 0.002, 0, 100);
+                parameter.ProviderFactoryParameter = new ImmsAverageDataProviderFactoryParameter(0.001, 0.002, 0, 100);
             }
             ProviderFactory = parameter?.ProviderFactoryParameter.Create(5, true);
         }
@@ -213,7 +213,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 analysisFile,
                 provider,
                 matchResultEvaluator,
-                Storage.DataBaseMapper.MoleculeAnnotators,
+                Storage.DataBases,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
                 PeakFilterModel)
@@ -229,8 +229,8 @@ namespace CompMs.App.Msdial.Model.Imms
 
             return AlignmentModel = new ImmsAlignmentModel(
                 alignmentFile,
-                Storage.DataBaseMapper.MoleculeAnnotators,
                 matchResultEvaluator,
+                Storage.DataBases,
                 Storage.DataBaseMapper,
                 PeakFilterModel,
                 Storage.Parameter,

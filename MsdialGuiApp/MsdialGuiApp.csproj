@@ -144,9 +144,11 @@
     <Compile Include="External Applications\MsDialIniField.cs" />
     <Compile Include="External Applications\MsDialIniParcer.cs" />
     <Compile Include="External Applications\MsDialToExternalApps.cs" />
+    <Compile Include="Model\Chart\Ms2ChromatogramsModel.cs" />
     <Compile Include="Model\Chart\MsSpectrum.cs" />
     <Compile Include="Model\Information\CompoundDetailModel.cs" />
     <Compile Include="Model\Information\PeakInformationModel.cs" />
+    <Compile Include="Model\DataObj\PeptideGroupModel.cs" />
     <Compile Include="Model\DataObj\ProteinResultContainerModel.cs" />
     <Compile Include="Model\Core\IAlignmentModel.cs" />
     <Compile Include="Model\Core\IAnalysisModel.cs" />
@@ -158,7 +160,9 @@
     <Compile Include="Model\DataObj\StandardCompoundModel.cs" />
     <Compile Include="Model\DataObj\SurveyScanSpectrum.cs" />
     <Compile Include="Model\Imms\ImmsAnnotatorSettingModel.cs" />
+    <Compile Include="Model\Lcimms\LcimmsEicLoader.cs" />
     <Compile Include="Model\Loader\BarItemsLoaderData.cs" />
+    <Compile Include="Model\Loader\IChromatogramLoader.cs" />
     <Compile Include="Model\Loader\MsSelectionItem.cs" />
     <Compile Include="Model\Normalize\InternalStandardLowessNormalizeModel.cs" />
     <Compile Include="Model\Normalize\InternalStandardNormalizeModel.cs" />
@@ -223,6 +227,7 @@
     <Compile Include="Model\Setting\MethodSettingModelFactory.cs" />
     <Compile Include="Model\Setting\MobilitySettingModel.cs" />
     <Compile Include="Model\Setting\MscleanrSettingModel.cs" />
+    <Compile Include="Model\Setting\PcaSettingModel.cs" />
     <Compile Include="Model\Setting\PeakDetectionSettingModel.cs" />
     <Compile Include="Model\Setting\ProjectParameterSettingModel.cs" />
     <Compile Include="Model\DataObj\DisplayChromatogram.cs" />
@@ -270,14 +275,18 @@
     <Compile Include="Model\Setting\DataBaseAnnotationSettingModelBase.cs" />
     <Compile Include="Model\Setting\ModificationSettingModel.cs" />
     <Compile Include="Model\Setting\MspAnnotationSettingModel.cs" />
+    <Compile Include="Model\Statistics\PcaResultModel.cs" />
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
     <Compile Include="Utility\ObservableExtensions.cs" />
+    <Compile Include="ViewModel\Chart\Ms2ChromatogramsViewModel.cs" />
     <Compile Include="ViewModel\Core\IAlignmentResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IAnalysisResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IResultViewModel.cs" />
+    <Compile Include="ViewModel\DataObj\PeptideViewModel.cs" />
     <Compile Include="ViewModel\Information\CompoundDetailViewModel.cs" />
     <Compile Include="ViewModel\Information\PeakInformationViewModel.cs" />
     <Compile Include="ViewModel\DataObj\ProteinGroupViewModel.cs" />
+    <Compile Include="ViewModel\DataObj\ProteinViewModel.cs" />
     <Compile Include="ViewModel\Loader\BarItemsLoaderDataViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentPeakPlotViewModel.cs" />
@@ -328,6 +337,7 @@
     <Compile Include="ViewModel\Lcimms\LcimmsAnnotatorSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcimms\MsdialLcimmsParameterViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsCompoundSearchViewModel.cs" />
+    <Compile Include="ViewModel\Loader\MultiMsRawSpectrumLoaderViewModel.cs" />
     <Compile Include="ViewModel\MsResult\SummarizedSpectrumViewModel.cs" />
     <Compile Include="Model\Search\PeakFilterModel.cs" />
     <Compile Include="ViewModel\Normalize\SplashProductViewModel.cs" />
@@ -379,6 +389,7 @@
     <Compile Include="ViewModel\Setting\ModificationSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\MscleanrSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\MzSearchQueryViewModel.cs" />
+    <Compile Include="ViewModel\Setting\PcaSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\PeakDetectionSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\PeakEqualityParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\PeakFeatureSearchValueViewModel.cs" />
@@ -386,6 +397,7 @@
     <Compile Include="ViewModel\Setting\ProjectParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\ProjectSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\RetentionTimeCorrectionViewModelLegacy.cs" />
+    <Compile Include="ViewModel\Statistics\PcaResultViewModel.cs" />
     <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
     <Compile Include="ViewModel\Table\ProteinGroupTableViewModel.cs" />
     <Compile Include="View\AdductView.xaml.cs">
@@ -396,6 +408,9 @@
     </Compile>
     <Compile Include="View\ChartSetting\ExpRefViewSettingRibbonTab.xaml.cs">
       <DependentUpon>ExpRefViewSettingRibbonTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ChartSetting\Ms2ChromatogramSettingRibbonTab.xaml.cs">
+      <DependentUpon>Ms2ChromatogramSettingRibbonTab.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\AlignmentEicView.xaml.cs">
       <DependentUpon>AlignmentEicView.xaml</DependentUpon>
@@ -414,6 +429,9 @@
     </Compile>
     <Compile Include="View\Chart\ExpRefView.xaml.cs">
       <DependentUpon>ExpRefView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\Ms2ChromatogramsView.xaml.cs">
+      <DependentUpon>Ms2ChromatogramsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\MsSpectrumView.xaml.cs">
       <DependentUpon>MsSpectrumView.xaml</DependentUpon>
@@ -660,6 +678,9 @@
     <Compile Include="View\Setting\MscleanrSettingView.xaml.cs">
       <DependentUpon>MscleanrSettingView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Setting\PcaSettingView.xaml.cs">
+      <DependentUpon>PcaSettingView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Setting\PeakDetectionSettingView.xaml.cs">
       <DependentUpon>PeakDetectionSettingView.xaml</DependentUpon>
     </Compile>
@@ -671,6 +692,9 @@
     </Compile>
     <Compile Include="View\Setting\RetentionTimeCorrectionWinLegacy.xaml.cs">
       <DependentUpon>RetentionTimeCorrectionWinLegacy.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Statistics\PcaResultView.xaml.cs">
+      <DependentUpon>PcaResultView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Table\AlignmentSpotTable.xaml.cs">
       <DependentUpon>AlignmentSpotTable.xaml</DependentUpon>
@@ -731,6 +755,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\ChartSetting\Ms2ChromatogramSettingRibbonTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Chart\AlignmentEicView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -752,6 +780,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Chart\ExpRefView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\Ms2ChromatogramsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1071,6 +1103,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Setting\PcaSettingView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\Setting\PeakDetectionSettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1084,6 +1120,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\RetentionTimeCorrectionWinLegacy.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Statistics\PcaResultView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1165,6 +1205,7 @@
     </EmbeddedResource>
     <None Include="Normalizations.cd" />
     <None Include="packages.config" />
+    <None Include="PeakFiltering.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

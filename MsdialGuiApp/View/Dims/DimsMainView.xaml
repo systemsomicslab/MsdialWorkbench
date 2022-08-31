@@ -339,6 +339,15 @@
                                     ItemsSource="{Binding PeakDetailViewModels}"
                                     SelectedIndex="0"
                                     Grid.Row="0">
+                            <TabControl.Style>
+                                <Style TargetType="TabControl">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding PeakDetailViewModels.Length}" Value="2">
+                                            <Setter Property="SelectedIndex" Value="0"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TabControl.Style>
                             <TabControl.Resources>
                                 <Style TargetType="TabItem">
                                     <Setter Property="Background" Value="{StaticResource MainThemeColor}"/>
@@ -394,6 +403,13 @@
                                     </ContextMenu>
                                 </chart:ExpRefView.ContextMenu>
                             </chart:ExpRefView>
+                        </TabItem>
+
+                        <TabItem Header="MS2 Chrom." 
+                                 Name="TabItem_MS2Chromatogram" 
+                                 Height="25"
+                                 Background="{StaticResource MainThemeColor}">
+                            <chart:Ms2ChromatogramsView DataContext="{Binding AnalysisViewModel.Value.Ms2ChromatogramsViewModel}"/>
                         </TabItem>
 
                         <TabItem Name="TabItem_RepresentativeVsReference"

@@ -60,7 +60,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         public static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isGuiProcess, int retry, int sleepMilliSeconds) {
-            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, isGuiProcess)) {
+            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
                 for (var i = 0; i < retry; i++) {
                     var rawObj = access.GetMeasurement();
                     if (rawObj != null)
@@ -280,8 +280,8 @@ namespace CompMs.MsdialCore.Utility {
 
             var counter = 0;
             var arrayLength = GetTargetArrayLength(provider, startScanID, endScanID, precursorMz, targetCE, param);
-            var valuePeakArrayList = new List<ValuePeak[]>();
-            foreach (var mzValue in pMzValues) valuePeakArrayList.Add(new ValuePeak[arrayLength]);
+            var valuePeakArrayList = new List<ValuePeak[]>(pMzValues.Count);
+            valuePeakArrayList.AddRange(pMzValues.Select(_ => new ValuePeak[arrayLength]));
 
             for (int i = startScanID; i <= endScanID; i++) {
                 var spec = provider.LoadMsSpectrumFromIndex(i);

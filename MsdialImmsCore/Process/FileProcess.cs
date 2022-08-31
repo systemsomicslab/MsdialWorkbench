@@ -50,7 +50,7 @@ namespace CompMs.MsdialImmsCore.Process
 
             var parameter = storage.Parameter;
             var iupacDB = storage.IupacDatabase;
-            var annotatorContainers = storage.DataBaseMapper.MoleculeAnnotators;
+            var annotatorContainers = storage.DataBases.MetabolomicsDataBases.SelectMany(Item => Item.Pairs.Select(pair => pair.ConvertToAnnotatorContainer())).ToArray();
 
             var rawObj = LoadMeasurement(file, isGuiProcess);
             //var provider = providerFactory.Create(file);

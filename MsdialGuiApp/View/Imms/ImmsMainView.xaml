@@ -262,7 +262,7 @@
                                         </chart:AlignmentPeakPlotView>
                                     </DataTemplate>
                                 </DataTemplate.Resources>
-                                <ContentPresenter Content="{Binding}"/>
+                                <ContentPresenter Content="{Binding Value}"/>
                             </DataTemplate>
                         </TabControl.ContentTemplate>
                     </TabControl>
@@ -340,6 +340,15 @@
                                     ItemsSource="{Binding PeakDetailViewModels}"
                                     SelectedIndex="0"
                                     Grid.Row="0">
+                            <TabControl.Style>
+                                <Style TargetType="TabControl">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding PeakDetailViewModels.Length}" Value="2">
+                                            <Setter Property="SelectedIndex" Value="0"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TabControl.Style>
                             <TabControl.Resources>
                                 <Style TargetType="TabItem">
                                     <Setter Property="Background" Value="{StaticResource MainThemeColor}"/>
@@ -397,11 +406,8 @@
                         <TabItem Header="MS2 Chrom." 
                                  Name="TabItem_MS2Chromatogram" 
                                  Height="25"
-                                 IsEnabled="False"
                                  Background="{StaticResource MainThemeColor}">
-                                 <!--
-                            <ms2:ChromatogramView />
-                            -->
+                            <chart:Ms2ChromatogramsView DataContext="{Binding AnalysisViewModel.Value.Ms2ChromatogramsViewModel}"/>
                         </TabItem>
 
                         <TabItem Header="Raw vs. Purified" 

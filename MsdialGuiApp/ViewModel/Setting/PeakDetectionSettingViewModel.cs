@@ -171,8 +171,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
         IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
 
-        public void Next() {
+        public ISettingViewModel Next(ISettingViewModel selected) {
             decide.OnNext(Unit.Default);
+            return null;
         }
     }
 }

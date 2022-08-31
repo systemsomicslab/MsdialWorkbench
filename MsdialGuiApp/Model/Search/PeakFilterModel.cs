@@ -1,11 +1,9 @@
-﻿using CompMs.Common.DataObj.Result;
-using CompMs.CommonMVVM;
+﻿using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialCore.DataObj;
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    public class PeakFilterModel : BindableBase
+    public sealed class PeakFilterModel : BindableBase
     {
         public PeakFilterModel(DisplayFilter enabledFilter) {
             EnabledFilter = enabledFilter;
@@ -14,12 +12,12 @@ namespace CompMs.App.Msdial.Model.Search
         public DisplayFilter EnabledFilter { get; }
 
         public DisplayFilter CheckedFilter {
-            get => checkedFilter;
-            set => SetProperty(ref checkedFilter, value & EnabledFilter);
+            get => _checkedFilter;
+            set => SetProperty(ref _checkedFilter, value & EnabledFilter);
         }
-        private DisplayFilter checkedFilter;
+        private DisplayFilter _checkedFilter;
 
-        public bool PeakFilter(IFilterable filterable, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+        public bool PeakFilter(IFilterable filterable, IMatchResultEvaluator<IFilterable> evaluator) {
             var checkedFilter = CheckedFilter;
             return AnnotationFilter(filterable, evaluator)
                 && (!checkedFilter.All(DisplayFilter.Ms2Acquired) || filterable.IsMsmsAssigned)
@@ -34,11 +32,11 @@ namespace CompMs.App.Msdial.Model.Search
                 && (!checkedFilter.All(DisplayFilter.MscleanrRmd) || !filterable.IsRmdFilteredByPostCurator);
         }
 
-        private bool AnnotationFilter(IAnnotatedObject spot, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+        private bool AnnotationFilter(IFilterable spot, IMatchResultEvaluator<IFilterable> evaluator) {
             var checkedFilter = CheckedFilter;
             if (!checkedFilter.Any(DisplayFilter.Annotates)) return true;
-            return checkedFilter.All(DisplayFilter.RefMatched) && spot.MatchResults.IsReferenceMatched(evaluator)
-                || checkedFilter.All(DisplayFilter.Suggested) && spot.MatchResults.IsAnnotationSuggested(evaluator)
+            return checkedFilter.All(DisplayFilter.RefMatched) && evaluator.IsReferenceMatched(spot)
+                || checkedFilter.All(DisplayFilter.Suggested) && evaluator.IsAnnotationSuggested(spot)
                 || checkedFilter.All(DisplayFilter.Unknown) && spot.MatchResults.IsUnknown;
         }
     }

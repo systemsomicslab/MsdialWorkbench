@@ -1,19 +1,20 @@
 ﻿using CompMs.Graphics.Core.Base;
 using CompMs.Common.Extension;
 using System;
+using CompMs.Graphics.Helper;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
+using System.Linq.Expressions;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace CompMs.Graphics.Chart
 {
-    public class Annotator : ChartBaseControl
+    public sealed class Annotator : ChartBaseControl
     {
         static Annotator() {
             culture = CultureInfo.GetCultureInfo("en-us");
@@ -21,61 +22,41 @@ namespace CompMs.Graphics.Chart
             IsHitTestVisibleProperty.OverrideMetadata(typeof(Annotator), new FrameworkPropertyMetadata(false));
         }
 
-        public static readonly DependencyProperty DatasProperty =
-            DependencyProperty.Register(
-                nameof(Datas), typeof(LabelData[]), typeof(Annotator),
-                new FrameworkPropertyMetadata(
-                    null,
-                    FrameworkPropertyMetadataOptions.AffectsRender,
-                    OnDatasChanged,
-                    CoerceDatas));
+        private readonly LazyDatas _lazyDatas = new LazyDatas();
 
-        LabelData[] Datas {
-            get => (LabelData[])GetValue(DatasProperty);
-            set => SetValue(DatasProperty, value);
-        }
+        private bool ShouldCoerceDatas = false;
 
-        bool ShouldCoerceDatas = false;
-        static void OnDatasChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-
-        }
-
-        static object CoerceDatas(DependencyObject d, object value) {
-            var chart = (Annotator)d;
-            var datas = chart.Datas;
-
-            if (chart.ShouldCoerceDatas) {
-                if (!chart.ReadCleanFlag(PropertyClean.ItemsSource)) {
-                    datas = chart.UpdateItemsSource(datas);
+        private void CoerceLazyDatas() {
+            if (ShouldCoerceDatas) {
+                var lazyDatas = _lazyDatas;
+                if (!ReadCleanFlag(PropertyClean.ItemsSource)) {
+                    UpdateItemsSource(lazyDatas);
                 }
-                if (!chart.ReadCleanFlag(PropertyClean.Item)) {
-                    datas = chart.UpdateItem(datas);
+                if (!ReadCleanFlag(PropertyClean.Item)) {
+                    UpdateItem(lazyDatas);
                 }
-                if (!chart.ReadCleanFlag(PropertyClean.Horizontal)) {
-                    datas = chart.UpdateHorizontalItems(datas);
+                if (!ReadCleanFlag(PropertyClean.Horizontal)) {
+                    UpdateHorizontalItems(lazyDatas);
                 }
-                if (!chart.ReadCleanFlag(PropertyClean.Vertical)) {
-                    datas = chart.UpdateVerticalItems(datas);
+                if (!ReadCleanFlag(PropertyClean.Vertical)) {
+                    UpdateVerticalItems(lazyDatas);
                 }
-                if (!chart.ReadCleanFlag(PropertyClean.Order)) {
-                    datas = chart.UpdateOrderItems(datas);
+                if (!ReadCleanFlag(PropertyClean.Order)) {
+                    UpdateOrderItems(lazyDatas);
                 }
-                if (!chart.ReadCleanFlag(PropertyClean.Label)) {
-                    datas = chart.UpdateLabel(datas);
+                if (!ReadCleanFlag(PropertyClean.Label)) {
+                    UpdateLabel(lazyDatas);
                 }
-                chart.ShouldCoerceDatas = new[]
+                ShouldCoerceDatas = new[]
                 {
-                    !chart.ReadCleanFlag(PropertyClean.ItemsSource),
-                    !chart.ReadCleanFlag(PropertyClean.Item),
-                    !chart.ReadCleanFlag(PropertyClean.Horizontal),
-                    !chart.ReadCleanFlag(PropertyClean.Vertical),
-                    !chart.ReadCleanFlag(PropertyClean.Order),
-                    !chart.ReadCleanFlag(PropertyClean.Label),
+                    !ReadCleanFlag(PropertyClean.ItemsSource),
+                    !ReadCleanFlag(PropertyClean.Item),
+                    !ReadCleanFlag(PropertyClean.Horizontal),
+                    !ReadCleanFlag(PropertyClean.Vertical),
+                    !ReadCleanFlag(PropertyClean.Order),
+                    !ReadCleanFlag(PropertyClean.Label),
                 }.Any(b => b);
             }
-
-            value = datas;
-            return value;
         }
 
         public static readonly DependencyProperty ItemsSourceProperty =
@@ -98,7 +79,7 @@ namespace CompMs.Graphics.Chart
 
             chart.ShouldCoerceDatas = true;
             chart.WriteCleanFlag(PropertyClean.ItemsSource, false);
-            chart.CoerceValue(DatasProperty);
+            chart.CoerceLazyDatas();
         }
 
         void OnItemsSourceChanged(System.Collections.IEnumerable newValue, System.Collections.IEnumerable oldValue) {
@@ -116,43 +97,41 @@ namespace CompMs.Graphics.Chart
         private void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
             ShouldCoerceDatas = true;
             WriteCleanFlag(PropertyClean.Item, false);
-            CoerceValue(DatasProperty);
+            CoerceLazyDatas();
         }
 
-        private LabelData[] UpdateItemsSource(LabelData[] value) {
-            source = collectionView?.Cast<object>().ToList();
-            if (source == null || !source.Any()) {
+        private void UpdateItemsSource(LazyDatas lazyDatas) {
+            var firstItem = collectionView?.Cast<object>().FirstOrDefault();
+            if (firstItem is null) {
                 WriteCleanFlag(PropertyClean.ItemsSource, true);
-                return new LabelData[0];
+                lazyDatas.SetSource(collectionView);
+                return;
             }
 
-            dataType = source.First().GetType();
-            var datas = source.Select(_ => new LabelData()).ToArray();
+            dataType = firstItem.GetType();
+            lazyDatas.SetSource(collectionView);
 
             WriteCleanFlag(PropertyClean.ItemsSource, true);
             WriteCleanFlag(PropertyClean.Horizontal | PropertyClean.Vertical | PropertyClean.Label | PropertyClean.Order, false);
-
-            return datas;
         }
 
-        private LabelData[] UpdateItem(LabelData[] value) {
-            var result = UpdateItemsSource(value);
+        private void UpdateItem(LazyDatas lazyDatas) {
+            UpdateItemsSource(lazyDatas);
             WriteCleanFlag(PropertyClean.Item, true);
-            return result;
         }
 
         protected override void OnHorizontalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             base.OnHorizontalAxisChanged(oldValue, newValue);
             WriteCleanFlag(PropertyClean.Horizontal, false);
             ShouldCoerceDatas = true;
-            CoerceValue(DatasProperty);
+            CoerceLazyDatas();
         }
 
         protected override void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             base.OnVerticalAxisChanged(oldValue, newValue);
             WriteCleanFlag(PropertyClean.Vertical, false);
             ShouldCoerceDatas = true;
-            CoerceValue(DatasProperty);
+            CoerceLazyDatas();
         }
 
         public static readonly DependencyProperty HorizontalPropertyNameProperty =
@@ -173,26 +152,19 @@ namespace CompMs.Graphics.Chart
             var chart = (Annotator)d;
             chart.WriteCleanFlag(PropertyClean.Horizontal, false);
             chart.ShouldCoerceDatas = true;
-            chart.CoerceValue(DatasProperty);
+            chart.CoerceLazyDatas();
         }
 
-        LabelData[] UpdateHorizontalItems(LabelData[] datas) {
-            if (string.IsNullOrEmpty(HorizontalPropertyName)) {
+        private void UpdateHorizontalItems(LazyDatas lazyDatas) {
+            if (string.IsNullOrEmpty(HorizontalPropertyName) || dataType is null) {
                 WriteCleanFlag(PropertyClean.Horizontal, true);
-                return datas;
+                return;
             }
 
-            var hPropertyInfo = dataType?.GetProperty(HorizontalPropertyName);
-            var hAxis = HorizontalAxis;
-            if (hPropertyInfo == null || hAxis == null || datas == null || !datas.Any()) {
-                return datas;
-            }
-
-            foreach ((var obj, var idx) in source.WithIndex()) {
-                datas[idx].x = hPropertyInfo == null ? 0 : hAxis.TranslateToAxisValue(hPropertyInfo.GetValue(obj));
-            }
+            var expression = ExpressionHelper.GetConvertToAxisValueExpression(dataType, HorizontalPropertyName);
+            lazyDatas.UpdateHorizontalValue(expression);
+            lazyDatas.UpdateHorizontalAxis(HorizontalAxis);
             WriteCleanFlag(PropertyClean.Horizontal, true);
-            return datas;
         }
 
         public static readonly DependencyProperty VerticalPropertyNameProperty =
@@ -213,26 +185,18 @@ namespace CompMs.Graphics.Chart
             var chart = (Annotator)d;
             chart.WriteCleanFlag(PropertyClean.Vertical, false);
             chart.ShouldCoerceDatas = true;
-            chart.CoerceValue(DatasProperty);
+            chart.CoerceLazyDatas();
         }
 
-        LabelData[] UpdateVerticalItems(LabelData[] datas) {
-            if (string.IsNullOrEmpty(VerticalPropertyName)) {
+        private void UpdateVerticalItems(LazyDatas lazyDatas) {
+            if (string.IsNullOrEmpty(VerticalPropertyName) || dataType is null) {
                 WriteCleanFlag(PropertyClean.Vertical, true);
-                return datas;
+                return;
             }
-
-            var vPropertyInfo = dataType?.GetProperty(VerticalPropertyName);
-            var vAxis = VerticalAxis;
-            if (vPropertyInfo == null || vAxis == null || datas == null || !datas.Any()) {
-                return datas;
-            }
-
-            foreach ((var obj, var idx) in source.WithIndex()) {
-                datas[idx].y = vPropertyInfo == null ? 0 : vAxis.TranslateToAxisValue(vPropertyInfo.GetValue(obj));
-            }
+            var expression = ExpressionHelper.GetConvertToAxisValueExpression(dataType, VerticalPropertyName);
+            lazyDatas.UpdateVerticalValue(expression);
+            lazyDatas.UpdateVerticalAxis(VerticalAxis);
             WriteCleanFlag(PropertyClean.Vertical, true);
-            return datas;
         }
 
         public static readonly DependencyProperty OrderingPropertyNameProperty =
@@ -250,32 +214,22 @@ namespace CompMs.Graphics.Chart
             var chart = (Annotator)d;
             chart.WriteCleanFlag(PropertyClean.Order, false);
             chart.ShouldCoerceDatas = true;
-            chart.CoerceValue(DatasProperty);
+            chart.CoerceLazyDatas();
         }
 
-        LabelData[] UpdateOrderItems(LabelData[] datas) {
-            if (datas == null || !datas.Any()) {
-                return datas;
+        private void UpdateOrderItems(LazyDatas lazyDatas) {
+            if (dataType is null) {
+                return;
             }
 
-            PropertyInfo prop = null;
-            if (!string.IsNullOrEmpty(OrderingPropertyName)) {
-                prop = dataType?.GetProperty(OrderingPropertyName);
+            if (!string.IsNullOrEmpty(OrderingPropertyName) && dataType != null) {
+                var expression = ExpressionHelper.GetPropertyGetterExpression(dataType, OrderingPropertyName);
+                lazyDatas.UpdateOrderValue(expression);
             }
-            foreach ((var obj, var idx) in source.WithIndex()) {
-                var value = prop?.GetValue(obj);
-                if (value is double dvalue) {
-                    datas[idx].order = dvalue;
-                }
-                else if (value is IConvertible conv) {
-                    datas[idx].order = Convert.ToDouble(conv);
-                }
-                else {
-                    datas[idx].order = 0;
-                }
+            else {
+                lazyDatas.ClearOrderValueUpdator();
             }
             WriteCleanFlag(PropertyClean.Order, true);
-            return datas;
         }
 
         public static readonly DependencyProperty LabelPropertyNameProperty = DependencyProperty.Register(
@@ -295,27 +249,22 @@ namespace CompMs.Graphics.Chart
             var chart = (Annotator)d;
             chart.WriteCleanFlag(PropertyClean.Label, false);
             chart.ShouldCoerceDatas = true;
-            chart.CoerceValue(DatasProperty);
+            chart.CoerceLazyDatas();
         }
 
-        LabelData[] UpdateLabel(LabelData[] datas) {
-            if (dataType == null || datas == null || !datas.Any()) {
-                return datas;
+        private void UpdateLabel(LazyDatas lazyDatas) {
+            if (dataType is null) {
+                return;
             }
 
-            var format = Format;
-            var lPropertyInfo = LabelPropertyName != null ? dataType.GetProperty(LabelPropertyName) : null;
-
-            foreach ((var obj, var idx) in source.Select(o => lPropertyInfo?.GetValue(o)).WithIndex()) {
-                if (obj == null)
-                    datas[idx].label = string.Empty;
-                else if (obj is double val)
-                    datas[idx].label = val.ToString(format);
-                else
-                    datas[idx].label = obj.ToString();
+            if (dataType != null && !string.IsNullOrEmpty(LabelPropertyName)) {
+                var expression = ExpressionHelper.GetPropertyGetterExpression(dataType, LabelPropertyName);
+                lazyDatas.UpdateLabelValue(expression, Format);
+            }
+            else {
+                lazyDatas.ClearLabelValueUpdator();
             }
             WriteCleanFlag(PropertyClean.Label, true);
-            return datas;
         }
 
         public static readonly DependencyProperty TopNProperty =
@@ -381,7 +330,7 @@ namespace CompMs.Graphics.Chart
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
             var hAxis = HorizontalAxis;
             var vAxis = VerticalAxis;
-            var datas = Datas;
+            var datas = _lazyDatas.Datas;
             if (hAxis == null || vAxis == null || datas == null)
                 return;
 
@@ -447,14 +396,11 @@ namespace CompMs.Graphics.Chart
             }
         }
 
-        #region field
         private ICollectionView collectionView;
-        private List<object> source;
         private Type dataType;
         private static readonly CultureInfo culture;
         private static readonly Typeface typeFace;
         private PropertyClean cleanFlags = PropertyClean.All;
-        #endregion
 
         private bool ReadCleanFlag(PropertyClean flag) {
             return (cleanFlags & flag) != 0;
@@ -486,6 +432,118 @@ namespace CompMs.Graphics.Chart
             internal string label;
             internal double order;
             internal Brush brush;
+        }
+
+        sealed class LazyDatas {
+            private LabelData[] _datas;
+            private IAxisManager _horizontalAxis;
+            private IAxisManager _verticalAxis;
+            private Expression<Func<object, IAxisManager, AxisValue>> _horizontalUpdator;
+            private Expression<Func<object, IAxisManager, AxisValue>> _verticalUpdator;
+            private ICollectionView _collectionView;
+            private Expression<Func<object, object>> _orderValueUpdator;
+            private Expression<Func<object, object>> _labelValueUpdator;
+            private string _format;
+
+            public LabelData[] Datas {
+                get {
+                    if (_datas is null) {
+                        Reconstruct();
+                    }
+                    return _datas;
+                }
+            }
+
+            private void Reconstruct() {
+                var source = _collectionView?.Cast<object>().ToArray();
+                if (source is null || _horizontalAxis is null || _verticalAxis is null || _horizontalUpdator is null || _verticalUpdator is null) {
+                    _datas = new LabelData[0];
+                    return;
+                }
+                var data = new LabelData[source.Length];
+                var horizontalUpdator = _horizontalUpdator.Compile();
+                var verticalUpdator = _verticalUpdator.Compile();
+                var orderValueUpdator = _orderValueUpdator?.Compile();
+                var labelValueUpdator = _labelValueUpdator?.Compile();
+                for (int i = 0; i < data.Length; i++) {
+                    data[i] = new LabelData();
+
+                    var item = source[i];
+                    data[i].x = horizontalUpdator.Invoke(item, _horizontalAxis);
+                    data[i].y = verticalUpdator.Invoke(item, _verticalAxis);
+
+                    var order = orderValueUpdator?.Invoke(item);
+                    if (order is double dvalue) {
+                        data[i].order = dvalue;
+                    }
+                    else if (order is IConvertible conv) {
+                        data[i].order = Convert.ToDouble(conv);
+                    }
+                    else {
+                        data[i].order = 0;
+                    }
+
+                    var label = labelValueUpdator?.Invoke(item);
+                    if (label == null) {
+                        data[i].label = string.Empty;
+                    }
+                    else if (label is double val && _format != null) {
+                        data[i].label = val.ToString(_format);
+                    }
+                    else {
+                        data[i].label = label.ToString();
+                    }
+                }
+                _datas = data;
+            }
+
+            public void SetSource(ICollectionView collectionView) {
+                _collectionView = collectionView;
+                _datas = null;
+            }
+
+            public bool IsEmpty => !_collectionView.Cast<object>().Any();
+
+            public void UpdateHorizontalAxis(IAxisManager axis) {
+                _horizontalAxis = axis;
+                _datas = null;
+            }
+
+            public void UpdateVerticalAxis(IAxisManager axis) {
+                _verticalAxis = axis;
+                _datas = null;
+            }
+
+            public void UpdateHorizontalValue(Expression<Func<object, IAxisManager, AxisValue>> updator) {
+                _horizontalUpdator = updator;
+                _datas = null;
+            }
+
+            public void UpdateVerticalValue(Expression<Func<object, IAxisManager, AxisValue>> updator) {
+                _verticalUpdator = updator;
+                _datas = null;
+            }
+
+            public void ClearOrderValueUpdator() {
+                _orderValueUpdator = null;
+                _datas = null;
+            }
+
+            public void UpdateOrderValue(Expression<Func<object, object>> updator) {
+                _orderValueUpdator = updator;
+                _datas = null;
+            }
+
+            public void ClearLabelValueUpdator() {
+                _labelValueUpdator = null;
+                _datas = null;
+            }
+
+            public void UpdateLabelValue(Expression<Func<object, object>> updator, string format) {
+                _labelValueUpdator = updator;
+                _format = format;
+                _datas = null;
+            }
         }
     }
 

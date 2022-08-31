@@ -17,6 +17,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -40,6 +41,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseMapper mapper,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             ParameterBase parameter,
+            IObserver<ProteinResultContainerModel> proteinResultContainerModelObserver,
             PeakFilterModel peakFilterModel)
             : base(analysisFile) {
             if (analysisFile is null) {
@@ -67,7 +69,15 @@ namespace CompMs.App.Msdial.Model.Lcms
             Parameter = parameter;
             CompoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper, parameter.PeakPickBaseParam).Items;
 
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, useRtFilter: true);
+            if (parameter.TargetOmics == TargetOmics.Proteomics) {
+                // These 3 lines must be moved to somewhere for swithcing/updating the alignment result
+                var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(analysisFile.ProteinAssembledResultFilePath);
+                var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Peaks, Target);
+                ProteinResultContainerModel = proteinResultContainerModel;
+                //proteinResultContainerModelObserver.OnNext(proteinResultContainerModel);
+            }
+
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~FilterEnableStatus.Dt).AddTo(Disposables);
 
             // Peak scatter plot
             var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
@@ -122,10 +132,12 @@ namespace CompMs.App.Msdial.Model.Lcms
                 VerticalTitle = "Abundance",
             }.AddTo(Disposables);
 
-            ExperimentSpectrumModel = EicModel.EicSource
-                .Select(source => new DisplayChromatogram(source))
+            ExperimentSpectrumModel = EicModel.Chromatogram
+                .Select(chromatogram => chromatogram.ConvertToDisplayChromatogram())
                 .Select(chromatogram => new ChromatogramsModel("Experiment chromatogram", chromatogram))
+                .DisposePreviousValue()
                 .Select(chromatogram => new RangeSelectableChromatogramModel(chromatogram))
+                .DisposePreviousValue()
                 .CombineLatest(
                     Target.Where(t => t != null),
                     (model, t) => new ExperimentSpectrumModel(model, AnalysisFile, provider, t.InnerModel, DataBaseMapper, Parameter))
@@ -179,7 +191,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Raw vs Purified spectrum model
             RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(
                 Target,
-                _rawSpectrumLoader,
+                rawSpectrumLoader,
                 decSpectrumLoader,
                 peak => peak.Mass,
                 peak => peak.Intensity) {
@@ -192,6 +204,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 OrderingProperty = nameof(SpectrumPeak.Intensity),
             }.AddTo(Disposables);
 
+            // Ms2 chromatogram
+            Ms2ChromatogramsModel = new Ms2ChromatogramsModel(Target, MsdecResult, rawSpectrumLoader, provider, Parameter).AddTo(Disposables);
 
             // SurveyScan
             var msdataType = Parameter.MSDataType;
@@ -222,12 +236,9 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var rtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, RtTol, Target.Select(t => t?.ChromXValue ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MzTol, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
-            Func<double, ChromatogramPeakFeatureModel> yyy(IReadOnlyList<ChromatogramPeakFeatureModel> ms1Peaks) {
-                return id => ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id));
-            }
             var idSpotFocus = new IdSpotFocus<ChromatogramPeakFeatureModel>(
                 Target,
-                yyy(Ms1Peaks),
+                id => Ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id)),
                 Target.Select(t => t?.MasterPeakID ?? 0d),
                 "Region focus by ID",
                 (rtSpotFocus, peak => peak.ChromXValue ?? 0d),
@@ -273,7 +284,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public RawPurifiedSpectrumsModel RawPurifiedSpectrumsModel { get; }
-
+        public Ms2ChromatogramsModel Ms2ChromatogramsModel { get; }
         public SurveyScanModel SurveyScanModel { get; }
 
         public LcmsAnalysisPeakTableModel PeakTableModel { get; }
@@ -347,6 +358,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ReadOnlyReactivePropertySlim<bool> CanSaveRawSpectra { get; }
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
+        public ProteinResultContainerModel ProteinResultContainerModel { get; }
 
         public void GoToMsfinderMethod() {
             MsDialToExternalApps.SendToMsFinderProgram(
