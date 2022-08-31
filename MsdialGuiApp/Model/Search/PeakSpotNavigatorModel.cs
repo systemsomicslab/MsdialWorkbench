@@ -27,6 +27,7 @@ namespace CompMs.App.Msdial.Model.Search
         Protein = 0x10,
         Comment = 0x20,
         Amplitude = 0x40,
+        All = ~None,
     }
 
     public sealed class PeakSpotNavigatorModel : DisposableModelBase

@@ -17,43 +17,38 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
     internal sealed class LcimmsAnalysisViewModel : ViewModelBase, IAnalysisResultViewModel
     {
+        private readonly LcimmsAnalysisModel _model;
+        private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
+
         public LcimmsAnalysisViewModel(
             LcimmsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             FocusControlManager focusControlManager) {
-            if (model is null) {
-                throw new ArgumentNullException(nameof(model));
-            }
-
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
-            }
-
-            if (peakSpotTableService is null) {
-                throw new ArgumentNullException(nameof(peakSpotTableService));
             }
 
             if (focusControlManager is null) {
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
 
-            this.model = model;
-            this.peakSpotTableService = peakSpotTableService;
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            _peakSpotTableService = peakSpotTableService ?? throw new ArgumentNullException(nameof(peakSpotTableService));
 
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
             var (rtmzPeakFocusAction, rtmzPeakFocused) = focusControlManager.Request();
-            var brush = Observable.Return(this.model.Brush);
+            var brush = Observable.Return(model.Brush);
             RtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.RtMzPlotModel, rtmzPeakFocusAction, rtmzPeakFocused).AddTo(Disposables);
             RtEicViewModel = new EicViewModel(
-                this.model.RtEicModel,
+                model.RtEicModel,
                 horizontalAxis: RtMzPlotViewModel.HorizontalAxis).AddTo(Disposables);
 
             var (dtmzPeakFocusAction, dtmzPeakFocused) = focusControlManager.Request();
             DtMzPlotViewModel = new AnalysisPeakPlotViewModel(model.DtMzPlotModel, dtmzPeakFocusAction, dtmzPeakFocused).AddTo(Disposables);
             DtEicViewModel = new EicViewModel(
-                this.model.DtEicModel,
+                model.DtEicModel,
                 horizontalAxis: DtMzPlotViewModel.HorizontalAxis).AddTo(Disposables);
 
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
@@ -62,8 +57,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             var (ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused) = focusControlManager.Request();
             Ms2ChromatogramsViewModel = new Ms2ChromatogramsViewModel(model.Ms2ChromatogramsModel, ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused).AddTo(Disposables);
 
+            RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(model.RawPurifiedSpectrumsModel).AddTo(Disposables);
+
             SurveyScanViewModel = new SurveyScanViewModel(
-                this.model.SurveyScanModel,
+                model.SurveyScanModel,
                 horizontalAxis: RtMzPlotViewModel.VerticalAxis).AddTo(Disposables);
             // PeakSpotTableViewModelBase = new LcimmsAnalysisViewModel
 
@@ -84,15 +81,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
-        private readonly LcimmsAnalysisModel model;
-        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
-
         public AnalysisPeakPlotViewModel RtMzPlotViewModel { get; private set; }
         public EicViewModel RtEicViewModel { get; private set; }
         public AnalysisPeakPlotViewModel DtMzPlotViewModel { get; private set; }
         public EicViewModel DtEicViewModel { get; private set; }
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; private set; }
         public Ms2ChromatogramsViewModel Ms2ChromatogramsViewModel { get; }
+        public RawPurifiedSpectrumsViewModel RawPurifiedSpectrumsViewModel { get; }
         public SurveyScanViewModel SurveyScanViewModel { get; private set; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }

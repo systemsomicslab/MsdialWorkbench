@@ -51,13 +51,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
 
             var (peakPlotFocusAction, peakPlotFocused) = focusControlManager.Request();
-            PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
+            RtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.RtMzPlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
+            DtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.DtMzPlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
 
             Ms2SpectrumViewModel = new MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
 
             var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
-            BarChartViewModel = new BarChartViewModel(model.BarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
-            AlignmentEicViewModel = new AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
+            RtBarChartViewModel = new BarChartViewModel(model.RtBarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
+            DtBarChartViewModel = new BarChartViewModel(model.DtBarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
+
+            RtAlignmentEicViewModel = new AlignmentEicViewModel(model.RtAlignmentEicModel).AddTo(Disposables);
+            DtAlignmentEicViewModel = new AlignmentEicViewModel(model.DtAlignmentEicModel).AddTo(Disposables);
             /*
             AlignmentSpotTableViewModel = new LcimmsAlignmentSpotTableViewModel(
                 model.AlignmentSpotTableModel,
@@ -82,29 +86,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
-        public AlignmentPeakPlotViewModel PlotViewModel {
-            get => plotViewModel;
-            set => SetProperty(ref plotViewModel, value);
-        }
-        private AlignmentPeakPlotViewModel plotViewModel;
-
-        public MsSpectrumViewModel Ms2SpectrumViewModel {
-            get => ms2SpectrumViewModel;
-            set => SetProperty(ref ms2SpectrumViewModel, value);
-        }
-        private MsSpectrumViewModel ms2SpectrumViewModel;
-
-        public BarChartViewModel BarChartViewModel {
-            get => barChartViewModel;
-            set => SetProperty(ref barChartViewModel, value);
-        }
-        private BarChartViewModel barChartViewModel;
-
-        public AlignmentEicViewModel AlignmentEicViewModel {
-            get => alignmentEicViewModel;
-            set => SetProperty(ref alignmentEicViewModel, value);
-        }
-        private AlignmentEicViewModel alignmentEicViewModel;
+        public AlignmentPeakPlotViewModel RtMzPlotViewModel { get; }
+        public AlignmentPeakPlotViewModel DtMzPlotViewModel { get; }
+        public MsSpectrumViewModel Ms2SpectrumViewModel { get; }
+        public BarChartViewModel RtBarChartViewModel { get; }
+        public BarChartViewModel DtBarChartViewModel { get; }
+        BarChartViewModel IAlignmentResultViewModel.BarChartViewModel => DtBarChartViewModel;
+        public AlignmentEicViewModel RtAlignmentEicViewModel { get; }
+        public AlignmentEicViewModel DtAlignmentEicViewModel { get; }
 
         /*
         public LcimmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel {
@@ -114,13 +103,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private LcimmsAlignmentSpotTableViewModel alignmentSpotTableViewModel;
         */
 
-        public ICollectionView Ms1Spots {
-            get => ms1Spots;
-            set => SetProperty(ref ms1Spots, value);
-        }
-        private ICollectionView ms1Spots;
-
-        public ICollectionView PeakSpotsView => ms1Spots;
+        public ICollectionView Ms1Spots { get; }
 
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 

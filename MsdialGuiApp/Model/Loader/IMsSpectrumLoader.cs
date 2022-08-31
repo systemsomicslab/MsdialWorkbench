@@ -141,10 +141,10 @@ namespace CompMs.App.Msdial.Model.Loader
                 Result = msdecResult;
                 return msdecResult?.Spectrum ?? new List<SpectrumPeak>(0);
             }
-            else if (target is AlignmentSpotPropertyModel) {
+            else if (target is AlignmentSpotPropertyModel spot) {
                 // var peak = (AlignmentSpotPropertyModel)ms1Peaks[idx];
                 //idx = peak.MSDecResultIDUsedForAnnotation;
-                var idx = ms1Peaks.IndexOf(target);
+                var idx = spot.MasterAlignmentID;
                 var msdecResult = loader.LoadMSDecResult(idx);
                 Result = msdecResult;
                 return msdecResult?.Spectrum ?? new List<SpectrumPeak>(0);

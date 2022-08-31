@@ -188,8 +188,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<LcimmsAnalysisViewModel> analysisAsObservable, IObservable<LcimmsAlignmentViewModel> alignmentAsObservable) {
             var eic = analysisAsObservable;
-            var bar = alignmentAsObservable.Select(vm => vm?.BarChartViewModel);
-            var alignmentEic = alignmentAsObservable.Select(vm => vm?.AlignmentEicViewModel);
+            var bar = alignmentAsObservable.Select(vm => vm?.DtBarChartViewModel);
+            var alignmentEic = alignmentAsObservable.Select(vm => vm?.DtAlignmentEicViewModel);
             return new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase>[] { eic, bar, alignmentEic});
         }
 

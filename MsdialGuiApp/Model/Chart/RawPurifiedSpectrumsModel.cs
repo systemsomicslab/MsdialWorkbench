@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.Common.Components;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -19,7 +20,9 @@ namespace CompMs.App.Msdial.Model.Chart
             IMsSpectrumLoader<ChromatogramPeakFeatureModel> rawLoader,
             IMsSpectrumLoader<ChromatogramPeakFeatureModel> decLoader,
             Func<SpectrumPeak, double> horizontalSelector,
-            Func<SpectrumPeak, double> verticalSelector) {
+            Func<SpectrumPeak, double> verticalSelector,
+            IObservable<IBrushMapper<SpectrumComment>> upperSpectrumBrush = null,
+            IObservable<IBrushMapper<SpectrumComment>> lowerSpectrumBrush = null) {
             if (targetSource is null) {
                 throw new ArgumentNullException(nameof(targetSource));
             }
@@ -67,7 +70,6 @@ namespace CompMs.App.Msdial.Model.Chart
 
             HorizontalSelector = horizontalSelector ?? throw new ArgumentNullException(nameof(horizontalSelector));
             VerticalSelector = verticalSelector ?? throw new ArgumentNullException(nameof(verticalSelector));
-
             var upperEmpty = upperSpectrum.Where(spec => spec is null || !spec.Any());
             var upperAny = upperSpectrum.Where(spec => spec?.Any() ?? false);
             UpperVerticalRangeSource = upperAny
@@ -88,6 +90,9 @@ namespace CompMs.App.Msdial.Model.Chart
             .Where(spec => spec.Any())
             .WithLatestFrom(Observable.Return(horizontalSelector),
                 (spec, selector) => new Range(spec.Min(horizontalSelector), spec.Max(horizontalSelector)));
+
+            UpperSpectrumBrush = upperSpectrumBrush;
+            LowerSpectrumBrush = lowerSpectrumBrush;
         }
 
         public IObservable<List<SpectrumPeak>> UpperSpectrumSource { get; }
@@ -139,7 +144,8 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public Func<SpectrumPeak, double> HorizontalSelector { get; }
         public Func<SpectrumPeak, double> VerticalSelector { get; }
-
+        public IObservable<IBrushMapper<SpectrumComment>> UpperSpectrumBrush { get; }
+        public IObservable<IBrushMapper<SpectrumComment>> LowerSpectrumBrush { get; }
         public IObservable<Range> HorizontalRangeSource { get; }
 
         public IObservable<Range> UpperVerticalRangeSource { get; }

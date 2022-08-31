@@ -103,7 +103,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 GraphTitle = fileName,
                 HorizontalProperty = nameof(AlignmentSpotPropertyModel.TimesCenter),
                 VerticalProperty = nameof(AlignmentSpotPropertyModel.MassCenter),
-                HorizontalTitle = "Drift time [1/k0]",
+                HorizontalTitle = "Mobility [1/k0]",
                 VerticalTitle = "m/z",
             }.AddTo(Disposables);
 
@@ -171,7 +171,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 peak => peak.Time,
                 peak => peak.Intensity).AddTo(Disposables);
             AlignmentEicModel.Elements.GraphTitle = "TIC, EIC, or BPC chromatograms";
-            AlignmentEicModel.Elements.HorizontalTitle = "Drift time [1/k0]";
+            AlignmentEicModel.Elements.HorizontalTitle = "Mobility [1/k0]";
             AlignmentEicModel.Elements.VerticalTitle = "Abundance";
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
