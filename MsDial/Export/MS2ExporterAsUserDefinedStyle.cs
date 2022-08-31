@@ -185,10 +185,10 @@ namespace Rfx.Riken.OsakaUniv
             var title = new Title() { Label = "" };
             var drawing = new DrawVisual(area, title, list, true);
             var diff = (drawing.SeriesList.MaxX - drawing.SeriesList.MinX) * 0.1f;
+            drawing.Initialize();
             drawing.MaxX += diff;
             drawing.MinX -= diff;
             drawing.MinY = 0f;
-            drawing.Initialize();
             return drawing;
         }
 
@@ -214,11 +214,11 @@ namespace Rfx.Riken.OsakaUniv
             var title = new Title() { Label = "" };
             var drawing = new DrawVisual(area, title, list, true);
             var diff = (drawing.SeriesList.MaxX - drawing.SeriesList.MinX) * 0.1f;
+            drawing.Initialize();
             drawing.MaxX += diff;
             drawing.MinX -= diff;
             drawing.MaxY = 100f;
             drawing.MinY = 0f;
-            drawing.Initialize();
             return drawing;
         }
 
