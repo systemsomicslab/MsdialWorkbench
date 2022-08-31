@@ -3,6 +3,7 @@ using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.App.Msdial.View.Setting;
+using CompMs.App.Msdial.View.Statistics;
 using CompMs.App.Msdial.View.Table;
 using CompMs.App.Msdial.ViewModel;
 using CompMs.App.Msdial.ViewModel.Chart;
@@ -11,6 +12,7 @@ using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
+using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM.WindowService;
 using CompMs.Graphics.UI.Message;
@@ -66,6 +68,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(OpenNormalizationSetView);
             broker.ToObservable<PcaSettingViewModel>()
                 .Subscribe(OpenPcaSettingView);
+            broker.ToObservable<PcaResultViewModel>()
+                .Subscribe(OpenPcaView);
 #if DEBUG
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
 #endif
@@ -134,6 +138,17 @@ namespace CompMs.App.Msdial.View.Core
                 DataContext = viewmodel,
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            dialog.Show();
+        }
+
+        private void OpenPcaView(PcaResultViewModel viewmodel) {
+            var dialog = new Window
+            {
+                DataContext = viewmodel,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Content = new PcaResultView(),
             };
             dialog.Show();
         }

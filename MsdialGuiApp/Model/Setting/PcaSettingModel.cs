@@ -1,14 +1,16 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Statistics;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Mathematics.Statistics;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Parameter;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    public class PcaSettingModel : BindableBase {
+    internal sealed class PcaSettingModel : BindableBase {
         private readonly ParameterBase _parameter;
         private readonly ObservableCollection<AlignmentSpotPropertyModel> _spotprops;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
@@ -45,6 +47,12 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private bool isUnknownImportedInStatistics;
 
+        public PcaResultModel PcaResultModel {
+            get => _pcaResultModel;
+            set => SetProperty(ref _pcaResultModel, value);
+        }
+        private PcaResultModel _pcaResultModel;
+
         public void RunPca()
         {
 
@@ -52,6 +60,7 @@ namespace CompMs.App.Msdial.Model.Setting
             {
                 //XDataMatrix = new double[_spotprops.Count, _parameter.FileID_AnalysisFileType.Keys.Count],
                 XScaled = new double[_parameter.FileID_AnalysisFileType.Keys.Count, _spotprops.Count],
+                XLabels = new ObservableCollection<string>(_spotprops.Select(prop => $@"ID: {prop.MasterAlignmentID}_{(string.IsNullOrEmpty(prop.Name) ? "Unknown" : prop.Name)}"))
             };
 
             //private Dictionary<int, string> ColumnIndex_MetaboliteName { get; set; } = null;
@@ -103,7 +112,8 @@ namespace CompMs.App.Msdial.Model.Setting
             //    }
             //}
 
-            var foo = StatisticsMathematics.PrincipalComponentAnalysis(statObj, MultivariateAnalysisOption.Pca, maxPcNumber);
+            var pcaResult = StatisticsMathematics.PrincipalComponentAnalysis(statObj, MultivariateAnalysisOption.Pca, MaxPcNumber);
+            PcaResultModel = new PcaResultModel(pcaResult);
         }
     }
 }

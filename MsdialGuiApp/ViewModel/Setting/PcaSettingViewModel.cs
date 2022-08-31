@@ -1,18 +1,22 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.CommonMVVM;
+using Reactive.Bindings.Notifiers;
 using System;
 
 namespace CompMs.App.Msdial.ViewModel.Setting {
     class PcaSettingViewModel : ViewModelBase {
         private readonly PcaSettingModel model;
+        private readonly IMessageBroker _broker;
 
-        public PcaSettingViewModel(PcaSettingModel model)
+        public PcaSettingViewModel(PcaSettingModel model, IMessageBroker broker)
         {
             if (model is null)
             {
                 throw new ArgumentNullException(nameof(model));
             }
             this.model = model;
+            _broker = broker;
             this.MaxPcNumber = model.MaxPcNumber.ToString();
         }
         public string MaxPcNumber
@@ -66,7 +70,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         }
         private bool _isUnknownImportedInStatistics;
 
-        public DelegateCommand PcaCommand => pcaCommand ?? (pcaCommand = new DelegateCommand(model.RunPca, () => !HasValidationErrors));//, Model.CanNormalize));
+        public DelegateCommand PcaCommand => pcaCommand ?? (pcaCommand = new DelegateCommand(RunPca, () => !HasValidationErrors));
         private DelegateCommand pcaCommand;
+
+        private void RunPca() {
+            model.RunPca();
+            var vm = new PcaResultViewModel(model.PcaResultModel);
+            _broker.Publish(vm);
+        }
     }
 }

@@ -97,7 +97,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             ProteinResultContainerAsObservable = Observable.Return(model.ProteinResultContainerModel);
 
             NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel).AddTo(Disposables);
-            PcaSettingViewModel = new PcaSettingViewModel(model.PcaSettingModel).AddTo(Disposables);
+            PcaSettingViewModel = new PcaSettingViewModel(model.PcaSettingModel, broker).AddTo(Disposables);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
