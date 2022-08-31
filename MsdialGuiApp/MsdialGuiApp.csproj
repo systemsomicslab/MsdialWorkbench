@@ -279,6 +279,8 @@
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
     <Compile Include="Utility\ObservableExtensions.cs" />
     <Compile Include="ViewModel\Chart\Ms2ChromatogramsViewModel.cs" />
+    <Compile Include="ViewModel\Chart\MultiAlignmentEicViewModel.cs" />
+    <Compile Include="ViewModel\Chart\MultiBarChartViewModel.cs" />
     <Compile Include="ViewModel\Core\IAlignmentResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IAnalysisResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IResultViewModel.cs" />

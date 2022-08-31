@@ -159,25 +159,54 @@
                                             </Grid>
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type vm:LcimmsAlignmentViewModel}">
-                                            <chart:AlignmentPeakPlotView DataContext="{Binding PlotViewModel}"
-                                                                         commonbehavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"
-                                                                         d:DataContext="{d:DesignInstance Type={x:Type vmchart:AlignmentPeakPlotViewModel}}">
-                                                <chart:AlignmentPeakPlotView.LabelTemplate>
-                                                    <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <StackPanel.Resources>
-                                                                <Style TargetType="TextBlock">
-                                                                    <Setter Property="FontSize" Value="9"/>
-                                                                    <Setter Property="Foreground" Value="Gray"/>
-                                                                </Style>
-                                                            </StackPanel.Resources>
-                                                            <TextBlock Text="{Binding AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
-                                                            <TextBlock Text="{Binding TimesCenter, Mode=OneTime, StringFormat=RT[min]: {0:N3}; }"/>
-                                                            <TextBlock Text="{Binding MassCenter, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </chart:AlignmentPeakPlotView.LabelTemplate>
-                                            </chart:AlignmentPeakPlotView>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <chart:AlignmentPeakPlotView DataContext="{Binding RtMzPlotViewModel}"
+                                                                             commonbehavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"
+                                                                             d:DataContext="{d:DesignInstance Type={x:Type vmchart:AlignmentPeakPlotViewModel}}"
+                                                                             Grid.Column="0">
+                                                    <chart:AlignmentPeakPlotView.LabelTemplate>
+                                                        <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <StackPanel.Resources>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="FontSize" Value="9"/>
+                                                                        <Setter Property="Foreground" Value="Gray"/>
+                                                                    </Style>
+                                                                </StackPanel.Resources>
+                                                                <TextBlock Text="{Binding AlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
+                                                                <TextBlock Text="{Binding TimesCenter, Mode=OneTime, StringFormat=RT[min]: {0:N3}; }"/>
+                                                                <TextBlock Text="{Binding MassCenter, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </chart:AlignmentPeakPlotView.LabelTemplate>
+                                                </chart:AlignmentPeakPlotView>
+
+                                                <chart:AlignmentPeakPlotView DataContext="{Binding DtMzPlotViewModel}"
+                                                                             commonbehavior:ObserveKeyboardFocusBehavior.ObserveAction="{Binding Focus, Mode=OneWay}"
+                                                                             d:DataContext="{d:DesignInstance Type={x:Type vmchart:AlignmentPeakPlotViewModel}}"
+                                                                             Grid.Column="1">
+                                                    <chart:AlignmentPeakPlotView.LabelTemplate>
+                                                        <DataTemplate DataType="{x:Type do:AlignmentSpotPropertyModel}">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <StackPanel.Resources>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="FontSize" Value="9"/>
+                                                                        <Setter Property="Foreground" Value="Gray"/>
+                                                                    </Style>
+                                                                </StackPanel.Resources>
+                                                                <TextBlock Text="{Binding MasterAlignmentID, Mode=OneTime, StringFormat=Local ID: {0}; }"/>
+                                                                <TextBlock Text="{Binding TimesCenter, Mode=OneTime, StringFormat=Mobility[1/K0]: {0:N4}; }"/>
+                                                                <TextBlock Text="{Binding MassCenter, Mode=OneTime, StringFormat=Mass[Da]: {0:N5};}"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </chart:AlignmentPeakPlotView.LabelTemplate>
+                                                </chart:AlignmentPeakPlotView>
+                                            </Grid>
                                         </DataTemplate>
                                     </ContentControl.Resources>
 
@@ -213,11 +242,11 @@
                                             <TextBlock Text="Eic of focused spot"
                                                        VerticalAlignment="Stretch"/>
                                         </DataTemplate>
-                                        <DataTemplate DataType="{x:Type vmchart:BarChartViewModel}">
+                                        <DataTemplate DataType="{x:Type vmchart:MultiBarChartViewModel}">
                                             <TextBlock Text="Bar chart of aligned spot"
                                                        VerticalAlignment="Stretch"/>
                                         </DataTemplate>
-                                        <DataTemplate DataType="{x:Type vmchart:AlignmentEicViewModel}">
+                                        <DataTemplate DataType="{x:Type vmchart:MultiAlignmentEicViewModel}">
                                             <TextBlock Text="EIC of aligned spot"
                                                        VerticalAlignment="Stretch"/>
                                         </DataTemplate>
@@ -239,11 +268,33 @@
                                                 <chart:EicView DataContext="{Binding DtEicViewModel}" Grid.Column="1"/>
                                             </Grid>
                                         </DataTemplate>
-                                        <DataTemplate DataType="{x:Type vmchart:BarChartViewModel}">
-                                            <chart:BarChartView/>
+                                        <DataTemplate DataType="{x:Type vmchart:MultiBarChartViewModel}">
+                                            <ItemsControl ItemsSource="{Binding BarCharts}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <UniformGrid Rows="1"/>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <chart:BarChartView/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
                                         </DataTemplate>
-                                        <DataTemplate DataType="{x:Type vmchart:AlignmentEicViewModel}">
-                                            <chart:AlignmentEicView/>
+                                        <DataTemplate DataType="{x:Type vmchart:MultiAlignmentEicViewModel}">
+                                            <ItemsControl ItemsSource="{Binding AlignmentEics}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <UniformGrid Rows="1"/>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <chart:AlignmentEicView/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
                                         </DataTemplate>
                                     </ContentControl.Resources>
                                 </ContentControl>

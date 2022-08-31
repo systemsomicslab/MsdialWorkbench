@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.Lcimms;
-using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
@@ -21,7 +20,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
     internal sealed class LcimmsMethodViewModel : MethodViewModel
     {
-        private readonly LcimmsMethodModel model;
+        private readonly LcimmsMethodModel _model;
         private readonly FocusControlManager _focusControlManager;
 
         private LcimmsMethodViewModel(
@@ -36,69 +35,22 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
-            this.model = model;
+            _model = model;
             _focusControlManager = focusControlManager.AddTo(Disposables);
         }
 
-        public bool RefMatchedChecked {
-            get => ReadDisplayFilter(DisplayFilter.RefMatched);
-            set => WriteDisplayFilter(DisplayFilter.RefMatched, value);
-        }
-        public bool SuggestedChecked {
-            get => ReadDisplayFilter(DisplayFilter.Suggested);
-            set => WriteDisplayFilter(DisplayFilter.Suggested, value);
-        }
-        public bool UnknownChecked {
-            get => ReadDisplayFilter(DisplayFilter.Unknown);
-            set => WriteDisplayFilter(DisplayFilter.Unknown, value);
-        }
-        public bool CcsChecked {
-            get => ReadDisplayFilter(DisplayFilter.CcsMatched);
-            set => WriteDisplayFilter(DisplayFilter.CcsMatched, value);
-        }
-        public bool Ms2AcquiredChecked {
-            get => ReadDisplayFilter(DisplayFilter.Ms2Acquired);
-            set => WriteDisplayFilter(DisplayFilter.Ms2Acquired, value);
-        }
-        public bool MolecularIonChecked {
-            get => ReadDisplayFilter(DisplayFilter.MolecularIon);
-            set => WriteDisplayFilter(DisplayFilter.MolecularIon, value);
-        }
-        public bool BlankFilterChecked {
-            get => ReadDisplayFilter(DisplayFilter.Blank);
-            set => WriteDisplayFilter(DisplayFilter.Blank, value);
-        }
-        public bool UniqueIonsChecked {
-            get => ReadDisplayFilter(DisplayFilter.UniqueIons);
-            set => WriteDisplayFilter(DisplayFilter.UniqueIons, value);
-        }
-        public bool ManuallyModifiedChecked {
-            get => ReadDisplayFilter(DisplayFilter.ManuallyModified);
-            set => WriteDisplayFilter(DisplayFilter.ManuallyModified, value);
-        }
-        private DisplayFilter displayFilters = DisplayFilter.Unset;
-
-        private bool ReadDisplayFilter(DisplayFilter flag) {
-            return displayFilters.Read(flag);
-        }
-
-        private void WriteDisplayFilter(DisplayFilter flag, bool set) {
-            displayFilters.Write(flag, set);
-            OnPropertyChanged(nameof(displayFilters));
-        }
-
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
-            if (analysisFile?.File is null || analysisFile.File == model.AnalysisFile) {
+            if (analysisFile?.File is null || analysisFile.File == _model.AnalysisFile) {
                 return Task.CompletedTask;
             }
-            return model.LoadAnalysisFileAsync(analysisFile.File, token);
+            return _model.LoadAnalysisFileAsync(analysisFile.File, token);
         }
 
         protected override Task LoadAlignmentFileCoreAsync(AlignmentFileBeanViewModel alignmentFile, CancellationToken token) {
-            if (alignmentFile?.File is null || alignmentFile.File == model.AlignmentFile) {
+            if (alignmentFile?.File is null || alignmentFile.File == _model.AlignmentFile) {
                 return Task.CompletedTask;
             }
-            return model.LoadAlignmentFileAsync(alignmentFile.File, token);
+            return _model.LoadAlignmentFileAsync(alignmentFile.File, token);
         }
 
         public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(ExportAlignment));
@@ -114,16 +66,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             dialog.ShowDialog();
         }
 
-        public DelegateCommand<Window> ShowTicCommand => showTicCommand ?? (showTicCommand = new DelegateCommand<Window>(model.ShowTIC));
+        public DelegateCommand<Window> ShowTicCommand => showTicCommand ?? (showTicCommand = new DelegateCommand<Window>(_model.ShowTIC));
         private DelegateCommand<Window> showTicCommand;
 
-        public DelegateCommand<Window> ShowBpcCommand => showBpcCommand ?? (showBpcCommand = new DelegateCommand<Window>(model.ShowBPC));
+        public DelegateCommand<Window> ShowBpcCommand => showBpcCommand ?? (showBpcCommand = new DelegateCommand<Window>(_model.ShowBPC));
         private DelegateCommand<Window> showBpcCommand;
 
-        public DelegateCommand<Window> ShowTicBpcRepEICCommand => showTicBpcRepEIC ?? (showTicBpcRepEIC = new DelegateCommand<Window>(model.ShowTicBpcRepEIC));
+        public DelegateCommand<Window> ShowTicBpcRepEICCommand => showTicBpcRepEIC ?? (showTicBpcRepEIC = new DelegateCommand<Window>(_model.ShowTicBpcRepEIC));
         private DelegateCommand<Window> showTicBpcRepEIC;
 
-        public DelegateCommand<Window> ShowEicCommand => showEicCommand ?? (showEicCommand = new DelegateCommand<Window>(model.ShowEIC));
+        public DelegateCommand<Window> ShowEicCommand => showEicCommand ?? (showEicCommand = new DelegateCommand<Window>(_model.ShowEIC));
         private DelegateCommand<Window> showEicCommand;
 
         private static IReadOnlyReactiveProperty<LcimmsAnalysisViewModel> ConvertToAnalysisViewModel(
@@ -188,14 +140,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<LcimmsAnalysisViewModel> analysisAsObservable, IObservable<LcimmsAlignmentViewModel> alignmentAsObservable) {
             var eic = analysisAsObservable;
-            var bar = alignmentAsObservable.Select(vm => vm?.DtBarChartViewModel);
-            var alignmentEic = alignmentAsObservable.Select(vm => vm?.DtAlignmentEicViewModel);
+            var bar = alignmentAsObservable.Select(vm => vm?.BarChartViewModels);
+            var alignmentEic = alignmentAsObservable.Select(vm => vm?.AlignmentEicViewModels);
             return new ViewModelSwitcher(eic, bar, new IObservable<ViewModelBase>[] { eic, bar, alignmentEic});
         }
 
         private static ViewModelSwitcher PrepareMassSpectrumViewModels(IObservable<LcimmsAnalysisViewModel> analysisAsObservable, IObservable<LcimmsAlignmentViewModel> alignmentAsObservable) {
             var rawdec = analysisAsObservable.Select(vm => vm?.RawDecSpectrumsViewModel);
-            var rawpur = Observable.Return<ViewModelBase>(null); // analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
+            var rawpur = analysisAsObservable.Select(vm => vm?.RawPurifiedSpectrumsViewModel);
             var ms2chrom = analysisAsObservable.Select(vm => vm?.Ms2ChromatogramsViewModel);
             var repref = alignmentAsObservable.Select(vm => vm?.Ms2SpectrumViewModel);
             return new ViewModelSwitcher(rawdec, repref, new IObservable<ViewModelBase>[] { rawdec, ms2chrom, rawpur, repref});

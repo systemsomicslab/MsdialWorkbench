@@ -15,7 +15,6 @@ using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcImMsApi.Parameter;
@@ -180,7 +179,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 VerticalTitle = "m/z",
             }.AddTo(Disposables);
             accumulatedTarget.Select(
-                t => $"Alignment: {alignmentFileBean.FileName}" +
+                t => $"{alignmentFileBean.FileName}" +
                     (t is null
                         ? string.Empty
                         : $"Spot ID: {t.MasterAlignmentID} Mass m/z: {t.MassCenter:F5} Mobility [1/K0]: {t.innerModel.TimesCenter.Drift.Value:F4}"))

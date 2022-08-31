@@ -59,9 +59,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
             RtBarChartViewModel = new BarChartViewModel(model.RtBarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
             DtBarChartViewModel = new BarChartViewModel(model.DtBarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
+            BarChartViewModels = new MultiBarChartViewModel(RtBarChartViewModel, DtBarChartViewModel).AddTo(Disposables);
 
             RtAlignmentEicViewModel = new AlignmentEicViewModel(model.RtAlignmentEicModel).AddTo(Disposables);
             DtAlignmentEicViewModel = new AlignmentEicViewModel(model.DtAlignmentEicModel).AddTo(Disposables);
+            AlignmentEicViewModels = new MultiAlignmentEicViewModel(RtAlignmentEicViewModel, DtAlignmentEicViewModel).AddTo(Disposables);
             /*
             AlignmentSpotTableViewModel = new LcimmsAlignmentSpotTableViewModel(
                 model.AlignmentSpotTableModel,
@@ -91,9 +93,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public MsSpectrumViewModel Ms2SpectrumViewModel { get; }
         public BarChartViewModel RtBarChartViewModel { get; }
         public BarChartViewModel DtBarChartViewModel { get; }
+        public MultiBarChartViewModel BarChartViewModels { get; }
+
         BarChartViewModel IAlignmentResultViewModel.BarChartViewModel => DtBarChartViewModel;
         public AlignmentEicViewModel RtAlignmentEicViewModel { get; }
         public AlignmentEicViewModel DtAlignmentEicViewModel { get; }
+        public MultiAlignmentEicViewModel AlignmentEicViewModels { get; }
 
         /*
         public LcimmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel {
