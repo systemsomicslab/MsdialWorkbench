@@ -141,14 +141,16 @@
                                   ItemStringFormat="Component {0}"/>
                     </ui:LabeledContent>
                     <ui:LabeledContent PrependLabel="Label type (sample):">
-                        <ComboBox ItemsSource="{Binding LabelTypes}"
+                        <ComboBox ItemsSource="{Binding LabelTypesSample}"
                                   SelectedValuePath="Value"
+                                  DisplayMemberPath="Value"
                                   SelectedValue="{Binding LabelTypeSample.Value}"/>
                     </ui:LabeledContent>
                     <ui:LabeledContent PrependLabel="Label type (metabolite):">
-                        <ComboBox ItemsSource="{Binding LabelTypes}"
+                        <ComboBox ItemsSource="{Binding LabelTypesMetabolite}"
                                   SelectedValuePath="Value"
-                                  SelectedItem="{Binding LabelTypeMetabolite.Value}"/>
+                                  DisplayMemberPath="Value"
+                                  SelectedValue="{Binding LabelTypeMetabolite.Value}"/>
                     </ui:LabeledContent>
                     <ui:LabeledContent PrependLabel="Spot size (sample):">
                         <ComboBox ItemsSource="{Binding SpotSizes}"
@@ -209,13 +211,13 @@
                 <Grid>
                     <chart:ScatterControlSlim ItemsSource="{Binding Loadings}"
                                               DataType="{x:Type vm:ComponentLoadingViewModel}"
-                                              HorizontalProperty="{Binding ComponentX.Value, StringFormat=Component {0}}"
-                                              VerticalProperty="{Binding ComponentY.Value, StringFormat=Component {0}}"
+                                              HorizontalProperty="ComponentX"
+                                              VerticalProperty="ComponentY"
                                               Radius="{Binding SpotSizeMetabolite.Value}"/>
                     <chart:Annotator ItemsSource="{Binding Loadings}"
-                                     HorizontalPropertyName="{Binding ComponentX.Value, StringFormat=Component {0}}"
-                                     VerticalPropertyName="{Binding ComponentY.Value, StringFormat=Component {0}}"
-                                     LabelPropertyName="{Binding LabelTypeMetabolite.Value}"
+                                     HorizontalPropertyName="ComponentX"
+                                     VerticalPropertyName="ComponentY"
+                                     LabelPropertyName="{Binding LabelTypeMetabolite.Value.PropertyName}"
                                      ContentAlignment="BottomCenter"/>
                 </Grid>
             </chart:SimpleChartControl>

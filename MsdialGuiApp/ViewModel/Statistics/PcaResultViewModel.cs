@@ -6,42 +6,26 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Dynamic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text.RegularExpressions;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics
 {
-    internal sealed class ComponentLoadingViewModel : DynamicObject, INotifyPropertyChanged
+    internal sealed class ComponentLoadingViewModel : ViewModelBase
     {
         private readonly ComponentLoadingModel _model;
 
 
-        public ComponentLoadingViewModel(ComponentLoadingModel model) {
+        public ComponentLoadingViewModel(ComponentLoadingModel model, int xIndex, int yIndex) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
+            ComponentX = _model.Loading[xIndex];
+            ComponentY = _model.Loading[yIndex];
         }
 
         public string Label => _model.Label;
 
-        // DynamicObject
-        private static readonly Regex PATTERN = new Regex(@"Component (?<id>\d+)");
-        public override bool TryGetMember(GetMemberBinder binder, out object result) {
-            var match = PATTERN.Match(binder.Name);
-            if (match.Success && match.Groups["id"].Success) {
-                var index = int.Parse(match.Groups["id"].Value);
-                if (index <= _model.Loading.Length) {
-                    result = _model.Loading[index - 1];
-                    return true;
-                }
-            }
-            result = default;
-            return false;
-        }
-
-        // INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
+        public double ComponentX { get; }
+        public double ComponentY { get; }
     }
 
     internal sealed class ComponentScoreViewModel : ViewModelBase {
@@ -50,6 +34,20 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
     internal sealed class ComponentContributionViewModel : ViewModelBase {
 
+    }
+
+    internal sealed class LabelTypeViewModel : ViewModelBase {
+        public LabelTypeViewModel(string displayName, string propertyName) {
+            DisplayName = displayName;
+            PropertyName = propertyName;
+        }
+
+        public string DisplayName { get; }
+        public string PropertyName { get; }
+
+        public override string ToString() {
+            return DisplayName;
+        }
     }
 
     internal sealed class PcaResultViewModel : ViewModelBase
@@ -63,39 +61,63 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             ComponentX = new ReactiveProperty<int>(1).AddTo(Disposables);
             ComponentY = new ReactiveProperty<int>(2).AddTo(Disposables);
 
-            LabelTypes = new List<IReadOnlyReactiveProperty<string>>
+            LabelTypesSample = new List<IReadOnlyReactiveProperty<LabelTypeViewModel>>
             {
-                new ReactivePropertySlim<string>("Label"),
-                ComponentX.Select(i => $"Component {i}").ToReadOnlyReactivePropertySlim().AddTo(Disposables),
-                ComponentY.Select(i => $"Component {i}").ToReadOnlyReactivePropertySlim().AddTo(Disposables),
-                new ReactivePropertySlim<string>("None"),
+                new ReactivePropertySlim<LabelTypeViewModel>(new LabelTypeViewModel("Sample", null /*nameof(ComponentScoreViewModel.Label)*/)),
+                ComponentX.Select(i => new LabelTypeViewModel($"Component {i}", null /*nameof(ComponentScoreViewModel.ComponentX)*/)).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
+                ComponentY.Select(i => new LabelTypeViewModel($"Component {i}", null /*nameof(ComponentScoreViewModel.ComponentY)*/)).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
+                new ReactivePropertySlim<LabelTypeViewModel>(new LabelTypeViewModel("None", null)),
             }.AsReadOnly();
+            LabelTypeSample = new ReactiveProperty<LabelTypeViewModel>(LabelTypesSample.First().Value).AddTo(Disposables);
 
-            Loadings = model.Loadings.ToReadOnlyReactiveCollection(m => new ComponentLoadingViewModel(m)).AddTo(Disposables);
-            LoadingHorizontalAxis = ComponentX.Select(i => model.LoadingAxises[i].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            LoadingVerticalAxis = ComponentY.Select(i => model.LoadingAxises[i].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            LabelTypesMetabolite = new List<IReadOnlyReactiveProperty<LabelTypeViewModel>>
+            {
+                new ReactivePropertySlim<LabelTypeViewModel>(new LabelTypeViewModel("Metabolite", nameof(ComponentLoadingViewModel.Label))),
+                ComponentX.Select(i => new LabelTypeViewModel($"Component {i}", nameof(ComponentLoadingViewModel.ComponentX))).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
+                ComponentY.Select(i => new LabelTypeViewModel($"Component {i}", nameof(ComponentLoadingViewModel.ComponentY))).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
+                new ReactivePropertySlim<LabelTypeViewModel>(new LabelTypeViewModel("None", null)),
+            }.AsReadOnly();
+            LabelTypeMetabolite = new ReactiveProperty<LabelTypeViewModel>(LabelTypesMetabolite.First().Value).AddTo(Disposables);
+
+            SpotSizeSample = new ReactiveProperty<double>(6).AddTo(Disposables);
+            SpotSizeMetabolite = new ReactiveProperty<double>(6).AddTo(Disposables);
+
+            Loadings = new ReactiveCollection<ComponentLoadingViewModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
+            Observable.CombineLatest(ComponentX, ComponentY)
+                .Throttle(TimeSpan.FromSeconds(.05d))
+                .Subscribe(xy =>
+                {
+                    Loadings.ClearOnScheduler();
+                    Loadings.AddRangeOnScheduler(_model.Loadings.Select(loading => new ComponentLoadingViewModel(loading, xy[0] - 1, xy[1] - 1)));
+
+                }).AddTo(Disposables);
+
+            LoadingHorizontalAxis = ComponentX.Select(i => model.LoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            LoadingVerticalAxis = ComponentY.Select(i => model.LoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
         public ReadOnlyCollection<int> Components { get; }
         public ReactiveProperty<int> ComponentX { get; }
         public ReactiveProperty<int> ComponentY { get; }
 
-        public ReadOnlyCollection<IReadOnlyReactiveProperty<string>> LabelTypes { get; }
-        public ReactiveProperty<string> LabelTypeSample { get; }
-        public ReactiveProperty<string> LabelTypeMetabolite { get; }
+        public ReadOnlyCollection<IReadOnlyReactiveProperty<LabelTypeViewModel>> LabelTypesSample { get; }
+        public ReactiveProperty<LabelTypeViewModel> LabelTypeSample { get; }
 
-        public ReadOnlyCollection<string> SpotSizes { get; } = new List<string>
+        public ReadOnlyCollection<IReadOnlyReactiveProperty<LabelTypeViewModel>> LabelTypesMetabolite { get; }
+        public ReactiveProperty<LabelTypeViewModel> LabelTypeMetabolite { get; }
+
+        public ReadOnlyCollection<double> SpotSizes { get; } = new List<double>
         {
-            "1", "2", "3", "4", "5", "6", "8", "10", "12", "14", "16", "20", "24",
+            1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 16, 20, 24,
         }.AsReadOnly();
-        public ReactiveProperty<string> SpotSizeSample { get; }
-        public ReactiveProperty<string> SpotSizeMetabolite { get; }
+        public ReactiveProperty<double> SpotSizeSample { get; }
+        public ReactiveProperty<double> SpotSizeMetabolite { get; }
 
         public ReadOnlyReactiveCollection<ComponentScoreViewModel> Scores { get; }
         public IAxisManager<double> ScoreHorizontalAxis { get; }
         public IAxisManager<double> ScoreVerticalAxis { get; }
 
-        public ReadOnlyReactiveCollection<ComponentLoadingViewModel> Loadings { get; }
+        public ReactiveCollection<ComponentLoadingViewModel> Loadings { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingHorizontalAxis { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingVerticalAxis { get; }
         public IAxisManager<double> ComponentXLoadingHorizontalAxis { get; }
