@@ -19,8 +19,8 @@ namespace CompMs.App.Msdial.Model.Loader
 
             _chromatogramSpotSerializer = chromatogramSpotSerializer;
             _eicFile = eicFile;
-            _id2ClsAsObservable = id2clsAsObservable.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            _cls2ColorAsObservable = cls2colorAsObservable.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            _id2ClsAsObservable = id2clsAsObservable.ToReactiveProperty().AddTo(Disposables);
+            _cls2ColorAsObservable = cls2colorAsObservable.ToReactiveProperty().AddTo(Disposables);
         }
 
         private readonly ChromatogramSerializer<ChromatogramSpotInfo> _chromatogramSpotSerializer;
