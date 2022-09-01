@@ -43,6 +43,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public LcimmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            DataBaseStorage databases,
             DataBaseMapper mapper,
             MsdialLcImMsParameter parameter,
             List<AnalysisFileBean> files,
@@ -281,6 +282,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 r_ => new CcsSimilarity(r_?.CcsSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
+
+            var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam);
+            CompoundSearchModel = target
+                .CombineLatest(MsdecResult, (t, r) => t is null || r is null ? null : new CompoundSearchModel<AlignmentSpotProperty>(_files[t.RepresentativeFileID], t.innerModel, r, searcherCollection.Items))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
         }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
@@ -323,14 +331,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         private IBarItemsLoader barItemsLoader;
 
-        public CompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {
-            return new CompoundSearchModel<AlignmentSpotProperty>(
-                _files[Target.Value.RepresentativeFileID],
-                Target.Value.innerModel,
-                MsdecResult.Value,
-                null,
-                null);
-        }
+        public ReadOnlyReactivePropertySlim<CompoundSearchModel<AlignmentSpotProperty>> CompoundSearchModel { get; }
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(Container, _alignmentFileBean.FilePath);

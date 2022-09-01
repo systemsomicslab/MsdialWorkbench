@@ -75,11 +75,18 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 .AddTo(Disposables);
             */
 
-            SearchCompoundCommand = this.model.Target
-                .CombineLatest(this.model.MsdecResult, (t, r) => t?.innerModel != null && r != null)
-                .ToReactiveCommand()
-                .AddTo(Disposables);
-            SearchCompoundCommand.Subscribe(SearchCompound).AddTo(Disposables);
+            SearchCompoundCommand = new[]{
+                model.Target.Select(t => t?.innerModel is null),
+                model.MsdecResult.Select(r => r is null),
+                model.CompoundSearchModel.Select(m => m is null),
+            }.CombineLatestValuesAreAllFalse()
+            .ToReactiveCommand()
+            .WithSubscribe(() => {
+                using (var vm = new CompoundSearchVM(model.CompoundSearchModel.Value)) {
+                    compoundSearchService.ShowDialog(vm);
+                }
+            })
+            .AddTo(Disposables);
 
             FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
 
@@ -126,16 +133,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ReactiveCommand SearchCompoundCommand { get; }
-
-        private void SearchCompound() {
-            if (model.Target.Value?.innerModel == null || model.MsdecResult.Value == null)
-                return;
-
-            using (var model = this.model.CreateCompoundSearchModel())
-            using (var vm = new CompoundSearchVM(model)) {
-                compoundSearchService.ShowDialog(vm);
-            }
-        }
 
         public ICommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
 

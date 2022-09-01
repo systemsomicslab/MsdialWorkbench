@@ -256,48 +256,47 @@
                         </TabControl.ItemTemplate>
                         <TabControl.ContentTemplate>
                             <DataTemplate>
-                                <ContentControl Content="{Binding}">
-                                    <ContentControl.Resources>
-                                        <DataTemplate DataType="{x:Type vm:LcimmsAnalysisViewModel}">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition/>
-                                                    <ColumnDefinition/>
-                                                </Grid.ColumnDefinitions>
-                                                <chart:EicView DataContext="{Binding RtEicViewModel}" Grid.Column="0"/>
-                                                <chart:EicView DataContext="{Binding DtEicViewModel}" Grid.Column="1"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                        <DataTemplate DataType="{x:Type vmchart:MultiBarChartViewModel}">
-                                            <ItemsControl ItemsSource="{Binding BarCharts}">
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <UniformGrid Rows="1"/>
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <chart:BarChartView/>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </DataTemplate>
-                                        <DataTemplate DataType="{x:Type vmchart:MultiAlignmentEicViewModel}">
-                                            <ItemsControl ItemsSource="{Binding AlignmentEics}">
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <UniformGrid Rows="1"/>
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <chart:AlignmentEicView/>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </DataTemplate>
-                                    </ContentControl.Resources>
-                                </ContentControl>
+                                <DataTemplate.Resources>
+                                    <DataTemplate DataType="{x:Type vm:LcimmsAnalysisViewModel}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <chart:EicView DataContext="{Binding RtEicViewModel}" Grid.Column="0"/>
+                                            <chart:EicView DataContext="{Binding DtEicViewModel}" Grid.Column="1"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vmchart:MultiBarChartViewModel}">
+                                        <ItemsControl ItemsSource="{Binding BarCharts}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <UniformGrid Rows="1"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <chart:BarChartView/>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type vmchart:MultiAlignmentEicViewModel}">
+                                        <ItemsControl ItemsSource="{Binding AlignmentEics}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <UniformGrid Rows="1"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <chart:AlignmentEicView/>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </DataTemplate>
+                                </DataTemplate.Resources>
+                                <ContentPresenter Content="{Binding}"/>
                             </DataTemplate>
                         </TabControl.ContentTemplate>
                     </TabControl>

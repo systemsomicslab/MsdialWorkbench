@@ -7,6 +7,7 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using System;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
@@ -129,7 +130,7 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public bool IsUnknown => innerModel.IsUnknown;
         public bool IsCcsMatch => ScanMatchResult?.IsCcsMatch ?? false;
-        public bool IsMsmsContained => innerModel.IsMsmsContained;
+        public bool IsMsmsContained => innerModel.IsMsmsContained || (innerModel.DriftChromFeatures?.Any(peak => peak.IsMsmsContained) ?? false);
         public bool IsFragmentQueryExisted => innerModel.FeatureFilterStatus.IsFragmentExistFiltered;
 
         public double AmplitudeScore => innerModel.PeakShape.AmplitudeScoreValue;

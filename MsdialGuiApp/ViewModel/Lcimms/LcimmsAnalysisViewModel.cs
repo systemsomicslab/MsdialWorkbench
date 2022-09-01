@@ -66,11 +66,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
             SearchCompoundCommand = model.CanSearchCompound
                 .ToReactiveCommand()
-                .AddTo(Disposables);
-            SearchCompoundCommand.WithLatestFrom(model.CompoundSearchModel)
-                .Subscribe(p =>
+                .WithSubscribe(() =>
                 {
-                    using (var vm = new CompoundSearchVM(p.Second)) {
+                    using (var vm = new CompoundSearchVM(model.CompoundSearchModel.Value)) {
                         compoundSearchService.ShowDialog(vm);
                     }
                 }).AddTo(Disposables);

@@ -91,6 +91,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 analysisFile,
                 providerFactory.Create(rawObj),
                 accProviderFactory.Create(rawObj),
+                Storage.DataBases,
                 matchResultEvaluator,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
@@ -107,6 +108,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             return AlignmentModel = new LcimmsAlignmentModel(
                 alignmentFile,
                 matchResultEvaluator,
+                Storage.DataBases,
                 Storage.DataBaseMapper,
                 Storage.Parameter,
                 Storage.AnalysisFiles,

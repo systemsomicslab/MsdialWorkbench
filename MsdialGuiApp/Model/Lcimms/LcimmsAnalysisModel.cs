@@ -51,6 +51,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AnalysisFileBean analysisFile,
             IDataProvider spectrumProvider,
             IDataProvider accSpectrumProvider,
+            DataBaseStorage databases,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseMapper mapper,
             MsdialLcImMsParameter parameter,
@@ -312,19 +313,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 (dtSpotFocus, peak => peak.InnerModel.ChromXsTop.Drift.Value)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus, dtSpotFocus);
 
-            CompoundSearchModel = target.Where(t => t != null)
-                .CombineLatest(msdecResult.Where(r => r != null), (t, r) => new CompoundSearchModel<ChromatogramPeakFeature>(analysisFile, t.InnerModel, r, new CompoundSearcher[0]))
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            CanSearchCompound = new[]
-            {
-                target.Select(t => t?.InnerModel != null),
-                msdecResult.Select(d => d != null),
-            }.CombineLatestValuesAreAllTrue()
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposables);
-
             var peakInformationModel = new PeakInformationAnalysisModel(target).AddTo(Disposables);
             peakInformationModel.Add(
                 t => new RtPoint(t?.InnerModel.ChromXsTop.RT.Value ?? 0d),
@@ -342,6 +330,20 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 r_ => new CcsSimilarity(r_?.CcsSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
+
+            var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam);
+            CompoundSearchModel = target
+                .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : new CompoundSearchModel<ChromatogramPeakFeature>(analysisFile, t.InnerModel, r, searcherCollection.Items))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            CanSearchCompound = new[]
+            {
+                target.Select(t => t?.InnerModel != null),
+                msdecResult.Select(d => d != null),
+            }.CombineLatestValuesAreAllTrue()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
         }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
@@ -360,7 +362,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
 
-        public IObservable<CompoundSearchModel<ChromatogramPeakFeature>> CompoundSearchModel { get; }
+        public ReadOnlyReactivePropertySlim<CompoundSearchModel<ChromatogramPeakFeature>> CompoundSearchModel { get; }
         public IObservable<bool> CanSearchCompound { get; }
 
 
