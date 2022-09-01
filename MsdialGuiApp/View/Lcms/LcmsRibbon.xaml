@@ -6,6 +6,7 @@
         mc:Ignorable="d"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
         xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+        xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
         xmlns:chartSetting="clr-namespace:CompMs.App.Msdial.View.ChartSetting"
         d:Background="White"
         d:DataContext="{d:DesignInstance Type={x:Type vm:LcmsMethodViewModel}}"
@@ -130,18 +131,18 @@
         <RibbonGroup>
             <RibbonButton Label="Normalization" LargeImageSource="{StaticResource Data_normalization_is}"
                           IsEnabled="True"
-                          Command="{Binding ShowNormalizationSettingCommand}"
+                          Command="{Binding AlignmentViewModel.Value.ShowNormalizationSettingCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
                           KeyTip="N"/>
             <RibbonButton Label="MS-CleanR peak filtering" LargeImageSource="{StaticResource MsCleanR_icon_is}"
                           IsEnabled="True"
-                          Command="{Binding ShowMscleanrFilterSettingCommand}"
+                          Command="{Binding ShowMscleanrFilterSettingCommand, Mode=OneTime}"
                           KeyTip="T"/>
             <RibbonButton Label="Tables for Proteomics" LargeImageSource="{StaticResource TreeForProteomics_icon_is}"
                           IsEnabled="True"
-                          Command="{Binding ShowProteinGroupTableCommand}"
+                          Command="{Binding ShowProteinGroupTableCommand, Mode=OneTime}"
                           KeyTip="T"/>
             <RibbonButton Label="Principal component analysis" LargeImageSource="{StaticResource PCA_is}"
-                          Command="{Binding ShowPcaSettingCommand}"
+                          Command="{Binding AlignmentViewModel.Value.ShowPcaSettingCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
                           KeyTip="P"/>
             <RibbonButton Label="Partial least squares" LargeImageSource="{StaticResource PLS_is}"
                           IsEnabled="False"

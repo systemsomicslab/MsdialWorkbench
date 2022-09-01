@@ -1,33 +1,28 @@
-﻿using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.ViewModel.Statistics;
+﻿using CompMs.App.Msdial.Model.Statistics;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Notifiers;
 using System;
 
-namespace CompMs.App.Msdial.ViewModel.Setting {
-    class PcaSettingViewModel : ViewModelBase {
+namespace CompMs.App.Msdial.ViewModel.Statistics
+{
+    internal sealed class PcaSettingViewModel : ViewModelBase
+    {
         private readonly PcaSettingModel model;
         private readonly IMessageBroker _broker;
 
-        public PcaSettingViewModel(PcaSettingModel model, IMessageBroker broker)
-        {
-            if (model is null)
-            {
+        public PcaSettingViewModel(PcaSettingModel model, IMessageBroker broker) {
+            if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
             this.model = model;
             _broker = broker;
-            this.MaxPcNumber = model.MaxPcNumber.ToString();
+            MaxPcNumber = model.MaxPcNumber.ToString();
         }
-        public string MaxPcNumber
-        {
+        public string MaxPcNumber {
             get => _maxPcNumber;
-            set
-            {
-                if (SetProperty(ref _maxPcNumber, value))
-                {
-                    if (!ContainsError(nameof(MaxPcNumber)))
-                    {
+            set {
+                if (SetProperty(ref _maxPcNumber, value)) {
+                    if (!ContainsError(nameof(MaxPcNumber))) {
                         model.MaxPcNumber = int.Parse(value);
                     }
                 }
@@ -37,8 +32,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         public bool IsIdentifiedImportedInStatistics {
             get => _isIdentifiedImportedInStatistics;
-            set
-            {
+            set {
                 if (SetProperty(ref _isIdentifiedImportedInStatistics, value)) {
                     model.IsIdentifiedImportedInStatistics = value;
                 }
@@ -48,8 +42,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         public bool IsAnnotatedImportedInStatistics {
             get => _isAnnotatedImportedInStatistics;
-            set
-            {
+            set {
                 if (SetProperty(ref _isAnnotatedImportedInStatistics, value)) {
                     model.IsAnnotatedImportedInStatistics = value;
                 }
@@ -57,13 +50,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
         }
         private bool _isAnnotatedImportedInStatistics;
 
-        public bool IsUnknownImportedInStatistics
-        {
+        public bool IsUnknownImportedInStatistics {
             get => _isUnknownImportedInStatistics;
-            set
-            {
-                if (SetProperty(ref _isUnknownImportedInStatistics, value))
-                {
+            set {
+                if (SetProperty(ref _isUnknownImportedInStatistics, value)) {
                     model.IsUnknownImportedInStatistics = value;
                 }
             }

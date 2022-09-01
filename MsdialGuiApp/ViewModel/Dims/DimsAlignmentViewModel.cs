@@ -1,11 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.Dims;
-using CompMs.App.Msdial.View.Normalize;
+using CompMs.App.Msdial.View.Statistics;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
-using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;

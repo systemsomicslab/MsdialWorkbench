@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 
-namespace CompMs.App.Msdial.View.Normalize
+namespace CompMs.App.Msdial.View.Statistics
 {
     /// <summary>
     /// Interaction logic for NormalizationSetView.xaml

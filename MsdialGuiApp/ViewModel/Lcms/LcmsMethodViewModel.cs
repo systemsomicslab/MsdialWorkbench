@@ -53,14 +53,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             var _proteinGroupTableViewModel = new ProteinGroupTableViewModel(proteinResultContainerAsObservable).AddTo(Disposables);
             ShowProteinGroupTableCommand = model.CanShowProteinGroupTable.ToReactiveCommand().AddTo(Disposables);
             ShowProteinGroupTableCommand.Subscribe(() => broker.Publish(_proteinGroupTableViewModel)).AddTo(Disposables);
-
-            var isAlignmentViewModelExists = AlignmentViewModel.Select(vm => vm is LcmsAlignmentViewModel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            ShowNormalizationSettingCommand = isAlignmentViewModelExists.ToReactiveCommand()
-                .WithSubscribe(() => broker.Publish(((LcmsAlignmentViewModel)AlignmentViewModel.Value).NormalizationSetViewModel))
-                .AddTo(Disposables);
-            ShowPcaSettingCommand = isAlignmentViewModelExists.ToReactiveCommand()
-                .WithSubscribe(() => broker.Publish(((LcmsAlignmentViewModel)AlignmentViewModel.Value).PcaSettingViewModel))
-                .AddTo(Disposables);
         }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
@@ -110,9 +102,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public DelegateCommand<Window> ShowMscleanrFilterSettingCommand => mscleanrFilterSettingCommand ??
             (mscleanrFilterSettingCommand = new DelegateCommand<Window>(MscleanrFilterSettingMethod));
         private DelegateCommand<Window> mscleanrFilterSettingCommand;
-
-        public ReactiveCommand ShowNormalizationSettingCommand { get; }
-        public ReactiveCommand ShowPcaSettingCommand { get; }
 
         private void FragmentSearchSettingMethod(Window obj) {
             if (SelectedViewModel.Value is IAlignmentResultViewModel) {

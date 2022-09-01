@@ -69,7 +69,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             _peakCollection = new ChromatogramPeakFeatureCollection(peaks);
 
             var orderedPeaks = peaks.OrderBy(peak => peak.ChromXsTop.RT.Value).Select(peak => new ChromatogramPeakFeatureModel(peak)).ToArray();
-            var peakTree = new SegmentTree<IEnumerable<ChromatogramPeakFeatureModel>>(peaks.Count, Enumerable.Empty<ChromatogramPeakFeatureModel>(), (xs, ys) => xs.Concat(ys));
+            var peakTree = new SegmentTree<IEnumerable<ChromatogramPeakFeatureModel>>(peaks.Count, Enumerable.Empty<ChromatogramPeakFeatureModel>(), Enumerable.Concat);
             using (peakTree.LazyUpdate()) {
                 foreach (var (peak, index) in orderedPeaks.WithIndex()) {
                     peakTree[index] = peak.InnerModel.DriftChromFeatures.Select(dpeak => new ChromatogramPeakFeatureModel(dpeak)).ToArray();
@@ -92,7 +92,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
             var accumulatedTarget = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
             var target = accumulatedTarget.Where(t => !(t is null))
-                .Delay(TimeSpan.FromSeconds(.1d))
+                .Delay(TimeSpan.FromSeconds(.05d))
                 .Select(t => {
                     var idx = orderedPeaks.IndexOf(t);
                     return peakTree.Query(idx, idx + 1).FirstOrDefault();
@@ -175,7 +175,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             DtMzPlotModel = new AnalysisPeakPlotModel(peakModels, peak => peak?.ChromXValue ?? 0d, peak => peak?.Mass ?? 0d, target, labelSource, selectedBrush, brushes, verticalAxis: RtMzPlotModel.VerticalAxis)
             {
-                HorizontalTitle = "Drift time [1/k0]",
+                HorizontalTitle = "Mobility [1/K0]",
                 VerticalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
@@ -183,7 +183,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             target.Select(
                 t => t is null
                         ? string.Empty
-                        : $"Spot ID: {t.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:F5} Drift time [1/k0]: {t.InnerModel.ChromXsTop.Drift.Value:F4}")
+                        : $"Spot ID: {t.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:F5} Mobility [1/K0]: {t.InnerModel.ChromXsTop.Drift.Value:F4}")
                 .Subscribe(title => DtMzPlotModel.GraphTitle = title)
                 .AddTo(Disposables);
 
@@ -228,10 +228,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .AddTo(Disposables);
 
             var rawLoader = new MultiMsRawSpectrumLoader(spectrumProvider, parameter);
+            var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
             Ms2SpectrumModel = new RawDecSpectrumsModel(
                 target,
                 rawLoader,
-                new MsDecSpectrumLoader(decLoader, Ms1Peaks),
+                decSpecLoader,
                 new MsRefSpectrumLoader(mapper),
                 new PropertySelector<SpectrumPeak, float>(peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, float>(peak => peak.Intensity),
@@ -245,6 +246,24 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             // Ms2 chromatogram
             Ms2ChromatogramsModel = new Ms2ChromatogramsModel(target, target.Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation)), rawLoader, spectrumProvider, parameter).AddTo(Disposables);
+
+            // Raw vs Purified spectrum model
+            RawPurifiedSpectrumsModel = new RawPurifiedSpectrumsModel(
+                target,
+                rawLoader,
+                decSpecLoader,
+                peak => peak.Mass,
+                peak => peak.Intensity,
+                Observable.Return(upperSpecBrush),
+                Observable.Return(lowerSpecBrush)) {
+                GraphTitle = "Raw vs. Purified spectrum",
+                HorizontalTitle = "m/z",
+                VerticalTitle = "Absolute abundance",
+                HorizontalProperty = nameof(SpectrumPeak.Mass),
+                VerticalProperty = nameof(SpectrumPeak.Intensity),
+                LabelProperty = nameof(SpectrumPeak.Mass),
+                OrderingProperty = nameof(SpectrumPeak.Intensity),
+            }.AddTo(Disposables);
 
             var surveyScanSpectrum = new SurveyScanSpectrum(target, t => Observable.FromAsync(token => LoadMsSpectrumAsync(t, token)))
                 .AddTo(Disposables);
@@ -280,17 +299,17 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     break;
             }
 
-            var mzSpotFocus = new ChromSpotFocus(RtMzPlotModel.VerticalAxis, MZ_TOLELANCE, target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
-            var rtSpotFocus = new ChromSpotFocus(RtMzPlotModel.HorizontalAxis, RT_TOLELANCE, accumulatedTarget.Select(t => t?.ChromXValue ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
-            var dtSpotFocus = new ChromSpotFocus(DtMzPlotModel.HorizontalAxis, DT_TOLELANCE, target.Select(t => t?.ChromXValue ?? 0d), "F3", "Drift time(1/k0)", isItalic: false).AddTo(Disposables);
+            var mzSpotFocus = new ChromSpotFocus(DtMzPlotModel.VerticalAxis, MZ_TOLELANCE, target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
+            var rtSpotFocus = new ChromSpotFocus(RtMzPlotModel.HorizontalAxis, RT_TOLELANCE, accumulatedTarget.Select(t => t?.InnerModel.ChromXsTop.RT.Value ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
+            var dtSpotFocus = new ChromSpotFocus(DtMzPlotModel.HorizontalAxis, DT_TOLELANCE, target.Select(t => t?.InnerModel.ChromXsTop.Drift.Value ?? 0d), "F4", "Mobility[1/K0]", isItalic: false).AddTo(Disposables);
             var idSpotFocus = new IdSpotFocus<ChromatogramPeakFeatureModel>(
                 target,
                 id => Ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id)),
                 target.Select(t => t?.MasterPeakID ?? 0d),
                 "Region focus by ID",
                 (mzSpotFocus, peak => peak.Mass),
-                // (rtSpotFocus, peak => peak.ChromXValue ?? 0d),
-                (dtSpotFocus, peak => peak.ChromXValue ?? 0d)).AddTo(Disposables);
+                (rtSpotFocus, peak => peak.InnerModel.ChromXsTop.RT.Value),
+                (dtSpotFocus, peak => peak.InnerModel.ChromXsTop.Drift.Value)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus, dtSpotFocus);
 
             CompoundSearchModel = target.Where(t => t != null)
@@ -335,6 +354,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public EicModel DtEicModel { get; }
         public RawDecSpectrumsModel Ms2SpectrumModel { get; }
         public Ms2ChromatogramsModel Ms2ChromatogramsModel { get; }
+        public RawPurifiedSpectrumsModel RawPurifiedSpectrumsModel { get; }
         public SurveyScanModel SurveyScanModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
         public PeakInformationAnalysisModel PeakInformationModel { get; }

@@ -21,7 +21,7 @@ using System.Reflection;
 using System.Windows;
 using System.Xml.Linq;
 
-namespace CompMs.App.Msdial.Model.Normalize
+namespace CompMs.App.Msdial.Model.Statistics
 {
     internal sealed class SplashSetModel : DisposableModelBase
     {
