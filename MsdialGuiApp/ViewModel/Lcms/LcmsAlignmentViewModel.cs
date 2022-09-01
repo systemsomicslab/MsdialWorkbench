@@ -97,7 +97,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             ProteinResultContainerAsObservable = Observable.Return(model.ProteinResultContainerModel);
 
             NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel).AddTo(Disposables);
+            ShowNormalizationSettingCommand = new ReactiveCommand()
+                .WithSubscribe(() => broker.Publish(NormalizationSetViewModel))
+                .AddTo(Disposables);
+
             PcaSettingViewModel = new PcaSettingViewModel(model.PcaSettingModel, broker).AddTo(Disposables);
+            ShowPcaSettingCommand = model.NormalizationSetModel.IsNormalized
+                .ToReactiveCommand()
+                .WithSubscribe(() => broker.Publish(PcaSettingViewModel))
+                .AddTo(Disposables);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -119,8 +127,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ViewModelBase[] PeakDetailViewModels { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
         public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable { get; }
+
         public NormalizationSetViewModel NormalizationSetViewModel { get; }
+        public ReactiveCommand ShowNormalizationSettingCommand { get; }
+
         public PcaSettingViewModel PcaSettingViewModel { get; }
+        public ReactiveCommand ShowPcaSettingCommand { get; }
 
         private void SearchCompound() {
             using (var csm = _model.CreateCompoundSearchModel()) {
