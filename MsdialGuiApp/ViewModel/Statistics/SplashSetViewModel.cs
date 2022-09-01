@@ -1,4 +1,4 @@
-﻿using CompMs.App.Msdial.Model.Normalize;
+﻿using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
@@ -6,9 +6,9 @@ using Reactive.Bindings.Extensions;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace CompMs.App.Msdial.ViewModel.Normalize
+namespace CompMs.App.Msdial.ViewModel.Statistics
 {
-    internal class SplashSetViewModel : ViewModelBase
+    internal sealed class SplashSetViewModel : ViewModelBase
     {
         private readonly SplashSetModel _model;
 

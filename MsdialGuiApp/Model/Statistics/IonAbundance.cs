@@ -1,6 +1,6 @@
 ﻿using CompMs.Common.Enum;
 
-namespace CompMs.App.Msdial.Model.Normalize
+namespace CompMs.App.Msdial.Model.Statistics
 {
     internal sealed class IonAbundance
     {

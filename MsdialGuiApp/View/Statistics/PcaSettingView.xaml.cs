@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Setting {
+namespace CompMs.App.Msdial.View.Statistics {
     /// <summary>
     /// PcaSettingView.xaml の相互作用ロジック
     /// </summary>

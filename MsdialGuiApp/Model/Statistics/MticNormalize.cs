@@ -1,5 +1,7 @@
 ﻿using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Normalize;
 using Reactive.Bindings;
@@ -7,15 +9,17 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Reactive.Linq;
 
-namespace CompMs.App.Msdial.Model.Normalize
+namespace CompMs.App.Msdial.Model.Statistics
 {
-    internal sealed class NoneNormalizeModel : BindableBase
+    internal sealed class MticNormalizeModel : BindableBase
     {
         private readonly AlignmentResultContainer _container;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly IMessageBroker _messageBroker;
 
-        public NoneNormalizeModel(AlignmentResultContainer container, IMessageBroker messageBroker) {
+        public MticNormalizeModel(AlignmentResultContainer container, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker messageBroker) {
             _container = container ?? throw new ArgumentNullException(nameof(container));
+            _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
         }
 
@@ -24,7 +28,7 @@ namespace CompMs.App.Msdial.Model.Normalize
             var task = TaskNotification.Start("Normalize..");
             var publisher = new TaskProgressPublisher(_broker, task);
             using (publisher.Start()) {
-                Normalization.None(_container.AlignmentSpotProperties);
+                Normalization.NormalizeByMaxPeakOnNamedPeaks(_container.AlignmentSpotProperties, _evaluator);
                 _container.IsNormalized = true;
             }
         }

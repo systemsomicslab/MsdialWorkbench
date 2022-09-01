@@ -7,7 +7,7 @@ using Reactive.Bindings.Notifiers;
 using System;
 using System.Reactive.Linq;
 
-namespace CompMs.App.Msdial.Model.Normalize
+namespace CompMs.App.Msdial.Model.Statistics
 {
     internal sealed class TicNormalizeModel : BindableBase
     {

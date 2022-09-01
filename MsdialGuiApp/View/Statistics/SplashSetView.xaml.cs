@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace CompMs.App.Msdial.View.Normalize
+namespace CompMs.App.Msdial.View.Statistics
 {
     /// <summary>
     /// Interaction logic for SplashSetView.xaml

@@ -164,15 +164,15 @@
     <Compile Include="Model\Loader\BarItemsLoaderData.cs" />
     <Compile Include="Model\Loader\IChromatogramLoader.cs" />
     <Compile Include="Model\Loader\MsSelectionItem.cs" />
-    <Compile Include="Model\Normalize\InternalStandardLowessNormalizeModel.cs" />
-    <Compile Include="Model\Normalize\InternalStandardNormalizeModel.cs" />
-    <Compile Include="Model\Normalize\IonAbundance.cs" />
-    <Compile Include="Model\Normalize\LowessNormalizeModel.cs" />
-    <Compile Include="Model\Normalize\MticNormalize.cs" />
-    <Compile Include="Model\Normalize\NoneNormalizeModel.cs" />
-    <Compile Include="Model\Normalize\NormalizationSetModel.cs" />
-    <Compile Include="Model\Normalize\SplashProduct.cs" />
-    <Compile Include="Model\Normalize\TicNormalizeModel.cs" />
+    <Compile Include="Model\Statistics\InternalStandardLowessNormalizeModel.cs" />
+    <Compile Include="Model\Statistics\InternalStandardNormalizeModel.cs" />
+    <Compile Include="Model\Statistics\IonAbundance.cs" />
+    <Compile Include="Model\Statistics\LowessNormalizeModel.cs" />
+    <Compile Include="Model\Statistics\MticNormalize.cs" />
+    <Compile Include="Model\Statistics\NoneNormalizeModel.cs" />
+    <Compile Include="Model\Statistics\NormalizationSetModel.cs" />
+    <Compile Include="Model\Statistics\SplashProduct.cs" />
+    <Compile Include="Model\Statistics\TicNormalizeModel.cs" />
     <Compile Include="Model\Search\CompoundSearcher.cs" />
     <Compile Include="Model\Search\CompoundSearcherCollection.cs" />
     <Compile Include="Model\Search\FocusNavigatorModel.cs" />
@@ -227,7 +227,7 @@
     <Compile Include="Model\Setting\MethodSettingModelFactory.cs" />
     <Compile Include="Model\Setting\MobilitySettingModel.cs" />
     <Compile Include="Model\Setting\MscleanrSettingModel.cs" />
-    <Compile Include="Model\Setting\PcaSettingModel.cs" />
+    <Compile Include="Model\Statistics\PcaSettingModel.cs" />
     <Compile Include="Model\Setting\PeakDetectionSettingModel.cs" />
     <Compile Include="Model\Setting\ProjectParameterSettingModel.cs" />
     <Compile Include="Model\DataObj\DisplayChromatogram.cs" />
@@ -315,7 +315,7 @@
     <Compile Include="Model\Lcimms\LcimmsAlignmentModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
-    <Compile Include="Model\Normalize\SplashSetModel.cs" />
+    <Compile Include="Model\Statistics\SplashSetModel.cs" />
     <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\Chart\SingleSpectrumViewModel.cs" />
     <Compile Include="ViewModel\Chart\SmallClassBarChartViewModel.cs" />
@@ -342,7 +342,7 @@
     <Compile Include="ViewModel\Loader\MultiMsRawSpectrumLoaderViewModel.cs" />
     <Compile Include="ViewModel\MsResult\SummarizedSpectrumViewModel.cs" />
     <Compile Include="Model\Search\PeakFilterModel.cs" />
-    <Compile Include="ViewModel\Normalize\SplashProductViewModel.cs" />
+    <Compile Include="ViewModel\Statistics\SplashProductViewModel.cs" />
     <Compile Include="ViewModel\Search\PeakFilterViewModel.cs" />
     <Compile Include="ViewModel\Search\FocusNavigatorViewModel.cs" />
     <Compile Include="ViewModel\Search\PeakSpotNavigatorViewModel.cs" />
@@ -376,8 +376,8 @@
     <Compile Include="ViewModel\Lcimms\LcimmsMethodViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsAnnotatorSettingViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsPeakSpotTableViewModel.cs" />
-    <Compile Include="ViewModel\Normalize\NormalizationSetViewModel.cs" />
-    <Compile Include="ViewModel\Normalize\SplashSetViewModel.cs" />
+    <Compile Include="ViewModel\Statistics\NormalizationSetViewModel.cs" />
+    <Compile Include="ViewModel\Statistics\SplashSetViewModel.cs" />
     <Compile Include="ViewModel\ProteomicsParameterVM.cs" />
     <Compile Include="ViewModel\Setting\AnnotationProcessSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\DataBaseSettingViewModel.cs" />
@@ -391,7 +391,7 @@
     <Compile Include="ViewModel\Setting\ModificationSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\MscleanrSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\MzSearchQueryViewModel.cs" />
-    <Compile Include="ViewModel\Setting\PcaSettingViewModel.cs" />
+    <Compile Include="ViewModel\Statistics\PcaSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\PeakDetectionSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\PeakEqualityParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\PeakFeatureSearchValueViewModel.cs" />
@@ -540,10 +540,10 @@
     <Compile Include="View\MsResult\SummarizedSpectrumView.xaml.cs">
       <DependentUpon>SummarizedSpectrumView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Normalize\NormalizationSetView.xaml.cs">
+    <Compile Include="View\Statistics\NormalizationSetView.xaml.cs">
       <DependentUpon>NormalizationSetView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Normalize\SplashSetView.xaml.cs">
+    <Compile Include="View\Statistics\SplashSetView.xaml.cs">
       <DependentUpon>SplashSetView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\PeakCuration\AlignedPeakCorrectionWinLegacy.xaml.cs">
@@ -680,7 +680,7 @@
     <Compile Include="View\Setting\MscleanrSettingView.xaml.cs">
       <DependentUpon>MscleanrSettingView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Setting\PcaSettingView.xaml.cs">
+    <Compile Include="View\Statistics\PcaSettingView.xaml.cs">
       <DependentUpon>PcaSettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Setting\PeakDetectionSettingView.xaml.cs">
@@ -945,11 +945,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Normalize\NormalizationSetView.xaml">
+    <Page Include="View\Statistics\NormalizationSetView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Normalize\SplashSetView.xaml">
+    <Page Include="View\Statistics\SplashSetView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1105,7 +1105,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Setting\PcaSettingView.xaml">
+    <Page Include="View\Statistics\PcaSettingView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
