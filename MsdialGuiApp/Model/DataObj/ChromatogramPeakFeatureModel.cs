@@ -153,7 +153,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         #endregion
 
         // IFilterable
-        bool IFilterable.IsMsmsAssigned => innerModel.IsMsmsContained;
+        bool IFilterable.IsMsmsAssigned => IsMsmsContained;
         bool IFilterable.IsBaseIsotopeIon => innerModel.PeakCharacter.IsotopeWeightNumber == 0;
         bool IFilterable.IsBlankFiltered => innerModel.FeatureFilterStatus.IsBlankFiltered;
         bool IFilterable.IsManuallyModifiedForAnnotation => innerModel.IsManuallyModifiedForAnnotation;

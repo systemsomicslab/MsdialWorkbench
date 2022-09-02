@@ -285,7 +285,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam);
             CompoundSearchModel = target
-                .CombineLatest(MsdecResult, (t, r) => t is null || r is null ? null : new CompoundSearchModel<AlignmentSpotProperty>(_files[t.RepresentativeFileID], t.innerModel, r, searcherCollection.Items))
+                .CombineLatest(MsdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel<AlignmentSpotProperty>(_files[t.RepresentativeFileID], t.innerModel, r, searcherCollection.Items))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -331,7 +331,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         private IBarItemsLoader barItemsLoader;
 
-        public ReadOnlyReactivePropertySlim<CompoundSearchModel<AlignmentSpotProperty>> CompoundSearchModel { get; }
+        public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel<AlignmentSpotProperty>> CompoundSearchModel { get; }
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(Container, _alignmentFileBean.FilePath);
