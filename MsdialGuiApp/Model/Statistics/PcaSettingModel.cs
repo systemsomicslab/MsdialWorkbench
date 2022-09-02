@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Statistics;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Mathematics.Statistics;
 using CompMs.CommonMVVM;
@@ -8,9 +7,10 @@ using CompMs.MsdialCore.Parameter;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace CompMs.App.Msdial.Model.Setting
+namespace CompMs.App.Msdial.Model.Statistics
 {
-    internal sealed class PcaSettingModel : BindableBase {
+    internal sealed class PcaSettingModel : BindableBase
+    {
         private readonly ParameterBase _parameter;
         private readonly ObservableCollection<AlignmentSpotPropertyModel> _spotprops;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
@@ -27,22 +27,19 @@ namespace CompMs.App.Msdial.Model.Setting
             set => SetProperty(ref maxPcNumber, value);
         }
         private int maxPcNumber;
-        public bool IsIdentifiedImportedInStatistics
-        {
+        public bool IsIdentifiedImportedInStatistics {
             get => isIdentifiedImportedInStatistics;
             set => SetProperty(ref isIdentifiedImportedInStatistics, value);
         }
         private bool isIdentifiedImportedInStatistics;
 
-        public bool IsAnnotatedImportedInStatistics
-        {
+        public bool IsAnnotatedImportedInStatistics {
             get => isAnnotatedImportedInStatistics;
             set => SetProperty(ref isAnnotatedImportedInStatistics, value);
         }
         private bool isAnnotatedImportedInStatistics;
 
-        public bool IsUnknownImportedInStatistics
-        {
+        public bool IsUnknownImportedInStatistics {
             get => isUnknownImportedInStatistics;
             set => SetProperty(ref isUnknownImportedInStatistics, value);
         }
@@ -54,8 +51,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private PcaResultModel _pcaResultModel;
 
-        public void RunPca()
-        {
+        public void RunPca() {
 
             var statObj = new StatisticsObject()
             {

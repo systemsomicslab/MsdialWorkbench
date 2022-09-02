@@ -249,7 +249,7 @@ namespace CompMs.App.Msdial.Model.Information
 
     internal sealed class DriftPoint : BindableBase, IPeakPoint
     {
-        private const string DRIFT_LABEL = "Drift time [1/k0]";
+        private const string DRIFT_LABEL = "Mobility [1/K0]";
 
         public DriftPoint(double dt) {
             Point = dt.ToString("F4");

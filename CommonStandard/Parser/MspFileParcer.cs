@@ -370,9 +370,7 @@ namespace CompMs.Common.Parser
                                         numChar = string.Empty;
 
                                         if (mspPeak.Comment == null) {
-#if !DEBUG
-                                            mspPeak.Comment = mspPeak.Mass.ToString();
-#endif
+
                                         }
                                         mspPeaks.Add(mspPeak);
                                         mspPeak = new SpectrumPeak();
@@ -412,9 +410,7 @@ namespace CompMs.Common.Parser
                                     numChar = string.Empty;
 
                                     if (mspPeak.Comment == null) {
-#if !DEBUG
-                                        mspPeak.Comment = mspPeak.Mass.ToString();
-#endif
+
                                     }
 
                                     mspPeaks.Add(mspPeak);

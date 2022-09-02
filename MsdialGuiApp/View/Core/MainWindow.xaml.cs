@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Notification;
 using CompMs.App.Msdial.View.Chart;
-using CompMs.App.Msdial.View.Normalize;
 using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.View.Statistics;
@@ -8,7 +7,6 @@ using CompMs.App.Msdial.View.Table;
 using CompMs.App.Msdial.ViewModel;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
-using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;

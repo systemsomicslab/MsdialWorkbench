@@ -89,12 +89,12 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .AddTo(Disposables);
 
             if (upperSpectrumBrushSource is null) {
-                upperSpectrumBrushSource = Observable.Return(new KeyBrushMapper<SpectrumComment>(SpectrumBrushes, Brushes.Blue));
+                upperSpectrumBrushSource = model.UpperSpectrumBrush ?? Observable.Return(new KeyBrushMapper<SpectrumComment>(SpectrumBrushes, Brushes.Blue));
             }
             UpperSpectrumBrushSource = upperSpectrumBrushSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             if (lowerSpectrumBrushSource is null) {
-                lowerSpectrumBrushSource = Observable.Return(new KeyBrushMapper<SpectrumComment>(SpectrumBrushes, Brushes.Red));
+                lowerSpectrumBrushSource = model.LowerSpectrumBrush ?? Observable.Return(new KeyBrushMapper<SpectrumComment>(SpectrumBrushes, Brushes.Red));
             }
             LowerSpectrumBrushSource = lowerSpectrumBrushSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }

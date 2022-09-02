@@ -1,14 +1,14 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace CompMs.App.Msdial.View.Lcms
+namespace CompMs.App.Msdial.View.Lcimms
 {
     /// <summary>
-    /// Interaction logic for LcmsCompoundSearchView.xaml
+    /// Interaction logic for LcimmsCompoundSearchView.xaml
     /// </summary>
-    public partial class LcmsCompoundSearchView : UserControl
+    public partial class LcimmsCompoundSearchView : UserControl
     {
-        public LcmsCompoundSearchView() {
+        public LcimmsCompoundSearchView() {
             InitializeComponent();
         }
 

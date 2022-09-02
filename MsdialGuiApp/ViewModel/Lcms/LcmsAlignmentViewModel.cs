@@ -3,11 +3,10 @@ using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
-using CompMs.App.Msdial.ViewModel.Normalize;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
-using CompMs.App.Msdial.ViewModel.Setting;
+using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -97,7 +96,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             ProteinResultContainerAsObservable = Observable.Return(model.ProteinResultContainerModel);
 
             NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel).AddTo(Disposables);
+            ShowNormalizationSettingCommand = new ReactiveCommand()
+                .WithSubscribe(() => broker.Publish(NormalizationSetViewModel))
+                .AddTo(Disposables);
+
             PcaSettingViewModel = new PcaSettingViewModel(model.PcaSettingModel, broker).AddTo(Disposables);
+            ShowPcaSettingCommand = model.NormalizationSetModel.IsNormalized
+                .ToReactiveCommand()
+                .WithSubscribe(() => broker.Publish(PcaSettingViewModel))
+                .AddTo(Disposables);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -119,8 +126,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ViewModelBase[] PeakDetailViewModels { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
         public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable { get; }
+
         public NormalizationSetViewModel NormalizationSetViewModel { get; }
+        public ReactiveCommand ShowNormalizationSettingCommand { get; }
+
         public PcaSettingViewModel PcaSettingViewModel { get; }
+        public ReactiveCommand ShowPcaSettingCommand { get; }
 
         private void SearchCompound() {
             using (var csm = _model.CreateCompoundSearchModel()) {

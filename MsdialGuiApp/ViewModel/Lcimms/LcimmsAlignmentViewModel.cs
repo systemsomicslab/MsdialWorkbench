@@ -51,13 +51,19 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
 
             var (peakPlotFocusAction, peakPlotFocused) = focusControlManager.Request();
-            PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
+            RtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.RtMzPlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
+            DtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.DtMzPlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
 
             Ms2SpectrumViewModel = new MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
 
             var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
-            BarChartViewModel = new BarChartViewModel(model.BarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
-            AlignmentEicViewModel = new AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
+            RtBarChartViewModel = new BarChartViewModel(model.RtBarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
+            DtBarChartViewModel = new BarChartViewModel(model.DtBarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
+            BarChartViewModels = new MultiBarChartViewModel(RtBarChartViewModel, DtBarChartViewModel).AddTo(Disposables);
+
+            RtAlignmentEicViewModel = new AlignmentEicViewModel(model.RtAlignmentEicModel).AddTo(Disposables);
+            DtAlignmentEicViewModel = new AlignmentEicViewModel(model.DtAlignmentEicModel).AddTo(Disposables);
+            AlignmentEicViewModels = new MultiAlignmentEicViewModel(RtAlignmentEicViewModel, DtAlignmentEicViewModel).AddTo(Disposables);
             /*
             AlignmentSpotTableViewModel = new LcimmsAlignmentSpotTableViewModel(
                 model.AlignmentSpotTableModel,
@@ -69,11 +75,18 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 .AddTo(Disposables);
             */
 
-            SearchCompoundCommand = this.model.Target
-                .CombineLatest(this.model.MsdecResult, (t, r) => t?.innerModel != null && r != null)
-                .ToReactiveCommand()
-                .AddTo(Disposables);
-            SearchCompoundCommand.Subscribe(SearchCompound).AddTo(Disposables);
+            SearchCompoundCommand = new[]{
+                model.Target.Select(t => t?.innerModel is null),
+                model.MsdecResult.Select(r => r is null),
+                model.CompoundSearchModel.Select(m => m is null),
+            }.CombineLatestValuesAreAllFalse()
+            .ToReactiveCommand()
+            .WithSubscribe(() => {
+                using (var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value)) {
+                    compoundSearchService.ShowDialog(vm);
+                }
+            })
+            .AddTo(Disposables);
 
             FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
 
@@ -82,29 +95,17 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
-        public AlignmentPeakPlotViewModel PlotViewModel {
-            get => plotViewModel;
-            set => SetProperty(ref plotViewModel, value);
-        }
-        private AlignmentPeakPlotViewModel plotViewModel;
+        public AlignmentPeakPlotViewModel RtMzPlotViewModel { get; }
+        public AlignmentPeakPlotViewModel DtMzPlotViewModel { get; }
+        public MsSpectrumViewModel Ms2SpectrumViewModel { get; }
+        public BarChartViewModel RtBarChartViewModel { get; }
+        public BarChartViewModel DtBarChartViewModel { get; }
+        public MultiBarChartViewModel BarChartViewModels { get; }
 
-        public MsSpectrumViewModel Ms2SpectrumViewModel {
-            get => ms2SpectrumViewModel;
-            set => SetProperty(ref ms2SpectrumViewModel, value);
-        }
-        private MsSpectrumViewModel ms2SpectrumViewModel;
-
-        public BarChartViewModel BarChartViewModel {
-            get => barChartViewModel;
-            set => SetProperty(ref barChartViewModel, value);
-        }
-        private BarChartViewModel barChartViewModel;
-
-        public AlignmentEicViewModel AlignmentEicViewModel {
-            get => alignmentEicViewModel;
-            set => SetProperty(ref alignmentEicViewModel, value);
-        }
-        private AlignmentEicViewModel alignmentEicViewModel;
+        BarChartViewModel IAlignmentResultViewModel.BarChartViewModel => DtBarChartViewModel;
+        public AlignmentEicViewModel RtAlignmentEicViewModel { get; }
+        public AlignmentEicViewModel DtAlignmentEicViewModel { get; }
+        public MultiAlignmentEicViewModel AlignmentEicViewModels { get; }
 
         /*
         public LcimmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel {
@@ -114,13 +115,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private LcimmsAlignmentSpotTableViewModel alignmentSpotTableViewModel;
         */
 
-        public ICollectionView Ms1Spots {
-            get => ms1Spots;
-            set => SetProperty(ref ms1Spots, value);
-        }
-        private ICollectionView ms1Spots;
-
-        public ICollectionView PeakSpotsView => ms1Spots;
+        public ICollectionView Ms1Spots { get; }
 
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 
@@ -138,16 +133,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ReactiveCommand SearchCompoundCommand { get; }
-
-        private void SearchCompound() {
-            if (model.Target.Value?.innerModel == null || model.MsdecResult.Value == null)
-                return;
-
-            using (var model = this.model.CreateCompoundSearchModel())
-            using (var vm = new CompoundSearchVM(model)) {
-                compoundSearchService.ShowDialog(vm);
-            }
-        }
 
         public ICommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
 
