@@ -304,6 +304,8 @@
                     <Grid Grid.Row="1" Grid.Column="1">
 
                         <Button Name="Button_TableViewer" Height="25" 
+                                DataContext="{Binding SelectedViewModel.Value, Mode=OneWay}"
+                                Command="{Binding ShowIonTableCommand, Mode=OneWay}"
                                 Width="110" Margin="0,2,0,0" 
                                 HorizontalContentAlignment="Right"
                                 Background="AliceBlue"

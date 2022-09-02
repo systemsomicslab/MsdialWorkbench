@@ -76,6 +76,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     peakTree[index] = peak.InnerModel.DriftChromFeatures.Select(dpeak => new ChromatogramPeakFeatureModel(dpeak)).ToArray();
                 }
             }
+            var driftPeaks = new ObservableCollection<ChromatogramPeakFeatureModel>(peakTree.Query(0, orderedPeaks.Length));
             var peakRanges = new Dictionary<ChromatogramPeakFeatureModel, (int, int)>();
             {
                 var j = 0;
@@ -118,9 +119,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }).AddTo(Disposables);
             Ms1Peaks = peakModels;
 
-            var peakSpotNavigator = new PeakSpotNavigatorModel(peakModels, peakFilterModel, evaluator, status: ~FilterEnableStatus.None).AddTo(Disposables);
+            var peakSpotNavigator = new PeakSpotNavigatorModel(driftPeaks, peakFilterModel, evaluator, status: FilterEnableStatus.All).AddTo(Disposables);
             var accEvaluator = new AccumulatedPeakEvaluator(evaluator);
             peakSpotNavigator.AttachFilter(accumulatedPeakModels, accumulatedPeakFilterModel, status: FilterEnableStatus.None, evaluator: accEvaluator?.Contramap<IFilterable, ChromatogramPeakFeature>(filterable => ((ChromatogramPeakFeatureModel)filterable).InnerModel));
+            peakSpotNavigator.AttachFilter(peakModels, peakFilterModel, status: FilterEnableStatus.All, evaluator: evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative));
             PeakSpotNavigatorModel = peakSpotNavigator;
 
             var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
@@ -277,7 +279,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
-            // PeakTableModel = new ImmsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax, ChromMin, ChromMax);
+            PeakTableModel = new LcimmsAnalysisPeakTableModel(
+                driftPeaks, target,
+                driftPeaks.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d, driftPeaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d,
+                driftPeaks.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXsTop.RT.Value) ?? 0d, driftPeaks.DefaultIfEmpty().Max(peak => peak?.InnerModel.ChromXsTop.RT.Value) ?? 0d,
+                driftPeaks.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXsTop.Drift.Value) ?? 0d, driftPeaks.DefaultIfEmpty().Max(peak => peak?.InnerModel.ChromXsTop.Drift.Value) ?? 0d)
+                .AddTo(Disposables);
 
             switch (parameter.TargetOmics) {
                 case TargetOmics.Lipidomics:
@@ -394,6 +401,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             get => _displayLabel;
             set => SetProperty(ref _displayLabel, value);
         }
+        public LcimmsAnalysisPeakTableModel PeakTableModel { get; }
+
         private string _displayLabel = string.Empty;
 
         public Task SaveAsync(CancellationToken token) {

@@ -67,6 +67,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     propTree[index] = prop.innerModel.AlignmentDriftSpotFeatures.Select(dprop => new AlignmentSpotPropertyModel(dprop, observableBarItemsLoader)).ToArray();
                 }
             }
+            var driftProps = new ObservableCollection<AlignmentSpotPropertyModel>(propTree.Query(0, props.Count));
             var propRanges = new Dictionary<AlignmentSpotPropertyModel, (int, int)>();
             {
                 var j = 0;
@@ -110,8 +111,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }).AddTo(Disposables);
             Ms1Spots = propModels;
 
-            var peakSpotNavigator = new PeakSpotNavigatorModel(propModels, peakFilterModel, evaluator, status: FilterEnableStatus.All).AddTo(Disposables);
+            var peakSpotNavigator = new PeakSpotNavigatorModel(driftProps, peakFilterModel, evaluator, status: FilterEnableStatus.All).AddTo(Disposables);
             var accEvaluator = new AccumulatedPeakEvaluator(evaluator);
+            peakSpotNavigator.AttachFilter(propModels, peakFilterModel, status: FilterEnableStatus.All, evaluator: evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative));
             peakSpotNavigator.AttachFilter(accumulatedPropModels, accumulatedPeakFilterModel, status: FilterEnableStatus.None, evaluator: accEvaluator.Contramap<IFilterable, AlignmentSpotProperty>(filterable => ((AlignmentSpotPropertyModel)filterable).innerModel));
             PeakSpotNavigatorModel = peakSpotNavigator;
 
@@ -246,7 +248,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
             RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
             DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
 
-            // AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(Ms1Spots, TargetZZZ, MassMin, MassMax, DriftMin, DriftMax);
+            AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(
+                driftProps, target,
+                driftProps.DefaultIfEmpty().Min(peak => peak?.MassCenter) ?? 0d, driftProps.DefaultIfEmpty().Max(peak => peak?.MassCenter) ?? 0d,
+                driftProps.DefaultIfEmpty().Min(peak => peak?.RT) ?? 0d, driftProps.DefaultIfEmpty().Max(peak => peak?.RT) ?? 0d,
+                driftProps.DefaultIfEmpty().Min(peak => peak?.Drift) ?? 0d, driftProps.DefaultIfEmpty().Max(peak => peak?.Drift) ?? 0d,
+                Observable.Return(classBrush)).AddTo(Disposables);
 
             MsdecResult = target.Where(t => t != null)
                 .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))
@@ -304,7 +311,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public BarChartModel RtBarChartModel { get; }
         public BarChartModel DtBarChartModel { get; }
-
+        public LcimmsAlignmentSpotTableModel AlignmentSpotTableModel { get; }
         public AlignmentEicModel RtAlignmentEicModel { get; }
         public AlignmentEicModel DtAlignmentEicModel { get; }
 
