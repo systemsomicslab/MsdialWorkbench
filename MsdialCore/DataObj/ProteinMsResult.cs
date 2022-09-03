@@ -14,9 +14,9 @@ namespace CompMs.MsdialCore.DataObj {
     public class ProteinMsResult {
         public ProteinMsResult() { }
         [SerializationConstructor]
-        public ProteinMsResult(int index, string databaseID, FastaProperty fasta) {
+        public ProteinMsResult(int index, string databaseID, FastaProperty fastaProperty) {
             DatabaseID = databaseID;
-            FastaProperty = fasta;
+            FastaProperty = fastaProperty;
             Index = index;
         }
         [Key(0)]

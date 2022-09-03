@@ -60,10 +60,11 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
 
         private void RunAnnotationCore(ChromatogramPeakFeature chromatogramPeakFeature, IReadOnlyList<MSDecResult> msdecResults, IDataProvider provider) {
             foreach (var dpeak in chromatogramPeakFeature.DriftChromFeatures) {
-                RunInnerAnnotationCore(chromatogramPeakFeature, dpeak, msdecResults[dpeak.MasterPeakID], provider);
-                if (!dpeak.MatchResults.Representative.IsUnknown) {
+                var msdecResult = msdecResults[dpeak.MasterPeakID]; 
+                if (!msdecResult.Spectrum.IsEmptyOrNull()) {
                     dpeak.MSDecResultIdUsed = dpeak.MasterPeakID;
                 }
+                RunInnerAnnotationCore(chromatogramPeakFeature, dpeak, msdecResult, provider);
             }
             chromatogramPeakFeature.SetMatchResultProperty(_refer, _evaluator);
         }

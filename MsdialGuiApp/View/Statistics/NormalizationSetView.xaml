@@ -1,10 +1,10 @@
-﻿<Window x:Class="CompMs.App.Msdial.View.Normalize.NormalizationSetView"
+﻿<Window x:Class="CompMs.App.Msdial.View.Statistics.NormalizationSetView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Normalize"
-        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Normalize"
+        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Statistics"
+        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Statistics"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type={x:Type vm:NormalizationSetViewModel}}"
         Width="800"
@@ -33,12 +33,12 @@
                     </Style>
                 </StackPanel.Resources>
                 <RadioButton Content="None" IsChecked="{Binding IsNormalizeNone.Value, Mode=TwoWay}" IsEnabled="True"/>
-                <RadioButton Content="Internal standard" IsChecked="{Binding IsNormalizeIS.Value, Mode=TwoWay}" IsEnabled="False"/>
-                <RadioButton Content="LOWESS" IsChecked="{Binding IsNormalizeLowess.Value, Mode=TwoWay}" IsEnabled="False"/>
-                <RadioButton Content="Internal standard + LOWESS" IsChecked="{Binding IsNormalizeIsLowess.Value, Mode=TwoWay}" IsEnabled="False"/>
+                <RadioButton Content="Internal standard" IsChecked="{Binding IsNormalizeIS.Value, Mode=TwoWay}" IsEnabled="True"/>
+                <RadioButton Content="LOWESS" IsChecked="{Binding IsNormalizeLowess.Value, Mode=TwoWay}" IsEnabled="True"/>
+                <RadioButton Content="Internal standard + LOWESS" IsChecked="{Binding IsNormalizeIsLowess.Value, Mode=TwoWay}" IsEnabled="True"/>
                 <RadioButton Content="SPLASH lipidomix" IsChecked="{Binding IsNormalizeSplash.Value, Mode=TwoWay}"/>
-                <RadioButton Content="Total ion chromatogram (TIC)" IsChecked="{Binding IsNormalizeTic.Value, Mode=TwoWay}" IsEnabled="False"/>
-                <RadioButton Content="mTIC: TIC of identified metabolites" IsChecked="{Binding IsNormalizeMTic.Value, Mode=TwoWay}" IsEnabled="False"/>
+                <RadioButton Content="Total ion chromatogram (TIC)" IsChecked="{Binding IsNormalizeTic.Value, Mode=TwoWay}" IsEnabled="True"/>
+                <RadioButton Content="mTIC: TIC of identified metabolites" IsChecked="{Binding IsNormalizeMTic.Value, Mode=TwoWay}" IsEnabled="True"/>
             </StackPanel>
         </GroupBox>
 

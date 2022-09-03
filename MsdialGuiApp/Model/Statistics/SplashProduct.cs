@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Xml.Linq;
 
-namespace CompMs.App.Msdial.Model.Normalize
+namespace CompMs.App.Msdial.Model.Statistics
 {
     internal class SplashProduct
     {

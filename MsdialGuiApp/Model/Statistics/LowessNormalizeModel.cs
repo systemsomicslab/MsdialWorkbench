@@ -1,25 +1,25 @@
 ﻿using CompMs.App.Msdial.ViewModel.Service;
-using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Normalize;
 using Reactive.Bindings;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Collections.Generic;
 using System.Reactive.Linq;
 
-namespace CompMs.App.Msdial.Model.Normalize
+namespace CompMs.App.Msdial.Model.Statistics
 {
-    internal sealed class MticNormalizeModel : BindableBase
+    internal sealed class LowessNormalizeModel : BindableBase
     {
         private readonly AlignmentResultContainer _container;
-        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+        private readonly IReadOnlyList<AnalysisFileBean> _files;
         private readonly IMessageBroker _messageBroker;
 
-        public MticNormalizeModel(AlignmentResultContainer container, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker messageBroker) {
+        public LowessNormalizeModel(AlignmentResultContainer container, IReadOnlyList<AnalysisFileBean> files, IMessageBroker messageBroker) {
             _container = container ?? throw new ArgumentNullException(nameof(container));
-            _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
+            _files = files ?? throw new ArgumentNullException(nameof(files));
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
         }
 
@@ -28,7 +28,7 @@ namespace CompMs.App.Msdial.Model.Normalize
             var task = TaskNotification.Start("Normalize..");
             var publisher = new TaskProgressPublisher(_broker, task);
             using (publisher.Start()) {
-                Normalization.NormalizeByMaxPeakOnNamedPeaks(_container.AlignmentSpotProperties, _evaluator);
+                Normalization.LowessNormalize(_files, _container.AlignmentSpotProperties, IonAbundanceUnit.NormalizedByInternalStandardPeakHeight);
                 _container.IsNormalized = true;
             }
         }

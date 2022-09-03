@@ -162,9 +162,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReadOnlyReactivePropertySlim<bool> IsEnabled { get; }
 
-        public void Next() {
+        public ISettingViewModel Next(ISettingViewModel selected) {
             decide.OnNext(Unit.Default);
             Model.Prepare();
+            return null;
         }
     }
 }

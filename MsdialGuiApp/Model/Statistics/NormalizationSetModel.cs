@@ -14,7 +14,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
-namespace CompMs.App.Msdial.Model.Normalize
+namespace CompMs.App.Msdial.Model.Statistics
 {
     internal sealed class NormalizationSetModel : DisposableModelBase
     {

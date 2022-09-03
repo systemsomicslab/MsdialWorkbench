@@ -395,13 +395,13 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBox Text="{Binding LowerValue, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                        <TextBox Text="{Binding LowerValue, RelativeSource={RelativeSource Mode=TemplatedParent}, StringFormat=N4}"
                                  TextAlignment="Center"
                                  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
                         <TextBlock Text="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                    Margin="10,0"
                                    Grid.Row="0" Grid.Column="2"/>
-                        <TextBox Text="{Binding UpperValue, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                        <TextBox Text="{Binding UpperValue, RelativeSource={RelativeSource Mode=TemplatedParent}, StringFormat=N4}"
                                  TextAlignment="Center"
                                  Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2"/>
 
@@ -458,6 +458,35 @@
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Opacity" Value="0.3"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <ControlTemplate TargetType="ToggleButton" x:Key="ExpanderLikeToggleButton">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="&#xEA3A;" FontFamily="Segoe MDL2 Assets" Width="{Binding Height, RelativeSource={RelativeSource Self}}"
+                       VerticalAlignment="Center" HorizontalAlignment="Center"
+                       Grid.Column="0"/>
+            <ContentPresenter Grid.Column="1" Margin="4,0,0,0"/>
+            <TextBlock Text="&#xE96E;" FontFamily="Segoe MDL2 Assets" Width="{Binding Height, RelativeSource={RelativeSource Self}}"
+                       VerticalAlignment="Center" HorizontalAlignment="Center"
+                       Grid.Column="0">
+                <TextBlock.LayoutTransform>
+                    <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="0.7" ScaleY="0.7"/>
+                </TextBlock.LayoutTransform>
+            </TextBlock>
+            <ContentPresenter Grid.Column="1" Margin="4,0,0,0"/>
+        </Grid>
+    </ControlTemplate>
+
+    <Style TargetType="RibbonTab" x:Key="FocusWhenVisible">
+        <Style.Triggers>
+            <Trigger Property="Visibility" Value="Visible">
+                <Setter Property="IsSelected" Value="True"/>
             </Trigger>
         </Style.Triggers>
     </Style>

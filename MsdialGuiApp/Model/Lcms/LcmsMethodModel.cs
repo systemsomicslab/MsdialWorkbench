@@ -15,7 +15,6 @@ using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.MessagePack;
 using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Graphics.UI.ProgressBar;
@@ -35,6 +34,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -53,6 +54,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
         private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly IMessageBroker _broker;
+        private readonly Subject<ProteinResultContainerModel> _proteinResultContainerModelSubject;
         private IAnnotationProcess annotationProcess;
 
         public LcmsMethodModel(
@@ -74,6 +76,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
+            _proteinResultContainerModelSubject = new Subject<ProteinResultContainerModel>().AddTo(Disposables);
+            CanShowProteinGroupTable = Observable.Return(storage.Parameter.TargetOmics == TargetOmics.Proteomics);
         }
 
         public IMsdialDataStorage<MsdialLcmsParameter> Storage { get; }
@@ -81,6 +85,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         private FacadeMatchResultEvaluator matchResultEvaluator;
 
         public PeakFilterModel PeakFilterModel { get; }
+
+        public IObservable<bool> CanShowProteinGroupTable { get; }
 
         public LcmsAnalysisModel AnalysisModel {
             get => analysisModel;
@@ -108,6 +114,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.DataBaseMapper,
                 matchResultEvaluator,
                 Storage.Parameter,
+                _proteinResultContainerModelSubject,
                 PeakFilterModel)
             .AddTo(Disposables);
         }
@@ -127,6 +134,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.Parameter,
                 _projectBaseParameter,
                 Storage.AnalysisFiles,
+                _proteinResultContainerModelSubject,
                 _broker)
             .AddTo(Disposables);
         }
@@ -630,7 +638,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             //param.FragmentSearchSettingValues = model.FragmentQuerySettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();
             //param.AndOrAtFragmentSearch = model.SearchOption.Value;
         }
-
 
         public void GoToMsfinderMethod(bool isAlignmentView) {
             if (isAlignmentView) {

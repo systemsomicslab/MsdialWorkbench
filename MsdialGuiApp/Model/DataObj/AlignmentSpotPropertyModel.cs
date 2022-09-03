@@ -27,6 +27,9 @@ namespace CompMs.App.Msdial.Model.DataObj
         public ReadOnlyCollection<AlignmentChromPeakFeature> AlignedPeakProperties => innerModel.AlignedPeakProperties.AsReadOnly();
         public ReadOnlyCollection<AlignmentChromPeakFeatureModel> AlignedPeakPropertiesModel { get; }
 
+        public double RT => innerModel.TimesCenter.RT.Value;
+        public double Drift => innerModel.TimesCenter.Drift.Value;
+
         public double TimesCenter {
             get => innerModel.TimesCenter.Value;
             set {
@@ -138,7 +141,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
 
         public bool IsUnknown => innerModel.IsUnknown;
-        public bool IsMsmsAssigned => innerModel.IsMsmsAssigned;
+        public bool IsMsmsAssigned => innerModel.IsMsmsAssigned || (innerModel.AlignmentDriftSpotFeatures?.Any(spot => spot.IsMsmsAssigned) ?? false);
         public bool IsBaseIsotopeIon => innerModel.PeakCharacter.IsotopeWeightNumber == 0;
         public bool IsBlankFiltered => innerModel.FeatureFilterStatus.IsBlankFiltered;
         public bool IsFragmentQueryExisted => innerModel.FeatureFilterStatus.IsFragmentExistFiltered;

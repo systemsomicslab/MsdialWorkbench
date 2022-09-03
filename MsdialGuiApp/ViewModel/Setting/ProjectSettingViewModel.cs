@@ -61,10 +61,16 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         IObservable<bool> ISettingViewModel.ObserveChangeAfterDecision => ObserveChangeAfterDecision;
 
-        public void Next() {
-            foreach (var vm in SettingViewModels) {
-                vm.Next();
+        public ISettingViewModel Next(ISettingViewModel selected) {
+            var current = SettingViewModels.IndexOf(selected);
+            if (current >= 0) {
+                selected.Next(selected);
+                var next = current + 1;
+                if (next < SettingViewModels.Count) {
+                    return SettingViewModels[next];
+                }
             }
+            return null;
         }
 
         public Task RunAsync() {

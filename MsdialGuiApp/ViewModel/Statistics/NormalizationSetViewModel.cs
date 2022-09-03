@@ -1,9 +1,9 @@
-﻿using CompMs.App.Msdial.Model.Normalize;
+﻿using CompMs.App.Msdial.Model.Statistics;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 
-namespace CompMs.App.Msdial.ViewModel.Normalize
+namespace CompMs.App.Msdial.ViewModel.Statistics
 {
     internal sealed class NormalizationSetViewModel : ViewModelBase
     {

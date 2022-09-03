@@ -21,6 +21,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
     internal sealed class LcimmsAlignmentViewModel : ViewModelBase, IAlignmentResultViewModel
     {
+        private readonly LcimmsAlignmentModel _model;
+        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
+
         public LcimmsAlignmentViewModel(
             LcimmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
@@ -37,44 +41,59 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
 
-            this.model = model;
-            this.compoundSearchService = compoundSearchService;
-            this.peakSpotTableService = peakSpotTableService;
+            this._model = model;
+            this._compoundSearchService = compoundSearchService;
+            this._peakSpotTableService = peakSpotTableService;
 
-            Target = this.model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            Target = this._model.Target.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            Brushes = this.model.Brushes.AsReadOnly();
-            SelectedBrush = this.model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
+            Brushes = this._model.Brushes.AsReadOnly();
+            SelectedBrush = this._model.ToReactivePropertySlimAsSynchronized(m => m.SelectedBrush).AddTo(Disposables);
 
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
-            PeakFilterViewModel = PeakSpotNavigatorViewModel.PeakFilterViewModel;
 
-            Ms1Spots = CollectionViewSource.GetDefaultView(this.model.Ms1Spots);
+            Ms1Spots = CollectionViewSource.GetDefaultView(this._model.Ms1Spots);
 
             var (peakPlotFocusAction, peakPlotFocused) = focusControlManager.Request();
-            PlotViewModel = new AlignmentPeakPlotViewModel(model.PlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
+            RtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.RtMzPlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
+            DtMzPlotViewModel = new AlignmentPeakPlotViewModel(model.DtMzPlotModel, peakPlotFocusAction, peakPlotFocused).AddTo(Disposables);
 
             Ms2SpectrumViewModel = new MsSpectrumViewModel(model.Ms2SpectrumModel).AddTo(Disposables);
 
             var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
-            BarChartViewModel = new BarChartViewModel(model.BarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
-            AlignmentEicViewModel = new AlignmentEicViewModel(model.AlignmentEicModel).AddTo(Disposables);
-            /*
+            RtBarChartViewModel = new BarChartViewModel(model.RtBarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
+            DtBarChartViewModel = new BarChartViewModel(model.DtBarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
+            BarChartViewModels = new MultiBarChartViewModel(RtBarChartViewModel, DtBarChartViewModel).AddTo(Disposables);
+
+            RtAlignmentEicViewModel = new AlignmentEicViewModel(model.RtAlignmentEicModel).AddTo(Disposables);
+            DtAlignmentEicViewModel = new AlignmentEicViewModel(model.DtAlignmentEicModel).AddTo(Disposables);
+            AlignmentEicViewModels = new MultiAlignmentEicViewModel(RtAlignmentEicViewModel, DtAlignmentEicViewModel).AddTo(Disposables);
+            
             AlignmentSpotTableViewModel = new LcimmsAlignmentSpotTableViewModel(
                 model.AlignmentSpotTableModel,
-                Observable.Return(model.BarItemsLoader),
-                MassLower, MassUpper,
-                DriftLower, DriftUpper,
-                MetaboliteFilterKeyword,
-                CommentFilterKeyword)
+                PeakSpotNavigatorViewModel.MzLowerValue,
+                PeakSpotNavigatorViewModel.MzUpperValue,
+                PeakSpotNavigatorViewModel.RtLowerValue,
+                PeakSpotNavigatorViewModel.RtUpperValue,
+                PeakSpotNavigatorViewModel.DtLowerValue,
+                PeakSpotNavigatorViewModel.DtUpperValue,
+                PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
+                PeakSpotNavigatorViewModel.CommentFilterKeyword,
+                PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
-            */
 
-            SearchCompoundCommand = this.model.Target
-                .CombineLatest(this.model.MsdecResult, (t, r) => t?.innerModel != null && r != null)
-                .ToReactiveCommand()
-                .AddTo(Disposables);
-            SearchCompoundCommand.Subscribe(SearchCompound).AddTo(Disposables);
+            SearchCompoundCommand = new[]{
+                model.Target.Select(t => t?.innerModel is null),
+                model.MsdecResult.Select(r => r is null),
+                model.CompoundSearchModel.Select(m => m is null),
+            }.CombineLatestValuesAreAllFalse()
+            .ToReactiveCommand()
+            .WithSubscribe(() => {
+                using (var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value)) {
+                    compoundSearchService.ShowDialog(vm);
+                }
+            })
+            .AddTo(Disposables);
 
             FocusNavigatorViewModel = new FocusNavigatorViewModel(model.FocusNavigatorModel).AddTo(Disposables);
 
@@ -83,56 +102,26 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
         }
 
-        public AlignmentPeakPlotViewModel PlotViewModel {
-            get => plotViewModel;
-            set => SetProperty(ref plotViewModel, value);
-        }
-        private AlignmentPeakPlotViewModel plotViewModel;
+        public AlignmentPeakPlotViewModel RtMzPlotViewModel { get; }
+        public AlignmentPeakPlotViewModel DtMzPlotViewModel { get; }
+        public MsSpectrumViewModel Ms2SpectrumViewModel { get; }
+        public BarChartViewModel RtBarChartViewModel { get; }
+        public BarChartViewModel DtBarChartViewModel { get; }
+        public MultiBarChartViewModel BarChartViewModels { get; }
 
-        public MsSpectrumViewModel Ms2SpectrumViewModel {
-            get => ms2SpectrumViewModel;
-            set => SetProperty(ref ms2SpectrumViewModel, value);
-        }
-        private MsSpectrumViewModel ms2SpectrumViewModel;
+        BarChartViewModel IAlignmentResultViewModel.BarChartViewModel => DtBarChartViewModel;
+        public AlignmentEicViewModel RtAlignmentEicViewModel { get; }
+        public AlignmentEicViewModel DtAlignmentEicViewModel { get; }
+        public MultiAlignmentEicViewModel AlignmentEicViewModels { get; }
+        public LcimmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel { get; }
 
-        public BarChartViewModel BarChartViewModel {
-            get => barChartViewModel;
-            set => SetProperty(ref barChartViewModel, value);
-        }
-        private BarChartViewModel barChartViewModel;
-
-        public AlignmentEicViewModel AlignmentEicViewModel {
-            get => alignmentEicViewModel;
-            set => SetProperty(ref alignmentEicViewModel, value);
-        }
-        private AlignmentEicViewModel alignmentEicViewModel;
-
-        /*
-        public LcimmsAlignmentSpotTableViewModel AlignmentSpotTableViewModel {
-            get => alignmentSpotTableViewModel;
-            set => SetProperty(ref alignmentSpotTableViewModel, value);
-        }
-        private LcimmsAlignmentSpotTableViewModel alignmentSpotTableViewModel;
-        */
-
-        public ICollectionView Ms1Spots {
-            get => ms1Spots;
-            set => SetProperty(ref ms1Spots, value);
-        }
-        private ICollectionView ms1Spots;
-
-        public ICollectionView PeakSpotsView => ms1Spots;
+        public ICollectionView Ms1Spots { get; }
 
         public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
 
         public ReactivePropertySlim<BrushMapData<AlignmentSpotPropertyModel>> SelectedBrush { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
-        public PeakFilterViewModel PeakFilterViewModel { get; }
         public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
-
-        private readonly LcimmsAlignmentModel model;
-        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
-        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
 
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
@@ -141,26 +130,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 
         public ReactiveCommand SearchCompoundCommand { get; }
 
-        private void SearchCompound() {
-            if (model.Target.Value?.innerModel == null || model.MsdecResult.Value == null)
-                return;
-
-            using (var model = this.model.CreateCompoundSearchModel())
-            using (var vm = new CompoundSearchVM(model)) {
-                compoundSearchService.ShowDialog(vm);
-            }
-        }
-
         public ICommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));
 
         private DelegateCommand showIonTableCommand;
 
         private void ShowIonTable() {
-            // peakSpotTableService.Show(AlignmentSpotTableViewModel);
+            _peakSpotTableService.Show(AlignmentSpotTableViewModel);
         }
 
         public void SaveProject() {
-            model.SaveProject();
+            _model.SaveProject();
         }
     }
 }

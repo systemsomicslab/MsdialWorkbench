@@ -4,8 +4,8 @@ using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
-using CompMs.App.Msdial.Model.Normalize;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Statistics;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -58,6 +58,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             MsdialLcmsParameter parameter,
             ProjectBaseParameterModel projectBaseParameter,
             List<AnalysisFileBean> files,
+            IObserver<ProteinResultContainerModel> proteinResultContainerModelObserver,
             IMessageBroker messageBroker)
             : base(alignmentFileBean, alignmentFileBean.FilePath) {
             if (databases is null) {
@@ -67,6 +68,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (projectBaseParameter is null) {
                 throw new ArgumentNullException(nameof(projectBaseParameter));
             }
+
 
             _alignmentFile = alignmentFileBean;
             Parameter = parameter;
@@ -82,9 +84,9 @@ namespace CompMs.App.Msdial.Model.Lcms
             var heightLoader = new BarItemsLoaderData("Peak height", Observable.Return("Height"), fileIdToClassNameAsObservable.Select(id2class => new HeightBarItemsLoader(id2class)), Observable.Return(true));
             var areaBaselineLoader = new BarItemsLoaderData("Peak area above base line", Observable.Return("Area"), fileIdToClassNameAsObservable.Select(id2class => new AreaAboveBaseLineBarItemsLoader(id2class)), Observable.Return(true));
             var areaZeroLoader = new BarItemsLoaderData("Peak area above zero", Observable.Return("Area"), fileIdToClassNameAsObservable.Select(id2class => new AreaAboveZeroBarItemsLoader(id2class)), Observable.Return(true));
-            var normalizedHeightLoader = new BarItemsLoaderData("Normalized peak height", Target.Select(t => t.IonAbundanceUnit.ToLabel()), fileIdToClassNameAsObservable.Select(id2class => new NormalizedHeightBarItemsLoader(id2class)), NormalizationSetModel.IsNormalized);
-            var normalizedAreaBaselineLoader = new BarItemsLoaderData("Normalized peak area above base line", Target.Select(t => t.IonAbundanceUnit.ToLabel()), fileIdToClassNameAsObservable.Select(id2class => new NormalizedAreaAboveBaseLineBarItemsLoader(id2class)), NormalizationSetModel.IsNormalized);
-            var normalizedAreaZeroLoader = new BarItemsLoaderData("Normalized peak area above zero", Target.Select(t => t.IonAbundanceUnit.ToLabel()), fileIdToClassNameAsObservable.Select(id2class => new NormalizedAreaAboveZeroBarItemsLoader(id2class)), NormalizationSetModel.IsNormalized);
+            var normalizedHeightLoader = new BarItemsLoaderData("Normalized peak height", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), fileIdToClassNameAsObservable.Select(id2class => new NormalizedHeightBarItemsLoader(id2class)), NormalizationSetModel.IsNormalized);
+            var normalizedAreaBaselineLoader = new BarItemsLoaderData("Normalized peak area above base line", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), fileIdToClassNameAsObservable.Select(id2class => new NormalizedAreaAboveBaseLineBarItemsLoader(id2class)), NormalizationSetModel.IsNormalized);
+            var normalizedAreaZeroLoader = new BarItemsLoaderData("Normalized peak area above zero", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), fileIdToClassNameAsObservable.Select(id2class => new NormalizedAreaAboveZeroBarItemsLoader(id2class)), NormalizationSetModel.IsNormalized);
             var barItemLoaderDatas = new[]
             {
                 heightLoader, areaBaselineLoader, areaZeroLoader,
@@ -93,14 +95,20 @@ namespace CompMs.App.Msdial.Model.Lcms
             var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.Select(_ => normalizedHeightLoader).ToReactiveProperty(barItemLoaderDatas.First()).AddTo(Disposables);
             var barItemsLoaderProperty = barItemsLoaderDataProperty.Where(data => !(data is null)).Select(data => data.ObservableLoader).Switch().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, barItemsLoaderProperty)));
-           
+
+            if (parameter.TargetOmics == TargetOmics.Proteomics) {
+                var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(alignmentFileBean.ProteinAssembledResultFilePath);
+                var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Spots, Target);
+                proteinResultContainerModelObserver.OnNext(proteinResultContainerModel);
+            }
+
             _decLoader = new MSDecLoader(_alignmentFile.SpectraFilePath);
             _msdecResult = Target.Where(t => t != null)
                 .Select(t => _decLoader.LoadMSDecResult(t.MasterAlignmentID))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, useRtFilter: true).AddTo(Disposables);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: ~FilterEnableStatus.Dt).AddTo(Disposables);
 
             // Peak scatter plot
             var ontologyBrush = new BrushMapData<AlignmentSpotPropertyModel>(
@@ -254,6 +262,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
+
+            PcaSettingModel = new PcaSettingModel(parameter, Ms1Spots, evaluator);
         }
 
         public ParameterBase Parameter { get; }
@@ -269,10 +279,12 @@ namespace CompMs.App.Msdial.Model.Lcms
         public AlignmentEicModel AlignmentEicModel { get; }
         public LcmsAlignmentSpotTableModel AlignmentSpotTableModel { get; private set; }
         public NormalizationSetModel NormalizationSetModel { get; }
+        public PcaSettingModel PcaSettingModel { get; }
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
+        public ProteinResultContainerModel ProteinResultContainerModel { get; }
 
         public CompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {
             return new LcmsCompoundSearchModel<AlignmentSpotProperty>(

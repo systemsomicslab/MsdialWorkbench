@@ -53,7 +53,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                     new AxisItemModel(upperLogVerticalAxis, "Log10"),
                 });
                 UpperVerticalAxis = new ReactivePropertySlim<AxisItemModel>(axis).AddTo(Disposables);
-                upperVerticalAxisSource = UpperVerticalAxis.Select(item => item.AxisManager);
+                upperVerticalAxisSource = UpperVerticalAxis.Where(item => item != null).Select(item => item.AxisManager);
             }
             else {
                 UpperVerticalAxiss = new ObservableCollection<AxisItemModel>();

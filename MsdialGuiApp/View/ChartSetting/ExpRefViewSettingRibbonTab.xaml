@@ -7,12 +7,20 @@
            mc:Ignorable="d" 
            Header="MS/MS spectrum"
            d:DataContext="{d:DesignInstance Type={x:Type vmchart:RawDecSpectrumsViewModel}}"
-           d:DesignHeight="450" d:DesignWidth="800">
-    <RibbonGroup Header="Select raw MS/MS spectrum">
+           d:DesignHeight="450" d:DesignWidth="800" d:Background="White">
+    <RibbonGroup Header="Raw MS/MS spectrum">
         <RibbonComboBox Label="Spectrum id"
                         VerticalAlignment="Center">
             <RibbonGallery SelectedItem="{Binding SelectedMs2Id.Value}">
                 <RibbonGalleryCategory ItemsSource="{Binding Ms2IdList.Value, FallbackValue={x:Null}}"/>
+            </RibbonGallery>
+        </RibbonComboBox>
+    </RibbonGroup>
+    <RibbonGroup Header="Intensity axis type">
+        <RibbonComboBox Label="Axis type"
+                        VerticalAlignment="Center">
+            <RibbonGallery SelectedItem="{Binding UpperVerticalAxis.Value}">
+                <RibbonGalleryCategory ItemsSource="{Binding UpperVerticalAxiss}" DisplayMemberPath="Label"/>
             </RibbonGallery>
         </RibbonComboBox>
     </RibbonGroup>

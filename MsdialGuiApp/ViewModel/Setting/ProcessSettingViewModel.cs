@@ -61,10 +61,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .Inverse()
                 .ToReactiveCommand()
                 .AddTo(Disposables);
-            ContinueCommand.WithLatestFrom(SelectedParentSettingViewModel, (a, b) => b)
-                .Where(vm => vm != null)
-                .Subscribe(vm => vm.Next())
-                .AddTo(Disposables);
+            ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
             RunCommand = SelectedParentSettingViewModel
                 .Switch(vm => vm is MethodSettingViewModel
@@ -129,10 +126,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .Inverse()
                 .ToReactiveCommand()
                 .AddTo(Disposables);
-            ContinueCommand.WithLatestFrom(SelectedParentSettingViewModel, (a, b) => b)
-                .Where(vm => vm != null)
-                .Subscribe(vm => vm.Next())
-                .AddTo(Disposables);
+            ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
             RunCommand = SelectedParentSettingViewModel
                 .Switch(vm => vm is MethodSettingViewModel
@@ -196,9 +190,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .Inverse()
                 .ToReactiveCommand()
                 .AddTo(Disposables);
-            ContinueCommand.WithLatestFrom(SelectedParentSettingViewModel, (a, b) => b)
-                .Where(vm => vm != null)
-                .Subscribe(vm => vm.Next())
+            ContinueCommand.Subscribe(Next)
                 .AddTo(Disposables);
 
             RunCommand = SelectedParentSettingViewModel
@@ -261,10 +253,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .Inverse()
                 .ToReactiveCommand()
                 .AddTo(Disposables);
-            ContinueCommand.WithLatestFrom(SelectedParentSettingViewModel, (a, b) => b)
-                .Where(vm => vm != null)
-                .Subscribe(vm => vm.Next())
-                .AddTo(Disposables);
+            ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
             RunCommand = SelectedParentSettingViewModel
                 .Switch(vm => vm is MethodSettingViewModel
@@ -323,10 +312,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .Inverse()
                 .ToReactiveCommand()
                 .AddTo(Disposables);
-            ContinueCommand.WithLatestFrom(SelectedParentSettingViewModel, (a, b) => b)
-                .Where(vm => vm != null)
-                .Subscribe(vm => vm.Next())
-                .AddTo(Disposables);
+            ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
             RunCommand = SelectedParentSettingViewModel
                 .Switch(vm => vm is MethodSettingViewModel
@@ -373,6 +359,28 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 return MethodSettingViewModel.StartWith(MethodSettingViewModel.Value);
             }
             return Observable.Return<ISettingViewModel>(null);
+        }
+
+        private void Next() {
+            var parent = SelectedParentSettingViewModel.Value;
+            if (parent is null) {
+                return;
+            }
+            var next = parent.Next(SelectedSettingViewModel.Value);
+            if (!(next is null)) {
+                SelectedSettingViewModel.Value = next;
+                return;
+            }
+            switch (parent) {
+                case ProjectSettingViewModel _:
+                    SelectedSettingViewModel.Value = DatasetSettingViewModel.Value.SettingViewModels.FirstOrDefault();
+                    break;
+                case DatasetSettingViewModel _:
+                    SelectedSettingViewModel.Value = MethodSettingViewModel.Value.SettingViewModels.FirstOrDefault();
+                    break;
+                case MethodSettingViewModel _:
+                    break;
+            }
         }
 
         private async Task RunProcessAsync() {

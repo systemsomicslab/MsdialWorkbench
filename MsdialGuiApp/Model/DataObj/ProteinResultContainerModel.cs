@@ -1,8 +1,11 @@
 ﻿using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using Reactive.Bindings;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
@@ -11,17 +14,25 @@ namespace CompMs.App.Msdial.Model.DataObj
         private readonly ProteinResultContainer _resultContainer;
         private readonly ObservableCollection<ProteinGroupModel> _proteinGroups;
 
-        public ProteinResultContainerModel(ProteinResultContainer resultContainer, IReadOnlyList<ChromatogramPeakFeatureModel> spots)
+        public ProteinResultContainerModel(ProteinResultContainer resultContainer, IReadOnlyList<ChromatogramPeakFeatureModel> spots, IReactiveProperty<ChromatogramPeakFeatureModel> target)
         {
             _resultContainer = resultContainer;
             _proteinGroups = new ObservableCollection<ProteinGroupModel>(resultContainer.ProteinGroups.Select(group => new ProteinGroupModel(group, spots)));
+            Target = new ReactivePropertySlim<object>();
+            Target.OfType<ChromatogramPeakFeatureModel>().Subscribe(t => target.Value = t);
 
         }
 
-        public ProteinResultContainerModel(ProteinResultContainer resultContainer, IReadOnlyList<AlignmentSpotPropertyModel> spots)
+        public ProteinResultContainerModel(ProteinResultContainer resultContainer, IReadOnlyList<AlignmentSpotPropertyModel> spots, IReactiveProperty<AlignmentSpotPropertyModel> target)
         {
             _resultContainer = resultContainer;
             _proteinGroups = new ObservableCollection<ProteinGroupModel>(resultContainer.ProteinGroups.Select(group => new ProteinGroupModel(group, spots)));
+            Target = new ReactivePropertySlim<object>();
+            Target.OfType<AlignmentSpotPropertyModel>().Subscribe(t => target.Value = t);
         }
+
+        public ReadOnlyObservableCollection<ProteinGroupModel> ProteinGroups => new ReadOnlyObservableCollection<ProteinGroupModel>(_proteinGroups);
+
+        public IReactiveProperty<object> Target { get; }
     }
 }

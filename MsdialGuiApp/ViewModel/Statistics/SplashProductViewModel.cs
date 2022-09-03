@@ -1,12 +1,13 @@
-﻿using CompMs.App.Msdial.Model.Normalize;
+﻿using CompMs.App.Msdial.Model.Statistics;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 
-namespace CompMs.App.Msdial.ViewModel.Normalize
+namespace CompMs.App.Msdial.ViewModel.Statistics
 {
-    class SplashProductViewModel : ViewModelBase {
+    internal sealed class SplashProductViewModel : ViewModelBase
+    {
         public SplashProductViewModel(SplashProduct product) {
             Model = product;
             Lipids = Model.Lipids

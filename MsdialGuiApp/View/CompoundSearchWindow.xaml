@@ -10,6 +10,8 @@
         xmlns:divm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
         xmlns:lcv="clr-namespace:CompMs.App.Msdial.View.Lcms"
         xmlns:lcvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
+        xmlns:lcimv="clr-namespace:CompMs.App.Msdial.View.Lcimms"
+        xmlns:lcimvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
         xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type={x:Type vm:CompoundSearchVM}}"
@@ -37,6 +39,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type imvm:ImmsCompoundSearchVM}">
                 <imv:ImmsCompoundSearchView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type lcimvm:LcimmsCompoundSearchViewModel}">
+                <lcimv:LcimmsCompoundSearchView />
             </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>
