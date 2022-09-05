@@ -231,6 +231,7 @@ namespace CompMs.Graphics.Chart
                 zz = Convert.ToDouble(z as IConvertible);
                 var color = GetGradientColor(GradientStops, zz, zmin, zmax);
                 var brush = new SolidColorBrush(color);
+                brush.Freeze();
 
                 var dv = new AnnotatedDrawingVisual(o)
                 {

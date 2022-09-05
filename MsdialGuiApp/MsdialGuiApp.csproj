@@ -287,6 +287,7 @@
     <Compile Include="Model\Statistics\PcaResultModel.cs" />
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
     <Compile Include="Utility\ObservableExtensions.cs" />
+    <Compile Include="ViewModel\Chart\ImagingImageViewModel.cs" />
     <Compile Include="ViewModel\Chart\Ms2ChromatogramsViewModel.cs" />
     <Compile Include="ViewModel\Chart\MultiAlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\Chart\MultiBarChartViewModel.cs" />
@@ -449,6 +450,9 @@
     </Compile>
     <Compile Include="View\Chart\ExpRefView.xaml.cs">
       <DependentUpon>ExpRefView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\ImagingImageView.xaml.cs">
+      <DependentUpon>ImagingImageView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\Ms2ChromatogramsView.xaml.cs">
       <DependentUpon>Ms2ChromatogramsView.xaml</DependentUpon>
@@ -812,6 +816,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Chart\ExpRefView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\ImagingImageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
