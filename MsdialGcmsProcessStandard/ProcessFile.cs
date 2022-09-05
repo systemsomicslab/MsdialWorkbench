@@ -21,7 +21,7 @@ namespace Msdial.Gcms.Dataprocess {
             var fileID = rdamProperty.RdamFilePath_RdamFileID[analysisFile.AnalysisFilePropertyBean.AnalysisFilePath];
             var measurementID = rdamProperty.RdamFileContentBeanCollection[fileID].FileID_MeasurementID[analysisFile.AnalysisFilePropertyBean.AnalysisFileId];
 
-            using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, true))
+            using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, false, true))
             {
                 var spectrumList = DataAccessGcUtility.GetRdamSpectrumList(rawDataAccess);
                 if (spectrumList == null) return;

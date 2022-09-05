@@ -69,6 +69,7 @@ namespace CompMs.Common.DataObj {
         public List<RawSpectrum> AccumulatedSpectrumList { get; set; }
         public List<double> CollisionEnergyTargets { get; set; }
         public MaldiFrameLaserInfo MaldiFrameLaserInfo { get; set; }
+        public List<MaldiFrameInfo> MaldiFrames { get; set; }
 
         public RawMeasurement()
         {
@@ -80,6 +81,8 @@ namespace CompMs.Common.DataObj {
             SpectrumList = new List<RawSpectrum>();
             AccumulatedSpectrumList = new List<RawSpectrum>();
             MaldiFrameLaserInfo = new MaldiFrameLaserInfo();
+
+            MaldiFrames = new List<MaldiFrameInfo>();
         }
     }
 
@@ -280,5 +283,17 @@ namespace CompMs.Common.DataObj {
     {
         public float Mz;
         public float Intensity;
+    }
+
+    public class RawSpectraOnPixels {
+        // array lengths of xyframes and pixelpeakfeatureslist should be equal.
+        public List<MaldiFrameInfo> XYFrames;
+        public List<RawPixelFeatures> PixelPeakFeaturesList;
+    }
+
+    public class RawPixelFeatures {
+        public double Mz;
+        public double Drift;
+        public double[] IntensityArray;
     }
 }
