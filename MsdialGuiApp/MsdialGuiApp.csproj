@@ -292,6 +292,11 @@
     <Compile Include="ViewModel\Core\IAnalysisResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IResultViewModel.cs" />
     <Compile Include="ViewModel\DataObj\PeptideViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\RoiIntensitiesViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\RoiResultViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\RoiViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\WholeImageIntensitiesViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\WholeImageResultViewModel.cs" />
     <Compile Include="ViewModel\Information\CompoundDetailViewModel.cs" />
     <Compile Include="ViewModel\Information\PeakInformationViewModel.cs" />
     <Compile Include="ViewModel\DataObj\ProteinGroupViewModel.cs" />
