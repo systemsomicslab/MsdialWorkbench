@@ -490,6 +490,9 @@
     <Compile Include="View\Export\SaveImageAsWinLegacy.xaml.cs">
       <DependentUpon>SaveImageAsWinLegacy.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Imaging\ImagingMainView.xaml.cs">
+      <DependentUpon>ImagingMainView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Imms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
     </Compile>
@@ -871,6 +874,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Export\SaveImageAsWinLegacy.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Imaging\ImagingMainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

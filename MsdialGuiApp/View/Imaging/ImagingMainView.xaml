@@ -1,0 +1,101 @@
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Imaging.ImagingMainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Imaging"
+             mc:Ignorable="d" 
+             d:Background="White"
+             d:DesignHeight="780" d:DesignWidth="1280">
+    <UserControl.Resources>
+        <XmlDataProvider x:Key="ROIData">
+            <x:XData>
+                <Files xmlns="" Title="Files">
+                    <Title>Files</Title>
+                    <File Title="FileA">
+                        <ROI Id="FileA_100_RegionA" Title="m/z 100, Region A" Region="A"/>
+                        <ROI Id="FileA_100_RegionB" Title="m/z 100, Region B" Region="B"/>
+                        <ROI Id="FileA_200" Title="m/z 200"/>
+                        <ROI Id="FileA_300" Title="m/z 300"/>
+                    </File>
+                    <File Title="FileB">
+                        <ROI Id="FileB_100" Title="m/z 100"/>
+                    </File>
+                    <File Title="FileC">
+                        <ROI Id="FileC_100" Title="m/z 100"/>
+                        <ROI Id="FileC_200" Title="m/z 200"/>
+                    </File>
+                </Files>
+            </x:XData>
+        </XmlDataProvider>
+        <XmlDataProvider x:Key="ComparedData" XPath="Datas/">
+            <x:XData>
+                <Datas Title="Datas">
+                    <Data Title="ComparedA">
+                        <ROI Id="FileA_100_RegionA" Title="m/z 100, Region A" Region="A"/>
+                        <ROI Id="FileA_100_RegionB" Title="m/z 100, Region B" Region="B"/>
+                    </Data>
+                    <Data Title="ComparedB">
+                        <ROI Id="FileA_100_RegionA" Title="m/z 100, Region A" Region="A"/>
+                        <ROI Id="FileB_100" Title="m/z 100"/>
+                        <ROI Id="FileC_100" Title="m/z 100"/>
+                    </Data>
+                </Datas>
+            </x:XData>
+        </XmlDataProvider>
+
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="160"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <ContentControl Content="{StaticResource ROIData}" Grid.Row="0">
+                <ContentControl.ContentTemplate>
+                    <DataTemplate>
+                        <GroupBox Header="{Binding XPath=/Files/File/Title}">
+                            <ListBox ItemsSource="{Binding XPath=/Files/File}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding XPath=@Title}"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </GroupBox>
+                    </DataTemplate>
+                </ContentControl.ContentTemplate>
+            </ContentControl>
+            <ContentControl Content="ROIs?" Grid.Row="1"/>
+        </Grid>
+
+        <Grid Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <ContentControl Content="Image" Grid.Row="1" Grid.Column="0"/>
+            <ContentControl Content="Scatter" Grid.Row="1" Grid.Column="1"/>
+        </Grid>
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <ContentControl Content="PeakInfo" Grid.Row="0"/>
+            <ContentControl Content="MS/MS" Grid.Row="1"/>
+        </Grid>
+        
+    </Grid>
+</UserControl>
