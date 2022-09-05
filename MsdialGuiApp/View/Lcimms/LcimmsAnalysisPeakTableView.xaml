@@ -1,22 +1,17 @@
-﻿<UserControl x:Class="CompMs.App.Msdial.View.Lcms.LcmsAnalysisPeakTableView"
+﻿<UserControl x:Class="CompMs.App.Msdial.View.Lcimms.LcimmsAnalysisPeakTableView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Lcms"
              mc:Ignorable="d" 
-             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
+             xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
              xmlns:rs="clr-namespace:CompMs.Graphics.UI.RangeSlider;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:converter="clr-namespace:CompMs.App.Msdial.ViewModel.Converter"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
-             d:DataContext="{d:DesignInstance Type=vm:LcmsAnalysisPeakTableViewModel}"
+             d:DataContext="{d:DesignInstance Type=vm:LcimmsAnalysisPeakTableViewModel}"
+             d:Background="White"
              d:DesignHeight="450" d:DesignWidth="1200">
-    <d:DesignerProperties.DesignStyle>
-        <Style TargetType="UserControl">
-            <Setter Property="Background" Value="White"/>
-        </Style>
-    </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -36,6 +31,7 @@
                 <ColumnDefinition Width="110"/>
                 <ColumnDefinition />
                 <ColumnDefinition />
+                <ColumnDefinition Width="210"/>
                 <ColumnDefinition Width="210"/>
                 <ColumnDefinition Width="210"/>
             </Grid.ColumnDefinitions>
@@ -91,6 +87,14 @@
                             Style="{StaticResource EditableRangeSlider}"
                             Margin="8,0"
                             Grid.Column="4"/>
+            <rs:RangeSlider Tag="Mobility"
+                            Minimum="{Binding DtMin, Mode=OneWay}"
+                            Maximum="{Binding DtMax, Mode=OneWay}"
+                            LowerValue="{Binding DtLower.Value, Mode=TwoWay}"
+                            UpperValue="{Binding DtUpper.Value, Mode=TwoWay}"
+                            Style="{StaticResource EditableRangeSlider}"
+                            Margin="8,0"
+                            Grid.Column="5"/>
         </Grid>
 
         <DataGrid x:Name="PeakSpotView"
@@ -129,7 +133,11 @@
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTextColumn Header="RT(min)"
-                                    Binding="{Binding Path=ChromXValue, StringFormat=F3}"
+                                    Binding="{Binding Path=RT, StringFormat=F3}"
+                                    IsReadOnly="True"
+                                    Width="70" />
+                <DataGridTextColumn Header="Mobility(1/K0)"
+                                    Binding="{Binding Path=Drift, StringFormat=F4}"
                                     IsReadOnly="True"
                                     Width="70" />
                 <DataGridTextColumn Header="Type"

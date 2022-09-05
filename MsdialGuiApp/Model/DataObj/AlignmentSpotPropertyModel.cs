@@ -27,6 +27,9 @@ namespace CompMs.App.Msdial.Model.DataObj
         public ReadOnlyCollection<AlignmentChromPeakFeature> AlignedPeakProperties => innerModel.AlignedPeakProperties.AsReadOnly();
         public ReadOnlyCollection<AlignmentChromPeakFeatureModel> AlignedPeakPropertiesModel { get; }
 
+        public double RT => innerModel.TimesCenter.RT.Value;
+        public double Drift => innerModel.TimesCenter.Drift.Value;
+
         public double TimesCenter {
             get => innerModel.TimesCenter.Value;
             set {
