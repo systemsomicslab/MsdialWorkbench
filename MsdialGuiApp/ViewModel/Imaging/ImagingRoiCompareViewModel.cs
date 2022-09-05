@@ -2,7 +2,7 @@
 
 namespace CompMs.App.Msdial.ViewModel.Imaging
 {
-    internal sealed class WholeImageIntensitiesViewModel : ViewModelBase
+    internal sealed class ImagingRoiCompareViewModel : ViewModelBase
     {
     }
 }
