@@ -104,20 +104,19 @@ namespace CompMs.MspGenerator
 
             //////// mtb-info上で最終的なmspを出力
             ////// 指定のフォルダの中にある.mspファイルを結合します。
-            var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
+            //var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
             //var exportFileName = "Msp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedmsp";
-
             //Common.jointMspFiles(mspFolder, exportFileName);
-            ////////////結合したファイルを下記フォルダに移動
-            var workingDirectry = mspFolder + @"\LBM\";
+            //////////////結合したファイルを下記フォルダに移動
+            //var workingDirectry = mspFolder + @"\LBM\";
             //System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
             //////////
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + exportFileName,
             //     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20220318.txt", workingDirectry);
 
-            ////////上書き用
-            //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + @"Msp20220322084048.jointedmsp",
-            //     mspFolder + @"RT_CCS_predictedFile\predictedRTCCSAll_20220318.txt", workingDirectry);
+            //////上書き用
+            ////MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + @"Msp20220322084048.jointedmsp",
+            ////     mspFolder + @"RT_CCS_predictedFile\predictedRTCCSAll_20220318.txt", workingDirectry);
 
 
             ///mspファイル生成ツール
@@ -137,7 +136,7 @@ namespace CompMs.MspGenerator
             var faChain2 = new List<string>();
             var faChain3 = new List<string>();
 
-            var outputFolder = @"d:\mikikot\Desktop\Tsugawa-san_work\20220309_NAA\NewNA_msp";
+            var outputFolder = @"D:\mikikot\Desktop\Tsugawa-san_work\20220902_HexCer_check\NewMsp\";
 
             //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";
@@ -621,10 +620,10 @@ namespace CompMs.MspGenerator
 
                 ////tuningして最善解でモデルファイルを作成（指標はRMSE）
                 ////tuningするパラメーターはコード内を参照 
-                var workingFolder =
-                 @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB";
-                var trainFile = workingFolder + @"\InChIKeySmilesRtList.txt";
-                var output = workingFolder + @"\InChIKeySmilesRtListModel_NCDK_" + DateTime.Now.ToString("yyyyMMddHHmm") + ".model";
+                //var workingFolder =
+                // @"E:\6_Projects\PROJECT_CASMI2022\PFP_DB";
+                //var trainFile = workingFolder + @"\InChIKeySmilesRtList.txt";
+                //var output = workingFolder + @"\InChIKeySmilesRtListModel_NCDK_" + DateTime.Now.ToString("yyyyMMddHHmm") + ".model";
                 //RtCcsPredictOnDotNet.GeneratePredictionModelVS2("RT", trainFile, output);
 
                 //// RT、CCSの予測結果を求め、mspGeneratorで使っている形式で出力する
