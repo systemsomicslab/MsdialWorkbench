@@ -1,11 +1,6 @@
 ﻿using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
@@ -16,8 +11,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public double Intensity { get; }
     }
 
-    internal sealed class ImagingImageViewModel : ViewModelBase
+    internal sealed class SampleImageViewModel : ViewModelBase
     {
+        public string Title { get; }
         public ReadOnlyCollection<ImagePixel> ImagePixels { get; }
         public IAxisManager<double> HorizontalAxis { get; }
         public IAxisManager<double> VerticalAxis { get; }

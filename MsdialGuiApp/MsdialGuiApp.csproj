@@ -287,7 +287,7 @@
     <Compile Include="Model\Statistics\PcaResultModel.cs" />
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
     <Compile Include="Utility\ObservableExtensions.cs" />
-    <Compile Include="ViewModel\Chart\ImagingImageViewModel.cs" />
+    <Compile Include="ViewModel\Chart\SampleImageViewModel.cs" />
     <Compile Include="ViewModel\Chart\Ms2ChromatogramsViewModel.cs" />
     <Compile Include="ViewModel\Chart\MultiAlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\Chart\MultiBarChartViewModel.cs" />
@@ -296,6 +296,7 @@
     <Compile Include="ViewModel\Core\IResultViewModel.cs" />
     <Compile Include="ViewModel\DataObj\PeptideViewModel.cs" />
     <Compile Include="ViewModel\Imaging\ImagingImageViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\ImagingMainViewModel.cs" />
     <Compile Include="ViewModel\Imaging\ImagingRoiCompareViewModel.cs" />
     <Compile Include="ViewModel\Imaging\ImagingRoiViewModel.cs" />
     <Compile Include="ViewModel\Imaging\RoiIntensitiesViewModel.cs" />
@@ -451,8 +452,8 @@
     <Compile Include="View\Chart\ExpRefView.xaml.cs">
       <DependentUpon>ExpRefView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Chart\ImagingImageView.xaml.cs">
-      <DependentUpon>ImagingImageView.xaml</DependentUpon>
+    <Compile Include="View\Chart\SampleImageView.xaml.cs">
+      <DependentUpon>SampleImageView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\Ms2ChromatogramsView.xaml.cs">
       <DependentUpon>Ms2ChromatogramsView.xaml</DependentUpon>
@@ -819,7 +820,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Chart\ImagingImageView.xaml">
+    <Page Include="View\Chart\SampleImageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

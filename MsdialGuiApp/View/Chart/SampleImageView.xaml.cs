@@ -3,11 +3,11 @@
 namespace CompMs.App.Msdial.View.Chart
 {
     /// <summary>
-    /// Interaction logic for ImagingImageView.xaml
+    /// Interaction logic for SampleImageView.xaml
     /// </summary>
-    public partial class ImagingImageView : UserControl
+    public partial class SampleImageView : UserControl
     {
-        public ImagingImageView() {
+        public SampleImageView() {
             InitializeComponent();
         }
     }
