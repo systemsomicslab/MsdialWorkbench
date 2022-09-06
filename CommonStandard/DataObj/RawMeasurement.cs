@@ -286,17 +286,27 @@ namespace CompMs.Common.DataObj {
     }
 
     public struct Raw2DElement {
+        public Raw2DElement(double mz, double drift) {
+            Mz = mz;
+            Drift = drift;
+        }
+
+        public Raw2DElement(ChromXs chrom) {
+            Mz = chrom.Mz.Value;
+            Drift = chrom.Drift.Value;
+        }
+
         public double Mz;
         public double Drift;
     }
 
-    public class RawSpectraOnPixels {
+    public sealed class RawSpectraOnPixels {
         // array lengths of xyframes and pixelpeakfeatureslist should be equal.
         public List<MaldiFrameInfo> XYFrames;
         public List<RawPixelFeatures> PixelPeakFeaturesList;
     }
 
-    public class RawPixelFeatures {
+    public sealed class RawPixelFeatures {
         public double Mz;
         public double Drift;
         public double[] IntensityArray;
