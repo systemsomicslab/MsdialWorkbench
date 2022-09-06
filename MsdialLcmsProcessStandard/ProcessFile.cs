@@ -27,7 +27,7 @@ namespace Msdial.Lcms.DataProcess {
             System.Console.WriteLine(analysisFile.AnalysisFilePropertyBean.AnalysisFilePath);
             var spectrumCollection = new ObservableCollection<RawSpectrum>();
             var accumulatedMs1SpecCollection = new ObservableCollection<RawSpectrum>();
-            using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt))
+            using (var rawDataAccess = new RawDataAccess(analysisFile.AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, false, true, analysisFile.RetentionTimeCorrectionBean.PredictedRt))
             {
                 var raw_measurment = DataAccessLcUtility.GetRawDataMeasurement(rawDataAccess);
                 spectrumCollection = DataAccessLcUtility.GetAllSpectrumCollection(raw_measurment);

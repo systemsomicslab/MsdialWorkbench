@@ -97,7 +97,8 @@ namespace CompMs.App.MsdialConsole {
             //new ModificationsXmlRefParser().Read();
 
             //new TestProteomicsProcess().PDFTest();
-            new TestProteomicsProcess().ProcessTest();
+            //new TestProteomicsProcess().ProcessTest();
+            MaldiMsProcessTest.TimsOnTest();
 
             //FormulaStringParcer.Convert2FormulaObjV2("C6H12O6");
             //FormulaStringParcer.Convert2FormulaObjV2("CH3COONa");
