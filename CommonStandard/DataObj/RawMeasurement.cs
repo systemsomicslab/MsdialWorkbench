@@ -285,6 +285,11 @@ namespace CompMs.Common.DataObj {
         public float Intensity;
     }
 
+    public struct Raw2DElement {
+        public double Mz;
+        public double Drift;
+    }
+
     public class RawSpectraOnPixels {
         // array lengths of xyframes and pixelpeakfeatureslist should be equal.
         public List<MaldiFrameInfo> XYFrames;
