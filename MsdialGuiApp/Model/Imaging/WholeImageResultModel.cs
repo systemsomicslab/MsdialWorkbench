@@ -7,5 +7,10 @@ namespace CompMs.App.Msdial.Model.Imaging
     {
         public AnalysisFileBean File { get; }
         public ChromatogramPeakFeatureCollection Peaks { get; }
+
+        public WholeImageResultModel(AnalysisFileBean file) {
+            File = file ?? throw new System.ArgumentNullException(nameof(file));
+            Peaks = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath, default).Result;
+        }
     }
 }

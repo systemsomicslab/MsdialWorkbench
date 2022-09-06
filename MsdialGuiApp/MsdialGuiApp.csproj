@@ -151,8 +151,8 @@
     <Compile Include="Model\Imaging\ImaginRoiCompareModel.cs" />
     <Compile Include="Model\Imaging\RoiModel.cs" />
     <Compile Include="Model\Imaging\RoiIntensitiesModel.cs" />
-    <Compile Include="Model\Imaging\RoiResultModel.cs" />
     <Compile Include="Model\Imaging\WholeImageResultModel.cs" />
+    <Compile Include="Model\Imms\ImagingImmsMethodModel.cs" />
     <Compile Include="Model\Information\CompoundDetailModel.cs" />
     <Compile Include="Model\Information\PeakInformationModel.cs" />
     <Compile Include="Model\DataObj\PeptideGroupModel.cs" />
