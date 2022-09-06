@@ -1,4 +1,5 @@
-﻿using CompMs.Graphics.Core.Base;
+﻿using CompMs.Graphics.Base;
+using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Helper;
 using System;
 using System.ComponentModel;
@@ -142,6 +143,18 @@ namespace CompMs.Graphics.Chart
             }
         }
 
+        public static readonly DependencyProperty GradientBrushProperty =
+            DependencyProperty.Register(
+                nameof(GradientBrush), typeof(IBrushMapper), typeof(HeatmapControl),
+                new FrameworkPropertyMetadata(
+                    null,
+                    FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public IBrushMapper GradientBrush {
+            get => (IBrushMapper)GetValue(GradientBrushProperty);
+            set => SetValue(GradientStopsProperty, value);
+        }
+
         public static readonly DependencyProperty GradientStopsProperty =
             DependencyProperty.Register(
                 nameof(GradientStops), typeof(GradientStopCollection), typeof(HeatmapControl),
@@ -228,10 +241,17 @@ namespace CompMs.Graphics.Chart
                 if (xx == double.NaN || yy == double.NaN) continue;
 
                 var z = _zGetter.Invoke(o);
-                zz = Convert.ToDouble(z as IConvertible);
-                var color = GetGradientColor(GradientStops, zz, zmin, zmax);
-                var brush = new SolidColorBrush(color);
-                brush.Freeze();
+                Brush brush;
+                if (GradientBrush is null)
+                {
+                    zz = Convert.ToDouble(z as IConvertible);
+                    var color = GetGradientColor(GradientStops, zz, zmin, zmax);
+                    brush = new SolidColorBrush(color);
+                    brush.Freeze();
+                }
+                else {
+                    brush = GradientBrush.Map(z);
+                }
 
                 var dv = new AnnotatedDrawingVisual(o)
                 {
