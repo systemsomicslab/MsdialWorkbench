@@ -39,9 +39,15 @@ namespace CompMs.App.MsdialConsole.Process {
                 AnalysisFileType = AnalysisFileType.Sample,
                 DeconvolutionFilePath = fileDir + "\\" + filename + "_test220906" + ".dcl",
                 PeakAreaBeanInformationFilePath = fileDir + "\\" + filename + "_test220906" + ".pai"
+                
             };
             var param = new MsdialImmsParameter() {
-                TextDBFilePath = reffile
+                TextDBFilePath = reffile,
+                IonMode = IonMode.Negative,
+                MinimumAmplitude = 10000,
+                FileID2CcsCoefficients = new Dictionary<int, CoefficientsForCcsCalculation>() {
+                    { 0, new CoefficientsForCcsCalculation() { IsBrukerIM = true } }
+                }
             };
             CommonProcess.ParseLibraries(param, -1, 
                 out var iupacDB, 
@@ -57,10 +63,6 @@ namespace CompMs.App.MsdialConsole.Process {
             }
             Console.WriteLine("Peak picking...");
             var provider = new StandardDataProviderFactory().Create(rawobj);
-            var coeff = new CoefficientsForCcsCalculation() {
-                IsBrukerIM = true
-            };
-
             var container = new MsdialImmsDataStorage {
                 AnalysisFiles = new List<AnalysisFileBean>() { file }, 
                 AlignmentFiles = new List<AlignmentFileBean>(),
@@ -78,10 +80,11 @@ namespace CompMs.App.MsdialConsole.Process {
                 new List<IAnnotatorParameterPair<IAnnotationQuery, Common.Components.MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> { 
                     new MetabolomicsAnnotatorParameterPair(annotator, param.TextDbSearchParam)
                 }
-                );
-            
-            
-            CompMs.MsdialImmsCore.Process.FileProcess.Run(file, container, evaluator, false);
+            );
+
+            //var mspAnnotator = new CompMs.MsdialImmsCore.Algorithm.Annotation.ImmsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), param.MspSearchParam, param.TargetOmics, "MspDB", -1);
+
+            CompMs.MsdialImmsCore.Process.FileProcess.Run(file, container, null, annotator, provider, evaluator, false, null);
             var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
 
             RawSpectraOnPixels pixelData = null;
