@@ -9,15 +9,15 @@ using CompMs.Graphics.Base;
 
 namespace ChartDrawingUiTest.Heatmap
 {
+    public class CategoryData
+    {
+        public string X { get; set; }
+        public string Y { get; set; }
+        public double Z { get; set; }
+    }
+
     public class HeatmapVM3 : INotifyPropertyChanged
     {
-        public class CategoryData
-        {
-            public string X { get; set; }
-            public string Y { get; set; }
-            public double Z { get; set; }
-        }
-
         public ObservableCollection<CategoryData> Series
         {
             get => series;

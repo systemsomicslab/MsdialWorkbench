@@ -47,6 +47,7 @@
                 Grid.Row="0" Grid.Column="1">
             <chart:HeatmapControl x:Name="heatmap"
                                     ItemsSource="{Binding  Source={StaticResource SeriesView}}"
+                                    DataType="{x:Type local:CategoryData}"
                                     HorizontalAxis="{StaticResource HorizontalAxis}"
                                     VerticalAxis="{StaticResource VerticalAxis}"
                                     HorizontalPropertyName="X"

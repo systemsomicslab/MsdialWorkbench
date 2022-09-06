@@ -138,7 +138,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             pbmcw.Loaded += async (s, e) => {
                 foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                    await Task.Run(() => FileProcess.Run(analysisfile, storage, null, null, (IDataProviderFactory<RawMeasurement>)ProviderFactory, matchResultEvaluator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
+                    await Task.Run(() => FileProcess.Run(analysisfile, storage, null, null, ProviderFactory.Create(analysisfile), matchResultEvaluator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
                     vm.CurrentValue++;
                 }
                 pbmcw.Close();
