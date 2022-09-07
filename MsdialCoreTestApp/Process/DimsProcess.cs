@@ -48,7 +48,7 @@ namespace CompMs.App.MsdialConsole.Process
                 });
             var evaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(storage.DataBaseMapper);
             foreach (var file in files) {
-                ProcessFile.Run(file, providerFactory, storage, annotationProcess, evaluator);
+                ProcessFile.Run(file, providerFactory.Create(file), storage, annotationProcess, evaluator);
             }
 
             var alignmentFile = storage.AlignmentFiles.First();
