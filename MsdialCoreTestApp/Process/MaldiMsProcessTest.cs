@@ -1,4 +1,5 @@
-﻿using CompMs.Common.DataObj;
+﻿using CompMs.Common.Components;
+using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
@@ -187,16 +188,16 @@ namespace CompMs.App.MsdialConsole.Process
                 }
             );
 
-            //var mspAnnotator = new CompMs.MsdialImmsCore.Algorithm.Annotation.ImmsMspAnnotator(new MoleculeDataBase(container.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), param.MspSearchParam, param.TargetOmics, "MspDB", -1);
+            var annotationProcess = BuildAnnotationProcess(container.DataBases);
 
-            CompMs.MsdialDimsCore.Process.FileProcess.Run(file, container, null, annotator, provider, evaluator, false, null);
+            CompMs.MsdialDimsCore.ProcessFile.Run(file, provider, container, annotationProcess, evaluator);
             var features = MsdialPeakSerializer.LoadChromatogramPeakFeatures(file.PeakAreaBeanInformationFilePath);
 
             RawSpectraOnPixels pixelData = null;
-            var featureElements = features.Select(n => new Raw2DElement() { Mz = n.Mass, Drift = n.ChromXsTop.Value }).ToList();
+            var featureElements = features.Select(n => new Raw2DElement() { Mz = n.Mass }).ToList();
             Console.WriteLine("Reading data...");
             using (var access = new RawDataAccess(filepath, 0, false, true, false)) {
-                pixelData = access.GetRawPixelFeatures(featureElements);
+                pixelData = access.GetRawPixelFeatures(featureElements, null);
             }
 
             foreach (var item in features.Zip(pixelData.PixelPeakFeaturesList, (feature, pixel) => (Feature: feature, Pixel: pixel))) {
@@ -224,6 +225,17 @@ namespace CompMs.App.MsdialConsole.Process
             }
         }
 
+        private static IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage) {
+            var containers = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
+            foreach (var annotators in storage.MetabolomicsDataBases) {
+                containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
+            }
+            return new StandardAnnotationProcess<IAnnotationQuery>(
+                containers.Select(container => (
+                    new AnnotationQueryWithoutIsotopeFactory(container.Annotator) as IAnnotationQueryFactory<IAnnotationQuery>,
+                    container
+                )).ToList());
+        }
     }
 
 
