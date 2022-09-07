@@ -5,6 +5,7 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,7 +14,11 @@ namespace CompMs.App.Msdial.Model.Imms
     internal sealed class ImagingImmsMethodModel : DisposableModelBase, IMethodModel {
         public ImagingImmsMethodModel(IEnumerable<AnalysisFileBean> files) {
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(files);
+            ImageModels = new ObservableCollection<ImagingImageModel>(files.Select(file => new ImagingImageModel(file)));
+            Image = ImageModels.FirstOrDefault();
         }
+
+        public ObservableCollection<ImagingImageModel> ImageModels { get; }
 
         public ImagingImageModel Image {
             get => _image;
@@ -31,7 +36,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public AlignmentFileBean AlignmentFile => null;
 
         public Task LoadAnalysisFileAsync(AnalysisFileBean analysisFile, CancellationToken token) {
-            Image = new ImagingImageModel(analysisFile);
+            Image = ImageModels.FirstOrDefault(image => image.File == analysisFile);
             return Task.CompletedTask;
         }
 

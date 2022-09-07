@@ -170,6 +170,28 @@ namespace CompMs.Graphics.Chart
             set => SetValue(GradientStopsProperty, value);
         }
 
+        public static readonly DependencyProperty PatchWidthProperty =
+            DependencyProperty.Register(
+                nameof(PatchWidth), typeof(double), typeof(HeatmapControl),
+                new FrameworkPropertyMetadata(
+                    1d, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public double PatchWidth {
+            get => (double)GetValue(PatchWidthProperty);
+            set => SetValue(PatchWidthProperty, value);
+        }
+
+        public static readonly DependencyProperty PatchHeightProperty =
+            DependencyProperty.Register(
+                nameof(PatchHeight), typeof(double), typeof(HeatmapControl),
+                new FrameworkPropertyMetadata(
+                    1d, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public double PatchHeight {
+            get => (double)GetValue(PatchHeightProperty);
+            set => SetValue(PatchHeightProperty, value);
+        }
+
         public static readonly DependencyProperty SelectedItemProperty =
             DependencyProperty.Register(
                 nameof(SelectedItem), typeof(object), typeof(HeatmapControl),
@@ -222,8 +244,8 @@ namespace CompMs.Graphics.Chart
 
             visualChildren.Clear();
             double zmax = double.MinValue, zmin = double.MaxValue;
-            double xwidth = HorizontalAxis.TranslateToRenderPoint(1d, FlippedX, ActualWidth) - HorizontalAxis.TranslateToRenderPoint(0d, FlippedX, ActualWidth);
-            double ywidth = Math.Abs(VerticalAxis.TranslateToRenderPoint(1d, FlippedY, ActualHeight) - VerticalAxis.TranslateToRenderPoint(0d, FlippedY, ActualHeight));
+            double xwidth = HorizontalAxis.TranslateToRenderPoint(PatchWidth, FlippedX, ActualWidth) - HorizontalAxis.TranslateToRenderPoint(0d, FlippedX, ActualWidth);
+            double ywidth = Math.Abs(VerticalAxis.TranslateToRenderPoint(PatchHeight, FlippedY, ActualHeight) - VerticalAxis.TranslateToRenderPoint(0d, FlippedY, ActualHeight));
             foreach (var o in _cv) {
                 var z = _zGetter?.Invoke(o);
                 zmax = Math.Max(zmax, Convert.ToDouble(z));
@@ -273,8 +295,8 @@ namespace CompMs.Graphics.Chart
         private static Color GetGradientColor(GradientStopCollection gsc, double offset) {
             var lowers = gsc.Where(gs => gs.Offset <= offset).ToArray();
             var highers = gsc.Where(gs => gs.Offset > offset).ToArray();
-            if (offset < 0) return highers.Min(gs => (gs.Offset, gs.Color)).Color;
-            if (offset >= 1) return lowers.Max(gs => (gs.Offset, gs.Color)).Color;
+            if (lowers.Length == 0) return highers.Min(gs => (gs.Offset, gs.Color)).Color;
+            if (highers.Length == 0) return lowers.Max(gs => (gs.Offset, gs.Color)).Color;
 
             var lo = lowers.Max(gs => (gs.Offset, gs.Color));
             var hi = highers.Min(gs => (gs.Offset, gs.Color));

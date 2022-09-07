@@ -9,15 +9,18 @@ namespace CompMs.App.Msdial.Model.Imaging
 {
     internal sealed class ImagingRoiModel : BindableBase
     {
-        private readonly RoiModel _roi;
         private readonly ObservableCollection<RoiIntensitiesModel> _intensities;
 
-        public ImagingRoiModel(RoiModel roi, List<Raw2DElement> elements) {
-            _roi = roi ?? throw new System.ArgumentNullException(nameof(roi));
-            var rawSpectraOnPixels = roi.RetrieveRawSpectraOnPixels(elements);
+        public ImagingRoiModel(RoiModel roi, List<Raw2DElement> elements, MaldiFrameLaserInfo laserInfo) {
+            Roi = roi ?? throw new System.ArgumentNullException(nameof(roi));
+            var rawSpectraOnPixels = roi.RetrieveRawSpectraOnPixels(elements.Take(10).ToList());
             _intensities = new ObservableCollection<RoiIntensitiesModel>(
                 elements.Zip(rawSpectraOnPixels.PixelPeakFeaturesList,
-                    (element, pixelPeaks) => new RoiIntensitiesModel(pixelPeaks, roi, element)));
+                    (element, pixelPeaks) => new RoiIntensitiesModel(pixelPeaks, rawSpectraOnPixels.XYFrames, roi, element, laserInfo)));
+            Intensities = new ReadOnlyObservableCollection<RoiIntensitiesModel>(_intensities);
         }
+
+        public RoiModel Roi { get; }
+        public ReadOnlyObservableCollection<RoiIntensitiesModel> Intensities { get; }
     }
 }
