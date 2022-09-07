@@ -1,4 +1,6 @@
-﻿using CompMs.Graphics.Base;
+﻿using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Base;
+using CompMs.Graphics.Core.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,22 +22,28 @@ namespace CompMs.Graphics.Design
             GRADIENT_STOPS.Freeze();
         }
 
-        private readonly double _min, _max;
-        private readonly IList<GradientStop> _gradientStops;
+        private readonly GradientStopCollection _gradientStops;
+        private readonly ContinuousAxisManager<double> _ax;
 
         public GradientBrushMapper(double min, double max, IList<GradientStop> gradientStops = null) {
             if (gradientStops != null && gradientStops.Count <= 0) {
                 throw new ArgumentException(nameof(gradientStops));
             }
+            _gradientStops = gradientStops is null ? GRADIENT_STOPS : new GradientStopCollection(gradientStops.OrderBy(gs => gs.Offset));
+            if (!_gradientStops.IsFrozen) {
+                _gradientStops.Freeze();
+            }
 
-            _min = min;
-            _max = max;
-            _gradientStops = (IList<GradientStop>)gradientStops?.OrderBy(gs => gs.Offset).ToArray() ?? GRADIENT_STOPS;
+            _ax = new ContinuousAxisManager<double>(min, max);
         }
+
+        public GradientStopCollection GradientStops => _gradientStops;
+
+        public IAxisManager<double> AxisManager => _ax;
 
         public Brush Map(T key) {
             var value = Convert.ToDouble(key);
-            var offset = Math.Max(0, Math.Min(1, (value - _min) / (_max - _min)));
+            var offset = Math.Max(0, Math.Min(1, (value - _ax.Min.Value) / _ax.Range.Delta));
             var color = GetGradientColor(_gradientStops, offset);
             var brush = new SolidColorBrush(color);
             brush.Freeze();

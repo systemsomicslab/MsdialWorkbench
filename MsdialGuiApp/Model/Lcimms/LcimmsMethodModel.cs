@@ -86,7 +86,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
-            var rawObj = DataAccess.LoadMeasurement(analysisFile, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000);
+            var rawObj = DataAccess.LoadMeasurement(analysisFile, isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000);
             return AnalysisModel = new LcimmsAnalysisModel(
                 analysisFile,
                 providerFactory.Create(rawObj),
@@ -154,7 +154,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
 
         public void RunAlignmentProcess() {
-            Func<AnalysisFileBean, RawMeasurement> map = (AnalysisFileBean file) => DataAccess.LoadMeasurement(file, true, 5, 1000);
+            Func<AnalysisFileBean, RawMeasurement> map = (AnalysisFileBean file) => DataAccess.LoadMeasurement(file, false, true, 5, 1000);
             AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage, matchResultEvaluator, providerFactory.ContraMap(map), accProviderFactory.ContraMap(map));
             var alignmentFile = Storage.AlignmentFiles.Last();
             var aligner = aFactory.CreatePeakAligner();

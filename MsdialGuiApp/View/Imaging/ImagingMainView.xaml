@@ -22,7 +22,7 @@
                     <Expander BorderThickness="0"
                               IsExpanded="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}">
                         <Expander.Header>
-                            <Run Text="{Binding ImageTitle}"/>
+                            <Run Text="{Binding ImageTitle, Mode=OneWay}"/>
                         </Expander.Header>
                         <ListBox ItemsSource="{Binding RoiViewModels}"
                                  SelectedItem="{Binding SelectedRoiViewModel}"
@@ -51,7 +51,7 @@
                         </Grid>
                     </ControlTemplate>
                 </GroupBox.Template>
-                <ListBox ItemsSource="{Binding ImageViewModels, Mode=OneWay}"
+                <ListBox ItemsSource="{Binding ImageViewModels}"
                          SelectedItem="{Binding SelectedImageViewModel}"
                          IsSynchronizedWithCurrentItem="True">
                 </ListBox>
@@ -70,7 +70,7 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <ContentControl Content="{Binding ImageViewModels}"
+            <ContentControl Content="{Binding}"
                             ContentTemplate="{StaticResource ImageSelector}"
                             Grid.Row="0"/>
             <ContentControl Content="{Binding RoiCompareViewModels}"
@@ -87,13 +87,13 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <DockPanel Grid.Row="1" Grid.Column="0">
-                <ComboBox ItemsSource="{Binding SelectedImageViewModel.SelectedRoiViewModel.Images}"
+                <ComboBox ItemsSource="{Binding SelectedImageViewModel.SelectedRoiViewModel.Intensities}"
                           IsSynchronizedWithCurrentItem="True"
                           DisplayMemberPath="Title"
                           DockPanel.Dock="Top"/>
-                <chart:SampleImageView DataContext="{Binding SelectedImageViewModel.SelectedRoiViewModel.Images/}"/>
+                <chart:SampleImageView DataContext="{Binding SelectedImageViewModel.SelectedRoiViewModel.Intensities/SampleImageViewModel}"/>
             </DockPanel>
-            <chart:PeakView DataContext="{Binding SelectedImageViewModel.PeakPlotViewModel}"
+            <chart:PeakView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.PeakPlotViewModel}"
                             Grid.Row="1" Grid.Column="1"/>
             <chart:BarChartView DataContext="{Binding SelectedRoiCompareViewModel.BarChartViewModel}"
                                 Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>

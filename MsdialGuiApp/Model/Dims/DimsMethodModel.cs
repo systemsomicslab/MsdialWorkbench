@@ -149,7 +149,7 @@ namespace CompMs.App.Msdial.Model.Dims
             foreach ((var analysisfile, var pb) in Storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
                 Task task() => Task.Run(() =>
                 {
-                    ProcessFile.Run(analysisfile, ProviderFactory, Storage, annotationProcess, matchResultEvaluator, reportAction: (int v) => pb.CurrentValue = v);
+                    ProcessFile.Run(analysisfile, ProviderFactory.Create(analysisfile), Storage, annotationProcess, matchResultEvaluator, reportAction: (int v) => pb.CurrentValue = v);
                     Interlocked.Increment(ref current);
                     vm.CurrentValue = current;
                 });
