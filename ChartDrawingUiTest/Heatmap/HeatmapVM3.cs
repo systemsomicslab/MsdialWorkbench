@@ -4,20 +4,21 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-
+using System.Windows.Media;
 using CompMs.Graphics.Base;
+using CompMs.Graphics.Design;
 
 namespace ChartDrawingUiTest.Heatmap
 {
+    public class CategoryData
+    {
+        public string X { get; set; }
+        public string Y { get; set; }
+        public double Z { get; set; }
+    }
+
     public class HeatmapVM3 : INotifyPropertyChanged
     {
-        public class CategoryData
-        {
-            public string X { get; set; }
-            public string Y { get; set; }
-            public double Z { get; set; }
-        }
-
         public ObservableCollection<CategoryData> Series
         {
             get => series;
@@ -41,6 +42,8 @@ namespace ChartDrawingUiTest.Heatmap
             get => zs;
             set => SetProperty(ref zs, value);
         }
+
+        public GradientBrushMapper<double> GradientBrush { get; }
 
         private ObservableCollection<CategoryData> series;
         private ObservableCollection<string> xs;
@@ -77,6 +80,11 @@ namespace ChartDrawingUiTest.Heatmap
             Xs = new ObservableCollection<string>(new HashSet<string>(s.Select(d => d.X)));
             Ys = new ObservableCollection<string>(new HashSet<string>(s.Select(d => d.Y)));
             Zs = new ObservableCollection<double>(s.Select(d => d.Z));
+            GradientBrush = new GradientBrushMapper<double>(Zs.Min(), Zs.Max(), new[]
+            {
+                new GradientStop(Colors.MediumPurple, 0d),
+                new GradientStop(Colors.Yellow, 1d),
+            });
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

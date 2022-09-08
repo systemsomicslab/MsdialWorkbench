@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Dims;
+using CompMs.App.Msdial.ViewModel.Imaging;
 using CompMs.App.Msdial.ViewModel.Imms;
 using CompMs.App.Msdial.ViewModel.Lcimms;
 using CompMs.App.Msdial.ViewModel.Lcms;
@@ -75,6 +76,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 case LcimmsMethodModel lcim:
                     return LcimmsMethodViewModel.Create(lcim, compoundSearchService, peakSpotTableService);
                 // case GcmsMethodModel _:
+                case ImagingImmsMethodModel iim:
+                    return new ImagingMainViewModel(iim);
                 default:
                     return null;
             }

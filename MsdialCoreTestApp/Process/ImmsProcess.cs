@@ -25,7 +25,7 @@ namespace CompMs.App.MsdialConsole.Process
             var container = new MsdialImmsDataStorage
             {
                 AnalysisFiles = analysisFiles, AlignmentFiles = new List<AlignmentFileBean> { alignmentFile },
-                MspDB = mspDB, TextDB = txtDB, IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialImmsParameter = param
+                MspDB = mspDB, TextDB = txtDB, IsotopeTextDB = isotopeTextDB, IupacDatabase = iupacDB, MsdialImmsParameter = param,
             };
 
             Console.WriteLine("Start processing..");

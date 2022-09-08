@@ -62,15 +62,25 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             SurveyScanViewModel = new SurveyScanViewModel(
                 model.SurveyScanModel,
                 horizontalAxis: RtMzPlotViewModel.VerticalAxis).AddTo(Disposables);
-            // PeakSpotTableViewModelBase = new LcimmsAnalysisViewModel
+            PeakTableViewModel = new LcimmsAnalysisPeakTableViewModel(
+                model.PeakTableModel,
+                Observable.Return(model.EicLoader),
+                PeakSpotNavigatorViewModel.MzLowerValue,
+                PeakSpotNavigatorViewModel.MzUpperValue,
+                PeakSpotNavigatorViewModel.RtLowerValue,
+                PeakSpotNavigatorViewModel.RtUpperValue,
+                PeakSpotNavigatorViewModel.DtLowerValue,
+                PeakSpotNavigatorViewModel.DtUpperValue,
+                PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
+                PeakSpotNavigatorViewModel.CommentFilterKeyword,
+                PeakSpotNavigatorViewModel.IsEditting)
+                .AddTo(Disposables);
 
             SearchCompoundCommand = model.CanSearchCompound
                 .ToReactiveCommand()
-                .AddTo(Disposables);
-            SearchCompoundCommand.WithLatestFrom(model.CompoundSearchModel)
-                .Subscribe(p =>
+                .WithSubscribe(() =>
                 {
-                    using (var vm = new CompoundSearchVM(p.Second)) {
+                    using (var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value)) {
                         compoundSearchService.ShowDialog(vm);
                     }
                 }).AddTo(Disposables);
@@ -89,6 +99,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public Ms2ChromatogramsViewModel Ms2ChromatogramsViewModel { get; }
         public RawPurifiedSpectrumsViewModel RawPurifiedSpectrumsViewModel { get; }
         public SurveyScanViewModel SurveyScanViewModel { get; private set; }
+        public LcimmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
@@ -100,7 +111,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {
-            // peakSpotTableService.Show(PeakTableViewModel);
+            _peakSpotTableService.Show(PeakTableViewModel);
         }
     }
 }

@@ -9,6 +9,8 @@
         xmlns:imvm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
         xmlns:div="clr-namespace:CompMs.App.Msdial.View.Dims"
         xmlns:divm="clr-namespace:CompMs.App.Msdial.ViewModel.Dims"
+        xmlns:lcimv="clr-namespace:CompMs.App.Msdial.View.Lcimms"
+        xmlns:lcimvm="clr-namespace:CompMs.App.Msdial.ViewModel.Lcimms"
         mc:Ignorable="d"
         Title="Peak spot table" Height="450" Width="1250">
     <ContentControl Content="{Binding}">
@@ -36,6 +38,12 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type lcvm:LcmsProteomicsAlignmentTableViewModel}">
                 <lcv:LcmsProteomicsAlignmentTableView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type lcimvm:LcimmsAnalysisPeakTableViewModel}">
+                <lcimv:LcimmsAnalysisPeakTableView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type lcimvm:LcimmsAlignmentSpotTableViewModel}">
+                <lcimv:LcimmsAlignmentSpotTableView />
             </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>

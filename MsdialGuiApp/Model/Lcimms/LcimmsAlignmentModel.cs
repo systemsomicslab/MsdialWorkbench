@@ -43,6 +43,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public LcimmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            DataBaseStorage databases,
             DataBaseMapper mapper,
             MsdialLcImMsParameter parameter,
             List<AnalysisFileBean> files,
@@ -66,6 +67,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     propTree[index] = prop.innerModel.AlignmentDriftSpotFeatures.Select(dprop => new AlignmentSpotPropertyModel(dprop, observableBarItemsLoader)).ToArray();
                 }
             }
+            var driftProps = new ObservableCollection<AlignmentSpotPropertyModel>(propTree.Query(0, props.Count));
             var propRanges = new Dictionary<AlignmentSpotPropertyModel, (int, int)>();
             {
                 var j = 0;
@@ -109,8 +111,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }).AddTo(Disposables);
             Ms1Spots = propModels;
 
-            var peakSpotNavigator = new PeakSpotNavigatorModel(propModels, peakFilterModel, evaluator, status: FilterEnableStatus.All).AddTo(Disposables);
+            var peakSpotNavigator = new PeakSpotNavigatorModel(driftProps, peakFilterModel, evaluator, status: FilterEnableStatus.All).AddTo(Disposables);
             var accEvaluator = new AccumulatedPeakEvaluator(evaluator);
+            peakSpotNavigator.AttachFilter(propModels, peakFilterModel, status: FilterEnableStatus.All, evaluator: evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative));
             peakSpotNavigator.AttachFilter(accumulatedPropModels, accumulatedPeakFilterModel, status: FilterEnableStatus.None, evaluator: accEvaluator.Contramap<IFilterable, AlignmentSpotProperty>(filterable => ((AlignmentSpotPropertyModel)filterable).innerModel));
             PeakSpotNavigatorModel = peakSpotNavigator;
 
@@ -245,7 +248,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
             RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
             DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
 
-            // AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(Ms1Spots, TargetZZZ, MassMin, MassMax, DriftMin, DriftMax);
+            AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(
+                driftProps, target,
+                driftProps.DefaultIfEmpty().Min(peak => peak?.MassCenter) ?? 0d, driftProps.DefaultIfEmpty().Max(peak => peak?.MassCenter) ?? 0d,
+                driftProps.DefaultIfEmpty().Min(peak => peak?.RT) ?? 0d, driftProps.DefaultIfEmpty().Max(peak => peak?.RT) ?? 0d,
+                driftProps.DefaultIfEmpty().Min(peak => peak?.Drift) ?? 0d, driftProps.DefaultIfEmpty().Max(peak => peak?.Drift) ?? 0d,
+                Observable.Return(classBrush)).AddTo(Disposables);
 
             MsdecResult = target.Where(t => t != null)
                 .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))
@@ -281,6 +289,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 r_ => new CcsSimilarity(r_?.CcsSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
+
+            var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam);
+            CompoundSearchModel = target
+                .CombineLatest(MsdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel<AlignmentSpotProperty>(_files[t.RepresentativeFileID], t.innerModel, r, searcherCollection.Items))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
         }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
@@ -296,7 +311,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public BarChartModel RtBarChartModel { get; }
         public BarChartModel DtBarChartModel { get; }
-
+        public LcimmsAlignmentSpotTableModel AlignmentSpotTableModel { get; }
         public AlignmentEicModel RtAlignmentEicModel { get; }
         public AlignmentEicModel DtAlignmentEicModel { get; }
 
@@ -323,14 +338,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         private IBarItemsLoader barItemsLoader;
 
-        public CompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {
-            return new CompoundSearchModel<AlignmentSpotProperty>(
-                _files[Target.Value.RepresentativeFileID],
-                Target.Value.innerModel,
-                MsdecResult.Value,
-                null,
-                null);
-        }
+        public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel<AlignmentSpotProperty>> CompoundSearchModel { get; }
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(Container, _alignmentFileBean.FilePath);

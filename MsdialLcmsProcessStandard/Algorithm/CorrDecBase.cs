@@ -44,7 +44,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                 var fileID = rdamPropertyBean.RdamFilePath_RdamFileID[analysisFileBeanCollection[i].AnalysisFilePropertyBean.AnalysisFilePath];
                 var measurementID = rdamPropertyBean.RdamFileContentBeanCollection[fileID].FileID_MeasurementID[analysisFileBeanCollection[i].AnalysisFilePropertyBean.AnalysisFileId];
 
-                using (var rawDataAccess = new RawDataAccess(analysisFileBeanCollection[i].AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, true, analysisFileBeanCollection[i].RetentionTimeCorrectionBean.PredictedRt))
+                using (var rawDataAccess = new RawDataAccess(analysisFileBeanCollection[i].AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, false, true, analysisFileBeanCollection[i].RetentionTimeCorrectionBean.PredictedRt))
                 {
                     var spectrumCollection = DataAccessLcUtility.GetRdamSpectrumCollection(projectPropertyBean, rdamPropertyBean, analysisFileBeanCollection[i]);
                     var rawPeakListList = new List<PeakListForGrouping>();
@@ -194,7 +194,7 @@ namespace Msdial.Lcms.Dataprocess.Algorithm
                 var fileID = rdamPropertyBean.RdamFilePath_RdamFileID[analysisFileBeanCollection[i].AnalysisFilePropertyBean.AnalysisFilePath];
                 var measurementID = rdamPropertyBean.RdamFileContentBeanCollection[fileID].FileID_MeasurementID[analysisFileBeanCollection[i].AnalysisFilePropertyBean.AnalysisFileId];
 
-                using (var rawDataAccess = new RawDataAccess(analysisFileBeanCollection[i].AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, true, analysisFileBeanCollection[i].RetentionTimeCorrectionBean.PredictedRt))
+                using (var rawDataAccess = new RawDataAccess(analysisFileBeanCollection[i].AnalysisFilePropertyBean.AnalysisFilePath, measurementID, false, false, true, analysisFileBeanCollection[i].RetentionTimeCorrectionBean.PredictedRt))
                 {
                     var spectrumCollection = DataAccessLcUtility.GetRdamSpectrumCollection(rawDataAccess);
                     var j = alignmentID;

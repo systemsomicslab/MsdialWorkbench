@@ -146,6 +146,14 @@
     <Compile Include="External Applications\MsDialToExternalApps.cs" />
     <Compile Include="Model\Chart\Ms2ChromatogramsModel.cs" />
     <Compile Include="Model\Chart\MsSpectrum.cs" />
+    <Compile Include="Model\Chart\SampleImageModel.cs" />
+    <Compile Include="Model\Imaging\ImagingImageModel.cs" />
+    <Compile Include="Model\Imaging\ImagingRoiModel.cs" />
+    <Compile Include="Model\Imaging\ImaginRoiCompareModel.cs" />
+    <Compile Include="Model\Imaging\RoiModel.cs" />
+    <Compile Include="Model\Imaging\RoiIntensitiesModel.cs" />
+    <Compile Include="Model\Imaging\WholeImageResultModel.cs" />
+    <Compile Include="Model\Imms\ImagingImmsMethodModel.cs" />
     <Compile Include="Model\Information\CompoundDetailModel.cs" />
     <Compile Include="Model\Information\PeakInformationModel.cs" />
     <Compile Include="Model\DataObj\PeptideGroupModel.cs" />
@@ -160,7 +168,9 @@
     <Compile Include="Model\DataObj\StandardCompoundModel.cs" />
     <Compile Include="Model\DataObj\SurveyScanSpectrum.cs" />
     <Compile Include="Model\Imms\ImmsAnnotatorSettingModel.cs" />
+    <Compile Include="Model\Lcimms\LcimmsCompoundSearchModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsEicLoader.cs" />
+    <Compile Include="Model\Lcimms\LcimmsPeakSpotTableModel.cs" />
     <Compile Include="Model\Loader\BarItemsLoaderData.cs" />
     <Compile Include="Model\Loader\IChromatogramLoader.cs" />
     <Compile Include="Model\Loader\MsSelectionItem.cs" />
@@ -278,6 +288,7 @@
     <Compile Include="Model\Statistics\PcaResultModel.cs" />
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
     <Compile Include="Utility\ObservableExtensions.cs" />
+    <Compile Include="ViewModel\Chart\SampleImageViewModel.cs" />
     <Compile Include="ViewModel\Chart\Ms2ChromatogramsViewModel.cs" />
     <Compile Include="ViewModel\Chart\MultiAlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\Chart\MultiBarChartViewModel.cs" />
@@ -285,10 +296,19 @@
     <Compile Include="ViewModel\Core\IAnalysisResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IResultViewModel.cs" />
     <Compile Include="ViewModel\DataObj\PeptideViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\ImagingImageViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\ImagingMainViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\ImagingRoiCompareViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\ImagingRoiViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\RoiIntensitiesViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\RoiViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\WholeImageResultViewModel.cs" />
     <Compile Include="ViewModel\Information\CompoundDetailViewModel.cs" />
     <Compile Include="ViewModel\Information\PeakInformationViewModel.cs" />
     <Compile Include="ViewModel\DataObj\ProteinGroupViewModel.cs" />
     <Compile Include="ViewModel\DataObj\ProteinViewModel.cs" />
+    <Compile Include="ViewModel\Lcimms\LcimmsCompoundSearchViewModel.cs" />
+    <Compile Include="ViewModel\Lcimms\LcimmsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Loader\BarItemsLoaderDataViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\Chart\AlignmentPeakPlotViewModel.cs" />
@@ -432,6 +452,9 @@
     <Compile Include="View\Chart\ExpRefView.xaml.cs">
       <DependentUpon>ExpRefView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Chart\SampleImageView.xaml.cs">
+      <DependentUpon>SampleImageView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Chart\Ms2ChromatogramsView.xaml.cs">
       <DependentUpon>Ms2ChromatogramsView.xaml</DependentUpon>
     </Compile>
@@ -486,6 +509,9 @@
     <Compile Include="View\Export\SaveImageAsWinLegacy.xaml.cs">
       <DependentUpon>SaveImageAsWinLegacy.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Imaging\ImagingMainView.xaml.cs">
+      <DependentUpon>ImagingMainView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Imms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
     </Compile>
@@ -515,6 +541,15 @@
     </Compile>
     <Compile Include="View\Lcimms\AlignmentParameterView.xaml.cs">
       <DependentUpon>AlignmentParameterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcimms\LcimmsAlignmentSpotTableView.xaml.cs">
+      <DependentUpon>LcimmsAlignmentSpotTableView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcimms\LcimmsAnalysisPeakTableView.xaml.cs">
+      <DependentUpon>LcimmsAnalysisPeakTableView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Lcimms\LcimmsCompoundSearchView.xaml.cs">
+      <DependentUpon>LcimmsCompoundSearchView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcimms\LcimmsRibbon.xaml.cs">
       <DependentUpon>LcimmsRibbon.xaml</DependentUpon>
@@ -785,6 +820,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Chart\SampleImageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Chart\Ms2ChromatogramsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -861,6 +900,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Imaging\ImagingMainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Imms\AnnotationSettingStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -906,6 +949,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Lcimms\AnnotationSettingStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcimms\LcimmsAlignmentSpotTableView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcimms\LcimmsAnalysisPeakTableView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Lcimms\LcimmsCompoundSearchView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

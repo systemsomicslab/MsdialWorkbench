@@ -47,11 +47,13 @@
                 Grid.Row="0" Grid.Column="1">
             <chart:HeatmapControl x:Name="heatmap"
                                     ItemsSource="{Binding  Source={StaticResource SeriesView}}"
+                                    DataType="{x:Type local:CategoryData}"
                                     HorizontalAxis="{StaticResource HorizontalAxis}"
                                     VerticalAxis="{StaticResource VerticalAxis}"
                                     HorizontalPropertyName="X"
                                     VerticalPropertyName="Y"
                                     DegreePropertyName="Z"
+                                    GradientBrush="{Binding GradientBrush}"
                                     ToolTipService.ShowDuration="{x:Static Member=sys:Int32.MaxValue}">
                 <chart:HeatmapControl.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
@@ -98,7 +100,7 @@
         <Rectangle Margin="5,5,5,0"
                    Grid.Row="0" Grid.Column="2">
             <Rectangle.Fill>
-                <LinearGradientBrush GradientStops="{Binding GradientStops, ElementName=heatmap}"
+                <LinearGradientBrush GradientStops="{Binding GradientBrush.GradientStops}"
                                      StartPoint="0,1" EndPoint="0,0"/>
             </Rectangle.Fill>
         </Rectangle>

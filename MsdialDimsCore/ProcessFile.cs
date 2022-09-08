@@ -21,7 +21,7 @@ namespace CompMs.MsdialDimsCore
     public static class ProcessFile {
         public static void Run(
             AnalysisFileBean file,
-            IDataProviderFactory<AnalysisFileBean> providerFactory,
+            IDataProvider provider,
             IMsdialDataStorage<MsdialDimsParameter> storage,
             IAnnotationProcess annotationProcess,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
@@ -29,7 +29,6 @@ namespace CompMs.MsdialDimsCore
             CancellationToken token = default) {
 
             var param = storage.Parameter;
-            var provider = providerFactory.Create(file);
 
             // parse raw data
             Console.WriteLine("Loading spectral information");

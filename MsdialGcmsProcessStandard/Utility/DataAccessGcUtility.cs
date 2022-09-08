@@ -34,7 +34,7 @@ namespace Msdial.Gcms.Dataprocess.Utility
             var measurementID = rdamProperty.RdamFileContentBeanCollection[fileID].FileID_MeasurementID[file.AnalysisFilePropertyBean.AnalysisFileId];
 
 
-            using (var rawDataAccess = new RawDataAccess(filepath, measurementID, false, true)) {
+            using (var rawDataAccess = new RawDataAccess(filepath, measurementID, false, false, true)) {
                 //Console.WriteLine("open stream: {0}", sw.ElapsedMilliseconds);
                 var mes = rawDataAccess.GetMeasurement();
                 //Console.WriteLine("got functions: {0}", sw.ElapsedMilliseconds);

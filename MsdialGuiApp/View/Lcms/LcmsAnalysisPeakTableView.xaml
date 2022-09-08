@@ -20,7 +20,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <converter:PeakToChromatogramConverter x:Key="peak2eic"/>
         </ResourceDictionary>

@@ -454,7 +454,7 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
             var isAllCalibrantImported = true;
             foreach (var file in files) {
                 var ibfpath = file.AnalysisFilePropertyBean.AnalysisFilePath;
-                using (var access = new RawDataAccess(ibfpath, 0, false, true)) {
+                using (var access = new RawDataAccess(ibfpath, 0, false, false, true)) {
                     var calinfo = access.ReadIonmobilityCalibrationInfo();
                     var fileid = file.AnalysisFilePropertyBean.AnalysisFileId;
                     CoefficientsForCcsCalculation ccsCalinfo;

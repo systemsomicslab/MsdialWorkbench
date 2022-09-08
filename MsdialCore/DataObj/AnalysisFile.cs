@@ -1,4 +1,6 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.Common.DataObj;
+using CompMs.Common.Enum;
+using CompMs.MsdialCore.Utility;
 using MessagePack;
 using System.Collections.Generic;
 
@@ -50,5 +52,9 @@ namespace CompMs.MsdialCore.DataObj {
         int IFileBean.FileID => AnalysisFileId;
         string IFileBean.FileName => AnalysisFileName;
         string IFileBean.FilePath => AnalysisFilePath;
+
+        public RawMeasurement LoadRawMeasurement(bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds) {
+            return DataAccess.LoadMeasurement(this, isImagingMsData, isGuiProcess, retry, sleepMilliSeconds);
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.MessagePack;
 using CompMs.MsdialCore.Parser;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,8 +12,11 @@ namespace CompMs.MsdialCore.DataObj
         private readonly List<ChromatogramPeakFeature> _items;
 
         public ChromatogramPeakFeatureCollection(List<ChromatogramPeakFeature> items) {
-            _items = items;
+            _items = items ?? throw new System.ArgumentNullException(nameof(items));
+            Items = _items.AsReadOnly();
         }
+
+        public ReadOnlyCollection<ChromatogramPeakFeature> Items { get; }
 
         public Task SerializeAsync(string outputFile, CancellationToken token = default) {
             return Task.Run(() => MsdialPeakSerializer.SaveChromatogramPeakFeatures(outputFile, _items), token);

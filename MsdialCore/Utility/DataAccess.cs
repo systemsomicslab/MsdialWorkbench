@@ -42,7 +42,7 @@ namespace CompMs.MsdialCore.Utility {
         // raw data access
         public static List<RawSpectrum> GetAllSpectra(string filepath) {
             List<RawSpectrum> rawSpectra = null;
-            using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false)) {
+            using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false, false)) {
                 var measurment = rawDataAccess.GetMeasurement();
                 rawSpectra = measurment.SpectrumList;
             }
@@ -52,15 +52,15 @@ namespace CompMs.MsdialCore.Utility {
         public static void GetAllSpectraWithAccumulatedMS1(string filepath, out List<RawSpectrum> allSpectrumList, out List<RawSpectrum> accumulatedSpectrumList) {
             allSpectrumList = new List<RawSpectrum>();
             accumulatedSpectrumList = new List<RawSpectrum>();
-            using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false)) {
+            using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false, false)) {
                 var measurment = rawDataAccess.GetMeasurement();
                 allSpectrumList = measurment.SpectrumList;
                 accumulatedSpectrumList = measurment.AccumulatedSpectrumList;
             }
         }
 
-        public static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isGuiProcess, int retry, int sleepMilliSeconds) {
-            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
+        public static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds) {
+            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, false, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
                 for (var i = 0; i < retry; i++) {
                     var rawObj = access.GetMeasurement();
                     if (rawObj != null)
@@ -72,7 +72,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         public static RawCalibrationInfo ReadIonMobilityCalibrationInfo(string filepath) {
-            using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false)) {
+            using (var rawDataAccess = new RawDataAccess(filepath, 0, false, false, false)) {
                 return rawDataAccess.ReadIonmobilityCalibrationInfo();
             }
         }

@@ -51,6 +51,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             AnalysisFileBean analysisFile,
             IDataProvider spectrumProvider,
             IDataProvider accSpectrumProvider,
+            DataBaseStorage databases,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseMapper mapper,
             MsdialLcImMsParameter parameter,
@@ -75,6 +76,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                     peakTree[index] = peak.InnerModel.DriftChromFeatures.Select(dpeak => new ChromatogramPeakFeatureModel(dpeak)).ToArray();
                 }
             }
+            var driftPeaks = new ObservableCollection<ChromatogramPeakFeatureModel>(peakTree.Query(0, orderedPeaks.Length));
             var peakRanges = new Dictionary<ChromatogramPeakFeatureModel, (int, int)>();
             {
                 var j = 0;
@@ -117,9 +119,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }).AddTo(Disposables);
             Ms1Peaks = peakModels;
 
-            var peakSpotNavigator = new PeakSpotNavigatorModel(peakModels, peakFilterModel, evaluator, status: ~FilterEnableStatus.None).AddTo(Disposables);
+            var peakSpotNavigator = new PeakSpotNavigatorModel(driftPeaks, peakFilterModel, evaluator, status: FilterEnableStatus.All).AddTo(Disposables);
             var accEvaluator = new AccumulatedPeakEvaluator(evaluator);
             peakSpotNavigator.AttachFilter(accumulatedPeakModels, accumulatedPeakFilterModel, status: FilterEnableStatus.None, evaluator: accEvaluator?.Contramap<IFilterable, ChromatogramPeakFeature>(filterable => ((ChromatogramPeakFeatureModel)filterable).InnerModel));
+            peakSpotNavigator.AttachFilter(peakModels, peakFilterModel, status: FilterEnableStatus.All, evaluator: evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative));
             PeakSpotNavigatorModel = peakSpotNavigator;
 
             var ontologyBrush = new BrushMapData<ChromatogramPeakFeatureModel>(
@@ -276,7 +279,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
-            // PeakTableModel = new ImmsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax, ChromMin, ChromMax);
+            PeakTableModel = new LcimmsAnalysisPeakTableModel(
+                driftPeaks, target,
+                driftPeaks.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d, driftPeaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d,
+                driftPeaks.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXsTop.RT.Value) ?? 0d, driftPeaks.DefaultIfEmpty().Max(peak => peak?.InnerModel.ChromXsTop.RT.Value) ?? 0d,
+                driftPeaks.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXsTop.Drift.Value) ?? 0d, driftPeaks.DefaultIfEmpty().Max(peak => peak?.InnerModel.ChromXsTop.Drift.Value) ?? 0d)
+                .AddTo(Disposables);
 
             switch (parameter.TargetOmics) {
                 case TargetOmics.Lipidomics:
@@ -312,19 +320,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 (dtSpotFocus, peak => peak.InnerModel.ChromXsTop.Drift.Value)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus, dtSpotFocus);
 
-            CompoundSearchModel = target.Where(t => t != null)
-                .CombineLatest(msdecResult.Where(r => r != null), (t, r) => new CompoundSearchModel<ChromatogramPeakFeature>(analysisFile, t.InnerModel, r, new CompoundSearcher[0]))
-                .DisposePreviousValue()
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(Disposables);
-            CanSearchCompound = new[]
-            {
-                target.Select(t => t?.InnerModel != null),
-                msdecResult.Select(d => d != null),
-            }.CombineLatestValuesAreAllTrue()
-            .ToReadOnlyReactivePropertySlim()
-            .AddTo(Disposables);
-
             var peakInformationModel = new PeakInformationAnalysisModel(target).AddTo(Disposables);
             peakInformationModel.Add(
                 t => new RtPoint(t?.InnerModel.ChromXsTop.RT.Value ?? 0d),
@@ -342,6 +337,20 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 r_ => new CcsSimilarity(r_?.CcsSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
+
+            var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam);
+            CompoundSearchModel = target
+                .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel<ChromatogramPeakFeature>(analysisFile, t.InnerModel, r, searcherCollection.Items))
+                .DisposePreviousValue()
+                .ToReadOnlyReactivePropertySlim()
+                .AddTo(Disposables);
+            CanSearchCompound = new[]
+            {
+                target.Select(t => t?.InnerModel != null),
+                msdecResult.Select(d => d != null),
+            }.CombineLatestValuesAreAllTrue()
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(Disposables);
         }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
@@ -360,7 +369,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
 
-        public IObservable<CompoundSearchModel<ChromatogramPeakFeature>> CompoundSearchModel { get; }
+        public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel<ChromatogramPeakFeature>> CompoundSearchModel { get; }
         public IObservable<bool> CanSearchCompound { get; }
 
 
@@ -392,6 +401,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             get => _displayLabel;
             set => SetProperty(ref _displayLabel, value);
         }
+        public LcimmsAnalysisPeakTableModel PeakTableModel { get; }
+
         private string _displayLabel = string.Empty;
 
         public Task SaveAsync(CancellationToken token) {
