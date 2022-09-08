@@ -140,10 +140,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\ChartBrushes.cs" />
+    <Compile Include="Common\Colormaps.cs" />
     <Compile Include="Common\CommonEnums.cs" />
     <Compile Include="External Applications\MsDialIniField.cs" />
     <Compile Include="External Applications\MsDialIniParcer.cs" />
     <Compile Include="External Applications\MsDialToExternalApps.cs" />
+    <Compile Include="Model\Chart\BitmapImageModel.cs" />
     <Compile Include="Model\Chart\Ms2ChromatogramsModel.cs" />
     <Compile Include="Model\Chart\MsSpectrum.cs" />
     <Compile Include="Model\Chart\SampleImageModel.cs" />
@@ -288,6 +290,7 @@
     <Compile Include="Model\Statistics\PcaResultModel.cs" />
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
     <Compile Include="Utility\ObservableExtensions.cs" />
+    <Compile Include="ViewModel\Chart\BitmapImageViewModel.cs" />
     <Compile Include="ViewModel\Chart\SampleImageViewModel.cs" />
     <Compile Include="ViewModel\Chart\Ms2ChromatogramsViewModel.cs" />
     <Compile Include="ViewModel\Chart\MultiAlignmentEicViewModel.cs" />
@@ -442,6 +445,9 @@
     </Compile>
     <Compile Include="View\Chart\BarChartView.xaml.cs">
       <DependentUpon>BarChartView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Chart\BitmapImageView.xaml.cs">
+      <DependentUpon>BitmapImageView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\DisplayChromatogramsView.xaml.cs">
       <DependentUpon>DisplayChromatogramsView.xaml</DependentUpon>
@@ -805,6 +811,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Chart\BarChartView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Chart\BitmapImageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

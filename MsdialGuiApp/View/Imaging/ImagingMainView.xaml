@@ -91,7 +91,7 @@
                           IsSynchronizedWithCurrentItem="True"
                           DisplayMemberPath="Title"
                           DockPanel.Dock="Top"/>
-                <chart:SampleImageView DataContext="{Binding SelectedImageViewModel.SelectedRoiViewModel.Intensities/SampleImageViewModel}"/>
+                <chart:BitmapImageView DataContext="{Binding SelectedImageViewModel.SelectedRoiViewModel.Intensities/BitmapImageViewModel}"/>
             </DockPanel>
             <chart:PeakView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.PeakPlotViewModel}"
                             Grid.Row="1" Grid.Column="1"/>
