@@ -8,7 +8,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm
     public class LcimmsAccumulateDataProvider : BaseDataProvider
     {
         public LcimmsAccumulateDataProvider(AnalysisFileBean file, bool isGuiProcess = false, int retry = 5) : 
-            base(SpectrumParser.GetAccumulatedMs1Spectrum(LoadMeasurement(file, false, isGuiProcess, retry).SpectrumList)) {
+            base(SpectrumParser.GetAccumulatedMs1Spectrum(LoadMeasurement(file, false, false, isGuiProcess, retry).SpectrumList)) {
             
         }
 

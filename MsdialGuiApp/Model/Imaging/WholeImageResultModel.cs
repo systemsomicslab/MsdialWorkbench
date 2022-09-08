@@ -42,7 +42,7 @@ namespace CompMs.App.Msdial.Model.Imaging
         public AnalysisPeakPlotModel PeakPlotModel { get; }
 
         public List<Raw2DElement> GetTargetElements() {
-            return _peaks.Items.Select(item => new Raw2DElement(item.ChromXsTop)).ToList();
+            return _peaks.Items.Select(item => new Raw2DElement(item.Mass, item.ChromXsTop.Drift.Value)).ToList();
         }
     }
 }

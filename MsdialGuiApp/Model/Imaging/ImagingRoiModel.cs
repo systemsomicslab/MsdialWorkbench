@@ -12,8 +12,9 @@ namespace CompMs.App.Msdial.Model.Imaging
         private readonly ObservableCollection<RoiIntensitiesModel> _intensities;
 
         public ImagingRoiModel(RoiModel roi, List<Raw2DElement> elements, MaldiFrameLaserInfo laserInfo) {
-            Roi = roi ?? throw new System.ArgumentNullException(nameof(roi));
-            var rawSpectraOnPixels = roi.RetrieveRawSpectraOnPixels(elements.Take(10).ToList());
+            Roi = roi ?? throw new System.ArgumentNullException(nameof(roi));//888.6216 1.45
+            elements = elements.Where(element => 880 < element.Mz && element.Mz < 890).ToList();
+            var rawSpectraOnPixels = roi.RetrieveRawSpectraOnPixels(elements);
             _intensities = new ObservableCollection<RoiIntensitiesModel>(
                 elements.Zip(rawSpectraOnPixels.PixelPeakFeaturesList,
                     (element, pixelPeaks) => new RoiIntensitiesModel(pixelPeaks, rawSpectraOnPixels.XYFrames, roi, element, laserInfo)));

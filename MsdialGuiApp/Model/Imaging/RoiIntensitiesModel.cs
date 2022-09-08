@@ -25,8 +25,14 @@ namespace CompMs.App.Msdial.Model.Imaging
                 $"m/z {element.Mz}, Mobility {element.Drift} [1/K0]",
                 new GradientStopCollection
                 {
-                    new GradientStop(Colors.White, 0d),
-                    new GradientStop(Colors.Black, 1d),
+                    // new GradientStop(Colors.Blue, 0d),
+                    // new GradientStop(Colors.White, .5d),
+                    // new GradientStop(Colors.Red, 1d),
+                    new GradientStop(Color.FromRgb( 68,   1,  84), 0d),
+                    new GradientStop(Color.FromRgb( 59,  82, 139), .25d),
+                    new GradientStop(Color.FromRgb( 33, 145, 140), .5d),
+                    new GradientStop(Color.FromRgb( 94, 201,  98), .75d),
+                    new GradientStop(Color.FromRgb(253, 231,  37), 1d),
                 },
                 laserInfo.BeamScanSizeX, laserInfo.BeamScanSizeY);
         }
