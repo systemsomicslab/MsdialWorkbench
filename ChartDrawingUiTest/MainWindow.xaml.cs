@@ -60,6 +60,7 @@ namespace ChartDrawingUiTest
                 typeof(ErrorBar1),
                 typeof(AreaSelectBehaviorTest),
                 typeof(RangeSelector),
+                typeof(ImageZoomTest),
             };
             pageType = pages.ToDictionary(type => type.Name);
             names = pageType.Keys.ToList();
