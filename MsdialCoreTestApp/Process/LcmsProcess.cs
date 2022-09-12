@@ -62,7 +62,7 @@ namespace CompMs.App.MsdialConsole.Process
                 tasks[idx] = Task.Run(async () => {
                     await sem.WaitAsync();
                     try {
-                        var provider = new StandardDataProvider(file, false, 5);
+                        var provider = new StandardDataProvider(file, false, false, 5);
                         FileProcess.Run(file, provider, storage, annotationProcess, evaluator);
                     }
                     finally {

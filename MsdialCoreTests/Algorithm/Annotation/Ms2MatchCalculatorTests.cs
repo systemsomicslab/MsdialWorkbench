@@ -16,10 +16,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 PrecursorMz = 810.604, CollisionCrossSection = 102,
                 Spectrum = new List<SpectrumPeak>
                 {
-                    new SpectrumPeak { Mass = 86.094f, Intensity = 5, },
-                    new SpectrumPeak { Mass = 184.073f, Intensity = 100, },
-                    new SpectrumPeak { Mass = 524.367f, Intensity = 1, },
-                    new SpectrumPeak { Mass = 810.604f, Intensity = 25, },
+                    new SpectrumPeak { Mass = 86.094, Intensity = 5, },
+                    new SpectrumPeak { Mass = 184.073, Intensity = 100, },
+                    new SpectrumPeak { Mass = 524.367, Intensity = 1, },
+                    new SpectrumPeak { Mass = 810.604, Intensity = 25, },
                 }
             };
             var parameter = new MsRefSearchParameterBase
@@ -39,12 +39,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
-                    new SpectrumPeak { Mass = 184.073f, Intensity = 100 },
-                    new SpectrumPeak { Mass = 506.361f, Intensity = 5 },
-                    new SpectrumPeak { Mass = 524.372f, Intensity = 5 },
-                    new SpectrumPeak { Mass = 526.330f, Intensity = 5 },
-                    new SpectrumPeak { Mass = 544.340f, Intensity = 5 },
-                    new SpectrumPeak { Mass = 810.601f, Intensity = 30 },
+                    new SpectrumPeak { Mass = 184.073, Intensity = 100 },
+                    new SpectrumPeak { Mass = 506.361, Intensity = 5 },
+                    new SpectrumPeak { Mass = 524.372, Intensity = 5 },
+                    new SpectrumPeak { Mass = 526.330, Intensity = 5 },
+                    new SpectrumPeak { Mass = 544.340, Intensity = 5 },
+                    new SpectrumPeak { Mass = 810.601, Intensity = 30 },
                 }
             };
 
@@ -67,10 +67,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 PrecursorMz = 810.604, CollisionCrossSection = 102,
                 Spectrum = new List<SpectrumPeak>
                 {
-                    new SpectrumPeak { Mass = 86.094f, Intensity = 5, },
-                    new SpectrumPeak { Mass = 184.073f, Intensity = 100, },
-                    new SpectrumPeak { Mass = 524.367f, Intensity = 1, },
-                    new SpectrumPeak { Mass = 810.604f, Intensity = 25, },
+                    new SpectrumPeak { Mass = 86.094, Intensity = 5, },
+                    new SpectrumPeak { Mass = 184.073, Intensity = 100, },
+                    new SpectrumPeak { Mass = 524.367, Intensity = 1, },
+                    new SpectrumPeak { Mass = 810.604, Intensity = 25, },
                 }
             };
             var parameter = new MsRefSearchParameterBase
@@ -90,12 +90,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
                 AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
                 Spectrum = new List<SpectrumPeak>
                 {
-                    new SpectrumPeak { Mass = 184.073f, Intensity = 100 },
-                    new SpectrumPeak { Mass = 506.361f, Intensity = 5 },
-                    new SpectrumPeak { Mass = 524.372f, Intensity = 5 },
-                    new SpectrumPeak { Mass = 526.330f, Intensity = 5 },
-                    new SpectrumPeak { Mass = 544.340f, Intensity = 5 },
-                    new SpectrumPeak { Mass = 810.601f, Intensity = 30 },
+                    new SpectrumPeak { Mass = 184.073, Intensity = 100 },
+                    new SpectrumPeak { Mass = 506.361, Intensity = 5 },
+                    new SpectrumPeak { Mass = 524.372, Intensity = 5 },
+                    new SpectrumPeak { Mass = 526.330, Intensity = 5 },
+                    new SpectrumPeak { Mass = 544.340, Intensity = 5 },
+                    new SpectrumPeak { Mass = 810.601, Intensity = 30 },
                 }
             };
 

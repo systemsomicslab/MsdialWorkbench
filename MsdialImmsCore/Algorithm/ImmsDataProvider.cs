@@ -32,12 +32,12 @@ namespace CompMs.MsdialImmsCore.Algorithm
         }
 
         public ImmsRepresentativeDataProvider(AnalysisFileBean file, double timeBegin, double timeEnd, bool isGuiProcess = false, int retry = 5)
-            :this(LoadMeasurement(file, false, isGuiProcess, retry).SpectrumList, timeBegin, timeEnd) {
+            :this(LoadMeasurement(file, false, false, isGuiProcess, retry).SpectrumList, timeBegin, timeEnd) {
 
         }
 
         public ImmsRepresentativeDataProvider(AnalysisFileBean file, bool isGuiProcess = false, int retry = 5)
-            :this(LoadMeasurement(file, false, isGuiProcess, retry).SpectrumList) {
+            :this(LoadMeasurement(file, false, false, isGuiProcess, retry).SpectrumList) {
 
         }
 
@@ -82,17 +82,17 @@ namespace CompMs.MsdialImmsCore.Algorithm
             :this(rawObj, 0.001, 0.002) { }
 
         public ImmsAverageDataProvider(AnalysisFileBean file, double massTolerance, double driftTolerance, double timeBegin, double timeEnd, bool isGuiProcess = false, int retry = 5)
-            :this(LoadMeasurement(file, false, isGuiProcess, retry), massTolerance, driftTolerance, timeBegin, timeEnd) {
+            :this(LoadMeasurement(file, false, false, isGuiProcess, retry), massTolerance, driftTolerance, timeBegin, timeEnd) {
 
         }
 
         public ImmsAverageDataProvider(AnalysisFileBean file, bool isGuiProcess = false, int retry = 5)
-            :this(LoadMeasurement(file, false, isGuiProcess, retry)) {
+            :this(LoadMeasurement(file, false, false, isGuiProcess, retry)) {
 
         }
 
         public ImmsAverageDataProvider(AnalysisFileBean file, double massTolerance, double driftTolerance, bool isGuiProcess = false, int retry = 5)
-            :this(LoadMeasurement(file, false, isGuiProcess, retry), massTolerance, driftTolerance) {
+            :this(LoadMeasurement(file, false, false, isGuiProcess, retry), massTolerance, driftTolerance) {
 
         }
 

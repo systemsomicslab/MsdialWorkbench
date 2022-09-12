@@ -118,18 +118,18 @@ namespace CompMs.Common.Lipidomics
             var h2oLossMass = lipid.Mass + adductmass - H2O;
             var spectrum = new List<SpectrumPeak>
             {
-                new SpectrumPeak((float)(adduct.ConvertToMz(lipid.Mass)), 999f, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                new SpectrumPeak((float)(h2oLossMass - MassDiffDictionary.HydrogenMass), 100f, "[M-H2O-H+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak((float)(h2oLossMass - C11H15NO7), 100f, "[M-H2O-C11H15NO7+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak((float)(h2oLossMass - C11H15NO7-H2O), 100f, "[M-H2O-C11H17NO8+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak((float)(h2oLossMass - C11H15NO7 - C6H10O5), 150f, "[M-H2O-C17H25NO12+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak((float)(h2oLossMass - C11H15NO7 - C6H10O5-H2O), 150f, "[M-H2O-C17H27NO13+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak((float)(h2oLossMass - C11H15NO7 - C6H10O5 *2), 150f, "[M-H2O-C23H35NO17+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak((float)(h2oLossMass - C11H15NO7 - C6H10O5 *2 -H2O), 300f, "[M-H2O-C23H37NO18+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true},//548
-                new SpectrumPeak((float)(C11H15NO7 + H2O + adductmass), 300f, "[C11H17NO8+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true}, //292
-                new SpectrumPeak((float)(C11H15NO7 + adductmass), 300f, "[C11H15NO7+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass }, //274
-                new SpectrumPeak((float)(C11H15NO7 + C6H10O5 + H2O + adductmass), 300f, "[C17H27NO13+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true}, //454
-                new SpectrumPeak((float)(C11H15NO7 + C6H10O5*2 +H2O*2 +C2H3N+ adductmass), 300f, "[C23H35NO17 +C2H3N +2H2O  +H]+")  { SpectrumComment = SpectrumComment.metaboliteclass }, //675
+                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                new SpectrumPeak(h2oLossMass - MassDiffDictionary.HydrogenMass, 100d, "[M-H2O-H+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(h2oLossMass - C11H15NO7, 100d, "[M-H2O-C11H15NO7+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(h2oLossMass - C11H15NO7-H2O, 100d, "[M-H2O-C11H17NO8+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(h2oLossMass - C11H15NO7 - C6H10O5, 150d, "[M-H2O-C17H25NO12+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(h2oLossMass - C11H15NO7 - C6H10O5-H2O, 150d, "[M-H2O-C17H27NO13+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(h2oLossMass - C11H15NO7 - C6H10O5 *2, 150d, "[M-H2O-C23H35NO17+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(h2oLossMass - C11H15NO7 - C6H10O5 *2 -H2O, 300d, "[M-H2O-C23H37NO18+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true},//548
+                new SpectrumPeak(C11H15NO7 + H2O + adductmass, 300d, "[C11H17NO8+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true}, //292
+                new SpectrumPeak(C11H15NO7 + adductmass, 300d, "[C11H15NO7+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass }, //274
+                new SpectrumPeak(C11H15NO7 + C6H10O5 + H2O + adductmass, 300d, "[C17H27NO13+H]+")  { SpectrumComment = SpectrumComment.metaboliteclass , IsAbsolutelyRequiredFragmentForAnnotation = true}, //454
+                new SpectrumPeak(C11H15NO7 + C6H10O5*2 +H2O*2 +C2H3N+ adductmass, 300d, "[C23H35NO17 +C2H3N +2H2O  +H]+")  { SpectrumComment = SpectrumComment.metaboliteclass }, //675
             };
             if (adduct.AdductIonName == "[M+NH4]+")
             {
@@ -137,7 +137,7 @@ namespace CompMs.Common.Lipidomics
                 (
                      new[]
                      {
-                        new SpectrumPeak((float)(lipid.Mass+ adductmass), 500f, "[M+H]+") { SpectrumComment = SpectrumComment.metaboliteclass },
+                        new SpectrumPeak(lipid.Mass+ adductmass, 500d, "[M+H]+") { SpectrumComment = SpectrumComment.metaboliteclass },
                      }
                 );
             }
@@ -154,7 +154,7 @@ namespace CompMs.Common.Lipidomics
                 (
                      new[]
                      {
-                        new SpectrumPeak((float)(chainMass + MassDiffDictionary.ProtonMass - H2O*2),300f, "[sph+H]+ -Header -H2O") { SpectrumComment = SpectrumComment.acylchain },
+                        new SpectrumPeak(chainMass + MassDiffDictionary.ProtonMass - H2O*2,300d, "[sph+H]+ -Header -H2O") { SpectrumComment = SpectrumComment.acylchain },
                         //new SpectrumPeak(chainMass + MassDiffDictionary.ProtonMass - CH4O2, 100d, "[sph+H]+ -CH4O2"),
                      }
                 );

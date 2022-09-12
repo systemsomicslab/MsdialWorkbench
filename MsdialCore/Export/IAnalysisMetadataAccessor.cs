@@ -81,7 +81,7 @@ namespace CompMs.MsdialCore.Export
 
             return new Dictionary<string, string> {
                 { "Peak ID", feature.MasterPeakID.ToString() },
-                { "Name", feature.Name },
+                { "Name", UnknownIfEmpty(feature.Name) },
                 { "Scan", feature.MS1RawSpectrumIdTop.ToString() },
                 // "m/z left", "m/z", "m/z right",
                 { "Height", string.Format("{0:0}", feature.PeakHeightTop) },
@@ -131,6 +131,7 @@ namespace CompMs.MsdialCore.Export
         //    return string.Join(";", spectrum.Select(peak => string.Format("{0:F5} {1:F0}", peak.Mass, peak.Intensity)));
         //}
 
+        protected static string UnknownIfEmpty(string value) => string.IsNullOrEmpty(value) ? "Unknown" : value;
         protected static string ValueOrNull(string value) => string.IsNullOrEmpty(value) ? "null" : value;
         protected static string ValueOrNull(double? value, string format) => value?.ToString(format) ?? "null";
         protected static string NullIfNegative(double value, string format) => value <= 0 ? "null" : value.ToString(format);

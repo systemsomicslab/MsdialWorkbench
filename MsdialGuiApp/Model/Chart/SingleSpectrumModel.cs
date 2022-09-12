@@ -18,9 +18,9 @@ namespace CompMs.App.Msdial.Model.Chart
         public SingleSpectrumModel(
             IObservable<List<SpectrumPeak>> spectrum,
             IObservable<IAxisManager<double>> horizontalAxis,
-            PropertySelector<SpectrumPeak, float> horizontalPropertySelector,
+            PropertySelector<SpectrumPeak, double> horizontalPropertySelector,
             IObservable<IAxisManager<double>> verticalAxis,
-            PropertySelector<SpectrumPeak, float> verticalPropertySelector,
+            PropertySelector<SpectrumPeak, double> verticalPropertySelector,
             IObservable<IBrushMapper> brush,
             string hueProperty,
             GraphLabels labels,
@@ -58,9 +58,9 @@ namespace CompMs.App.Msdial.Model.Chart
         public IObservable<List<SpectrumPeak>> Spectrum { get; }
         public IObservable<IAxisManager<double>> HorizontalAxis { get; }
         public GraphLabels Labels { get; }
-        public PropertySelector<SpectrumPeak, float> HorizontalPropertySelector { get; }
+        public PropertySelector<SpectrumPeak, double> HorizontalPropertySelector { get; }
         public IObservable<IAxisManager<double>> VerticalAxis { get; }
-        public PropertySelector<SpectrumPeak, float> VerticalPropertySelector { get; }
+        public PropertySelector<SpectrumPeak, double> VerticalPropertySelector { get; }
         public IObservable<IBrushMapper> Brush { get; }
         public string HueProperty { get; }
         public ReactivePropertySlim<bool> IsVisible { get; }

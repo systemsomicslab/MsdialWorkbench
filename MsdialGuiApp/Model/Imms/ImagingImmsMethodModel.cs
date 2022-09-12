@@ -3,7 +3,7 @@ using CompMs.App.Msdial.Model.Imaging;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
-using System.Collections.Generic;
+using CompMs.MsdialCore.Parameter;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -12,7 +12,8 @@ using System.Threading.Tasks;
 namespace CompMs.App.Msdial.Model.Imms
 {
     internal sealed class ImagingImmsMethodModel : DisposableModelBase, IMethodModel {
-        public ImagingImmsMethodModel(IEnumerable<AnalysisFileBean> files) {
+        public ImagingImmsMethodModel(IMsdialDataStorage<ParameterBase> storage) {
+            var files = storage.AnalysisFiles;
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(files);
             ImageModels = new ObservableCollection<ImagingImageModel>(files.Select(file => new ImagingImageModel(file)));
             Image = ImageModels.FirstOrDefault();

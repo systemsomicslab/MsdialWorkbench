@@ -11,11 +11,11 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
 
         public RoiIntensitiesViewModel(RoiIntensitiesModel model) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
-            SampleImageViewModel = new SampleImageViewModel(model.SampleImageModel).AddTo(Disposables);
+            BitmapImageViewModel = new BitmapImageViewModel(model.BitmapImageModel).AddTo(Disposables);
         }
 
         public string Title => $"{_model.Mz} {_model.Drift}";
 
-        public SampleImageViewModel SampleImageViewModel { get; }
+        public BitmapImageViewModel BitmapImageViewModel { get; }
     }
 }

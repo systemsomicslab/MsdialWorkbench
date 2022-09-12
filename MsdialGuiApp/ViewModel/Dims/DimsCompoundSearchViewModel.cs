@@ -1,11 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.Search;
-using System;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    class DimsCompoundSearchViewModel : CompoundSearchVM
+    internal sealed class DimsCompoundSearchViewModel : CompoundSearchVM
     {
-        public DimsCompoundSearchViewModel(CompoundSearchModel model) : base(model) {
+        public DimsCompoundSearchViewModel(CompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
         }
     }
 }
