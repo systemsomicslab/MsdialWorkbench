@@ -25,8 +25,7 @@ namespace CompMs.MsdialCore.DataObj
 
         public (double BasePeakMz, double BasePeakIntensity, double SummedIntensity) RetrieveBin(double mz, double tolerance) {
             var elements = _elements;
-            var start = elements.LowerBound((float)(mz - tolerance), (elem, target) => elem.Mz.CompareTo(target));
-            //var end = elements.UpperBound((float)(mz + tolerance), (elem, target) => elem.Mz.CompareTo(target));
+            var start = elements.LowerBound((mz - tolerance), (elem, target) => elem.Mz.CompareTo(target));
             var summedIntensity = 0d;
             var basepeakIntensity = 0d;
             var basepeakMz = mz;

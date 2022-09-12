@@ -23,20 +23,20 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
 
             var spectra = new List<RawSpectrum>
             {
-                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 1.00, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 10, Mz = (float)(100 - mzTol * 0.6) } } },
-                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 1.05, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 15, Mz = (float)(100 - mzTol * 0.5) } } },
-                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 1.25, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 20, Mz = (float)(100 - mzTol * 0.4) } } },
-                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 1.40, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 30, Mz = (float)(100 - mzTol * 0.3) } } },
-                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 1.55, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 40, Mz = (float)(100 - mzTol * 0.2) } } },
-                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 1.80, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 50, Mz = (float)(100 - mzTol * 0.1) } } },
-                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 1.95, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 45, Mz = (float)(100 + mzTol * 0.0) } } },
-                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 2.00, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 40, Mz = (float)(100 + mzTol * 0.1) } } },
-                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 2.10, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 60, Mz = (float)(100 + mzTol * 0.2) } } },
-                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 2.35, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 70, Mz = (float)(100 + mzTol * 0.3) } } },
-                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 2.50, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 60, Mz = (float)(100 + mzTol * 0.4) } } },
-                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 2.65, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 30, Mz = (float)(100 + mzTol * 0.5) } } },
-                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 2.85, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 15, Mz = (float)(100 + mzTol * 0.6) } } },
-                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 2.90, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 10, Mz = (float)(100 + mzTol * 0.7) } } },
+                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 1.00, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 10, Mz = 100 - mzTol * 0.6 } } },
+                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 1.05, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 15, Mz = 100 - mzTol * 0.5 } } },
+                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 1.25, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 20, Mz = 100 - mzTol * 0.4 } } },
+                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 1.40, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 30, Mz = 100 - mzTol * 0.3 } } },
+                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 1.55, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 40, Mz = 100 - mzTol * 0.2 } } },
+                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 1.80, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 50, Mz = 100 - mzTol * 0.1 } } },
+                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 1.95, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 45, Mz = 100 + mzTol * 0.0 } } },
+                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 2.00, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 40, Mz = 100 + mzTol * 0.1 } } },
+                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 2.10, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 60, Mz = 100 + mzTol * 0.2 } } },
+                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 2.35, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 70, Mz = 100 + mzTol * 0.3 } } },
+                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 2.50, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 60, Mz = 100 + mzTol * 0.4 } } },
+                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 2.65, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 30, Mz = 100 + mzTol * 0.5 } } },
+                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 2.85, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 15, Mz = 100 + mzTol * 0.6 } } },
+                new RawSpectrum { MsLevel = 1, ScanPolarity = ScanPolarity.Positive, ScanStartTime = 2.90, Spectrum = new RawPeakElement[] { new RawPeakElement { Intensity = 10, Mz = 100 + mzTol * 0.7 } } },
             };
 
             var spot = new AlignmentSpotProperty
