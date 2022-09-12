@@ -13,6 +13,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -76,6 +77,11 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
+
+            SetUnknownCommand = model.Target.Select(t => !(t is null))
+                .ToReactiveCommand()
+                .WithSubscribe(() => model.Target.Value.SetUnknown())
+                .AddTo(Disposables);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -89,10 +95,11 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
 
+        public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
             using (var model = _model.BuildCompoundSearchModel())
-            using (var vm = new CompoundSearchVM(model)) {
+            using (var vm = new DimsCompoundSearchViewModel(model, SetUnknownCommand)) {
                 if (_compoundSearchService.ShowDialog(vm) == true) {
                     _model.Target.Value.RaisePropertyChanged();
                 }

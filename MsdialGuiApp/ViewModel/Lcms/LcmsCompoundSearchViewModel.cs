@@ -5,12 +5,13 @@ using System;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
     public class LcmsCompoundSearchViewModel : CompoundSearchVM
     {
-        public LcmsCompoundSearchViewModel(CompoundSearchModel model) : base(model) {
+        public LcmsCompoundSearchViewModel(CompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
             ParameterHasErrors = ParameterVM.Select(parameter =>
                 parameter is null
                     ? Observable.Return(true)

@@ -11,5 +11,6 @@ namespace CompMs.App.Msdial.ViewModel.Core
         ViewModelBase[] PeakDetailViewModels { get; }
 
         ICommand ShowIonTableCommand { get; }
+        ICommand SetUnknownCommand { get; }
     }
 }

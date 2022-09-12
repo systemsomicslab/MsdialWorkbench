@@ -82,6 +82,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
 
+            SetUnknownCommand = Target.Select(t => !(t is null)).ToReactiveCommand()
+                .WithSubscribe(() => Target.Value.SetUnknown())
+                .AddTo(Disposables);
+
             SearchCompoundCommand = new[]{
                 model.Target.Select(t => t?.innerModel is null),
                 model.MsdecResult.Select(r => r is null),
@@ -89,7 +93,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             }.CombineLatestValuesAreAllFalse()
             .ToReactiveCommand()
             .WithSubscribe(() => {
-                using (var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value)) {
+                using (var vm = new LcimmsCompoundSearchViewModel(model.CompoundSearchModel.Value, SetUnknownCommand)) {
                     compoundSearchService.ShowDialog(vm);
                 }
             })
@@ -128,6 +132,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
 
+        public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
 
         public ICommand ShowIonTableCommand => showIonTableCommand ?? (showIonTableCommand = new DelegateCommand(ShowIonTable));

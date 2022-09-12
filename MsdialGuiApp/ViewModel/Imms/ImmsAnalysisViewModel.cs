@@ -69,6 +69,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
 
+            SetUnknownCommand = model.Target.Select(t => !(t is null))
+                .ToReactiveCommand()
+                .WithSubscribe(() => model.Target.Value.SetUnknown())
+                .AddTo(Disposables);
             SearchCompoundCommand = model.CanSearchCompound
                 .ToReactiveCommand()
                 .WithSubscribe(SearchCompound)
@@ -93,12 +97,14 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ReactiveCommand SearchCompoundCommand { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
 
+        public ICommand SetUnknownCommand { get; }
+
         private void SearchCompound() {
             using (var csm = _model.CreateCompoundSearchModel()) {
                 if (csm is null) {
                     return;
                 }
-                using (var vm = new ImmsCompoundSearchVM(csm)) {
+                using (var vm = new ImmsCompoundSearchVM(csm, SetUnknownCommand)) {
                     _compoundSearchService.ShowDialog(vm);
                 }
             }

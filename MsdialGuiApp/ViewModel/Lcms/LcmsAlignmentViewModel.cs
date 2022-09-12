@@ -82,6 +82,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
 
+            SetUnknownCommand = Target.Select(t => !(t is null)).ToReactiveCommand()
+                .WithSubscribe(() => Target.Value.SetUnknown())
+                .AddTo(Disposables);
+
             SearchCompoundCommand = _model.CanSearchCompound
                 .ToReactiveCommand()
                 .WithSubscribe(SearchCompound)
@@ -124,7 +128,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
-        public ReactiveCommand SearchCompoundCommand { get; }
         public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable { get; }
 
         public NormalizationSetViewModel NormalizationSetViewModel { get; }
@@ -133,12 +136,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public PcaSettingViewModel PcaSettingViewModel { get; }
         public ReactiveCommand ShowPcaSettingCommand { get; }
 
+        public ICommand SetUnknownCommand { get; }
+        public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
             using (var csm = _model.CreateCompoundSearchModel()) {
                 if (csm is null) {
                     return;
                 }
-                using (var vm = new LcmsCompoundSearchViewModel(csm)) {
+                using (var vm = new LcmsCompoundSearchViewModel(csm, SetUnknownCommand)) {
                     _compoundSearchService.ShowDialog(vm);
                 }
             }
