@@ -16,9 +16,10 @@
         </Grid.RowDefinitions>
         <TextBlock Text="Zoom image test" Grid.Row="0"/>
         <Border x:Name="View" Grid.Row="1">
-            <Image Source="http://prime.psc.riken.jp/compms/static/images/iconMsdial.png"
+            <Image x:Name="img" Source="http://prime.psc.riken.jp/compms/static/images/iconMsdial.png"
                    behavior:AddMovabilityBehavior.PositionBase="{Binding ElementName=View}"
                    Grid.Row="1"/>
         </Border>
+        <Border Width="{Binding Width, ElementName=img}" Height="{Binding Height, ElementName=img}" BorderThickness="1" BorderBrush="Red" Grid.Row="1"/>
     </Grid>
 </Page>

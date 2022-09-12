@@ -97,29 +97,13 @@ namespace CompMs.Graphics.Behavior
 
             var position = e.GetPosition(fe);
             if (e.Delta > 0) {
-                //var inv = _matrix;
-                //inv.Invert();
-                //position = inv.Transform(position);
                 var matrix = GetTransformMatrix(fe);
                 matrix.ScaleAt(1/1.1, 1/1.1, position.X, position.Y);
-                //_matrix = _matrix * new Matrix(.9, 0, 0, .9, position.X, position.Y);
-                //var transition = (position - new Point(ActualWidth / 2, ActualHeight / 2)) * -.1;
-                //_matrix.Translate(transition.X, transition.Y);
-                //_matrix.Scale(.9, .9);
-                //_matrix = new Matrix(_matrix.M11 * .9, 0, 0, _matrix.M22 * .9, .1 * position.X + .9 * _matrix.OffsetX, .1 * position.Y + .9 * _matrix.OffsetY);
                 fe.RenderTransform = new MatrixTransform(matrix);
             }
             else if (e.Delta < 0) {
-                //var inv = _matrix;
-                //inv.Invert();
-                //position = inv.Transform(position);
                 var matrix = GetTransformMatrix(fe);
                 matrix.ScaleAt(1.1d, 1.1d, position.X, position.Y);
-                //_matrix = _matrix * new Matrix(1.1, 0, 0, 1.1, position.X, position.Y);
-                //var transition = (position - new Point(ActualWidth / 2, ActualHeight / 2)) * .1;
-                //_matrix.Translate(transition.X, transition.Y);
-                //_matrix.Scale(1.1, 1.1);
-                //_matrix = new Matrix(_matrix.M11 * 1.1, 0, 0, _matrix.M22 * 1.1, -.1 * position.X + 1.1 * _matrix.OffsetX, -.1 * position.Y + 1.1 * _matrix.OffsetY);
                 fe.RenderTransform = new MatrixTransform(matrix);
             }
         }
@@ -189,16 +173,32 @@ namespace CompMs.Graphics.Behavior
             }
             var rubber = GetDragRubber(fe);
             if (rubber != null) {
-                var adorner = rubber;
                 var initial = GetDragInitialPoint(fe);
                 SetDragRubber(fe, null);
                 fe.ReleaseMouseCapture();
-                adorner.Detach();
+                rubber.Detach();
                 var transition = e.GetPosition(fe) - initial;
-                var center = initial + transition / 2;
                 var matrix = GetTransformMatrix(fe);
-                matrix.ScaleAt(fe.ActualWidth / Math.Abs(transition.X), fe.ActualHeight / Math.Abs(transition.Y), center.X, center.Y);
+                var inv = matrix;
+                inv.Invert();
+                var center = inv.Transform(initial + transition / 2);
+                // transition = inv.Transform(transition);
+                matrix = new Matrix(matrix.M11 * fe.ActualWidth / Math.Abs(transition.X), 0, 0, matrix.M22 * fe.ActualHeight / Math.Abs(transition.Y), -center.X * matrix.M11 * fe.ActualWidth / Math.Abs(transition.X), -center.Y * matrix.M22 * fe.ActualHeight / Math.Abs(transition.Y));
                 fe.RenderTransform = new MatrixTransform(matrix);
+            }
+        }
+
+        class Dot : System.Windows.Documents.Adorner
+        {
+            private readonly Rect _r;
+
+            public Dot(UIElement adornedElement, Rect rect) : base(adornedElement) {
+                _r = rect;
+            }
+
+            protected override void OnRender(DrawingContext drawingContext) {
+                base.OnRender(drawingContext);
+                drawingContext.DrawGeometry(Brushes.Red, null, new RectangleGeometry(_r));
             }
         }
 

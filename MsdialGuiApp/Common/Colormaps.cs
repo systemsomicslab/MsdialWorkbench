@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System.Linq;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace CompMs.App.Msdial.Common
@@ -6,13 +7,23 @@ namespace CompMs.App.Msdial.Common
     internal static class Colormaps
     {
         static Colormaps() {
-            Viridis = new BitmapPalette(VIRIDIS_DATA);
+            {
+                var data = VIRIDIS_DATA.ToArray();
+                data[0].A = 0;
+                Viridis = new BitmapPalette(data);
+            }
+            {
+                var data = VIRIDIS_DATA.Reverse().ToArray();
+                data[0].A = 0;
+                ViridisR = new BitmapPalette(data);
+            }
         }
 
         public static BitmapPalette Viridis { get; }
+        public static BitmapPalette ViridisR { get; }
 
         private readonly static Color[] VIRIDIS_DATA = new Color[] {
-                Color.FromArgb(8, 68, 1, 84 ),
+                Color.FromRgb( 68, 1, 84 ),
                 Color.FromRgb( 68, 2, 85 ),
                 Color.FromRgb( 68, 3, 87 ),
                 Color.FromRgb( 69, 5, 88 ),

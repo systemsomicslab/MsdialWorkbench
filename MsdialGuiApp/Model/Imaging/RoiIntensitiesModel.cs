@@ -28,14 +28,15 @@ namespace CompMs.App.Msdial.Model.Imaging
             var ymax = infos.Select(info => info.YIndexPos).DefaultIfEmpty(1).Max();
             var width = xmax - xmin + 1;
             var height = ymax - ymin + 1;
-            var stride = (PixelFormats.Gray8.BitsPerPixel + 7) / 8;
+            var pf = PixelFormats.Indexed8;
+            var stride = (pf.BitsPerPixel + 7) / 8;
             var image = new byte[width * stride * height];
             var zmin = features.IntensityArray.DefaultIfEmpty(0).Min();
             var zmax = features.IntensityArray.DefaultIfEmpty(255).Max();
             foreach (var (intensity, info) in features.IntensityArray.Zip(infos, (x, y) => (x, y))) {
-                image[width * stride * (info.YIndexPos - ymin) + (info.XIndexPos - xmin) * stride] = (byte)((intensity - zmin) / (zmax - zmin) * 255);
+                image[width * stride * (info.YIndexPos - ymin) + (info.XIndexPos - xmin) * stride] = (byte)Math.Max(1, (intensity - zmin) / (zmax - zmin) * 255);
             }
-            BitmapImageModel = new BitmapImageModel(image, width, height, PixelFormats.Indexed8, Colormaps.Viridis, $"m/z {element.Mz}, Mobility {element.Drift} [1/K0]");
+            BitmapImageModel = new BitmapImageModel(image, width, height, pf, Colormaps.Viridis, $"m/z {element.Mz}, Mobility {element.Drift} [1/K0]");
         }
 
         public RoiModel Roi { get; }
