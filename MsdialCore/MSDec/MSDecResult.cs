@@ -16,7 +16,7 @@ namespace CompMs.MsdialCore.MSDec {
         public ChromXs ChromXs { get; set; } = new ChromXs();
         public List<SpectrumPeak> Spectrum { get; set; } = new List<SpectrumPeak>();
         public void AddPeak(double mass, double intensity, string comment = null) {
-            Spectrum.Add(new SpectrumPeak((float)mass, (float)intensity, comment));
+            Spectrum.Add(new SpectrumPeak(mass, intensity, comment));
         }
 
         public int RawSpectrumID { get; set; } // origin of the msdec result spectrum

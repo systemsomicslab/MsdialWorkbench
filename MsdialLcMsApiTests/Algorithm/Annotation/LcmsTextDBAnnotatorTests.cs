@@ -460,10 +460,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation.Tests
                 PrecursorMz = 810.604, ChromXs = new ChromXs(2.2, ChromXType.RT, ChromXUnit.Min),
                 Spectrum = new List<SpectrumPeak>
                 {
-                    new SpectrumPeak { Mass = 86.094f, Intensity = 5, },
-                    new SpectrumPeak { Mass = 184.073f, Intensity = 100, },
-                    new SpectrumPeak { Mass = 524.367f, Intensity = 1, },
-                    new SpectrumPeak { Mass = 810.604f, Intensity = 25, },
+                    new SpectrumPeak { Mass = 86.094, Intensity = 5, },
+                    new SpectrumPeak { Mass = 184.073, Intensity = 100, },
+                    new SpectrumPeak { Mass = 524.367, Intensity = 1, },
+                    new SpectrumPeak { Mass = 810.604, Intensity = 25, },
                 }
             };
 

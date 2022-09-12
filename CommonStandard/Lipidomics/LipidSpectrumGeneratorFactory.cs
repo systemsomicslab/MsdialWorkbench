@@ -79,7 +79,7 @@ namespace CompMs.Common.Lipidomics
         public string Comment { get; }
 
         public SpectrumPeak[] Create(ILipid lipid, AdductIon adduct) {
-            return Mz.Evaluate(lipid, adduct).Select(mz => new SpectrumPeak((float)mz, (float)Intensity, Comment)).ToArray();
+            return Mz.Evaluate(lipid, adduct).Select(mz => new SpectrumPeak(mz, Intensity, Comment)).ToArray();
         }
     }
 
