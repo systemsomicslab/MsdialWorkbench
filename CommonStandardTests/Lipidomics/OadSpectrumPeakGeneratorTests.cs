@@ -115,5 +115,65 @@ namespace CompMs.Common.Lipidomics.Tests
             }
 
         }
+
+        [TestMethod()]
+        public void OadSphingoSpectrumPeakGeneratorTest()
+        {
+            var OadSpectrumPeakGenerator = new OadSpectrumPeakGenerator();
+            // SM 18:1(4);2O/18:1(9)
+            var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));//18:1(9)
+            var sphingo1 = new SphingoChain(18, DoubleBond.CreateFromPosition(4), Oxidized.CreateFromPosition(1, 3));// sphingo 18:1(4)
+            var lipid01 = new Lipid(LbmClass.SM, 728.5832, new PositionLevelChains(sphingo1, acyl1));
+
+            var sphingoPeak = OadSpectrumPeakGenerator.GetSphingoDoubleBondSpectrum(lipid01, sphingo1, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 0.0).ToList();
+            var acylPeak = OadSpectrumPeakGenerator.GetAcylDoubleBondSpectrum(lipid01, acyl1, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 0.0).ToList();
+
+            var actualList = sphingoPeak;
+            actualList.AddRange(acylPeak);
+
+
+            var expected = new SpectrumPeak[]
+            {
+                new SpectrumPeak(521.3714f,10f),
+                new SpectrumPeak(522.3792f,10f),
+                new SpectrumPeak(632.4524f,10f),
+                new SpectrumPeak(633.4602f,10f),
+                new SpectrumPeak(634.468f,10f),
+                new SpectrumPeak(590.4418f,10f),
+                new SpectrumPeak(591.4497f,10f),
+                new SpectrumPeak(592.4575f,10f),
+            };
+
+            foreach ((var e, var a) in expected.Zip(actualList))
+            {
+                Assert.AreEqual(e.Mass, a.Mass, 0.001);
+            }
+
+            // Cer 18:2(4,8);2O/24:0
+            var acyl2 = new AcylChain(24, DoubleBond.CreateFromPosition(), new Oxidized(0));// 24:0
+            var sphingo2 = new SphingoChain(18, DoubleBond.CreateFromPosition(4,8), Oxidized.CreateFromPosition(1, 3));// sphingo 18:2(4,8)
+            var lipid02 = new Lipid(LbmClass.Cer_NS, 647.6216, new PositionLevelChains(sphingo1, acyl2));
+
+            var actual = OadSpectrumPeakGenerator.GetSphingoDoubleBondSpectrum(lipid02, sphingo2, AdductIonParser.GetAdductIonBean("[M+H]+"), 0.0, 0.0);
+
+            expected = new SpectrumPeak[]
+            {
+                new SpectrumPeak(440.4098f,10f), //Δ4
+                new SpectrumPeak(441.4176f,10f),
+                new SpectrumPeak(537.478f,10f), //Δ8
+                new SpectrumPeak(538.4858f,10f),
+                new SpectrumPeak(539.4937f,10f),
+                new SpectrumPeak(495.4681f,10f),
+                new SpectrumPeak(496.4759f,10f),
+                new SpectrumPeak(497.4838f,10f),
+            };
+
+            foreach ((var e, var a) in expected.Zip(actual))
+            {
+                Assert.AreEqual(e.Mass, a.Mass, 0.001);
+            }
+
+        }
+
     }
 }

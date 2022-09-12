@@ -10081,12 +10081,12 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var trueCount = 0;
                     if (isClassIon1Found) trueCount++;
-                    if (isClassIon2Found) trueCount++;
+                    //if (isClassIon2Found) trueCount++;
                     if (isClassIon3Found) trueCount++;
                     //if (isClassIon4Found) trueCount++;
 
                     //if (isClassIon1Found == !true || isClassIon2Found == !true || isClassIon3Found == !true || isClassIon4Found == true) return null;
-                    if (trueCount < 3) return null;
+                    if (trueCount < 2) return null;
                     var candidates = new List<LipidMolecule>();
                     //var query = new List<Peak> {
                     //            new Peak() { Mz = diagnosticMz1, Intensity = threshold1 },
