@@ -12,6 +12,7 @@
     <Border x:Name="ImageContainer"
             ClipToBounds="True">
         <Image Source="{Binding BitmapSource}"
+               RenderOptions.BitmapScalingMode="NearestNeighbor"
                behavior:AddMovabilityBehavior.PositionBase="{Binding ElementName=ImageContainer}"/>
     </Border>
 </UserControl>
