@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
@@ -12,12 +13,13 @@ namespace CompMs.App.Msdial.Model.Imaging
 {
     internal sealed class RoiIntensitiesModel : BindableBase
     {
-        public RoiIntensitiesModel(RawPixelFeatures features, List<MaldiFrameInfo> infos, RoiModel roi, Raw2DElement element, MaldiFrameLaserInfo laserInfo) {
+        public RoiIntensitiesModel(RawPixelFeatures features, List<MaldiFrameInfo> infos, RoiModel roi, Raw2DElement element, ChromatogramPeakFeatureModel peak, MaldiFrameLaserInfo laserInfo) {
             if (features is null) {
                 throw new ArgumentNullException(nameof(features));
             }
 
             Roi = roi ?? throw new ArgumentNullException(nameof(roi));
+            Peak = peak;
             Mz = new MzValue(element.Mz);
             Drift = new DriftTime(element.Drift);
             Intensities = features.IntensityArray;
@@ -40,6 +42,7 @@ namespace CompMs.App.Msdial.Model.Imaging
         }
 
         public RoiModel Roi { get; }
+        public ChromatogramPeakFeatureModel Peak { get; }
         public SampleImageModel SampleImageModel { get; }
         public MzValue Mz { get; }
         public DriftTime Drift { get; }

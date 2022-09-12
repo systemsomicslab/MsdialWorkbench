@@ -1,6 +1,8 @@
-﻿using CompMs.App.Msdial.Model.Imaging;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Imaging;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.CommonMVVM;
+using Reactive.Bindings;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Imaging
@@ -15,5 +17,6 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
         }
 
         public AnalysisPeakPlotViewModel PeakPlotViewModel { get; }
+        public ReactiveProperty<ChromatogramPeakFeatureModel> Target => _model.Target;
     }
 }

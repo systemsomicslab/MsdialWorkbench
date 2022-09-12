@@ -13,7 +13,7 @@ namespace CompMs.App.Msdial.Model.Imaging
             ImageResult = new WholeImageResultModel(file).AddTo(Disposables);
 
             Roi = new RoiModel(file, file.GetMaldiFrames());
-            ImagingRoiModels.Add(new ImagingRoiModel(Roi, ImageResult.GetTargetElements(), file.GetMaldiFrameLaserInfo()));
+            ImagingRoiModels.Add(new ImagingRoiModel(Roi, ImageResult.GetTargetElements(), ImageResult.Target, file.GetMaldiFrameLaserInfo()).AddTo(Disposables));
         }
 
         public WholeImageResultModel ImageResult { get; }
