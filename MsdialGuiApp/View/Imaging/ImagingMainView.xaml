@@ -95,6 +95,7 @@
             </Grid.RowDefinitions>
             <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
                 <ComboBox ItemsSource="{Binding SelectedImageViewModel.SelectedRoiViewModel.Intensities}"
+                          SelectedItem="{Binding SelectedImageViewModel.SelectedRoiViewModel.SelectedPeakIntensities.Value}"
                           IsSynchronizedWithCurrentItem="True"
                           DisplayMemberPath="Title"
                           DockPanel.Dock="Top"/>

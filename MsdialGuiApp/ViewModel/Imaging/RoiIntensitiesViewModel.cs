@@ -14,6 +14,8 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
             BitmapImageViewModel = new BitmapImageViewModel(model.BitmapImageModel).AddTo(Disposables);
         }
 
+        public RoiIntensitiesModel Model => _model;
+
         public string Title => $"{_model.Mz} {_model.Drift}";
 
         public BitmapImageViewModel BitmapImageViewModel { get; }
