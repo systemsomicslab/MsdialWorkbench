@@ -66,7 +66,7 @@ namespace CompMs.MsdialCore.Export {
                 { "Alignment ID" ,spot.MasterAlignmentID.ToString() },
                 { "Protein group ID", spot.ProteinGroupID.ToString() },
                 { "Protein", spot.Protein },
-                { "Peptide name", spot.Name },
+                { "Peptide name", UnknownIfEmpty(spot.Name) },
                 { "Adduct type", spot?.AdductType.AdductIonName ?? "null" },
                 { "Fill %", spot.FillParcentage.ToString("F2") },
                 { "MS/MS assigned", spot.IsMsmsAssigned.ToString() },
@@ -103,6 +103,8 @@ namespace CompMs.MsdialCore.Export {
         protected static string GetPostCurationResult(AlignmentSpotProperty spot) {
             return "null"; // write something
         }
+
+        protected static string UnknownIfEmpty(string value) => string.IsNullOrEmpty(value) ? "Unknown" : value;
 
         private readonly static double eps = 1e-10;
         protected static string ValueOrNull(string value) => string.IsNullOrEmpty(value) ? "null" : value;
