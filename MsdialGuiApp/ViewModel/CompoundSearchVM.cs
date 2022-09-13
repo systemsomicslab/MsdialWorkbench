@@ -13,12 +13,13 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel
 {
     public class CompoundSearchVM : ViewModelBase
     {
-        public CompoundSearchVM(CompoundSearchModel model) {
+        public CompoundSearchVM(CompoundSearchModel model, ICommand setUnknownCommand) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -47,8 +48,8 @@ namespace CompMs.App.Msdial.ViewModel
             SetConfidenceCommand.Subscribe(this.model.SetConfidence);
             SetUnsettledCommand = canSet.ToReactiveCommand().AddTo(Disposables);
             SetUnsettledCommand.Subscribe(this.model.SetUnsettled);
-            SetUnknownCommand = canSet.ToReactiveCommand().AddTo(Disposables);
-            SetUnknownCommand.Subscribe(this.model.SetUnknown);
+
+            SetUnknownCommand = setUnknownCommand ?? canSet.ToReactiveCommand().WithSubscribe(model.SetUnknown).AddTo(Disposables);
 
             ParameterHasErrors = ParameterVM.Select(parameter =>
                 parameter is null
@@ -128,6 +129,6 @@ namespace CompMs.App.Msdial.ViewModel
 
         public ReactiveCommand SetUnsettledCommand { get; }
 
-        public ReactiveCommand SetUnknownCommand { get; }
+        public ICommand SetUnknownCommand { get; }
     }
 }

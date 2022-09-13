@@ -12,9 +12,8 @@ namespace CompMs.App.Msdial.Model.Imaging
             ImagingRoiModels = new ObservableCollection<ImagingRoiModel>();
             ImageResult = new WholeImageResultModel(file).AddTo(Disposables);
 
-            var rawObj = file.LoadRawMeasurement(isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 100);
-            Roi = new RoiModel(file, rawObj.MaldiFrames);
-            ImagingRoiModels.Add(new ImagingRoiModel(Roi, ImageResult.GetTargetElements(), rawObj.MaldiFrameLaserInfo));
+            Roi = new RoiModel(file, file.GetMaldiFrames());
+            ImagingRoiModels.Add(new ImagingRoiModel(Roi, ImageResult.GetTargetElements(), file.GetMaldiFrameLaserInfo()));
         }
 
         public WholeImageResultModel ImageResult { get; }

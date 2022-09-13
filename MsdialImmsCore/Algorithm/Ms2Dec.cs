@@ -114,7 +114,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 parameter.IonMode,
                 parameter);
 
-            var ms2ChromPeaksList = GetMs2PeaksList(provider, precursorMz, curatedSpectra.Select(x => (double)x.Mass).ToList(), ms1Chromatogram, parameter, targetCE);
+            var ms2ChromPeaksList = GetMs2PeaksList(provider, precursorMz, curatedSpectra.Select(x => x.Mass).ToList(), ms1Chromatogram, parameter, targetCE);
 
             if (ms2ChromPeaksList.IsEmptyOrNull()) {
                 return MSDecObjectHandler.GetDefaultMSDecResult(chromPeakFeature);

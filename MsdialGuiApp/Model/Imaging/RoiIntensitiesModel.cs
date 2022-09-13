@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.Common;
+using CompMs.App.Msdial.Model.Chart;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
@@ -20,15 +21,22 @@ namespace CompMs.App.Msdial.Model.Imaging
             Mz = new MzValue(element.Mz);
             Drift = new DriftTime(element.Drift);
             Intensities = features.IntensityArray;
-            SampleImageModel = new SampleImageModel(
-                features.IntensityArray.Zip(infos, (intensity, info) => new ImagePixel(info.MotorPositionX, info.MotorPositionY, intensity)),
-                $"m/z {element.Mz}, Mobility {element.Drift} [1/K0]",
-                new GradientStopCollection
-                {
-                    new GradientStop(Colors.White, 0d),
-                    new GradientStop(Colors.Black, 1d),
-                },
-                laserInfo.BeamScanSizeX, laserInfo.BeamScanSizeY);
+
+            var xmin = infos.Select(info => info.XIndexPos).DefaultIfEmpty(0).Min();
+            var xmax = infos.Select(info => info.XIndexPos).DefaultIfEmpty(1).Max();
+            var ymin = infos.Select(info => info.YIndexPos).DefaultIfEmpty(0).Min();
+            var ymax = infos.Select(info => info.YIndexPos).DefaultIfEmpty(1).Max();
+            var width = xmax - xmin + 1;
+            var height = ymax - ymin + 1;
+            var pf = PixelFormats.Indexed8;
+            var stride = (pf.BitsPerPixel + 7) / 8;
+            var image = new byte[width * stride * height];
+            var zmin = features.IntensityArray.DefaultIfEmpty(0).Min();
+            var zmax = features.IntensityArray.DefaultIfEmpty(255).Max();
+            foreach (var (intensity, info) in features.IntensityArray.Zip(infos, (x, y) => (x, y))) {
+                image[width * stride * (info.YIndexPos - ymin) + (info.XIndexPos - xmin) * stride] = (byte)Math.Max(1, (intensity - zmin) / (zmax - zmin) * 255);
+            }
+            BitmapImageModel = new BitmapImageModel(image, width, height, pf, Colormaps.Viridis, $"m/z {element.Mz}, Mobility {element.Drift} [1/K0]");
         }
 
         public RoiModel Roi { get; }
@@ -37,5 +45,7 @@ namespace CompMs.App.Msdial.Model.Imaging
         public DriftTime Drift { get; }
         public double[] Intensities { get; }
         public double AccumulatedIntensity => Intensities.Average();
+
+        public BitmapImageModel BitmapImageModel { get; }
     }
 }

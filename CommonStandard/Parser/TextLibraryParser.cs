@@ -160,7 +160,7 @@ namespace CompMs.Common.Parser
                     var mz = mzInt[0];
                     var intensity = mzInt[1];
 
-                    var peak = new SpectrumPeak() { Mass = float.Parse(mz), Intensity = float.Parse(intensity) };
+                    var peak = new SpectrumPeak() { Mass = double.Parse(mz), Intensity = double.Parse(intensity) };
                     if (peak.Intensity > threshold) {
                         peaks.Add(peak);
                     }

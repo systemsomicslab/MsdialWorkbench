@@ -8,6 +8,7 @@ using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -237,6 +238,12 @@ namespace CompMs.App.Msdial.Model.DataObj
             this.AlignedPeakPropertiesModel = this.innerModel.AlignedPeakProperties.Select(n => new AlignmentChromPeakFeatureModel(n)).ToList().AsReadOnly();
 
             BarItemCollection = BarItemCollection.Create(this, barItemsLoader);
+        }
+
+        public void SetUnknown() {
+            DataAccess.ClearMoleculePropertyInfomation(this);
+            MatchResults.RemoveManuallyResults();
+            MatchResults.AddResult(new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown });
         }
 
         public void RaisePropertyChanged() {

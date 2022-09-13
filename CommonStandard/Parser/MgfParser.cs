@@ -119,12 +119,13 @@ namespace CompMs.Common.Parser {
                 }
                 else
                 {
+                    double mz = 0.0, intensity = 0.0;
                     int charge = 1;
                     //var lineSpaceSplit = line.Split('\t');
                     var lineSpaceSplit = line.Split(' ');
                     var peak = new SpectrumPeak();
-                    if (lineSpaceSplit.Length > 0 && float.TryParse(lineSpaceSplit[0], out var mz)) peak.Mass = mz;
-                    if (lineSpaceSplit.Length > 1 && float.TryParse(lineSpaceSplit[1], out var intensity)) peak.Intensity = intensity;
+                    if (lineSpaceSplit.Length > 0 && double.TryParse(lineSpaceSplit[0], out mz)) peak.Mass = mz;
+                    if (lineSpaceSplit.Length > 1 && double.TryParse(lineSpaceSplit[1], out intensity)) peak.Intensity = intensity;
                     if (lineSpaceSplit.Length > 2 && int.TryParse(lineSpaceSplit[2], out charge)) peak.Charge = charge;
                     mgfRecord.Spectrum.Add(peak);
                 }

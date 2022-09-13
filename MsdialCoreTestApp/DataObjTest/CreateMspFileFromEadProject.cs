@@ -137,7 +137,7 @@ namespace MsdialPrivateConsoleApp {
                 var beginRtForSub = 2.0 - 0.1;
                 var endRtForSub = 2.0 + 0.1;
 
-                var provider = new StandardDataProvider(file, false, 5);
+                var provider = new StandardDataProvider(file, false, false, 5);
 
                 var spectrum = provider.LoadMsNSpectrums(level: 2);
                 var experiments = spectrum.Select(spec => spec.ExperimentID).Distinct().OrderBy(v => v).ToArray();

@@ -26,7 +26,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
 
         public DimsBpiDataProvider(AnalysisFileBean file, double timeBegin, double timeEnd, bool isGuiProcess = false, int retry = 5)
-            : this(LoadMeasurement(file, true, isGuiProcess, retry).SpectrumList, timeBegin, timeEnd) {
+            : this(LoadMeasurement(file, true, false, isGuiProcess, retry).SpectrumList, timeBegin, timeEnd) {
 
         }
 
@@ -58,7 +58,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
 
         public DimsTicDataProvider(AnalysisFileBean file, double timeBegin, double timeEnd, bool isGuiProcess = false, int retry = 5)
-            : this(LoadMeasurement(file, true, isGuiProcess, retry).SpectrumList, timeBegin, timeEnd) {
+            : this(LoadMeasurement(file, true, false, isGuiProcess, retry).SpectrumList, timeBegin, timeEnd) {
 
         }
 
@@ -94,7 +94,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
         }
 
         public DimsAverageDataProvider(AnalysisFileBean file, double massTolerance, double timeBegin, double timeEnd, bool isGuiProcess = false, int retry = 5)
-            : this(LoadMeasurement(file, true, isGuiProcess, retry).SpectrumList, massTolerance, timeBegin, timeEnd) {
+            : this(LoadMeasurement(file, true, false, isGuiProcess, retry).SpectrumList, massTolerance, timeBegin, timeEnd) {
 
         }
 

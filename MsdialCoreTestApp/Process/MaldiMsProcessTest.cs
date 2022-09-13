@@ -26,12 +26,12 @@ namespace CompMs.App.MsdialConsole.Process
     public sealed class MaldiMsProcessTest {
         private MaldiMsProcessTest() { }
         public static void TimsOnTest() {
-            var filepath = @"D:\msdial_test\test_data\Brain-C-3-9AA-ON\Brain-C-3-9AA-TIMS-ON-1.d";
-            var reffile = @"D:\msdial_test\test_data\imaging\20220725_timsTOFpro_TextLibrary_Brain_Neg.txt";
-            var outputfile = @"D:\msdial_test\test_data\Brain-C-3-9AA-ON\Brain-C-3-9AA-TIMS-ON-1_msdial.mddata";
+            var filepath = @"E:\6_Projects\PROJECT_ImagingMS\20210122_timsTOF flex-data\Brain-C-3-9AA-ON\Brain-C-3-9AA-TIMS-ON-1.d";
+            var reffile = @"E:\6_Projects\PROJECT_ImagingMS\Lipid reference library\20220725_timsTOFpro_TextLibrary_Brain_Neg.txt";
+            var outputfile = @"E:\6_Projects\PROJECT_ImagingMS\20210122_timsTOF flex-data\Brain-C-3-9AA-ON\Brain-C-3-9AA-TIMS-ON-1.mddata";
             var filename = Path.GetFileNameWithoutExtension(filepath);
             var fileDir = Path.GetDirectoryName(filepath);
-            var projectParameter = new ProjectParameter(DateTime.Now, @"D:\msdial_test\test_data\Brain-C-3-9AA-ON\", "Brain-C-3-9AA-TIMS-ON-1.mdproject");
+            var projectParameter = new ProjectParameter(DateTime.Now, @"E:\6_Projects\PROJECT_ImagingMS\20210122_timsTOF flex-data\Brain-C-3-9AA-ON\", "Brain-C-3-9AA-TIMS-ON-1.mdproject");
             var storage = new ProjectDataStorage(projectParameter);
             var file = new AnalysisFileBean() {
                 AnalysisFileId = 0,
@@ -107,30 +107,30 @@ namespace CompMs.App.MsdialConsole.Process
                 pixelData = access.GetRawPixelFeatures(featureElements, null);
             }
 
-            foreach (var (feature, pixel) in IEnumerableExtension.Zip(features, pixelData.PixelPeakFeaturesList)) {
+            //foreach (var (feature, pixel) in IEnumerableExtension.Zip(features, pixelData.PixelPeakFeaturesList)) {
                 
-                if (feature.IsReferenceMatched(evaluator)) {
-                    Console.WriteLine("Name\t" + feature.Name);
-                    Console.WriteLine("MZ\t" + feature.PrecursorMz);
-                    Console.WriteLine("Drift\t" + feature.ChromXsTop.Value);
-                    Console.WriteLine("CCS\t" + feature.CollisionCrossSection);
+            //    if (feature.IsReferenceMatched(evaluator)) {
+            //        Console.WriteLine("Name\t" + feature.Name);
+            //        Console.WriteLine("MZ\t" + feature.PrecursorMz);
+            //        Console.WriteLine("Drift\t" + feature.ChromXsTop.Value);
+            //        Console.WriteLine("CCS\t" + feature.CollisionCrossSection);
 
-                    var refdata = container.TextDB[feature.MatchResults.Representative.LibraryID];
-                    Console.WriteLine("RefMz\t" + refdata.PrecursorMz);
-                    Console.WriteLine("RefCCS\t" + refdata.CollisionCrossSection);
+            //        var refdata = container.TextDB[feature.MatchResults.Representative.LibraryID];
+            //        Console.WriteLine("RefMz\t" + refdata.PrecursorMz);
+            //        Console.WriteLine("RefCCS\t" + refdata.CollisionCrossSection);
 
-                    Console.WriteLine("PixelCount\t" + pixel.IntensityArray.Length);
-                    Console.WriteLine("X_Index\tY_Index\tX_UM\tY_UM\tIntensity");
-                    foreach (var (intensity, frame) in pixel.IntensityArray.Zip(pixelData.XYFrames, (intensity, frame) => (intensity, frame))) {
-                        var x_index = frame.XIndexPos;
-                        var y_index = frame.YIndexPos;
-                        var x_um = frame.MotorPositionX;
-                        var y_um = frame.MotorPositionY;
+            //        Console.WriteLine("PixelCount\t" + pixel.IntensityArray.Length);
+            //        Console.WriteLine("X_Index\tY_Index\tX_UM\tY_UM\tIntensity");
+            //        foreach (var (intensity, frame) in pixel.IntensityArray.Zip(pixelData.XYFrames, (intensity, frame) => (intensity, frame))) {
+            //            var x_index = frame.XIndexPos;
+            //            var y_index = frame.YIndexPos;
+            //            var x_um = frame.MotorPositionX;
+            //            var y_um = frame.MotorPositionY;
 
-                        Console.WriteLine(x_index + "\t" + y_index + "\t" + x_um + "\t" + y_um + "\t" + intensity);
-                    }
-                }
-            }
+            //            Console.WriteLine(x_index + "\t" + y_index + "\t" + x_um + "\t" + y_um + "\t" + intensity);
+            //        }
+            //    }
+            //}
         }
 
         public static void TimsOffTest() {

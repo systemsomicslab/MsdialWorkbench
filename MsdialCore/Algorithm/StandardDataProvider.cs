@@ -15,8 +15,8 @@ namespace CompMs.MsdialCore.Algorithm
 
         }
 
-        public StandardDataProvider(AnalysisFileBean file, bool isGuiProcess, int retry, CancellationToken token = default)
-            : base(LoadMeasurementAsync(file, false, isGuiProcess, retry, token)) {
+        public StandardDataProvider(AnalysisFileBean file, bool isImagingMs, bool isGuiProcess, int retry, CancellationToken token = default)
+            : base(LoadMeasurementAsync(file, false, isImagingMs, isGuiProcess, retry, token)) {
 
         }
     }
@@ -33,7 +33,7 @@ namespace CompMs.MsdialCore.Algorithm
         private readonly int retry = 5;
 
         public IDataProvider Create(AnalysisFileBean file) {
-            return new StandardDataProvider(file, isGuiProcess, retry);
+            return new StandardDataProvider(file, false, isGuiProcess, retry);
         }
 
         public IDataProvider Create(RawMeasurement rawMeasurement) {

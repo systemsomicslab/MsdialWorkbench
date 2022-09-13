@@ -67,10 +67,10 @@ namespace CompMs.Common.Lipidomics
                             var nl_NS2_H2O = nl_SN2 - H2O;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)nl_SN1_H2O, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)nl_NS2_H2O, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_SN1_H2O, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_NS2_H2O, Intensity = 0.01 }
                             };
 
                             var foundCount = 0;
@@ -125,8 +125,8 @@ namespace CompMs.Common.Lipidomics
                             var nl_SN2 = diagnosticMz3 - acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 0.01f },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.01 },
                             };
 
                             var foundCount = 0;
@@ -184,8 +184,8 @@ namespace CompMs.Common.Lipidomics
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn1, Intensity = 1.0f },
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 1.0f }
+                            new SpectrumPeak() { Mass = sn1, Intensity = 1.0 },
+                            new SpectrumPeak() { Mass = sn2, Intensity = 1.0 }
                         };
 
                             var foundCount = 0;
@@ -250,8 +250,8 @@ namespace CompMs.Common.Lipidomics
                             var sn2 = acylCainMass(sn2Carbon, sn2Double) - Electron;
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.1f },
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f }
+                            new SpectrumPeak() { Mass = sn1, Intensity = 0.1 },
+                            new SpectrumPeak() { Mass = sn2, Intensity = 0.1 }
                         };
 
                             var foundCount = 0;
@@ -302,8 +302,8 @@ namespace CompMs.Common.Lipidomics
                             var sn2 = acylCainMass(sn2Carbon, sn2Double) - Electron;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.01f },
+                                new SpectrumPeak() { Mass = sn1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sn2, Intensity = 0.01 },
                             };
 
                             var foundCount = 0;
@@ -358,8 +358,8 @@ namespace CompMs.Common.Lipidomics
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn1, Intensity = 1.0f },
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 1.0f }
+                            new SpectrumPeak() { Mass = sn1, Intensity = 1.0 },
+                            new SpectrumPeak() { Mass = sn2, Intensity = 1.0 }
                         };
 
                             var foundCount = 0;
@@ -420,10 +420,10 @@ namespace CompMs.Common.Lipidomics
                             var nl_NS2_H2O = nl_SN2 - H2O;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)nl_SN1_H2O, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)nl_NS2_H2O, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_SN1_H2O, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_NS2_H2O, Intensity = 0.01 }
                             };
 
                             var foundCount = 0;
@@ -497,8 +497,8 @@ namespace CompMs.Common.Lipidomics
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn1, Intensity = 1.0f },
-                                new SpectrumPeak() { Mass = (float)sn2, Intensity = 1.0f }
+                                new SpectrumPeak() { Mass = sn1, Intensity = 1.0 },
+                                new SpectrumPeak() { Mass = sn2, Intensity = 1.0 }
                             };
 
                             var foundCount = 0;
@@ -561,8 +561,8 @@ namespace CompMs.Common.Lipidomics
                             var nl_SN2 = diagnosticMz - acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.01 }
                             };
 
                             var foundCount = 0;
@@ -630,8 +630,8 @@ namespace CompMs.Common.Lipidomics
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn1, Intensity = 1.0f },
-                                new SpectrumPeak() { Mass = (float)sn2, Intensity = 1.0f }
+                                new SpectrumPeak() { Mass = sn1, Intensity = 1.0 },
+                                new SpectrumPeak() { Mass = sn2, Intensity = 1.0 }
                             };
 
                             var foundCount = 0;
@@ -688,8 +688,8 @@ namespace CompMs.Common.Lipidomics
                             var nl_SN2 = diagnosticMz - acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 10f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 10f }
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 10 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 10 }
                             };
 
                             var foundCount = 0;
@@ -752,8 +752,8 @@ namespace CompMs.Common.Lipidomics
                     //        var nl_SN2 = diagnosticMz - acylCainMass(sn2Carbon, sn2Double);
 
                     //        var query = new List<SpectrumPeak> {
-                    //            new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.01f },
-                    //            new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 0.01f }
+                    //            new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.01 },
+                    //            new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.01 }
                     //        };
 
                     //        var foundCount = 0;
@@ -822,8 +822,8 @@ namespace CompMs.Common.Lipidomics
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = sn1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sn2, Intensity = 0.01 }
                             };
 
                             var foundCount = 0;
@@ -886,8 +886,8 @@ namespace CompMs.Common.Lipidomics
                             var nl_SN1_H2O = nl_SN1 - H2O;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)nl_SN1_H2O, Intensity = 0.01f },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_SN1_H2O, Intensity = 0.01 },
                             };
 
                             var foundCount = 0;
@@ -940,7 +940,7 @@ namespace CompMs.Common.Lipidomics
                             //Debug.WriteLine("LNAPS {0}:{1}/n-{2}:{3}, m/z {4}", sn1Carbon, sn1Double, sn2Carbon, sn2Double, nl_SN2);
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 30.0f }
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 30.0 }
                             };
 
                             var foundCount = 0;
@@ -949,8 +949,8 @@ namespace CompMs.Common.Lipidomics
                             if (foundCount == 1)
                             {
                                 query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sn1, Intensity = 30.0f },
-                                    //new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 10.0f }
+                                    new SpectrumPeak() { Mass = sn1, Intensity = 30.0 },
+                                    //new SpectrumPeak() { Mass = nl_SN1, Intensity = 10.0 }
                                 };
                                 foundCount = 0;
                                 averageIntensity = 0.0;
@@ -1004,7 +1004,7 @@ namespace CompMs.Common.Lipidomics
                     //        var sn2Double = totalDoubleBond - sn1Double;
                     //        var sn1 = etherBondAcylLoss(sn1Carbon, sn1Double) - Electron;
                     //        var query = new List<SpectrumPeak> {
-                    //            new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.1f },
+                    //            new SpectrumPeak() { Mass = sn1, Intensity = 0.1 },
                     //        };
 
                     //        var foundCount = 0;
@@ -1064,9 +1064,9 @@ namespace CompMs.Common.Lipidomics
                             //    " " + sn1 + " " + nl_SN1);
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn1, Intensity = 30.0f },
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)nl_SN1_H2O, Intensity = 1f }
+                                new SpectrumPeak() { Mass = sn1, Intensity = 30.0 },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 1 },
+                                new SpectrumPeak() { Mass = nl_SN1_H2O, Intensity = 1 }
                             };
 
                             var foundCount = 0;
@@ -1129,7 +1129,7 @@ namespace CompMs.Common.Lipidomics
                                 diagnosticMz - H2O + 2 * MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 }
                             };
 
                             var foundCount = 0;
@@ -1188,7 +1188,7 @@ namespace CompMs.Common.Lipidomics
                     //                -  (MassDiffDictionary.HydrogenMass*2) - 22.9898;
 
                     //        var query = new List<SpectrumPeak> {
-                    //            new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f }
+                    //            new SpectrumPeak() { Mass = sph1, Intensity = 0.01 }
                     //        };
 
                     //        var foundCount = 0;
@@ -1246,7 +1246,7 @@ namespace CompMs.Common.Lipidomics
 
                             var sphFragment = diagnosticMz1 - acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.HydrogenMass;
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sphFragment, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = sphFragment, Intensity = 0.01 }
                             };
                             //if (sphCarbon == 18 && sphDouble == 1 && acylCarbon == 17 && acylDouble == 0) {
                             //    Console.WriteLine("");
@@ -1377,9 +1377,9 @@ namespace CompMs.Common.Lipidomics
                                     var nl_SN2 = diagnosticMz - acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var nl_SN3 = diagnosticMz - acylCainMass(sn3Carbon, sn3Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 5f },
-                                        new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 5f },
-                                        new SpectrumPeak() { Mass = (float)nl_SN3, Intensity = 5f }
+                                        new SpectrumPeak() { Mass = nl_SN1, Intensity = 5 },
+                                        new SpectrumPeak() { Mass = nl_SN2, Intensity = 5 },
+                                        new SpectrumPeak() { Mass = nl_SN3, Intensity = 5 }
                                     };
 
                                     var foundCount = 0;
@@ -1432,9 +1432,9 @@ namespace CompMs.Common.Lipidomics
                                     var nl_SN2 = diagnosticMz - acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var nl_SN3 = diagnosticMz - acylCainMass(sn3Carbon, sn3Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.1f },
-                                        new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 0.1f },
-                                        new SpectrumPeak() { Mass = (float)nl_SN3, Intensity = 0.1f }
+                                        new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.1 },
+                                        new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.1 },
+                                        new SpectrumPeak() { Mass = nl_SN3, Intensity = 0.1 }
                                     };
 
                                     var foundCount = 0;
@@ -1448,9 +1448,9 @@ namespace CompMs.Common.Lipidomics
                                         var nl_SN2_H = diagnosticMzH - acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                                         var nl_SN3_H = diagnosticMzH - acylCainMass(sn3Carbon, sn3Double) - H2O + MassDiffDictionary.HydrogenMass;
                                         var query2 = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)nl_SN1_H, Intensity = 0.1f },
-                                        new SpectrumPeak() { Mass = (float)nl_SN2_H, Intensity = 0.1f },
-                                        new SpectrumPeak() { Mass = (float)nl_SN3_H, Intensity = 0.1f }
+                                        new SpectrumPeak() { Mass = nl_SN1_H, Intensity = 0.1 },
+                                        new SpectrumPeak() { Mass = nl_SN2_H, Intensity = 0.1 },
+                                        new SpectrumPeak() { Mass = nl_SN3_H, Intensity = 0.1 }
                                         };
 
                                         var foundCount2 = 0;
@@ -1640,8 +1640,8 @@ namespace CompMs.Common.Lipidomics
 
                             var query = new List<SpectrumPeak>
                             {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 5f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 5f },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 5 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 5 },
                             };
                             var foundCount = 0;
                             var averageIntensity = 0.0;
@@ -1686,8 +1686,8 @@ namespace CompMs.Common.Lipidomics
                     //        var nl_SN2 = diagnosticMz - acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                     //        var query = new List<SpectrumPeak>
                     //        {
-                    //            new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.1f },
-                    //            new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 0.1f },
+                    //            new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.1 },
+                    //            new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.1 },
                     //        };
                     //        var foundCount = 0;
                     //        var averageIntensity = 0.0;
@@ -1702,8 +1702,8 @@ namespace CompMs.Common.Lipidomics
                     //            var nl_SN2_H = diagnosticMzH - acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                     //            var query2 = new List<SpectrumPeak>
                     //            {
-                    //            new SpectrumPeak() { Mass = (float)nl_SN1_H, Intensity = 0.1f },
-                    //            new SpectrumPeak() { Mass = (float)nl_SN2_H, Intensity = 0.1f },
+                    //            new SpectrumPeak() { Mass = nl_SN1_H, Intensity = 0.1 },
+                    //            new SpectrumPeak() { Mass = nl_SN2_H, Intensity = 0.1 },
                     //            };
                     //            countFragmentExistence(spectrum, query2, ms2Tolerance, out foundCount2, out averageIntensity2);
                     //            if (foundCount2 == 2)
@@ -2105,9 +2105,9 @@ namespace CompMs.Common.Lipidomics
                             var NL_sn2AndWater = NL_sn2 + 18.0105642;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn2, Intensity = 30.0f },
-                                //new SpectrumPeak() { Mass = (float)NL_sn2, Intensity = 0.1f },
-                                //new SpectrumPeak() { Mass = (float)NL_sn2AndWater, Intensity = 0.1f }
+                                new SpectrumPeak() { Mass = sn2, Intensity = 30.0 },
+                                //new SpectrumPeak() { Mass = NL_sn2, Intensity = 0.1 },
+                                //new SpectrumPeak() { Mass = NL_sn2AndWater, Intensity = 0.1 }
                             };
 
                             var foundCount = 0;
@@ -2176,8 +2176,8 @@ namespace CompMs.Common.Lipidomics
                             //Console.WriteLine(sn1Carbon + ":" + sn1Double + "e/" + sn2Carbon + ":" + sn2Double + " " + NL_sn1 + " " + sn1_rearrange);
 
                             var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)NL_sn1, Intensity = 1f },
-                                    new SpectrumPeak() { Mass = (float)sn1_rearrange, Intensity = 5f }
+                                    new SpectrumPeak() { Mass = NL_sn1, Intensity = 1 },
+                                    new SpectrumPeak() { Mass = sn1_rearrange, Intensity = 5 }
                                 };
 
                             var foundCount = 0;
@@ -2202,7 +2202,7 @@ namespace CompMs.Common.Lipidomics
                             //else {
                             //    var sn2 = acylCainMass(sn2Carbon, sn2Double) - Electron;
                             //    query = new List<SpectrumPeak> {
-                            //        new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f }
+                            //        new SpectrumPeak() { Mass = sn2, Intensity = 0.1 }
                             //    };
 
                             //    foundCount = 0;
@@ -2253,8 +2253,8 @@ namespace CompMs.Common.Lipidomics
                             var NL_sn2 = theoreticalMz - acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 10.0f },
-                            new SpectrumPeak() { Mass = (float)NL_sn2, Intensity = 0.1f }
+                            new SpectrumPeak() { Mass = sn2, Intensity = 10.0 },
+                            new SpectrumPeak() { Mass = NL_sn2, Intensity = 0.1 }
                         };
 
                             var foundCount = 0;
@@ -2354,7 +2354,7 @@ namespace CompMs.Common.Lipidomics
                                 var nl_sn2H2O = nl_sn2 + 18.0105642;
 
                                 var query1 = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)nl_sn2, Intensity = 0.1f },
+                                    new SpectrumPeak() { Mass = nl_sn2, Intensity = 0.1 },
                                 };
 
                                 var foundCount1 = 0;
@@ -2364,11 +2364,11 @@ namespace CompMs.Common.Lipidomics
                                 if (foundCount1 == 1)
                                 {
                                     var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f },
-                                    new SpectrumPeak() { Mass = (float)sn2_H2Oloss, Intensity = 0.1f },
-                                    new SpectrumPeak() { Mass = (float)sn2_xH2Oloss, Intensity = 0.1f },
-                                    //new SpectrumPeak() { Mass = (float)NL_sn2, Intensity = 0.1f },
-                                    //new SpectrumPeak() { Mass = (float)NL_sn2H2O, Intensity = 0.1f }
+                                    new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
+                                    new SpectrumPeak() { Mass = sn2_H2Oloss, Intensity = 0.1 },
+                                    new SpectrumPeak() { Mass = sn2_xH2Oloss, Intensity = 0.1 },
+                                    //new SpectrumPeak() { Mass = NL_sn2, Intensity = 0.1 },
+                                    //new SpectrumPeak() { Mass = NL_sn2H2O, Intensity = 0.1 }
                                 };
                                     var foundCount = 0;
                                     var averageIntensity = 0.0;
@@ -2456,7 +2456,7 @@ namespace CompMs.Common.Lipidomics
                                 var nl_sn2AndWater = nl_sn2 + 18.0105642;
 
                                 var query1 = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)nl_sn2, Intensity = 0.1f },
+                                    new SpectrumPeak() { Mass = nl_sn2, Intensity = 0.1 },
                                 };
 
                                 var foundCount1 = 0;
@@ -2466,11 +2466,11 @@ namespace CompMs.Common.Lipidomics
                                 if (foundCount1 == 1)
                                 {
                                     var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f },
-                                    new SpectrumPeak() { Mass = (float)sn2_H2Oloss, Intensity = 0.1f },
-                                    new SpectrumPeak() { Mass = (float)sn2_xH2Oloss, Intensity = 0.1f },
-                                    //new SpectrumPeak() { Mass = (float)nl_sn2, Intensity = 0.1f },
-                                    //new SpectrumPeak() { Mass = (float)nl_sn2AndWater, Intensity = 0.1f }
+                                    new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
+                                    new SpectrumPeak() { Mass = sn2_H2Oloss, Intensity = 0.1 },
+                                    new SpectrumPeak() { Mass = sn2_xH2Oloss, Intensity = 0.1 },
+                                    //new SpectrumPeak() { Mass = nl_sn2, Intensity = 0.1 },
+                                    //new SpectrumPeak() { Mass = nl_sn2AndWater, Intensity = 0.1 }
                                 };
 
                                     var foundCount = 0;
@@ -2680,7 +2680,7 @@ namespace CompMs.Common.Lipidomics
                                 var sn2_xH2Oloss = sn2 - (H2O * Math.Min(TotalOxidized - sn1Oxidized, 2));
 
                                 var query1 = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sn1, Intensity = 10f },
+                                    new SpectrumPeak() { Mass = sn1, Intensity = 10 },
                                 };
 
                                 var foundCount1 = 0;
@@ -2690,9 +2690,9 @@ namespace CompMs.Common.Lipidomics
                                 if (foundCount1 == 1)
                                 {
                                     var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f },
-                                    new SpectrumPeak() { Mass = (float)sn2_H2Oloss, Intensity = 0.1f },
-                                    new SpectrumPeak() { Mass = (float)sn2_xH2Oloss, Intensity = 0.1f }
+                                    new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
+                                    new SpectrumPeak() { Mass = sn2_H2Oloss, Intensity = 0.1 },
+                                    new SpectrumPeak() { Mass = sn2_xH2Oloss, Intensity = 0.1 }
                                 };
 
                                     var foundCount2 = 0;
@@ -2779,7 +2779,7 @@ namespace CompMs.Common.Lipidomics
                                 var sn2_xH2Oloss = sn2 - (H2O * Math.Min(TotalOxidized - sn1Oxidized, 2));
 
                                 var query1 = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sn1, Intensity = 10f },
+                                    new SpectrumPeak() { Mass = sn1, Intensity = 10 },
                                 };
 
                                 var foundCount1 = 0;
@@ -2789,9 +2789,9 @@ namespace CompMs.Common.Lipidomics
                                 if (foundCount1 == 1)
                                 {
                                     var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f },
-                                    new SpectrumPeak() { Mass = (float)sn2_H2Oloss, Intensity = 0.1f },
-                                    new SpectrumPeak() { Mass = (float)sn2_xH2Oloss, Intensity = 0.1f }
+                                    new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
+                                    new SpectrumPeak() { Mass = sn2_H2Oloss, Intensity = 0.1 },
+                                    new SpectrumPeak() { Mass = sn2_xH2Oloss, Intensity = 0.1 }
                                 };
 
                                     var foundCount2 = 0;
@@ -2807,12 +2807,12 @@ namespace CompMs.Common.Lipidomics
                                 }
 
                                 //var query = new List<SpectrumPeak> {
-                                //    new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn1_H2Oloss, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn2_H2Oloss, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn1_xH2Oloss, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn2_xH2Oloss, Intensity = 0.1f }
+                                //    new SpectrumPeak() { Mass = sn1, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn1_H2Oloss, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn2_H2Oloss, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn1_xH2Oloss, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn2_xH2Oloss, Intensity = 0.1 }
                                 //};
 
                                 //var foundCount = 0;
@@ -2900,7 +2900,7 @@ namespace CompMs.Common.Lipidomics
                                 var sn2_xH2Oloss = sn2 - (H2O * Math.Min(TotalOxidized - sn1Oxidized, 2));
 
                                 var query1 = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sn1, Intensity = 10f },
+                                    new SpectrumPeak() { Mass = sn1, Intensity = 10 },
                                 };
 
                                 var foundCount1 = 0;
@@ -2910,9 +2910,9 @@ namespace CompMs.Common.Lipidomics
                                 if (foundCount1 == 1)
                                 {
                                     var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f },
-                                    new SpectrumPeak() { Mass = (float)sn2_H2Oloss, Intensity = 0.1f },
-                                    new SpectrumPeak() { Mass = (float)sn2_xH2Oloss, Intensity = 0.1f }
+                                    new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
+                                    new SpectrumPeak() { Mass = sn2_H2Oloss, Intensity = 0.1 },
+                                    new SpectrumPeak() { Mass = sn2_xH2Oloss, Intensity = 0.1 }
                                 };
 
                                     var foundCount2 = 0;
@@ -2928,12 +2928,12 @@ namespace CompMs.Common.Lipidomics
                                 }
 
                                 //var query = new List<SpectrumPeak> {
-                                //    new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn1_H2Oloss, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn2_H2Oloss, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn1_xH2Oloss, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn2_xH2Oloss, Intensity = 0.1f }
+                                //    new SpectrumPeak() { Mass = sn1, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn1_H2Oloss, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn2_H2Oloss, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn1_xH2Oloss, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn2_xH2Oloss, Intensity = 0.1 }
                                 //};
 
                                 //var foundCount = 0;
@@ -3014,7 +3014,7 @@ namespace CompMs.Common.Lipidomics
                                 var sn2_xH2Oloss = sn2 - (H2O * Math.Min(TotalOxidized - sn1Oxidized, 2));
 
                                 var query1 = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sn1, Intensity = 10f },
+                                    new SpectrumPeak() { Mass = sn1, Intensity = 10 },
                                 };
 
                                 var foundCount1 = 0;
@@ -3024,9 +3024,9 @@ namespace CompMs.Common.Lipidomics
                                 if (foundCount1 == 1)
                                 {
                                     var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f },
-                                    new SpectrumPeak() { Mass = (float)sn2_H2Oloss, Intensity = 0.1f },
-                                    new SpectrumPeak() { Mass = (float)sn2_xH2Oloss, Intensity = 0.1f }
+                                    new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
+                                    new SpectrumPeak() { Mass = sn2_H2Oloss, Intensity = 0.1 },
+                                    new SpectrumPeak() { Mass = sn2_xH2Oloss, Intensity = 0.1 }
                                 };
 
                                     var foundCount2 = 0;
@@ -3042,12 +3042,12 @@ namespace CompMs.Common.Lipidomics
                                 }
 
                                 //var query = new List<SpectrumPeak> {
-                                //    new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn1_H2Oloss, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn2_H2Oloss, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn1_xH2Oloss, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn2_xH2Oloss, Intensity = 0.1f }
+                                //    new SpectrumPeak() { Mass = sn1, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn1_H2Oloss, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn2_H2Oloss, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn1_xH2Oloss, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn2_xH2Oloss, Intensity = 0.1 }
                                 //};
 
                                 //var foundCount = 0;
@@ -3124,7 +3124,7 @@ namespace CompMs.Common.Lipidomics
                                 var sn2_xH2Oloss = sn2 - (H2O * Math.Min(TotalOxidized - sn1Oxidized, 2));
 
                                 var query1 = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sn1, Intensity = 10f },
+                                    new SpectrumPeak() { Mass = sn1, Intensity = 10 },
                                 };
 
                                 var foundCount1 = 0;
@@ -3134,9 +3134,9 @@ namespace CompMs.Common.Lipidomics
                                 if (foundCount1 == 1)
                                 {
                                     var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f },
-                                    new SpectrumPeak() { Mass = (float)sn2_H2Oloss, Intensity = 0.1f },
-                                    new SpectrumPeak() { Mass = (float)sn2_xH2Oloss, Intensity = 0.1f }
+                                    new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
+                                    new SpectrumPeak() { Mass = sn2_H2Oloss, Intensity = 0.1 },
+                                    new SpectrumPeak() { Mass = sn2_xH2Oloss, Intensity = 0.1 }
                                 };
 
                                     var foundCount2 = 0;
@@ -3152,12 +3152,12 @@ namespace CompMs.Common.Lipidomics
                                 }
 
                                 //var query = new List<SpectrumPeak> {
-                                //    new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn1_H2Oloss, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn2_H2Oloss, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn1_xH2Oloss, Intensity = 0.1f },
-                                //    new SpectrumPeak() { Mass = (float)sn2_xH2Oloss, Intensity = 0.1f }
+                                //    new SpectrumPeak() { Mass = sn1, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn1_H2Oloss, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn2_H2Oloss, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn1_xH2Oloss, Intensity = 0.1 },
+                                //    new SpectrumPeak() { Mass = sn2_xH2Oloss, Intensity = 0.1 }
                                 //};
 
                                 //var foundCount = 0;
@@ -3221,8 +3221,8 @@ namespace CompMs.Common.Lipidomics
                             var nl_SN2 = theoreticalMz - acylCainMass(sn2Carbon, sn2Double) - 179.05611 - 17.026549;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 10f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 10f },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 10 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 10 },
                             };
 
                             var foundCount = 0;
@@ -3257,8 +3257,8 @@ namespace CompMs.Common.Lipidomics
                             var nl_SN2 = theoreticalMz - acylCainMass(sn2Carbon, sn2Double) - H2O + Proton;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.1f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 0.1f },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.1 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.1 },
                             };
 
                             var foundCount = 0;
@@ -3315,8 +3315,8 @@ namespace CompMs.Common.Lipidomics
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn1, Intensity = 5.0f },
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 5.0f }
+                            new SpectrumPeak() { Mass = sn1, Intensity = 5.0 },
+                            new SpectrumPeak() { Mass = sn2, Intensity = 5.0 }
                         };
 
                             var foundCount = 0;
@@ -3375,10 +3375,10 @@ namespace CompMs.Common.Lipidomics
                             var nl_SN2_H2O = nl_SN2 - H2O;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)nl_SN1_H2O, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2_H2O, Intensity = 1f },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 1 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 1 },
+                                new SpectrumPeak() { Mass = nl_SN1_H2O, Intensity = 1 },
+                                new SpectrumPeak() { Mass = nl_SN2_H2O, Intensity = 1 },
                             };
 
                             var foundCount = 0;
@@ -3414,8 +3414,8 @@ namespace CompMs.Common.Lipidomics
                             var nl_SN2 = theoreticalMz - acylCainMass(sn2Carbon, sn2Double) - H2O + Proton;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.1f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 0.1f },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.1 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.1 },
                             };
 
                             var foundCount = 0;
@@ -3466,8 +3466,8 @@ namespace CompMs.Common.Lipidomics
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn1, Intensity = 5.0f },
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 5.0f }
+                            new SpectrumPeak() { Mass = sn1, Intensity = 5.0 },
+                            new SpectrumPeak() { Mass = sn2, Intensity = 5.0 }
                         };
 
                             var foundCount = 0;
@@ -3531,7 +3531,7 @@ namespace CompMs.Common.Lipidomics
                             var sn2Dmag = 12 * (sn2Carbon + 3) + MassDiffDictionary.HydrogenMass * ((sn2Carbon * 2) - (sn2Double * 2) - 1 + 5) + 3 * MassDiffDictionary.OxygenMass + Proton;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn2Dmag, Intensity = 30f },
+                                new SpectrumPeak() { Mass = sn2Dmag, Intensity = 30 },
                             };
 
                             var foundCount = 0;
@@ -3574,7 +3574,7 @@ namespace CompMs.Common.Lipidomics
                             var nl_SN1 = diagnosticMz - sn1alkyl + Proton;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 10f },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 10 },
                             };
 
                             var foundCount = 0;
@@ -3621,8 +3621,8 @@ namespace CompMs.Common.Lipidomics
                             var NL_sn2 = 12 * (sn1Carbon + 3 + 6) + MassDiffDictionary.HydrogenMass * (2 * (sn1Carbon + 3 - sn1Double) + 11) + MassDiffDictionary.OxygenMass * 8;
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 10.0f },
-                            new SpectrumPeak() { Mass = (float)NL_sn2, Intensity = 5.0f }
+                            new SpectrumPeak() { Mass = sn2, Intensity = 10.0 },
+                            new SpectrumPeak() { Mass = NL_sn2, Intensity = 5.0 }
                         };
 
                             var foundCount = 0;
@@ -3794,7 +3794,7 @@ AdductIon adduct)
                             var nl_SN1 = theoreticalMz - acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.OxygenMass - MassDiffDictionary.NitrogenMass - H2O - 4.0 * MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 80f },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 80 },
                             };
 
                             //Console.WriteLine("Molecule {0}, Diagnostic m/z {1}", "DAG " + sn1Carbon + ":" + sn1Double + "e/" + sn2Carbon + ":" + sn2Double, nl_SN1);
@@ -3859,7 +3859,7 @@ AdductIon adduct)
                             var nl_SN1 = diagnosticMz - sn1alkyl + Proton;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 10f },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 10 },
                             };
 
                             var foundCount = 0;
@@ -3902,7 +3902,7 @@ AdductIon adduct)
                             var nl_SN1 = diagnosticMz - sn1alkyl + Proton;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 10f },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 10 },
                             };
 
                             var foundCount = 0;
@@ -3949,8 +3949,8 @@ AdductIon adduct)
                             var NL_sn2 = 12 * (sn1Carbon + 3 + 12) + MassDiffDictionary.HydrogenMass * (2 * (sn1Carbon + 3 - sn1Double) + 21) + MassDiffDictionary.OxygenMass * 13;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn2, Intensity = 10.0f },
-                                new SpectrumPeak() { Mass = (float)NL_sn2, Intensity = 5.0f }
+                                new SpectrumPeak() { Mass = sn2, Intensity = 10.0 },
+                                new SpectrumPeak() { Mass = NL_sn2, Intensity = 5.0 }
                             };
 
                             var foundCount = 0;
@@ -4012,12 +4012,12 @@ AdductIon adduct)
                             var nl_NS2_H2O = nl_SN2 - H2O;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.01f },
-                                //new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.01f },
-                                //new SpectrumPeak() { Mass = (float)nl_SN1_H2O, Intensity = 0.01f },
-                                //new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 0.01f },
-                                //new SpectrumPeak() { Mass = (float)nl_NS2_H2O, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = sn1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sn2, Intensity = 0.01 },
+                                //new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.01 },
+                                //new SpectrumPeak() { Mass = nl_SN1_H2O, Intensity = 0.01 },
+                                //new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.01 },
+                                //new SpectrumPeak() { Mass = nl_NS2_H2O, Intensity = 0.01 }
                         };
 
                             var foundCount = 0;
@@ -4075,13 +4075,13 @@ AdductIon adduct)
                     //if (isClassIon2Found == true) return null;
 
                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = 255.2329539f, Intensity = 5f },    // 16:0
-                                        new SpectrumPeak() { Mass = 283.264254f, Intensity = 5f },     // 18:0
-                                        new SpectrumPeak() { Mass = 281.2486039f, Intensity = 5f },    // 18:1 
-                                        new SpectrumPeak() { Mass = 279.2329539f, Intensity = 5f },     // 18:2
-                                        new SpectrumPeak() { Mass = 277.2173038f, Intensity = 5f },     // 18:3,
-                                        new SpectrumPeak() { Mass = 303.2329539f, Intensity = 5f },     // 20:4,
-                                        new SpectrumPeak() { Mass = 327.2329539f, Intensity = 5f },     // 22:6,
+                                        new SpectrumPeak() { Mass = 255.2329539, Intensity = 5 },    // 16:0
+                                        new SpectrumPeak() { Mass = 283.264254, Intensity = 5 },     // 18:0
+                                        new SpectrumPeak() { Mass = 281.2486039, Intensity = 5 },    // 18:1 
+                                        new SpectrumPeak() { Mass = 279.2329539, Intensity = 5 },     // 18:2
+                                        new SpectrumPeak() { Mass = 277.2173038, Intensity = 5 },     // 18:3,
+                                        new SpectrumPeak() { Mass = 303.2329539, Intensity = 5 },     // 20:4,
+                                        new SpectrumPeak() { Mass = 327.2329539, Intensity = 5 },     // 22:6,
                                     };
 
                     var foundCount = 0;
@@ -4265,9 +4265,9 @@ AdductIon adduct)
                                     var nl_SN2 = diagnosticMz - acylCainMass(sn2Carbon, sn2Double) - H2O + Proton;
                                     var nl_SN3 = diagnosticMz - acylCainMass(sn3Carbon, sn3Double) - H2O + Proton;
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 5f },
-                                        new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 5f },
-                                        new SpectrumPeak() { Mass = (float)nl_SN3, Intensity = 5f }
+                                        new SpectrumPeak() { Mass = nl_SN1, Intensity = 5 },
+                                        new SpectrumPeak() { Mass = nl_SN2, Intensity = 5 },
+                                        new SpectrumPeak() { Mass = nl_SN3, Intensity = 5 }
                                     };
 
                                     var foundCount = 0;
@@ -4332,9 +4332,9 @@ AdductIon adduct)
                                     var nl_SN2 = diagnosticMz - acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var nl_SN3 = diagnosticMz - acylCainMass(sn3Carbon, sn3Double) - H2O + MassDiffDictionary.HydrogenMass;
                                     var query = new List<SpectrumPeak> {
-                                        //new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.1f },
-                                        new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 1f },
-                                        new SpectrumPeak() { Mass = (float)nl_SN3, Intensity = 1f }
+                                        //new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.1 },
+                                        new SpectrumPeak() { Mass = nl_SN2, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = nl_SN3, Intensity = 1 }
                                     };
 
                                     var foundCount = 0;
@@ -4348,9 +4348,9 @@ AdductIon adduct)
                                         var nl_SN2_H = diagnosticMzH - acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
                                         var nl_SN3_H = diagnosticMzH - acylCainMass(sn3Carbon, sn3Double) - H2O + MassDiffDictionary.HydrogenMass;
                                         var query2 = new List<SpectrumPeak> {
-                                            //new SpectrumPeak() { Mass = (float)nl_SN1_H, Intensity = 0.1f },
-                                            new SpectrumPeak() { Mass = (float)nl_SN2_H, Intensity = 0.1f },
-                                            new SpectrumPeak() { Mass = (float)nl_SN3_H, Intensity = 0.1f }
+                                            //new SpectrumPeak() { Mass = nl_SN1_H, Intensity = 0.1 },
+                                            new SpectrumPeak() { Mass = nl_SN2_H, Intensity = 0.1 },
+                                            new SpectrumPeak() { Mass = nl_SN3_H, Intensity = 0.1 }
                                             };
 
                                         var foundCount2 = 0;
@@ -4431,10 +4431,10 @@ AdductIon adduct)
                             var nl_NS2_H2O = nl_SN2 - H2O;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)nl_SN1_H2O, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)nl_NS2_H2O, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_SN1_H2O, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_NS2_H2O, Intensity = 0.01 }
                             };
 
                             var foundCount = 0;
@@ -4483,8 +4483,8 @@ AdductIon adduct)
                             var nl_SN2 = diagnosticMz1 - acylCainMass(sn2Carbon, sn2Double) - MassDiffDictionary.HydrogenMass - MassDiffDictionary.OxygenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 0.01f },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.01 },
                             };
 
                             var foundCount = 0;
@@ -4530,8 +4530,8 @@ AdductIon adduct)
                             var SN2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)SN1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)SN2, Intensity = 0.01f },
+                                new SpectrumPeak() { Mass = SN1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = SN2, Intensity = 0.01 },
                             };
 
                             var foundCount = 0;
@@ -4642,7 +4642,7 @@ AdductIon adduct)
                             var SN1 = fattyacidProductIon(sn1Carbon, sn1Double);
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)SN1, Intensity = 0.01f },
+                                new SpectrumPeak() { Mass = SN1, Intensity = 0.01 },
                             };
 
                             var foundCount = 0;
@@ -4713,10 +4713,10 @@ AdductIon adduct)
                             var nl_NS2_H2O = nl_SN2 - H2O;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)nl_SN1_H2O, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)nl_NS2_H2O, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_SN1_H2O, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = nl_NS2_H2O, Intensity = 0.01 }
                             };
 
                             var foundCount = 0;
@@ -4812,8 +4812,8 @@ AdductIon adduct)
                             var nl_SN2 = diagnosticMz - acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 10.0f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 10.0f },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 10.0 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 10.0 },
                             };
 
                             var foundCount = 0;
@@ -4857,8 +4857,8 @@ AdductIon adduct)
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn1, Intensity = 5.0f },
-                                new SpectrumPeak() { Mass = (float)sn2, Intensity = 5.0f }
+                                new SpectrumPeak() { Mass = sn1, Intensity = 5.0 },
+                                new SpectrumPeak() { Mass = sn2, Intensity = 5.0 }
                             };
 
                             var foundCount = 0;
@@ -4934,9 +4934,9 @@ AdductIon adduct)
                                     var SN3Gly = sn3 + 73.028416;//[SN1+C3H4O2+H]+
 
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)SN1Glc, Intensity = 1f },
-                                        new SpectrumPeak() { Mass = (float)SN2Gly, Intensity = 1f },
-                                        new SpectrumPeak() { Mass = (float)SN3Gly, Intensity = 1f }
+                                        new SpectrumPeak() { Mass = SN1Glc, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = SN2Gly, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = SN3Gly, Intensity = 1 }
                                     };
 
                                     var foundCount = 0;
@@ -4991,9 +4991,9 @@ AdductIon adduct)
                                     var sn3 = fattyacidProductIon(sn3Carbon, sn3Double);
 
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)sn1, Intensity = 1f },
-                                        new SpectrumPeak() { Mass = (float)sn2, Intensity = 1f },
-                                        new SpectrumPeak() { Mass = (float)sn3, Intensity = 1f }
+                                        new SpectrumPeak() { Mass = sn1, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = sn2, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = sn3, Intensity = 1 }
                                     };
 
                                     var foundCount = 0;
@@ -5056,8 +5056,8 @@ AdductIon adduct)
                             var nl_SN2 = diagnosticMz2 - acylCainMass(sn2Carbon, sn2Double) - H2O + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 10.0f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 10.0f },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 10.0 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 10.0 },
                             };
 
                             var foundCount = 0;
@@ -5106,10 +5106,10 @@ AdductIon adduct)
                             var nl_SN2 = theoreticalMz - acylCainMass(sn2Carbon, sn2Double) - H2O + Proton;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.1f },
-                                new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f },
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.1f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 0.1f }
+                                new SpectrumPeak() { Mass = sn1, Intensity = 0.1 },
+                                new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.1 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.1 }
                             };
                             var foundCount = 0;
                             var averageIntensity = 0.0;
@@ -5165,8 +5165,8 @@ AdductIon adduct)
                             var sn2 = acylCainMass(sn2Carbon, sn2Double) - Electron;
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.1f },
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f }
+                            new SpectrumPeak() { Mass = sn1, Intensity = 0.1 },
+                            new SpectrumPeak() { Mass = sn2, Intensity = 0.1 }
                         };
 
                             var foundCount = 0;
@@ -5211,8 +5211,8 @@ AdductIon adduct)
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn1, Intensity = 5.0f },
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 5.0f }
+                            new SpectrumPeak() { Mass = sn1, Intensity = 5.0 },
+                            new SpectrumPeak() { Mass = sn2, Intensity = 5.0 }
                         };
 
                             var foundCount = 0;
@@ -5268,8 +5268,8 @@ AdductIon adduct)
                             var sn2 = acylCainMass(sn2Carbon, sn2Double) - Electron;
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.1f },
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f }
+                            new SpectrumPeak() { Mass = sn1, Intensity = 0.1 },
+                            new SpectrumPeak() { Mass = sn2, Intensity = 0.1 }
                         };
 
                             var foundCount = 0;
@@ -5316,8 +5316,8 @@ AdductIon adduct)
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn1, Intensity = 5.0f },
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 5.0f }
+                            new SpectrumPeak() { Mass = sn1, Intensity = 5.0 },
+                            new SpectrumPeak() { Mass = sn2, Intensity = 5.0 }
                         };
 
                             var foundCount = 0;
@@ -5374,8 +5374,8 @@ AdductIon adduct)
                             var sn2 = acylCainMass(sn2Carbon, sn2Double) - Electron;
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.1f },
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f }
+                            new SpectrumPeak() { Mass = sn1, Intensity = 0.1 },
+                            new SpectrumPeak() { Mass = sn2, Intensity = 0.1 }
                         };
 
                             var foundCount = 0;
@@ -5417,8 +5417,8 @@ AdductIon adduct)
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn1, Intensity = 5.0f },
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 5.0f }
+                            new SpectrumPeak() { Mass = sn1, Intensity = 5.0 },
+                            new SpectrumPeak() { Mass = sn2, Intensity = 5.0 }
                         };
 
                             var foundCount = 0;
@@ -5490,9 +5490,9 @@ AdductIon adduct)
                                     var SN3Gly = sn3 + 73.028416;//[SN3+C3H4O2+H]+
 
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)SN1Gly, Intensity = 1.0f },
-                                        new SpectrumPeak() { Mass = (float)SN2Gly, Intensity = 1.0f },
-                                        new SpectrumPeak() { Mass = (float)SN3Gly, Intensity = 1.0f },
+                                        new SpectrumPeak() { Mass = SN1Gly, Intensity = 1.0 },
+                                        new SpectrumPeak() { Mass = SN2Gly, Intensity = 1.0 },
+                                        new SpectrumPeak() { Mass = SN3Gly, Intensity = 1.0 },
                                     };
 
                                     var foundCount = 0;
@@ -5558,9 +5558,9 @@ AdductIon adduct)
                                     var sn3 = fattyacidProductIon(sn3Carbon, sn3Double);
 
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.1f },
-                                        new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f },
-                                        new SpectrumPeak() { Mass = (float)sn3, Intensity = 0.1f }
+                                        new SpectrumPeak() { Mass = sn1, Intensity = 0.1 },
+                                        new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
+                                        new SpectrumPeak() { Mass = sn3, Intensity = 0.1 }
                                     };
                                     var foundCount = 0;
                                     var averageIntensity = 0.0;
@@ -5653,8 +5653,8 @@ AdductIon adduct)
 
                             var query = new List<SpectrumPeak>
                             {
-                                new SpectrumPeak() { Mass = (float)SN1SN2Gly, Intensity = 50f },
-                                new SpectrumPeak() { Mass = (float)SN3SN4Gly, Intensity = 50f }
+                                new SpectrumPeak() { Mass = SN1SN2Gly, Intensity = 50 },
+                                new SpectrumPeak() { Mass = SN3SN4Gly, Intensity = 50 }
                             };
 
                             var foundCount = 0;
@@ -5702,8 +5702,8 @@ AdductIon adduct)
 
                         var query2 = new List<SpectrumPeak>
                                             {
-                                                new SpectrumPeak() { Mass = (float)SN1_SN2, Intensity = 1.0f },
-                                                new SpectrumPeak() { Mass = (float)SN3_SN4, Intensity = 1.0f }
+                                                new SpectrumPeak() { Mass = SN1_SN2, Intensity = 1.0 },
+                                                new SpectrumPeak() { Mass = SN3_SN4, Intensity = 1.0 }
                                             };
                         var foundCount2 = 0;
                         var averageIntensity2 = 0.0;
@@ -5757,10 +5757,10 @@ AdductIon adduct)
 
                                             var query = new List<SpectrumPeak>
                                                 {
-                                                    new SpectrumPeak() { Mass = (float)SN1, Intensity = 1f },
-                                                    new SpectrumPeak() { Mass = (float)SN2, Intensity = 1f },
-                                                    new SpectrumPeak() { Mass = (float)SN3, Intensity = 1f },
-                                                    new SpectrumPeak() { Mass = (float)SN4, Intensity = 1f },
+                                                    new SpectrumPeak() { Mass = SN1, Intensity = 1 },
+                                                    new SpectrumPeak() { Mass = SN2, Intensity = 1 },
+                                                    new SpectrumPeak() { Mass = SN3, Intensity = 1 },
+                                                    new SpectrumPeak() { Mass = SN4, Intensity = 1 },
                                                 };
 
                                             var foundCount = 0;
@@ -5859,10 +5859,10 @@ AdductIon adduct)
 
                                         var query = new List<SpectrumPeak>
                                                 {
-                                                    new SpectrumPeak() { Mass = (float)SN1, Intensity = 1f },
-                                                    new SpectrumPeak() { Mass = (float)SN2, Intensity = 1f },
-                                                    new SpectrumPeak() { Mass = (float)SN3, Intensity = 1f },
-                                                    new SpectrumPeak() { Mass = (float)SN4, Intensity = 1f },
+                                                    new SpectrumPeak() { Mass = SN1, Intensity = 1 },
+                                                    new SpectrumPeak() { Mass = SN2, Intensity = 1 },
+                                                    new SpectrumPeak() { Mass = SN3, Intensity = 1 },
+                                                    new SpectrumPeak() { Mass = SN4, Intensity = 1 },
                                                 };
 
                                         var foundCount = 0;
@@ -5944,8 +5944,8 @@ AdductIon adduct)
 
                             var query = new List<SpectrumPeak>
                             {
-                                new SpectrumPeak() { Mass = (float)SN1SN2Gly, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)SN3SN4Gly, Intensity = 1f }
+                                new SpectrumPeak() { Mass = SN1SN2Gly, Intensity = 1 },
+                                new SpectrumPeak() { Mass = SN3SN4Gly, Intensity = 1 }
                             };
 
                             var foundCount = 0;
@@ -6029,15 +6029,15 @@ AdductIon adduct)
 
                                     var query = new List<SpectrumPeak>
                                         {
-                                        new SpectrumPeak() { Mass = (float)SN1, Intensity = 0.1f },
-                                        new SpectrumPeak() { Mass = (float)SN2, Intensity = 5f },
-                                        new SpectrumPeak() { Mass = (float)SN3, Intensity = 5f },
+                                        new SpectrumPeak() { Mass = SN1, Intensity = 0.1 },
+                                        new SpectrumPeak() { Mass = SN2, Intensity = 5 },
+                                        new SpectrumPeak() { Mass = SN3, Intensity = 5 },
                                         };
 
                                     var query2 = new List<SpectrumPeak>
                                         {
-                                        new SpectrumPeak() { Mass = (float)SN1_PA, Intensity = 5f },
-                                        new SpectrumPeak() { Mass = (float)SN2_SN3_PA, Intensity = 5f }
+                                        new SpectrumPeak() { Mass = SN1_PA, Intensity = 5 },
+                                        new SpectrumPeak() { Mass = SN2_SN3_PA, Intensity = 5 }
                                         };
 
                                     var foundCount = 0;
@@ -6121,8 +6121,8 @@ AdductIon adduct)
 
                             var query = new List<SpectrumPeak>
                                         {
-                                        new SpectrumPeak() { Mass = (float)SN1_PA, Intensity = 5.0f },
-                                        new SpectrumPeak() { Mass = (float)SN2_PA, Intensity = 5.0f },
+                                        new SpectrumPeak() { Mass = SN1_PA, Intensity = 5.0 },
+                                        new SpectrumPeak() { Mass = SN2_PA, Intensity = 5.0 },
                                         };
 
                             var foundCount = 0;
@@ -6205,8 +6205,8 @@ AdductIon adduct)
                     var nl_H2O = theoreticalMz - H2O; // -H2O
                     var query = new List<SpectrumPeak>
                                         {
-                                        new SpectrumPeak() { Mass = (float)alphaOHflag01, Intensity = 10.0f },
-                                        new SpectrumPeak() { Mass = (float)nl_H2O, Intensity = 1.0f }
+                                        new SpectrumPeak() { Mass = alphaOHflag01, Intensity = 10.0 },
+                                        new SpectrumPeak() { Mass = nl_H2O, Intensity = 1.0 }
                                         };
 
                     var foundCount = 0;
@@ -6276,12 +6276,12 @@ AdductIon adduct)
 
                             var query = new List<SpectrumPeak>
                                         {
-                                        new SpectrumPeak() { Mass = (float)NL_SN1, Intensity = 10.0f },
-                                        new SpectrumPeak() { Mass = (float)NL_SN2, Intensity = 1.0f },
+                                        new SpectrumPeak() { Mass = NL_SN1, Intensity = 10.0 },
+                                        new SpectrumPeak() { Mass = NL_SN2, Intensity = 1.0 },
                                         };
                             var query2 = new List<SpectrumPeak>
                                         {
-                                        new SpectrumPeak() { Mass = (float)aahfaFrag1, Intensity = 10.0f },
+                                        new SpectrumPeak() { Mass = aahfaFrag1, Intensity = 10.0 },
                                         };
 
                             var foundCount = 0;
@@ -6359,7 +6359,7 @@ AdductIon adduct)
 
                             // must query
                             var queryMust = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 5f },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 5 },
                             };
                             var foundCountMust = 0;
                             var averageIntensityMust = 0.0;
@@ -6367,8 +6367,8 @@ AdductIon adduct)
                             if (foundCountMust == 0) continue;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph3, Intensity = 0.01f },
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph3, Intensity = 0.01 },
                             };
 
                             var foundCount = 0;
@@ -6448,9 +6448,9 @@ AdductIon adduct)
                             //Console.WriteLine("d" + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble + " " +
                             //    sphChain_loss + " " + sphFragment + " " + acylFragment);
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sphChain_loss, Intensity = 5f },
-                                new SpectrumPeak() { Mass = (float)sphFragment, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)acylFragment, Intensity = 1f }
+                                new SpectrumPeak() { Mass = sphChain_loss, Intensity = 5 },
+                                new SpectrumPeak() { Mass = sphFragment, Intensity = 1 },
+                                new SpectrumPeak() { Mass = acylFragment, Intensity = 1 }
                             };
 
                             var foundCount = 0;
@@ -6510,8 +6510,8 @@ AdductIon adduct)
 
                             // must query
                             var queryMust = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)diagnosticMz, Intensity = 5f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 10f },
+                                new SpectrumPeak() { Mass = diagnosticMz, Intensity = 5 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 10 },
                             };
                             var foundCountMust = 0;
                             var averageIntensityMust = 0.0;
@@ -6590,7 +6590,7 @@ AdductIon adduct)
 
                         // must query
                         var queryMust = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 5f },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 5 },
                             };
                         var foundCountMust = 0;
                         var averageIntensityMust = 0.0;
@@ -6598,8 +6598,8 @@ AdductIon adduct)
                         if (foundCountMust == 0) continue;
 
                         var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph3, Intensity = 0.01f },
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph3, Intensity = 0.01 },
                             };
                         var foundCount = 0;
                         var averageIntensity = 0.0;
@@ -6669,9 +6669,9 @@ AdductIon adduct)
                         var sphFragment = ((sphCarbon - 2) * 12) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2) - 1) + MassDiffDictionary.OxygenMass; // [Sph-NCC-3H]-
                         var acylFragment = fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // 
                         var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sphChain_loss, Intensity = 5f },
-                                new SpectrumPeak() { Mass = (float)sphFragment, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)acylFragment, Intensity = 1f }
+                                new SpectrumPeak() { Mass = sphChain_loss, Intensity = 5 },
+                                new SpectrumPeak() { Mass = sphFragment, Intensity = 1 },
+                                new SpectrumPeak() { Mass = acylFragment, Intensity = 1 }
                             };
 
                         var foundCount = 0;
@@ -6743,10 +6743,10 @@ AdductIon adduct)
                             var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph3, Intensity = 0.01f },
-                                //new SpectrumPeak() { Mass = (float)acylamide, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph3, Intensity = 0.01 },
+                                //new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                             };
 
                             var foundCount = 0;
@@ -6815,9 +6815,9 @@ AdductIon adduct)
                             var acylFragment = fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // 
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sphChain_loss, Intensity = 0.1f },
-                                new SpectrumPeak() { Mass = (float)sphFragment, Intensity = 0.1f },
-                                new SpectrumPeak() { Mass = (float)acylFragment, Intensity = 0.1f }
+                                new SpectrumPeak() { Mass = sphChain_loss, Intensity = 0.1 },
+                                new SpectrumPeak() { Mass = sphFragment, Intensity = 0.1 },
+                                new SpectrumPeak() { Mass = acylFragment, Intensity = 0.1 }
                             };
 
                             var foundCount = 0;
@@ -6894,10 +6894,10 @@ AdductIon adduct)
                             //    sph1 + " " + sph2 + " " + sph3);
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph3, Intensity = 0.01f },
-                                //new SpectrumPeak() { Mass = (float)acylamide, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph3, Intensity = 0.01 },
+                                //new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                             };
 
                             var foundCount = 0;
@@ -6964,7 +6964,7 @@ AdductIon adduct)
                                 + MassDiffDictionary.HydrogenMass * 4 + 12 * 2 + MassDiffDictionary.OxygenMass - Proton; // as [FAA+C2H3-H]- fix 20220905
                             //Console.WriteLine("HexCer-O " + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble + " " + acylFragment);
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)acylFragment, Intensity = 0.1f }
+                                new SpectrumPeak() { Mass = acylFragment, Intensity = 0.1 }
                             };
 
                             var foundCount = 0;
@@ -7037,9 +7037,9 @@ AdductIon adduct)
                         var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                         var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 0.01f },
-                                //new SpectrumPeak() { Mass = (float)acylamide, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 0.01 },
+                                //new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                             };
 
                         var foundCount = 0;
@@ -7107,9 +7107,9 @@ AdductIon adduct)
                         var acylFragment = fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // 
 
                         var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sphChain_loss, Intensity = 0.1f },
-                                new SpectrumPeak() { Mass = (float)sphFragment, Intensity = 0.1f },
-                                new SpectrumPeak() { Mass = (float)acylFragment, Intensity = 0.1f }
+                                new SpectrumPeak() { Mass = sphChain_loss, Intensity = 0.1 },
+                                new SpectrumPeak() { Mass = sphFragment, Intensity = 0.1 },
+                                new SpectrumPeak() { Mass = acylFragment, Intensity = 0.1 }
                             };
 
                         var foundCount = 0;
@@ -7173,10 +7173,10 @@ AdductIon adduct)
                             var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph3, Intensity = 0.01f },
-                                //new SpectrumPeak() { Mass = (float)acylamide, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph3, Intensity = 0.01 },
+                                //new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                             };
 
                             //Console.WriteLine("Cer-O" + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble + " " +
@@ -7265,9 +7265,9 @@ AdductIon adduct)
                             var sphFragment = SphingoChainMass(sphCarbon - 2, sphDouble) - MassDiffDictionary.OxygenMass - MassDiffDictionary.NitrogenMass - Proton; // [Sph-NCC-3H]-
                             var acylFragment = fattyacidProductIon(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass;
                             var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sphChain_loss, Intensity = 0.1f },
-                                    new SpectrumPeak() { Mass = (float)sphFragment, Intensity = 1f },
-                                    new SpectrumPeak() { Mass = (float)acylFragment, Intensity = 1f }
+                                    new SpectrumPeak() { Mass = sphChain_loss, Intensity = 0.1 },
+                                    new SpectrumPeak() { Mass = sphFragment, Intensity = 1 },
+                                    new SpectrumPeak() { Mass = acylFragment, Intensity = 1 }
                                 };
 
                             var foundCount = 0;
@@ -7324,10 +7324,10 @@ AdductIon adduct)
                             var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph3, Intensity = 0.01f },
-                                //new SpectrumPeak() { Mass = (float)acylamide, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph3, Intensity = 0.01 },
+                                //new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                             };
 
                             //Console.WriteLine("Cer-DOS" + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble + " " +
@@ -7455,7 +7455,7 @@ AdductIon adduct)
                             var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 1f },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 1 },
                             };
 
                             var foundCount = 0;
@@ -7573,7 +7573,7 @@ AdductIon adduct)
                             var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 1f },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 1 },
                             };
 
                             var foundCount = 0;
@@ -7636,11 +7636,11 @@ AdductIon adduct)
                             var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)sph3, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)sph4, Intensity = 1f },
-                                //new SpectrumPeak() { Mass = (float)acylamide, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = sph1, Intensity = 1 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 1 },
+                                new SpectrumPeak() { Mass = sph3, Intensity = 1 },
+                                new SpectrumPeak() { Mass = sph4, Intensity = 1 },
+                                //new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                             };
 
                             var foundCount = 0;
@@ -7699,10 +7699,10 @@ AdductIon adduct)
                             //    sphChain_loss + " " + sphFragment + " " + acylFragment1 + " " + acylFragment2);
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sphChain_loss, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)sphFragment, Intensity = 0.1f },
-                                new SpectrumPeak() { Mass = (float)acylFragment1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)acylFragment2, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = sphChain_loss, Intensity = 1 },
+                                new SpectrumPeak() { Mass = sphFragment, Intensity = 0.1 },
+                                new SpectrumPeak() { Mass = acylFragment1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = acylFragment2, Intensity = 0.01 }
                             };
 
                             var foundCount = 0;
@@ -7768,11 +7768,11 @@ AdductIon adduct)
                             var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + 2 * MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)sph3, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)sph4, Intensity = 1f },
-                                //new SpectrumPeak() { Mass = (float)acylamide, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = sph1, Intensity = 1 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 1 },
+                                new SpectrumPeak() { Mass = sph3, Intensity = 1 },
+                                new SpectrumPeak() { Mass = sph4, Intensity = 1 },
+                                //new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                             };
 
                             var foundCount = 0;
@@ -7842,9 +7842,9 @@ AdductIon adduct)
                             var acylFragment1 = fattyacidProductIon(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass; // FA(+OH)+ O (may be not sure)
                             var acylFragment2 = fattyacidProductIon(acylCarbon, acylDouble) - 12 - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // FA(+OH) -C -O -2H(may be not sure)
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sphChain_loss, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)acylFragment1, Intensity = 0.1f },
-                                new SpectrumPeak() { Mass = (float)acylFragment2, Intensity = 0.1f }
+                                new SpectrumPeak() { Mass = sphChain_loss, Intensity = 1 },
+                                new SpectrumPeak() { Mass = acylFragment1, Intensity = 0.1 },
+                                new SpectrumPeak() { Mass = acylFragment2, Intensity = 0.1 }
                             };
 
                             var foundCount = 0;
@@ -7946,9 +7946,9 @@ AdductIon adduct)
                             var sphFragment = ((sphCarbon - 2) * 12) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2) - 1) + MassDiffDictionary.OxygenMass; // [Sph-NCCO-3H]-
                             var acylFragment = fattyacidProductIon(acylCarbon, acylDouble) - 12 - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // [FA-CO-3H]-
                             var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)sphChain_loss, Intensity = 0.5f },
-                                        new SpectrumPeak() { Mass = (float)sphFragment, Intensity = 0.5f },
-                                        new SpectrumPeak() { Mass = (float)acylFragment, Intensity = 0.5f }
+                                        new SpectrumPeak() { Mass = sphChain_loss, Intensity = 0.5 },
+                                        new SpectrumPeak() { Mass = sphFragment, Intensity = 0.5 },
+                                        new SpectrumPeak() { Mass = acylFragment, Intensity = 0.5 }
                                 };
 
                             var foundCount = 0;
@@ -8051,9 +8051,9 @@ AdductIon adduct)
                         var acylFragment = fattyacidProductIon(acylCarbon, acylDouble) - 2 * MassDiffDictionary.HydrogenMass; // 
                         var acylFragment2 = fattyacidProductIon(acylCarbon, acylDouble) - 2 * MassDiffDictionary.HydrogenMass - 12 - MassDiffDictionary.OxygenMass; // [FA-CO-3H]-
                         var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sph1, Intensity = 1f },
-                                    new SpectrumPeak() { Mass = (float)acylFragment, Intensity = 1f },
-                                    new SpectrumPeak() { Mass = (float)acylFragment2, Intensity = 1f }
+                                    new SpectrumPeak() { Mass = sph1, Intensity = 1 },
+                                    new SpectrumPeak() { Mass = acylFragment, Intensity = 1 },
+                                    new SpectrumPeak() { Mass = acylFragment2, Intensity = 1 }
                                 };
 
                         var foundCount = 0;
@@ -8158,8 +8158,8 @@ AdductIon adduct)
                             var sph1 = SphingoChainMass(sphCarbon + 2, sphDouble) + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass - Proton; // [Sph+C2H2O-H]- suggest Cer-BS fragment
                             var sphFragment = SphingoChainMass(sphCarbon - 2, sphDouble) - MassDiffDictionary.OxygenMass - MassDiffDictionary.NitrogenMass - Proton; // [Sph-C2H7NO-H]-
                             var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sph1, Intensity = 1f },
-                                    new SpectrumPeak() { Mass = (float)sphFragment, Intensity = 1f },
+                                    new SpectrumPeak() { Mass = sph1, Intensity = 1 },
+                                    new SpectrumPeak() { Mass = sphFragment, Intensity = 1 },
                                 };
 
                             var foundCount = 0;
@@ -8253,7 +8253,7 @@ AdductIon adduct)
                         var sphFragment2 = diagnosticMz - fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.HydrogenMass + 12; // ([Sph+C=O-CO-3H]- on Excel sheet)
 
                         var mustQuery = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sph1, Intensity = 50f },
+                                    new SpectrumPeak() { Mass = sph1, Intensity = 50 },
                                 };
 
                         var foundCount = 0;
@@ -8263,9 +8263,9 @@ AdductIon adduct)
                         if (foundCount != 1) continue;
 
                         var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sph1, Intensity = 1f },
-                                    new SpectrumPeak() { Mass = (float)sphFragment1, Intensity = 1f },
-                                    new SpectrumPeak() { Mass = (float)sphFragment2, Intensity = 1f }
+                                    new SpectrumPeak() { Mass = sph1, Intensity = 1 },
+                                    new SpectrumPeak() { Mass = sphFragment1, Intensity = 1 },
+                                    new SpectrumPeak() { Mass = sphFragment2, Intensity = 1 }
                                 };
 
                         foundCount = 0;
@@ -8350,9 +8350,9 @@ AdductIon adduct)
                             var sphFragment = ((sphCarbon - 2) * 12) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2) - 1) + 2 * MassDiffDictionary.OxygenMass; // [Sph-C2H9NO-H]-
                             var acylamide = fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass + Electron;
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sphChain_loss, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)sphFragment, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)acylamide, Intensity = 1f }
+                                new SpectrumPeak() { Mass = sphChain_loss, Intensity = 1 },
+                                new SpectrumPeak() { Mass = sphFragment, Intensity = 1 },
+                                new SpectrumPeak() { Mass = acylamide, Intensity = 1 }
                             };
 
                             //Console.WriteLine("Cer-NP t" + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble +
@@ -8454,7 +8454,7 @@ AdductIon adduct)
                                     //    esterloss + " " + esterFa + " " + acylamide);
 
                                     var query1 = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)esterFa, Intensity = 30f },
+                                        new SpectrumPeak() { Mass = esterFa, Intensity = 30 },
                                     };
 
                                     var foundCount1 = 0;
@@ -8465,9 +8465,9 @@ AdductIon adduct)
                                     { // the diagnostic acyl ion must be observed for level 2 annotation
 
                                         var query2 = new List<SpectrumPeak> {
-                                                new SpectrumPeak() { Mass = (float)esterloss, Intensity = 1f },
-                                                new SpectrumPeak() { Mass = (float)esterFa, Intensity = 30f },
-                                                new SpectrumPeak() { Mass = (float)acylamide, Intensity = 0.01f }
+                                                new SpectrumPeak() { Mass = esterloss, Intensity = 1 },
+                                                new SpectrumPeak() { Mass = esterFa, Intensity = 30 },
+                                                new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                                             };
 
                                         var foundCount2 = 0;
@@ -8543,10 +8543,10 @@ AdductIon adduct)
                             //Console.WriteLine(sphCarbon + ":" + sphDouble + " " + sph1 + " " + sph2 + " " + sph3);
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph3, Intensity = 0.01f },
-                                //new SpectrumPeak() { Mass = (float)acylamide, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph3, Intensity = 0.01 },
+                                //new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                             };
 
                             var foundCount = 0;
@@ -8628,7 +8628,7 @@ AdductIon adduct)
                                     + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass + Electron;
 
                                 var query1 = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)esterFa, Intensity = 30f },
+                                        new SpectrumPeak() { Mass = esterFa, Intensity = 30 },
                                     };
 
                                 var foundCount1 = 0;
@@ -8640,9 +8640,9 @@ AdductIon adduct)
                                 { // the diagnostic acyl ion must be observed for level 2 annotation
 
                                     var query2 = new List<SpectrumPeak> {
-                                                new SpectrumPeak() { Mass = (float)esterloss, Intensity = 1f },
-                                                new SpectrumPeak() { Mass = (float)esterFa, Intensity = 30f },
-                                                new SpectrumPeak() { Mass = (float)acylamide, Intensity = 0.01f }
+                                                new SpectrumPeak() { Mass = esterloss, Intensity = 1 },
+                                                new SpectrumPeak() { Mass = esterFa, Intensity = 30 },
+                                                new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                                             };
 
                                     var foundCount2 = 0;
@@ -8753,9 +8753,9 @@ AdductIon adduct)
                                     if (!isOmegaAcylFragmentFound) continue;
 
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)omegaAcylloss, Intensity = 0.01f },
-                                        new SpectrumPeak() { Mass = (float)omegaAcyllossHexloss, Intensity = 0.01f },
-                                        new SpectrumPeak() { Mass = (float)omegaAcylFA, Intensity = 0.01f },
+                                        new SpectrumPeak() { Mass = omegaAcylloss, Intensity = 0.01 },
+                                        new SpectrumPeak() { Mass = omegaAcyllossHexloss, Intensity = 0.01 },
+                                        new SpectrumPeak() { Mass = omegaAcylFA, Intensity = 0.01 },
                                     };
 
                                     var foundCount = 0;
@@ -8770,7 +8770,7 @@ AdductIon adduct)
                                     { // the diagnostic acyl ion must be observed for level 2 annotation
                                         var acylamide = fattyacidProductIon(acylCarbon, acylDouble) + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass + Electron;
                                         var query2 = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)acylamide, Intensity = 0.01f }
+                                        new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                                         };
                                         var foundCount2 = 0;
                                         var averageIntensity2 = 0.0;
@@ -8847,10 +8847,10 @@ AdductIon adduct)
                             var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) + 2) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.OxygenMass + MassDiffDictionary.NitrogenMass;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph3, Intensity = 0.01f },
-                                //new SpectrumPeak() { Mass = (float)acylamide, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph3, Intensity = 0.01 },
+                                //new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                             };
 
                             var foundCount = 0;
@@ -8942,9 +8942,9 @@ AdductIon adduct)
                             var sphFragment = SphingoChainMass(sphCarbon - 2, sphDouble) - MassDiffDictionary.OxygenMass - MassDiffDictionary.NitrogenMass - Proton; // [Sph-NCC-3H]-
                             var acylFragment = fattyacidProductIon(acylCarbon, acylDouble) + MassDiffDictionary.OxygenMass;
                             var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sphChain_loss, Intensity = 0.1f },
-                                    new SpectrumPeak() { Mass = (float)sphFragment, Intensity = 1f },
-                                    new SpectrumPeak() { Mass = (float)acylFragment, Intensity = 1f }
+                                    new SpectrumPeak() { Mass = sphChain_loss, Intensity = 0.1 },
+                                    new SpectrumPeak() { Mass = sphFragment, Intensity = 1 },
+                                    new SpectrumPeak() { Mass = acylFragment, Intensity = 1 }
                                 };
 
                             var foundCount = 0;
@@ -9026,8 +9026,8 @@ AdductIon adduct)
                                     var extFa = fattyacidProductIon(extCarbon, extDouble);
 
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)extAcylloss, Intensity = 0.01f },
-                                        new SpectrumPeak() { Mass = (float)extFa, Intensity = 0.01f },
+                                        new SpectrumPeak() { Mass = extAcylloss, Intensity = 0.01 },
+                                        new SpectrumPeak() { Mass = extFa, Intensity = 0.01 },
                                     };
 
                                     var foundCount = 0;
@@ -9039,7 +9039,7 @@ AdductIon adduct)
                                         var acylamide = fattyacidProductIon(acylCarbon, acylDouble) + MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass + Electron + MassDiffDictionary.OxygenMass;
                                         var query2 = new List<SpectrumPeak>
                                         {
-                                        new SpectrumPeak() { Mass = (float)acylamide, Intensity = 0.01f }
+                                        new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                                         };
                                         var foundCount2 = 0;
                                         var averageIntensity2 = 0.0;
@@ -9093,7 +9093,7 @@ AdductIon adduct)
                                     //Console.WriteLine("ASM {0} Unique mass {1}", "d" + sphCarbon + acylCarbon + ":" + sphDouble + acylDouble + "-O-" + extCarbon + ":" + extDouble, extAcylloss);
 
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)extAcylloss, Intensity = 0.01f },
+                                        new SpectrumPeak() { Mass = extAcylloss, Intensity = 0.01 },
                                     };
 
                                     var foundCount = 0;
@@ -9172,9 +9172,9 @@ AdductIon adduct)
                                     var acylFragment = esterloss - ((sphCarbon - 3) * 12 + ((sphCarbon - 3) * 2 - 2) * MassDiffDictionary.HydrogenMass);
 
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)esterloss, Intensity = 1f },
-                                        new SpectrumPeak() { Mass = (float)esterFa, Intensity = 50f },
-                                        new SpectrumPeak() { Mass = (float)acylFragment, Intensity = 1f }
+                                        new SpectrumPeak() { Mass = esterloss, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = esterFa, Intensity = 50 },
+                                        new SpectrumPeak() { Mass = acylFragment, Intensity = 1 }
                                     };
 
                                     var foundCount = 0;
@@ -9272,12 +9272,12 @@ AdductIon adduct)
                                     var sphLoss = diagnosticMz - ((sphCarbon - 2) * 12 + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2) - sphDouble * 2);  //[M-Sph+C2H6NO]-
                                     var sphLoss2 = sphLoss - H2O;      //[M-Sph+C2H4N]-
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)extAcylHexloss, Intensity = 1f },
-                                        new SpectrumPeak() { Mass = (float)extAcylFa, Intensity = 1f },
-                                        new SpectrumPeak() { Mass = (float)sphLoss, Intensity = 1f },
-                                        new SpectrumPeak() { Mass = (float)sphLoss2, Intensity = 1f },
-                                        new SpectrumPeak() { Mass = (float)extAcylLoss, Intensity = 10f },
-                                        new SpectrumPeak() { Mass = (float)extAcylLoss2, Intensity = 10f }
+                                        new SpectrumPeak() { Mass = extAcylHexloss, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = extAcylFa, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = sphLoss, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = sphLoss2, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = extAcylLoss, Intensity = 10 },
+                                        new SpectrumPeak() { Mass = extAcylLoss2, Intensity = 10 }
                                     };
 
                                     var foundCount = 0;
@@ -9339,19 +9339,19 @@ AdductIon adduct)
                                     //    exAcylSugarIon, ceramideIon, ceramideIon_1WaterLoss, ceramideIon_2WaterLoss, sphIon, sphIon_1H2OLoss, sphIon_CH2OLoss);
 
                                     var exAcylQuery = new List<SpectrumPeak>() {
-                                        new SpectrumPeak() { Mass = (float)exAcylSugarIon, Intensity = 1f }
+                                        new SpectrumPeak() { Mass = exAcylSugarIon, Intensity = 1 }
                                     };
 
                                     var ceramideQuery = new List<SpectrumPeak>() {
-                                        new SpectrumPeak() { Mass = (float)ceramideIon, Intensity = 1f },
-                                        new SpectrumPeak() { Mass = (float)ceramideIon_1WaterLoss, Intensity = 1f },
-                                        new SpectrumPeak() { Mass = (float)ceramideIon_2WaterLoss, Intensity = 1f }
+                                        new SpectrumPeak() { Mass = ceramideIon, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = ceramideIon_1WaterLoss, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = ceramideIon_2WaterLoss, Intensity = 1 }
                                     };
 
                                     var sphQuery = new List<SpectrumPeak>() {
-                                        new SpectrumPeak() { Mass = (float)sphIon, Intensity = 1f },
-                                        new SpectrumPeak() { Mass = (float)sphIon_1H2OLoss, Intensity = 1f },
-                                        new SpectrumPeak() { Mass = (float)sphIon_CH2OLoss, Intensity = 1f }
+                                        new SpectrumPeak() { Mass = sphIon, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = sphIon_1H2OLoss, Intensity = 1 },
+                                        new SpectrumPeak() { Mass = sphIon_CH2OLoss, Intensity = 1 }
                                     };
 
                                     var exAcylQueryFoundCount = 0;
@@ -9448,10 +9448,10 @@ AdductIon adduct)
 
 
                                 var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)sph3, Intensity = 1f },
-                               // new SpectrumPeak() { Mass = (float)acylamide, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = sph1, Intensity = 1 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 1 },
+                                new SpectrumPeak() { Mass = sph3, Intensity = 1 },
+                               // new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                             };
 
                                 var foundCount = 0;
@@ -9486,10 +9486,10 @@ AdductIon adduct)
                                 //Console.WriteLine("SHexCer {0}:{1};2O/{2}:{3}, sph1={4}, sph2={5}, sph3={6}", sphCarbon, sphDouble, acylCarbon, acylDouble, sph1, sph2, sph3);
 
                                 var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 1f },
-                                new SpectrumPeak() { Mass = (float)sph3, Intensity = 1f },
-                               // new SpectrumPeak() { Mass = (float)acylamide, Intensity = 0.01f }
+                                new SpectrumPeak() { Mass = sph1, Intensity = 1 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 1 },
+                                new SpectrumPeak() { Mass = sph3, Intensity = 1 },
+                               // new SpectrumPeak() { Mass = acylamide, Intensity = 0.01 }
                             };
 
                                 var foundCount = 0;
@@ -9583,8 +9583,8 @@ AdductIon adduct)
                             var sph2 = sph1 - H2O;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 0.01f },
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 0.01 },
                             };
 
                             var foundCount = 0;
@@ -9673,8 +9673,8 @@ AdductIon adduct)
                             var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 0.01f },
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 0.01 },
                             };
 
                             var foundCount = 0;
@@ -9747,8 +9747,8 @@ AdductIon adduct)
                             var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 0.01f },
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 0.01 },
                             };
 
                             var foundCount = 0;
@@ -9881,8 +9881,8 @@ AdductIon adduct)
                             var sph2 = sph1 - H2O;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 0.01f },
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 0.01 },
                             };
 
                             var foundCount = 0;
@@ -9959,8 +9959,8 @@ AdductIon adduct)
                             var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 0.01f },
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 0.01 },
                             };
 
                             var foundCount = 0;
@@ -10036,8 +10036,8 @@ AdductIon adduct)
                             var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 0.01f },
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 0.01 },
                             };
 
                             var foundCount = 0;
@@ -10118,8 +10118,8 @@ AdductIon adduct)
                             var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.01f },
-                                new SpectrumPeak() { Mass = (float)sph2, Intensity = 0.01f },
+                                new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
+                                new SpectrumPeak() { Mass = sph2, Intensity = 0.01 },
                             };
 
                             var foundCount = 0;
@@ -10193,9 +10193,9 @@ AdductIon adduct)
                     if (trueCount < 2) return null;
                     var candidates = new List<LipidMolecule>();
                     //var query = new List<SpectrumPeak> {
-                    //            new SpectrumPeak() { Mass = (float)diagnosticMz1, Intensity = threshold1 },
-                    //            new SpectrumPeak() { Mass = (float)diagnosticMz2, Intensity = threshold2 },
-                    //            new SpectrumPeak() { Mass = (float)diagnosticMz3, Intensity = threshold3 }
+                    //            new SpectrumPeak() { Mass = diagnosticMz1, Intensity = threshold1 },
+                    //            new SpectrumPeak() { Mass = diagnosticMz2, Intensity = threshold2 },
+                    //            new SpectrumPeak() { Mass = diagnosticMz3, Intensity = threshold3 }
                     //        };
 
                     //var foundCount = 0;
@@ -10251,9 +10251,9 @@ AdductIon adduct)
 
                     var candidates = new List<LipidMolecule>();
                     //var query = new List<SpectrumPeak> {
-                    //            new SpectrumPeak() { Mass = (float)diagnosticMz1, Intensity = threshold1 },
-                    //            new SpectrumPeak() { Mass = (float)diagnosticMz2, Intensity = threshold2 },
-                    //            new SpectrumPeak() { Mass = (float)diagnosticMz3, Intensity = threshold3 }
+                    //            new SpectrumPeak() { Mass = diagnosticMz1, Intensity = threshold1 },
+                    //            new SpectrumPeak() { Mass = diagnosticMz2, Intensity = threshold2 },
+                    //            new SpectrumPeak() { Mass = diagnosticMz3, Intensity = threshold3 }
                     //        };
 
                     //var foundCount = 0;
@@ -10310,10 +10310,10 @@ AdductIon adduct)
 
                     var candidates = new List<LipidMolecule>();
                     //var query = new List<SpectrumPeak> {
-                    //            new SpectrumPeak() { Mass = (float)diagnosticMz1, Intensity = threshold1 },
-                    //            new SpectrumPeak() { Mass = (float)diagnosticMz2, Intensity = threshold2 },
-                    //            new SpectrumPeak() { Mass = (float)diagnosticMz3, Intensity = threshold3 },
-                    //            new SpectrumPeak() { Mass = (float)diagnosticMz4, Intensity = threshold4 }
+                    //            new SpectrumPeak() { Mass = diagnosticMz1, Intensity = threshold1 },
+                    //            new SpectrumPeak() { Mass = diagnosticMz2, Intensity = threshold2 },
+                    //            new SpectrumPeak() { Mass = diagnosticMz3, Intensity = threshold3 },
+                    //            new SpectrumPeak() { Mass = diagnosticMz4, Intensity = threshold4 }
                     //        };
 
                     //var foundCount = 0;
@@ -10369,8 +10369,8 @@ AdductIon adduct)
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn1_gly, Intensity = 1.0f },
-                                new SpectrumPeak() { Mass = (float)sn2, Intensity = 1.0f }
+                                new SpectrumPeak() { Mass = sn1_gly, Intensity = 1.0 },
+                                new SpectrumPeak() { Mass = sn2, Intensity = 1.0 }
                             };
 
                             var foundCount = 0;
@@ -10427,8 +10427,8 @@ AdductIon adduct)
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn1_gly, Intensity = 30.0f },
-                                //new SpectrumPeak() { Mass = (float)sn2, Intensity = 1.0f }
+                                new SpectrumPeak() { Mass = sn1_gly, Intensity = 30.0 },
+                                //new SpectrumPeak() { Mass = sn2, Intensity = 1.0 }
                             };
 
                             var foundCount = 0;
@@ -10488,7 +10488,7 @@ AdductIon adduct)
                             var acylLoss1 = theoreticalMz - acylCainMass(acylCarbon, acylDouble) + Proton;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)acylLoss1, Intensity = 0.1f },
+                                new SpectrumPeak() { Mass = acylLoss1, Intensity = 0.1 },
                             };
 
                             var foundCount = 0;
@@ -10503,7 +10503,7 @@ AdductIon adduct)
                             }
                             var acylLoss2 = theoreticalMz - acylCainMass(acylCarbon, acylDouble) - acylOxidized * MassDiffDictionary.OxygenMass + Proton;
                             var query2 = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)acylLoss2, Intensity = 0.1f },
+                                new SpectrumPeak() { Mass = acylLoss2, Intensity = 0.1 },
                             };
 
                             var foundCount2 = 0;
@@ -10569,7 +10569,7 @@ AdductIon adduct)
                                 var acylLoss = theoreticalMz - acylCainMass(acylCarbon, acylDouble) + Proton;
 
                                 var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)acylLoss, Intensity = 0.1f }
+                                    new SpectrumPeak() { Mass = acylLoss, Intensity = 0.1 }
                                     };
 
                                 var foundCount = 0;
@@ -10608,7 +10608,7 @@ AdductIon adduct)
                                 var acylLoss = theoreticalMz - acylCainMass(acylCarbon, acylDouble) - acylOxidized * MassDiffDictionary.OxygenMass + Proton;
 
                                 var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)acylLoss, Intensity = 0.1f }
+                                    new SpectrumPeak() { Mass = acylLoss, Intensity = 0.1 }
                                     };
 
                                 var foundCount = 0;
@@ -11165,16 +11165,16 @@ AdductIon adduct)
                             var sn2H2OGlyLoss = sn2GlyLoss - H2O;
 
                             var queryMust = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sn2Loss, Intensity = 5f },
+                                    new SpectrumPeak() { Mass = sn2Loss, Intensity = 5 },
                                 };
                             var foundCountMust = 0;
                             var averageIntensitMusty = 0.0;
                             countFragmentExistence(spectrum, queryMust, ms2Tolerance, out foundCountMust, out averageIntensitMusty);
                             if (foundCountMust == 0) continue;
                             var query = new List<SpectrumPeak> {
-                                    //new SpectrumPeak() { Mass = (float)sn2Loss, Intensity = 5f },
-                                    new SpectrumPeak() { Mass = (float)sn2GlyLoss, Intensity = 5f },
-                                    new SpectrumPeak() { Mass = (float)sn2H2OGlyLoss, Intensity = 5f }
+                                    //new SpectrumPeak() { Mass = sn2Loss, Intensity = 5 },
+                                    new SpectrumPeak() { Mass = sn2GlyLoss, Intensity = 5 },
+                                    new SpectrumPeak() { Mass = sn2H2OGlyLoss, Intensity = 5 }
                                 };
 
                             //Console.WriteLine("NAAG " + sn1Carbon + ":" + sn1Double + "/" + sn2Carbon + ":" + sn2Double +
@@ -11225,9 +11225,9 @@ AdductIon adduct)
                             var sn2 = fattyacidProductIon(sn1Carbon, sn1Double);
 
                             var query = new List<SpectrumPeak> {
-                                    new SpectrumPeak() { Mass = (float)sn2Loss, Intensity = 10.0f },
-                                    new SpectrumPeak() { Mass = (float)sn2CO2Loss, Intensity = 5.0f },
-                                    new SpectrumPeak() { Mass = (float)sn2, Intensity = 5.0f }
+                                    new SpectrumPeak() { Mass = sn2Loss, Intensity = 10.0 },
+                                    new SpectrumPeak() { Mass = sn2CO2Loss, Intensity = 5.0 },
+                                    new SpectrumPeak() { Mass = sn2, Intensity = 5.0 }
                                 };
 
                             var foundCount = 0;
@@ -11290,10 +11290,10 @@ AdductIon adduct)
                             //    " " + sn2Loss + " " + sn2SerLoss + " " + sn2SerGlyLoss + " " + ser);
 
                             var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)sn2Loss, Intensity = 5f },
-                                        new SpectrumPeak() { Mass = (float)sn2SerLoss, Intensity = 5f },
-                                        new SpectrumPeak() { Mass = (float)sn2SerGlyLoss, Intensity = 5f },
-                                        new SpectrumPeak() { Mass = (float)ser, Intensity = 5f }
+                                        new SpectrumPeak() { Mass = sn2Loss, Intensity = 5 },
+                                        new SpectrumPeak() { Mass = sn2SerLoss, Intensity = 5 },
+                                        new SpectrumPeak() { Mass = sn2SerGlyLoss, Intensity = 5 },
+                                        new SpectrumPeak() { Mass = ser, Intensity = 5 }
                                     };
 
                             var foundCount = 0;
@@ -11342,10 +11342,10 @@ AdductIon adduct)
                                 var sn2 = fattyacidProductIon(sn1Carbon, sn1Double);
 
                                 var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)sn2Loss, Intensity = 10.0f },
-                                        new SpectrumPeak() { Mass = (float)sn2CH2OLoss, Intensity = 5.0f },
-                                        new SpectrumPeak() { Mass = (float)sn2CH2O3Loss, Intensity = 5.0f },
-                                        new SpectrumPeak() { Mass = (float)sn2, Intensity = 5.0f }
+                                        new SpectrumPeak() { Mass = sn2Loss, Intensity = 10.0 },
+                                        new SpectrumPeak() { Mass = sn2CH2OLoss, Intensity = 5.0 },
+                                        new SpectrumPeak() { Mass = sn2CH2O3Loss, Intensity = 5.0 },
+                                        new SpectrumPeak() { Mass = sn2, Intensity = 5.0 }
                                     };
 
                                 var foundCount = 0;
@@ -11420,10 +11420,10 @@ AdductIon adduct)
                                 if (acylOxidized == 0)
                                 {
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)acylLoss, Intensity = 1.0f },
-                                        new SpectrumPeak() { Mass = (float)acylH2OLoss, Intensity = 1.0f },
-                                        new SpectrumPeak() { Mass = (float)sph1, Intensity = 1.0f },
-                                        new SpectrumPeak() { Mass = (float)sph2, Intensity = 1.0f }
+                                        new SpectrumPeak() { Mass = acylLoss, Intensity = 1.0 },
+                                        new SpectrumPeak() { Mass = acylH2OLoss, Intensity = 1.0 },
+                                        new SpectrumPeak() { Mass = sph1, Intensity = 1.0 },
+                                        new SpectrumPeak() { Mass = sph2, Intensity = 1.0 }
                                 };
 
                                     var foundCount = 0;
@@ -11457,9 +11457,9 @@ AdductIon adduct)
 
 
                                 var query2 = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)acylLoss, Intensity = 1.0f },
-                                new SpectrumPeak() { Mass = (float)acylH2OLoss, Intensity = 1.0f },
-                                new SpectrumPeak() { Mass = (float)sph3, Intensity = 1.0f },
+                                new SpectrumPeak() { Mass = acylLoss, Intensity = 1.0 },
+                                new SpectrumPeak() { Mass = acylH2OLoss, Intensity = 1.0 },
+                                new SpectrumPeak() { Mass = sph3, Intensity = 1.0 },
                                 };
 
                                 var foundCount2 = 0;
@@ -11513,8 +11513,8 @@ AdductIon adduct)
                             var acylamideLoss = acylLoss - (MassDiffDictionary.NitrogenMass + MassDiffDictionary.HydrogenMass * 3);
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)acylLoss, Intensity = 1.0f },
-                                new SpectrumPeak() { Mass = (float)acylamideLoss, Intensity = 1.0f },
+                                new SpectrumPeak() { Mass = acylLoss, Intensity = 1.0 },
+                                new SpectrumPeak() { Mass = acylamideLoss, Intensity = 1.0 },
                                 };
 
                             var foundCount = 0;
@@ -11573,8 +11573,8 @@ AdductIon adduct)
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn1, Intensity = 5.0f },
-                                new SpectrumPeak() { Mass = (float)sn2, Intensity = 10.0f }
+                                new SpectrumPeak() { Mass = sn1, Intensity = 5.0 },
+                                new SpectrumPeak() { Mass = sn2, Intensity = 10.0 }
                             };
 
                             var foundCount = 0;
@@ -11908,9 +11908,9 @@ AdductIon adduct)
                             var sn1Fragment = sn1Carbon * 12 + ((sn1Carbon - (sn1Double + 1)) * 2 - 2) * MassDiffDictionary.HydrogenMass + MassDiffDictionary.OxygenMass + Proton;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn2Loss, Intensity = 5f },
-                                new SpectrumPeak() { Mass = (float)sn2H2OLoss, Intensity = 5f },
-                                new SpectrumPeak() { Mass = (float)sn1Fragment, Intensity = 5f }
+                                new SpectrumPeak() { Mass = sn2Loss, Intensity = 5 },
+                                new SpectrumPeak() { Mass = sn2H2OLoss, Intensity = 5 },
+                                new SpectrumPeak() { Mass = sn1Fragment, Intensity = 5 }
                             };
 
                             var foundCount = 0;
@@ -12440,10 +12440,10 @@ AdductIon adduct)
                             var nl_SN2 = theoreticalMz - acylCainMass(sn2Carbon, sn2Double) - H2O + Proton;
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.1f },
-                                new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f },
-                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 0.1f },
-                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 0.1f }
+                                new SpectrumPeak() { Mass = sn1, Intensity = 0.1 },
+                                new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
+                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 0.1 },
+                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 0.1 }
                             };
                             var foundCount = 0;
                             var averageIntensity = 0.0;
@@ -12502,8 +12502,8 @@ AdductIon adduct)
                             var NL_sn2 = theoreticalMz - acylCainMass(sn2Carbon, sn2Double) - H2O + Proton;
 
                             var query = new List<SpectrumPeak> {
-                            //new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f },
-                            new SpectrumPeak() { Mass = (float)NL_sn2, Intensity = 0.1f }
+                            //new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
+                            new SpectrumPeak() { Mass = NL_sn2, Intensity = 0.1 }
                         };
 
                             var foundCount = 0;
@@ -12544,8 +12544,8 @@ AdductIon adduct)
                         var sn2Mag = fattyacidProductIon(sn2Carbon, sn2Double) + 12 * 3 + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * 5 + Proton;
 
                         var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f },
-                            new SpectrumPeak() { Mass = (float)sn2Mag, Intensity = 10f }
+                            new SpectrumPeak() { Mass = sn2, Intensity = 0.1 },
+                            new SpectrumPeak() { Mass = sn2Mag, Intensity = 10 }
                         };
 
                         var foundCount = 0;
@@ -12653,8 +12653,8 @@ AdductIon adduct)
                             var sn2 = acylCainMass(sn2Carbon, sn2Double) - Electron;
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.1f },
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f }
+                            new SpectrumPeak() { Mass = sn1, Intensity = 0.1 },
+                            new SpectrumPeak() { Mass = sn2, Intensity = 0.1 }
                         };
 
                             var foundCount = 0;
@@ -12702,8 +12702,8 @@ AdductIon adduct)
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn1, Intensity = 10.0f },
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 10.0f }
+                            new SpectrumPeak() { Mass = sn1, Intensity = 10.0 },
+                            new SpectrumPeak() { Mass = sn2, Intensity = 10.0 }
                         };
 
                             var foundCount = 0;
@@ -12761,8 +12761,8 @@ AdductIon adduct)
                             var sn2 = acylCainMass(sn2Carbon, sn2Double) - Electron;
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn1, Intensity = 0.1f },
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 0.1f }
+                            new SpectrumPeak() { Mass = sn1, Intensity = 0.1 },
+                            new SpectrumPeak() { Mass = sn2, Intensity = 0.1 }
                         };
 
                             var foundCount = 0;
@@ -12810,8 +12810,8 @@ AdductIon adduct)
                             var sn2 = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sn1, Intensity = 10.0f },
-                            new SpectrumPeak() { Mass = (float)sn2, Intensity = 10.0f }
+                            new SpectrumPeak() { Mass = sn1, Intensity = 10.0 },
+                            new SpectrumPeak() { Mass = sn2, Intensity = 10.0 }
                         };
 
                             var foundCount = 0;
@@ -12870,8 +12870,8 @@ AdductIon adduct)
                             var sph2 = sph1 - H2O;
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sph1, Intensity = 0.1f },
-                            new SpectrumPeak() { Mass = (float)sph2, Intensity = 0.1f }
+                            new SpectrumPeak() { Mass = sph1, Intensity = 0.1 },
+                            new SpectrumPeak() { Mass = sph2, Intensity = 0.1 }
                         };
 
                             var foundCount = 0;
@@ -12913,7 +12913,7 @@ AdductIon adduct)
                             var sphFragment = 12 * (sphCarbon - 2) + (2 * (sphCarbon - 2) - 2 * sphDouble + 1) * MassDiffDictionary.HydrogenMass + 2 * MassDiffDictionary.OxygenMass - 3 * MassDiffDictionary.HydrogenMass - Proton;  // [Sph-NCCO-3H]-
 
                             var query = new List<SpectrumPeak> {
-                            new SpectrumPeak() { Mass = (float)sphFragment, Intensity = 0.01f },
+                            new SpectrumPeak() { Mass = sphFragment, Intensity = 0.01 },
                         };
 
                             var foundCount = 0;
@@ -12989,11 +12989,11 @@ AdductIon adduct)
                                     var nl_SN2andH2O = nl_SN2 - H2O;
 
                                     var query = new List<SpectrumPeak> {
-                                        new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 5f },
-                                        new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 5f },
-                                        new SpectrumPeak() { Mass = (float)nl_SN3, Intensity = 5f },
-                                        new SpectrumPeak() { Mass = (float)nl_SN1andH2O, Intensity = 5f },
-                                        new SpectrumPeak() { Mass = (float)nl_SN2andH2O, Intensity = 5f }
+                                        new SpectrumPeak() { Mass = nl_SN1, Intensity = 5 },
+                                        new SpectrumPeak() { Mass = nl_SN2, Intensity = 5 },
+                                        new SpectrumPeak() { Mass = nl_SN3, Intensity = 5 },
+                                        new SpectrumPeak() { Mass = nl_SN1andH2O, Intensity = 5 },
+                                        new SpectrumPeak() { Mass = nl_SN2andH2O, Intensity = 5 }
                                     };
 
                                     var foundCount = 0;
@@ -13079,12 +13079,12 @@ AdductIon adduct)
 
                                             var query = new List<SpectrumPeak>
                                             {
-                                                new SpectrumPeak() { Mass = (float)nl_SN1, Intensity = 5f },
-                                                new SpectrumPeak() { Mass = (float)nl_SN2, Intensity = 5f },
-                                                new SpectrumPeak() { Mass = (float)nl_SN4, Intensity = 5f },
-                                                new SpectrumPeak() { Mass = (float)nl_SN3andSN4, Intensity = 5f },
-                                                new SpectrumPeak() { Mass = (float)nl_SN1andSN4, Intensity = 5f },
-                                                new SpectrumPeak() { Mass = (float)nl_SN2andSN4, Intensity = 5f }
+                                                new SpectrumPeak() { Mass = nl_SN1, Intensity = 5 },
+                                                new SpectrumPeak() { Mass = nl_SN2, Intensity = 5 },
+                                                new SpectrumPeak() { Mass = nl_SN4, Intensity = 5 },
+                                                new SpectrumPeak() { Mass = nl_SN3andSN4, Intensity = 5 },
+                                                new SpectrumPeak() { Mass = nl_SN1andSN4, Intensity = 5 },
+                                                new SpectrumPeak() { Mass = nl_SN2andSN4, Intensity = 5 }
                                             };
 
                                             var foundCount = 0;
@@ -13327,8 +13327,8 @@ AdductIon adduct)
                             var sn2Fa = fattyacidProductIon(sn2Carbon, sn2Double);
 
                             var query = new List<SpectrumPeak> {
-                                new SpectrumPeak() { Mass = (float)sn1Fa, Intensity = 0.1f },
-                                new SpectrumPeak() { Mass = (float)sn2Fa, Intensity = 0.1f },
+                                new SpectrumPeak() { Mass = sn1Fa, Intensity = 0.1 },
+                                new SpectrumPeak() { Mass = sn2Fa, Intensity = 0.1 },
                             };
 
 

@@ -6,6 +6,7 @@ using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Utility;
 using System;
 using System.Linq;
 
@@ -147,10 +148,8 @@ namespace CompMs.App.Msdial.Model.DataObj
         public int MSDecResultIDUsedForAnnotation => innerModel.GetMSDecResultID();
         #endregion
 
-        #region Field
 
         private readonly ChromatogramPeakFeature innerModel;
-        #endregion
 
         // IFilterable
         bool IFilterable.IsMsmsAssigned => IsMsmsContained;
@@ -200,6 +199,12 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public void RaisePropertyChanged() {
             OnPropertyChanged(string.Empty);
+        }
+
+        public void SetUnknown() {
+            DataAccess.ClearMoleculePropertyInfomation(this);
+            MatchResults.RemoveManuallyResults();
+            MatchResults.AddResult(new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown });
         }
     }
 }

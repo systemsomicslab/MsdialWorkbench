@@ -12,6 +12,7 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
+using System.Reactive.Linq;
 using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
@@ -75,6 +76,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
+            SetUnknownCommand = Target.Select(t => !(t is null)).ToReactiveCommand()
+                .WithSubscribe(() => Target.Value.SetUnknown())
+                .AddTo(Disposables);
         }
 
         public Chart.AlignmentPeakPlotViewModel PlotViewModel {
@@ -118,13 +122,14 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
 
+        public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
         private void SearchCompound() {
             using (var csm = _model.CreateCompoundSearchModel()) {
                 if (csm is null) {
                     return;
                 }
-                using (var vm = new ImmsCompoundSearchVM(csm)) {
+                using (var vm = new ImmsCompoundSearchVM(csm, SetUnknownCommand)) {
                     _compoundSearchService.ShowDialog(vm);
                 }
             }

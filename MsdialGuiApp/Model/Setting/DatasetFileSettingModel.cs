@@ -31,6 +31,8 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public ObservableCollection<AnalysisFileBean> Files { get; }
 
+        public IEnumerable<AnalysisFileBean> IncludedFiles => Files.Where(file => file.AnalysisFileIncluded);
+
         public bool IsReadOnly { get; }
 
         public string ProjectFolderPath {
@@ -87,7 +89,9 @@ namespace CompMs.App.Msdial.Model.Setting
             var fileID_ClassName = parameter.FileID_ClassName;
             fileID_AnalysisFileType.Clear();
             fileID_ClassName.Clear();
-            foreach (var analysisfile in Files) {
+            var counter = 0;
+            foreach (var analysisfile in IncludedFiles) {
+                analysisfile.AnalysisFileId = counter++;
                 fileID_ClassName[analysisfile.AnalysisFileId] = analysisfile.AnalysisFileClass;
                 fileID_AnalysisFileType[analysisfile.AnalysisFileId] = analysisfile.AnalysisFileType;
             }
@@ -96,13 +100,13 @@ namespace CompMs.App.Msdial.Model.Setting
             var classnameToColorBytes = parameter.ClassnameToColorBytes;
             classnameToOrder.Clear();
             classnameToColorBytes.Clear();
-            foreach (var (classId, idx) in Files.Select(analysisfile => analysisfile.AnalysisFileClass).Distinct().WithIndex()) {
+            foreach (var (classId, idx) in IncludedFiles.Select(analysisfile => analysisfile.AnalysisFileClass).Distinct().WithIndex()) {
                 classnameToOrder[classId] = idx;
                 var color = ChartBrushes.GetChartBrush(idx).Color;
                 classnameToColorBytes[classId] = new List<byte> { color.R, color.G, color.B, color.A };
             }
 
-            parameter.IsBoxPlotForAlignmentResult = Files
+            parameter.IsBoxPlotForAlignmentResult = IncludedFiles
                 .GroupBy(analysisfile => analysisfile.AnalysisFileType)
                 .Average(group => group.Count())
                 > 4;

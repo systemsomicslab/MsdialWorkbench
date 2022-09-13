@@ -110,8 +110,8 @@ namespace CompMs.App.Msdial.Model.Search
             MsSpectrumModel = new MsSpectrumModel(
                 Observable.Return(this.msdecResult.Spectrum),
                 referenceSpectrum,
-                new PropertySelector<SpectrumPeak, float>(peak => peak.Mass),
-                new PropertySelector<SpectrumPeak, float>(peak => peak.Intensity),
+                new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
+                new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
                 new GraphLabels(string.Empty, "m/z", "Abundance", nameof(SpectrumPeak.Mass), nameof(SpectrumPeak.Intensity)),
                 nameof(SpectrumPeak.SpectrumComment),
                 Observable.Return(MsSpectrumModel.GetBrush(Brushes.Blue)),
