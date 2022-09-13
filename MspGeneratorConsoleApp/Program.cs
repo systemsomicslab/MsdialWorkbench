@@ -27,19 +27,19 @@ namespace CompMs.MspGenerator
 
 
 
-            /// RTCCS Prediction
-            var workingDirectry = @"d:\mikikot\Desktop\Tsugawa-san_work\20220912_lipid_library\RTCCS_Prediction\padel\";//作業用フォルダ
-            var toPredictFileName = workingDirectry + @"\txt\20220912143534_notfound.txt"; // 計算させたいInChIKeyとSMILESのリスト
+            ///// RTCCS Prediction
+            //var workingDirectry = @"d:\mikikot\Desktop\Tsugawa-san_work\20220912_lipid_library\RTCCS_Prediction\padel\";//作業用フォルダ
+            //var toPredictFileName = workingDirectry + @"\txt\20220912143534_notfound.txt"; // 計算させたいInChIKeyとSMILESのリスト
 
-            var predictionWorkingDirectry = @"F:\takahashi\RTprediction\~from_MSP\setting\";
-            var padelDescriptortypes = predictionWorkingDirectry + @"\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
-            var descriptorSelecerRTFile = predictionWorkingDirectry + @"\para_RT152.txt"; // RT予測に使用するdescriptorのリスト
-            var descriptorSelecerCSSFile = predictionWorkingDirectry + @"\para_ccs327.txt"; // CCS予測に使用するdescriptorのリスト
-            var rScriptAvdModelPath = @predictionWorkingDirectry;// masterRT.csvとmasterCCS.csvとmodelingファイルの入っているフォルダのpath
-            var rtModelingRdsFile = rScriptAvdModelPath + "xgb_padel_evaluation_RT_2020-06-15.rds";
-            var ccsModelingRdsFile = rScriptAvdModelPath + "xgb_padel_evaluation_CCS_2020-06-15.rds";
-            var padelProgramPath = @"F:\takahashi\RTprediction\~from_MSP\PaDEL-Descriptor\";//PaDELのフォルダパス
-            var rLocationPath = @"D:\Program Files\R\R-4.2.1\bin\x64"; // Rのpath
+            //var predictionWorkingDirectry = @"F:\takahashi\RTprediction\~from_MSP\setting\";
+            //var padelDescriptortypes = predictionWorkingDirectry + @"\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
+            //var descriptorSelecerRTFile = predictionWorkingDirectry + @"\para_RT152.txt"; // RT予測に使用するdescriptorのリスト
+            //var descriptorSelecerCSSFile = predictionWorkingDirectry + @"\para_ccs327.txt"; // CCS予測に使用するdescriptorのリスト
+            //var rScriptAvdModelPath = @predictionWorkingDirectry;// masterRT.csvとmasterCCS.csvとmodelingファイルの入っているフォルダのpath
+            //var rtModelingRdsFile = rScriptAvdModelPath + "xgb_padel_evaluation_RT_2020-06-15.rds";
+            //var ccsModelingRdsFile = rScriptAvdModelPath + "xgb_padel_evaluation_CCS_2020-06-15.rds";
+            //var padelProgramPath = @"F:\takahashi\RTprediction\~from_MSP\PaDEL-Descriptor\";//PaDELのフォルダパス
+            //var rLocationPath = @"D:\Program Files\R\R-4.2.1\bin\x64"; // Rのpath
 
 
             //RtCcsPredictManager.smilesToSdfOnNCDK(workingDirectry, toPredictFileName);
@@ -107,7 +107,7 @@ namespace CompMs.MspGenerator
             //var exportFileName = "Msp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedmsp";
             ////Common.jointMspFiles(mspFolder, exportFileName);
             //////////////////結合したファイルを下記フォルダに移動
-            workingDirectry = mspFolder + @"\LBM\";
+            var workingDirectry = mspFolder + @"\LBM\";
             ////System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
             ////////////
             ////MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + exportFileName,
@@ -115,9 +115,9 @@ namespace CompMs.MspGenerator
 
             //////上書き用　ファイル名オプション
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + @"Msp20220912142947.jointedmsp",
-            //     mspFolder + @"RT_CCS_predictedFile\predictedRTCCSAll_20220912_conventional.txt",
+            //     mspFolder + @"RT_CCS_predictedFile\predictedRTCCSAll_NCDK_20220913_TUAT.txt",
             //     workingDirectry,
-            //     "conventional");
+            //     "TUAT");
 
 
             ///mspファイル生成ツール
@@ -600,8 +600,8 @@ namespace CompMs.MspGenerator
                  @"D:\mikikot\Desktop\Tsugawa-san_work\20220912_lipid_library\RTCCS_Prediction\TUAT_NCDK\";
 
                 qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
-                    (workingFolder + @"\txt\20220912143534_notfound.txt",
-                     workingFolder + @"\20220906152415_notfound_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
+                    (workingFolder + @"\txt\20220913111218_notfound.txt",
+                     workingFolder + @"\20220913111218_notfound_descriptor.txt");
 
                 //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
                 //    (@"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeySmilesRtList.txt",
@@ -645,13 +645,13 @@ namespace CompMs.MspGenerator
                 //// NCDKの結果は 235 descriptor(adductScoreを含まない)
                 //var workingFolder1 = @"D:\takahashi\desktop\Tsugawa-san_work\20210401_descriptorCalc\calculated\all\";
                 //var workingFolder2 = @"D:\takahashi\desktop\Tsugawa-san_work\20210430_RTprediction\calc\";
-                //var rtTrainModel = workingFolder + @"\model\Train_RT_NCDK_202209061305.model";
-                //var rtTestFile = @"D:\mikikot\Desktop\Tsugawa-san_work\20220707_RTpredictionForTUAT\prediction\001\notfound_re_calc\20220906152415_notfound_20220906152837.2.txt";
-                //var ccsTrainModel =  @"F:\takahashi\from_Ddrive\takahashi\desktop\Tsugawa-san_work\20210430_RTprediction\calc\model\masterCCS_NCDK_202101081945.model";
-                //var ccsTestFile = rtTestFile;
-                //var resultFile = rtTestFile + @"_predicted.txt";
+                var rtTrainModel = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\NCDK_TUAT_RT_202209061305.model";
+                var rtTestFile = workingFolder + @"\20220913111218_notfound_descriptor.txt";
+                var ccsTrainModel = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\masterCCS_NCDK_202101081945.model";
+                var ccsTestFile = rtTestFile;
+                var resultFile = rtTestFile + @"_predicted.txt";
 
-                //RtCcsPredictOnDotNet.mergeRtAndCcsResultFilesVS2(resultFile, rtTrainModel, rtTestFile, ccsTrainModel, ccsTestFile);
+                RtCcsPredictOnDotNet.mergeRtAndCcsResultFilesVS2(resultFile, rtTrainModel, rtTestFile, ccsTrainModel, ccsTestFile);
 
                 //フォルダ内実行
                 //var files = Directory.GetFiles(@"D:\mikikot\Desktop\Tsugawa-san_work\20220707_RTpredictionForTUAT\prediction\calced\", "*.txt");
@@ -661,8 +661,8 @@ namespace CompMs.MspGenerator
                 //    RtCcsPredictOnDotNet.mergeRtAndCcsResultFilesVS2(resultFile, rtTrainModel, file, ccsTrainModel, file);
                 //}
 
-                //var predictedFilesDirectry = @"D:\mikikot\Desktop\Tsugawa-san_work\20220707_RTpredictionForTUAT\prediction\001\predicted\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
-                //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_NCDK_20220906.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
+                //var predictedFilesDirectry = @"D:\mikikot\Desktop\Tsugawa-san_work\20220912_lipid_library\RTCCS_Prediction\TUAT_NCDK\predictedFile\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
+                //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_NCDK_20220913.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
 
                 //MergeRTandCCSintoMsp.generateDicOfPredictVs2(predictedFilesDirectry, dbFileName);
 
