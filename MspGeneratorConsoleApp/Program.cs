@@ -113,7 +113,7 @@ namespace CompMs.MspGenerator
             ////MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + exportFileName,
             ////     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20220912_conventional.txt", workingDirectry, "conventional");
 
-            //////上書き用　ファイル名オプション
+            ////上書き用　ファイル名オプション
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + @"Msp20220912142947.jointedmsp",
             //     mspFolder + @"RT_CCS_predictedFile\predictedRTCCSAll_NCDK_20220913_TUAT.txt",
             //     workingDirectry,
@@ -596,12 +596,12 @@ namespace CompMs.MspGenerator
                 //// inputFile <- InChIKeyとSMILESを含んだテーブルデータを渡す。
                 //// 1行目(ヘッダー行)が"SMILES"となっている列を認識してdescriptorを算出する。
                 /// RtCcsPredictOnDotNet.GenerateQsarDescriptorFileVS2();//--old
-                var workingFolder =
-                 @"D:\mikikot\Desktop\Tsugawa-san_work\20220912_lipid_library\RTCCS_Prediction\TUAT_NCDK\";
+                //var workingFolder =
+                // @"D:\mikikot\Desktop\Tsugawa-san_work\20220912_lipid_library\RTCCS_Prediction\TUAT_NCDK\";
 
-                qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
-                    (workingFolder + @"\txt\20220913111218_notfound.txt",
-                     workingFolder + @"\20220913111218_notfound_descriptor.txt");
+                //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
+                //    (workingFolder + @"\txt\20220913111218_notfound.txt",
+                //     workingFolder + @"\20220913111218_notfound_descriptor_"+ DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
 
                 //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
                 //    (@"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeySmilesRtList.txt",
@@ -645,13 +645,13 @@ namespace CompMs.MspGenerator
                 //// NCDKの結果は 235 descriptor(adductScoreを含まない)
                 //var workingFolder1 = @"D:\takahashi\desktop\Tsugawa-san_work\20210401_descriptorCalc\calculated\all\";
                 //var workingFolder2 = @"D:\takahashi\desktop\Tsugawa-san_work\20210430_RTprediction\calc\";
-                var rtTrainModel = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\NCDK_TUAT_RT_202209061305.model";
-                var rtTestFile = workingFolder + @"\20220913111218_notfound_descriptor.txt";
-                var ccsTrainModel = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\masterCCS_NCDK_202101081945.model";
-                var ccsTestFile = rtTestFile;
-                var resultFile = rtTestFile + @"_predicted.txt";
+                //var rtTrainModel = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\NCDK_TUAT_RT_202209061305.model";
+                //var rtTestFile = workingFolder + @"\20220913111218_notfound_descriptor.txt";
+                //var ccsTrainModel = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\masterCCS_NCDK_202101081945.model";
+                //var ccsTestFile = rtTestFile;
+                //var resultFile = rtTestFile + @"_predicted.txt";
 
-                RtCcsPredictOnDotNet.mergeRtAndCcsResultFilesVS2(resultFile, rtTrainModel, rtTestFile, ccsTrainModel, ccsTestFile);
+                //RtCcsPredictOnDotNet.mergeRtAndCcsResultFilesVS2(resultFile, rtTrainModel, rtTestFile, ccsTrainModel, ccsTestFile);
 
                 //フォルダ内実行
                 //var files = Directory.GetFiles(@"D:\mikikot\Desktop\Tsugawa-san_work\20220707_RTpredictionForTUAT\prediction\calced\", "*.txt");
@@ -662,7 +662,7 @@ namespace CompMs.MspGenerator
                 //}
 
                 //var predictedFilesDirectry = @"D:\mikikot\Desktop\Tsugawa-san_work\20220912_lipid_library\RTCCS_Prediction\TUAT_NCDK\predictedFile\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
-                //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_NCDK_20220913.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
+                //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_NCDK_20220913_TUAT.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
 
                 //MergeRTandCCSintoMsp.generateDicOfPredictVs2(predictedFilesDirectry, dbFileName);
 

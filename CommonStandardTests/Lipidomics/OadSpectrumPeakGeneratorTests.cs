@@ -134,8 +134,8 @@ namespace CompMs.Common.Lipidomics.Tests
 
             var expected = new SpectrumPeak[]
             {
-                new SpectrumPeak(521.3714f,10f),
-                new SpectrumPeak(522.3792f,10f),
+                new SpectrumPeak(519.3558f,10f),
+                new SpectrumPeak(520.3636f,10f),
                 new SpectrumPeak(632.4524f,10f),
                 new SpectrumPeak(633.4602f,10f),
                 new SpectrumPeak(634.468f,10f),
@@ -160,12 +160,12 @@ namespace CompMs.Common.Lipidomics.Tests
             {
                 new SpectrumPeak(440.4098f,10f), //Δ4
                 new SpectrumPeak(441.4176f,10f),
-                new SpectrumPeak(537.478f,10f), //Δ8
-                new SpectrumPeak(538.4858f,10f),
-                new SpectrumPeak(539.4937f,10f),
-                new SpectrumPeak(495.4681f,10f),
-                new SpectrumPeak(496.4759f,10f),
-                new SpectrumPeak(497.4838f,10f),
+                new SpectrumPeak(537.4752f,10f),//Δ8
+                new SpectrumPeak(538.483f,10f),
+                new SpectrumPeak(539.4908f,10f),
+                new SpectrumPeak(495.4646f,10f),
+                new SpectrumPeak(496.4724f,10f),
+                new SpectrumPeak(497.4802f,10f),
             };
 
             foreach ((var e, var a) in expected.Zip(actual))

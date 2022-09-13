@@ -15,6 +15,9 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.CarbonMass,
         }.Sum();
 
+        private static readonly double Electron = 0.00054858026;
+
+
         private IEnumerable<SpectrumPeak> GetOadDoubleBondSpectrum(ILipid lipid, IChain chain, AdductIon adduct, double nlMass, double abundance)
         {
             if (chain.DoubleBond.UnDecidedCount != 0 || chain.CarbonCount == 0)
@@ -49,20 +52,20 @@ namespace CompMs.Common.Lipidomics
                     var factor = 1.0;
                     var dbPeakHigher = diffs[bond] + MassDiffDictionary.OxygenMass;
                     var dbPeakLower = diffs[bond] - MassDiffDictionary.CarbonMass - CH2;
-                    peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + dbPeakHigher), (float)(factor * abundance), $"{chain} C{bond} DB fragment higher") { SpectrumComment = speccomment });
-                    peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + dbPeakHigher + MassDiffDictionary.HydrogenMass), (float)(factor * abundance * 0.5), $"{chain} C{bond} DB fragment higher+H") { SpectrumComment = speccomment });
-                    peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + dbPeakHigher + MassDiffDictionary.HydrogenMass * 2), (float)(factor * abundance * 0.15), $"{chain} C{bond} DB fragment higher+2H") { SpectrumComment = speccomment });
-                    peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + dbPeakLower), (float)(factor * abundance), $"{chain} C{bond} DB fragment lower") { SpectrumComment = speccomment });
-                    peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + dbPeakLower + MassDiffDictionary.HydrogenMass), (float)(factor * abundance * 0.5), $"{chain} C{bond} DB fragment lower+H") { SpectrumComment = speccomment });
-                    peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + dbPeakLower + MassDiffDictionary.HydrogenMass * 2), (float)(factor * abundance * 0.15), $"{chain} C{bond} DB fragment lower+2H") { SpectrumComment = speccomment });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeakHigher + Electron), (factor * abundance), $"{chain} C{bond} DB fragment higher") { SpectrumComment = speccomment });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeakHigher + MassDiffDictionary.HydrogenMass), (factor * abundance * 0.5), $"{chain} C{bond} DB fragment higher+H") { SpectrumComment = speccomment });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeakHigher + MassDiffDictionary.HydrogenMass * 2), (factor * abundance * 0.15), $"{chain} C{bond} DB fragment higher+2H") { SpectrumComment = speccomment });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeakLower + Electron), (factor * abundance), $"{chain} C{bond} DB fragment lower") { SpectrumComment = speccomment });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeakLower + MassDiffDictionary.HydrogenMass), (factor * abundance * 0.5), $"{chain} C{bond} DB fragment lower+H") { SpectrumComment = speccomment });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeakLower + MassDiffDictionary.HydrogenMass * 2), (factor * abundance * 0.15), $"{chain} C{bond} DB fragment lower+2H") { SpectrumComment = speccomment });
                 }
                 else
                 {
                     var speccomment = SpectrumComment.doublebond;
                     var factor = 1.0;
                     var dbPeakHigher = diffs[bond] + MassDiffDictionary.OxygenMass;
-                    peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + dbPeakHigher), (float)(factor * abundance), $"{chain} C{bond} DB fragment higher") { SpectrumComment = speccomment });
-                    peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + dbPeakHigher + MassDiffDictionary.HydrogenMass), (float)(factor * abundance * 0.5), $"{chain} C{bond} DB fragment higher+H") { SpectrumComment = speccomment });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeakHigher + Electron), (factor * abundance), $"{chain} C{bond} DB fragment higher") { SpectrumComment = speccomment });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeakHigher + MassDiffDictionary.HydrogenMass), (factor * abundance * 0.5), $"{chain} C{bond} DB fragment higher+H") { SpectrumComment = speccomment });
                 }
             }
 
@@ -82,7 +85,7 @@ namespace CompMs.Common.Lipidomics
                 return Enumerable.Empty<SpectrumPeak>();
             }
             //var chainLoss = lipid.Mass - sphingo.Mass - nlMass + MassDiffDictionary.NitrogenMass + 12 * 2 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 5;
-            var chainLoss = lipid.Mass - sphingo.Mass - nlMass + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 3;
+            var chainLoss = lipid.Mass - sphingo.Mass - nlMass + MassDiffDictionary.NitrogenMass + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 1;
             var diffs = new double[sphingo.CarbonCount];
             for (int i = 0; i < sphingo.CarbonCount; i++)
             {
@@ -96,7 +99,7 @@ namespace CompMs.Common.Lipidomics
                 diffs[bond.Position] -= MassDiffDictionary.HydrogenMass;
                 bondPositions.Add(bond.Position);
             }
-            for (int i = 2; i < sphingo.CarbonCount; i++)
+            for (int i = 1; i < sphingo.CarbonCount; i++)
             {
                 diffs[i] += diffs[i - 1];
             }
@@ -110,20 +113,20 @@ namespace CompMs.Common.Lipidomics
                     var factor = 1.0;
                     var dbPeakHigher = diffs[bond] + MassDiffDictionary.OxygenMass;
                     var dbPeakLower = diffs[bond] - MassDiffDictionary.CarbonMass - CH2;
-                    peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + dbPeakHigher), (float)(factor * abundance), $"{sphingo} C{bond} DB fragment higher") { SpectrumComment = speccomment });
-                    peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + dbPeakHigher + MassDiffDictionary.HydrogenMass), (float)(factor * abundance * 0.5), $"{sphingo} C{bond} DB fragment higher+H") { SpectrumComment = speccomment });
-                    peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + dbPeakHigher + MassDiffDictionary.HydrogenMass * 2), (float)(factor * abundance * 0.15), $"{sphingo} C{bond} DB fragment higher+2H") { SpectrumComment = speccomment });
-                    peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + dbPeakLower), (float)(factor * abundance), $"{sphingo} C{bond} DB fragment lower") { SpectrumComment = speccomment });
-                    peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + dbPeakLower + MassDiffDictionary.HydrogenMass), (float)(factor * abundance * 0.5), $"{sphingo} C{bond} DB fragment lower+H") { SpectrumComment = speccomment });
-                    peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + dbPeakLower + MassDiffDictionary.HydrogenMass * 2), (float)(factor * abundance * 0.15), $"{sphingo} C{bond} DB fragment lower+2H") { SpectrumComment = speccomment });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeakHigher + Electron), (factor * abundance), $"{sphingo} C{bond} DB fragment higher") { SpectrumComment = speccomment });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeakHigher + MassDiffDictionary.HydrogenMass), (factor * abundance * 0.5), $"{sphingo} C{bond} DB fragment higher+H") { SpectrumComment = speccomment });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeakHigher + MassDiffDictionary.HydrogenMass * 2), (factor * abundance * 0.15), $"{sphingo} C{bond} DB fragment higher+2H") { SpectrumComment = speccomment });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeakLower + Electron), (factor * abundance), $"{sphingo} C{bond} DB fragment lower") { SpectrumComment = speccomment });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeakLower + MassDiffDictionary.HydrogenMass), (factor * abundance * 0.5), $"{sphingo} C{bond} DB fragment lower+H") { SpectrumComment = speccomment });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeakLower + MassDiffDictionary.HydrogenMass * 2), (factor * abundance * 0.15), $"{sphingo} C{bond} DB fragment lower+2H") { SpectrumComment = speccomment });
                 }
                 else
                 {
                     var speccomment = SpectrumComment.doublebond;
                     var factor = 1.0;
-                    var dbPeak = diffs[bond - 1] ;
-                    peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + dbPeak), (float)(factor * abundance), $"{sphingo} C{bond} DB ") { SpectrumComment = speccomment });
-                    peaks.Add(new SpectrumPeak((float)adduct.ConvertToMz(chainLoss + dbPeak + MassDiffDictionary.HydrogenMass), (float)(factor * abundance * 0.5), $"{sphingo} C{bond} DB +H") { SpectrumComment = speccomment });
+                    var dbPeak = diffs[bond - 1 - 1] - MassDiffDictionary.HydrogenMass;
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeak + Electron), (factor * abundance), $"{sphingo} C{bond} DB ") { SpectrumComment = speccomment });
+                    peaks.Add(new SpectrumPeak(adduct.ConvertToMz(chainLoss + dbPeak + MassDiffDictionary.HydrogenMass), (factor * abundance * 0.5), $"{sphingo} C{bond} DB +H") { SpectrumComment = speccomment });
                 }
             }
 
