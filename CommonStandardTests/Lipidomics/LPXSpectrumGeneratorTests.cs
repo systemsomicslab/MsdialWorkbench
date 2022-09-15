@@ -27,6 +27,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 226.0838871 ,//Gly-O -CH2(Sn1)
                 240.0995197 ,//-Sn1-O
                 258.1100844 ,//-Sn1
+                265.25259 ,//18:1(9) acyl+
                 284.0893489 ,//Sn1-1-H
                 285.0971739 ,//Sn1-1
                 286.104999  ,//Sn1-1+H
@@ -104,6 +105,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 246.0865668 ,//Gly-C
                 248.0658313 ,//Gly-O
                 262.0814639 ,//-Sn1-O
+                265.25259 ,//18:1(9) acyl+
                 280.0920286 ,//-Sn1
                 306.0712931 ,//Sn1-1-H
                 307.0791182 ,//Sn1-1
@@ -199,6 +201,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 256.058099  ,//Sn1-2-H
                 257.065924  ,//Sn1-2
                 258.073749  ,//Sn1-2+H
+                265.25259 ,//18:1(9) acyl+
                 270.073749  ,//Sn1-3-H
                 271.0815741 ,//Sn1-3
                 272.0893991 ,//Sn1-3+H
@@ -242,6 +245,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 450.2615498 ,//Sn1-16-H
                 451.2693748 ,//Sn1-16
                 452.2771999 ,//Sn1-16+H
+                462.29790 ,//Precursor - H2O
                 464.2771999 ,//Sn1-17-H
                 465.2850249 ,//Sn1-17
                 466.2928499 ,//Sn1-17+H
@@ -272,6 +276,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 238.0451286 ,//-acylChain
                 264.0243931 ,//Sn1-1-H
                 265.0322182 ,//Sn1-1
+                265.25259 ,//18:1(9) acyl+
                 266.0400432 ,//Sn1-1+H
                 278.0400432 ,//Sn1-2-H
                 279.0478682 ,//Sn1-2
@@ -320,6 +325,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 472.243494  ,//Sn1-16-H
                 473.2513191 ,//Sn1-16
                 474.2591441 ,//Sn1-16+H
+                484.27985 ,//Precursor - H2O
                 486.2591441 ,//Sn1-17-H
                 487.2669691 ,//Sn1-17
                 488.2747942 ,//Sn1-17+H
@@ -350,11 +356,13 @@ namespace CompMs.Common.Lipidomics.Tests
 
             var expects = new[]
             {
+                    155.010386 ,//Header - H2O
                     173.0209525 ,//Header
                     213.0522526 ,//Gly-C
                     215.0315172 ,//Gly-O
                     //229.0480197 ,//-Sn1-H2O
                     247.0585844 ,//-Sn1
+                    265.25259 ,//18:1(9) acyl+
                     273.0378489 ,//Sn1-1-H
                     274.0456739 ,//Sn1-1
                     275.053499  ,//Sn1-1+H
@@ -433,10 +441,12 @@ namespace CompMs.Common.Lipidomics.Tests
 
             var expects = new[]
             {
+                176.99233 ,//Header - H2O
                 195.0028967 ,//Header
                 235.0341968 ,//Gly-C
                 237.0134614 ,//Gly-O
                 //251.0299639 ,//-Sn1-H2O
+                265.25259 ,//18:1(9) acyl+
                 269.0405286 ,//-Sn1
                 295.0197931 ,//Sn1-1-H
                 296.0276182 ,//Sn1-1
@@ -474,7 +484,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 447.1762938 ,//Sn1-12-H
                 448.1841188 ,//Sn1-12
                 449.1919439 ,//Sn1-12+H
-                459.2490648 ,//Precursor -C3H6O2
+                //459.2490648 ,//Precursor -C3H6O2
                 461.1919439 ,//Sn1-13-H
                 462.1997689 ,//Sn1-13
                 463.2075939 ,//Sn1-13+H
@@ -519,6 +529,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 155.01093   ,//C3H9O6P-H2O
                 173.0124997 ,//C3H9O6P
                 261.0369865 ,//Header
+                265.25259 ,//18:1(9) acyl+
                 301.0709    ,//Gly-C
                 303.0507    ,//Gly-O, -CH2(Sn1)
                 317.0632197 ,//-Sn1-H2O
@@ -610,6 +621,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 226.05066   ,//Gly-C
                 228.0253    ,//Gly-O, -CH2(SN1)
                 260.05353    ,// -acylChain
+                265.25259 ,//18:1(9) acyl+
                 286.0322489 ,//Sn1-1-H
                 287.0400739 ,//Sn1-1
                 288.047899  ,//Sn1-1+H
@@ -690,6 +702,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 207.9994342 ,//Header
                 248.0326042 ,//Gly-C
                 250.0072442 ,//Gly-O
+                265.25259 ,//18:1(9) acyl+
                 282.0349286 ,// -acylChain
                 308.0141931 ,//Sn1-1-H
                 309.0220182 ,//Sn1-1
