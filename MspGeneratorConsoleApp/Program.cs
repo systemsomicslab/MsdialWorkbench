@@ -596,12 +596,12 @@ namespace CompMs.MspGenerator
                 //// inputFile <- InChIKeyとSMILESを含んだテーブルデータを渡す。
                 //// 1行目(ヘッダー行)が"SMILES"となっている列を認識してdescriptorを算出する。
                 /// RtCcsPredictOnDotNet.GenerateQsarDescriptorFileVS2();//--old
-                //var workingFolder =
-                // @"D:\mikikot\Desktop\Tsugawa-san_work\20220912_lipid_library\RTCCS_Prediction\TUAT_NCDK\";
+                var workingFolder =
+                 @"D:\mikikot\Desktop\Tsugawa-san_work\20220912_lipid_library\RTCCS_Prediction\TUAT_NCDK\";
 
-                //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
-                //    (workingFolder + @"\txt\20220913111218_notfound.txt",
-                //     workingFolder + @"\20220913111218_notfound_descriptor_"+ DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
+                qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
+                    (workingFolder + @"\txt\20220913111218_notfound.txt",
+                     workingFolder + @"\20220913111218_notfound_descriptor_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
 
                 //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
                 //    (@"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeySmilesRtList.txt",
