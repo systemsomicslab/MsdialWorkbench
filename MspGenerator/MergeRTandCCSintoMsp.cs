@@ -195,11 +195,11 @@ namespace CompMs.MspGenerator
         }
 
 
-        public static void mergeRTandCCSintoMsp(string mspFilePath, string calculatedFilePath, string outputFolderPath)
+        public static void mergeRTandCCSintoMsp(string mspFilePath, string calculatedFilePath, string outputFolderPath, string outputNameOption)
         {
-            var outputFileName = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_converted.lbm2";
-            var outputMspFileName = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_insertRTCCS.msp";
-            var outputFileNameDev = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_converted_dev.lbm2";
+            var outputFileName = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_" + outputNameOption + "_converted.lbm2";
+            var outputMspFileName = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_" + outputNameOption + "_insertRTCCS.msp";
+            var outputFileNameDev = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_" + outputNameOption + "_converted_dev.lbm2";
 
             Console.WriteLine("Loading the msp file.");
 
@@ -406,11 +406,11 @@ namespace CompMs.MspGenerator
             }
         }
 
-        public static void mergeRTandCCSintoMspVs2(string mspFilePath, string calculatedFilePath, string outputFolderPath)
+        public static void mergeRTandCCSintoMspVs2(string mspFilePath, string calculatedFilePath, string outputFolderPath, string outputNameOption)
         {
-            var outputFileName = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_converted.lbm2";
-            var outputMspFileName = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_insertRTCCS.msp";
-            var outputFileNameDev = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_converted_dev.lbm2";
+            var outputFileName = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_" + outputNameOption + "_converted.lbm2";
+            var outputMspFileName = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_" + outputNameOption + "_insertRTCCS.msp";
+            var outputFileNameDev = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_" + outputNameOption + "_converted_dev.lbm2";
 
             Console.WriteLine("Loading the msp file.");
 

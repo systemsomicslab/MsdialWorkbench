@@ -157,7 +157,7 @@ namespace CompMs.MspGenerator
                 {   "GM1" ,    new List<string>(){ "[M-H]-", "[M-2H]2-" , "[M+NH4]+", "[M+2NH4]2+", "[M+2H]2+" }    },
                 {   "GT1b" ,    new List<string>(){ "[M-H]-", "[M-2H]2-", "[M+2NH4]2+", "[M+2H]2+" }    },
                 {   "GQ1b" ,    new List<string>(){ "[M-H]-", "[M-2H]2-", "[M+2NH4]2+" }    },
-                {   "NGcGM3" ,    new List<string>(){ "[M-H]-", "[M-2H]2-", "[M+NH4]+" }    },
+                {   "NGcGM3" ,    new List<string>(){ "[M-H]-", "[M-2H]2-", "[M+H]+", "[M+NH4]+" }    },
                 {   "CerP" ,    new List<string>(){ "[M-H]-", "[M+H]+"}    },
                 {   "Hex2Cer" ,    new List<string>(){ "[M+H]+" , "[M+HCOO]-", "[M+CH3COO]-" }    },
                 {   "Hex3Cer" ,    new List<string>(){ "[M+H]+" , "[M+HCOO]-", "[M+CH3COO]-" }    },

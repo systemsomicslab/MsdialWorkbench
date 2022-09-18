@@ -6960,7 +6960,8 @@ AdductIon adduct)
 
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
-                            var acylFragment = fattyacidProductIon(acylCarbon, acylDouble) + MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass; // 
+                            var acylFragment = acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.NitrogenMass
+                                + MassDiffDictionary.HydrogenMass * 4 + 12 * 2 + MassDiffDictionary.OxygenMass - Proton; // as [FAA+C2H3-H]- fix 20220905
                             //Console.WriteLine("HexCer-O " + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble + " " + acylFragment);
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = acylFragment, Intensity = 0.1 }
@@ -9669,7 +9670,7 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
 
                             var sph1 = SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
@@ -9743,7 +9744,7 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
 
                             var sph1 = SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
@@ -9955,7 +9956,7 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
 
                             var sph1 = SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
@@ -10032,7 +10033,7 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
 
                             var sph1 = SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
@@ -10089,15 +10090,16 @@ AdductIon adduct)
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+NH4]+")
+                if (adduct.AdductIonName == "[M+NH4]+" || adduct.AdductIonName == "[M+H]+")
                 {
                     // calc [M+H]+
                     var diagnosticMz = adduct.AdductIonName == "[M+NH4]+" ?
                         theoreticalMz - 17.026549 : theoreticalMz;
 
-                    // seek [M-H2O-C11H17NO9+H]+ // M-H2O-307
+                    // seek [M-H2O-C11H16NO9+H]+ // M-H2O-307
                     var threshold = 5.0;
-                    var diagnosticMz2 = theoreticalMz - H2O - (12 * 11 + MassDiffDictionary.HydrogenMass * 17 + MassDiffDictionary.NitrogenMass * 1 + MassDiffDictionary.OxygenMass * 9);
+                    var diagnosticMz2 = diagnosticMz - H2O - (12 * 11 + MassDiffDictionary.HydrogenMass * 17
+                        + MassDiffDictionary.NitrogenMass * 1 + MassDiffDictionary.OxygenMass * 9); // fix 20220905
                     // seek M-H2O-307-1sugar
                     var diagnosticMz3 = diagnosticMz2 - (12 * 6 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.OxygenMass * 5);
                     var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
@@ -10113,7 +10115,7 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
 
                             var sph1 = SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
 
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = sph1, Intensity = 0.01 },
@@ -10136,7 +10138,7 @@ AdductIon adduct)
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
-            if (adduct.AdductIonName == "[M-H]-")
+            if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M-2H]2-")
             {
                 // seek [C11H17NO8-H]-  as 306.078
                 var threshold1 = 0.01;
@@ -10183,12 +10185,12 @@ AdductIon adduct)
 
                     var trueCount = 0;
                     if (isClassIon1Found) trueCount++;
-                    if (isClassIon2Found) trueCount++;
+                    //if (isClassIon2Found) trueCount++;
                     if (isClassIon3Found) trueCount++;
                     //if (isClassIon4Found) trueCount++;
 
                     //if (isClassIon1Found == !true || isClassIon2Found == !true || isClassIon3Found == !true || isClassIon4Found == true) return null;
-                    if (trueCount < 3) return null;
+                    if (trueCount < 2) return null;
                     var candidates = new List<LipidMolecule>();
                     //var query = new List<SpectrumPeak> {
                     //            new SpectrumPeak() { Mass = diagnosticMz1, Intensity = threshold1 },
@@ -12412,10 +12414,10 @@ AdductIon adduct)
             { // negative ion mode 
                 if (adduct.AdductIonName == "[M-H]-")
                 {
-                    // seek 225.0069 [C6H9O8S]-
+                    // seek [C6H9O8S]-
                     var threshold1 = 0.1;
                     var diagnosticMz1 = 241.0024;
-                    // seek 225.0069 [H2SO4-H]-
+                    // seek  [H2SO4-H]-
                     var threshold2 = 0.1;
                     var diagnosticMz2 = 96.9601;
 
