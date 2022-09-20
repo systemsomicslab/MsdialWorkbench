@@ -279,12 +279,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             SurveyScanModel.Elements.HorizontalProperty = nameof(SpectrumPeakWrapper.Mass);
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
-            PeakTableModel = new LcimmsAnalysisPeakTableModel(
-                driftPeaks, target,
-                driftPeaks.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d, driftPeaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d,
-                driftPeaks.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXsTop.RT.Value) ?? 0d, driftPeaks.DefaultIfEmpty().Max(peak => peak?.InnerModel.ChromXsTop.RT.Value) ?? 0d,
-                driftPeaks.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXsTop.Drift.Value) ?? 0d, driftPeaks.DefaultIfEmpty().Max(peak => peak?.InnerModel.ChromXsTop.Drift.Value) ?? 0d)
-                .AddTo(Disposables);
+            PeakTableModel = new LcimmsAnalysisPeakTableModel(driftPeaks, target).AddTo(Disposables);
 
             switch (parameter.TargetOmics) {
                 case TargetOmics.Lipidomics:
@@ -371,7 +366,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel<ChromatogramPeakFeature>> CompoundSearchModel { get; }
         public IObservable<bool> CanSearchCompound { get; }
-
 
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
 

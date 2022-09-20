@@ -224,11 +224,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            var massMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
-            var massMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
-            var rtMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.TimesCenter) ?? 0d;
-            var rtMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.TimesCenter) ?? 0d;
-            AlignmentSpotTableModel = new LcmsAlignmentSpotTableModel(Ms1Spots, Target, massMin, massMax, rtMin, rtMax, classBrush).AddTo(Disposables);
+            AlignmentSpotTableModel = new LcmsAlignmentSpotTableModel(Ms1Spots, Target, classBrush).AddTo(Disposables);
 
             CanSearchCompound = new[]
             {

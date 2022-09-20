@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Table;
 using Reactive.Bindings;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
@@ -42,28 +43,20 @@ namespace CompMs.App.Msdial.Model.Imms
     {
         public ImmsAlignmentSpotTableModel(
             ObservableCollection<AlignmentSpotPropertyModel> spots,
-            IReactiveProperty<AlignmentSpotPropertyModel> target,
-            double massMin, double massMax,
-            double driftMin, double driftMax)
-            : base(
-                  spots, target,
-                  massMin, massMax,
-                  driftMin, driftMax) {
+            IReactiveProperty<AlignmentSpotPropertyModel> target)
+            : base(spots, target,
+                  spots.Select(peak => peak.MassCenter).DefaultIfEmpty().Min(), spots.Select(peak => peak.MassCenter).DefaultIfEmpty().Max(),
+                  spots.Select(peak => peak.TimesCenter).DefaultIfEmpty().Min(), spots.Select(peak => peak.TimesCenter).DefaultIfEmpty().Max()) {
 
         }
     }
 
     sealed class ImmsAnalysisPeakTableModel : ImmsPeakSpotTableModel<ChromatogramPeakFeatureModel>
     {
-        public ImmsAnalysisPeakTableModel(
-            ObservableCollection<ChromatogramPeakFeatureModel> peaks,
-            IReactiveProperty<ChromatogramPeakFeatureModel> target,
-            double massMin, double massMax,
-            double driftMin, double driftMax)
-            : base(
-                  peaks, target,
-                  massMin, massMax,
-                  driftMin, driftMax) {
+        public ImmsAnalysisPeakTableModel(ObservableCollection<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target)
+            : base(peaks, target,
+                  peaks.Select(peak => peak.Mass).DefaultIfEmpty().Min(), peaks.Select(peak => peak.Mass).DefaultIfEmpty().Max(),
+                  peaks.DefaultIfEmpty().Min(peak => peak.ChromXValue) ?? 0d, peaks.DefaultIfEmpty().Max(peak => peak.ChromXValue) ?? 0d) {
         }
     }
 }
