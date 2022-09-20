@@ -657,6 +657,10 @@ namespace CompMs.MspGenerator
             List<string> chains = null;
             string[] acylArray = null;
 
+            // d-substituted compound support 20220920
+            Regex reg = new Regex(@"\(d([0-9]*)\)");
+            chainString = reg.Replace(chainString, "");
+
             var pattern2 = @"(\()(?<chain1>.+?)(\))(?<chain2>.+?)(/)(?<chain3>.+?$)";
             var pattern3 = @"(?<chain1>.+?)(\(FA )(?<chain2>.+?)(\))";
             var pattern4 = @"(?<chain1>.+?)(/)(?<chain2>.+?)(\(FA )(?<chain3>.+?)(\))";
