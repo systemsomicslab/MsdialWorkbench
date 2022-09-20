@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Imaging;
+using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -12,7 +13,8 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
             RoiViewModels = model.ImagingRoiModels.ToReadOnlyReactiveCollection(m => new ImagingRoiViewModel(m)).AddTo(Disposables);
             ImageResultViewModel = new WholeImageResultViewModel(model.ImageResult).AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[0];
+            var peakInfo = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { peakInfo, };
             Ms2ViewModels = new ViewModelBase[0];
         }
 
