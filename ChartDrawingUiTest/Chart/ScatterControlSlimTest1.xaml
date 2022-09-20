@@ -114,6 +114,7 @@
                                       HorizontalProperty="X"
                                       VerticalProperty="Y"
                                       DataType="{x:Type core:DataPoint}"
+                                      PointBrush="{Binding Brushes/Brush}"
                                       SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                                       SelectedPoint="{Binding SelectedPoint, Mode=OneWayToSource}"
                                       FocusedItem="{Binding FocusedItem, Mode=OneWayToSource}"
@@ -189,8 +190,17 @@
             </ContentControl.ContentTemplate>
         </ContentControl>
         <StackPanel Orientation="Horizontal" Margin="8" Grid.Row="5">
-            <Label Content="Number of spots: "/>
-            <TextBox Text="{Binding Number, UpdateSourceTrigger=PropertyChanged}" Width="160"/>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Number of spots: "/>
+                <TextBox Text="{Binding Number, UpdateSourceTrigger=PropertyChanged}" Width="160"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="32,0,0,0">
+                <Label Content="Colored by: "/>
+                <ComboBox ItemsSource="{Binding Brushes}"
+                          DisplayMemberPath="Label"
+                          IsSynchronizedWithCurrentItem="True"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Page>
