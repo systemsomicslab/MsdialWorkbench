@@ -138,8 +138,8 @@ namespace CompMs.Common.Algorithm.ChromSmoothing
             var smoothedPeaklist = new List<SpectrumPeak>(n);
             for (int i = 0; i < n; i++) {
                 smoothedPeaklist.Add(new SpectrumPeak {
-                    Mass = (float)peaklist[i].Mass,
-                    Intensity = (float)intensities[i + smoothingLevel] / normalizationValue
+                    Mass = peaklist[i].Mass,
+                    Intensity = intensities[i + smoothingLevel] / normalizationValue
                 });
             }
 

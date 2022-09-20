@@ -6,6 +6,7 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:local="clr-namespace:Rfx.Riken.OsakaUniv.Hca"
+             xmlns:glo="clr-namespace:Rfx.Riken.OsakaUniv"
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
@@ -59,6 +60,7 @@
         </Grid.RowDefinitions>
         <chart:HeatmapControl x:Name="heatmap"
                                 ItemsSource="{Binding HeatmapView}"
+                                DataType="{x:Type glo:MatrixData}"
                                 HorizontalAxis="{StaticResource FileAxis}"
                                 VerticalAxis="{StaticResource MetaboliteAxis}"
                                 HorizontalPropertyName="FileId"

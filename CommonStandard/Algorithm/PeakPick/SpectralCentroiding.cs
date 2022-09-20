@@ -172,7 +172,7 @@ namespace CompMs.Common.Algorithm.PeakPick {
 
                     //5. Set peakInforamtion
                     #region
-                    var peak = new SpectrumPeak() { Mass = (float)datapoints[peakTopId][0], Intensity = (float)datapoints[peakTopId][1], Resolution = resolution, Comment = string.Empty };
+                    var peak = new SpectrumPeak() { Mass = datapoints[peakTopId][0], Intensity = datapoints[peakTopId][1], Resolution = resolution, Comment = string.Empty };
                     centroidedSpectra.Add(peak);
                     peakID++;
                     #endregion

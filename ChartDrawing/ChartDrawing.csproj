@@ -77,6 +77,7 @@
     <Compile Include="AxisManager\StandardLabelGenerator.cs" />
     <Compile Include="Base\DataPointCollection.cs" />
     <Compile Include="Base\RangeSelection.cs" />
+    <Compile Include="Behavior\AddMovabilityBehavior.cs" />
     <Compile Include="Behavior\AreaSelectBehavior.cs" />
     <Compile Include="Behavior\DataGridIsEdittingBehavior.cs" />
     <Compile Include="Chart\AreaChartControl.cs" />
@@ -89,6 +90,7 @@
     <Compile Include="Chart\ScatterControlSlim.cs" />
     <Compile Include="Chart\VerticalLine.cs" />
     <Compile Include="Converter\ColorToBrushMapperConverter.cs" />
+    <Compile Include="Design\GradientBrushMapper.cs" />
     <Compile Include="Design\PenSelector.cs" />
     <Compile Include="Design\ConstantBrushMapper.cs" />
     <Compile Include="Design\DelegateBrushMapper.cs" />

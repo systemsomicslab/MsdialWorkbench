@@ -118,14 +118,14 @@ namespace CompMs.Common.Lipidomics
         private SpectrumPeak[] GetLDGTASpectrum(ILipid lipid, AdductIon adduct) {
             var spectrum = new List<SpectrumPeak>
             {
-                new SpectrumPeak((float)(adduct.ConvertToMz(lipid.Mass)), 999f, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                new SpectrumPeak((float)(adduct.ConvertToMz(lipid.Mass - CHO2)), 100f, "Precursor - CO2") { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak((float)(adduct.ConvertToMz(lipid.Mass - H2O)), 50f, "Precursor - H2O") { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak((float)(adduct.ConvertToMz(C8H16NO3)), 100f, "C8H16NO3") { SpectrumComment = SpectrumComment.metaboliteclass}, //175[M+H]+
-                new SpectrumPeak((float)(adduct.ConvertToMz(C7H13NO2)), 100f, "Header") { SpectrumComment = SpectrumComment.metaboliteclass}, //144[M+H]+
-                new SpectrumPeak((float)(adduct.ConvertToMz(C7H13NO2 + H2O)), 200f, "Header + H2O") { SpectrumComment = SpectrumComment.metaboliteclass}, //162[M+H]+
+                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - CHO2), 100d, "Precursor - CO2") { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - H2O), 50d, "Precursor - H2O") { SpectrumComment = SpectrumComment.metaboliteclass },
+                new SpectrumPeak(adduct.ConvertToMz(C8H16NO3), 100d, "C8H16NO3") { SpectrumComment = SpectrumComment.metaboliteclass}, //175[M+H]+
+                new SpectrumPeak(adduct.ConvertToMz(C7H13NO2), 100d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass}, //144[M+H]+
+                new SpectrumPeak(adduct.ConvertToMz(C7H13NO2 + H2O), 200d, "Header + H2O") { SpectrumComment = SpectrumComment.metaboliteclass}, //162[M+H]+
                 //new SpectrumPeak(adduct.ConvertToMz(Gly_C), 150d, "Gly-C")  { SpectrumComment = SpectrumComment.metaboliteclass },
-                new SpectrumPeak((float)(adduct.ConvertToMz(Gly_O)), 150f, "Gly-O") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true  },
+                new SpectrumPeak(adduct.ConvertToMz(Gly_O), 150d, "Gly-O") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true  },
             };
             return spectrum.ToArray();
         }
@@ -139,8 +139,8 @@ namespace CompMs.Common.Lipidomics
             var chainMass = acylChain.Mass - MassDiffDictionary.HydrogenMass;
             return new[]
             {
-                new SpectrumPeak((float)adduct.ConvertToMz(lipidMass - chainMass), 100f, $"-{acylChain}") { SpectrumComment = SpectrumComment.acylchain, IsAbsolutelyRequiredFragmentForAnnotation = true  },
-                new SpectrumPeak((float)adduct.ConvertToMz(lipidMass - chainMass - H2O ), 100f, $"-{acylChain}-O") { SpectrumComment = SpectrumComment.acylchain },
+                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass), 100d, $"-{acylChain}") { SpectrumComment = SpectrumComment.acylchain, IsAbsolutelyRequiredFragmentForAnnotation = true  },
+                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass - H2O ), 100d, $"-{acylChain}-O") { SpectrumComment = SpectrumComment.acylchain },
             };
         }
 
@@ -149,7 +149,7 @@ namespace CompMs.Common.Lipidomics
             var chainMass = acylChain.Mass;
             return new[]
             {
-                new SpectrumPeak((float)(adduct.ConvertToMz(lipidMass - chainMass -H2O + MassDiffDictionary.HydrogenMass - CH2)), 100f, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
+                new SpectrumPeak(adduct.ConvertToMz(lipidMass - chainMass -H2O + MassDiffDictionary.HydrogenMass - CH2), 100d, "-CH2(Sn1)") { SpectrumComment = SpectrumComment.snposition },
             };
         }
 

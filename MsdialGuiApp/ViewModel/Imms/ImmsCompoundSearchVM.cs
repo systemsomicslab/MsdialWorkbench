@@ -4,12 +4,13 @@ using Reactive.Bindings.Extensions;
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Imms
 {
-    class ImmsCompoundSearchVM : CompoundSearchVM
+    internal sealed class ImmsCompoundSearchVM : CompoundSearchVM
     {
-        public ImmsCompoundSearchVM(CompoundSearchModel model) : base(model) {
+        public ImmsCompoundSearchVM(CompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
             ParameterHasErrors = ParameterVM.Select(parameter =>
                 parameter is null
                     ? Observable.Return(true)

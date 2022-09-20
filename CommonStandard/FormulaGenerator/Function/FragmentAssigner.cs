@@ -225,7 +225,7 @@ namespace CompMs.Common.FormulaGenerator.Function {
 
             var highestMz = monoIsotopicPeaklist[0].Mass;
             if (Math.Abs(highestMz - precurosrMz) > masstol)
-                monoIsotopicPeaklist.Insert(0, new SpectrumPeak() { Mass = (float)precurosrMz, Intensity = 1, Comment = "Insearted precursor" });
+                monoIsotopicPeaklist.Insert(0, new SpectrumPeak() { Mass = precurosrMz, Intensity = 1, Comment = "Insearted precursor" });
 
             for (int i = 0; i < monoIsotopicPeaklist.Count; i++)
             {

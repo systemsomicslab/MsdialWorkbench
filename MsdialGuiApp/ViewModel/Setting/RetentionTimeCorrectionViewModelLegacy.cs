@@ -333,6 +333,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
                     f.RetentionTimeCorrectionBean = new RetentionTimeCorrectionBean();
                 }
             }
+            Parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection = CheckBox_RunWithRtCorrection; 
             this.RtWin.DialogResult = true;
             this.RtWin.Close();
         }

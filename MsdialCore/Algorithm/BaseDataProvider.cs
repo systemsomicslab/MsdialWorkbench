@@ -37,12 +37,12 @@ namespace CompMs.MsdialCore.Algorithm
             });
         }
 
-        protected static Task<RawMeasurement> LoadMeasurementAsync(AnalysisFileBean file, bool isProfile, bool isGuiProcess, int retry, CancellationToken token) {
-            return Task.Run(() => LoadMeasurement(file, isProfile, isGuiProcess, retry), token);
+        protected static Task<RawMeasurement> LoadMeasurementAsync(AnalysisFileBean file, bool isProfile, bool isImagingMs, bool isGuiProcess, int retry, CancellationToken token) {
+            return Task.Run(() => LoadMeasurement(file, isProfile, isImagingMs, isGuiProcess, retry), token);
         }
 
-        protected static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isProfile, bool isGuiProcess, int retry) {
-            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isProfile, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
+        protected static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isProfile, bool isImagingMs, bool isGuiProcess, int retry) {
+            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, isProfile, isImagingMs, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
                 for (var i = 0; i < retry; i++) {
                     var rawObj = access.GetMeasurement();
                     if (rawObj != null) {

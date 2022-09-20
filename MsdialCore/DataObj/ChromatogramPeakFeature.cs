@@ -113,7 +113,7 @@ namespace CompMs.MsdialCore.DataObj
         [Key(24)]
         public List<SpectrumPeak> Spectrum { get; set; } = new List<SpectrumPeak>();
         public void AddPeak(double mass, double intensity, string comment = null) {
-            Spectrum.Add(new SpectrumPeak((float)mass, (float)intensity, comment));
+            Spectrum.Add(new SpectrumPeak(mass, intensity, comment));
         }
 
         // set for IMoleculeProperty (for representative)

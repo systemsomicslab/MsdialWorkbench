@@ -147,6 +147,9 @@
             -->
         </ResourceDictionary>
     </UserControl.Resources>
+    <UserControl.InputBindings>
+        <KeyBinding Gesture="Ctrl+D" Command="{Binding SelectedViewModel.Value.SetUnknownCommand, Mode=OneWay}"/>
+    </UserControl.InputBindings>
 
     <Grid Name="Grid_MainWindow">
 

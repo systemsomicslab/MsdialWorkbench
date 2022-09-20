@@ -171,6 +171,9 @@
       <DependentUpon>DoubleClickListBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\DPControl.cs" />
+    <Compile Include="UI\ImageZoomTest.xaml.cs">
+      <DependentUpon>ImageZoomTest.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\RangeSlider.xaml.cs">
       <DependentUpon>RangeSlider.xaml</DependentUpon>
     </Compile>
@@ -306,6 +309,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\DoubleClickListBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\ImageZoomTest.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

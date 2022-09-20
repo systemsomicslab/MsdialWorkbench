@@ -48,7 +48,12 @@ namespace CompMs.App.Msdial.Model.Setting
                     factoryImpl = new LcmsMethodSettingModelFactory(lcmsStorage, projectBaseParameter, process, messageBroker);
                     break;
                 case IMsdialDataStorage<MsdialImmsParameter> immsStorage:
-                    factoryImpl = new ImmsMethodSettingModelFactory(immsStorage, projectBaseParameter, process, messageBroker);
+                    if (immsStorage.Parameter.MachineCategory == MachineCategory.IIMMS) {
+                        factoryImpl = new ImagingImmsMethodSettingModelFactory(immsStorage, projectBaseParameter, process, messageBroker);
+                    }
+                    else {
+                        factoryImpl = new ImmsMethodSettingModelFactory(immsStorage, projectBaseParameter, process, messageBroker);
+                    }
                     break;
                 case IMsdialDataStorage<MsdialDimsParameter> dimsStorage:
                     factoryImpl = new DimsMethodSettingModelFactory(dimsStorage, projectBaseParameter, process, messageBroker);
@@ -374,6 +379,79 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public IMethodModel BuildMethod() {
             return new LcimmsMethodModel(storage, _projectBaseParameter);
+        }
+    }
+
+    sealed class ImagingImmsMethodSettingModelFactory : IMethodSettingModelFactory
+    {
+        private readonly IMsdialDataStorage<MsdialImmsParameter> storage;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
+        private readonly ProcessOption process;
+        private readonly IMessageBroker _broker;
+
+        public ImagingImmsMethodSettingModelFactory(IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker broker) {
+            this.storage = storage;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
+            this.process = process;
+            _broker = broker;
+        }
+
+        public AdductIonSettingModel CreateAdductIonSetting() {
+            return new AdductIonSettingModel(storage.Parameter, process);
+        }
+
+        public AlignmentParameterSettingModel CreateAlignmentParameterSetting() {
+            return new AlignmentParameterSettingModel(storage.Parameter, DateTime.Now, storage.AnalysisFiles, storage.AlignmentFiles, process);
+        }
+
+        public DataCollectionSettingModel CreateDataCollectionSetting() {
+            return new DataCollectionSettingModel(storage.Parameter, storage.AnalysisFiles, process);
+        }
+
+        public DeconvolutionSettingModel CreateDeconvolutionSetting() {
+            return new DeconvolutionSettingModel(storage.Parameter.ChromDecBaseParam, process);
+        }
+
+        public IdentifySettingModel CreateIdentifySetting() {
+            var parameter = storage.Parameter;
+            var model = new IdentifySettingModel(storage.Parameter, new ImmsAnnotatorSettingModelFactory(), process, storage.DataBases);
+
+            if (parameter.TargetOmics == TargetOmics.Lipidomics) {
+                if (model.DataBaseModels.Count == 0) {
+                    if (parameter.CollistionType == CollisionType.EIEIO
+                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EadLipid)) {
+                        var databaseModel = model.AddDataBase();
+                        databaseModel.DBSource = DataBaseSource.EadLipid;
+                    }
+
+                    string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
+                    var lbmFile = lbmFiles.FirstOrDefault();
+                    if (!(lbmFile is null)
+                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.Msp)) {
+                        var databaseModel = model.AddDataBase();
+                        databaseModel.DataBasePath = lbmFile;
+                    }
+                }
+            }
+            return model;
+        }
+
+        public IsotopeTrackSettingModel CreateIsotopeTrackSetting() {
+            return new IsotopeTrackSettingModel(storage.Parameter, storage.AnalysisFiles, process);
+        }
+
+        public MobilitySettingModel CreateMobilitySetting() {
+            return new MobilitySettingModel(storage.Parameter, storage.AnalysisFiles, process);
+        }
+
+        public PeakDetectionSettingModel CreatePeakDetectionSetting() {
+            return new PeakDetectionSettingModel(storage.Parameter.PeakPickBaseParam, process);
+        }
+
+        public IMethodModel BuildMethod() {
+            var method = new ImagingImmsMethodModel(storage);
+            return method;
         }
     }
 }

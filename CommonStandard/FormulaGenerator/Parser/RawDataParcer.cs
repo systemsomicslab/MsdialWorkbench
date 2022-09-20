@@ -414,7 +414,7 @@ namespace CompMs.Common.FormulaGenerator.Parser {
                             {
                                 if (numChar != string.Empty)
                                 {
-                                    peakBean.Mass = float.Parse(numChar);
+                                    peakBean.Mass = double.Parse(numChar);
                                     mzFill = true;
                                     numChar = string.Empty;
                                 }
@@ -423,7 +423,7 @@ namespace CompMs.Common.FormulaGenerator.Parser {
                             {
                                 if (numChar != string.Empty)
                                 {
-                                    peakBean.Intensity = float.Parse(numChar);
+                                    peakBean.Intensity = double.Parse(numChar);
                                     mzFill = false;
                                     numChar = string.Empty;
                                     if (peakBean.Comment == null) peakBean.Comment = peakBean.Mass.ToString();
@@ -453,7 +453,7 @@ namespace CompMs.Common.FormulaGenerator.Parser {
                         {
                             if (numChar != string.Empty)
                             {
-                                peakBean.Mass = float.Parse(numChar);
+                                peakBean.Mass = double.Parse(numChar);
                                 mzFill = true;
                                 numChar = string.Empty;
                             }
@@ -462,7 +462,7 @@ namespace CompMs.Common.FormulaGenerator.Parser {
                         {
                             if (numChar != string.Empty)
                             {
-                                peakBean.Intensity = float.Parse(numChar);
+                                peakBean.Intensity = double.Parse(numChar);
                                 mzFill = false;
                                 numChar = string.Empty;
                                 if (peakBean.Comment == null) peakBean.Comment = peakBean.Mass.ToString();
@@ -506,7 +506,7 @@ namespace CompMs.Common.FormulaGenerator.Parser {
                             {
                                 if (numChar != string.Empty)
                                 {
-                                    peakBean.Mass = float.Parse(numChar);
+                                    peakBean.Mass = double.Parse(numChar);
                                     mzFill = true;
                                     numChar = string.Empty;
                                 }
@@ -515,7 +515,7 @@ namespace CompMs.Common.FormulaGenerator.Parser {
                             {
                                 if (numChar != string.Empty)
                                 {
-                                    peakBean.Intensity = float.Parse(numChar);
+                                    peakBean.Intensity = double.Parse(numChar);
                                     mzFill = false;
                                     numChar = string.Empty;
                                     if (peakBean.Comment == null) {
@@ -550,7 +550,7 @@ namespace CompMs.Common.FormulaGenerator.Parser {
                         {
                             if (numChar != string.Empty)
                             {
-                                peakBean.Mass = float.Parse(numChar);
+                                peakBean.Mass = double.Parse(numChar);
                                 mzFill = true;
                                 numChar = string.Empty;
                             }
@@ -558,7 +558,7 @@ namespace CompMs.Common.FormulaGenerator.Parser {
                         else if (mzFill == true)
                         {
                             if (numChar != string.Empty) {
-                                peakBean.Intensity = float.Parse(numChar);
+                                peakBean.Intensity = double.Parse(numChar);
                                 mzFill = false;
                                 numChar = string.Empty;
                                 if (peakBean.Comment == null) {

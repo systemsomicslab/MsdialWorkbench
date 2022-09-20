@@ -41,9 +41,9 @@ namespace CompMs.Common.Components
     public class SpectrumPeak : ISpectrumPeak
     {
         [Key(0)]
-        public float Mass { get; set; }
+        public double Mass { get; set; }
         [Key(1)]
-        public float Intensity { get; set; }
+        public double Intensity { get; set; }
         [Key(2)]
         public string Comment { get; set; }
         [IgnoreMember]
@@ -68,7 +68,7 @@ namespace CompMs.Common.Components
         public bool IsAbsolutelyRequiredFragmentForAnnotation { get; set; }
 
         public SpectrumPeak() { }
-        public SpectrumPeak(float mass, float intensity, 
+        public SpectrumPeak(double mass, double intensity, 
             string comment = null, SpectrumComment spectrumcomment = SpectrumComment.none, bool isMust = false) {
             Mass = mass;
             Intensity = intensity;
@@ -79,17 +79,6 @@ namespace CompMs.Common.Components
         
         public SpectrumPeak Clone() {
             return (SpectrumPeak)MemberwiseClone();
-        }
-
-        // ISpectrumPeak interface
-        double ISpectrumPeak.Mass {
-            get => (double)Mass;
-            set => Mass = (float)value;
-        }
-
-        double ISpectrumPeak.Intensity {
-            get => (double)Intensity;
-            set => Intensity = (float)value;
         }
     }
 }

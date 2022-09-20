@@ -69,6 +69,7 @@ namespace CompMs.Common.DataObj {
         public List<RawSpectrum> AccumulatedSpectrumList { get; set; }
         public List<double> CollisionEnergyTargets { get; set; }
         public MaldiFrameLaserInfo MaldiFrameLaserInfo { get; set; }
+        public List<MaldiFrameInfo> MaldiFrames { get; set; }
 
         public RawMeasurement()
         {
@@ -80,6 +81,8 @@ namespace CompMs.Common.DataObj {
             SpectrumList = new List<RawSpectrum>();
             AccumulatedSpectrumList = new List<RawSpectrum>();
             MaldiFrameLaserInfo = new MaldiFrameLaserInfo();
+
+            MaldiFrames = new List<MaldiFrameInfo>();
         }
     }
 
@@ -278,7 +281,34 @@ namespace CompMs.Common.DataObj {
 
     public struct RawPeakElement
     {
-        public float Mz;
-        public float Intensity;
+        public double Mz;
+        public double Intensity;
+    }
+
+    public struct Raw2DElement {
+        public Raw2DElement(double mz, double drift) {
+            Mz = mz;
+            Drift = drift;
+        }
+
+        public Raw2DElement(ChromXs chrom) {
+            Mz = chrom.Mz.Value;
+            Drift = chrom.Drift.Value;
+        }
+
+        public double Mz;
+        public double Drift;
+    }
+
+    public sealed class RawSpectraOnPixels {
+        // array lengths of xyframes and pixelpeakfeatureslist should be equal.
+        public List<MaldiFrameInfo> XYFrames;
+        public List<RawPixelFeatures> PixelPeakFeaturesList;
+    }
+
+    public sealed class RawPixelFeatures {
+        public double Mz;
+        public double Drift;
+        public double[] IntensityArray;
     }
 }

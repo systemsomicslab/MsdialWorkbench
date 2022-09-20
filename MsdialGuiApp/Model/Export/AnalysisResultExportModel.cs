@@ -124,7 +124,7 @@ namespace CompMs.App.Msdial.Model.Export
 
         private int isotopeExportMax = 2;
 
-        private static void Export(
+        public static void Export(
             AnalysisFileBean file,
             IDataProvider provider,
             IAnalysisExporter exporter,

@@ -81,7 +81,7 @@ namespace CompMs.MsdialCore.Export
             return new Dictionary<string, string>
             {
                 { "Alignment ID" ,spot.MasterAlignmentID.ToString() },
-                { "Metabolite name", spot.Name },
+                { "Metabolite name", UnknownIfEmpty(spot.Name) },
                 { "Adduct type", spot?.AdductType.AdductIonName ?? "null" },
                 { "Post curation result", GetPostCurationResult(spot) },
                 { "Fill %", spot.FillParcentage.ToString("F2") },
@@ -130,6 +130,8 @@ namespace CompMs.MsdialCore.Export
         protected static string GetPostCurationResult(AlignmentSpotProperty spot) {
             return "null"; // write something
         }
+
+        protected static string UnknownIfEmpty(string value) => string.IsNullOrEmpty(value) ? "Unknown" : value;
 
         private readonly static double eps = 1e-10;
         protected static string ValueOrNull(string value) => string.IsNullOrEmpty(value) ? "null" : value;
