@@ -117,7 +117,7 @@
             </Grid.RowDefinitions>
             <TabControl ItemsSource="{Binding SelectedImageViewModel.PeakDetailViewModels}"
                         Grid.Row="0">
-                <TabControl.ItemTemplate>
+                <TabControl.ContentTemplate>
                     <DataTemplate>
                         <DataTemplate.Resources>
                             <DataTemplate DataType="{x:Type infovm:PeakInformationViewModel}">
@@ -129,20 +129,20 @@
                         </DataTemplate.Resources>
                         <ContentPresenter Content="{Binding}"/>
                     </DataTemplate>
-                </TabControl.ItemTemplate>
-                <TabControl.ContentTemplate>
+                </TabControl.ContentTemplate>
+                <TabControl.ItemTemplate>
                     <DataTemplate>
                         <DataTemplate.Resources>
                             <DataTemplate DataType="{x:Type infovm:PeakInformationViewModel}">
-                                <Run>Peak information</Run>
+                                <TextBlock>Peak information</TextBlock>
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type infovm:CompoundDetailViewModel}">
-                                <Run>Compound information</Run>
+                                <TextBlock>Compound information</TextBlock>
                             </DataTemplate>
                         </DataTemplate.Resources>
                         <ContentPresenter Content="{Binding}"/>
                     </DataTemplate>
-                </TabControl.ContentTemplate>
+                </TabControl.ItemTemplate>
             </TabControl>
             <TabControl ItemsSource="{Binding SelectedImageViewModel.Ms2ViewModels}"
                         Grid.Row="1">
@@ -150,10 +150,10 @@
                     <DataTemplate>
                         <DataTemplate.Resources>
                             <DataTemplate DataType="{x:Type chartvm:RawDecSpectrumsViewModel}">
-                                <Run>Exp. vs. Ref.</Run>
+                                <TextBlock>Exp. vs. Ref.</TextBlock>
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type chartvm:RawPurifiedSpectrumsViewModel}">
-                                <Run>Raw vs. Purified</Run>
+                                <TextBlock>Raw vs. Purified</TextBlock>
                             </DataTemplate>
                         </DataTemplate.Resources>
                         <ContentPresenter Content="{Binding}"/>

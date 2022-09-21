@@ -98,12 +98,12 @@ namespace CompMs.Graphics.Behavior
             var position = e.GetPosition(fe);
             if (e.Delta > 0) {
                 var matrix = GetTransformMatrix(fe);
-                matrix.ScaleAt(1/1.1, 1/1.1, position.X, position.Y);
+                matrix.ScaleAt(1.1d, 1.1d, position.X, position.Y);
                 fe.RenderTransform = new MatrixTransform(matrix);
             }
             else if (e.Delta < 0) {
                 var matrix = GetTransformMatrix(fe);
-                matrix.ScaleAt(1.1d, 1.1d, position.X, position.Y);
+                matrix.ScaleAt(1/1.1, 1/1.1, position.X, position.Y);
                 fe.RenderTransform = new MatrixTransform(matrix);
             }
         }
