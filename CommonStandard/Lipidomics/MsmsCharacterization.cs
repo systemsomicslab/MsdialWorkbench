@@ -7380,10 +7380,16 @@ AdductIon adduct)
                     var threshold3 = 1;
                     var diagnosticMz3 = diagnosticMz2 - 162.052833;
 
-                    var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
-                    var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
-                    var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
-                    if (isClassIon1Found != true || isClassIon2Found != true || isClassIon3Found != true) return null;
+                    //var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                    //var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                    //var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
+                    //if (isClassIon1Found != true || isClassIon2Found != true || isClassIon3Found != true) return null;
+
+                    var classIonFound = new List<bool>();
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3));
+                    if (classIonFound.Count(f => f == true) < 2) return null;
 
                     // seek [M-C18H30O15-H]- // reject Hex3Cer
                     var threshold5 = 1;
@@ -7425,11 +7431,16 @@ AdductIon adduct)
                     var threshold3 = 1.0;
                     var diagnosticMz3 = diagnosticMz2 - 162.052833;
 
-                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
-                    var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
+                    //var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    //var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                    //var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
+                    //if (!isClassIonFound || !isClassIon2Found || !isClassIon3Found) return null;
 
-                    if (!isClassIonFound || !isClassIon2Found || !isClassIon3Found) return null;
+                    var classIonFound = new List<bool>();
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3));
+                    if (classIonFound.Count(f => f == true) < 2) return null;
 
                     // seek [M-C18H30O15-H]- // reject Hex3Cer
                     var threshold5 = 1;
@@ -7505,12 +7516,18 @@ AdductIon adduct)
                     var threshold4 = 1;
                     var diagnosticMz4 = diagnosticMz3 - 162.052833;
 
-                    var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
-                    var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
-                    var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
-                    var isClassIon4Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz4, threshold4);
+                    //var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                    //var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                    //var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
+                    //var isClassIon4Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz4, threshold4);
+                    //if (isClassIon1Found != true || isClassIon2Found != true || isClassIon3Found != true || isClassIon4Found != true) return null;
 
-                    if (isClassIon1Found != true || isClassIon2Found != true || isClassIon3Found != true || isClassIon4Found != true) return null;
+                    var classIonFound = new List<bool>(); // 20220921 fix
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz4, threshold4));
+                    if (classIonFound.Count(f => f == true) < 3) return null;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
@@ -7549,12 +7566,19 @@ AdductIon adduct)
                     var threshold4 = 1.0;
                     var diagnosticMz4 = diagnosticMz3 - 162.052833;
 
-                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
-                    var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
-                    var isClassIon4Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz4, threshold4);
+                    //var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    //var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                    //var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
+                    //var isClassIon4Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz4, threshold4);
+                    //if (!isClassIonFound || !isClassIon2Found || !isClassIon3Found || !isClassIon4Found) return null;
 
-                    if (!isClassIonFound || !isClassIon2Found || !isClassIon3Found || !isClassIon4Found) return null;
+                    var classIonFound = new List<bool>(); // 20220921 fix
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz4, threshold4));
+                    if (classIonFound.Count(f => f == true) < 3) return null;
+
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
