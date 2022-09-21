@@ -406,6 +406,225 @@ namespace CompMs.MspGenerator
             }
         }
 
+        public static void mergeRTandCCSintoMspVs3(string mspFilePath, List<string[]> calculatedFilePaths, string outputFolderPath)
+        {
+
+            Console.WriteLine("Loading the msp file.");
+
+            var mspDB = MspFileParser.MspFileReader(mspFilePath);
+            var mspDB2 = MspFileParcer.MspFileReader(mspFilePath);
+            var inchikeyToSmiles = new Dictionary<string, string>();
+            foreach (var query in mspDB)
+            {
+                if (!inchikeyToSmiles.ContainsKey(query.InChIKey))
+                {
+                    inchikeyToSmiles[query.InChIKey] = query.SMILES;
+                }
+            }
+
+            foreach (var calculatedFile in calculatedFilePaths)
+            {
+                var calculatedFilePath= calculatedFile[0];
+                var outputNameOption = calculatedFile[1];
+
+                var outputFileName = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_" + outputNameOption + "_converted.lbm2";
+                var outputMspFileName = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_" + outputNameOption + "_insertRTCCS.msp";
+                var outputFileNameDev = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_" + outputNameOption + "_converted_dev.lbm2";
+                var inchikeyToPredictedRt = new Dictionary<string, float>();
+                using (var sr = new StreamReader(calculatedFilePath, true))
+                {
+                    var line = sr.ReadLine();
+                    var lineArray = line.Split('\t');
+                    while (sr.Peek() > -1)
+                    {
+                        line = sr.ReadLine();
+                        if (line == string.Empty) continue;
+                        lineArray = line.Split('\t');
+                        var inchikey = lineArray[0];
+                        var predictedRtString = lineArray[2];
+                        var predictedRt = -1.0F;
+                        if (float.TryParse(predictedRtString, out predictedRt) && !inchikeyToPredictedRt.ContainsKey(inchikey))
+                        {
+                            inchikeyToPredictedRt[inchikey] = predictedRt;
+                        }
+                    }
+                }
+
+                var inchikeyToPredictedCcs = new Dictionary<string, Dictionary<string, string>>();
+
+                using (var sr = new StreamReader(calculatedFilePath, true))
+                {
+                    var header = sr.ReadLine();
+                    var headerArray = header.Split('\t');
+                    var adduct = new List<string>();
+                    foreach (string str in headerArray)
+                    {
+                        adduct.Add(str);
+                    }
+
+                    while (sr.Peek() > -1)
+                    {
+                        var adductAndCcs = new Dictionary<string, string>();
+                        var line = sr.ReadLine();
+                        if (line == string.Empty) continue;
+                        var lineArray = line.Split('\t');
+                        var inchikey = lineArray[0];
+                        for (int i = 2; i < headerArray.Count(); i++)
+                        {
+                            if (lineArray.Length == i)
+                            {
+                                Array.Resize(ref lineArray, lineArray.Length + 1);
+                                lineArray[i] = "";
+                            }
+
+                            adductAndCcs.Add(adduct[i], lineArray[i]);
+                        }
+
+                        if (!inchikeyToPredictedCcs.ContainsKey(lineArray[0]))
+                        {
+                            inchikeyToPredictedCcs.Add(inchikey, adductAndCcs);
+                        }
+                    }
+                }
+
+                var errCount = 0;
+                var errList = new List<string>();
+                foreach (var query in mspDB)
+                {
+                    if (query.InChIKey == "" || query.InChIKey == null)
+                    {
+                        continue;
+                    }
+
+                    if (inchikeyToPredictedRt.ContainsKey(query.InChIKey))
+                    {
+                        if (inchikeyToPredictedRt[query.InChIKey] == 0)
+                        {
+                            continue;
+                        }
+                        else if (query.ChromXs.RT.Value == -1)
+                        {
+                            query.ChromXs = new ChromXs(inchikeyToPredictedRt[query.InChIKey], ChromXType.RT, ChromXUnit.Min);
+                        }
+                    }
+                    else
+                    {
+                        errCount = errCount + 1;
+                        errList.Add(query.InChIKey + "\t" + query.SMILES);
+                        //Console.WriteLine("Error at {0}", query.InChIKey);
+                    }
+
+                    if (inchikeyToPredictedCcs.ContainsKey(query.InChIKey))
+                    {
+                        var CCSs = inchikeyToPredictedCcs[query.InChIKey];
+                        if (CCSs.ContainsKey(query.AdductType.AdductIonName))
+                        {
+                            var adductCCS = CCSs[query.AdductType.AdductIonName];
+                            if (adductCCS == "" || adductCCS == "0") { continue; }
+                            query.CollisionCrossSection = double.Parse(adductCCS);
+                        }
+                    }
+                    else
+                    {
+                        errCount = errCount + 1;
+                        errList.Add(query.InChIKey + "\t" + query.SMILES);
+                        //Console.WriteLine("Error at {0}", query.InChIKey);
+                    }
+                }
+
+                if (errCount > 0)
+                {
+                    var tempCsvFilePath2 = outputFolderPath + "\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + outputNameOption + "_notfound.txt";
+                    errList = errList.Distinct().ToList();
+
+                    using (var sw = new StreamWriter(tempCsvFilePath2, false, Encoding.ASCII))
+                    {
+                        sw.WriteLine("InChIKey\tSMILES");
+                        foreach (var item in errList)
+                        {
+                            sw.WriteLine(item);
+                        }
+                    }
+
+                    Console.WriteLine("empty parameters found...see txt file");
+                    Console.ReadKey();
+                }
+                else
+                {
+                    var tempCsvFilePath = outputFolderPath + "\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".csv";
+                    var counter = 0;
+                    using (var sw = new StreamWriter(tempCsvFilePath, false, Encoding.ASCII))
+                    {
+                        sw.WriteLine("Name,InChIKey,SMILES");
+                        foreach (var pair in inchikeyToSmiles)
+                        {
+                            sw.WriteLine("ID_" + counter + "," + pair.Key + "," + pair.Value);
+                            counter++;
+                        }
+                    }
+
+                    //var mspDB2 = MspFileParcer.MspFileReader(mspFilePath);
+                    foreach (var query in mspDB2)
+                    {
+                        if (query.InchiKey == "" || query.InchiKey == null)
+                        {
+                            continue;
+                        }
+
+                        if (inchikeyToPredictedRt.ContainsKey(query.InchiKey))
+                        {
+                            if (inchikeyToPredictedRt[query.InchiKey] == 0)
+                            {
+                                continue;
+                            }
+                            else if (query.RetentionTime == -1)
+                            {
+                                query.RetentionTime = inchikeyToPredictedRt[query.InchiKey];
+                            }
+                        }
+                        else
+                        {
+                            errCount = errCount + 1;
+                            errList.Add(query.InchiKey + "\t" + query.Smiles);
+                            Console.WriteLine("Error at {0}", query.InchiKey);
+                        }
+
+                        if (inchikeyToPredictedCcs.ContainsKey(query.InchiKey))
+                        {
+                            var CCSs = inchikeyToPredictedCcs[query.InchiKey];
+                            if (CCSs.ContainsKey(query.AdductIonBean.AdductIonName))
+                            {
+                                var adductCCS = CCSs[query.AdductIonBean.AdductIonName];
+                                if (adductCCS == "" || adductCCS == "0") { continue; }
+                                query.CollisionCrossSection = float.Parse(adductCCS);
+                            }
+                        }
+                        else
+                        {
+                            errCount = errCount + 1;
+                            errList.Add(query.InchiKey + "\t" + query.Smiles);
+                            Console.WriteLine("Error at {0}", query.InchiKey);
+                        }
+                    }
+
+                    Console.WriteLine("Exporting...");
+
+                    using (var sw = new StreamWriter(outputMspFileName, false, Encoding.ASCII))
+                    {
+                        foreach (var storage in mspDB2)
+                        {
+                            writeMspFields(storage, sw);
+                        }
+                    }
+
+                    MoleculeMsRefMethods.SaveMspToFile(mspDB, outputFileNameDev);
+                    MspMethods.SaveMspToFile(mspDB2, outputFileName);
+                }
+
+            }
+        }
+
+
         public static void mergeRTandCCSintoMspVs2(string mspFilePath, string calculatedFilePath, string outputFolderPath, string outputNameOption)
         {
             var outputFileName = outputFolderPath + "\\" + Path.GetFileNameWithoutExtension(mspFilePath) + "_" + outputNameOption + "_converted.lbm2";
