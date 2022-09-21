@@ -440,7 +440,7 @@ namespace Rfx.Riken.OsakaUniv {
             if (id == 0) {
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PC 15:0_18:1(d7)",
+                    StandardName = "PC 33:1(d7)|PC 15:0_18:1(d7)",
                     Concentration = 33.19585,
                     DilutionRate = 0.015625,
                     MolecularWeight = 753.106,
@@ -449,7 +449,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PE 15:0_18:1(d7)",
+                    StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                     Concentration = 35.1605,
                     DilutionRate = 0.015625,
                     MolecularWeight = 711.025,
@@ -458,7 +458,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PC 15:0_18:1(d7)",
+                    StandardName = "PC 33:1(d7)|PC 15:0_18:1(d7)",
                     Concentration = 33.19585,
                     DilutionRate = 0.015625,
                     MolecularWeight = 753.106,
@@ -467,7 +467,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PE 15:0_18:1(d7)",
+                    StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                     Concentration = 35.1605,
                     DilutionRate = 0.015625,
                     MolecularWeight = 711.025,
@@ -476,7 +476,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PS 15:0_18:1(d7)",
+                    StandardName = "PS 33:1(d7)|PS 15:0_18:1(d7)",
                     Concentration = 32.1742,
                     DilutionRate = 0.015625,
                     MolecularWeight = 777.02,
@@ -485,7 +485,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PG 15:0_18:1(d7)",
+                    StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                     Concentration = 32.7217,
                     DilutionRate = 0.015625,
                     MolecularWeight = 764.02,
@@ -494,7 +494,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PI 15:0_18:1(d7)",
+                    StandardName = "PI 33:1(d7)|PI 15:0_18:1(d7)",
                     Concentration = 29.5114,
                     DilutionRate = 0.015625,
                     MolecularWeight = 847.13,
@@ -557,7 +557,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "DG 15:0_18:1(d7)",
+                    StandardName = "DG 33:1(d7)|DG 15:0_18:1(d7)",
                     Concentration = 42.5186,
                     DilutionRate = 0.015625,
                     MolecularWeight = 587.978,
@@ -566,7 +566,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "TG 15:0_18:1(d7)_15:0",
+                    StandardName = "TG 48:1(d7)|TG 15:0_18:1(d7)_15:0",
                     Concentration = 30.7743,
                     DilutionRate = 0.015625,
                     MolecularWeight = 812.366,
@@ -575,7 +575,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "SM 18:1;2O/18:1(d9)",
+                    StandardName = "SM 36:1;2O(d9)|SM 18:1;2O/18:1(d9)",
                     Concentration = 33.8691,
                     DilutionRate = 0.015625,
                     MolecularWeight = 738.136,
@@ -584,7 +584,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
+                    StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                     Concentration = 47.087175,
                     DilutionRate = 0.015625,
                     MolecularWeight = 530.93,
@@ -1216,7 +1216,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PC 15:0_18:1(d7)",
+                        StandardName = "PC 33:1(d7)|PC 15:0_18:1(d7)",
                         Concentration = 33.19585,
                         DilutionRate = 0.015625,
                         MolecularWeight = 753.106,
@@ -1225,7 +1225,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PC 15:0_18:1(d7)",
+                        StandardName = "PC 33:1(d7)|PC 15:0_18:1(d7)",
                         Concentration = 33.19585,
                         DilutionRate = 0.015625,
                         MolecularWeight = 753.106,
@@ -1234,7 +1234,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PE 15:0_18:1(d7)",
+                        StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                         Concentration = 35.1605,
                         DilutionRate = 0.015625,
                         MolecularWeight = 711.025,
@@ -1243,7 +1243,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PE 15:0_18:1(d7)",
+                        StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                         Concentration = 35.1605,
                         DilutionRate = 0.015625,
                         MolecularWeight = 711.025,
@@ -1252,7 +1252,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PE 15:0_18:1(d7)",
+                        StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                         Concentration = 35.1605,
                         DilutionRate = 0.015625,
                         MolecularWeight = 711.025,
@@ -1261,7 +1261,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PG 15:0_18:1(d7)",
+                        StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                         Concentration = 32.7217,
                         DilutionRate = 0.015625,
                         MolecularWeight = 764.02,
@@ -1270,7 +1270,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PG 15:0_18:1(d7)",
+                        StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                         Concentration = 32.7217,
                         DilutionRate = 0.015625,
                         MolecularWeight = 764.02,
@@ -1279,7 +1279,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PG 15:0_18:1(d7)",
+                        StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                         Concentration = 32.7217,
                         DilutionRate = 0.015625,
                         MolecularWeight = 764.02,
@@ -1288,7 +1288,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PG 15:0_18:1(d7)",
+                        StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                         Concentration = 32.7217,
                         DilutionRate = 0.015625,
                         MolecularWeight = 764.02,
@@ -1297,7 +1297,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PG 15:0_18:1(d7)",
+                        StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                         Concentration = 32.7217,
                         DilutionRate = 0.015625,
                         MolecularWeight = 764.02,
@@ -1306,7 +1306,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PG 15:0_18:1(d7)",
+                        StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                         Concentration = 32.7217,
                         DilutionRate = 0.015625,
                         MolecularWeight = 764.02,
@@ -1315,7 +1315,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PG 15:0_18:1(d7)",
+                        StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                         Concentration = 32.7217,
                         DilutionRate = 0.015625,
                         MolecularWeight = 764.02,
@@ -1324,7 +1324,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PG 15:0_18:1(d7)",
+                        StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                         Concentration = 32.7217,
                         DilutionRate = 0.015625,
                         MolecularWeight = 764.02,
@@ -1333,7 +1333,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PI 15:0_18:1(d7)",
+                        StandardName = "PI 33:1(d7)|PI 15:0_18:1(d7)",
                         Concentration = 29.5114,
                         DilutionRate = 0.015625,
                         MolecularWeight = 847.13,
@@ -1342,7 +1342,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PI 15:0_18:1(d7)",
+                        StandardName = "PI 33:1(d7)|PI 15:0_18:1(d7)",
                         Concentration = 29.5114,
                         DilutionRate = 0.015625,
                         MolecularWeight = 847.13,
@@ -1351,7 +1351,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PI 15:0_18:1(d7)",
+                        StandardName = "PI 33:1(d7)|PI 15:0_18:1(d7)",
                         Concentration = 29.5114,
                         DilutionRate = 0.015625,
                         MolecularWeight = 847.13,
@@ -1360,7 +1360,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PS 15:0_18:1(d7)",
+                        StandardName = "PS 33:1(d7)|PS 15:0_18:1(d7)",
                         Concentration = 32.1742,
                         DilutionRate = 0.015625,
                         MolecularWeight = 777.02,
@@ -1369,7 +1369,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PS 15:0_18:1(d7)",
+                        StandardName = "PS 33:1(d7)|PS 15:0_18:1(d7)",
                         Concentration = 32.1742,
                         DilutionRate = 0.015625,
                         MolecularWeight = 777.02,
@@ -1378,7 +1378,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PS 15:0_18:1(d7)",
+                        StandardName = "PS 33:1(d7)|PS 15:0_18:1(d7)",
                         Concentration = 32.1742,
                         DilutionRate = 0.015625,
                         MolecularWeight = 777.02,
@@ -1387,7 +1387,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PS 15:0_18:1(d7)",
+                        StandardName = "PS 33:1(d7)|PS 15:0_18:1(d7)",
                         Concentration = 32.1742,
                         DilutionRate = 0.015625,
                         MolecularWeight = 777.02,
@@ -1396,7 +1396,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "SM 18:1;2O/18:1(d9)",
+                        StandardName = "SM 36:1;2O(d9)|SM 18:1;2O/18:1(d9)",
                         Concentration = 33.8691,
                         DilutionRate = 0.015625,
                         MolecularWeight = 738.136,
@@ -1405,7 +1405,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "TG 15:0_18:1(d7)_15:0",
+                        StandardName = "TG 48:1(d7)|TG 15:0_18:1(d7)_15:0",
                         Concentration = 30.7743,
                         DilutionRate = 0.015625,
                         MolecularWeight = 812.366,
@@ -1594,7 +1594,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PE 15:0_18:1(d7)",
+                        StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                         Concentration = 35.1605,
                         DilutionRate = 0.015625,
                         MolecularWeight = 711.025,
@@ -1603,7 +1603,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PE 15:0_18:1(d7)",
+                        StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                         Concentration = 35.1605,
                         DilutionRate = 0.015625,
                         MolecularWeight = 711.025,
@@ -1612,7 +1612,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PI 15:0_18:1(d7)",
+                        StandardName = "PI 33:1(d7)|PI 15:0_18:1(d7)",
                         Concentration = 28.91795,
                         DilutionRate = 0.015625,
                         MolecularWeight = 847.13,
@@ -1621,7 +1621,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "TG 15:0_18:1(d7)_15:0",
+                        StandardName = "TG 48:1(d7)|TG 15:0_18:1(d7)_15:0",
                         Concentration = 30.7743,
                         DilutionRate = 0.015625,
                         MolecularWeight = 812.366,
@@ -1630,7 +1630,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "TG 15:0_18:1(d7)_15:0",
+                        StandardName = "TG 48:1(d7)|TG 15:0_18:1(d7)_15:0",
                         Concentration = 30.7743,
                         DilutionRate = 0.015625,
                         MolecularWeight = 812.366,
@@ -1639,7 +1639,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1648,7 +1648,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1657,7 +1657,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1666,7 +1666,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1675,7 +1675,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1684,7 +1684,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1693,7 +1693,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1702,7 +1702,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1711,7 +1711,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1720,7 +1720,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1729,7 +1729,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1738,7 +1738,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1747,7 +1747,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1756,7 +1756,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1765,7 +1765,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1774,7 +1774,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1783,7 +1783,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1792,7 +1792,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1801,7 +1801,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1810,7 +1810,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1819,7 +1819,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1828,7 +1828,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1837,7 +1837,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1846,7 +1846,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1855,7 +1855,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1864,7 +1864,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1873,7 +1873,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1882,7 +1882,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1891,7 +1891,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1900,7 +1900,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 47.087175,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -1909,7 +1909,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "DG 15:0_18:1(d7)",
+                        StandardName = "DG 33:1(d7)|DG 15:0_18:1(d7)",
                         Concentration = 42.5186,
                         DilutionRate = 0.015625,
                         MolecularWeight = 587.978,
@@ -1921,7 +1921,7 @@ namespace Rfx.Riken.OsakaUniv {
             else if (id == 1) {
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PC 15:0_18:1(d7)",
+                    StandardName = "PC 33:1(d7)|PC 15:0_18:1(d7)",
                     Concentration = 106.224,
                     DilutionRate = 0.015625,
                     MolecularWeight = 753.106,
@@ -1930,7 +1930,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PE 15:0_18:1(d7)",
+                    StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                     Concentration = 3.52,
                     DilutionRate = 0.015625,
                     MolecularWeight = 711.025,
@@ -1939,7 +1939,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PC 15:0_18:1(d7)",
+                    StandardName = "PC 33:1(d7)|PC 15:0_18:1(d7)",
                     Concentration = 106.224,
                     DilutionRate = 0.015625,
                     MolecularWeight = 753.106,
@@ -1948,7 +1948,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PE 15:0_18:1(d7)",
+                    StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                     Concentration = 3.52,
                     DilutionRate = 0.015625,
                     MolecularWeight = 711.025,
@@ -1957,7 +1957,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PS 15:0_18:1(d7)",
+                    StandardName = "PS 33:1(d7)|PS 15:0_18:1(d7)",
                     Concentration = 3.216,
                     DilutionRate = 0.015625,
                     MolecularWeight = 755.034,
@@ -1966,7 +1966,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PG 15:0_18:1(d7)",
+                    StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                     Concentration = 19.632,
                     DilutionRate = 0.015625,
                     MolecularWeight = 742.035,
@@ -1975,7 +1975,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PI 15:0_18:1(d7)",
+                    StandardName = "PI 33:1(d7)|PI 15:0_18:1(d7)",
                     Concentration = 5.904,
                     DilutionRate = 0.015625,
                     MolecularWeight = 830.097,
@@ -1984,7 +1984,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PA 15:0_18:1(d7)",
+                    StandardName = "PA 33:1(d7)|PA 15:0_18:1(d7)",
                     Concentration = 5.072,
                     DilutionRate = 0.015625,
                     MolecularWeight = 667.956,
@@ -2047,7 +2047,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "DG 15:0_18:1(d7)",
+                    StandardName = "DG 33:1(d7)|DG 15:0_18:1(d7)",
                     Concentration = 8.496,
                     DilutionRate = 0.015625,
                     MolecularWeight = 587.978,
@@ -2056,7 +2056,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "TG 15:0_18:1(d7)_15:0",
+                    StandardName = "TG 48:1(d7)|TG 15:0_18:1(d7)_15:0",
                     Concentration = 33.856,
                     DilutionRate = 0.015625,
                     MolecularWeight = 812.366,
@@ -2065,7 +2065,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "SM 18:1;2O/18:1(d9)",
+                    StandardName = "SM 36:1;2O(d9)|SM 18:1;2O/18:1(d9)",
                     Concentration = 20.32,
                     DilutionRate = 0.015625,
                     MolecularWeight = 738.136,
@@ -2084,7 +2084,7 @@ namespace Rfx.Riken.OsakaUniv {
             }
             else if (id == 2) {
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PC 15:0_18:1(d7)",
+                    StandardName = "PC 33:1(d7)|PC 15:0_18:1(d7)",
                     Concentration = 106.224,
                     DilutionRate = 0.015625,
                     MolecularWeight = 753.106,
@@ -2093,7 +2093,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PE 15:0_18:1(d7)",
+                    StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                     Concentration = 3.52,
                     DilutionRate = 0.015625,
                     MolecularWeight = 711.025,
@@ -2102,7 +2102,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PS 15:0_18:1(d7)",
+                    StandardName = "PS 33:1(d7)|PS 15:0_18:1(d7)",
                     Concentration = 5.1456,
                     DilutionRate = 0.015625,
                     MolecularWeight = 755.034,
@@ -2111,7 +2111,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PI 15:0_18:1(d7)",
+                    StandardName = "PI 33:1(d7)|PI 15:0_18:1(d7)",
                     Concentration = 4.7232,
                     DilutionRate = 0.015625,
                     MolecularWeight = 830.097,
@@ -2165,7 +2165,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PC O-18:1_18:1(d7)",
+                    StandardName = "PC O-36:2(d7)|PC O-18:1_18:1(d7)",
                     Concentration = 5.1203,
                     DilutionRate = 0.015625,
                     MolecularWeight = 781.201,
@@ -2174,7 +2174,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "DG 15:0_18:1(d7)",
+                    StandardName = "DG 33:1(d7)|DG 15:0_18:1(d7)",
                     Concentration = 10.1952,
                     DilutionRate = 0.015625,
                     MolecularWeight = 587.978,
@@ -2183,7 +2183,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "TG 15:0_18:1(d7)_15:0",
+                    StandardName = "TG 48:1(d7)|TG 15:0_18:1(d7)_15:0",
                     Concentration = 33.856,
                     DilutionRate = 0.015625,
                     MolecularWeight = 812.366,
@@ -2192,7 +2192,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "SM 18:1;2O/18:1(d9)",
+                    StandardName = "SM 36:1;2O(d9)|SM 18:1;2O/18:1(d9)",
                     Concentration = 20.32,
                     DilutionRate = 0.015625,
                     MolecularWeight = 738.136,
@@ -2212,7 +2212,7 @@ namespace Rfx.Riken.OsakaUniv {
             else if (id == 3) {
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PC 15:0_18:1(d7)",
+                    StandardName = "PC 33:1(d7)|PC 15:0_18:1(d7)",
                     Concentration = 132.7834,
                     DilutionRate = 0.015625,
                     MolecularWeight = 753.106,
@@ -2221,7 +2221,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PE 15:0_18:1(d7)",
+                    StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                     Concentration = 140.642,
                     DilutionRate = 0.015625,
                     MolecularWeight = 711.025,
@@ -2230,7 +2230,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PC 15:0_18:1(d7)",
+                    StandardName = "PC 33:1(d7)|PC 15:0_18:1(d7)",
                     Concentration = 132.7834,
                     DilutionRate = 0.015625,
                     MolecularWeight = 753.106,
@@ -2239,7 +2239,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PE 15:0_18:1(d7)",
+                    StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                     Concentration = 140.642,
                     DilutionRate = 0.015625,
                     MolecularWeight = 711.025,
@@ -2248,7 +2248,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PS 15:0_18:1(d7)",
+                    StandardName = "PS 33:1(d7)|PS 15:0_18:1(d7)",
                     Concentration = 128.6968,
                     DilutionRate = 0.015625,
                     MolecularWeight = 777.02,
@@ -2257,7 +2257,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PG 15:0_18:1(d7)",
+                    StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                     Concentration = 130.8868,
                     DilutionRate = 0.015625,
                     MolecularWeight = 764.02,
@@ -2266,7 +2266,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "PI 15:0_18:1(d7)",
+                    StandardName = "PI 33:1(d7)|PI 15:0_18:1(d7)",
                     Concentration = 118.0456,
                     DilutionRate = 0.015625,
                     MolecularWeight = 847.13,
@@ -2329,7 +2329,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "DG 15:0_18:1(d7)",
+                    StandardName = "DG 33:1(d7)|DG 15:0_18:1(d7)",
                     Concentration = 170.0744,
                     DilutionRate = 0.015625,
                     MolecularWeight = 587.978,
@@ -2338,7 +2338,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "TG 15:0_18:1(d7)_15:0",
+                    StandardName = "TG 48:1(d7)|TG 15:0_18:1(d7)_15:0",
                     Concentration = 123.0972,
                     DilutionRate = 0.015625,
                     MolecularWeight = 812.366,
@@ -2347,7 +2347,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "SM 18:1;2O/18:1(d9)",
+                    StandardName = "SM 36:1;2O(d9)|SM 18:1;2O/18:1(d9)",
                     Concentration = 135.4764,
                     DilutionRate = 0.015625,
                     MolecularWeight = 738.136,
@@ -2356,7 +2356,7 @@ namespace Rfx.Riken.OsakaUniv {
                 });
 
                 compounds.Add(new StandardCompound() {
-                    StandardName = "Cer 18:1;2O/15:0(d7)",
+                    StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                     Concentration = 188.3487,
                     DilutionRate = 0.015625,
                     MolecularWeight = 530.93,
@@ -2969,7 +2969,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PC 15:0_18:1(d7)",
+                        StandardName = "PC 33:1(d7)|PC 15:0_18:1(d7)",
                         Concentration = 132.7834,
                         DilutionRate = 0.015625,
                         MolecularWeight = 753.106,
@@ -2978,7 +2978,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PC 15:0_18:1(d7)",
+                        StandardName = "PC 33:1(d7)|PC 15:0_18:1(d7)",
                         Concentration = 132.7834,
                         DilutionRate = 0.015625,
                         MolecularWeight = 753.106,
@@ -2987,7 +2987,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PE 15:0_18:1(d7)",
+                        StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                         Concentration = 140.642,
                         DilutionRate = 0.015625,
                         MolecularWeight = 711.025,
@@ -2996,7 +2996,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PE 15:0_18:1(d7)",
+                        StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                         Concentration = 140.642,
                         DilutionRate = 0.015625,
                         MolecularWeight = 711.025,
@@ -3005,7 +3005,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PE 15:0_18:1(d7)",
+                        StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                         Concentration = 140.642,
                         DilutionRate = 0.015625,
                         MolecularWeight = 711.025,
@@ -3014,7 +3014,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PG 15:0_18:1(d7)",
+                        StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                         Concentration = 130.8868,
                         DilutionRate = 0.015625,
                         MolecularWeight = 764.02,
@@ -3023,7 +3023,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PG 15:0_18:1(d7)",
+                        StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                         Concentration = 130.8868,
                         DilutionRate = 0.015625,
                         MolecularWeight = 764.02,
@@ -3032,7 +3032,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PG 15:0_18:1(d7)",
+                        StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                         Concentration = 130.8868,
                         DilutionRate = 0.015625,
                         MolecularWeight = 764.02,
@@ -3041,7 +3041,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PG 15:0_18:1(d7)",
+                        StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                         Concentration = 130.8868,
                         DilutionRate = 0.015625,
                         MolecularWeight = 764.02,
@@ -3050,7 +3050,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PG 15:0_18:1(d7)",
+                        StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                         Concentration = 130.8868,
                         DilutionRate = 0.015625,
                         MolecularWeight = 764.02,
@@ -3059,7 +3059,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PG 15:0_18:1(d7)",
+                        StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                         Concentration = 130.8868,
                         DilutionRate = 0.015625,
                         MolecularWeight = 764.02,
@@ -3068,7 +3068,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PG 15:0_18:1(d7)",
+                        StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                         Concentration = 130.8868,
                         DilutionRate = 0.015625,
                         MolecularWeight = 764.02,
@@ -3077,7 +3077,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PG 15:0_18:1(d7)",
+                        StandardName = "PG 33:1(d7)|PG 15:0_18:1(d7)",
                         Concentration = 130.8868,
                         DilutionRate = 0.015625,
                         MolecularWeight = 764.02,
@@ -3086,7 +3086,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PI 15:0_18:1(d7)",
+                        StandardName = "PI 33:1(d7)|PI 15:0_18:1(d7)",
                         Concentration = 118.0456,
                         DilutionRate = 0.015625,
                         MolecularWeight = 847.13,
@@ -3095,7 +3095,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PI 15:0_18:1(d7)",
+                        StandardName = "PI 33:1(d7)|PI 15:0_18:1(d7)",
                         Concentration = 118.0456,
                         DilutionRate = 0.015625,
                         MolecularWeight = 847.13,
@@ -3104,7 +3104,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PI 15:0_18:1(d7)",
+                        StandardName = "PI 33:1(d7)|PI 15:0_18:1(d7)",
                         Concentration = 118.0456,
                         DilutionRate = 0.015625,
                         MolecularWeight = 847.13,
@@ -3113,7 +3113,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PS 15:0_18:1(d7)",
+                        StandardName = "PS 33:1(d7)|PS 15:0_18:1(d7)",
                         Concentration = 128.6968,
                         DilutionRate = 0.015625,
                         MolecularWeight = 777.02,
@@ -3122,7 +3122,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PS 15:0_18:1(d7)",
+                        StandardName = "PS 33:1(d7)|PS 15:0_18:1(d7)",
                         Concentration = 128.6968,
                         DilutionRate = 0.015625,
                         MolecularWeight = 777.02,
@@ -3131,7 +3131,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PS 15:0_18:1(d7)",
+                        StandardName = "PS 33:1(d7)|PS 15:0_18:1(d7)",
                         Concentration = 128.6968,
                         DilutionRate = 0.015625,
                         MolecularWeight = 777.02,
@@ -3140,7 +3140,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PS 15:0_18:1(d7)",
+                        StandardName = "PS 33:1(d7)|PS 15:0_18:1(d7)",
                         Concentration = 128.6968,
                         DilutionRate = 0.015625,
                         MolecularWeight = 777.02,
@@ -3149,7 +3149,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "SM 18:1;2O/18:1(d9)",
+                        StandardName = "SM 36:1;2O(d9)|SM 18:1;2O/18:1(d9)",
                         Concentration = 135.4764,
                         DilutionRate = 0.015625,
                         MolecularWeight = 738.136,
@@ -3158,7 +3158,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "TG 15:0_18:1(d7)_15:0",
+                        StandardName = "TG 48:1(d7)|TG 15:0_18:1(d7)_15:0",
                         Concentration = 123.0972,
                         DilutionRate = 0.015625,
                         MolecularWeight = 812.366,
@@ -3347,7 +3347,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PE 15:0_18:1(d7)",
+                        StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                         Concentration = 140.642,
                         DilutionRate = 0.015625,
                         MolecularWeight = 711.025,
@@ -3356,7 +3356,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PE 15:0_18:1(d7)",
+                        StandardName = "PE 33:1(d7)|PE 15:0_18:1(d7)",
                         Concentration = 140.642,
                         DilutionRate = 0.015625,
                         MolecularWeight = 711.025,
@@ -3365,7 +3365,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "PI 15:0_18:1(d7)",
+                        StandardName = "PI 33:1(d7)|PI 15:0_18:1(d7)",
                         Concentration = 115.6718,
                         DilutionRate = 0.015625,
                         MolecularWeight = 847.13,
@@ -3374,7 +3374,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "TG 15:0_18:1(d7)_15:0",
+                        StandardName = "TG 48:1(d7)|TG 15:0_18:1(d7)_15:0",
                         Concentration = 123.0972,
                         DilutionRate = 0.015625,
                         MolecularWeight = 812.366,
@@ -3383,7 +3383,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "TG 15:0_18:1(d7)_15:0",
+                        StandardName = "TG 48:1(d7)|TG 15:0_18:1(d7)_15:0",
                         Concentration = 123.0972,
                         DilutionRate = 0.015625,
                         MolecularWeight = 812.366,
@@ -3392,7 +3392,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3401,7 +3401,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3410,7 +3410,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3419,7 +3419,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3428,7 +3428,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3437,7 +3437,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3446,7 +3446,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3455,7 +3455,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3464,7 +3464,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3473,7 +3473,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3482,7 +3482,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3491,7 +3491,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3500,7 +3500,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3509,7 +3509,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3518,7 +3518,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3527,7 +3527,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3536,7 +3536,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3545,7 +3545,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3554,7 +3554,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3563,7 +3563,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3572,7 +3572,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3581,7 +3581,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3590,7 +3590,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3599,7 +3599,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3608,7 +3608,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3617,7 +3617,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3626,7 +3626,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3635,7 +3635,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3644,7 +3644,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3653,7 +3653,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "Cer 18:1;2O/15:0(d7)",
+                        StandardName = "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)",
                         Concentration = 188.3487,
                         DilutionRate = 0.015625,
                         MolecularWeight = 530.93,
@@ -3662,7 +3662,7 @@ namespace Rfx.Riken.OsakaUniv {
                     });
 
                     compounds.Add(new StandardCompound() {
-                        StandardName = "DG 15:0_18:1(d7)",
+                        StandardName = "DG 33:1(d7)|DG 15:0_18:1(d7)",
                         Concentration = 170.0744,
                         DilutionRate = 0.015625,
                         MolecularWeight = 587.978,

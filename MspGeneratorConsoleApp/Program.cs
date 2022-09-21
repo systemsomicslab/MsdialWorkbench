@@ -103,15 +103,19 @@ namespace CompMs.MspGenerator
 
             //////// mtb-info上で最終的なmspを出力
             ////// 指定のフォルダの中にある.mspファイルを結合します。
-            var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
+            //var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
             //var exportFileName = "Msp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedmsp";
-            ////Common.jointMspFiles(mspFolder, exportFileName);
-            //////////////////結合したファイルを下記フォルダに移動
-            var workingDirectry = mspFolder + @"\LBM\";
-            ////System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
-            ////////////
-            ////MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + exportFileName,
-            ////     mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20220912_conventional.txt", workingDirectry, "conventional");
+            //Common.jointMspFiles(mspFolder, exportFileName);
+            ////////////結合したファイルを下記フォルダに移動
+            //var workingDirectry = mspFolder + @"\LBM\";
+            //System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
+
+            //////////// 複数作成可　配列リストでRT CCS予測ファイルとファイル名オプションを渡す。
+            //MergeRTandCCSintoMsp.mergeRTandCCSintoMspVs3(
+            //    workingDirectry + "\\" + exportFileName,
+            //    new List<string[]>{ new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20220912_conventional.txt","conventional" },
+            //                        new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_NCDK_20220913_TUAT.txt" , "TUAT"} },
+            //    workingDirectry);
 
             ////上書き用　ファイル名オプション
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + @"Msp20220912142947.jointedmsp",
@@ -596,12 +600,12 @@ namespace CompMs.MspGenerator
                 //// inputFile <- InChIKeyとSMILESを含んだテーブルデータを渡す。
                 //// 1行目(ヘッダー行)が"SMILES"となっている列を認識してdescriptorを算出する。
                 /// RtCcsPredictOnDotNet.GenerateQsarDescriptorFileVS2();//--old
-                var workingFolder =
-                 @"D:\mikikot\Desktop\Tsugawa-san_work\20220912_lipid_library\RTCCS_Prediction\TUAT_NCDK\";
+                //var workingFolder =
+                // @"D:\mikikot\Desktop\Tsugawa-san_work\20220912_lipid_library\RTCCS_Prediction\TUAT_NCDK\";
 
-                qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
-                    (workingFolder + @"\txt\20220913111218_notfound.txt",
-                     workingFolder + @"\20220913111218_notfound_descriptor_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
+                //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
+                //    (workingFolder + @"\txt\20220913111218_notfound.txt",
+                //     workingFolder + @"\20220913111218_notfound_descriptor_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
 
                 //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
                 //    (@"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeySmilesRtList.txt",

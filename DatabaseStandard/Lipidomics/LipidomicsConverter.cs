@@ -7,14 +7,18 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Riken.Metabolomics.Lipidomics {
-    public sealed class LipidomicsConverter {
+namespace Riken.Metabolomics.Lipidomics
+{
+    public sealed class LipidomicsConverter
+    {
         private LipidomicsConverter() { }
-        
-        public static LipidMolecule ConvertMsdialLipidnameToLipidMoleculeObject(MspFormatCompoundInformationBean query) {
+
+        public static LipidMolecule ConvertMsdialLipidnameToLipidMoleculeObject(MspFormatCompoundInformationBean query)
+        {
             var molecule = new LipidMolecule();
 
-            switch (query.CompoundClass) {
+            switch (query.CompoundClass)
+            {
 
                 //Glycerolipid
                 case "MAG":
@@ -457,30 +461,38 @@ namespace Riken.Metabolomics.Lipidomics {
             return molecule;
         }
 
-        public static LipidMolecule ConvertMsdialLipidnameToLipidMoleculeObjectVS2(MspFormatCompoundInformationBean query) {
+        public static LipidMolecule ConvertMsdialLipidnameToLipidMoleculeObjectVS2(MspFormatCompoundInformationBean query)
+        {
             var molecule = new LipidMolecule();
             var lipidclass = query.CompoundClass;
 
             /*  FattyAcyls [FA], Glycerolipids [GL], Glycerophospholipids [GP], Sphingolipids [SP]
             *  SterolLipids [ST], PrenolLipids [PR], Saccharolipids [SL], Polyketides [PK]
             */
-           
+
             var lipidcategory = ConvertMsdialClassDefinitionToSuperClassVS2(lipidclass);
             var lbmclass = ConvertMsdialClassDefinitionToLbmClassEnumVS2(lipidclass);
 
-            if (lipidcategory == "FattyAcyls" || lipidcategory == "Glycerolipids" || 
-                lipidcategory == "Glycerophospholipids" || lipidcategory == "Sphingolipids" || lbmclass == LbmClass.VAE) {
+            if (lipidcategory == "FattyAcyls" || lipidcategory == "Glycerolipids" ||
+                lipidcategory == "Glycerophospholipids" || lipidcategory == "Sphingolipids" || lbmclass == LbmClass.VAE)
+            {
                 SetLipidAcylChainProperties(molecule, query);
             }
-            else if (lipidcategory == "SterolLipids" || lipidcategory == "PrenolLipids") { 
+            else if (lipidcategory == "SterolLipids" || lipidcategory == "PrenolLipids")
+            {
                 if (lbmclass == LbmClass.Vitamin_D || lbmclass == LbmClass.Vitamin_E || lbmclass == LbmClass.SHex ||
-                    lbmclass == LbmClass.SSulfate || lbmclass == LbmClass.BAHex || lbmclass == LbmClass.BASulfate || 
+                    lbmclass == LbmClass.SSulfate || lbmclass == LbmClass.BAHex || lbmclass == LbmClass.BASulfate ||
                     lbmclass == LbmClass.BileAcid ||
-                    query.Name == "Cholesterol" || query.Name == "CholesterolSulfate") {
+                    query.Name == "Cholesterol" || query.Name == "CholesterolSulfate")
+                {
                     SetSingleLipidStructure(molecule, query);
-                } else if (lbmclass == LbmClass.CoQ) {
+                }
+                else if (lbmclass == LbmClass.CoQ)
+                {
                     SetCoqMolecule(molecule, query);
-                } else {
+                }
+                else
+                {
                     SetLipidAcylChainProperties(molecule, query);
                 }
             }
@@ -489,16 +501,19 @@ namespace Riken.Metabolomics.Lipidomics {
             molecule.LipidCategory = lipidcategory;
             molecule.LipidSubclass = lipidclass;
 
-            if (molecule.LipidName == null || molecule.LipidName == string.Empty || molecule.Adduct == null) {
+            if (molecule.LipidName == null || molecule.LipidName == string.Empty || molecule.Adduct == null)
+            {
                 molecule.IsValidatedFormat = false;
             }
-            else {
+            else
+            {
                 molecule.IsValidatedFormat = true;
             }
             return molecule;
         }
 
-        public static LipidMolecule ConvertMsdialLipidnameToLipidMoleculeObjectVS2(string lipidname, string ontology) {
+        public static LipidMolecule ConvertMsdialLipidnameToLipidMoleculeObjectVS2(string lipidname, string ontology)
+        {
             var molecule = new LipidMolecule();
             var lipidclass = ontology;
 
@@ -511,20 +526,25 @@ namespace Riken.Metabolomics.Lipidomics {
 
             //Console.WriteLine(lipidcategory + "\t" + lbmclass.ToString() + "\t" + ontology);
             if (lipidcategory == "FattyAcyls" || lipidcategory == "Glycerolipids" ||
-                lipidcategory == "Glycerophospholipids" || lipidcategory == "Sphingolipids" || lbmclass == LbmClass.VAE) {
+                lipidcategory == "Glycerophospholipids" || lipidcategory == "Sphingolipids" || lbmclass == LbmClass.VAE)
+            {
                 SetLipidAcylChainProperties(molecule, lipidname, ontology);
             }
-            else if (lipidcategory == "SterolLipids" || lipidcategory == "PrenolLipids") {
+            else if (lipidcategory == "SterolLipids" || lipidcategory == "PrenolLipids")
+            {
                 if (lbmclass == LbmClass.Vitamin_D || lbmclass == LbmClass.Vitamin_E || lbmclass == LbmClass.SHex ||
                     lbmclass == LbmClass.SSulfate || lbmclass == LbmClass.BAHex || lbmclass == LbmClass.BASulfate ||
                     lbmclass == LbmClass.BileAcid ||
-                    lipidname == "Cholesterol" || lipidname == "CholesterolSulfate") {
+                    lipidname == "Cholesterol" || lipidname == "CholesterolSulfate")
+                {
                     SetSingleLipidStructure(molecule, lipidname, ontology);
                 }
-                else if (lbmclass == LbmClass.CoQ) {
+                else if (lbmclass == LbmClass.CoQ)
+                {
                     SetCoqMolecule(molecule, lipidname, ontology);
                 }
-                else {
+                else
+                {
                     SetLipidAcylChainProperties(molecule, lipidname, ontology);
                 }
             }
@@ -533,10 +553,12 @@ namespace Riken.Metabolomics.Lipidomics {
             molecule.LipidCategory = lipidcategory;
             molecule.LipidSubclass = lipidclass;
 
-            if (molecule.LipidName == null || molecule.LipidName == string.Empty) {
+            if (molecule.LipidName == null || molecule.LipidName == string.Empty)
+            {
                 molecule.IsValidatedFormat = false;
             }
-            else {
+            else
+            {
                 molecule.IsValidatedFormat = true;
             }
             return molecule;
@@ -548,7 +570,7 @@ namespace Riken.Metabolomics.Lipidomics {
             var lipidclass = lipidname.Split(' ')[0];
             if (lipidname.Contains("e;") || lipidname.Contains("p;") || lipidname.Contains("e+") || lipidname.Contains("e/"))
                 lipidclass = "Ether" + lipidclass;
-            
+
             var lbmLipidclass = ConvertMsdialClassDefinitionToLbmClassEnum(query.CompoundClass);
             var querylipidClass = ConvertLbmClassEnumToMsdialClassDefinition(lbmLipidclass);
             var isInconsistency = false;
@@ -562,14 +584,16 @@ namespace Riken.Metabolomics.Lipidomics {
             var querysemicoronCount = query.Name.Length - query.Name.Replace(";", "").Length;
 
 
-            switch (query.CompoundClass) {
+            switch (query.CompoundClass)
+            {
 
                 //Glycerolipid
                 case "MAG":
                     level = "Chain resolved";
                     break;
                 case "DAG":
-                    if (adduct == "[M+NH4]+") {
+                    if (adduct == "[M+NH4]+")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
@@ -583,7 +607,8 @@ namespace Riken.Metabolomics.Lipidomics {
                         level = "Chain resolved";
                     break;
                 case "EtherDAG":
-                    if (adduct == "[M+NH4]+") {
+                    if (adduct == "[M+NH4]+")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
@@ -617,43 +642,50 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Phospholipid
                 case "PC":
-                    if (adduct == "[M+H]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "PE":
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "PG":
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "PI":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "PS":
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "PA":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "BMP":
-                    if (adduct == "[M+NH4]+") {
+                    if (adduct == "[M+NH4]+")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
@@ -663,7 +695,8 @@ namespace Riken.Metabolomics.Lipidomics {
                         level = "Chain resolved";
                     break;
                 case "CL":
-                    if (lipidsemicoronCount == querysemicoronCount) {
+                    if (lipidsemicoronCount == querysemicoronCount)
+                    {
                         if (lipidname.Split(';')[1].Split('-').Length < 4)
                             level = "Chain semi-resolved";
                         else
@@ -675,7 +708,8 @@ namespace Riken.Metabolomics.Lipidomics {
                         level = "Chain resolved";
                     break;
                 case "LCL":
-                    if (lipidsemicoronCount == querysemicoronCount) {
+                    if (lipidsemicoronCount == querysemicoronCount)
+                    {
                         if (lipidname.Split(';')[1].Split('-').Length < 3)
                             level = "Chain semi-resolved";
                         else
@@ -702,32 +736,37 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Ether linked phospholipid
                 case "EtherPC":
-                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "EtherPE":
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 //Ether linked phospholipid
                 case "EtherPG":
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "EtherPI":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "EtherPS":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
@@ -735,13 +774,15 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Ether linked phospholipid
                 case "EtherMGDG":
-                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "EtherDGDG":
-                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
@@ -750,31 +791,36 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Oxidized phospholipid
                 case "OxPC":
-                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "OxPE":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "OxPG":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "OxPI":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "OxPS":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
@@ -783,13 +829,15 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Oxidized ether linked phospholipid
                 case "EtherOxPC":
-                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "EtherOxPE":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
@@ -797,19 +845,22 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Oxidized ether linked phospholipid
                 case "PMeOH":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "PEtOH":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "PBtOH":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
@@ -817,13 +868,15 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //N-acyl lipids
                 case "LNAPE":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "LNAPS":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
@@ -846,19 +899,22 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Plantlipid
                 case "MGDG":
-                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "DGDG":
-                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "SQDG":
-                    if (adduct == "[M+NH4]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+NH4]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
@@ -964,10 +1020,12 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Sphingomyelin
                 case "SM":
-                    if (query.Name.Contains("t")) {
+                    if (query.Name.Contains("t"))
+                    {
 
                     }
-                    else if (adduct == "[M+H]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    else if (adduct == "[M+H]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
@@ -995,7 +1053,8 @@ namespace Riken.Metabolomics.Lipidomics {
                         level = "Chain resolved";
                     break;
                 case "Cer_EODS":
-                    if (lipidsemicoronCount == querysemicoronCount) {
+                    if (lipidsemicoronCount == querysemicoronCount)
+                    {
                         if (lipidname.Split(';')[1].Contains("-O-") && lipidname.Split(';')[1].Contains("/"))
                             level = "Chain resolved";
                         else
@@ -1003,7 +1062,8 @@ namespace Riken.Metabolomics.Lipidomics {
                     }
                     break;
                 case "Cer_EOS":
-                    if (lipidsemicoronCount == querysemicoronCount) {
+                    if (lipidsemicoronCount == querysemicoronCount)
+                    {
                         if (lipidname.Split(';')[1].Contains("-O-") && lipidname.Split(';')[1].Contains("/"))
                             level = "Chain resolved";
                         else
@@ -1067,56 +1127,65 @@ namespace Riken.Metabolomics.Lipidomics {
                         level = "Chain semi-resolved";
                     break;
                 case "HexHexCer_NS":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "HexHexHexCer_NS":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "HexHexCer":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "HexHexHexCer":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "Hex2Cer":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "Hex3Cer":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "PE_Cer":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
                 case "PI_Cer":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
                     break;
 
                 case "SHexCer":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
@@ -1127,7 +1196,8 @@ namespace Riken.Metabolomics.Lipidomics {
                     break;
 
                 case "GM3":
-                    if (adduct == "[M+NH4]+") {
+                    if (adduct == "[M+NH4]+")
+                    {
                         if (lipidsemicoronCount == querysemicoronCount)
                             level = "Chain resolved";
                     }
@@ -1170,14 +1240,16 @@ namespace Riken.Metabolomics.Lipidomics {
                     break;
             }
 
-            if (isInconsistency) {
+            if (isInconsistency)
+            {
                 return level + "; inconsistency with MSP file";
             }
             else
                 return level;
         }
 
-        public static string LipidomicsAnnotationLevel(string lipidname, string ontology, string adduct) {
+        public static string LipidomicsAnnotationLevel(string lipidname, string ontology, string adduct)
+        {
             var lipidclass = lipidname.Split(' ')[0];
             if (lipidname.Contains("e;") || lipidname.Contains("p;") || lipidname.Contains("e+") || lipidname.Contains("e/"))
                 lipidclass = "Ether" + lipidclass;
@@ -1185,14 +1257,16 @@ namespace Riken.Metabolomics.Lipidomics {
             var level = "Class resolved";
             var lipidsemicoronCount = lipidname.Length - lipidname.Replace(";", "").Length;
 
-            switch (ontology) {
+            switch (ontology)
+            {
 
                 //Glycerolipid
                 case "MAG":
                     level = "Chain resolved";
                     break;
                 case "DAG":
-                    if (adduct == "[M+NH4]+") {
+                    if (adduct == "[M+NH4]+")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
@@ -1206,7 +1280,8 @@ namespace Riken.Metabolomics.Lipidomics {
                         level = "Chain resolved";
                     break;
                 case "EtherDAG":
-                    if (adduct == "[M+NH4]+") {
+                    if (adduct == "[M+NH4]+")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
@@ -1243,43 +1318,50 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Phospholipid
                 case "PC":
-                    if (adduct == "[M+H]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "PE":
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "PG":
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "PI":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "PS":
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "PA":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "BMP":
-                    if (adduct == "[M+NH4]+") {
+                    if (adduct == "[M+NH4]+")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
@@ -1289,7 +1371,8 @@ namespace Riken.Metabolomics.Lipidomics {
                         level = "Chain resolved";
                     break;
                 case "CL":
-                    if (lipidsemicoronCount == 2) {
+                    if (lipidsemicoronCount == 2)
+                    {
                         if (lipidname.Split(';')[1].Split('-').Length < 4)
                             level = "Chain semi-resolved";
                         else
@@ -1301,7 +1384,8 @@ namespace Riken.Metabolomics.Lipidomics {
                         level = "Chain resolved";
                     break;
                 case "LCL":
-                    if (lipidsemicoronCount == 3) {
+                    if (lipidsemicoronCount == 3)
+                    {
                         if (lipidname.Split(';')[1].Split('-').Length < 3)
                             level = "Chain semi-resolved";
                         else
@@ -1328,39 +1412,46 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Ether linked phospholipid
                 case "EtherPC":
-                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
-                case "EtherPE(Plasmalogen)": {
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
-                        if (lipidsemicoronCount == 2)
-                            level = "Chain resolved";
+                case "EtherPE(Plasmalogen)":
+                    {
+                        if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                        {
+                            if (lipidsemicoronCount == 2)
+                                level = "Chain resolved";
+                        }
+                        break;
                     }
-                    break;
-                }
                 case "EtherPE":
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 //Ether linked phospholipid
                 case "EtherPG":
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "EtherPI":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "EtherPS":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
@@ -1368,13 +1459,15 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Ether linked phospholipid
                 case "EtherMGDG":
-                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "EtherDGDG":
-                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
@@ -1383,31 +1476,36 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Oxidized phospholipid
                 case "OxPC":
-                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "OxPE":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "OxPG":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "OxPI":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "OxPS":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
@@ -1416,13 +1514,15 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Oxidized ether linked phospholipid
                 case "EtherOxPC":
-                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "EtherOxPE":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
@@ -1430,19 +1530,22 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Oxidized ether linked phospholipid
                 case "PMeOH":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "PEtOH":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "PBtOH":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
@@ -1450,13 +1553,15 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //N-acyl lipids
                 case "LNAPE":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "LNAPS":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
@@ -1479,19 +1584,22 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Plantlipid
                 case "MGDG":
-                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "DGDG":
-                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "SQDG":
-                    if (adduct == "[M+NH4]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+NH4]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
@@ -1601,10 +1709,12 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Sphingomyelin
                 case "SM":
-                    if (lipidname.Contains("t")) {
+                    if (lipidname.Contains("t"))
+                    {
 
                     }
-                    else if (adduct == "[M+H]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    else if (adduct == "[M+H]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
@@ -1632,7 +1742,8 @@ namespace Riken.Metabolomics.Lipidomics {
                         level = "Chain resolved";
                     break;
                 case "Cer_EODS":
-                    if (lipidsemicoronCount == 2) {
+                    if (lipidsemicoronCount == 2)
+                    {
                         if (lipidname.Split(';')[1].Contains("-O-") && lipidname.Split(';')[1].Contains("/"))
                             level = "Chain resolved";
                         else
@@ -1640,7 +1751,8 @@ namespace Riken.Metabolomics.Lipidomics {
                     }
                     break;
                 case "Cer_EOS":
-                    if (lipidsemicoronCount == 2) {
+                    if (lipidsemicoronCount == 2)
+                    {
                         if (lipidname.Split(';')[1].Contains("-O-") && lipidname.Split(';')[1].Contains("/"))
                             level = "Chain resolved";
                         else
@@ -1704,56 +1816,65 @@ namespace Riken.Metabolomics.Lipidomics {
                         level = "Chain semi-resolved";
                     break;
                 case "HexHexCer_NS":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "HexHexHexCer_NS":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "HexHexCer":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "HexHexHexCer":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "Hex2Cer":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "Hex3Cer":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "PE_Cer":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
                 case "PI_Cer":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
                     break;
 
                 case "SHexCer":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
@@ -1764,7 +1885,8 @@ namespace Riken.Metabolomics.Lipidomics {
                     break;
 
                 case "GM3":
-                    if (adduct == "[M+NH4]+") {
+                    if (adduct == "[M+NH4]+")
+                    {
                         if (lipidsemicoronCount == 2)
                             level = "Chain resolved";
                     }
@@ -1809,17 +1931,20 @@ namespace Riken.Metabolomics.Lipidomics {
             return level;
         }
 
-        public static string LipidomicsAnnotationLevelVS2(string lipidname, string ontology, string adduct) {
+        public static string LipidomicsAnnotationLevelVS2(string lipidname, string ontology, string adduct)
+        {
             var level = "Class resolved";
             var lipidsemicoronCount = lipidname.Length - lipidname.Replace("|", "").Length;
 
-            switch (ontology) {
+            switch (ontology)
+            {
                 //Glycerolipid
                 case "MG":
                     level = "Chain resolved";
                     break;
                 case "DG":
-                    if (adduct == "[M+NH4]+") {
+                    if (adduct == "[M+NH4]+")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
@@ -1833,7 +1958,8 @@ namespace Riken.Metabolomics.Lipidomics {
                         level = "Chain resolved";
                     break;
                 case "EtherDG":
-                    if (adduct == "[M+NH4]+") {
+                    if (adduct == "[M+NH4]+")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
@@ -1870,43 +1996,50 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Phospholipid
                 case "PC":
-                    if (adduct == "[M+H]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "PE":
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "PG":
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "PI":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "PS":
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "PA":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "BMP":
-                    if (adduct == "[M+NH4]+") {
+                    if (adduct == "[M+NH4]+")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
@@ -1916,7 +2049,8 @@ namespace Riken.Metabolomics.Lipidomics {
                         level = "Chain resolved";
                     break;
                 case "CL":
-                    if (lipidsemicoronCount == 1) {
+                    if (lipidsemicoronCount == 1)
+                    {
                         if (lipidname.Split('|')[1].Split('_').Length < 4)
                             level = "Chain semi-resolved";
                         else
@@ -1928,7 +2062,8 @@ namespace Riken.Metabolomics.Lipidomics {
                         level = "Chain resolved";
                     break;
                 case "MLCL":
-                    if (lipidsemicoronCount == 1) {
+                    if (lipidsemicoronCount == 1)
+                    {
                         if (lipidname.Split('|')[1].Split('_').Length < 3)
                             level = "Chain semi-resolved";
                         else
@@ -1955,39 +2090,46 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Ether linked phospholipid
                 case "EtherPC":
-                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
-                case "EtherPE(Plasmalogen)": {
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
-                        if (lipidsemicoronCount == 1)
-                            level = "Chain resolved";
+                case "EtherPE(Plasmalogen)":
+                    {
+                        if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                        {
+                            if (lipidsemicoronCount == 1)
+                                level = "Chain resolved";
+                        }
+                        break;
                     }
-                    break;
-                }
                 case "EtherPE":
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 //Ether linked phospholipid
                 case "EtherPG":
-                    if (adduct == "[M+H]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "EtherPI":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "EtherPS":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
@@ -1995,19 +2137,22 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Ether linked phospholipid
                 case "EtherMGDG":
-                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "EtherSMGDG":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "EtherDGDG":
-                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
@@ -2016,31 +2161,36 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Oxidized phospholipid
                 case "OxPC":
-                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "OxPE":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "OxPG":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "OxPI":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "OxPS":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
@@ -2049,13 +2199,15 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Oxidized ether linked phospholipid
                 case "EtherOxPC":
-                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "EtherOxPE":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
@@ -2063,19 +2215,22 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Oxidized ether linked phospholipid
                 case "PMeOH":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "PEtOH":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "PBtOH":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
@@ -2083,13 +2238,15 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //N-acyl lipids
                 case "LNAPE":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "LNAPS":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
@@ -2120,19 +2277,22 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Plantlipid
                 case "MGDG":
-                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "DGDG":
-                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    if (adduct == "[M+NH4]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "SQDG":
-                    if (adduct == "[M+NH4]+" || adduct == "[M-H]-") {
+                    if (adduct == "[M+NH4]+" || adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
@@ -2245,10 +2405,12 @@ namespace Riken.Metabolomics.Lipidomics {
 
                 //Sphingomyelin
                 case "SM":
-                    if (lipidname.Contains("t")) {
+                    if (lipidname.Contains("t"))
+                    {
 
                     }
-                    else if (adduct == "[M+H]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-") {
+                    else if (adduct == "[M+H]+" || adduct == "[M+CH3COO]-" || adduct == "[M+HCOO]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
@@ -2276,7 +2438,8 @@ namespace Riken.Metabolomics.Lipidomics {
                         level = "Chain resolved";
                     break;
                 case "Cer_EODS":
-                    if (lipidsemicoronCount == 1) {
+                    if (lipidsemicoronCount == 1)
+                    {
                         if (lipidname.Split('|')[1].Contains("(FA") && lipidname.Split('|')[1].Contains("/"))
                             level = "Chain resolved";
                         else
@@ -2284,7 +2447,8 @@ namespace Riken.Metabolomics.Lipidomics {
                     }
                     break;
                 case "Cer_EOS":
-                    if (lipidsemicoronCount == 1) {
+                    if (lipidsemicoronCount == 1)
+                    {
                         if (lipidname.Split('|')[1].Contains("(FA") && lipidname.Split('|')[1].Contains("/"))
                             level = "Chain resolved";
                         else
@@ -2348,32 +2512,37 @@ namespace Riken.Metabolomics.Lipidomics {
                         level = "Chain semi-resolved";
                     break;
                 case "Hex2Cer":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "Hex3Cer":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "PE_Cer":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
                 case "PI_Cer":
-                    if (adduct == "[M-H]-") {
+                    if (adduct == "[M-H]-")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
                     break;
 
                 case "SHexCer":
-                    if (adduct == "[M+H]+") {
+                    if (adduct == "[M+H]+")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
@@ -2384,7 +2553,8 @@ namespace Riken.Metabolomics.Lipidomics {
                     break;
 
                 case "GM3":
-                    if (adduct == "[M+NH4]+") {
+                    if (adduct == "[M+NH4]+")
+                    {
                         if (lipidsemicoronCount == 1)
                             level = "Chain resolved";
                     }
@@ -2426,14 +2596,16 @@ namespace Riken.Metabolomics.Lipidomics {
         }
 
 
-        public static string GetLipoqualityDatabaseLinkUrl(MspFormatCompoundInformationBean query) {
+        public static string GetLipoqualityDatabaseLinkUrl(MspFormatCompoundInformationBean query)
+        {
             var molecule = ConvertMsdialLipidnameToLipidMoleculeObject(query);
             if (molecule == null) return string.Empty;
             return "http://jcbl.jp/wiki/Lipoquality:Resource?lc=" + molecule.LipidName + "&ct=c";
         }
 
         // now for Cholesterol and CholesterolSulfate
-        private static void setSingleMetaboliteInfor(LipidMolecule molecule, MspFormatCompoundInformationBean query) {
+        private static void setSingleMetaboliteInfor(LipidMolecule molecule, MspFormatCompoundInformationBean query)
+        {
 
             var name = query.Name;
             var nameArray = name.Split(';').ToArray();
@@ -2460,7 +2632,8 @@ namespace Riken.Metabolomics.Lipidomics {
         }
 
         // now for Cholesterol and CholesterolSulfate
-        public static void SetSingleLipidStructure(LipidMolecule molecule, MspFormatCompoundInformationBean query) {
+        public static void SetSingleLipidStructure(LipidMolecule molecule, MspFormatCompoundInformationBean query)
+        {
 
             var lipidinfo = query.Name;
             SetBasicMoleculerProperties(molecule, query);
@@ -2475,8 +2648,9 @@ namespace Riken.Metabolomics.Lipidomics {
             molecule.Sn1DoubleBondCount = 0;
         }
 
-        public static void SetSingleLipidStructure(LipidMolecule molecule, string lipidname, string ontology) {
-            
+        public static void SetSingleLipidStructure(LipidMolecule molecule, string lipidname, string ontology)
+        {
+
             molecule.LipidName = lipidname;
             molecule.SublevelLipidName = lipidname;
             molecule.TotalChainString = "0:0";
@@ -2487,7 +2661,8 @@ namespace Riken.Metabolomics.Lipidomics {
             molecule.Sn1DoubleBondCount = 0;
         }
 
-        public static void SetCoqMolecule(LipidMolecule molecule, MspFormatCompoundInformationBean query) {
+        public static void SetCoqMolecule(LipidMolecule molecule, MspFormatCompoundInformationBean query)
+        {
 
             SetBasicMoleculerProperties(molecule, query);
 
@@ -2506,7 +2681,8 @@ namespace Riken.Metabolomics.Lipidomics {
             molecule.Sn1DoubleBondCount = 0;
         }
 
-        public static void SetCoqMolecule(LipidMolecule molecule, string lipidname, string ontology) {
+        public static void SetCoqMolecule(LipidMolecule molecule, string lipidname, string ontology)
+        {
 
             var carbonCountString = lipidname.Substring(3); // CoQ3 -> 3
             var carbonCount = 0;
@@ -2522,7 +2698,8 @@ namespace Riken.Metabolomics.Lipidomics {
             molecule.Sn1DoubleBondCount = 0;
         }
 
-        public static void setSingleMetaboliteInfor(LipidMolecule molecule, string lipidname, string lipidclassString) {
+        public static void setSingleMetaboliteInfor(LipidMolecule molecule, string lipidname, string lipidclassString)
+        {
 
             var name = lipidname;
             var nameArray = name.Split(';').ToArray();
@@ -2543,7 +2720,8 @@ namespace Riken.Metabolomics.Lipidomics {
 
 
         private static void setSingleAcylChainsLipidAnnotation(LipidMolecule molecule,
-            MspFormatCompoundInformationBean query) {
+            MspFormatCompoundInformationBean query)
+        {
             var name = query.Name;
             var nameArray = name.Split(';').ToArray();
 
@@ -2591,7 +2769,8 @@ namespace Riken.Metabolomics.Lipidomics {
             molecule.Sn1Oxidizedount = sn1OxidizedCount;
         }
 
-        public static void SetLipidAcylChainProperties(LipidMolecule molecule, MspFormatCompoundInformationBean query) {
+        public static void SetLipidAcylChainProperties(LipidMolecule molecule, MspFormatCompoundInformationBean query)
+        {
             var lipidname = query.Name.Trim(); // e.g. ST 28:2;O;Hex;PA 12:0_12:0, SE 28:2/8:0
             var chainStrings = acylChainStringSeparatorVS2(lipidname);
             var ontology = query.CompoundClass;
@@ -2601,7 +2780,8 @@ namespace Riken.Metabolomics.Lipidomics {
             SetBasicMoleculerProperties(molecule, query);
             if (chainStrings == null) return;
 
-            switch (chainStrings.Count()) {
+            switch (chainStrings.Count())
+            {
                 case 1: setMonoAcylChainProperty(molecule, lipidname, ontology, chainStrings); break;
                 case 2: setDiAcylChainProperty(molecule, lipidname, ontology, chainStrings); break;
                 case 3: setTriAcylChainProperty(molecule, lipidname, ontology, chainStrings); break;
@@ -2611,21 +2791,24 @@ namespace Riken.Metabolomics.Lipidomics {
             return;
         }
 
-        public static void SetLipidAcylChainProperties(LipidMolecule molecule, string lipidname, string ontology) {
+        public static void SetLipidAcylChainProperties(LipidMolecule molecule, string lipidname, string ontology)
+        {
             var chainStrings = acylChainStringSeparatorVS2(lipidname);
             if (chainStrings == null) return;
-            switch (chainStrings.Count()) {
+            switch (chainStrings.Count())
+            {
                 case 1: setMonoAcylChainProperty(molecule, lipidname, ontology, chainStrings); break;
                 case 2: setDiAcylChainProperty(molecule, lipidname, ontology, chainStrings); break;
                 case 3: setTriAcylChainProperty(molecule, lipidname, ontology, chainStrings); break;
                 case 4: setTetraAcylChainProperty(molecule, lipidname, ontology, chainStrings); break;
             }
-          
+
             return;
         }
 
 
-        public static void SetBasicMoleculerProperties(LipidMolecule molecule, MspFormatCompoundInformationBean query) {
+        public static void SetBasicMoleculerProperties(LipidMolecule molecule, MspFormatCompoundInformationBean query)
+        {
             // var lipidclass = ConvertMsdialClassDefinitionToLbmClassEnumVS2(query.CompoundClass);
             molecule.Mz = query.PrecursorMz;
             molecule.Smiles = query.Smiles;
@@ -2633,14 +2816,15 @@ namespace Riken.Metabolomics.Lipidomics {
             molecule.Formula = query.Formula;
 
             //Console.WriteLine(query.Name + "\t" + query.AdductIonBean.AdductIonName);
-           
+
             molecule.Adduct = AdductIonParcer.GetAdductIonBean(query.AdductIonBean.AdductIonName);
             molecule.IonMode = query.IonMode;
             // molecule.LipidClass = lipidclass;
         }
 
         private static void setMonoAcylChainProperty(LipidMolecule molecule,
-            string lipidname, string ontology, List<string> chainStrings) {
+            string lipidname, string ontology, List<string> chainStrings)
+        {
             if (chainStrings.Count != 1) return;
             var lipidclass = ConvertMsdialClassDefinitionToLbmClassEnumVS2(ontology);
             int sn1CarbonCount, sn1DoubleBond, sn1OxidizedCount;
@@ -2663,7 +2847,8 @@ namespace Riken.Metabolomics.Lipidomics {
             molecule.Sn1Oxidizedount = sn1OxidizedCount;
         }
 
-        public static LipidMolecule GetLipidMoleculeNameProperties(string lipidname) {
+        public static LipidMolecule GetLipidMoleculeNameProperties(string lipidname)
+        {
             if (lipidname.Split(' ').Length == 1) return new LipidMolecule() { SublevelLipidName = lipidname };
 
             var lipidheader = lipidname.Split(' ')[0];
@@ -2673,7 +2858,8 @@ namespace Riken.Metabolomics.Lipidomics {
             if (chainsCount == 0) return new LipidMolecule() { SublevelLipidName = lipidname };
 
             var molecule = new LipidMolecule();
-            switch (chainsCount) {
+            switch (chainsCount)
+            {
                 case 1: setSingleAcylChainsLipidAnnotation(molecule, lipidname, lipidheader); break;
                 case 2: setDoubleAcylChainsLipidAnnotation(molecule, lipidname, lipidheader); break;
                 case 3: setTripleAcylChainsLipidAnnotation(molecule, lipidname, lipidheader); break;
@@ -2683,8 +2869,9 @@ namespace Riken.Metabolomics.Lipidomics {
         }
 
 
-        public static void setSingleAcylChainsLipidAnnotation(LipidMolecule molecule, 
-            string lipidname, string lipidclassString) {
+        public static void setSingleAcylChainsLipidAnnotation(LipidMolecule molecule,
+            string lipidname, string lipidclassString)
+        {
             var name = lipidname;
             var lipidinfo = name;
             var lipidSuperClass = ConvertMsdialClassDefinitionToSuperClass(lipidclassString);
@@ -2715,10 +2902,12 @@ namespace Riken.Metabolomics.Lipidomics {
         }
 
         private static void setDoubleAcylChainsLipidAnnotation(LipidMolecule molecule,
-            MspFormatCompoundInformationBean query) {
+            MspFormatCompoundInformationBean query)
+        {
 
             var nameArray = query.Name.Split(';').ToArray();
-            if (nameArray.Length == 2) { // e.g. in positive PC Na adduct, only sublevel information is resigtered like PC 36:3; [M+Na]+
+            if (nameArray.Length == 2)
+            { // e.g. in positive PC Na adduct, only sublevel information is resigtered like PC 36:3; [M+Na]+
                 setSingleAcylChainsLipidAnnotation(molecule, query);
                 return;
             }
@@ -2776,7 +2965,8 @@ namespace Riken.Metabolomics.Lipidomics {
         }
 
         private static void setDiAcylChainProperty(LipidMolecule molecule,
-            string lipidname, string ontology, List<string> chainStrings) {// e.g. SM 18:1;2O/30:1, PE 16:0_18:0;O, MGDG 2:0_2:0, ST 28:2;O;Hex;PA 12:0_12:0
+            string lipidname, string ontology, List<string> chainStrings)
+        {// e.g. SM 18:1;2O/30:1, PE 16:0_18:0;O, MGDG 2:0_2:0, ST 28:2;O;Hex;PA 12:0_12:0
 
             if (chainStrings.Count != 2) return;
             var lipidclass = ConvertMsdialClassDefinitionToLbmClassEnumVS2(ontology);
@@ -2814,26 +3004,31 @@ namespace Riken.Metabolomics.Lipidomics {
             molecule.Sn2Oxidizedount = sn2OxidizedCount;
         }
 
-        private static string getTotalChainString(int carbon, int rdb, int oxidized, LbmClass lipidclass, string chainPrefix, int acylChainCount) {
+        private static string getTotalChainString(int carbon, int rdb, int oxidized, LbmClass lipidclass, string chainPrefix, int acylChainCount)
+        {
             var rdbString = rdb.ToString();
 
             if (lipidclass == LbmClass.Cer_EODS || lipidclass == LbmClass.Cer_EBDS
                 || lipidclass == LbmClass.ASM
                 || lipidclass == LbmClass.FAHFA || lipidclass == LbmClass.NAGly || lipidclass == LbmClass.NAGlySer || lipidclass == LbmClass.NAGlySer
-                || lipidclass == LbmClass.TG_EST) {
+                || lipidclass == LbmClass.TG_EST)
+            {
                 rdbString = (rdb + 1).ToString();
                 oxidized = oxidized + 1;
             }
 
-            if (lipidclass == LbmClass.Cer_EOS || lipidclass == LbmClass.HexCer_EOS) {
-                if (acylChainCount != 2) {
+            if (lipidclass == LbmClass.Cer_EOS || lipidclass == LbmClass.HexCer_EOS)
+            {
+                if (acylChainCount != 2)
+                {
                     rdbString = (rdb + 1).ToString();
                     oxidized = oxidized + 1;
                 }
             }
 
 
-            if (chainPrefix == "P-") {
+            if (chainPrefix == "P-")
+            {
                 rdbString = (rdb - 1).ToString();
             }
             var oxString = oxidized == 0
@@ -2841,11 +3036,12 @@ namespace Riken.Metabolomics.Lipidomics {
                  : oxidized == 1
                      ? ";O"
                      : ";" + oxidized + "O";
-           return chainPrefix + carbon + ":" + rdbString + oxString;
+            return chainPrefix + carbon + ":" + rdbString + oxString;
         }
 
         public static void setDoubleAcylChainsLipidAnnotation(LipidMolecule molecule,
-            string lipidname, string lipidclassString) {
+            string lipidname, string lipidclassString)
+        {
 
             var lipidheader = lipidname.Split(' ')[0];
             var acylchains = lipidname.Split(' ')[1];
@@ -2877,7 +3073,7 @@ namespace Riken.Metabolomics.Lipidomics {
                 (sn1DoubleBond + sn2DoubleBond).ToString() + sn1Suffix + oxString; // d48:2
             var sublevelLipidName = lipidheader + " " + totalChain; // SM d48:2
             setChainProperties(totalChain, out totalCarbonCount, out totalDoubleBond, out totalOxidizedCount);
-           
+
             molecule.SublevelLipidName = sublevelLipidName;
             molecule.LipidName = lipidName;
             molecule.LipidClass = lipidclass;
@@ -2896,10 +3092,12 @@ namespace Riken.Metabolomics.Lipidomics {
         }
 
         private static void setTripleAcylChainsLipidAnnotation(LipidMolecule molecule,
-            MspFormatCompoundInformationBean query) {
+            MspFormatCompoundInformationBean query)
+        {
 
             var nameArray = query.Name.Split(';').ToArray();
-            if (nameArray.Length == 2) { // e.g. in positive PC Na adduct, only sublevel information is resigtered like PC 36:3; [M+Na]+
+            if (nameArray.Length == 2)
+            { // e.g. in positive PC Na adduct, only sublevel information is resigtered like PC 36:3; [M+Na]+
                 setSingleAcylChainsLipidAnnotation(molecule, query);
                 return;
             }
@@ -2912,7 +3110,8 @@ namespace Riken.Metabolomics.Lipidomics {
             var adductInfo = nameArray[2].Trim();
 
             var chainStrings = acylChainStringSeparator(lipidName);
-            if (chainStrings.Count() == 2) {
+            if (chainStrings.Count() == 2)
+            {
                 setDoubleAcylChainsLipidAnnotation(molecule, query);
                 return;
             }
@@ -2961,7 +3160,8 @@ namespace Riken.Metabolomics.Lipidomics {
         }
 
         private static void setTriAcylChainProperty(LipidMolecule molecule,
-           string lipidname, string ontology, List<string> chainStrings) {
+           string lipidname, string ontology, List<string> chainStrings)
+        {
 
             if (chainStrings.Count != 3) return;
 
@@ -3014,13 +3214,14 @@ namespace Riken.Metabolomics.Lipidomics {
         }
 
         private static void setTetraAcylChainProperty(LipidMolecule molecule,
-           string lipidname, string ontology, List<string> chainStrings) {
+           string lipidname, string ontology, List<string> chainStrings)
+        {
 
             if (chainStrings.Count != 4) return;
 
             var lipidclass = ConvertMsdialClassDefinitionToLbmClassEnumVS2(ontology);
             var lipidHeader = GetLipidHeaderString(lipidname);
-           
+
             var sn1AcylChainString = chainStrings[0];
             var sn2AcylChainString = chainStrings[1];
             var sn3AcylChainString = chainStrings[2];
@@ -3067,9 +3268,11 @@ namespace Riken.Metabolomics.Lipidomics {
             molecule.Sn4Oxidizedount = sn4OxidizedCount;
         }
 
-        public static string GetLipidHeaderString(string lipidname) {
+        public static string GetLipidHeaderString(string lipidname)
+        {
             var lipidHeader = lipidname.Split(' ')[0];
-            if (lipidHeader == "SE" || lipidHeader == "ST" || lipidHeader == "SG" || lipidHeader == "BA" || lipidHeader == "ASG") {
+            if (lipidHeader == "SE" || lipidHeader == "ST" || lipidHeader == "SG" || lipidHeader == "BA" || lipidHeader == "ASG")
+            {
                 var dummyString = string.Empty;
                 RetrieveSterolHeaderChainStrings(lipidname, out lipidHeader, out dummyString);
             }
@@ -3077,7 +3280,8 @@ namespace Riken.Metabolomics.Lipidomics {
         }
 
         public static void setTripleAcylChainsLipidAnnotation(LipidMolecule molecule,
-            string lipidname, string lipidclassString) {
+            string lipidname, string lipidclassString)
+        {
 
             var lipidheader = lipidname.Split(' ')[0];
             var acylchains = lipidname.Split(' ')[1];
@@ -3086,7 +3290,7 @@ namespace Riken.Metabolomics.Lipidomics {
             var lipidName = lipidname; // SM d18:1/30:1
             var chainStrings = acylChainStringSeparator(lipidName);
             if (chainStrings.Count() != 3) return;
-           
+
             var sn1AcylChainString = chainStrings[0];
             var sn2AcylChainString = chainStrings[1];
             var sn3AcylChainString = chainStrings[2];
@@ -3137,10 +3341,12 @@ namespace Riken.Metabolomics.Lipidomics {
         }
 
         private static void setQuadAcylChainsLipidAnnotation(LipidMolecule molecule,
-            MspFormatCompoundInformationBean query) {
+            MspFormatCompoundInformationBean query)
+        {
 
             var nameArray = query.Name.Split(';').ToArray();
-            if (nameArray.Length == 2) { // e.g. in positive PC Na adduct, only sublevel information is resigtered like PC 36:3; [M+Na]+
+            if (nameArray.Length == 2)
+            { // e.g. in positive PC Na adduct, only sublevel information is resigtered like PC 36:3; [M+Na]+
                 setSingleAcylChainsLipidAnnotation(molecule, query);
                 return;
             }
@@ -3153,7 +3359,8 @@ namespace Riken.Metabolomics.Lipidomics {
             var adductInfo = nameArray[2].Trim();
 
             var chainStrings = acylChainStringSeparator(lipidName);
-            if (chainStrings.Count() == 2) { //e.g. in positive CL, the chains are defined as double acyls
+            if (chainStrings.Count() == 2)
+            { //e.g. in positive CL, the chains are defined as double acyls
                 setDoubleAcylChainsLipidAnnotation(molecule, query);
                 return;
             }
@@ -3210,7 +3417,8 @@ namespace Riken.Metabolomics.Lipidomics {
         }
 
         public static void setQuadAcylChainsLipidAnnotation(LipidMolecule molecule,
-            string lipidname, string lipidclassString) {
+            string lipidname, string lipidclassString)
+        {
 
             var lipidheader = lipidname.Split(' ')[0];
             var acylchains = lipidname.Split(' ')[1];
@@ -3278,7 +3486,8 @@ namespace Riken.Metabolomics.Lipidomics {
             molecule.Sn4Oxidizedount = sn4OxidizedCount;
         }
 
-        private static void setChainPropertiesVS2(string chainString, out int carbonCount, out int doubleBondCount, out int oxidizedCount) {
+        private static void setChainPropertiesVS2(string chainString, out int carbonCount, out int doubleBondCount, out int oxidizedCount)
+        {
 
             carbonCount = 0;
             doubleBondCount = 0;
@@ -3288,9 +3497,10 @@ namespace Riken.Metabolomics.Lipidomics {
             //try convertion
             var isPlasmenyl = chainString.Contains("P-") ? true : false;
             chainString = chainString.Replace("O-", "").Replace("P-", "").Replace("N-", "").Replace("e", "").Replace("p", "").Replace("m", "").Replace("n-", "").Replace("d", "").Replace("t", "");
-            
+
             // for oxidized moiety parser
-            if (chainString.Contains(";")) { // e.g. 18:2;2O, 18:2;(2OH)
+            if (chainString.Contains(";"))
+            { // e.g. 18:2;2O, 18:2;(2OH)
                 var chain = chainString.Split(';')[0];
                 var oxidizedmoiety = chainString.Split(';')[1]; //2O, (2OH)
                 //modified by MT 2020/12/11 & 2021/01/12
@@ -3305,10 +3515,13 @@ namespace Riken.Metabolomics.Lipidomics {
                 }
                 int.TryParse(expectedOxCount, out oxidizedCount);
                 chainString = chain;
-            } else if (chainString.Contains("+")) { //20:3+3O
+            }
+            else if (chainString.Contains("+"))
+            { //20:3+3O
                 var chain = chainString.Split('+')[0]; // 20:3
                 var expectedOxCount = chainString.Split('+')[1].Replace("O", ""); //2
-                if (expectedOxCount == string.Empty || expectedOxCount == "") {
+                if (expectedOxCount == string.Empty || expectedOxCount == "")
+                {
                     expectedOxCount = "1";
                 }
                 int.TryParse(expectedOxCount, out oxidizedCount);
@@ -3317,11 +3530,14 @@ namespace Riken.Metabolomics.Lipidomics {
 
 
             // for SN1/SN2 string parser 
-            if (chainString.Contains("-SN")) {
-                if (chainString.Contains("-SN1")) {
+            if (chainString.Contains("-SN"))
+            {
+                if (chainString.Contains("-SN1"))
+                {
                     chainString = chainString.Replace("-SN1", "");
                 }
-                else if (chainString.Contains("-SN2")) {
+                else if (chainString.Contains("-SN2"))
+                {
                     chainString = chainString.Replace("-SN2", "");
                 }
             }
@@ -3334,18 +3550,20 @@ namespace Riken.Metabolomics.Lipidomics {
             if (isPlasmenyl) doubleBondCount++;
         }
 
-        private static void setChainProperties(string chainString, out int carbonCount, out int doubleBondCount, out int oxidizedCount) {
+        private static void setChainProperties(string chainString, out int carbonCount, out int doubleBondCount, out int oxidizedCount)
+        {
 
             carbonCount = -1;
             doubleBondCount = -1;
             oxidizedCount = -1;
 
             //pattern: 18:1, 18:1e, 18:1p d18:1, t20:0, n-18:0, N-19:0, 20:3+3O, 20:3+2O(2Cyc), 18:2-SN1, O-18:1, P-18:1, N-18:1, 16:0;O, 18:2;2O, 18:2;(2OH)
-           
+
             if (chainString.Contains("e") || chainString.Contains("p") || chainString.Contains("m") ||
                 chainString.StartsWith("d") || chainString.StartsWith("t") || chainString.StartsWith("n-") || chainString.StartsWith("N-") ||
-                chainString.StartsWith("O-") || chainString.StartsWith("P-")) {
-                chainString = chainString.Replace("O-","").Replace("P-", "").Replace("N-", "").Replace("e", "").Replace("p", "").Replace("m", "").Replace("n-", "").Replace("d", "").Replace("t", "");
+                chainString.StartsWith("O-") || chainString.StartsWith("P-"))
+            {
+                chainString = chainString.Replace("O-", "").Replace("P-", "").Replace("N-", "").Replace("e", "").Replace("p", "").Replace("m", "").Replace("n-", "").Replace("d", "").Replace("t", "");
 
                 var carbon = chainString.Split(':')[0];
                 var doublebond = chainString.Split(':')[1];
@@ -3354,10 +3572,14 @@ namespace Riken.Metabolomics.Lipidomics {
                 oxidizedCount = 0;
             }
 
-            if (chainString.Contains("-SN1") || chainString.Contains("-SN2")) {
-                if (chainString.Contains("-SN1")) {
+            if (chainString.Contains("-SN1") || chainString.Contains("-SN2"))
+            {
+                if (chainString.Contains("-SN1"))
+                {
                     chainString = chainString.Replace("-SN1", "");
-                } else if (chainString.Contains("-SN2")) {
+                }
+                else if (chainString.Contains("-SN2"))
+                {
                     chainString = chainString.Replace("-SN2", "");
                 }
                 var carbon = chainString.Split(':')[0];
@@ -3367,18 +3589,22 @@ namespace Riken.Metabolomics.Lipidomics {
                 oxidizedCount = 0;
             }
 
-            if (chainString.Contains("+") && chainString.Contains("(")) { // it means 20:3+2O(2Cyc) case
+            if (chainString.Contains("+") && chainString.Contains("("))
+            { // it means 20:3+2O(2Cyc) case
                 var separatedArray = chainString.Replace("Cyc)", "").Split('(');
-                if (separatedArray.Length == 2) {
+                if (separatedArray.Length == 2)
+                {
                     int cycleCount;
-                    if (int.TryParse(separatedArray[1], out cycleCount)) {
+                    if (int.TryParse(separatedArray[1], out cycleCount))
+                    {
                         var oxAcylString = separatedArray[0]; // should be 20:3+2O
                         var acylString = oxAcylString.Split('+')[0]; // 20:3
                         var carbonString = acylString.Split(':')[0]; //20
                         var doublebondString = acylString.Split(':')[1]; //3
                         var oxCountString = oxAcylString.Split('+')[1].Replace("O", ""); //2
 
-                        if (oxCountString == string.Empty || oxCountString == "") {
+                        if (oxCountString == string.Empty || oxCountString == "")
+                        {
                             oxCountString = "1";
                         }
 
@@ -3389,12 +3615,14 @@ namespace Riken.Metabolomics.Lipidomics {
                     }
                 }
             }
-            else if (chainString.Contains("+")) { // it means 20:3+2O case
+            else if (chainString.Contains("+"))
+            { // it means 20:3+2O case
                 var acylString = chainString.Split('+')[0]; // 20:3
                 var carbonString = acylString.Split(':')[0]; //20
                 var doublebondString = acylString.Split(':')[1]; //3
                 var oxCountString = chainString.Split('+')[1].Replace("O", ""); //2
-                if (oxCountString == string.Empty || oxCountString == "") {
+                if (oxCountString == string.Empty || oxCountString == "")
+                {
                     oxCountString = "1";
                 }
 
@@ -3402,7 +3630,8 @@ namespace Riken.Metabolomics.Lipidomics {
                 int.TryParse(oxCountString, out oxidizedCount);
                 int.TryParse(doublebondString, out doubleBondCount);
             }
-            else {
+            else
+            {
                 var carbon = chainString.Split(':')[0];
                 var doublebond = chainString.Split(':')[1];
                 int.TryParse(carbon, out carbonCount);
@@ -3411,72 +3640,90 @@ namespace Riken.Metabolomics.Lipidomics {
             }
         }
 
-        private static void getPrefixSuffix(string chainString, out string prefix, out string suffix) {
+        private static void getPrefixSuffix(string chainString, out string prefix, out string suffix)
+        {
 
             prefix = string.Empty;
             suffix = string.Empty;
 
-            if (chainString.Contains("e")) {
+            if (chainString.Contains("e"))
+            {
                 suffix = "e";
             }
-            else if (chainString.Contains("p")) {
+            else if (chainString.Contains("p"))
+            {
                 suffix = "p";
             }
 
-            if (chainString.Contains("m")) {
+            if (chainString.Contains("m"))
+            {
                 prefix = "m";
             }
-            else if (chainString.Contains("d")) {
+            else if (chainString.Contains("d"))
+            {
                 prefix = "d";
             }
-            else if (chainString.Contains("t")) {
+            else if (chainString.Contains("t"))
+            {
                 prefix = "t";
             }
-            else if (chainString.Contains("n-")) {
+            else if (chainString.Contains("n-"))
+            {
                 prefix = "n-";
             }
         }
 
 
         // this method is not capable of oxidized form.
-        private static List<string> acylChainStringSeparator(string moleculeString) {
+        private static List<string> acylChainStringSeparator(string moleculeString)
+        {
             var chains = new List<string>();
             string[] acylArray = null;
 
-            if (moleculeString.Contains("-O-")) {
+            if (moleculeString.Contains("-O-"))
+            {
                 var cMolString = moleculeString.Replace("-O-", "-");
-                if (cMolString.Contains("/")) {
+                if (cMolString.Contains("/"))
+                {
                     cMolString = cMolString.Replace("/", "-");
                 }
 
                 acylArray = cMolString.Split(' ')[1].Split('-');
             }
-            else if (moleculeString.Contains("(") && !moleculeString.Contains("Cyc")) {
+            else if (moleculeString.Contains("(") && !moleculeString.Contains("Cyc"))
+            {
 
-                if (moleculeString.Contains("/")) {
+                if (moleculeString.Contains("/"))
+                {
                     acylArray = moleculeString.Split('(')[1].Split(')')[0].Split('/');
                 }
-                else {
+                else
+                {
                     acylArray = moleculeString.Split('(')[1].Split(')')[0].Split('-');
                 }
             }
-            else if (moleculeString.Contains("/n-")) {
+            else if (moleculeString.Contains("/n-"))
+            {
                 var cMolString = moleculeString.Replace("/n-", "-");
-                if (cMolString.Contains("/")) {
+                if (cMolString.Contains("/"))
+                {
                     cMolString = cMolString.Replace("/", "-");
                 }
 
                 acylArray = cMolString.Split(' ')[1].Split('-');
             }
-            else {
+            else
+            {
                 var cMolString = moleculeString;
-                if (cMolString.Contains("/")) {
+                if (cMolString.Contains("/"))
+                {
                     cMolString = cMolString.Replace("/", "-");
                 }
                 acylArray = cMolString.Split(' ')[1].Split('-');
             }
 
-            for (int i = 0; i < acylArray.Length; i++) {
+            for (int i = 0; i < acylArray.Length; i++)
+            {
                 if (i == 0 && acylArray[i] != string.Empty) chains.Add(acylArray[i]);
                 if (i == 1 && acylArray[i] != string.Empty) chains.Add(acylArray[i]);
                 if (i == 2 && acylArray[i] != string.Empty) chains.Add(acylArray[i]);
@@ -3485,7 +3732,8 @@ namespace Riken.Metabolomics.Lipidomics {
             return chains;
         }
 
-        private static List<string> acylChainStringSeparatorVS2(string moleculeString) {
+        private static List<string> acylChainStringSeparatorVS2(string moleculeString)
+        {
 
             if (moleculeString.Split(' ').Length == 1) return null;
 
@@ -3507,13 +3755,15 @@ namespace Riken.Metabolomics.Lipidomics {
             {
                 RetrieveSterolHeaderChainStrings(moleculeString, out headerString, out chainString);
             }
-            else {
+            else
+            {
                 chainString = moleculeString.Substring(headerString.Length + 1);
             }
             List<string> chains = null;
             string[] acylArray = null;
 
             // d-substituted compound support 20220920
+            if (chainString.Contains('|')) return null;
             Regex reg = new Regex(@"\(d([0-9]*)\)");
             chainString = reg.Replace(chainString, "");
 
@@ -3522,14 +3772,17 @@ namespace Riken.Metabolomics.Lipidomics {
             var pattern4 = @"(?<chain1>.+?)(/)(?<chain2>.+?)(\(FA )(?<chain3>.+?)(\))";
             var pattern12 = @"(\(FA )(?<chain2>.+?)(\))(?<chain1>.+?$)";
 
-            if (chainString.Contains("/") && chainString.Contains("(FA")) { // pattern 4
+            if (chainString.Contains("/") && chainString.Contains("(FA"))
+            { // pattern 4
                 var regexes = Regex.Match(chainString, pattern4).Groups;
                 chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value, regexes["chain3"].Value };
-            } 
-            else if (chainString.Contains("(FA")) {  // pattern 3
+            }
+            else if (chainString.Contains("(FA"))
+            {  // pattern 3
                 var regexes = Regex.Match(chainString, pattern3).Groups;
                 var chain1strings = regexes["chain1"].Value;
-                if (chain1strings.Contains("_")) {
+                if (chain1strings.Contains("_"))
+                {
                     chains = new List<string>();
                     foreach (var chainstring in chain1strings.Split('_').ToArray()) chains.Add(chainstring);
                     chains.Add(regexes["chain2"].Value);
@@ -3546,43 +3799,51 @@ namespace Riken.Metabolomics.Lipidomics {
                 }
                 //Console.WriteLine();
             }
-            else if (chainString.Contains("(O-") && chainString.Contains("/")) { // pattern 2
+            else if (chainString.Contains("(O-") && chainString.Contains("/"))
+            { // pattern 2
                 var regexes = Regex.Match(chainString, pattern2).Groups;
                 chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value, regexes["chain3"].Value };
                 //Console.WriteLine();
             }
-            else {
+            else
+            {
                 chainString = chainString.Replace('/', '_');
                 acylArray = chainString.Split('_');
                 chains = new List<string>();
-                for (int i = 0; i < acylArray.Length; i++) {
+                for (int i = 0; i < acylArray.Length; i++)
+                {
                     if (i == 0 && acylArray[i] != string.Empty) chains.Add(acylArray[i]);
                     if (i == 1 && acylArray[i] != string.Empty) chains.Add(acylArray[i]);
                     if (i == 2 && acylArray[i] != string.Empty) chains.Add(acylArray[i]);
                     if (i == 3 && acylArray[i] != string.Empty) chains.Add(acylArray[i]);
                 }
             }
-           
+
             return chains;
         }
 
-        public static void RetrieveSterolHeaderChainStrings(string moleculeString, out string headerString, out string chainString) {
+        public static void RetrieveSterolHeaderChainStrings(string moleculeString, out string headerString, out string chainString)
+        {
 
             headerString = string.Empty;
             chainString = string.Empty;
-            if (moleculeString.Contains("/")) {
+            if (moleculeString.Contains("/"))
+            {
                 var splitterArray = moleculeString.Split('/');
                 chainString = splitterArray[splitterArray.Length - 1];
             }
-            else {
+            else
+            {
                 var splitterArray = moleculeString.Split(' ');
                 chainString = splitterArray[splitterArray.Length - 1];
             }
         }
 
-        public static List<string> GetLipidClasses() {
+        public static List<string> GetLipidClasses()
+        {
             var names = new List<string>();
-            foreach (var lipid in Enum.GetValues(typeof(LbmClass)).Cast<LbmClass>()) {
+            foreach (var lipid in Enum.GetValues(typeof(LbmClass)).Cast<LbmClass>())
+            {
                 var cName = ConvertLbmClassEnumToMsdialClassDefinitionVS2(lipid);
                 if (cName != "Undefined" && !names.Contains(cName))
                     names.Add(cName);
@@ -3590,8 +3851,10 @@ namespace Riken.Metabolomics.Lipidomics {
             return names;
         }
 
-        public static string ConvertLbmClassEnumToMsdialClassDefinition(LbmClass lipidclass) {
-            switch (lipidclass) {
+        public static string ConvertLbmClassEnumToMsdialClassDefinition(LbmClass lipidclass)
+        {
+            switch (lipidclass)
+            {
                 case LbmClass.MG: return "MAG";
                 case LbmClass.DG: return "DAG";
                 case LbmClass.TG: return "TAG";
@@ -3738,8 +4001,10 @@ namespace Riken.Metabolomics.Lipidomics {
             }
         }
 
-        public static string ConvertLbmClassEnumToMsdialClassDefinitionVS2(LbmClass lipidclass) {
-            switch (lipidclass) {
+        public static string ConvertLbmClassEnumToMsdialClassDefinitionVS2(LbmClass lipidclass)
+        {
+            switch (lipidclass)
+            {
                 case LbmClass.MG: return "MG";
                 case LbmClass.DG: return "DG";
                 case LbmClass.TG: return "TG";
@@ -3916,14 +4181,17 @@ namespace Riken.Metabolomics.Lipidomics {
             }
         }
 
-        public static string ConvertMsdialLbmStringToMsdialOfficialOntology(string lipidclass) {
+        public static string ConvertMsdialLbmStringToMsdialOfficialOntology(string lipidclass)
+        {
             var lbmclass = ConvertMsdialClassDefinitionToLbmClassEnumVS2(lipidclass);
             return ConvertLbmClassEnumToMsdialClassDefinitionVS2(lbmclass);
         }
 
 
-        public static LbmClass ConvertMsdialClassDefinitionToLbmClassEnum(string lipidclass) {
-            switch (lipidclass) {
+        public static LbmClass ConvertMsdialClassDefinitionToLbmClassEnum(string lipidclass)
+        {
+            switch (lipidclass)
+            {
                 case "MAG": return LbmClass.MG;
                 case "DAG": return LbmClass.DG;
                 case "TAG": return LbmClass.TG;
@@ -4133,8 +4401,10 @@ namespace Riken.Metabolomics.Lipidomics {
             }
         }
 
-        public static LbmClass ConvertMsdialClassDefinitionToLbmClassEnumVS2(string lipidclass) {
-            switch (lipidclass) {
+        public static LbmClass ConvertMsdialClassDefinitionToLbmClassEnumVS2(string lipidclass)
+        {
+            switch (lipidclass)
+            {
                 case "MG": return LbmClass.MG;
                 case "DG": return LbmClass.DG;
                 case "TG": return LbmClass.TG;
@@ -4376,8 +4646,10 @@ namespace Riken.Metabolomics.Lipidomics {
         }
 
 
-        public static string ConvertMsdialClassDefinitionToSuperClass(string lipidclass) {
-            switch (lipidclass) {
+        public static string ConvertMsdialClassDefinitionToSuperClass(string lipidclass)
+        {
+            switch (lipidclass)
+            {
                 case "MAG": return "Glycerolipid";
                 case "DAG": return "Glycerolipid";
                 case "TAG": return "Glycerolipid";
@@ -4571,7 +4843,8 @@ namespace Riken.Metabolomics.Lipidomics {
             }
         }
 
-        public static string ConvertMsdialClassDefinitionToSuperClassVS2(string lipidclass) {
+        public static string ConvertMsdialClassDefinitionToSuperClassVS2(string lipidclass)
+        {
 
             /*  
              *  FattyAcyls [FA]
@@ -4585,7 +4858,8 @@ namespace Riken.Metabolomics.Lipidomics {
              * 
              */
 
-            switch (lipidclass) {
+            switch (lipidclass)
+            {
 
                 case "NAE": return "FattyAcyls";
                 case "NAGly": return "FattyAcyls";
@@ -4826,13 +5100,15 @@ namespace Riken.Metabolomics.Lipidomics {
             }
         }
 
-        public static void AsciiToSerializedObject(string input, string output) {
+        public static void AsciiToSerializedObject(string input, string output)
+        {
             var queries = LbmFileParcer.Read(input);
             MspMethods.SaveMspToFile(queries, output);
             //MessagePackHandler.SaveToFile<List<MspFormatCompoundInformationBean>>(queries, output);
         }
 
-        public static List<MspFormatCompoundInformationBean> SerializedObjectToMspQeries(string input) {
+        public static List<MspFormatCompoundInformationBean> SerializedObjectToMspQeries(string input)
+        {
             //var queries = MessagePackHandler.LoadFromFile<List<MspFormatCompoundInformationBean>>(input);
             var queries = MspMethods.LoadMspFromFile(input);
             return queries;
