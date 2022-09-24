@@ -31,7 +31,13 @@
     <ProjectReference Include="..\MsdialCommonStandard\MsdialCommonStandard.csproj" />
     <ProjectReference Include="..\MsdialGcmsProcessStandard\MsdialGcmsProcessStandard.csproj" />
     <ProjectReference Include="..\MsdialLcmsProcessStandard\MsdialLcmsProcessStandard.csproj" />
-    <ProjectReference Include="..\RawDataHandlerStandard\RawDataHandlerStandard.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Reference Include="RawDataHandler">
+      <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

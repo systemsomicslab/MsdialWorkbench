@@ -52,13 +52,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -87,6 +87,13 @@
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework.Classic" />
+    <Reference Include="RawDataHandler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
+    </Reference>
+    <Reference Include="RawDataViewer">
+      <HintPath>..\Assemblies\RawDataViewer.exe</HintPath>
+    </Reference>
     <Reference Include="ReactiveProperty, Version=7.10.0.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
       <HintPath>..\packages\ReactiveProperty.7.10.0\lib\netstandard2.0\ReactiveProperty.dll</HintPath>
     </Reference>
@@ -1332,10 +1339,6 @@
     <ProjectReference Include="..\MsdialLcMsApi\MsdialLcMsApi.csproj">
       <Project>{A45C80BC-85BB-4953-AA7D-941633964F08}</Project>
       <Name>MsdialLcMsApi</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RawDataHandlerStandard\RawDataHandlerStandard.csproj">
-      <Project>{6C2831A2-F1DD-4FC6-A31B-6B9EE894298B}</Project>
-      <Name>RawDataHandlerStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
