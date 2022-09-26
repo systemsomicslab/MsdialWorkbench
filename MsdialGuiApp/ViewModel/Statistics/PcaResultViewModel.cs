@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Statistics;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Statistics;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
@@ -26,6 +27,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
         public double ComponentX { get; }
         public double ComponentY { get; }
+        public ComponentLoadingModel Model => _model;
     }
 
     internal sealed class ComponentScoreViewModel : ViewModelBase {
@@ -60,6 +62,10 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             Components = Enumerable.Range(1, model.NumberOfComponents).ToList().AsReadOnly();
             ComponentX = new ReactiveProperty<int>(1).AddTo(Disposables);
             ComponentY = new ReactiveProperty<int>(2).AddTo(Disposables);
+
+            //Brushes = model.Brushes.AsReadOnly();
+            //Brush = model.Brush.AsReadOnly();
+            Brush = model.SelectedBrush;
 
             LabelTypesSample = new List<IReadOnlyReactiveProperty<LabelTypeViewModel>>
             {
@@ -118,6 +124,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public IAxisManager<double> ScoreVerticalAxis { get; }
 
         public ReactiveCollection<ComponentLoadingViewModel> Loadings { get; }
+        //public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
+        public BrushMapData<ComponentLoadingViewModel> Brush { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingHorizontalAxis { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingVerticalAxis { get; }
         public IAxisManager<double> ComponentXLoadingHorizontalAxis { get; }

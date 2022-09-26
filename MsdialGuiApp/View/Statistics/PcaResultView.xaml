@@ -213,11 +213,13 @@
                                               DataType="{x:Type vm:ComponentLoadingViewModel}"
                                               HorizontalProperty="ComponentX"
                                               VerticalProperty="ComponentY"
+                                              PointBrush="{Binding Brush.Mapper}"
                                               Radius="{Binding SpotSizeMetabolite.Value}"/>
                     <chart:Annotator ItemsSource="{Binding Loadings}"
                                      HorizontalPropertyName="ComponentX"
                                      VerticalPropertyName="ComponentY"
                                      LabelPropertyName="{Binding LabelTypeMetabolite.Value.PropertyName}"
+                                     Brush="Red"
                                      ContentAlignment="BottomCenter"/>
                 </Grid>
             </chart:SimpleChartControl>
