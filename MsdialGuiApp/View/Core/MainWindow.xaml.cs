@@ -48,6 +48,8 @@ namespace CompMs.App.Msdial.View.Core
 
             broker = MessageBroker.Default;
 
+            broker.ToObservable<ProgressBarMultiContainerRequest>()
+                .Subscribe(ShowMultiProgressBarWindow);
             broker.ToObservable<ProgressBarMultiContainerVM>()
                 .Subscribe(ShowProgressBar);
             broker.ToObservable<ExperimentSpectrumViewModel>()
@@ -84,6 +86,27 @@ namespace CompMs.App.Msdial.View.Core
                     }
                 }
             });
+        }
+
+        private void ShowMultiProgressBarWindow(ProgressBarMultiContainerRequest request) {
+            using (var viewmodel = new ProgressBarMultiContainerVM(request)) {
+                var dialog = new ProgressBarMultiContainerWindow
+                {
+                    DataContext = viewmodel,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                dialog.Loaded += async (s, e) =>
+                {
+                    await viewmodel.RunAsync();
+                    viewmodel.Result = true;
+
+                    dialog.DialogResult = true;
+                    dialog.Close();
+                };
+                dialog.ShowDialog();
+                request.Result = viewmodel.Result;
+            }
         }
 
         private void ShowProgressBar(ProgressBarMultiContainerVM viewmodel) {

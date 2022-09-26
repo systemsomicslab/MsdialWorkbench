@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Setting;
@@ -11,7 +12,6 @@ using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
-using CompMs.Common.MessagePack;
 using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -24,17 +24,14 @@ using CompMs.MsdialImmsCore.Export;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using Reactive.Bindings.Notifiers;
-using System.Threading;
-using CompMs.Common.DataObj;
-using CompMs.App.Msdial.Model.Search;
 
 namespace CompMs.App.Msdial.Model.Imms
 {
@@ -107,7 +104,7 @@ namespace CompMs.App.Msdial.Model.Imms
             var processOption = option;
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                if (!ProcessAnnotaion(null, Storage))
+                if (!ProcessAnnotaion(Storage))
                     return Task.CompletedTask;
             }
 
@@ -120,33 +117,34 @@ namespace CompMs.App.Msdial.Model.Imms
             return LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token);
         }
 
-        private bool ProcessAnnotaion(Window owner, IMsdialDataStorage<MsdialImmsParameter> storage) {
-            var vm = new ProgressBarMultiContainerVM
-            {
-                MaxValue = storage.AnalysisFiles.Count,
-                CurrentValue = 0,
-                ProgressBarVMs = new ObservableCollection<ProgressBarVM>(
-                        storage.AnalysisFiles.Select(file => new ProgressBarVM { Label = file.AnalysisFileName })
-                    ),
-            };
-            var pbmcw = new ProgressBarMultiContainerWindow
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
+        private bool ProcessAnnotaion(IMsdialDataStorage<MsdialImmsParameter> storage) {
+            var request = new ProgressBarMultiContainerRequest(
+                async vm =>
+                {
+                    var tasks = new List<Task>();
+                    var usable = Math.Max(Storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
+                    using (var sem = new SemaphoreSlim(usable, usable)) {
+                        foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
+                            var task = Task.Run(async () =>
+                            {
+                                await sem.WaitAsync();
+                                try {
+                                    FileProcess.Run(analysisfile, storage, null, null, ProviderFactory.Create(analysisfile), matchResultEvaluator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v);
+                                    vm.Increment();
+                                }
+                                finally {
+                                    sem.Release();
+                                }
+                            });
+                            tasks.Add(task);
+                        }
+                        await Task.WhenAll(tasks).ConfigureAwait(false);
+                    }
+                },
+                storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
+            _broker.Publish(request);
 
-            pbmcw.Loaded += async (s, e) => {
-                foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                    await Task.Run(() => FileProcess.Run(analysisfile, storage, null, null, ProviderFactory.Create(analysisfile), matchResultEvaluator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v));
-                    vm.CurrentValue++;
-                }
-                pbmcw.Close();
-            };
-
-            pbmcw.ShowDialog();
-
-            return true;
+            return request.Result ?? false;
         }
 
         private bool ProcessAlignment(Window owner, IMsdialDataStorage<MsdialImmsParameter> storage) {

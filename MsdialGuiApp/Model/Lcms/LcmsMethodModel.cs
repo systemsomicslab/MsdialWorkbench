@@ -156,7 +156,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var processOption = option;
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                if (!ProcessAnnotaion(Application.Current.MainWindow, Storage))
+                if (!ProcessAnnotaion(Storage))
                     return;
             }
 
@@ -219,38 +219,20 @@ namespace CompMs.App.Msdial.Model.Lcms
             return new EadLipidomicsAnnotationProcess<IAnnotationQuery>(containerPairs, eadAnnotationQueryFactoryTriple, mapper);
         }
 
-        public bool ProcessAnnotaion(Window owner, IMsdialDataStorage<MsdialLcmsParameter> storage) {
-            var vm = new ProgressBarMultiContainerVM
-            {
-                MaxValue = storage.AnalysisFiles.Count,
-                CurrentValue = 0,
-                ProgressBarVMs = new ObservableCollection<ProgressBarVM>(
-                        storage.AnalysisFiles.Select(file => new ProgressBarVM { Label = file.AnalysisFileName })
-                    ),
-            };
-            var pbmcw = new ProgressBarMultiContainerWindow
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-
-            pbmcw.Loaded += async (s, e) => {
-                var tasks = new List<Task>();
-                var current = 0;
-                var processor = new MsdialLcMsApi.Process.FileProcess(providerFactory, storage, annotationProcess, matchResultEvaluator);
-                var thread = GetNumberOfThreadToBeUsed(storage.Parameter.NumThreads);
-                await processor.RunAllAsync(
-                    storage.AnalysisFiles,
-                    vm.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
-                    thread == 1 ? 1 : (int)(thread * 0.5),
-                    () => { Interlocked.Increment(ref current); vm.CurrentValue = current; });
-
-                pbmcw.DialogResult = true;
-                pbmcw.Close();
-            };
-
-            return pbmcw.ShowDialog() ?? false;
+        public bool ProcessAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage) {
+            var request = new ProgressBarMultiContainerRequest(
+                vm_ =>
+                {
+                    var processor = new MsdialLcMsApi.Process.FileProcess(providerFactory, storage, annotationProcess, matchResultEvaluator);
+                    return processor.RunAllAsync(
+                        storage.AnalysisFiles,
+                        vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
+                        Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
+                        vm_.Increment);
+                },
+                storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
+            _broker.Publish(request);
+            return request.Result ?? false;
         }
 
         public bool ProcessSeccondAnnotaion4ShotgunProteomics(Window owner, IMsdialDataStorage<MsdialLcmsParameter> storage) {

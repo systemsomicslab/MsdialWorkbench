@@ -3,13 +3,37 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.Graphics.UI.ProgressBar
 {
-    public class ProgressBarMultiContainerVM : ViewModelBase
+    public sealed class ProgressBarMultiContainerRequest : BindableBase {
+        public ProgressBarMultiContainerRequest(Func<ProgressBarMultiContainerVM, Task> asyncAction, IReadOnlyList<string> labels) {
+            AsyncAction = asyncAction;
+            Labels = labels;
+        }
+
+        public Func<ProgressBarMultiContainerVM, Task> AsyncAction { get; }
+        public IReadOnlyList<string> Labels { get; }
+        public bool? Result { get; set; } = null;
+    }
+
+    public sealed class ProgressBarMultiContainerVM : ViewModelBase
     {
+        private List<Func<Task>> _actions = new List<Func<Task>>();
+
+        public ProgressBarMultiContainerVM() {
+            ProgressBarVMs = new ObservableCollection<ProgressBarVM>();
+        }
+
+        public ProgressBarMultiContainerVM(ProgressBarMultiContainerRequest request) {
+            _actions.Add(() => request?.AsyncAction?.Invoke(this));
+            MaxValue = request.Labels.Count;
+            CurrentValue = 0;
+            ProgressBarVMs = new ObservableCollection<ProgressBarVM>(request.Labels.Select(label => new ProgressBarVM { Label = label, }));
+        }
+
         public int MaxValue {
             get => maxValue;
             set => SetProperty(ref maxValue, value);
@@ -19,22 +43,27 @@ namespace CompMs.Graphics.UI.ProgressBar
             get => currentValue;
             set => SetProperty(ref currentValue, value);
         }
+        private int maxValue = 100, currentValue = 0;
 
         public ObservableCollection<ProgressBarVM> ProgressBarVMs {
             get => progressBarVMs;
             set => SetProperty(ref progressBarVMs, value);
         }
-
-        private int maxValue = 100, currentValue = 0;
         private ObservableCollection<ProgressBarVM> progressBarVMs;
 
-        public ProgressBarMultiContainerVM() {
-            ProgressBarVMs = new ObservableCollection<ProgressBarVM>();
+        public bool? Result {
+            get => _result;
+            set => SetProperty(ref _result, value);
         }
+        private bool? _result = null;
 
-        private List<Func<Task>> _actions = new List<Func<Task>>();
         public void AddAction(Func<Task> action) {
             _actions.Add(action);
+        }
+
+        public void Increment() {
+            Interlocked.Increment(ref currentValue);
+            OnPropertyChanged(nameof(CurrentValue));
         }
 
         public Task RunAsync() {
@@ -44,11 +73,5 @@ namespace CompMs.Graphics.UI.ProgressBar
             }
             return Task.WhenAll(tasks);
         }
-
-        public bool? Result {
-            get => _result;
-            set => SetProperty(ref _result, value);
-        }
-        private bool? _result = null;
     }
 }

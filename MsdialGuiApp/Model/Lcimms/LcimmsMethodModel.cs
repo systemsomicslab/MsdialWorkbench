@@ -9,9 +9,9 @@ using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
-using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Graphics.UI.ProgressBar;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -26,6 +26,7 @@ using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Process;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,13 +44,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
-        public LcimmsMethodModel(IMsdialDataStorage<MsdialLcImMsParameter> storage, ProjectBaseParameterModel projectBaseParameter)
+        public LcimmsMethodModel(IMsdialDataStorage<MsdialLcImMsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
             : base(storage.AnalysisFiles, storage.AlignmentFiles, projectBaseParameter) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
             }
 
             Storage = storage;
+            _broker = broker;
             providerFactory = new StandardDataProviderFactory();
             accProviderFactory = new LcimmsAccumulateDataProviderFactory();
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
@@ -77,6 +79,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly IDataProviderFactory<RawMeasurement> providerFactory;
         private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
+        private readonly IMessageBroker _broker;
 
         public PeakFilterModel AccumulatedPeakFilterModel { get; }
         public PeakFilterModel PeakFilterModel { get; }
@@ -125,8 +128,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var processOption = option;
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                var tasks = Storage.AnalysisFiles.Select(file => RunAnnotationProcess(file, null));
-                await Task.WhenAll(tasks).ConfigureAwait(false);
+                if (!RunFileProcess(Storage.AnalysisFiles, Storage.Parameter.ProcessBaseParam)) {
+                    return;
+                }
             }
 
             // Run Alignment
@@ -149,8 +153,33 @@ namespace CompMs.App.Msdial.Model.Lcimms
             return new LcimmsStandardAnnotationProcess(factories, parameters, evaluator, refer);
         }
 
-        public Task RunAnnotationProcess(AnalysisFileBean analysisfile, Action<int> action) {
-            return Task.Run(() => FileProcess.Run(analysisfile, providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true, reportAction: action));
+        private bool RunFileProcess(List<AnalysisFileBean> analysisFiles, ProcessBaseParameter parameter) {
+            var request = new ProgressBarMultiContainerRequest(
+                async vm =>
+                {
+                    var tasks = new List<Task>();
+                    var usable = Math.Max(parameter.UsableNumThreads / 2, 1);
+                    using (var sem = new SemaphoreSlim(usable, usable)) {
+                        foreach ((var analysisFile, var pb) in analysisFiles.Zip(vm.ProgressBarVMs)) {
+                            var task = Task.Run(async () =>
+                            {
+                                await sem.WaitAsync();
+                                try {
+                                    FileProcess.Run(analysisFile, providerFactory, accProviderFactory, annotationProcess, matchResultEvaluator, Storage, isGuiProcess: true, reportAction: (int v) => pb.CurrentValue = v);
+                                    vm.Increment();
+                                }
+                                finally {
+                                    sem.Release();
+                                }
+                            });
+                            tasks.Add(task);
+                        }
+                        await Task.WhenAll(tasks).ConfigureAwait(false);
+                    }
+                },
+                analysisFiles.Select(file => file.AnalysisFileName).ToArray());
+            _broker.Publish(request);
+            return request.Result ?? false;
         }
 
         public void RunAlignmentProcess() {

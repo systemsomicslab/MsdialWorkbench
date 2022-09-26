@@ -146,7 +146,9 @@ namespace CompMs.MsdialCore.Parameter {
         public ProcessBaseParameter ProcessBaseParam { get; set; } = new ProcessBaseParameter();
         [IgnoreMember]
         public ProcessOption ProcessOption { get => ProcessBaseParam.ProcessOption; set => ProcessBaseParam.ProcessOption = value; }
+
         [IgnoreMember]
+        // for advanced settings; ignore max ProcessorCount
         public int NumThreads { get => ProcessBaseParam.NumThreads; set => ProcessBaseParam.NumThreads = value; }
 
 
@@ -983,6 +985,9 @@ namespace CompMs.MsdialCore.Parameter {
         public ProcessOption ProcessOption { get; set; } = ProcessOption.All;
         [Key(1)]
         public int NumThreads { get; set; } = 2;
+
+        [IgnoreMember]
+        public int UsableNumThreads => Math.Max(1, Math.Min(Environment.ProcessorCount, NumThreads));
     }
 
     // MS-CleanR (post curator) parameters

@@ -123,7 +123,7 @@ namespace CompMs.App.Msdial.Model.Dims
             var processOption = option;
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                if (!RunAnnotationAll(Storage.AnalysisFiles)) {
+                if (!RunAnnotationAll(Storage.AnalysisFiles, Storage.Parameter.ProcessBaseParam)) {
                     return;
                 }
             }
@@ -136,27 +136,33 @@ namespace CompMs.App.Msdial.Model.Dims
             await LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
-        private bool RunAnnotationAll(List<AnalysisFileBean> analysisFiles) {
-            var vm = new ProgressBarMultiContainerVM
-            {
-                MaxValue = analysisFiles.Count,
-                CurrentValue = 0,
-                ProgressBarVMs = new ObservableCollection<ProgressBarVM>(analysisFiles.Select(file => new ProgressBarVM { Label = file.AnalysisFileName, })),
-            };
-
-            var tasks = new List<Task>();
-            var current = 0;
-            foreach ((var analysisfile, var pb) in Storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                Task task() => Task.Run(() =>
+        private bool RunAnnotationAll(List<AnalysisFileBean> analysisFiles, ProcessBaseParameter parameter) {
+            var request = new ProgressBarMultiContainerRequest(
+                async vm =>
                 {
-                    ProcessFile.Run(analysisfile, ProviderFactory.Create(analysisfile), Storage, annotationProcess, matchResultEvaluator, reportAction: (int v) => pb.CurrentValue = v);
-                    Interlocked.Increment(ref current);
-                    vm.CurrentValue = current;
-                });
-                vm.AddAction(task);
-            }
-            _broker.Publish(vm);
-            return vm.Result ?? false;
+                    var tasks = new List<Task>();
+                    var usable = Math.Max(parameter.UsableNumThreads / 2, 1);
+                    using (var sem = new SemaphoreSlim(usable, usable)) {
+                        foreach ((var analysisfile, var pb) in analysisFiles.Zip(vm.ProgressBarVMs)) {
+                            var task = Task.Run(async () =>
+                            {
+                                await sem.WaitAsync();
+                                try {
+                                    ProcessFile.Run(analysisfile, ProviderFactory.Create(analysisfile), Storage, annotationProcess, matchResultEvaluator, reportAction: (int v) => pb.CurrentValue = v);
+                                    vm.Increment();
+                                }
+                                finally {
+                                    sem.Release();
+                                }
+                            });
+                            tasks.Add(task);
+                        }
+                        await Task.WhenAll(tasks).ConfigureAwait(false);
+                    }
+                },
+                analysisFiles.Select(file => file.AnalysisFileName).ToArray());
+            _broker.Publish(request);
+            return request.Result ?? false;
         }
 
         public void RunAlignmentProcess() {
