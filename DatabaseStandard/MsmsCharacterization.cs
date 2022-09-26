@@ -7346,10 +7346,10 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                 if (adduct.AdductIonName == "[M+H]+")
                 {
                     // seek -H2O
-                    var threshold = 1.0;
+                    var threshold = 0.1;
                     var diagnosticMz = theoreticalMz - H2O;
                     // seek -H2O -Hex(-C6H10O5)
-                    var threshold2 = 1.0;
+                    var threshold2 = 0.1;
                     var diagnosticMz2 = diagnosticMz - 162.052833;
 
                     var threshold3 = 1.0;
@@ -7477,13 +7477,13 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                 if (adduct.AdductIonName == "[M+H]+")
                 {
                     // seek -H2O
-                    var threshold = 1.0;
+                    var threshold = 0.1;
                     var diagnosticMz = theoreticalMz - H2O;
                     // seek -H2O -Hex(-C6H10O5)
-                    var threshold2 = 1.0;
+                    var threshold2 = 0.1;
                     var diagnosticMz2 = diagnosticMz - 162.052833;
 
-                    var threshold3 = 1.0;
+                    var threshold3 = 0.1;
                     var diagnosticMz3 = diagnosticMz2 - 162.052833;
 
                     var threshold4 = 1.0;
@@ -10085,16 +10085,16 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                 if (adduct.AdductIonName == "[M+H]+")
                 {
                     // seek -H2O 
-                    var threshold1 = 10.0;
+                    var threshold1 = 5.0;
                     var diagnosticMz1 = theoreticalMz - H2O;
                     // seek -2H2O 
-                    var threshold2 = 10.0;
+                    var threshold2 = 5.0;
                     var diagnosticMz2 = diagnosticMz1 - H2O;
                     // seek -H2O -CH2O
-                    var threshold3 = 10.0;
+                    var threshold3 = 1.0;
                     var diagnosticMz3 = diagnosticMz2 - 12;
                     // frag -3H2O 
-                    var threshold4 = 10.0;
+                    var threshold4 = 5.0;
                     var diagnosticMz4 = diagnosticMz2 - H2O;
 
                     var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
@@ -14291,7 +14291,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             return new LipidMolecule()
             {
                 LipidClass = lbmClass,
-                AnnotationLevel = 2,
+                AnnotationLevel = 1,
                 SublevelLipidName = totalName,
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,
@@ -14343,7 +14343,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             return new LipidMolecule()
             {
                 LipidClass = lbmClass,
-                AnnotationLevel = 2,
+                AnnotationLevel = 1,
                 SublevelLipidName = totalName,
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,

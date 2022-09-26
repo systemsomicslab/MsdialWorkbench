@@ -925,6 +925,15 @@ namespace Riken.Metabolomics.Lipidomics
                         totalOxidizedString = totalOxidizedString.Replace("O", "");//3
                     }
 
+                    // 42:1;2O case
+                    totalDoubleBondString = bondString.Split(';')[0]; // 1
+                    if (bondString.Split(';').Length > 1)
+                    {
+                        totalOxidizedString = bondString.Split(';')[1]; //2O
+                        totalOxidizedString = totalOxidizedString.Replace("O", "");//2
+                    }
+
+
                     // Etheryzed case
                     if (totalDoubleBondString.Contains("e"))
                     {
