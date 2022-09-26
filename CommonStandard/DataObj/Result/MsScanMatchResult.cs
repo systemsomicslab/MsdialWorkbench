@@ -14,7 +14,7 @@ namespace CompMs.Common.DataObj.Result {
         Manual = 1 << 6,
     }
     public enum DataBaseSource {
-        None, Msp, Lbm, Text, Fasta, EadLipid
+        None, Msp, Lbm, Text, Fasta, EieioLipid, OadLipid
     }
 
     [MessagePackObject]

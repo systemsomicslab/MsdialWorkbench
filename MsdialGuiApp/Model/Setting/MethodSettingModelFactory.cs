@@ -114,9 +114,9 @@ namespace CompMs.App.Msdial.Model.Setting
             if (parameter.TargetOmics == TargetOmics.Lipidomics) {
                 if (model.DataBaseModels.Count == 0) {
                     if (parameter.CollistionType == CollisionType.EIEIO
-                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EadLipid)) {
+                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EieioLipid)) {
                         var databaseModel = model.AddDataBase();
-                        databaseModel.DBSource = DataBaseSource.EadLipid;
+                        databaseModel.DBSource = DataBaseSource.EieioLipid;
                     }
 
                     string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -202,9 +202,9 @@ namespace CompMs.App.Msdial.Model.Setting
             if (parameter.TargetOmics == TargetOmics.Lipidomics) {
                 if (model.DataBaseModels.Count == 0) {
                     if (parameter.CollistionType == CollisionType.EIEIO
-                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EadLipid)) {
+                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EieioLipid)) {
                         var databaseModel = model.AddDataBase();
-                        databaseModel.DBSource = DataBaseSource.EadLipid;
+                        databaseModel.DBSource = DataBaseSource.EieioLipid;
                     }
 
                     string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -275,9 +275,9 @@ namespace CompMs.App.Msdial.Model.Setting
             if (parameter.TargetOmics == TargetOmics.Lipidomics) {
                 if (model.DataBaseModels.Count == 0) {
                     if (parameter.CollistionType == CollisionType.EIEIO
-                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EadLipid)) {
+                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EieioLipid)) {
                         var databaseModel = model.AddDataBase();
-                        databaseModel.DBSource = DataBaseSource.EadLipid;
+                        databaseModel.DBSource = DataBaseSource.EieioLipid;
                     }
 
                     string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -347,9 +347,9 @@ namespace CompMs.App.Msdial.Model.Setting
             if (parameter.TargetOmics == TargetOmics.Lipidomics) {
                 if (model.DataBaseModels.Count == 0) {
                     if (parameter.CollistionType == CollisionType.EIEIO
-                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EadLipid)) {
+                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EieioLipid)) {
                         var databaseModel = model.AddDataBase();
-                        databaseModel.DBSource = DataBaseSource.EadLipid;
+                        databaseModel.DBSource = DataBaseSource.EieioLipid;
                     }
 
                     string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -419,9 +419,9 @@ namespace CompMs.App.Msdial.Model.Setting
             if (parameter.TargetOmics == TargetOmics.Lipidomics) {
                 if (model.DataBaseModels.Count == 0) {
                     if (parameter.CollistionType == CollisionType.EIEIO
-                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EadLipid)) {
+                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EieioLipid)) {
                         var databaseModel = model.AddDataBase();
-                        databaseModel.DBSource = DataBaseSource.EadLipid;
+                        databaseModel.DBSource = DataBaseSource.EieioLipid;
                     }
 
                     string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);

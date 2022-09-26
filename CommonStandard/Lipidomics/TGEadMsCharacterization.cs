@@ -10,9 +10,9 @@ namespace CompMs.Common.Lipidomics
             float tolerance, float mzBegin, float mzEnd)
         {
 
-            var defaultResult = EadMsCharacterizationUtility.GetDefaultScoreForGlycerophospholipid(
+            var defaultResult = EieioMsCharacterizationUtility.GetDefaultScoreForGlycerophospholipid(
                     scan, reference, tolerance, mzBegin, mzEnd, 0, 2, 1, 0.5);
-            return EadMsCharacterizationUtility.GetDefaultCharacterizationResultForTriacylGlycerols(molecule, defaultResult);
+            return StandardMsCharacterizationUtility.GetDefaultCharacterizationResultForTriacylGlycerols(molecule, defaultResult);
         }
     }
 }

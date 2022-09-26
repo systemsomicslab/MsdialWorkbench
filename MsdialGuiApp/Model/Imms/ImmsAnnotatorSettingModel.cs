@@ -127,7 +127,7 @@ namespace CompMs.App.Msdial.Model.Imms
                     return new ImmsMspAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
                 case DataBaseSource.Text:
                     return new ImmsTextDBAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
-                case DataBaseSource.EadLipid:
+                case DataBaseSource.EieioLipid:
                     return new ImmsEadLipidAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
                 default:
                     throw new NotSupportedException(nameof(dataBaseSettingModel.DBSource));
