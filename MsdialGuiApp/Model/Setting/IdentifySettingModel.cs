@@ -194,7 +194,7 @@ namespace CompMs.App.Msdial.Model.Setting
         private void SetEadLipidomicsAnnotatorContainer(DataBaseStorage storage) {
             foreach (var group in AnnotatorModels.OfType<IEadLipidAnnotatorSettingModel>().GroupBy(m => m.DataBaseSettingModel)) {
                 var dbModel = group.Key;
-                EadLipidDatabase db = dbModel.CreateEieioLipidDatabase();
+                EadLipidDatabase db = dbModel.DBSource == DataBaseSource.OadLipid ? dbModel.CreateOadLipidDatabase() : dbModel.CreateEieioLipidDatabase();
                 if (db is null) {
                     continue;
                 }

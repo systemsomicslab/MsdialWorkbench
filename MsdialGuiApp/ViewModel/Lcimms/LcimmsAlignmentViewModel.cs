@@ -79,6 +79,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 PeakSpotNavigatorViewModel.DtUpperValue,
                 PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
                 PeakSpotNavigatorViewModel.CommentFilterKeyword,
+                PeakSpotNavigatorViewModel.OntologyFilterKeyword,
+                PeakSpotNavigatorViewModel.AdductFilterKeyword,
                 PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
 

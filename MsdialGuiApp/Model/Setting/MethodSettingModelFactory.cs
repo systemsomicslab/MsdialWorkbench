@@ -119,6 +119,12 @@ namespace CompMs.App.Msdial.Model.Setting
                         databaseModel.DBSource = DataBaseSource.EieioLipid;
                     }
 
+                    if (parameter.CollistionType == CollisionType.OAD
+                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.OadLipid)) {
+                        var databaseModel = model.AddDataBase();
+                        databaseModel.DBSource = DataBaseSource.OadLipid;
+                    }
+
                     string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                     var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
                     var lbmFile = lbmFiles.FirstOrDefault();
@@ -207,6 +213,12 @@ namespace CompMs.App.Msdial.Model.Setting
                         databaseModel.DBSource = DataBaseSource.EieioLipid;
                     }
 
+                    if (parameter.CollistionType == CollisionType.OAD
+                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.OadLipid)) {
+                        var databaseModel = model.AddDataBase();
+                        databaseModel.DBSource = DataBaseSource.OadLipid;
+                    }
+
                     string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                     var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
                     var lbmFile = lbmFiles.FirstOrDefault();
@@ -278,6 +290,12 @@ namespace CompMs.App.Msdial.Model.Setting
                         && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EieioLipid)) {
                         var databaseModel = model.AddDataBase();
                         databaseModel.DBSource = DataBaseSource.EieioLipid;
+                    }
+
+                    if (parameter.CollistionType == CollisionType.OAD
+                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.OadLipid)) {
+                        var databaseModel = model.AddDataBase();
+                        databaseModel.DBSource = DataBaseSource.OadLipid;
                     }
 
                     string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -352,6 +370,12 @@ namespace CompMs.App.Msdial.Model.Setting
                         databaseModel.DBSource = DataBaseSource.EieioLipid;
                     }
 
+                    if (parameter.CollistionType == CollisionType.OAD
+                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.OadLipid)) {
+                        var databaseModel = model.AddDataBase();
+                        databaseModel.DBSource = DataBaseSource.OadLipid;
+                    }
+
                     string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                     var lbmFiles = Directory.GetFiles(mainDirectory, "*." + SaveFileFormat.lbm + "?", SearchOption.TopDirectoryOnly);
                     var lbmFile = lbmFiles.FirstOrDefault();
@@ -422,6 +446,12 @@ namespace CompMs.App.Msdial.Model.Setting
                         && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.EieioLipid)) {
                         var databaseModel = model.AddDataBase();
                         databaseModel.DBSource = DataBaseSource.EieioLipid;
+                    }
+
+                    if (parameter.CollistionType == CollisionType.OAD
+                        && model.DataBaseModels.All(m => m.DBSource != DataBaseSource.OadLipid)) {
+                        var databaseModel = model.AddDataBase();
+                        databaseModel.DBSource = DataBaseSource.OadLipid;
                     }
 
                     string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);

@@ -22,7 +22,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Id = id ?? throw new System.ArgumentNullException(nameof(id));
             Priority = priority;
             EadLipidDatabase = db ?? throw new System.ArgumentNullException(nameof(db));
-            scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EIEIO, true);
+            if (db.Source == DataBaseSource.OadLipid) {
+                scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.OAD, true);
+            }
+            else {
+                scorer = new MsReferenceScorer(id, priority, TargetOmics.Lipidomics, SourceType.GeneratedLipid, CollisionType.EIEIO, true);
+            }
             Parameter = parameter ?? throw new System.ArgumentNullException(nameof(parameter));
             evaluator = MsScanMatchResultEvaluator.CreateEvaluator(Parameter);
         }

@@ -8,6 +8,7 @@
               xmlns:properties="clr-namespace:CompMs.App.Msdial.Properties"
               xmlns:progressbar="clr-namespace:CompMs.Graphics.UI.ProgressBar;assembly=ChartDrawing"
               mc:Ignorable="d"
+              Icon="/Resources/msdial_icon.ico"
               d:DataContext="{d:DesignInstance Type={x:Type vm:MainWindowVM}}"
               Title="{Binding ProjectFile, StringFormat='MS-DIAL alpha version {0}'}" Height="800" Width="1280">
     <i:Interaction.Triggers>

@@ -78,6 +78,22 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 .Subscribe()
                 .AddTo(Disposables);
 
+            OntologyFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
+            OntologyFilterKeyword
+                .Where(keywords => !(keywords is null))
+                .Select(keywords => Observable.FromAsync(token => model.SetOntologyKeywordsAsync(keywords.Split(), token)))
+                .Switch()
+                .Subscribe()
+                .AddTo(Disposables);
+
+            AdductFilterKeyword = new ReactivePropertySlim<string>(string.Empty).AddTo(Disposables);
+            AdductFilterKeyword
+                .Where(keywords => !(keywords is null))
+                .Select(keywords => Observable.FromAsync(token => model.SetAdductKeywordsAsync(keywords.Split(), token)))
+                .Switch()
+                .Subscribe()
+                .AddTo(Disposables);
+
             IsEditting = new ReactivePropertySlim<bool>().AddTo(Disposables);
 
             PeakSpotsView = CollectionViewSource.GetDefaultView(model.PeakSpots);
@@ -96,6 +112,8 @@ namespace CompMs.App.Msdial.ViewModel.Search
                 MetaboliteFilterKeyword.ToUnit(),
                 ProteinFilterKeyword.ToUnit(),
                 CommentFilterKeyword.ToUnit(),
+                OntologyFilterKeyword.ToUnit(),
+                AdductFilterKeyword.ToUnit(),
             }.Merge();
 
             var ifIsEditting = needRefresh.Take(1).Zip(IsEditting.Where(x => !x)).Select(x => x.First);
@@ -140,6 +158,8 @@ namespace CompMs.App.Msdial.ViewModel.Search
         public ReactivePropertySlim<string> MetaboliteFilterKeyword { get; }
         public ReactivePropertySlim<string> ProteinFilterKeyword { get; }
         public ReactivePropertySlim<string> CommentFilterKeyword { get; }
+        public ReactivePropertySlim<string> OntologyFilterKeyword { get; }
+        public ReactivePropertySlim<string> AdductFilterKeyword { get; }
 
         public PeakFilterViewModel PeakFilterViewModel { get; }
 
