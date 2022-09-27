@@ -12,7 +12,12 @@
     <ProjectReference Include="..\IsotopeRatioCalculatorStandard\IsotopeRatioCalculatorStandard.csproj" />
     <ProjectReference Include="..\MathematicsStandard\MathematicsStandard.csproj" />
     <ProjectReference Include="..\MolecularFormulaFinderStandard\MolecularFormulaFinderStandard.csproj" />
-    <ProjectReference Include="..\RawDataHandlerStandard\RawDataHandlerStandard.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="RawDataHandler">
+      <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

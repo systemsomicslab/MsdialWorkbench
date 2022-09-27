@@ -6887,7 +6887,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                             var acylCarbon = totalCarbon - sphCarbon;
                             var acylDouble = totalDoubleBond - sphDouble;
-                            var acylFragment = fattyacidProductIon(acylCarbon, acylDouble) + MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass; // 
+                            var acylFragment = acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.NitrogenMass
+                                + MassDiffDictionary.HydrogenMass * 4 + 12 * 2 + MassDiffDictionary.OxygenMass - Proton; // as [FAA+C2H3-H]- fix 20220905
                             //Console.WriteLine("HexCer-O " + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble + " " + acylFragment);
                             var query = new List<Peak> {
                                 new Peak() { Mz = acylFragment, Intensity = 0.1 }
@@ -7302,10 +7303,17 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     var threshold3 = 1;
                     var diagnosticMz3 = diagnosticMz2 - 162.052833;
 
-                    var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
-                    var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
-                    var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
-                    if (isClassIon1Found != true || isClassIon2Found != true || isClassIon3Found != true) return null;
+                    //var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                    //var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                    //var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
+                    //if (isClassIon1Found != true || isClassIon2Found != true || isClassIon3Found != true) return null;
+
+                    var classIonFound = new List<bool>();// 20220921 fix
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3));
+                    if (classIonFound.Count(f => f == true) < 2) return null;
+
 
                     // seek [M-C18H30O15-H]- // reject Hex3Cer
                     var threshold5 = 1;
@@ -7338,20 +7346,25 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                 if (adduct.AdductIonName == "[M+H]+")
                 {
                     // seek -H2O
-                    var threshold = 1.0;
+                    var threshold = 0.1;
                     var diagnosticMz = theoreticalMz - H2O;
                     // seek -H2O -Hex(-C6H10O5)
-                    var threshold2 = 1.0;
+                    var threshold2 = 0.1;
                     var diagnosticMz2 = diagnosticMz - 162.052833;
 
                     var threshold3 = 1.0;
                     var diagnosticMz3 = diagnosticMz2 - 162.052833;
 
-                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
-                    var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
+                    //var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    //var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                    //var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
+                    //if (!isClassIonFound || !isClassIon2Found || !isClassIon3Found) return null;
 
-                    if (!isClassIonFound || !isClassIon2Found || !isClassIon3Found) return null;
+                    var classIonFound = new List<bool>();// 20220921 fix
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3));
+                    if (classIonFound.Count(f => f == true) < 2) return null;
 
                     // seek [M-C18H30O15-H]- // reject Hex3Cer
                     var threshold5 = 1;
@@ -7426,12 +7439,18 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     var threshold4 = 1;
                     var diagnosticMz4 = diagnosticMz3 - 162.052833;
 
-                    var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
-                    var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
-                    var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
-                    var isClassIon4Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz4, threshold4);
+                    //var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
+                    //var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                    //var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
+                    //var isClassIon4Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz4, threshold4);
+                    //if (isClassIon1Found != true || isClassIon2Found != true || isClassIon3Found != true || isClassIon4Found != true) return null;
 
-                    if (isClassIon1Found != true || isClassIon2Found != true || isClassIon3Found != true || isClassIon4Found != true) return null;
+                    var classIonFound = new List<bool>();// 20220921 fix
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz4, threshold4));
+                    if (classIonFound.Count(f => f == true) < 3) return null;
 
                     if (adduct.AdductIonName == "[M+CH3COO]-" || adduct.AdductIonName == "[M+Hac-H]-")
                     {
@@ -7458,24 +7477,29 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                 if (adduct.AdductIonName == "[M+H]+")
                 {
                     // seek -H2O
-                    var threshold = 1.0;
+                    var threshold = 0.1;
                     var diagnosticMz = theoreticalMz - H2O;
                     // seek -H2O -Hex(-C6H10O5)
-                    var threshold2 = 1.0;
+                    var threshold2 = 0.1;
                     var diagnosticMz2 = diagnosticMz - 162.052833;
 
-                    var threshold3 = 1.0;
+                    var threshold3 = 0.1;
                     var diagnosticMz3 = diagnosticMz2 - 162.052833;
 
                     var threshold4 = 1.0;
                     var diagnosticMz4 = diagnosticMz3 - 162.052833;
 
-                    var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
-                    var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
-                    var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
-                    var isClassIon4Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz4, threshold4);
-
-                    if (!isClassIonFound || !isClassIon2Found || !isClassIon3Found || !isClassIon4Found) return null;
+                    //var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
+                    //var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2);
+                    //var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3);
+                    //var isClassIon4Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz4, threshold4);
+                    //if (!isClassIonFound || !isClassIon2Found || !isClassIon3Found || !isClassIon4Found) return null;
+                    var classIonFound = new List<bool>(); // 20220921 fix
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold2));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold3));
+                    classIonFound.Add(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz4, threshold4));
+                    if (classIonFound.Count(f => f == true) < 3) return null;
 
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
@@ -9574,7 +9598,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                             var acylDouble = totalDoubleBond - sphDouble;
 
                             var sph1 = SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
 
                             var query = new List<Peak> {
                                 new Peak() { Mz = sph1, Intensity = 0.01 },
@@ -9647,7 +9671,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                             var acylDouble = totalDoubleBond - sphDouble;
 
                             var sph1 = SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
 
                             var query = new List<Peak> {
                                 new Peak() { Mz = sph1, Intensity = 0.01 },
@@ -9778,7 +9802,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                             var acylDouble = totalDoubleBond - sphDouble;
 
                             var sph1 = SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
 
                             var query = new List<Peak> {
                                 new Peak() { Mz = sph1, Intensity = 0.01 },
@@ -9855,7 +9879,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                             var acylDouble = totalDoubleBond - sphDouble;
 
                             var sph1 = SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
 
                             var query = new List<Peak> {
                                 new Peak() { Mz = sph1, Intensity = 0.01 },
@@ -9931,7 +9955,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                             var acylDouble = totalDoubleBond - sphDouble;
 
                             var sph1 = SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
 
                             var query = new List<Peak> {
                                 new Peak() { Mz = sph1, Intensity = 0.01 },
@@ -9987,7 +10011,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             if (maxSphDoubleBond > totalDoubleBond) maxSphDoubleBond = totalDoubleBond;
             if (adduct.IonMode == IonMode.Positive)
             { // positive ion mode 
-                if (adduct.AdductIonName == "[M+NH4]+")
+                if (adduct.AdductIonName == "[M+NH4]+" || adduct.AdductIonName == "[M+H]+")
                 {
                     // calc [M+H]+
                     var diagnosticMz = adduct.AdductIonName == "[M+NH4]+" ?
@@ -9995,7 +10019,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     // seek [M-H2O-C11H17NO9+H]+ // M-H2O-307
                     var threshold = 5.0;
-                    var diagnosticMz2 = theoreticalMz - H2O - (12 * 11 + MassDiffDictionary.HydrogenMass * 17 + MassDiffDictionary.NitrogenMass * 1 + MassDiffDictionary.OxygenMass * 9);
+                    var diagnosticMz2 = diagnosticMz - H2O - (12 * 11 + MassDiffDictionary.HydrogenMass * 17
+                        + MassDiffDictionary.NitrogenMass * 1 + MassDiffDictionary.OxygenMass * 9); // fix 20220905
                     // seek M-H2O-307-1sugar
                     var diagnosticMz3 = diagnosticMz2 - (12 * 6 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.OxygenMass * 5);
                     var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
@@ -10011,7 +10036,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                             var acylDouble = totalDoubleBond - sphDouble;
 
                             var sph1 = SphingoChainMass(sphCarbon, sphDouble) + MassDiffDictionary.HydrogenMass;
-                            var sph2 = sph1 - H2O;
+                            var sph2 = sph1 - H2O - MassDiffDictionary.OxygenMass + Proton; // fix 20220905
 
                             var query = new List<Peak> {
                                 new Peak() { Mz = sph1, Intensity = 0.01 },
@@ -10034,7 +10059,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
-            if (adduct.AdductIonName == "[M-H]-")
+            if (adduct.AdductIonName == "[M-H]-" || adduct.AdductIonName == "[M-2H]2-")
             {
                 // seek [C11H17NO8-H]-  as 306.078
                 var threshold1 = 0.01;
@@ -10060,16 +10085,16 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                 if (adduct.AdductIonName == "[M+H]+")
                 {
                     // seek -H2O 
-                    var threshold1 = 10.0;
+                    var threshold1 = 5.0;
                     var diagnosticMz1 = theoreticalMz - H2O;
                     // seek -2H2O 
-                    var threshold2 = 10.0;
+                    var threshold2 = 5.0;
                     var diagnosticMz2 = diagnosticMz1 - H2O;
                     // seek -H2O -CH2O
-                    var threshold3 = 10.0;
+                    var threshold3 = 1.0;
                     var diagnosticMz3 = diagnosticMz2 - 12;
                     // frag -3H2O 
-                    var threshold4 = 10.0;
+                    var threshold4 = 5.0;
                     var diagnosticMz4 = diagnosticMz2 - H2O;
 
                     var isClassIon1Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz1, threshold1);
@@ -10079,12 +10104,12 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
                     var trueCount = 0;
                     if (isClassIon1Found) trueCount++;
-                    if (isClassIon2Found) trueCount++;
+                    //if (isClassIon2Found) trueCount++;
                     if (isClassIon3Found) trueCount++;
                     //if (isClassIon4Found) trueCount++;
 
                     //if (isClassIon1Found == !true || isClassIon2Found == !true || isClassIon3Found == !true || isClassIon4Found == true) return null;
-                    if (trueCount < 3) return null;
+                    if (trueCount < 2) return null;
                     var candidates = new List<LipidMolecule>();
                     //var query = new List<Peak> {
                     //            new Peak() { Mz = diagnosticMz1, Intensity = threshold1 },
@@ -14266,7 +14291,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             return new LipidMolecule()
             {
                 LipidClass = lbmClass,
-                AnnotationLevel = 2,
+                AnnotationLevel = 1,
                 SublevelLipidName = totalName,
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,
@@ -14318,7 +14343,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             return new LipidMolecule()
             {
                 LipidClass = lbmClass,
-                AnnotationLevel = 2,
+                AnnotationLevel = 1,
                 SublevelLipidName = totalName,
                 LipidName = lipidName,
                 TotalCarbonCount = totalCarbon,

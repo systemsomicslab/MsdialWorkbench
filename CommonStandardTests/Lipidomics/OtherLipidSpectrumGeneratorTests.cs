@@ -21,6 +21,8 @@ namespace CompMs.Common.Lipidomics.Tests
 
             var expects = new[]
             {
+                265.25259    ,// 18:1(11) acyl+
+                311.23694    ,// 22:6(4,7,10,13,16,19) acyl+
                 339.2893715    ,//Sn2 FA loss
                 357.2999362 ,//Sn2 Acyl loss
                 365.2686361 ,//Sn2-1-H
@@ -153,6 +155,8 @@ namespace CompMs.Common.Lipidomics.Tests
 
             var expects = new[]
             {
+                265.25259    ,// 18:1(11) acyl+
+                311.23694    ,// 22:6(4,7,10,13,16,19) acyl+
                 339.2893715    ,//Sn2 FA loss
                 357.2999362 ,//Sn2 Acyl loss
                 365.2686361 ,//Sn2-1-H
@@ -1477,6 +1481,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 227.16366, // Acyl 16:1(11) C10-H
                 228.17149, // Acyl 16:1(11) C10
                 229.17931, // Acyl 16:1(11) C10+H
+                237.22129, // 16:1(11) acyl+
                 240.17149, // Acyl 16:1(11) C11-H
                 241.17931, // Acyl 16:1(11) C11
                 242.18714, // Acyl 16:1(11) C11+H
@@ -1545,6 +1550,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 227.16366, // Acyl 16:1(11) C10-H
                 228.17149, // Acyl 16:1(11) C10
                 229.17931, // Acyl 16:1(11) C10+H
+                237.22129, // 16:1(11) acyl+
                 240.17149, // Acyl 16:1(11) C11-H
                 241.17931, // Acyl 16:1(11) C11
                 242.18714, // Acyl 16:1(11) C11+H
@@ -1582,6 +1588,8 @@ namespace CompMs.Common.Lipidomics.Tests
 
             var expects = new[]
             {
+                98.034414, // -16:1(11)-O
+                113.02150, // -16:1(11)
                 141.01587, // Acyl 16:1(11) C1-H
                 142.02369, // Acyl 16:1(11) C1
                 143.03152, // Acyl 16:1(11) C1+H

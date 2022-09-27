@@ -64,6 +64,7 @@ namespace CompMs.Graphics.Chart
                 nameof(ItemsSource), typeof(System.Collections.IEnumerable), typeof(Annotator),
                 new FrameworkPropertyMetadata(
                     default(System.Collections.IEnumerable),
+                    FrameworkPropertyMetadataOptions.AffectsRender,
                     OnItemsSourceChanged));
 
         public System.Collections.IEnumerable ItemsSource

@@ -22,10 +22,15 @@ namespace CompMs.MsdialCore.DataObj
         private readonly List<MoleculeMsReference> _references;
         private readonly object syncObject = new object();
 
-        public EadLipidDictionaryDatabase(string dbPath, string id) {
+        public EadLipidDictionaryDatabase(string dbPath, string id, DataBaseSource source) {
             _dbPath = dbPath;
             _id = id;
-            _lipidGenerator = FacadeLipidSpectrumGenerator.Default;
+            if (source == DataBaseSource.OadLipid) {
+                _lipidGenerator = FacadeLipidSpectrumGenerator.OadLipidGenerator;
+            }
+            else {
+                _lipidGenerator = FacadeLipidSpectrumGenerator.Default;
+            }
             _comparer = new LipidNameAdductPairComparer();
             _lipidToReference = new ConcurrentDictionary<(ILipid, AdductIon), Lazy<MoleculeMsReference>>(_comparer);
             _references = new List<MoleculeMsReference>();

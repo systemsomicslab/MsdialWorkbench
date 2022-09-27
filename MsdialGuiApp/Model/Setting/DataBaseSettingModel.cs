@@ -36,8 +36,14 @@ namespace CompMs.App.Msdial.Model.Setting
                     break;
                 case EadLipidDatabase ldb:
                     this.eadLipidDatabase = ldb;
-                    DBSource = DataBaseSource.EadLipid;
+                    if (this.parameter.CollistionType == CollisionType.OAD) {
+                        DBSource = DataBaseSource.OadLipid;
+                    }
+                    else {
+                        DBSource = DataBaseSource.EieioLipid;
+                    }
                     break;
+
             }
             DataBaseID = database.Id;
             IsLoaded = true;
@@ -100,8 +106,10 @@ namespace CompMs.App.Msdial.Model.Setting
                     return CreateMoleculeDataBase();
                 case DataBaseSource.Fasta:
                     return CreatePorteomicsDB();
-                case DataBaseSource.EadLipid:
-                    return CreateEadLipidDatabase();
+                case DataBaseSource.EieioLipid:
+                    return CreateEieioLipidDatabase();
+                case DataBaseSource.OadLipid:
+                    return CreateOadLipidDatabase();
                 default:
                     throw new NotSupportedException(DBSource.ToString());
             }
@@ -129,10 +137,19 @@ namespace CompMs.App.Msdial.Model.Setting
             }
         }
 
-        public EadLipidDatabase CreateEadLipidDatabase() {
+        public EadLipidDatabase CreateEieioLipidDatabase() {
             switch (DBSource) {
-                case DataBaseSource.EadLipid:
-                    return eadLipidDatabase ?? new EadLipidDatabase(Path.GetTempFileName(), DataBaseID, LipidDatabaseFormat.Dictionary);
+                case DataBaseSource.EieioLipid:
+                    return eadLipidDatabase ?? new EadLipidDatabase(Path.GetTempFileName(), DataBaseID, LipidDatabaseFormat.Dictionary, DataBaseSource.EieioLipid);
+                default:
+                    return null;
+            }
+        }
+
+        public EadLipidDatabase CreateOadLipidDatabase() {
+            switch (DBSource) {
+                case DataBaseSource.OadLipid:
+                    return eadLipidDatabase ?? new EadLipidDatabase(Path.GetTempFileName(), DataBaseID, LipidDatabaseFormat.Dictionary, DataBaseSource.OadLipid);
                 default:
                     return null;
             }

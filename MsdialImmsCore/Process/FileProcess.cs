@@ -13,7 +13,6 @@ using CompMs.MsdialCore.Utility;
 using CompMs.MsdialImmsCore.Algorithm;
 using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.Parameter;
-using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;

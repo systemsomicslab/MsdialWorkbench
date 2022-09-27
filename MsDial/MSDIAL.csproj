@@ -87,6 +87,10 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="RawDataHandler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
+    </Reference>
     <Reference Include="Splash">
       <HintPath>..\Assemblies\Splash.dll</HintPath>
     </Reference>
@@ -955,10 +959,6 @@
     <ProjectReference Include="..\PathwayMap\PathwayMap.csproj">
       <Project>{7c8bf853-6f34-4cbd-bec9-6d1aea199947}</Project>
       <Name>PathwayMap</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RawDataHandlerStandard\RawDataHandlerStandard.csproj">
-      <Project>{6c2831a2-f1dd-4fc6-a31b-6b9ee894298b}</Project>
-      <Name>RawDataHandlerStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

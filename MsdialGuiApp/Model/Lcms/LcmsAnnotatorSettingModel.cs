@@ -169,7 +169,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     return new LcmsTextDBAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
                 case DataBaseSource.Fasta:
                     return new LcmsProteomicsAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
-                case DataBaseSource.EadLipid:
+                case DataBaseSource.EieioLipid:
                     return new LcmsEadLipidAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
                 default:
                     throw new NotSupportedException(nameof(dataBaseSettingModel.DBSource));

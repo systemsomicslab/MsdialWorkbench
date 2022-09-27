@@ -23,10 +23,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PairwisePlotCommon", "Pairw
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructureFinderConsoleApp", "StructureFinderConsoleApp\StructureFinderConsoleApp.csproj", "{86885B4A-4080-4C44-BAA7-D581745D26F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RawDataHandlerConsoleApp", "RawDataHandlerConsoleApp\RawDataHandlerConsoleApp.csproj", "{0C3CAF47-69C1-4F16-8006-CB7FB7004CB7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RawDataHandlerGuiApp", "RawDataHandlerGuiApp\RawDataHandlerGuiApp.csproj", "{730BC91E-8C0E-457E-B13B-22EE59E68B1D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChartDrawing", "ChartDrawing\ChartDrawing.csproj", "{6131640B-30E6-4606-A394-BE953590F3E9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorPickerWpfApp", "ColorPickerWpfApp\ColorPickerWpfApp.csproj", "{DF1C7411-8616-4566-952D-7C6344309C87}"
@@ -93,8 +89,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialGcmsProcessStandard",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialLcmsProcessStandard", "MsdialLcmsProcessStandard\MsdialLcmsProcessStandard.csproj", "{F4B299D9-6DC4-4535-88C6-302C299A1AAC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RawDataHandlerStandard", "RawDataHandlerStandard\RawDataHandlerStandard.csproj", "{6C2831A2-F1DD-4FC6-A31B-6B9EE894298B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsfinderCommonStandard", "MsfinderCommonStandard\MsfinderCommonStandard.csproj", "{182C56F1-1714-47A8-B402-095E0762E851}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PugRestApiStandard", "PugRestApiStandard\PugRestApiStandard.csproj", "{8E910488-8CEB-446B-8F8B-AE04C660C6A6}"
@@ -156,8 +150,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsdialIntegrateTests", "MsdialIntegrateTests\MsdialIntegrateTests.csproj", "{4CC31723-8ECF-43DD-9399-BDEB31E75CBC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpectrumViewer", "SpectrumViewer\SpectrumViewer.csproj", "{0780A32F-D596-447F-8E46-95E9491EE19F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RawDataViewer", "RawDataViewer\RawDataViewer.csproj", "{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsDialMassqlTestApp", "MsDialMassqlTestApp\MsDialMassqlTestApp.csproj", "{EC61509F-B542-43B0-BB57-98CC3715BC0E}"
 EndProject
@@ -249,22 +241,6 @@ Global
 		{86885B4A-4080-4C44-BAA7-D581745D26F3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{86885B4A-4080-4C44-BAA7-D581745D26F3}.Release|x64.ActiveCfg = Release|Any CPU
 		{86885B4A-4080-4C44-BAA7-D581745D26F3}.Release|x64.Build.0 = Release|Any CPU
-		{0C3CAF47-69C1-4F16-8006-CB7FB7004CB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0C3CAF47-69C1-4F16-8006-CB7FB7004CB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0C3CAF47-69C1-4F16-8006-CB7FB7004CB7}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{0C3CAF47-69C1-4F16-8006-CB7FB7004CB7}.Debug|x64.Build.0 = Debug|Any CPU
-		{0C3CAF47-69C1-4F16-8006-CB7FB7004CB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0C3CAF47-69C1-4F16-8006-CB7FB7004CB7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0C3CAF47-69C1-4F16-8006-CB7FB7004CB7}.Release|x64.ActiveCfg = Release|Any CPU
-		{0C3CAF47-69C1-4F16-8006-CB7FB7004CB7}.Release|x64.Build.0 = Release|Any CPU
-		{730BC91E-8C0E-457E-B13B-22EE59E68B1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{730BC91E-8C0E-457E-B13B-22EE59E68B1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{730BC91E-8C0E-457E-B13B-22EE59E68B1D}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{730BC91E-8C0E-457E-B13B-22EE59E68B1D}.Debug|x64.Build.0 = Debug|Any CPU
-		{730BC91E-8C0E-457E-B13B-22EE59E68B1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{730BC91E-8C0E-457E-B13B-22EE59E68B1D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{730BC91E-8C0E-457E-B13B-22EE59E68B1D}.Release|x64.ActiveCfg = Release|Any CPU
-		{730BC91E-8C0E-457E-B13B-22EE59E68B1D}.Release|x64.Build.0 = Release|Any CPU
 		{6131640B-30E6-4606-A394-BE953590F3E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6131640B-30E6-4606-A394-BE953590F3E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6131640B-30E6-4606-A394-BE953590F3E9}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -529,14 +505,6 @@ Global
 		{F4B299D9-6DC4-4535-88C6-302C299A1AAC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F4B299D9-6DC4-4535-88C6-302C299A1AAC}.Release|x64.ActiveCfg = Release|Any CPU
 		{F4B299D9-6DC4-4535-88C6-302C299A1AAC}.Release|x64.Build.0 = Release|Any CPU
-		{6C2831A2-F1DD-4FC6-A31B-6B9EE894298B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C2831A2-F1DD-4FC6-A31B-6B9EE894298B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6C2831A2-F1DD-4FC6-A31B-6B9EE894298B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{6C2831A2-F1DD-4FC6-A31B-6B9EE894298B}.Debug|x64.Build.0 = Debug|Any CPU
-		{6C2831A2-F1DD-4FC6-A31B-6B9EE894298B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C2831A2-F1DD-4FC6-A31B-6B9EE894298B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6C2831A2-F1DD-4FC6-A31B-6B9EE894298B}.Release|x64.ActiveCfg = Release|Any CPU
-		{6C2831A2-F1DD-4FC6-A31B-6B9EE894298B}.Release|x64.Build.0 = Release|Any CPU
 		{182C56F1-1714-47A8-B402-095E0762E851}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{182C56F1-1714-47A8-B402-095E0762E851}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{182C56F1-1714-47A8-B402-095E0762E851}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -785,14 +753,6 @@ Global
 		{0780A32F-D596-447F-8E46-95E9491EE19F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0780A32F-D596-447F-8E46-95E9491EE19F}.Release|x64.ActiveCfg = Release|Any CPU
 		{0780A32F-D596-447F-8E46-95E9491EE19F}.Release|x64.Build.0 = Release|Any CPU
-		{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}.Debug|x64.Build.0 = Debug|Any CPU
-		{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}.Release|Any CPU.Build.0 = Release|Any CPU
-		{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}.Release|x64.ActiveCfg = Release|Any CPU
-		{55AD7E0C-C38A-4940-A3E6-6E0852A68A49}.Release|x64.Build.0 = Release|Any CPU
 		{EC61509F-B542-43B0-BB57-98CC3715BC0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EC61509F-B542-43B0-BB57-98CC3715BC0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC61509F-B542-43B0-BB57-98CC3715BC0E}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -806,7 +766,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
+		SolutionGuid = {A1654BE4-26EA-48AA-841E-6C2E3DEBDCCF}
 	EndGlobalSection
 EndGlobal

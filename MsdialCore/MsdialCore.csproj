@@ -14,12 +14,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CommonStandard\CommonStandard.csproj" />
-    <ProjectReference Include="..\RawDataHandlerStandard\RawDataHandlerStandard.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="RawDataHandler">
+      <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
+    </Reference>
     <Reference Include="Splash">
       <HintPath>..\Assemblies\Splash.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\Assemblies\System.Data.SQLite.dll</HintPath>
     </Reference>
   </ItemGroup>
 

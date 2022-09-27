@@ -20,15 +20,17 @@ namespace CompMs.MsdialCore.DataObj
     {
         private readonly string _dbPath;
         private ILipidDatabase _innerDb;
+        private DataBaseSource _source;
 
         [MessagePack.SerializationConstructor]
-        public EadLipidDatabase(string id, LipidDatabaseFormat dataBaseFormat) : this(Path.GetTempFileName(), id, dataBaseFormat) {
+        public EadLipidDatabase(string id, LipidDatabaseFormat dataBaseFormat, DataBaseSource source) : this(Path.GetTempFileName(), id, dataBaseFormat, source) {
 
         }
 
-        public EadLipidDatabase(string dbPath, string id, LipidDatabaseFormat dataBaseFormat) {
+        public EadLipidDatabase(string dbPath, string id, LipidDatabaseFormat dataBaseFormat, DataBaseSource source) {
             _dbPath = dbPath;
             Id = id;
+            _source = source;
             switch (dataBaseFormat) {
                 case LipidDatabaseFormat.None: // For loading previous project which use sqlite database.
                 case LipidDatabaseFormat.Sqlite:
@@ -38,7 +40,7 @@ namespace CompMs.MsdialCore.DataObj
                 case LipidDatabaseFormat.Dictionary:
                 default:
                     DatabaseFormat = LipidDatabaseFormat.Dictionary;
-                    _innerDb = new EadLipidDictionaryDatabase(dbPath, id);
+                    _innerDb = new EadLipidDictionaryDatabase(dbPath, id, source);
                     break;
             }
         }
@@ -83,7 +85,7 @@ namespace CompMs.MsdialCore.DataObj
                     if (File.Exists(_dbPath)) {
                         File.Delete(_dbPath);
                     }
-                    _innerDb = new EadLipidDictionaryDatabase(_dbPath, Id);
+                    _innerDb = new EadLipidDictionaryDatabase(_dbPath, Id, _source);
                     _innerDb.SetReferences(references);
                     DatabaseFormat = LipidDatabaseFormat.Dictionary;
                     break;

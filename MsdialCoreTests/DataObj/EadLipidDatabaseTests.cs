@@ -15,7 +15,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
     {
         [TestMethod()]
         public void EadLipidDatabaseTest() {
-            var db = new EadLipidDatabase(":memory:", "DBID", LipidDatabaseFormat.Sqlite);
+            var db = new EadLipidDatabase(":memory:", "DBID", LipidDatabaseFormat.Sqlite, DataBaseSource.EieioLipid);
             var acyl1 = new AcylChain(18, DoubleBond.CreateFromPosition(), new Oxidized(0));
             var acyl2 = new AcylChain(18, DoubleBond.CreateFromPosition(9, 12), new Oxidized(0));
             var lipid = new Lipid(LbmClass.PC, 785.5935, new PositionLevelChains(acyl1, acyl2));
