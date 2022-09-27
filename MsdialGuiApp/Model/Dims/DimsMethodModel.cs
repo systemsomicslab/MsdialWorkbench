@@ -130,7 +130,9 @@ namespace CompMs.App.Msdial.Model.Dims
 
             // Run Alignment
             if (processOption.HasFlag(ProcessOption.Alignment)) {
-                RunAlignmentProcess();
+                if (!RunAlignmentProcess()) {
+                    return;
+                }
             }
 
             await LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
@@ -165,14 +167,20 @@ namespace CompMs.App.Msdial.Model.Dims
             return request.Result ?? false;
         }
 
-        public void RunAlignmentProcess() {
-            AlignmentProcessFactory aFactory = new DimsAlignmentProcessFactory(Storage, matchResultEvaluator);
-            var alignmentFile = Storage.AlignmentFiles.Last();
-            var aligner = aFactory.CreatePeakAligner();
-            aligner.ProviderFactory = ProviderFactory;
-            var result = aligner.Alignment(Storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
-            result.Save(alignmentFile);
-            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(Storage, result.AlignmentSpotProperties).ToList());
+        public bool RunAlignmentProcess() {
+            var request = new ProgressBarRequest("Process alignment..", isIndeterminate: true,
+                async _ =>
+                {
+                    AlignmentProcessFactory aFactory = new DimsAlignmentProcessFactory(Storage, matchResultEvaluator);
+                    var alignmentFile = Storage.AlignmentFiles.Last();
+                    var aligner = aFactory.CreatePeakAligner();
+                    aligner.ProviderFactory = ProviderFactory;
+                    var result = await Task.Run(() => aligner.Alignment(Storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer)).ConfigureAwait(false);
+                    result.Save(alignmentFile);
+                    MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(Storage, result.AlignmentSpotProperties).ToList());
+                });
+            _broker.Publish(request);
+            return request.Result ?? false;
         }
 
         private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialDimsParameter> storage, IReadOnlyList<AlignmentSpotProperty> spots) {

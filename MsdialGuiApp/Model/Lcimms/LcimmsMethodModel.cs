@@ -135,7 +135,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             // Run Alignment
             if (processOption.HasFlag(ProcessOption.Alignment)) {
-                RunAlignmentProcess();
+                if (!RunAlignmentProcess()) {
+                    return;
+                }
             }
 
             await LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
@@ -182,14 +184,20 @@ namespace CompMs.App.Msdial.Model.Lcimms
             return request.Result ?? false;
         }
 
-        public void RunAlignmentProcess() {
-            Func<AnalysisFileBean, RawMeasurement> map = (AnalysisFileBean file) => DataAccess.LoadMeasurement(file, false, true, 5, 1000);
-            AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage, matchResultEvaluator, providerFactory.ContraMap(map), accProviderFactory.ContraMap(map));
-            var alignmentFile = Storage.AlignmentFiles.Last();
-            var aligner = aFactory.CreatePeakAligner();
-            var result = aligner.Alignment(Storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
-            result.Save(alignmentFile);
-            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(Storage, result.AlignmentSpotProperties).ToList());
+        public bool RunAlignmentProcess() {
+            var request = new ProgressBarRequest("Process alignment..", isIndeterminate: true,
+                async _ =>
+                {
+                    Func<AnalysisFileBean, RawMeasurement> map = (AnalysisFileBean file) => DataAccess.LoadMeasurement(file, false, true, 5, 1000);
+                    AlignmentProcessFactory aFactory = new LcimmsAlignmentProcessFactory(Storage, matchResultEvaluator, providerFactory.ContraMap(map), accProviderFactory.ContraMap(map));
+                    var alignmentFile = Storage.AlignmentFiles.Last();
+                    var aligner = aFactory.CreatePeakAligner();
+                    var result = await Task.Run(() => aligner.Alignment(Storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer)).ConfigureAwait(false);
+                    result.Save(alignmentFile);
+                    MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(Storage, result.AlignmentSpotProperties).ToList());
+                });
+            _broker.Publish(request);
+            return request.Result ?? false;
         }
 
         private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialLcImMsParameter> storage, IReadOnlyList<AlignmentSpotProperty> spots) {

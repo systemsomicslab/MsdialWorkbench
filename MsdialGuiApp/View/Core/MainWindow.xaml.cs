@@ -50,8 +50,8 @@ namespace CompMs.App.Msdial.View.Core
 
             broker.ToObservable<ProgressBarMultiContainerRequest>()
                 .Subscribe(ShowMultiProgressBarWindow);
-            broker.ToObservable<ProgressBarMultiContainerVM>()
-                .Subscribe(ShowProgressBar);
+            broker.ToObservable<ProgressBarRequest>()
+                .Subscribe(ShowProgressBarWindow);
             broker.ToObservable<ExperimentSpectrumViewModel>()
                 .Subscribe(OpenExperimentSpectrumView);
             broker.ToObservable<ProteinGroupTableViewModel>()
@@ -98,33 +98,30 @@ namespace CompMs.App.Msdial.View.Core
                 };
                 dialog.Loaded += async (s, e) =>
                 {
-                    await viewmodel.RunAsync();
-                    viewmodel.Result = true;
-
-                    dialog.DialogResult = true;
-                    dialog.Close();
+                    await viewmodel.RunAsync().ConfigureAwait(false);
+                    request.Result = true;
+                    dialog.Dispatcher.Invoke(dialog.Close);
                 };
                 dialog.ShowDialog();
-                request.Result = viewmodel.Result;
             }
         }
 
-        private void ShowProgressBar(ProgressBarMultiContainerVM viewmodel) {
-            var dialog = new ProgressBarMultiContainerWindow
-            {
-                DataContext = viewmodel,
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            dialog.Loaded += async (s, e) =>
-            {
-                await viewmodel.RunAsync();
-                viewmodel.Result = true;
-
-                dialog.DialogResult = true;
-                dialog.Close();
-            };
-            dialog.ShowDialog();
+        private void ShowProgressBarWindow(ProgressBarRequest request) {
+            using (var viewmodel = new ProgressBarVM(request)) {
+                var dialog = new ProgressBarWindow
+                {
+                    DataContext = viewmodel,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                dialog.Loaded += async (s, e) =>
+                {
+                    await request.AsyncAction.Invoke(viewmodel).ConfigureAwait(false);
+                    request.Result = true;
+                    dialog.Dispatcher.Invoke(dialog.Close);
+                };
+                dialog.ShowDialog();
+            }
         }
 
         private void OpenExperimentSpectrumView(ExperimentSpectrumViewModel viewmodel) {

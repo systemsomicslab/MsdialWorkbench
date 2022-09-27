@@ -110,7 +110,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             // Run Alignment
             if (processOption.HasFlag(ProcessOption.Alignment)) {
-                if (!ProcessAlignment(null, Storage))
+                if (!ProcessAlignment(Storage))
                     return Task.CompletedTask;
             }
 
@@ -147,31 +147,20 @@ namespace CompMs.App.Msdial.Model.Imms
             return request.Result ?? false;
         }
 
-        private bool ProcessAlignment(Window owner, IMsdialDataStorage<MsdialImmsParameter> storage) {
-            var vm = new ProgressBarVM
-            {
-                IsIndeterminate = true,
-                Label = "Process alignment..",
-            };
-            var pbw = new ProgressBarWindow
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            pbw.Show();
-
-            var factory = new ImmsAlignmentProcessFactory(storage, matchResultEvaluator);
-            var aligner = factory.CreatePeakAligner();
-            aligner.ProviderFactory = ProviderFactory; // TODO: I'll remove this later.
-            var alignmentFile = storage.AlignmentFiles.Last();
-            var result = aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer);
-            result.Save(alignmentFile);
-            MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
-
-            pbw.Close();
-
-            return true;
+        private bool ProcessAlignment(IMsdialDataStorage<MsdialImmsParameter> storage) {
+            var request = new ProgressBarRequest("Process alignment..", isIndeterminate: true,
+                async _ =>
+                {
+                    var factory = new ImmsAlignmentProcessFactory(storage, matchResultEvaluator);
+                    var aligner = factory.CreatePeakAligner();
+                    aligner.ProviderFactory = ProviderFactory; // TODO: I'll remove this later.
+                    var alignmentFile = storage.AlignmentFiles.Last();
+                    var result = await Task.Run(() => aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer)).ConfigureAwait(false);
+                    result.Save(alignmentFile);
+                    MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
+                });
+            _broker.Publish(request);
+            return request.Result ?? false;
         }
 
         private static IEnumerable<MSDecResult> LoadRepresentativeDeconvolutions(IMsdialDataStorage<MsdialImmsParameter> storage, IReadOnlyList<AlignmentSpotProperty> spots) {
