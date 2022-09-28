@@ -197,8 +197,8 @@
             <chart:SimpleChartControl HorizontalAxis="{Binding ScoreHorizontalAxis}"
                                       VerticalAxis="{Binding ScoreVerticalAxis}"
                                       GraphTitle="PCA score plot"
-                                      HorizontalTitle="{Binding ComponentX.Value}"
-                                      VerticalTitle="{Binding ComponentY.Value}"
+                                      HorizontalTitle="{Binding ComponentX.Value, StringFormat=Principal component{0}}"
+                                      VerticalTitle="{Binding ComponentY.Value, StringFormat=Principal component{0}}"
                                       Grid.Row="0" Grid.Column="0">
             </chart:SimpleChartControl>
 
