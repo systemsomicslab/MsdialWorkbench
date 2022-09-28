@@ -28,6 +28,19 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 PeakAreaAboveBaseline = 11,
                 Mass = 12
             };
+            Assert.AreEqual(1, peak.ChromScanIdLeft);
+            Assert.AreEqual(2, peak.ChromScanIdTop);
+            Assert.AreEqual(3, peak.ChromScanIdRight);
+            Assert.AreEqual(4, peak.ChromXsLeft.Value);
+            Assert.AreEqual(5, peak.ChromXsTop.Value);
+            Assert.AreEqual(6, peak.ChromXsRight.Value);
+            Assert.AreEqual(7, peak.PeakHeightLeft);
+            Assert.AreEqual(8, peak.PeakHeightTop);
+            Assert.AreEqual(9, peak.PeakHeightRight);
+            Assert.AreEqual(10, peak.PeakAreaAboveZero);
+            Assert.AreEqual(11, peak.PeakAreaAboveBaseline);
+            Assert.AreEqual(12, peak.Mass);
+            Assert.AreEqual(peak.Mass, peak.PrecursorMz);
 
             var memory = new MemoryStream();
             MessagePackDefaultHandler.SaveToStream(peak, memory);

@@ -20,34 +20,33 @@ namespace CompMs.MsdialCore.DataObj
     {
 
         // basic property of IChromatogramPeakFeature
+        [IgnoreMember]
+        public IChromatogramPeakFeature PeakFeature { get; } = new BaseChromatogramPeakFeature();
         [Key(0)]
-        public int ChromScanIdLeft { get; set; }
+        public int ChromScanIdLeft { get => PeakFeature.ChromScanIdLeft; set => PeakFeature.ChromScanIdLeft = value; }
         [Key(1)]
-        public int ChromScanIdTop { get; set; }
+        public int ChromScanIdTop { get => PeakFeature.ChromScanIdTop; set => PeakFeature.ChromScanIdTop = value; }
         [Key(2)]
-        public int ChromScanIdRight { get; set; }
+        public int ChromScanIdRight { get => PeakFeature.ChromScanIdRight; set => PeakFeature.ChromScanIdRight = value; }
         [Key(3)]
-        public ChromXs ChromXsLeft { get; set; }
+        public ChromXs ChromXsLeft { get => PeakFeature.ChromXsLeft; set => PeakFeature.ChromXsLeft = value; }
         [Key(4)]
-        public ChromXs ChromXsTop { get; set; }
+        public ChromXs ChromXsTop { get => PeakFeature.ChromXsTop; set => PeakFeature.ChromXsTop = value; }
         [Key(5)]
-        public ChromXs ChromXsRight { get; set; }
+        public ChromXs ChromXsRight { get => PeakFeature.ChromXsRight; set => PeakFeature.ChromXsRight = value; }
         [Key(6)]
-        public double PeakHeightLeft { get; set; }
+        public double PeakHeightLeft { get => PeakFeature.PeakHeightLeft; set => PeakFeature.PeakHeightLeft = value; }
         [Key(7)]
-        public double PeakHeightTop { get; set; }
+        public double PeakHeightTop { get => PeakFeature.PeakHeightTop; set => PeakFeature.PeakHeightTop = value; }
         [Key(8)]
-        public double PeakHeightRight { get; set; }
+        public double PeakHeightRight { get => PeakFeature.PeakHeightRight; set => PeakFeature.PeakHeightRight = value; }
         [Key(9)]
-        public double PeakAreaAboveZero { get; set; }
+        public double PeakAreaAboveZero { get => PeakFeature.PeakAreaAboveZero; set => PeakFeature.PeakAreaAboveZero = value; }
         [Key(10)]
-        public double PeakAreaAboveBaseline { get; set; }
+        public double PeakAreaAboveBaseline { get => PeakFeature.PeakAreaAboveBaseline; set => PeakFeature.PeakAreaAboveBaseline = value; }
 
         [Key(43)]
-        public double Mass { get => mass; set => mass = value; }
-
-        [Key(48)]
-        private double mass;
+        public double Mass { get => PeakFeature.Mass; set => PeakFeature.Mass = value; }
 
         public double PeakWidth(ChromXType type) {
             switch (type) {
@@ -105,7 +104,7 @@ namespace CompMs.MsdialCore.DataObj
         [Key(20)]
         public int ScanID { get; set; } // same as MS1RawSpectrumID
         [IgnoreMember]
-        public double PrecursorMz { get => mass; set => mass = value; } // in LC-MS/MS same as Mass
+        public double PrecursorMz { get => PeakFeature.Mass; set => PeakFeature.Mass = value; } // in LC-MS/MS same as Mass
         [Key(22)]
         public IonMode IonMode { get; set; }
         [IgnoreMember]
