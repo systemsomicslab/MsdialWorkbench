@@ -94,33 +94,6 @@ namespace CompMs.App.Msdial.Model.Statistics
                 SelectedBrush = amplitude;
             }
 
-            //Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
-            //{
-            //    new BrushMapData<AlignmentSpotPropertyModel>(
-            //        new KeyBrushMapper<AlignmentSpotPropertyModel, string>(
-            //            ChemOntologyColor.Ontology2RgbaBrush,
-            //            spot => spot?.Ontology ?? string.Empty,
-            //            Color.FromArgb(180, 181, 181, 181)),
-            //        "Ontology"),
-            //    new BrushMapData<AlignmentSpotPropertyModel>(
-            //        new DelegateBrushMapper<AlignmentSpotPropertyModel>(
-            //            spot => Color.FromArgb(
-            //                180,
-            //                (byte)(255 * spot.innerModel.RelativeAmplitudeValue),
-            //                (byte)(255 * (1 - Math.Abs(spot.innerModel.RelativeAmplitudeValue - 0.5))),
-            //                (byte)(255 - 255 * spot.innerModel.RelativeAmplitudeValue)),
-            //            enableCache: true),
-            //        "Amplitude"),
-            //};
-            //switch (parameter.TargetOmics) {
-            //    case TargetOmics.Lipidomics:
-            //        SelectedBrush = Brushes[0];
-            //        break;
-            //    case TargetOmics.Metabolomics:
-            //    case TargetOmics.Proteomics:
-            //        SelectedBrush = Brushes[1];
-            //        break;
-            //}
         }
 
         public ObservableCollection<ComponentLoadingModel> Loadings { get; }
