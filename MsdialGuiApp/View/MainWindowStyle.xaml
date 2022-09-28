@@ -395,13 +395,13 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBox Text="{Binding LowerValue, RelativeSource={RelativeSource Mode=TemplatedParent}, StringFormat=N4}"
+                        <TextBox Text="{Binding LowerValue, RelativeSource={RelativeSource Mode=TemplatedParent}, StringFormat=F4}"
                                  TextAlignment="Center"
                                  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
                         <TextBlock Text="{Binding Tag, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                    Margin="10,0"
                                    Grid.Row="0" Grid.Column="2"/>
-                        <TextBox Text="{Binding UpperValue, RelativeSource={RelativeSource Mode=TemplatedParent}, StringFormat=N4}"
+                        <TextBox Text="{Binding UpperValue, RelativeSource={RelativeSource Mode=TemplatedParent}, StringFormat=F4}"
                                  TextAlignment="Center"
                                  Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2"/>
 
