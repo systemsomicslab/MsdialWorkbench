@@ -48,11 +48,13 @@ namespace CompMs.App.Msdial.Model.Statistics
         private readonly MultivariateAnalysisResult _multivariateAnalysisResult;
         private readonly ParameterBase _parameter;
         private readonly ObservableCollection<AlignmentSpotPropertyModel> _spotprops;
+        private readonly ObservableCollection<AnalysisFileBean> _analysisfiles;
 
         public PcaResultModel(
             MultivariateAnalysisResult multivariateAnalysisResult,
             ParameterBase parameter,
-            ObservableCollection<AlignmentSpotPropertyModel> spotprops
+            ObservableCollection<AlignmentSpotPropertyModel> spotprops,
+            ObservableCollection<AnalysisFileBean> analysisfiles
             ) {
 
             _multivariateAnalysisResult = multivariateAnalysisResult ?? throw new ArgumentNullException(nameof(multivariateAnalysisResult));
@@ -64,6 +66,10 @@ namespace CompMs.App.Msdial.Model.Statistics
             LoadingAxises = multivariateAnalysisResult.PPreds
                 .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new ContinuousAxisManager<double>(pc_loadings, new ConstantMargin(10))))
                 .ToList().AsReadOnly();
+
+            Scores = new ObservableCollection<ComponentScoreModel>(
+                statisticsObject.XLabels.Select((label, i) =>
+                    new ComponentScoreModel(multivariateAnalysisResult.TPreds.Select(preds => preds[i]).ToArray(), label, analysisfiles[i])));
 
             var ontology = new BrushMapData<ComponentLoadingViewModel>(
                 new KeyBrushMapper<ComponentLoadingViewModel, string>(
@@ -97,6 +103,7 @@ namespace CompMs.App.Msdial.Model.Statistics
         }
 
         public ObservableCollection<ComponentLoadingModel> Loadings { get; }
+        public ObservableCollection<ComponentScoreModel> Scores { get; }
         public ReadOnlyCollection<Lazy<IAxisManager<double>>> LoadingAxises { get; }
         public List<BrushMapData<ComponentLoadingViewModel>> Brushes { get; }
 

@@ -3,6 +3,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Mathematics.Statistics;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialImmsCore.Parameter;
 using System.Collections.ObjectModel;
@@ -60,6 +61,7 @@ namespace CompMs.App.Msdial.Model.Statistics
 
             var metaboliteIDs = new ObservableCollection<int>();
             var metaboliteSpotProps = new ObservableCollection<AlignmentSpotPropertyModel>();
+            var analysisFiles = new ObservableCollection<AnalysisFileBean>();
 
             foreach (var spot in _spotprops) {
                 if (isIdentifiedImportedInStatistics && _evaluator.IsReferenceMatched(spot.ScanMatchResult)) {
@@ -114,7 +116,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             //}
 
             var pcaResult = StatisticsMathematics.PrincipalComponentAnalysis(statObj, MultivariateAnalysisOption.Pca, MaxPcNumber);
-            PcaResultModel = new PcaResultModel(pcaResult, _parameter, metaboliteSpotProps);
+            PcaResultModel = new PcaResultModel(pcaResult, _parameter, metaboliteSpotProps, analysisFiles);
         }
     }
 }
