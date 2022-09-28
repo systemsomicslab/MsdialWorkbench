@@ -30,6 +30,19 @@ namespace CompMs.App.Msdial.Model.Statistics
         public AlignmentSpotPropertyModel Spot { get; }
 
     }
+    internal sealed class ComponentScoreModel : BindableBase {
+        public ComponentScoreModel(double[] score, string label, AnalysisFileBean bean)
+        {
+            Score = score ?? throw new ArgumentNullException(nameof(score));
+            Label = label;
+            Bean = bean;
+        }
+
+        public double[] Score { get; }
+        public string Label { get; }
+        public AnalysisFileBean Bean { get; }
+
+    }
 
     internal sealed class PcaResultModel : BindableBase {
         private readonly MultivariateAnalysisResult _multivariateAnalysisResult;

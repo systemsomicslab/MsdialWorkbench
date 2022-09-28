@@ -30,7 +30,24 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public ComponentLoadingModel Model => _model;
     }
 
-    internal sealed class ComponentScoreViewModel : ViewModelBase {
+
+
+    internal sealed class ComponentScoreViewModel : ViewModelBase
+    {
+        private readonly ComponentScoreModel _model;
+
+        public ComponentScoreViewModel(ComponentScoreModel model, int xIndex, int yIndex)
+        {
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            ComponentX = _model.Score[xIndex];
+            ComponentY = _model.Score[yIndex];
+        }
+
+        public string Label => _model.Label;
+
+        public double ComponentX { get; }
+        public double ComponentY { get; }
+        public ComponentScoreModel Model => _model;
 
     }
 
@@ -119,12 +136,11 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public ReactiveProperty<double> SpotSizeSample { get; }
         public ReactiveProperty<double> SpotSizeMetabolite { get; }
 
-        public ReadOnlyReactiveCollection<ComponentScoreViewModel> Scores { get; }
         public IAxisManager<double> ScoreHorizontalAxis { get; }
         public IAxisManager<double> ScoreVerticalAxis { get; }
 
         public ReactiveCollection<ComponentLoadingViewModel> Loadings { get; }
-        //public ReadOnlyCollection<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
+        public ReactiveCollection<ComponentScoreViewModel> Scores { get; }
         public BrushMapData<ComponentLoadingViewModel> Brush { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingHorizontalAxis { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingVerticalAxis { get; }
