@@ -3,7 +3,10 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Mathematics.Statistics;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
+using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialImmsCore.Parameter;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -14,11 +17,15 @@ namespace CompMs.App.Msdial.Model.Statistics
         private readonly ParameterBase _parameter;
         private readonly ObservableCollection<AlignmentSpotPropertyModel> _spotprops;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+        private readonly List<AnalysisFileBean> _analysisfiles;
 
-        public PcaSettingModel(ParameterBase parameter, ObservableCollection<AlignmentSpotPropertyModel> spotprops, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+        public PcaSettingModel(ParameterBase parameter, ObservableCollection<AlignmentSpotPropertyModel> spotprops,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator, List<AnalysisFileBean> analysisfiles) {
             _parameter = parameter ?? throw new System.ArgumentNullException(nameof(parameter));
             _spotprops = spotprops ?? throw new System.ArgumentNullException(nameof(spotprops));
+            _analysisfiles = analysisfiles ?? throw new System.ArgumentNullException(nameof(analysisfiles));
             _evaluator = evaluator ?? throw new System.ArgumentNullException(nameof(evaluator));
+            maxPcNumber = 5;
         }
 
         public int MaxPcNumber {
@@ -51,38 +58,42 @@ namespace CompMs.App.Msdial.Model.Statistics
         private PcaResultModel _pcaResultModel;
 
         public void RunPca() {
-
-            var statObj = new StatisticsObject()
-            {
-                //XDataMatrix = new double[_spotprops.Count, _parameter.FileID_AnalysisFileType.Keys.Count],
-                XScaled = new double[_parameter.FileID_AnalysisFileType.Keys.Count, _spotprops.Count],
-                XLabels = new ObservableCollection<string>(_spotprops.Select(prop => $@"ID: {prop.MasterAlignmentID}_{(string.IsNullOrEmpty(prop.Name) ? "Unknown" : prop.Name)}"))
-            };
-
             //private Dictionary<int, string> ColumnIndex_MetaboliteName { get; set; } = null;
 
             int counterSample = 0;
             int counterMetabolite = 0;
 
             var metaboliteIDs = new ObservableCollection<int>();
+            var metaboliteSpotProps = new ObservableCollection<AlignmentSpotPropertyModel>();
 
             foreach (var spot in _spotprops) {
                 if (isIdentifiedImportedInStatistics && _evaluator.IsReferenceMatched(spot.ScanMatchResult)) {
                     metaboliteIDs.Add(spot.MasterAlignmentID);
+                    metaboliteSpotProps.Add(spot);
                 }
                 if (isAnnotatedImportedInStatistics && _evaluator.IsAnnotationSuggested(spot.ScanMatchResult)) {
                     metaboliteIDs.Add(spot.MasterAlignmentID);
+                    metaboliteSpotProps.Add(spot);
                 }
                 if (isUnknownImportedInStatistics && !_evaluator.IsReferenceMatched(spot.ScanMatchResult) && !_evaluator.IsAnnotationSuggested(spot.ScanMatchResult)) {
                     metaboliteIDs.Add(spot.MasterAlignmentID);
+                    metaboliteSpotProps.Add(spot);
                 }
             }
 
+            var statObj = new StatisticsObject()
+            {
+                //XDataMatrix = new double[_spotprops.Count, _parameter.FileID_AnalysisFileType.Keys.Count],
+                XScaled = new double[_parameter.FileID_AnalysisFileType.Keys.Count, metaboliteSpotProps.Count],
+                XLabels = new ObservableCollection<string>(metaboliteSpotProps.Select(prop => $@"ID: {prop.MasterAlignmentID}_{(string.IsNullOrEmpty(prop.Name) ? "Unknown" : prop.Name)}")),
+                YLabels = new ObservableCollection<string>(_analysisfiles.Select(file => file.AnalysisFileName)),
+            };
+
             for (int i = 0; i < _parameter.FileID_AnalysisFileType.Keys.Count; i++) {
                 counterMetabolite = 0;
-                for (int j = 0; j < _spotprops.Count; j++) {
-                    if (!metaboliteIDs.Contains(_spotprops[j].MasterAlignmentID)) continue;
-                    var alignProp = _spotprops[j].AlignedPeakProperties;
+                for (int j = 0; j < metaboliteSpotProps.Count; j++) {
+                    if (!metaboliteIDs.Contains(metaboliteSpotProps[j].MasterAlignmentID)) continue;
+                    var alignProp = metaboliteSpotProps[j].AlignedPeakProperties;
                     statObj.XScaled[counterSample, counterMetabolite] = alignProp[i].NormalizedPeakHeight;
                     counterMetabolite++;
                 }
@@ -109,7 +120,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             //}
 
             var pcaResult = StatisticsMathematics.PrincipalComponentAnalysis(statObj, MultivariateAnalysisOption.Pca, MaxPcNumber);
-            PcaResultModel = new PcaResultModel(pcaResult);
+            PcaResultModel = new PcaResultModel(pcaResult, _parameter, metaboliteSpotProps, _analysisfiles);
         }
     }
 }

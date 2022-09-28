@@ -2,6 +2,7 @@
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics
 {
@@ -16,11 +17,16 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             }
             this.model = model;
             _broker = broker;
-            MaxPcNumber = model.MaxPcNumber.ToString();
+            this.MaxPcNumber = model.MaxPcNumber.ToString();
         }
+
+        [Required(ErrorMessage = "Max principal component number must be a positive int value.")]
+        [Range(0, int.MaxValue, ErrorMessage = "Max principal component number must be a positive int value.")]
+        [RegularExpression(@"^([1-9][0-9]*)$", ErrorMessage = "Max principal component number must be a positive int value.")]
         public string MaxPcNumber {
             get => _maxPcNumber;
-            set {
+            set
+            {
                 if (SetProperty(ref _maxPcNumber, value)) {
                     if (!ContainsError(nameof(MaxPcNumber))) {
                         model.MaxPcNumber = int.Parse(value);
