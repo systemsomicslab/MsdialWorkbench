@@ -73,7 +73,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
     {
         private readonly PcaResultModel _model;
 
-        public PcaResultViewModel(PcaResultModel model) {
+        public PcaResultViewModel(PcaResultModel model)
+        {
             _model = model ?? throw new ArgumentNullException(nameof(model));
 
             Components = Enumerable.Range(1, model.NumberOfComponents).ToList().AsReadOnly();
@@ -117,7 +118,21 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
             LoadingHorizontalAxis = ComponentX.Select(i => model.LoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             LoadingVerticalAxis = ComponentY.Select(i => model.LoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            Scores = new ReactiveCollection<ComponentScoreViewModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
+            Observable.CombineLatest(ComponentX, ComponentY)
+                .Throttle(TimeSpan.FromSeconds(.05d))
+                .Subscribe(xy =>
+                {
+                    Scores.ClearOnScheduler();
+                    Scores.AddRangeOnScheduler(_model.Scores.Select(score => new ComponentScoreViewModel(score, xy[0] - 1, xy[1] - 1)));
+
+                }).AddTo(Disposables);
+
+            ScoreHorizontalAxis = ComponentX.Select(i => model.ScoreAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            ScoreVerticalAxis = ComponentY.Select(i => model.ScoreAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
+
 
         public ReadOnlyCollection<int> Components { get; }
         public ReactiveProperty<int> ComponentX { get; }
@@ -136,14 +151,13 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public ReactiveProperty<double> SpotSizeSample { get; }
         public ReactiveProperty<double> SpotSizeMetabolite { get; }
 
-        public IAxisManager<double> ScoreHorizontalAxis { get; }
-        public IAxisManager<double> ScoreVerticalAxis { get; }
-
         public ReactiveCollection<ComponentLoadingViewModel> Loadings { get; }
         public ReactiveCollection<ComponentScoreViewModel> Scores { get; }
         public BrushMapData<ComponentLoadingViewModel> Brush { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingHorizontalAxis { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingVerticalAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<double>> ScoreHorizontalAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<double>> ScoreVerticalAxis { get; }
         public IAxisManager<double> ComponentXLoadingHorizontalAxis { get; }
         public IAxisManager<double> ComponentXLoadingVerticalAxis { get; }
         public IAxisManager<double> ComponentYLoadingHorizontalAxis { get; }

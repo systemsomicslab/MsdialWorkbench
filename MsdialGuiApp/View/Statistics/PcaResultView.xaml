@@ -194,12 +194,19 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <chart:SimpleChartControl HorizontalAxis="{Binding ScoreHorizontalAxis}"
-                                      VerticalAxis="{Binding ScoreVerticalAxis}"
+            <chart:SimpleChartControl HorizontalAxis="{Binding ScoreHorizontalAxis.Value}"
+                                      VerticalAxis="{Binding ScoreVerticalAxis.Value}"
                                       GraphTitle="PCA score plot"
                                       HorizontalTitle="{Binding ComponentX.Value, StringFormat=Principal component{0}}"
                                       VerticalTitle="{Binding ComponentY.Value, StringFormat=Principal component{0}}"
                                       Grid.Row="0" Grid.Column="0">
+                <Grid>
+                    <chart:ScatterControlSlim ItemsSource="{Binding Scores}"
+                                              DataType="{x:Type vm:ComponentScoreViewModel}"
+                                              HorizontalProperty="ComponentX"
+                                              VerticalProperty="ComponentY"
+                                              Radius="{Binding SpotSizeSample.Value}"/>
+                </Grid>
             </chart:SimpleChartControl>
 
             <chart:SimpleChartControl HorizontalAxis="{Binding LoadingHorizontalAxis.Value}"
