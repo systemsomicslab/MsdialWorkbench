@@ -81,31 +81,34 @@ namespace CompMs.MsdialCore.Utility {
         public static ChromatogramPeakFeature GetChromatogramPeakFeature(PeakDetectionResult result, ChromXType type, ChromXUnit unit, double mass) {
             if (result == null) return null;
 
-            var peakFeature = new ChromatogramPeakFeature() {
-
-                MasterPeakID = result.PeakID,
-                PeakID = result.PeakID,
-
+            var basePeak = new BaseChromatogramPeakFeature
+            {
                 ChromScanIdLeft = result.ScanNumAtLeftPeakEdge,
                 ChromScanIdTop = result.ScanNumAtPeakTop,
                 ChromScanIdRight = result.ScanNumAtRightPeakEdge,
-
                 ChromXsLeft = new ChromXs(result.ChromXAxisAtLeftPeakEdge, type, unit),
                 ChromXsTop = new ChromXs(result.ChromXAxisAtPeakTop, type, unit),
                 ChromXsRight = new ChromXs(result.ChromXAxisAtRightPeakEdge, type, unit),
-
-                ChromXs = new ChromXs(result.ChromXAxisAtPeakTop, type, unit),
-
                 PeakHeightLeft = result.IntensityAtLeftPeakEdge,
                 PeakHeightTop = result.IntensityAtPeakTop,
                 PeakHeightRight = result.IntensityAtRightPeakEdge,
-
                 PeakAreaAboveZero = result.AreaAboveZero,
                 PeakAreaAboveBaseline = result.AreaAboveBaseline,
-
                 Mass = mass,
+            };
+            if (type != ChromXType.Mz) {
+                basePeak.ChromXsLeft.Mz = new MzValue(mass);
+                basePeak.ChromXsTop.Mz = new MzValue(mass);
+                basePeak.ChromXsRight.Mz = new MzValue(mass);
+            }
 
-                PeakShape = new ChromatogramPeakShape() {
+            return new ChromatogramPeakFeature(basePeak)
+            {
+                MasterPeakID = result.PeakID,
+                PeakID = result.PeakID,
+
+                PeakShape = new ChromatogramPeakShape()
+                {
                     SignalToNoise = result.SignalToNoise,
                     EstimatedNoise = result.EstimatedNoise,
                     BasePeakValue = result.BasePeakValue,
@@ -118,15 +121,6 @@ namespace CompMs.MsdialCore.Utility {
                     AmplitudeScoreValue = result.AmplitudeScoreValue
                 }
             };
-
-            if (type != ChromXType.Mz) {
-                peakFeature.ChromXs.Mz = new MzValue(mass);
-                peakFeature.ChromXsLeft.Mz = new MzValue(mass);
-                peakFeature.ChromXsTop.Mz = new MzValue(mass);
-                peakFeature.ChromXsRight.Mz = new MzValue(mass);
-            }
-
-            return peakFeature;
         }
 
         public static List<IsotopicPeak> GetIsotopicPeaks(IReadOnlyList<RawSpectrum> rawSpectrumList, int scanID, float targetedMz, float massTolerance, int maxIsotopes = 2) {

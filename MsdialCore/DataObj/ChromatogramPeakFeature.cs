@@ -1,6 +1,5 @@
 ﻿using CompMs.Common.Algorithm.PeakPick;
 using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -9,7 +8,6 @@ using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Utility;
 using MessagePack;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,10 +16,17 @@ namespace CompMs.MsdialCore.DataObj
     [MessagePackObject]
     public sealed class ChromatogramPeakFeature : IChromatogramPeakFeature, IChromatogramPeak, IMoleculeMsProperty, IMSIonProperty, IAnnotatedObject
     {
+        public ChromatogramPeakFeature() {
+            PeakFeature = new BaseChromatogramPeakFeature();
+        }
+
+        public ChromatogramPeakFeature(IChromatogramPeakFeature peakFeature) {
+            PeakFeature = peakFeature;
+        }
 
         // basic property of IChromatogramPeakFeature
         [IgnoreMember]
-        public IChromatogramPeakFeature PeakFeature { get; } = new BaseChromatogramPeakFeature();
+        public IChromatogramPeakFeature PeakFeature { get; }
         [Key(0)]
         public int ChromScanIdLeft { get => PeakFeature.ChromScanIdLeft; set => PeakFeature.ChromScanIdLeft = value; }
         [Key(1)]
@@ -326,34 +331,34 @@ namespace CompMs.MsdialCore.DataObj
                 return null;
             }
 
-            var peakFeature = new ChromatogramPeakFeature() {
-
-                MasterPeakID = peakDetectionResult.PeakID,
-                PeakID = peakDetectionResult.PeakID,
-
+            var basePeak = new BaseChromatogramPeakFeature
+            {
                 ChromScanIdLeft = peakDetectionResult.ScanNumAtLeftPeakEdge,
                 ChromScanIdTop = peakDetectionResult.ScanNumAtPeakTop,
                 ChromScanIdRight = peakDetectionResult.ScanNumAtRightPeakEdge,
-
                 ChromXsLeft = chromatogram.PeakChromXs(peakDetectionResult.ChromXAxisAtLeftPeakEdge, mz),
                 ChromXsTop = chromatogram.PeakChromXs(peakDetectionResult.ChromXAxisAtPeakTop, mz),
                 ChromXsRight = chromatogram.PeakChromXs(peakDetectionResult.ChromXAxisAtRightPeakEdge, mz),
+                PeakHeightLeft = peakDetectionResult.IntensityAtLeftPeakEdge,
+                PeakHeightTop = peakDetectionResult.IntensityAtPeakTop,
+                PeakHeightRight = peakDetectionResult.IntensityAtRightPeakEdge,
+                PeakAreaAboveZero = peakDetectionResult.AreaAboveZero,
+                PeakAreaAboveBaseline = peakDetectionResult.AreaAboveBaseline,
+                Mass = mz,
+            };
+
+            return new ChromatogramPeakFeature(basePeak)
+            {
+                MasterPeakID = peakDetectionResult.PeakID,
+                PeakID = peakDetectionResult.PeakID,
 
                 //assign the scan number of MS1 and MS/MS for precursor ion's peaks
                 MS1RawSpectrumIdTop = chromatogram.Peaks[peakDetectionResult.ScanNumAtPeakTop].ID,
                 MS1RawSpectrumIdLeft = chromatogram.Peaks[peakDetectionResult.ScanNumAtLeftPeakEdge].ID,
                 MS1RawSpectrumIdRight = chromatogram.Peaks[peakDetectionResult.ScanNumAtRightPeakEdge].ID,
 
-                PeakHeightLeft = peakDetectionResult.IntensityAtLeftPeakEdge,
-                PeakHeightTop = peakDetectionResult.IntensityAtPeakTop,
-                PeakHeightRight = peakDetectionResult.IntensityAtRightPeakEdge,
-
-                PeakAreaAboveZero = peakDetectionResult.AreaAboveZero,
-                PeakAreaAboveBaseline = peakDetectionResult.AreaAboveBaseline,
-
-                Mass = (double)mz,
-
-                PeakShape = new ChromatogramPeakShape() {
+                PeakShape = new ChromatogramPeakShape()
+                {
                     SignalToNoise = peakDetectionResult.SignalToNoise,
                     EstimatedNoise = peakDetectionResult.EstimatedNoise,
                     BasePeakValue = peakDetectionResult.BasePeakValue,
@@ -366,8 +371,6 @@ namespace CompMs.MsdialCore.DataObj
                     AmplitudeScoreValue = peakDetectionResult.AmplitudeScoreValue
                 }
             };
-
-            return peakFeature;
         }
 
         public static ChromatogramPeakFeature FromPeakDetectionResult(PeakDetectionResult peakDetectionResult, Chromatogram_temp2 chromatogram, double mz) {
@@ -375,34 +378,34 @@ namespace CompMs.MsdialCore.DataObj
                 return null;
             }
 
-            var peakFeature = new ChromatogramPeakFeature() {
-
-                MasterPeakID = peakDetectionResult.PeakID,
-                PeakID = peakDetectionResult.PeakID,
-
+            var basePeak = new BaseChromatogramPeakFeature
+            {
                 ChromScanIdLeft = peakDetectionResult.ScanNumAtLeftPeakEdge,
                 ChromScanIdTop = peakDetectionResult.ScanNumAtPeakTop,
                 ChromScanIdRight = peakDetectionResult.ScanNumAtRightPeakEdge,
-
                 ChromXsLeft = chromatogram.PeakChromXs(peakDetectionResult.ChromXAxisAtLeftPeakEdge, mz),
                 ChromXsTop = chromatogram.PeakChromXs(peakDetectionResult.ChromXAxisAtPeakTop, mz),
                 ChromXsRight = chromatogram.PeakChromXs(peakDetectionResult.ChromXAxisAtRightPeakEdge, mz),
+                PeakHeightLeft = peakDetectionResult.IntensityAtLeftPeakEdge,
+                PeakHeightTop = peakDetectionResult.IntensityAtPeakTop,
+                PeakHeightRight = peakDetectionResult.IntensityAtRightPeakEdge,
+                PeakAreaAboveZero = peakDetectionResult.AreaAboveZero,
+                PeakAreaAboveBaseline = peakDetectionResult.AreaAboveBaseline,
+                Mass = mz,
+            };
+
+            return new ChromatogramPeakFeature(basePeak)
+            {
+                MasterPeakID = peakDetectionResult.PeakID,
+                PeakID = peakDetectionResult.PeakID,
 
                 //assign the scan number of MS1 and MS/MS for precursor ion's peaks
                 MS1RawSpectrumIdTop = chromatogram.Peaks[peakDetectionResult.ScanNumAtPeakTop].Id,
                 MS1RawSpectrumIdLeft = chromatogram.Peaks[peakDetectionResult.ScanNumAtLeftPeakEdge].Id,
                 MS1RawSpectrumIdRight = chromatogram.Peaks[peakDetectionResult.ScanNumAtRightPeakEdge].Id,
 
-                PeakHeightLeft = peakDetectionResult.IntensityAtLeftPeakEdge,
-                PeakHeightTop = peakDetectionResult.IntensityAtPeakTop,
-                PeakHeightRight = peakDetectionResult.IntensityAtRightPeakEdge,
-
-                PeakAreaAboveZero = peakDetectionResult.AreaAboveZero,
-                PeakAreaAboveBaseline = peakDetectionResult.AreaAboveBaseline,
-
-                Mass = (double)mz,
-
-                PeakShape = new ChromatogramPeakShape() {
+                PeakShape = new ChromatogramPeakShape()
+                {
                     SignalToNoise = peakDetectionResult.SignalToNoise,
                     EstimatedNoise = peakDetectionResult.EstimatedNoise,
                     BasePeakValue = peakDetectionResult.BasePeakValue,
@@ -415,8 +418,6 @@ namespace CompMs.MsdialCore.DataObj
                     AmplitudeScoreValue = peakDetectionResult.AmplitudeScoreValue
                 }
             };
-
-            return peakFeature;
         }
 
         public void SetMatchResultProperty(MoleculeMsReference reference, MsScanMatchResult result, IMatchResultEvaluator<MsScanMatchResult> evaluator) {

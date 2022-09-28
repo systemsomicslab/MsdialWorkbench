@@ -13,7 +13,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
     {
         [TestMethod]
         public void ChromatogramPeakFeatureInterfaceSerializeTest() {
-            var peak = new ChromatogramPeakFeature
+            var basePeak = new BaseChromatogramPeakFeature
             {
                 ChromScanIdLeft = 1,
                 ChromScanIdTop = 2,
@@ -28,6 +28,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
                 PeakAreaAboveBaseline = 11,
                 Mass = 12
             };
+            var peak = new ChromatogramPeakFeature(basePeak);
             Assert.AreEqual(1, peak.ChromScanIdLeft);
             Assert.AreEqual(2, peak.ChromScanIdTop);
             Assert.AreEqual(3, peak.ChromScanIdRight);
