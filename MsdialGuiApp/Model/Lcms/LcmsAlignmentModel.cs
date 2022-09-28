@@ -11,6 +11,7 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM.ChemView;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -199,14 +200,14 @@ namespace CompMs.App.Msdial.Model.Lcms
             // Class intensity bar chart
             var classBrush = projectBaseParameter
                 .ObserveProperty(p => p.ClassnameToColorBytes)
-                .Select(classToColor => new KeyBrushMapper<BarItem, string>(
+                .Select(classToColor => new KeyBrushMapper<string>(
                     classToColor.ToDictionary(
                         kvp => kvp.Key,
                         kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
                     ),
-                    item => item.Class,
                     Colors.Blue));
-            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, classBrush).AddTo(Disposables);
+            var barBrush = classBrush.Select(bm => bm.Contramap((BarItem item) => item.Class));
+            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush).AddTo(Disposables);
 
             // Class eic
             var classToColorAsObservable = projectBaseParameter
@@ -224,7 +225,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            AlignmentSpotTableModel = new LcmsAlignmentSpotTableModel(Ms1Spots, Target, classBrush).AddTo(Disposables);
+            AlignmentSpotTableModel = new LcmsAlignmentSpotTableModel(Ms1Spots, Target, barBrush).AddTo(Disposables);
 
             CanSearchCompound = new[]
             {
