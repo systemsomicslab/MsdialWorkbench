@@ -1,7 +1,4 @@
 ﻿using CompMs.Common.Components;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CompMs.Common.Interfaces {
     public interface IChromatogramPeakFeature {
