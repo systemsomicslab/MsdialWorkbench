@@ -185,12 +185,7 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(
-                    Ms1Spots,
-                    Target,
-                    Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d,
-                    Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d)
-                .AddTo(Disposables);
+            AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, Target).AddTo(Disposables);
 
             _msdecResult = Target.Where(t => t != null)
                 .Select(t => decLoader.LoadMSDecResult(t.MasterAlignmentID))

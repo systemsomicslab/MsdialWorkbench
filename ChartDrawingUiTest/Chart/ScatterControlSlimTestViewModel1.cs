@@ -1,15 +1,19 @@
 ﻿using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Design;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
 
 namespace ChartDrawingUiTest.Chart
 {
-    public class ScatterControlSlimTestViewModel1 : ViewModelBase
+    internal class ScatterControlSlimTestViewModel1 : ViewModelBase
     {
         public ScatterControlSlimTestViewModel1() {
             var xs = Enumerable.Range(0, Number).Select(x => new DataPoint() { X = x * (2 * Math.PI) / Number, Y = Math.Sin(x * (2 * Math.PI) / Number), Type = (int)(x * (2 * Math.PI) / Number)});
@@ -21,6 +25,12 @@ namespace ChartDrawingUiTest.Chart
             var verticalAxis = ContinuousAxisManager<double>.Build(Series, p => p.Y);
             verticalAxis.ChartMargin = new RelativeMargin(0.05);
             VerticalAxis = verticalAxis;
+            Brushes = new List<BrushContainer>
+            {
+                new BrushContainer { Brush = new ConstantBrushMapper(System.Windows.Media.Brushes.Black), Label = "Black", },
+                new BrushContainer { Brush = new ConstantBrushMapper(System.Windows.Media.Brushes.Red), Label = "Red", },
+                new BrushContainer { Brush = new KeyBrushMapper<DataPoint, int>(new Dictionary<int, Color> { [0] = Colors.Red, [1] = Colors.Orange, [2] = Colors.Yellow, [3] = Colors.Green, [4] = Colors.Blue, [5] = Colors.Indigo, [6] = Colors.Purple, }, dp => dp.Type), Label = "Rainbow", },
+            };
         }
 
         public ObservableCollection<DataPoint> Series { get; }
@@ -59,6 +69,8 @@ namespace ChartDrawingUiTest.Chart
         }
         private Point? focusedPoint;
 
+        public List<BrushContainer> Brushes { get; }
+
         protected override void OnPropertyChanged(PropertyChangedEventArgs e) {
             base.OnPropertyChanged(e);
             if (e.PropertyName == nameof(Number)) {
@@ -68,5 +80,10 @@ namespace ChartDrawingUiTest.Chart
                 }
             }
         }
+    }
+
+    internal class BrushContainer {
+        public IBrushMapper Brush { get; set; /*init;*/ }
+        public string Label { get; set; /*init;*/ }
     }
 }

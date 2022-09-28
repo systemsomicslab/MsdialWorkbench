@@ -59,11 +59,6 @@ namespace CompMs.App.Msdial.Model.Imms
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, observableBarItemsLoader)));
 
-            MassMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.MassCenter) ?? 0d;
-            MassMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.MassCenter) ?? 0d;
-            DriftMin = Ms1Spots.DefaultIfEmpty().Min(v => v?.TimesCenter) ?? 0d;
-            DriftMax = Ms1Spots.DefaultIfEmpty().Max(v => v?.TimesCenter) ?? 0d;
-
             Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
             {
                 new BrushMapData<AlignmentSpotPropertyModel>(
@@ -176,7 +171,7 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, MassMin, MassMax, DriftMin, DriftMax).AddTo(Disposables);
+            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target).AddTo(Disposables);
 
             MsdecResult = Target.Where(t => t != null)
                 .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))
@@ -212,11 +207,6 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
-
-        public double MassMin { get; }
-        public double MassMax { get; }
-        public double DriftMin { get; }
-        public double DriftMax { get; }
 
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }

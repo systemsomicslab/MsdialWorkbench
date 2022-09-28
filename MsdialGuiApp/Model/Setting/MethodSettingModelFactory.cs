@@ -42,7 +42,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker messageBroker) {
             switch (storage) {
                 case IMsdialDataStorage<MsdialLcImMsParameter> lcimmsStorage:
-                    factoryImpl = new LcimmsMethodSettingModelFactory(lcimmsStorage, projectBaseParameter, process);
+                    factoryImpl = new LcimmsMethodSettingModelFactory(lcimmsStorage, projectBaseParameter, process, messageBroker);
                     break;
                 case IMsdialDataStorage<MsdialLcmsParameter> lcmsStorage:
                     factoryImpl = new LcmsMethodSettingModelFactory(lcmsStorage, projectBaseParameter, process, messageBroker);
@@ -335,11 +335,13 @@ namespace CompMs.App.Msdial.Model.Setting
         private readonly IMsdialDataStorage<MsdialLcImMsParameter> storage;
         private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly ProcessOption process;
+        private readonly IMessageBroker _broker;
 
-        public LcimmsMethodSettingModelFactory(IMsdialDataStorage<MsdialLcImMsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process) {
+        public LcimmsMethodSettingModelFactory(IMsdialDataStorage<MsdialLcImMsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker broker) {
             this.storage = storage;
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             this.process = process;
+            _broker = broker;
         }
 
         public AdductIonSettingModel CreateAdductIonSetting() {
@@ -402,7 +404,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new LcimmsMethodModel(storage, _projectBaseParameter);
+            return new LcimmsMethodModel(storage, _projectBaseParameter, _broker);
         }
     }
 

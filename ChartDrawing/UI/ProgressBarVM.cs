@@ -1,30 +1,57 @@
 ﻿using CompMs.CommonMVVM;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.Graphics.UI.ProgressBar
 {
-    public class ProgressBarVM : ViewModelBase
-    {
-        public string Label {
-            get => label;
-            set => SetProperty(ref label, value);
+    public sealed class ProgressBarRequest {
+        public ProgressBarRequest(string label, bool isIndeterminate, Func<ProgressBarVM, Task> asyncAction) {
+            Label = label;
+            IsIndeterminate = isIndeterminate;
+            AsyncAction = asyncAction;
         }
+
+        public string Label { get; }
+        public bool IsIndeterminate { get; }
+
+        public Func<ProgressBarVM, Task> AsyncAction { get; }
+
+        public bool? Result { get; set; }
+    }
+
+    public sealed class ProgressBarVM : ViewModelBase
+    {
+        public ProgressBarVM() {
+
+        }
+
+        public ProgressBarVM(ProgressBarRequest request) {
+            Label = request.Label;
+            IsIndeterminate = request.IsIndeterminate;
+        }
+
+        public string Label {
+            get => _label;
+            set => SetProperty(ref _label, value);
+        }
+        private string _label = string.Empty;
+
         public int CurrentValue {
-            get => currentValue;
-            set => SetProperty(ref currentValue, value);
+            get => _currentValue;
+            set => SetProperty(ref _currentValue, value);
+        }
+        private int _currentValue = 0;
+
+        public void Increment() {
+            Interlocked.Increment(ref _currentValue);
+            OnPropertyChanged(nameof(CurrentValue));
         }
 
         public bool IsIndeterminate {
-            get => isIndeterminate;
-            set => SetProperty(ref isIndeterminate, value);
+            get => _isIndeterminate;
+            set => SetProperty(ref _isIndeterminate, value);
         }
-
-        private string label = string.Empty;
-        private int currentValue = 0;
-        private bool isIndeterminate = false;
+        private bool _isIndeterminate = false;
     }
 }

@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Table;
 using Reactive.Bindings;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Dims
 {
@@ -30,11 +31,8 @@ namespace CompMs.App.Msdial.Model.Dims
 
     sealed class DimsAnalysisPeakTableModel : DimsPeakSpotTableModel<ChromatogramPeakFeatureModel>
     {
-        public DimsAnalysisPeakTableModel(
-            ObservableCollection<ChromatogramPeakFeatureModel> peaks,
-            IReactiveProperty<ChromatogramPeakFeatureModel> target,
-            double massMin, double massMax)
-            : base(peaks, target, massMin, massMax) {
+        public DimsAnalysisPeakTableModel(ObservableCollection<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target)
+            : base(peaks, target, peaks.Select(peak => peak.Mass).DefaultIfEmpty().Min(), peaks.Select(peak => peak.Mass).DefaultIfEmpty().Max()) {
 
         }
     }
@@ -43,9 +41,8 @@ namespace CompMs.App.Msdial.Model.Dims
     {
         public DimsAlignmentSpotTableModel(
             ObservableCollection<AlignmentSpotPropertyModel> spots,
-            IReactiveProperty<AlignmentSpotPropertyModel> target,
-            double massMin, double massMax)
-            : base(spots, target, massMin, massMax) {
+            IReactiveProperty<AlignmentSpotPropertyModel> target)
+            : base(spots, target, spots.Select(spot => spot.MassCenter).DefaultIfEmpty().Min(), spots.Select(spot => spot.MassCenter).DefaultIfEmpty().Max()) {
 
         }
     }

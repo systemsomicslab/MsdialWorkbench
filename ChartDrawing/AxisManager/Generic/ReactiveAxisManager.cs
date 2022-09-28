@@ -18,6 +18,7 @@ namespace CompMs.Graphics.AxisManager.Generic
             var observer = new RangeObserver(AxisManagerImpl);
             observer.Subscribe(rangeSource);
             Disposables.Add(observer);
+            axisManager.PropertyChanged += (s, e) => { if (e.PropertyName == nameof(BaseAxisManager<T>.UnitLabel)) OnPropertyChanged(nameof(UnitLabel)); };
         }
 
         public ReactiveAxisManager(
@@ -28,6 +29,7 @@ namespace CompMs.Graphics.AxisManager.Generic
             var observer = new RangeObserver(AxisManagerImpl);
             observer.Subscribe(rangeSource);
             Disposables.Add(observer);
+            axisManager.PropertyChanged += (s, e) => { if (e.PropertyName == nameof(BaseAxisManager<T>.UnitLabel)) OnPropertyChanged(nameof(UnitLabel)); };
         }
 
         public Range Range => AxisManagerImpl.Range;
@@ -41,6 +43,8 @@ namespace CompMs.Graphics.AxisManager.Generic
             add => AxisManagerImpl.InitialRangeChanged += value;
             remove => AxisManagerImpl.InitialRangeChanged -= value;
         }
+
+        public string UnitLabel => AxisManagerImpl.UnitLabel;
 
         public bool Contains(AxisValue value) => AxisManagerImpl.Contains(value);
 

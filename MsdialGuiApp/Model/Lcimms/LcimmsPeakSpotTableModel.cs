@@ -4,6 +4,7 @@ using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Lcimms
 {
@@ -50,22 +51,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public LcimmsAlignmentSpotTableModel(
             ObservableCollection<AlignmentSpotPropertyModel> peakSpots,
             IReactiveProperty<AlignmentSpotPropertyModel> target,
-            double massMin,
-            double massMax,
-            double rtMin,
-            double rtMax,
-            double dtMin,
-            double dtMax,
             IObservable<IBrushMapper<BarItem>> classBrush)
-            : base(
-                  peakSpots,
-                  target,
-                  massMin,
-                  massMax,
-                  rtMin,
-                  rtMax,
-                  dtMin,
-                  dtMax) {
+            : base(peakSpots, target,
+                  peakSpots.DefaultIfEmpty().Min(peak => peak?.MassCenter) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.MassCenter) ?? 0d,
+                  peakSpots.DefaultIfEmpty().Min(peak => peak?.RT) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.RT) ?? 0d,
+                  peakSpots.DefaultIfEmpty().Min(peak => peak?.Drift) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.Drift) ?? 0d) {
             ClassBrush = classBrush;
         }
 
@@ -74,24 +64,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
     sealed class LcimmsAnalysisPeakTableModel : LcimmsPeakSpotTableModel<ChromatogramPeakFeatureModel>
     {
-        public LcimmsAnalysisPeakTableModel(
-            ObservableCollection<ChromatogramPeakFeatureModel> peakSpots,
-            IReactiveProperty<ChromatogramPeakFeatureModel> target,
-            double massMin,
-            double massMax,
-            double rtMin,
-            double rtMax,
-            double dtMin,
-            double dtMax)
-            : base(
-                  peakSpots,
-                  target,
-                  massMin,
-                  massMax,
-                  rtMin,
-                  rtMax,
-                  dtMin,
-                  dtMax) {
+        public LcimmsAnalysisPeakTableModel(ObservableCollection<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel> target)
+            : base(peakSpots, target,
+                peakSpots.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d,
+                peakSpots.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXsTop.RT.Value) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.InnerModel.ChromXsTop.RT.Value) ?? 0d,
+                peakSpots.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXsTop.Drift.Value) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.InnerModel.ChromXsTop.Drift.Value) ?? 0d) {
         }
     }
 }

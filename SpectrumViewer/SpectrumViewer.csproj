@@ -90,6 +90,7 @@
     <Compile Include="Model\SpectrumGenerationRuleModel.cs" />
     <Compile Include="Model\SpectrumGeneratorEditorModel.cs" />
     <Compile Include="Model\SplitSpectrumsModel.cs" />
+    <Compile Include="ViewModel\DisplayScanViewModel.cs" />
     <Compile Include="ViewModel\IScanCollectionViewModel.cs" />
     <Compile Include="ViewModel\LipidReferenceCollectionViewModel.cs" />
     <Compile Include="ViewModel\LipidSelectionViewModel.cs" />

@@ -4,6 +4,7 @@ using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
@@ -46,18 +47,10 @@ namespace CompMs.App.Msdial.Model.Lcms
         public LcmsAlignmentSpotTableModel(
             ObservableCollection<AlignmentSpotPropertyModel> peakSpots,
             IReactiveProperty<AlignmentSpotPropertyModel> target,
-            double massMin,
-            double massMax,
-            double rtMin,
-            double rtMax,
             IObservable<IBrushMapper<BarItem>> classBrush)
-            : base(
-                  peakSpots,
-                  target,
-                  massMin,
-                  massMax,
-                  rtMin,
-                  rtMax) {
+            : base(peakSpots, target,
+                  peakSpots.DefaultIfEmpty().Min(peakSpot => peakSpot?.MassCenter) ?? 0d, peakSpots.DefaultIfEmpty().Max(peakSpot => peakSpot?.MassCenter) ?? 0d,
+                  peakSpots.DefaultIfEmpty().Min(peakSpot => peakSpot?.TimesCenter) ?? 0d, peakSpots.DefaultIfEmpty().Max(peakSpot => peakSpot?.TimesCenter) ?? 0d) {
             ClassBrush = classBrush;
         }
 
@@ -66,20 +59,10 @@ namespace CompMs.App.Msdial.Model.Lcms
 
     sealed class LcmsAnalysisPeakTableModel : LcmsPeakSpotTableModel<ChromatogramPeakFeatureModel>
     {
-        public LcmsAnalysisPeakTableModel(
-            ObservableCollection<ChromatogramPeakFeatureModel> peakSpots,
-            IReactiveProperty<ChromatogramPeakFeatureModel> target,
-            double massMin,
-            double massMax,
-            double rtMin,
-            double rtMax)
-            : base(
-                  peakSpots,
-                  target,
-                  massMin,
-                  massMax,
-                  rtMin,
-                  rtMax) {
+        public LcmsAnalysisPeakTableModel(ObservableCollection<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel> target)
+            : base(peakSpots, target,
+                  peakSpots.Select(peakSpot => peakSpot.Mass).DefaultIfEmpty().Min(), peakSpots.Select(peakSpot => peakSpot.Mass).DefaultIfEmpty().Max(),
+                  peakSpots.DefaultIfEmpty().Min(peakSpot => peakSpot?.ChromXValue) ?? 0d, peakSpots.DefaultIfEmpty().Max(peakSpot => peakSpot?.ChromXValue) ?? 0d) {
         }
     }
 }

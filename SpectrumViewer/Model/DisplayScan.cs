@@ -9,7 +9,7 @@ namespace CompMs.App.SpectrumViewer.Model
 {
     public class DisplayScan : BindableBase, IMSScanProperty
     {
-        public DisplayScan(IMSScanProperty scan) {
+        private DisplayScan(IMSScanProperty scan) {
             Scan = scan ?? throw new ArgumentNullException(nameof(scan));
             switch (scan) {
                 case MoleculeMsReference reference:

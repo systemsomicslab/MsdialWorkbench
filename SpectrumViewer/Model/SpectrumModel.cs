@@ -27,7 +27,7 @@ namespace CompMs.App.SpectrumViewer.Model
         }
 
         public void AddScan(IMSScanProperty scan) {
-            var scan_ = scan as DisplayScan ?? new DisplayScan(scan);
+            var scan_ = DisplayScan.WrapScan(scan);
             displayScans.Add(scan_);
         }
 
