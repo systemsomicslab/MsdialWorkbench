@@ -24,6 +24,7 @@ namespace CompMs.Common.Lipidomics.Tests
                     142.0252765 ,//Header
                     182.0576723 ,//Gly-C
                     184.0369369 ,//Gly-O
+                    265.25259 ,//18:1(9) acyl+
                     308.2709989 ,//-Header -CH2(Sn1) calc
                     321.278823919  ,//-Header -acylChain -O
                     339.2893886 ,//-Header -acylChain
@@ -296,6 +297,7 @@ namespace CompMs.Common.Lipidomics.Tests
                     142.0252765 ,//Header
                     182.0576723 ,//Gly-C
                     184.0369369 ,//Gly-O
+                    265.25259 ,//18:1(9) acyl+
                     308.2709989 ,//-Header -CH2(Sn1) calc
                     321.2788239 ,//-Header -acylChain -O
                     339.2893886 ,//-Header -acylChain
@@ -448,6 +450,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 186.01749   ,//Header
                 226.05066   ,//Gly-C
                 228.0253    ,//Gly-O
+                265.25259 ,//18:1(9) acyl+
                 308.2637    ,//-Header -CH2(SN1) calc
                 322.27924   ,//-Header -acylChain -O
                 339.29147   ,//-Header -acylChain
@@ -533,6 +536,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 207.9994342 ,//Header
                 248.0326042 ,//Gly-C
                 250.0072442 ,//Gly-O
+                265.25259 ,//18:1(9) acyl+
                 330.2456442 ,//-Header -CH2(SN1) calc
                 344.2611842 ,//-Header -acylChain -O
                 361.2734142 ,//-Header -acylChain
@@ -625,6 +629,8 @@ namespace CompMs.Common.Lipidomics.Tests
                     173.0209525   ,	//	Header
                     213.0522526   ,	//	Gly-C
                     215.0315172    ,	//	Gly-O
+                    265.25259 ,//18:1(9) acyl+
+                    311.23694 ,//22:6(4,7,10,13,16,19) acyl
                     321.2793554435, //-Header -sn2-O
                     339.2899201296, //-Header -sn2
                     353.2480553159, //-Header -CH2(Sn1)
@@ -768,6 +774,8 @@ namespace CompMs.Common.Lipidomics.Tests
                 173.0209525 ,// Header
                 213.0522526 ,// Gly-C
                 215.0315172 ,// Gly-O
+                265.25259 ,//18:1(9) acyl+
+                311.23694 ,//22:6(4,7,10,13,16,19) acyl
                 321.2793554 ,//-Header  -SN2-O
                 339.2899201 ,//-Header  -SN2
                 353.2480553 ,//-Header  -CH2(SN1)
@@ -912,6 +920,8 @@ namespace CompMs.Common.Lipidomics.Tests
                 195.0023482 ,// Header
                 235.0336483 ,// Gly-C
                 237.0129129 ,// Gly-O
+                265.25259 ,//18:1(9) acyl+
+                311.23694 ,//22:6(4,7,10,13,16,19) acyl
                 343.2607511 ,//-Header  -SN2-O
                 361.2713158 ,//-Header  -SN2
                 375.229451  ,//-Header  -CH2(SN1)
@@ -1317,6 +1327,7 @@ namespace CompMs.Common.Lipidomics.Tests
                     139.01358   ,//Gly-C
                     140.993 ,//Gly-O
                     173.0124997 ,//C3H9O6P
+                    265.25259 ,//18:1(9) acyl+
                     307.2632696 ,// Header -CH2(SN1) calc
                     321.27924   ,// -Header -acylChain -O
                     339.29147   ,// -Header -acylChain

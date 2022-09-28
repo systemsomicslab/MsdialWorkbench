@@ -113,18 +113,5 @@ namespace CompMs.App.Msdial.Model.Core
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-
-        public int GetNumberOfThreadToBeUsed(int userDefinedNumThread) {
-            var numThreads = 1;
-            if (userDefinedNumThread > 1) {
-                // for advanced settings; ignore max ProcessorCount
-                var lp = Environment.ProcessorCount;
-                if (userDefinedNumThread > lp + 1) {
-                    userDefinedNumThread = lp;
-                }
-                numThreads = userDefinedNumThread;
-            }
-            return numThreads;
-        }
     }
 }

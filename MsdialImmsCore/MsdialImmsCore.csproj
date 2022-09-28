@@ -10,4 +10,10 @@
     <ProjectReference Include="..\MsdialCore\MsdialCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="RawDataHandler">
+      <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

@@ -232,7 +232,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             SurveyScanModel.Elements.VerticalProperty = nameof(SpectrumPeakWrapper.Intensity);
 
             // Peak table
-            PeakTableModel = new LcmsAnalysisPeakTableModel(Ms1Peaks, Target, MassMin, MassMax, ChromMin, ChromMax).AddTo(Disposables);
+            PeakTableModel = new LcmsAnalysisPeakTableModel(Ms1Peaks, Target).AddTo(Disposables);
 
             var rtSpotFocus = new ChromSpotFocus(PlotModel.HorizontalAxis, RtTol, Target.Select(t => t?.ChromXValue ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
             var mzSpotFocus = new ChromSpotFocus(PlotModel.VerticalAxis, MzTol, Target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
@@ -294,11 +294,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
-
-        public double ChromMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.ChromXValue) ?? 0d;
-        public double ChromMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.ChromXValue) ?? 0d;
-        public double MassMin => Ms1Peaks.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d;
-        public double MassMax => Ms1Peaks.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d;
 
         public CompoundSearchModel<ChromatogramPeakFeature> CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {

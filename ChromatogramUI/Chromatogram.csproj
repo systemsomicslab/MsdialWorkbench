@@ -36,6 +36,10 @@
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="RawDataHandler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -125,10 +129,6 @@
     <ProjectReference Include="..\DataProcessingStandard\DataProcessingStandard.csproj">
       <Project>{3c1f2344-609f-4939-a6be-2ae4327c26a0}</Project>
       <Name>DataProcessingStandard</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RawDataHandlerStandard\RawDataHandlerStandard.csproj">
-      <Project>{6c2831a2-f1dd-4fc6-a31b-6b9ee894298b}</Project>
-      <Name>RawDataHandlerStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

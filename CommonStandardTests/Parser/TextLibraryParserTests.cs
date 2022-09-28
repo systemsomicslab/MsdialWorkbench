@@ -15,19 +15,19 @@ namespace CompMs.Common.Parser.Tests
     public class TextLibraryParserTests
     {
         private readonly string data = @"NAME	MZ	RT	Adduct	InChIKey	Formula	SMILES	Ontology	CCS
-PC 15:0_18:1(d7)	753.6134	9.5	[M+H]+	ZEWLMKXMNQOCOQ-GCHPQBSENA-N	C41H73D7NO8P	[C@](COP(=O)([O-])OCC[N+](C)(C)C)([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O	PC	285.9533
-PE 15:0_18:1(d7)	711.56647	9.64	[M+H]+	ADCNXGARWPJRBV-RGLIIYCRNA-N	C38H67D7NO8P	[C@](COP(=O)(O)OCCN)([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O	PE	272.6542
-PS 15:0_18:1(d7)	755.55635	8.38	[M+H]+	KVBAVKWITJZQEG-UDKXCJCZNA-N	C39H67D7NO10P	C(O)(=O)[C@@]([H])(N)COP(OC[C@]([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O)(=O)O	PS	280.763
-PG 15:0_18:1(d7)	759.58765	8.42	[M+NH4]+	CAKDJPLPYOYWLK-AHOXJELVNA-N	C39H68D7O10P	[H][C@](O)(CO)COP(OC[C@]([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O)(=O)O	PG	286.2431
-PI 15:0_18:1(d7)	847.604124	8.35	[M+NH4]+	XCKYASHMOHAUQB-OAFUKSMZNA-N	C42H72D7O13P	[C@]([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)(COP(=O)(O)O[C@@H]1C(O)[C@H](O)C(O)C(O)C1O)COC(CCCCCCCCCCCCCC)=O	PI	294.3615
+PC 33:1(d7)|PC 15:0_18:1(d7)	753.6134	9.5	[M+H]+	ZEWLMKXMNQOCOQ-GCHPQBSENA-N	C41H73D7NO8P	[C@](COP(=O)([O-])OCC[N+](C)(C)C)([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O	PC	285.9533
+PE 33:1(d7)|PE 15:0_18:1(d7)	711.56647	9.64	[M+H]+	ADCNXGARWPJRBV-RGLIIYCRNA-N	C38H67D7NO8P	[C@](COP(=O)(O)OCCN)([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O	PE	272.6542
+PS 33:1(d7)|PS 15:0_18:1(d7)	755.55635	8.38	[M+H]+	KVBAVKWITJZQEG-UDKXCJCZNA-N	C39H67D7NO10P	C(O)(=O)[C@@]([H])(N)COP(OC[C@]([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O)(=O)O	PS	280.763
+PG 33:1(d7)|PG 15:0_18:1(d7)	759.58765	8.42	[M+NH4]+	CAKDJPLPYOYWLK-AHOXJELVNA-N	C39H68D7O10P	[H][C@](O)(CO)COP(OC[C@]([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O)(=O)O	PG	286.2431
+PI 33:1(d7)|PI 15:0_18:1(d7)	847.604124	8.35	[M+NH4]+	XCKYASHMOHAUQB-OAFUKSMZNA-N	C42H72D7O13P	[C@]([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)(COP(=O)(O)O[C@@H]1C(O)[C@H](O)C(O)C(O)C1O)COC(CCCCCCCCCCCCCC)=O	PI	294.3615
 LPC 18:1(d7)	529.39934	6.33	[M+H]+	YAMUFBLWGFFICM-HNNXNMBSNA-N	C26H45D7NO7P	C(COP(=O)([O-])OCC[N+](C)(C)C)([H])(O)COC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O	LPC	231.1935
 LPE 18:1(d7)	487.35238	6.4	[M+H]+	PYVRVRFVLRNJLY-CCLUNVSZNA-N	C23H39D7NO7P	[C@](COP(=O)(O)OCCN)([H])(O)COC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O	LPE	216.9472
 CE 18:1(d7)	675.67785	14.94	[M+NH4]+	RJECHNNFRHZQKU-LCUGTLGDNA-N	C45H71D7O2	[C@]12(CC=C3C[C@@H](OC(=O)CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])CC[C@]3(C)[C@@]1([H])CC[C@]1(C)[C@@]([H])([C@@](C)([H])CCCC(C)C)CC[C@@]21[H])[H]	CE	287.669
 MG 18:1(d7)	381.37036	6.95	[M+NH4]+	RZRNAYUHWVFMIP-IJGLUQEONA-N	C21H33D7O4	OCC([H])(O)COC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O	MG	206.191
-DG 15:0_18:1(d7)	605.58449	11.42	[M+NH4]+	GWAPRYUVSHVZHN-ZYYJJESQNA-N	C36H61D7O5	OC[C@]([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O	DG	260.628
-TG 15:0_18:1(d7)_15:0	829.79854	14.45	[M+NH4]+	YUNYDLOKHYJQAT-OTEPLKBXSA-N	C51H89D7O6	C(OC(=O)CCCCCCCCCCCCCC)[C@](OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O	TG	310.2784
-SM 18:1;2O/18:1(d9)	738.647	9.11	[M+H]+	NBEADXWAAWCCDG-KYPZZJCONA-N	C41H72D9N2O6P	[C@](COP(=O)([O-])OCC[N+](C)(C)C)([H])(NC(CCCCCCC/C=C\CCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)[C@]([H])(O)/C=C/CCCCCCCCCCCCC	SM	288.9422
-Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQGFJZSA-N	C33H58D7NO3	[H][C@@](O)(\C=C\CCCCCCCCCCCCC)[C@]([H])(CO)NC(=O)CCCCCCCCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H]	Cer-NS	254.166";
+DG 33:1(d7)|DG 15:0_18:1(d7)	605.58449	11.42	[M+NH4]+	GWAPRYUVSHVZHN-ZYYJJESQNA-N	C36H61D7O5	OC[C@]([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O	DG	260.628
+TG 48:1(d7)|TG 15:0_18:1(d7)_15:0	829.79854	14.45	[M+NH4]+	YUNYDLOKHYJQAT-OTEPLKBXSA-N	C51H89D7O6	C(OC(=O)CCCCCCCCCCCCCC)[C@](OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O	TG	310.2784
+SM 36:1;2O(d9)|SM 18:1;2O/18:1(d9)	738.647	9.11	[M+H]+	NBEADXWAAWCCDG-KYPZZJCONA-N	C41H72D9N2O6P	[C@](COP(=O)([O-])OCC[N+](C)(C)C)([H])(NC(CCCCCCC/C=C\CCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)[C@]([H])(O)/C=C/CCCCCCCCCCCCC	SM	288.9422
+Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQGFJZSA-N	C33H58D7NO3	[H][C@@](O)(\C=C\CCCCCCCCCCCCC)[C@]([H])(CO)NC(=O)CCCCCCCCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H]	Cer-NS	254.166";
 
         [TestMethod()]
         public void TextLibraryReaderValidNameTest()
@@ -211,19 +211,19 @@ Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQGFJZSA-N	C33H58D
             string no_option_data = string.Join("\r\n", new string[]
             {
                 "NAME\tMZ",
-                "PC 15:0_18:1(d7)\t753.6134",
-                "PE 15:0_18:1(d7)\t711.56647",
-                "PS 15:0_18:1(d7)\t755.55635",
-                "PG 15:0_18:1(d7)\t759.58765",
-                "PI 15:0_18:1(d7)\t847.604124",
+                "PC 33:1(d7)|PC 15:0_18:1(d7)\t753.6134",
+                "PE 33:1(d7)|PE 15:0_18:1(d7)\t711.56647",
+                "PS 33:1(d7)|PS 15:0_18:1(d7)\t755.55635",
+                "PG 33:1(d7)|PG 15:0_18:1(d7)\t759.58765",
+                "PI 33:1(d7)|PI 15:0_18:1(d7)\t847.604124",
                 "LPC 18:1(d7)\t529.39934",
                 "LPE 18:1(d7)\t487.35238",
                 "CE 18:1(d7)\t675.67785",
                 "MG 18:1(d7)\t381.37036",
-                "DG 15:0_18:1(d7)\t605.58449",
-                "TG 15:0_18:1(d7)_15:0\t829.79854",
-                "SM 18:1;2O/18:1(d9)\t738.647",
-                "Cer 18:1;2O/15:0(d7)\t531.5476588"
+                "DG 33:1(d7)|DG 15:0_18:1(d7)\t605.58449",
+                "TG 48:1(d7)|TG 15:0_18:1(d7)_15:0\t829.79854",
+                "SM 36:1;2O(d9)|SM 18:1;2O/18:1(d9)\t738.647",
+                "Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)\t531.5476588"
             });
 
             var sr = new StringReader(no_option_data);
@@ -243,11 +243,11 @@ Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQGFJZSA-N	C33H58D
             string less_field_data = string.Join("\r\n", new string[]
             {
                 "NAME",
-                "PC 15:0_18:1(d7)",
-                "PE 15:0_18:1(d7)",
-                "PS 15:0_18:1(d7)",
-                "PG 15:0_18:1(d7)",
-                "PI 15:0_18:1(d7)",
+                "PC 33:1(d7)|PC 15:0_18:1(d7)",
+                "PE 33:1(d7)|PE 15:0_18:1(d7)",
+                "PS 33:1(d7)|PS 15:0_18:1(d7)",
+                "PG 33:1(d7)|PG 15:0_18:1(d7)",
+                "PI 33:1(d7)|PI 15:0_18:1(d7)",
             });
 
             var sr = new StringReader(less_field_data);
@@ -267,11 +267,11 @@ Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQGFJZSA-N	C33H58D
             string non_numerical_mz_data = string.Join("\r\n", new string[]
             {
                 "NAME\tMZ",
-                "PC 15:0_18:1(d7)\ta",
-                "PE 15:0_18:1(d7)\t ",
-                "PS 15:0_18:1(d7)\t755.55635",
-                "PG 15:0_18:1(d7)\t+",
-                "PI 15:0_18:1(d7)\t847.604124",
+                "PC 33:1(d7)|PC 15:0_18:1(d7)\ta",
+                "PE 33:1(d7)|PE 15:0_18:1(d7)\t ",
+                "PS 33:1(d7)|PS 15:0_18:1(d7)\t755.55635",
+                "PG 33:1(d7)|PG 15:0_18:1(d7)\t+",
+                "PI 33:1(d7)|PI 15:0_18:1(d7)\t847.604124",
                 "LPC 18:1(d7)\t-",
                 "CE 18:1(d7)\t675.67785",
             });
@@ -293,12 +293,12 @@ Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQGFJZSA-N	C33H58D
             string non_numerical_rt_data = string.Join("\r\n", new string[]
             {
                 "NAME\tMZ\tRT",
-                "PC 15:0_18:1(d7)\t753.6134\ta",
-                "PE 15:0_18:1(d7)\t711.56647\t ",
+                "PC 33:1(d7)|PC 15:0_18:1(d7)\t753.6134\ta",
+                "PE 33:1(d7)|PE 15:0_18:1(d7)\t711.56647\t ",
                 "LPE 18:1(d7)\t487.35238\t6.4",
-                "PS 15:0_18:1(d7)\t755.55635\t+",
+                "PS 33:1(d7)|PS 15:0_18:1(d7)\t755.55635\t+",
                 "CE 18:1(d7)\t675.67785\t14.94",
-                "PG 15:0_18:1(d7)\t759.58765\t-",
+                "PG 33:1(d7)|PG 15:0_18:1(d7)\t759.58765\t-",
                 "MG 18:1(d7)\t381.37036\t6.95",
             });
 
@@ -320,11 +320,11 @@ Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQGFJZSA-N	C33H58D
             string non_numerical_ccs_data = string.Join("\r\n", new string[]
             {
                 @"NAME	MZ	RT	Adduct	InChIKey	Formula	SMILES	Ontology	CCS",
-                @"PC 15:0_18:1(d7)	753.6134	9.5	[M+H]+	ZEWLMKXMNQOCOQ-GCHPQBSENA-N	C41H73D7NO8P	[C@](COP(=O)([O-])OCC[N+](C)(C)C)([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O	PC	a",
-                @"PE 15:0_18:1(d7)	711.56647	9.64	[M+H]+	ADCNXGARWPJRBV-RGLIIYCRNA-N	C38H67D7NO8P	[C@](COP(=O)(O)OCCN)([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O	PE	 ",
-                @"PS 15:0_18:1(d7)	755.55635	8.38	[M+H]+	KVBAVKWITJZQEG-UDKXCJCZNA-N	C39H67D7NO10P	C(O)(=O)[C@@]([H])(N)COP(OC[C@]([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O)(=O)O	PS	280.763",
-                @"PG 15:0_18:1(d7)	759.58765	8.42	[M+NH4]+	CAKDJPLPYOYWLK-AHOXJELVNA-N	C39H68D7O10P	[H][C@](O)(CO)COP(OC[C@]([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O)(=O)O	PG	+",
-                @"PI 15:0_18:1(d7)	847.604124	8.35	[M+NH4]+	XCKYASHMOHAUQB-OAFUKSMZNA-N	C42H72D7O13P	[C@]([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)(COP(=O)(O)O[C@@H]1C(O)[C@H](O)C(O)C(O)C1O)COC(CCCCCCCCCCCCCC)=O	PI	294.3615",
+                @"PC 33:1(d7)|PC 15:0_18:1(d7)	753.6134	9.5	[M+H]+	ZEWLMKXMNQOCOQ-GCHPQBSENA-N	C41H73D7NO8P	[C@](COP(=O)([O-])OCC[N+](C)(C)C)([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O	PC	a",
+                @"PE 33:1(d7)|PE 15:0_18:1(d7)	711.56647	9.64	[M+H]+	ADCNXGARWPJRBV-RGLIIYCRNA-N	C38H67D7NO8P	[C@](COP(=O)(O)OCCN)([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O	PE	 ",
+                @"PS 33:1(d7)|PS 15:0_18:1(d7)	755.55635	8.38	[M+H]+	KVBAVKWITJZQEG-UDKXCJCZNA-N	C39H67D7NO10P	C(O)(=O)[C@@]([H])(N)COP(OC[C@]([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O)(=O)O	PS	280.763",
+                @"PG 33:1(d7)|PG 15:0_18:1(d7)	759.58765	8.42	[M+NH4]+	CAKDJPLPYOYWLK-AHOXJELVNA-N	C39H68D7O10P	[H][C@](O)(CO)COP(OC[C@]([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)COC(CCCCCCCCCCCCCC)=O)(=O)O	PG	+",
+                @"PI 33:1(d7)|PI 15:0_18:1(d7)	847.604124	8.35	[M+NH4]+	XCKYASHMOHAUQB-OAFUKSMZNA-N	C42H72D7O13P	[C@]([H])(OC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O)(COP(=O)(O)O[C@@H]1C(O)[C@H](O)C(O)C(O)C1O)COC(CCCCCCCCCCCCCC)=O	PI	294.3615",
                 @"LPC 18:1(d7)	529.39934	6.33	[M+H]+	YAMUFBLWGFFICM-HNNXNMBSNA-N	C26H45D7NO7P	C(COP(=O)([O-])OCC[N+](C)(C)C)([H])(O)COC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O	LPC	-",
                 @"LPE 18:1(d7)	487.35238	6.4	[M+H]+	PYVRVRFVLRNJLY-CCLUNVSZNA-N	C23H39D7NO7P	[C@](COP(=O)(O)OCCN)([H])(O)COC(CCCCCCC/C=C\CCCCCC([2H])([2H])C([2H])([2H])C([2H])([2H])[2H])=O	LPE	216.9472",
             });
@@ -346,11 +346,11 @@ Cer 18:1;2O/15:0(d7)	531.5476588	9.34	[M+H]+	HBULQAPKKLNTLT-BXLQGFJZSA-N	C33H58D
             string negative_mz_data = string.Join("\r\n", new string[]
             {
                 "NAME\tMZ",
-                "PC 15:0_18:1(d7)\t753.6134",
-                "PE 15:0_18:1(d7)\t-711.56647",
-                "PS 15:0_18:1(d7)\t755.55635",
-                "PG 15:0_18:1(d7)\t+759.58765",
-                "PI 15:0_18:1(d7)\t-847.604124",
+                "PC 33:1(d7)|PC 15:0_18:1(d7)\t753.6134",
+                "PE 33:1(d7)|PE 15:0_18:1(d7)\t-711.56647",
+                "PS 33:1(d7)|PS 15:0_18:1(d7)\t755.55635",
+                "PG 33:1(d7)|PG 15:0_18:1(d7)\t+759.58765",
+                "PI 33:1(d7)|PI 15:0_18:1(d7)\t-847.604124",
                 "LPC 18:1(d7)\t529.39934",
                 "CE 18:1(d7)\t675.648",
             });

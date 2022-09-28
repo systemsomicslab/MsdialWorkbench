@@ -5,11 +5,43 @@ using NCDK.Smiles;
 using NCDK.Graphs.InChI;
 using System.Linq;
 using CompMs.Common.Lipidomics;
+using System.IO;
 
 namespace CompMs.MspGenerator
 {
     public class SmilesInchikeyGenerator
     {
+        public static void run(string input)
+        {
+            var resultList = new List<string>();
+            var output = input + ".result.txt";
+            using (var sr = new StreamReader(input, true))
+            {
+
+                while (sr.Peek() > -1)
+                {
+                    var item = sr.ReadLine();
+                    var lipid = (Lipid)FacadeLipidParser.Default.Parse(item);
+                    var result = Generate(lipid);
+                    if (result != null)
+                    {
+                    resultList.Add(item + "\t" + result.Smiles + "\t" + result.InchiKey);
+                    }
+                    else
+                    {
+                        resultList.Add(item);
+                    }
+                }
+            }
+            using (var sw = new StreamWriter(output, false, Encoding.ASCII))
+            {
+                foreach (var item in resultList)
+                {
+                    sw.WriteLine(item);
+                }
+            }
+        }
+
         public static SmilesInchikey Generate(Lipid lipid)
         {
             if (lipid.Chains is PositionLevelChains plChains)
@@ -28,7 +60,7 @@ namespace CompMs.MspGenerator
                     var chainSmiles = smilesInchikeyGenerator.ChainSmilesGen(chain);
                     if (chain is SphingoChain)
                     {
-                        chainSmiles = chainSmiles.Remove(0,5).Insert(1, "%" + jointPosition);
+                        chainSmiles = chainSmiles.Remove(0, 5).Insert(1, "%" + jointPosition);
                     }
                     else
                     {
@@ -87,7 +119,7 @@ namespace CompMs.MspGenerator
 
             if (chain is AcylChain)
             {
-                chainSmiles = chainSmiles.Insert(1,"(=O)");
+                chainSmiles = chainSmiles.Insert(1, "(=O)");
             }
 
             chainSmiles = chainSmiles.Replace("CEC", @"\C=C\");
@@ -125,13 +157,13 @@ namespace CompMs.MspGenerator
             {"PEtOH", "C(O%10)C(O%20)COP(O)(OCC)=O."},
             {"PMeOH", "C(O%10)C(O%20)COP(O)(OC)=O."},
 
-            {"LPC", "C(O%10)C(O)COP([O-])(=O)OCC[N+](C)(C)C."},
+            {"LPC", "C(O%10)C(O%20)COP([O-])(=O)OCC[N+](C)(C)C."},
             //{"LPCSN1", "C(O%10)C(O)COP([O-])(=O)OCC[N+](C)(C)C."},
-            {"LPA", "C(O%10)C(O)COP(O)(O)=O."},
-            {"LPE", "C(O%10)C(O)COP(O)(=O)OCCN."},
-            {"LPG", "C(O)(CO)COP(O)(=O)OCC(O)C(O%10)."},
-            {"LPI", "C(O%10)C(O)COP(O)(=O)OC1C(O)C(O)C(O)C(O)C1O."},
-            {"LPS", "C(N)(COP(O)(=O)OCC(O)C(O%10))C(O)=O."},
+            {"LPA", "C(O%10)C(O%20)COP(O)(O)=O."},
+            {"LPE", "C(O%10)C(O%20)COP(O)(=O)OCCN."},
+            {"LPG", "C(O)(CO)COP(O)(=O)OCC(O%20)C(O%10)."},
+            {"LPI", "C(O%10)C(O%20)COP(O)(=O)OC1C(O)C(O)C(O)C(O)C1O."},
+            {"LPS", "C(N)(COP(O)(=O)OCC(O%20)C(O%10))C(O)=O."},
             {"EtherLPC", "C(O)C(O%10)COP([O-])(=O)OCC[N+](C)(C)C."},
             {"EtherLPE", "C(O%10)C(O)COP(O)(=O)OCCN."},
             //{"EtherLPE_P", "C(O%10)C(O)COP(O)(=O)OCCN."},
@@ -236,7 +268,7 @@ namespace CompMs.MspGenerator
 
 
             ////ceramide need chain conbination
-            //{"SHexCer", "OCC1OC(OCC%10N%20)C(O)C(OS(O)(=O)=O)C1O."},
+            {"SHexCer", "OCC1OC(OCC%10N%20)C(O)C(OS(O)(=O)=O)C1O."},
             //{"SHexCer+O", "OCC1OC(OCC%10N%20)C(O)C(OS(O)(=O)=O)C1O."},
             //{"SM", "C[N+](C)(C)CCOP([O-])(=O)OCC%10N%20."},
             //{"SM+O", "C[N+](C)(C)CCOP([O-])(=O)OCC%10N%20."},
@@ -275,7 +307,7 @@ namespace CompMs.MspGenerator
             //{"NAOrn_FAHFA", "NCCCC(N%20)C(O)=O."},
 
             //// single acyl chain
-            //{"CAR", "C[N+](C)(C)CC(CC([O-])=O)O%10."},  //  old SMILES {"CAR", "C[N+](C)(C)CC(CC(O)=O)O%10."},  20200713 adduct change [M+] -> [M+H]+
+            {"CAR", "C[N+](C)(C)CC(CC([O-])=O)O%10."},  //  old SMILES {"CAR", "C[N+](C)(C)CC(CC(O)=O)O%10."},  20200713 adduct change [M+] -> [M+H]+
             //{"NAE", "N%10CCO."},
             //{"VAE", "CC(=CCO%10)C=CC=C(C)C=CC1=C(C)CCCC1(C)C."},
             //{"NAGlySer_OxFA", "OCC(NC(=O)CN%20)C(O)=O."},

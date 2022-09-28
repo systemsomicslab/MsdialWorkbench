@@ -9,9 +9,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace CompMs.Common.Lipidomics {
-    public static class LipidomicsConverter {
-        
+namespace CompMs.Common.Lipidomics
+{
+    public static class LipidomicsConverter
+    {
+
         //public static LipidMolecule ConvertMsdialLipidnameToLipidMoleculeObject(MoleculeMsReference query) {
         //    var molecule = new LipidMolecule();
 
@@ -452,30 +454,38 @@ namespace CompMs.Common.Lipidomics {
         //    return molecule;
         //}
 
-        public static LipidMolecule ConvertMsdialLipidnameToLipidMoleculeObjectVS2(MoleculeMsReference query) {
+        public static LipidMolecule ConvertMsdialLipidnameToLipidMoleculeObjectVS2(MoleculeMsReference query)
+        {
             var molecule = new LipidMolecule();
             var lipidclass = query.CompoundClass;
 
             /*  FattyAcyls [FA], Glycerolipids [GL], Glycerophospholipids [GP], Sphingolipids [SP]
             *  SterolLipids [ST], PrenolLipids [PR], Saccharolipids [SL], Polyketides [PK]
             */
-           
+
             var lipidcategory = ConvertMsdialClassDefinitionToSuperClassVS2(lipidclass);
             var lbmclass = ConvertMsdialClassDefinitionToLbmClassEnumVS2(lipidclass);
 
-            if (lipidcategory == "FattyAcyls" || lipidcategory == "Glycerolipids" || 
-                lipidcategory == "Glycerophospholipids" || lipidcategory == "Sphingolipids" || lbmclass == LbmClass.VAE) {
+            if (lipidcategory == "FattyAcyls" || lipidcategory == "Glycerolipids" ||
+                lipidcategory == "Glycerophospholipids" || lipidcategory == "Sphingolipids" || lbmclass == LbmClass.VAE)
+            {
                 SetLipidAcylChainProperties(molecule, query);
             }
-            else if (lipidcategory == "SterolLipids" || lipidcategory == "PrenolLipids") { 
+            else if (lipidcategory == "SterolLipids" || lipidcategory == "PrenolLipids")
+            {
                 if (lbmclass == LbmClass.Vitamin_D || lbmclass == LbmClass.Vitamin_E || lbmclass == LbmClass.SHex ||
-                    lbmclass == LbmClass.SSulfate || lbmclass == LbmClass.BAHex || lbmclass == LbmClass.BASulfate || 
+                    lbmclass == LbmClass.SSulfate || lbmclass == LbmClass.BAHex || lbmclass == LbmClass.BASulfate ||
                     lbmclass == LbmClass.BileAcid ||
-                    query.Name == "Cholesterol" || query.Name == "CholesterolSulfate") {
+                    query.Name == "Cholesterol" || query.Name == "CholesterolSulfate")
+                {
                     SetSingleLipidStructure(molecule, query);
-                } else if (lbmclass == LbmClass.CoQ) {
+                }
+                else if (lbmclass == LbmClass.CoQ)
+                {
                     SetCoqMolecule(molecule, query);
-                } else {
+                }
+                else
+                {
                     SetLipidAcylChainProperties(molecule, query);
                 }
             }
@@ -484,16 +494,19 @@ namespace CompMs.Common.Lipidomics {
             molecule.LipidCategory = lipidcategory;
             molecule.LipidSubclass = lipidclass;
 
-            if (molecule.LipidName == null || molecule.LipidName == string.Empty || molecule.Adduct == null) {
+            if (molecule.LipidName == null || molecule.LipidName == string.Empty || molecule.Adduct == null)
+            {
                 molecule.IsValidatedFormat = false;
             }
-            else {
+            else
+            {
                 molecule.IsValidatedFormat = true;
             }
             return molecule;
         }
 
-        public static LipidMolecule ConvertMsdialLipidnameToLipidMoleculeObjectVS2(string lipidname, string ontology) {
+        public static LipidMolecule ConvertMsdialLipidnameToLipidMoleculeObjectVS2(string lipidname, string ontology)
+        {
             var molecule = new LipidMolecule();
             var lipidclass = ontology;
 
@@ -506,20 +519,25 @@ namespace CompMs.Common.Lipidomics {
 
             //Console.WriteLine(lipidcategory + "\t" + lbmclass.ToString() + "\t" + ontology);
             if (lipidcategory == "FattyAcyls" || lipidcategory == "Glycerolipids" ||
-                lipidcategory == "Glycerophospholipids" || lipidcategory == "Sphingolipids" || lbmclass == LbmClass.VAE) {
+                lipidcategory == "Glycerophospholipids" || lipidcategory == "Sphingolipids" || lbmclass == LbmClass.VAE)
+            {
                 SetLipidAcylChainProperties(molecule, lipidname, ontology);
             }
-            else if (lipidcategory == "SterolLipids" || lipidcategory == "PrenolLipids") {
+            else if (lipidcategory == "SterolLipids" || lipidcategory == "PrenolLipids")
+            {
                 if (lbmclass == LbmClass.Vitamin_D || lbmclass == LbmClass.Vitamin_E || lbmclass == LbmClass.SHex ||
                     lbmclass == LbmClass.SSulfate || lbmclass == LbmClass.BAHex || lbmclass == LbmClass.BASulfate ||
                     lbmclass == LbmClass.BileAcid ||
-                    lipidname == "Cholesterol" || lipidname == "CholesterolSulfate") {
+                    lipidname == "Cholesterol" || lipidname == "CholesterolSulfate")
+                {
                     SetSingleLipidStructure(molecule, lipidname, ontology);
                 }
-                else if (lbmclass == LbmClass.CoQ) {
+                else if (lbmclass == LbmClass.CoQ)
+                {
                     SetCoqMolecule(molecule, lipidname, ontology);
                 }
-                else {
+                else
+                {
                     SetLipidAcylChainProperties(molecule, lipidname, ontology);
                 }
             }
@@ -528,10 +546,12 @@ namespace CompMs.Common.Lipidomics {
             molecule.LipidCategory = lipidcategory;
             molecule.LipidSubclass = lipidclass;
 
-            if (molecule.LipidName == null || molecule.LipidName == string.Empty) {
+            if (molecule.LipidName == null || molecule.LipidName == string.Empty)
+            {
                 molecule.IsValidatedFormat = false;
             }
-            else {
+            else
+            {
                 molecule.IsValidatedFormat = true;
             }
             return molecule;
@@ -543,7 +563,7 @@ namespace CompMs.Common.Lipidomics {
         //    var lipidclass = lipidname.Split(' ')[0];
         //    if (lipidname.Contains("e;") || lipidname.Contains("p;") || lipidname.Contains("e+") || lipidname.Contains("e/"))
         //        lipidclass = "Ether" + lipidclass;
-            
+
         //    var lbmLipidclass = ConvertMsdialClassDefinitionToLbmClassEnum(query.CompoundClass);
         //    var querylipidClass = ConvertLbmClassEnumToMsdialClassDefinition(lbmLipidclass);
         //    var isInconsistency = false;
@@ -2433,7 +2453,8 @@ namespace CompMs.Common.Lipidomics {
         //}
 
         // now for Cholesterol and CholesterolSulfate
-        public static void SetSingleLipidStructure(LipidMolecule molecule, MoleculeMsReference query) {
+        public static void SetSingleLipidStructure(LipidMolecule molecule, MoleculeMsReference query)
+        {
 
             var lipidinfo = query.Name;
             SetBasicMoleculerProperties(molecule, query);
@@ -2448,8 +2469,9 @@ namespace CompMs.Common.Lipidomics {
             molecule.Sn1DoubleBondCount = 0;
         }
 
-        public static void SetSingleLipidStructure(LipidMolecule molecule, string lipidname, string ontology) {
-            
+        public static void SetSingleLipidStructure(LipidMolecule molecule, string lipidname, string ontology)
+        {
+
             molecule.LipidName = lipidname;
             molecule.SublevelLipidName = lipidname;
             molecule.TotalChainString = "0:0";
@@ -2460,7 +2482,8 @@ namespace CompMs.Common.Lipidomics {
             molecule.Sn1DoubleBondCount = 0;
         }
 
-        public static void SetCoqMolecule(LipidMolecule molecule, MoleculeMsReference query) {
+        public static void SetCoqMolecule(LipidMolecule molecule, MoleculeMsReference query)
+        {
 
             SetBasicMoleculerProperties(molecule, query);
 
@@ -2479,7 +2502,8 @@ namespace CompMs.Common.Lipidomics {
             molecule.Sn1DoubleBondCount = 0;
         }
 
-        public static void SetCoqMolecule(LipidMolecule molecule, string lipidname, string ontology) {
+        public static void SetCoqMolecule(LipidMolecule molecule, string lipidname, string ontology)
+        {
 
             var carbonCountString = lipidname.Substring(3); // CoQ3 -> 3
             var carbonCount = 0;
@@ -2564,7 +2588,8 @@ namespace CompMs.Common.Lipidomics {
         //    molecule.Sn1Oxidizedount = sn1OxidizedCount;
         //}
 
-        public static void SetLipidAcylChainProperties(LipidMolecule molecule, MoleculeMsReference query) {
+        public static void SetLipidAcylChainProperties(LipidMolecule molecule, MoleculeMsReference query)
+        {
             var lipidname = query.Name.Trim(); // e.g. ST 28:2;O;Hex;PA 12:0_12:0, SE 28:2/8:0
             var chainStrings = acylChainStringSeparatorVS2(lipidname);
             var ontology = query.CompoundClass;
@@ -2574,7 +2599,8 @@ namespace CompMs.Common.Lipidomics {
             SetBasicMoleculerProperties(molecule, query);
             if (chainStrings == null) return;
 
-            switch (chainStrings.Count()) {
+            switch (chainStrings.Count())
+            {
                 case 1: setMonoAcylChainProperty(molecule, lipidname, ontology, chainStrings); break;
                 case 2: setDiAcylChainProperty(molecule, lipidname, ontology, chainStrings); break;
                 case 3: setTriAcylChainProperty(molecule, lipidname, ontology, chainStrings); break;
@@ -2584,21 +2610,24 @@ namespace CompMs.Common.Lipidomics {
             return;
         }
 
-        public static void SetLipidAcylChainProperties(LipidMolecule molecule, string lipidname, string ontology) {
+        public static void SetLipidAcylChainProperties(LipidMolecule molecule, string lipidname, string ontology)
+        {
             var chainStrings = acylChainStringSeparatorVS2(lipidname);
             if (chainStrings == null) return;
-            switch (chainStrings.Count()) {
+            switch (chainStrings.Count())
+            {
                 case 1: setMonoAcylChainProperty(molecule, lipidname, ontology, chainStrings); break;
                 case 2: setDiAcylChainProperty(molecule, lipidname, ontology, chainStrings); break;
                 case 3: setTriAcylChainProperty(molecule, lipidname, ontology, chainStrings); break;
                 case 4: setTetraAcylChainProperty(molecule, lipidname, ontology, chainStrings); break;
             }
-          
+
             return;
         }
 
 
-        public static void SetBasicMoleculerProperties(LipidMolecule molecule, MoleculeMsReference query) {
+        public static void SetBasicMoleculerProperties(LipidMolecule molecule, MoleculeMsReference query)
+        {
             // var lipidclass = ConvertMsdialClassDefinitionToLbmClassEnumVS2(query.CompoundClass);
             molecule.Mz = (float)query.PrecursorMz;
             molecule.Smiles = query.SMILES;
@@ -2606,14 +2635,15 @@ namespace CompMs.Common.Lipidomics {
             molecule.Formula = query.Formula.FormulaString;
 
             //Console.WriteLine(query.Name + "\t" + query.AdductIonBean.AdductIonName);
-           
+
             molecule.Adduct = query.AdductType;
             molecule.IonMode = query.IonMode;
             // molecule.LipidClass = lipidclass;
         }
 
         private static void setMonoAcylChainProperty(LipidMolecule molecule,
-            string lipidname, string ontology, List<string> chainStrings) {
+            string lipidname, string ontology, List<string> chainStrings)
+        {
             if (chainStrings.Count != 1) return;
             var lipidclass = ConvertMsdialClassDefinitionToLbmClassEnumVS2(ontology);
             int sn1CarbonCount, sn1DoubleBond, sn1OxidizedCount;
@@ -2749,7 +2779,8 @@ namespace CompMs.Common.Lipidomics {
         //}
 
         private static void setDiAcylChainProperty(LipidMolecule molecule,
-            string lipidname, string ontology, List<string> chainStrings) {// e.g. SM 18:1;2O/30:1, PE 16:0_18:0;O, MGDG 2:0_2:0, ST 28:2;O;Hex;PA 12:0_12:0
+            string lipidname, string ontology, List<string> chainStrings)
+        {// e.g. SM 18:1;2O/30:1, PE 16:0_18:0;O, MGDG 2:0_2:0, ST 28:2;O;Hex;PA 12:0_12:0
 
             if (chainStrings.Count != 2) return;
             var lipidclass = ConvertMsdialClassDefinitionToLbmClassEnumVS2(ontology);
@@ -2786,25 +2817,30 @@ namespace CompMs.Common.Lipidomics {
             molecule.Sn2Oxidizedount = sn2OxidizedCount;
         }
 
-        private static string getTotalChainString(int carbon, int rdb, int oxidized, LbmClass lipidclass, string chainPrefix, int acylChainCount) {
+        private static string getTotalChainString(int carbon, int rdb, int oxidized, LbmClass lipidclass, string chainPrefix, int acylChainCount)
+        {
             var rdbString = rdb.ToString();
-            
+
             if (lipidclass == LbmClass.Cer_EODS || lipidclass == LbmClass.Cer_EBDS
                 || lipidclass == LbmClass.ASM
                 || lipidclass == LbmClass.FAHFA || lipidclass == LbmClass.NAGly || lipidclass == LbmClass.NAGlySer || lipidclass == LbmClass.NAGlySer
-                || lipidclass == LbmClass.TG_EST) {
+                || lipidclass == LbmClass.TG_EST)
+            {
                 rdbString = (rdb + 1).ToString();
                 oxidized = oxidized + 1;
             }
 
-            if (lipidclass == LbmClass.Cer_EOS || lipidclass == LbmClass.HexCer_EOS) {
-                if (acylChainCount != 2) {
+            if (lipidclass == LbmClass.Cer_EOS || lipidclass == LbmClass.HexCer_EOS)
+            {
+                if (acylChainCount != 2)
+                {
                     rdbString = (rdb + 1).ToString();
                     oxidized = oxidized + 1;
                 }
             }
 
-            if (chainPrefix == "P-") {
+            if (chainPrefix == "P-")
+            {
                 rdbString = (rdb - 1).ToString();
             }
             var oxString = oxidized == 0
@@ -2932,7 +2968,8 @@ namespace CompMs.Common.Lipidomics {
         //}
 
         private static void setTriAcylChainProperty(LipidMolecule molecule,
-           string lipidname, string ontology, List<string> chainStrings) {
+           string lipidname, string ontology, List<string> chainStrings)
+        {
 
             if (chainStrings.Count != 3) return;
 
@@ -2980,13 +3017,14 @@ namespace CompMs.Common.Lipidomics {
         }
 
         private static void setTetraAcylChainProperty(LipidMolecule molecule,
-           string lipidname, string ontology, List<string> chainStrings) {
+           string lipidname, string ontology, List<string> chainStrings)
+        {
 
             if (chainStrings.Count != 4) return;
 
             var lipidclass = ConvertMsdialClassDefinitionToLbmClassEnumVS2(ontology);
             var lipidHeader = GetLipidHeaderString(lipidname);
-           
+
             var sn1AcylChainString = chainStrings[0];
             var sn2AcylChainString = chainStrings[1];
             var sn3AcylChainString = chainStrings[2];
@@ -3033,9 +3071,11 @@ namespace CompMs.Common.Lipidomics {
             molecule.Sn4Oxidizedount = sn4OxidizedCount;
         }
 
-        public static string GetLipidHeaderString(string lipidname) {
+        public static string GetLipidHeaderString(string lipidname)
+        {
             var lipidHeader = lipidname.Split(' ')[0];
-            if (lipidHeader == "SE" || lipidHeader == "ST" || lipidHeader == "SG" || lipidHeader == "BA" || lipidHeader == "ASG") {
+            if (lipidHeader == "SE" || lipidHeader == "ST" || lipidHeader == "SG" || lipidHeader == "BA" || lipidHeader == "ASG")
+            {
                 var dummyString = string.Empty;
                 RetrieveSterolHeaderChainStrings(lipidname, out lipidHeader, out dummyString);
             }
@@ -3052,7 +3092,7 @@ namespace CompMs.Common.Lipidomics {
         //    var lipidName = lipidname; // SM d18:1/30:1
         //    var chainStrings = acylChainStringSeparator(lipidName);
         //    if (chainStrings.Count() != 3) return;
-           
+
         //    var sn1AcylChainString = chainStrings[0];
         //    var sn2AcylChainString = chainStrings[1];
         //    var sn3AcylChainString = chainStrings[2];
@@ -3244,7 +3284,8 @@ namespace CompMs.Common.Lipidomics {
         //    molecule.Sn4Oxidizedount = sn4OxidizedCount;
         //}
 
-        private static void setChainPropertiesVS2(string chainString, out int carbonCount, out int doubleBondCount, out int oxidizedCount) {
+        private static void setChainPropertiesVS2(string chainString, out int carbonCount, out int doubleBondCount, out int oxidizedCount)
+        {
 
             carbonCount = 0;
             doubleBondCount = 0;
@@ -3254,9 +3295,10 @@ namespace CompMs.Common.Lipidomics {
             //try convertion
             var isPlasmenyl = chainString.Contains("P-") ? true : false;
             chainString = chainString.Replace("O-", "").Replace("P-", "").Replace("N-", "").Replace("e", "").Replace("p", "").Replace("m", "").Replace("n-", "").Replace("d", "").Replace("t", "");
-            
+
             // for oxidized moiety parser
-            if (chainString.Contains(";")) { // e.g. 18:2;2O, 18:2;(2OH)
+            if (chainString.Contains(";"))
+            { // e.g. 18:2;2O, 18:2;(2OH)
                 var chain = chainString.Split(';')[0];
                 var oxidizedmoiety = chainString.Split(';')[1]; //2O, (2OH)
                 //modified by MT 2020/12/11 & 2021/01/12
@@ -3265,16 +3307,19 @@ namespace CompMs.Common.Lipidomics {
                 {
                     expectedOxCount = "1";
                 }
-                else if (oxidizedmoiety.Contains("(2OH)")|| oxidizedmoiety.Contains("(3OH)"))
+                else if (oxidizedmoiety.Contains("(2OH)") || oxidizedmoiety.Contains("(3OH)"))
                 {
-                        expectedOxCount = "1";
+                    expectedOxCount = "1";
                 }
                 int.TryParse(expectedOxCount, out oxidizedCount);
                 chainString = chain;
-            } else if (chainString.Contains("+")) { //20:3+3O
+            }
+            else if (chainString.Contains("+"))
+            { //20:3+3O
                 var chain = chainString.Split('+')[0]; // 20:3
                 var expectedOxCount = chainString.Split('+')[1].Replace("O", ""); //2
-                if (expectedOxCount == string.Empty || expectedOxCount == "") {
+                if (expectedOxCount == string.Empty || expectedOxCount == "")
+                {
                     expectedOxCount = "1";
                 }
                 int.TryParse(expectedOxCount, out oxidizedCount);
@@ -3283,11 +3328,14 @@ namespace CompMs.Common.Lipidomics {
 
 
             // for SN1/SN2 string parser 
-            if (chainString.Contains("-SN")) {
-                if (chainString.Contains("-SN1")) {
+            if (chainString.Contains("-SN"))
+            {
+                if (chainString.Contains("-SN1"))
+                {
                     chainString = chainString.Replace("-SN1", "");
                 }
-                else if (chainString.Contains("-SN2")) {
+                else if (chainString.Contains("-SN2"))
+                {
                     chainString = chainString.Replace("-SN2", "");
                 }
             }
@@ -3307,7 +3355,7 @@ namespace CompMs.Common.Lipidomics {
         //    oxidizedCount = -1;
 
         //    //pattern: 18:1, 18:1e, 18:1p d18:1, t20:0, n-18:0, N-19:0, 20:3+3O, 20:3+2O(2Cyc), 18:2-SN1, O-18:1, P-18:1, N-18:1, 16:0;O, 18:2;2O, 18:2;(2OH)
-           
+
         //    if (chainString.Contains("e") || chainString.Contains("p") || chainString.Contains("m") ||
         //        chainString.StartsWith("d") || chainString.StartsWith("t") || chainString.StartsWith("n-") || chainString.StartsWith("N-") ||
         //        chainString.StartsWith("O-") || chainString.StartsWith("P-")) {
@@ -3451,7 +3499,8 @@ namespace CompMs.Common.Lipidomics {
         //    return chains;
         //}
 
-        private static List<string> acylChainStringSeparatorVS2(string moleculeString) {
+        private static List<string> acylChainStringSeparatorVS2(string moleculeString)
+        {
 
             if (moleculeString.Split(' ').Length == 1) return null;
 
@@ -3469,28 +3518,38 @@ namespace CompMs.Common.Lipidomics {
             // pattern [12]  LPE-N (FA 16:0)18:1  (LNAPE,LNAPS)
             var headerString = moleculeString.Split(' ')[0].Trim();
             string chainString = string.Empty;
-            if (headerString == "SE" || headerString == "ST" || headerString == "SG" || headerString == "BA" || headerString == "ASG") {
+            if (headerString == "SE" || headerString == "ST" || headerString == "SG" || headerString == "BA" || headerString == "ASG")
+            {
                 RetrieveSterolHeaderChainStrings(moleculeString, out headerString, out chainString);
             }
-            else {
+            else
+            {
                 chainString = moleculeString.Substring(headerString.Length + 1);
             }
             List<string> chains = null;
             string[] acylArray = null;
+
+            // d-substituted compound support 20220920
+            if (chainString.Contains('|')) return null;
+            Regex reg = new Regex(@"\(d([0-9]*)\)");
+            chainString = reg.Replace(chainString, "");
 
             var pattern2 = @"(\()(?<chain1>.+?)(\))(?<chain2>.+?)(/)(?<chain3>.+?$)";
             var pattern3 = @"(?<chain1>.+?)(\(FA )(?<chain2>.+?)(\))";
             var pattern4 = @"(?<chain1>.+?)(/)(?<chain2>.+?)(\(FA )(?<chain3>.+?)(\))";
             var pattern12 = @"(\(FA )(?<chain2>.+?)(\))(?<chain1>.+?$)";
 
-            if (chainString.Contains("/") && chainString.Contains("(FA")) { // pattern 4
+            if (chainString.Contains("/") && chainString.Contains("(FA"))
+            { // pattern 4
                 var regexes = Regex.Match(chainString, pattern4).Groups;
                 chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value, regexes["chain3"].Value };
-            } 
-            else if (chainString.Contains("(FA")) {  // pattern 3
+            }
+            else if (chainString.Contains("(FA"))
+            {  // pattern 3
                 var regexes = Regex.Match(chainString, pattern3).Groups;
                 var chain1strings = regexes["chain1"].Value;
-                if (chain1strings.Contains("_")) {
+                if (chain1strings.Contains("_"))
+                {
                     chains = new List<string>();
                     foreach (var chainstring in chain1strings.Split('_').ToArray()) chains.Add(chainstring);
                     chains.Add(regexes["chain2"].Value);
@@ -3507,43 +3566,51 @@ namespace CompMs.Common.Lipidomics {
                 }
                 //Console.WriteLine();
             }
-            else if (chainString.Contains("(O-") && chainString.Contains("/")) { // pattern 2
+            else if (chainString.Contains("(O-") && chainString.Contains("/"))
+            { // pattern 2
                 var regexes = Regex.Match(chainString, pattern2).Groups;
                 chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value, regexes["chain3"].Value };
                 //Console.WriteLine();
             }
-            else {
+            else
+            {
                 chainString = chainString.Replace('/', '_');
                 acylArray = chainString.Split('_');
                 chains = new List<string>();
-                for (int i = 0; i < acylArray.Length; i++) {
+                for (int i = 0; i < acylArray.Length; i++)
+                {
                     if (i == 0 && acylArray[i] != string.Empty) chains.Add(acylArray[i]);
                     if (i == 1 && acylArray[i] != string.Empty) chains.Add(acylArray[i]);
                     if (i == 2 && acylArray[i] != string.Empty) chains.Add(acylArray[i]);
                     if (i == 3 && acylArray[i] != string.Empty) chains.Add(acylArray[i]);
                 }
             }
-           
+
             return chains;
         }
 
-        public static void RetrieveSterolHeaderChainStrings(string moleculeString, out string headerString, out string chainString) {
+        public static void RetrieveSterolHeaderChainStrings(string moleculeString, out string headerString, out string chainString)
+        {
 
             headerString = string.Empty;
             chainString = string.Empty;
-            if (moleculeString.Contains("/")) {
+            if (moleculeString.Contains("/"))
+            {
                 var splitterArray = moleculeString.Split('/');
                 chainString = splitterArray[splitterArray.Length - 1];
             }
-            else {
+            else
+            {
                 var splitterArray = moleculeString.Split(' ');
                 chainString = splitterArray[splitterArray.Length - 1];
             }
         }
 
-        public static List<string> GetLipidClasses() {
+        public static List<string> GetLipidClasses()
+        {
             var names = new List<string>();
-            foreach (var lipid in System.Enum.GetValues(typeof(LbmClass)).Cast<LbmClass>()) {
+            foreach (var lipid in System.Enum.GetValues(typeof(LbmClass)).Cast<LbmClass>())
+            {
                 var cName = ConvertLbmClassEnumToMsdialClassDefinitionVS2(lipid);
                 if (cName != "Undefined" && !names.Contains(cName))
                     names.Add(cName);
@@ -3681,8 +3748,10 @@ namespace CompMs.Common.Lipidomics {
         //    }
         //}
 
-        public static string ConvertLbmClassEnumToMsdialClassDefinitionVS2(LbmClass lipidclass) {
-            switch (lipidclass) {
+        public static string ConvertLbmClassEnumToMsdialClassDefinitionVS2(LbmClass lipidclass)
+        {
+            switch (lipidclass)
+            {
                 case LbmClass.MG: return "MG";
                 case LbmClass.DG: return "DG";
                 case LbmClass.TG: return "TG";
@@ -4042,8 +4111,10 @@ namespace CompMs.Common.Lipidomics {
         //    }
         //}
 
-        public static LbmClass ConvertMsdialClassDefinitionToLbmClassEnumVS2(string lipidclass) {
-            switch (lipidclass) {
+        public static LbmClass ConvertMsdialClassDefinitionToLbmClassEnumVS2(string lipidclass)
+        {
+            switch (lipidclass)
+            {
                 case "MG": return LbmClass.MG;
                 case "DG": return LbmClass.DG;
                 case "TG": return LbmClass.TG;
@@ -4263,7 +4334,7 @@ namespace CompMs.Common.Lipidomics {
                 case "AHexCer": return LbmClass.AHexCer;
                 case "ASM": return LbmClass.ASM;
 
-                case"GPNAE": return LbmClass.GPNAE;
+                case "GPNAE": return LbmClass.GPNAE;
                 case "MGMG": return LbmClass.MGMG;
                 case "DGMG": return LbmClass.DGMG;
 
@@ -4460,7 +4531,8 @@ namespace CompMs.Common.Lipidomics {
         //    }
         //}
 
-        public static string ConvertMsdialClassDefinitionToSuperClassVS2(string lipidclass) {
+        public static string ConvertMsdialClassDefinitionToSuperClassVS2(string lipidclass)
+        {
 
             /*  
              *  FattyAcyls [FA]
@@ -4474,7 +4546,8 @@ namespace CompMs.Common.Lipidomics {
              * 
              */
 
-            switch (lipidclass) {
+            switch (lipidclass)
+            {
 
                 case "NAE": return "FattyAcyls";
                 case "NAGly": return "FattyAcyls";

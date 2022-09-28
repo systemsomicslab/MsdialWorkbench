@@ -48,8 +48,10 @@ namespace CompMs.App.Msdial.View.Core
 
             broker = MessageBroker.Default;
 
-            broker.ToObservable<ProgressBarMultiContainerVM>()
-                .Subscribe(ShowProgressBar);
+            broker.ToObservable<ProgressBarMultiContainerRequest>()
+                .Subscribe(ShowMultiProgressBarWindow);
+            broker.ToObservable<ProgressBarRequest>()
+                .Subscribe(ShowProgressBarWindow);
             broker.ToObservable<ExperimentSpectrumViewModel>()
                 .Subscribe(OpenExperimentSpectrumView);
             broker.ToObservable<ProteinGroupTableViewModel>()
@@ -86,22 +88,40 @@ namespace CompMs.App.Msdial.View.Core
             });
         }
 
-        private void ShowProgressBar(ProgressBarMultiContainerVM viewmodel) {
-            var dialog = new ProgressBarMultiContainerWindow
-            {
-                DataContext = viewmodel,
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            dialog.Loaded += async (s, e) =>
-            {
-                await viewmodel.RunAsync();
-                viewmodel.Result = true;
+        private void ShowMultiProgressBarWindow(ProgressBarMultiContainerRequest request) {
+            using (var viewmodel = new ProgressBarMultiContainerVM(request)) {
+                var dialog = new ProgressBarMultiContainerWindow
+                {
+                    DataContext = viewmodel,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                dialog.Loaded += async (s, e) =>
+                {
+                    await viewmodel.RunAsync().ConfigureAwait(false);
+                    request.Result = true;
+                    dialog.Dispatcher.Invoke(dialog.Close);
+                };
+                dialog.ShowDialog();
+            }
+        }
 
-                dialog.DialogResult = true;
-                dialog.Close();
-            };
-            dialog.ShowDialog();
+        private void ShowProgressBarWindow(ProgressBarRequest request) {
+            using (var viewmodel = new ProgressBarVM(request)) {
+                var dialog = new ProgressBarWindow
+                {
+                    DataContext = viewmodel,
+                    Owner = this,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                dialog.Loaded += async (s, e) =>
+                {
+                    await request.AsyncAction.Invoke(viewmodel).ConfigureAwait(false);
+                    request.Result = true;
+                    dialog.Dispatcher.Invoke(dialog.Close);
+                };
+                dialog.ShowDialog();
+            }
         }
 
         private void OpenExperimentSpectrumView(ExperimentSpectrumViewModel viewmodel) {

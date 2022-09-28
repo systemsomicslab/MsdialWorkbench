@@ -3,7 +3,7 @@
 		<Label>EquiSPLASH</Label>
 		<Lipids>
 			<Lipid>
-				<StandardName>PC 15:0_18:1(d7)</StandardName>
+				<StandardName>PC 33:1(d7)|PC 15:0_18:1(d7)</StandardName>
 				<Concentration>33.19585</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>753.106</MolecularWeight>
@@ -11,7 +11,7 @@
 				<TargetClass>PC</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>35.1605</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -19,7 +19,7 @@
 				<TargetClass>PE</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PC 15:0_18:1(d7)</StandardName>
+				<StandardName>PC 33:1(d7)|PC 15:0_18:1(d7)</StandardName>
 				<Concentration>33.19585</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>753.106</MolecularWeight>
@@ -27,7 +27,7 @@
 				<TargetClass>EtherPC</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>35.1605</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -35,7 +35,7 @@
 				<TargetClass>EtherPE</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PS 15:0_18:1(d7)</StandardName>
+				<StandardName>PS 33:1(d7)|PS 15:0_18:1(d7)</StandardName>
 				<Concentration>32.1742</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>777.02</MolecularWeight>
@@ -43,7 +43,7 @@
 				<TargetClass>PS</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>32.7217</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -51,7 +51,7 @@
 				<TargetClass>PG</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PI 15:0_18:1(d7)</StandardName>
+				<StandardName>PI 33:1(d7)|PI 15:0_18:1(d7)</StandardName>
 				<Concentration>29.5114</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>847.13</MolecularWeight>
@@ -107,7 +107,7 @@
 				<TargetClass>MG</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>DG 15:0_18:1(d7)</StandardName>
+				<StandardName>DG 33:1(d7)|DG 15:0_18:1(d7)</StandardName>
 				<Concentration>42.5186</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>587.978</MolecularWeight>
@@ -115,7 +115,7 @@
 				<TargetClass>DG</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>TG 15:0_18:1(d7)_15:0</StandardName>
+				<StandardName>TG 48:1(d7)|TG 15:0_18:1(d7)_15:0</StandardName>
 				<Concentration>30.7743</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>812.366</MolecularWeight>
@@ -123,7 +123,7 @@
 				<TargetClass>TG</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>SM 18:1;2O/18:1(d9)</StandardName>
+				<StandardName>SM 36:1;2O(d9)|SM 18:1;2O/18:1(d9)</StandardName>
 				<Concentration>33.8691</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>738.136</MolecularWeight>
@@ -131,7 +131,7 @@
 				<TargetClass>SM</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -750,7 +750,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PC 15:0_18:1(d7)</StandardName>
+				<StandardName>PC 33:1(d7)|PC 15:0_18:1(d7)</StandardName>
 				<Concentration>33.19585</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>753.106</MolecularWeight>
@@ -759,7 +759,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PC 15:0_18:1(d7)</StandardName>
+				<StandardName>PC 33:1(d7)|PC 15:0_18:1(d7)</StandardName>
 				<Concentration>33.19585</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>753.106</MolecularWeight>
@@ -768,7 +768,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>35.1605</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -777,7 +777,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>35.1605</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -786,7 +786,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>35.1605</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -795,7 +795,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>32.7217</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -804,7 +804,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>32.7217</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -813,7 +813,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>32.7217</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -822,7 +822,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>32.7217</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -831,7 +831,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>32.7217</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -840,7 +840,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>32.7217</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -849,7 +849,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>32.7217</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -858,7 +858,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>32.7217</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -867,7 +867,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PI 15:0_18:1(d7)</StandardName>
+				<StandardName>PI 33:1(d7)|PI 15:0_18:1(d7)</StandardName>
 				<Concentration>29.5114</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>847.13</MolecularWeight>
@@ -876,7 +876,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PI 15:0_18:1(d7)</StandardName>
+				<StandardName>PI 33:1(d7)|PI 15:0_18:1(d7)</StandardName>
 				<Concentration>29.5114</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>847.13</MolecularWeight>
@@ -885,7 +885,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PI 15:0_18:1(d7)</StandardName>
+				<StandardName>PI 33:1(d7)|PI 15:0_18:1(d7)</StandardName>
 				<Concentration>29.5114</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>847.13</MolecularWeight>
@@ -894,7 +894,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PS 15:0_18:1(d7)</StandardName>
+				<StandardName>PS 33:1(d7)|PS 15:0_18:1(d7)</StandardName>
 				<Concentration>32.1742</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>777.02</MolecularWeight>
@@ -903,7 +903,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PS 15:0_18:1(d7)</StandardName>
+				<StandardName>PS 33:1(d7)|PS 15:0_18:1(d7)</StandardName>
 				<Concentration>32.1742</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>777.02</MolecularWeight>
@@ -912,7 +912,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PS 15:0_18:1(d7)</StandardName>
+				<StandardName>PS 33:1(d7)|PS 15:0_18:1(d7)</StandardName>
 				<Concentration>32.1742</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>777.02</MolecularWeight>
@@ -921,7 +921,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PS 15:0_18:1(d7)</StandardName>
+				<StandardName>PS 33:1(d7)|PS 15:0_18:1(d7)</StandardName>
 				<Concentration>32.1742</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>777.02</MolecularWeight>
@@ -930,7 +930,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>SM 18:1;2O/18:1(d9)</StandardName>
+				<StandardName>SM 36:1;2O(d9)|SM 18:1;2O/18:1(d9)</StandardName>
 				<Concentration>33.8691</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>738.136</MolecularWeight>
@@ -939,7 +939,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>TG 15:0_18:1(d7)_15:0</StandardName>
+				<StandardName>TG 48:1(d7)|TG 15:0_18:1(d7)_15:0</StandardName>
 				<Concentration>30.7743</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>812.366</MolecularWeight>
@@ -1128,7 +1128,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>35.1605</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -1137,7 +1137,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>35.1605</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -1146,7 +1146,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PI 15:0_18:1(d7)</StandardName>
+				<StandardName>PI 33:1(d7)|PI 15:0_18:1(d7)</StandardName>
 				<Concentration>28.91795</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>847.13</MolecularWeight>
@@ -1155,7 +1155,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>TG 15:0_18:1(d7)_15:0</StandardName>
+				<StandardName>TG 48:1(d7)|TG 15:0_18:1(d7)_15:0</StandardName>
 				<Concentration>30.7743</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>812.366</MolecularWeight>
@@ -1164,7 +1164,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>TG 15:0_18:1(d7)_15:0</StandardName>
+				<StandardName>TG 48:1(d7)|TG 15:0_18:1(d7)_15:0</StandardName>
 				<Concentration>30.7743</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>812.366</MolecularWeight>
@@ -1173,7 +1173,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1182,7 +1182,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1191,7 +1191,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1200,7 +1200,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1209,7 +1209,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1218,7 +1218,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1227,7 +1227,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1236,7 +1236,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1245,7 +1245,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1254,7 +1254,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1263,7 +1263,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1272,7 +1272,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1281,7 +1281,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1290,7 +1290,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1299,7 +1299,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1308,7 +1308,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1317,7 +1317,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1326,7 +1326,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1335,7 +1335,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1344,7 +1344,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1353,7 +1353,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1362,7 +1362,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1371,7 +1371,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1380,7 +1380,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1389,7 +1389,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1398,7 +1398,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1407,7 +1407,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1416,7 +1416,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1425,7 +1425,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1434,7 +1434,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>47.087175</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -1443,7 +1443,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>DG 15:0_18:1(d7)</StandardName>
+				<StandardName>DG 33:1(d7)|DG 15:0_18:1(d7)</StandardName>
 				<Concentration>42.5186</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>587.978</MolecularWeight>
@@ -1457,7 +1457,7 @@
 		<Label>SPLASH LIPIDOMIX</Label>
 		<Lipids>
 			<Lipid>
-				<StandardName>PC 15:0_18:1(d7)</StandardName>
+				<StandardName>PC 33:1(d7)|PC 15:0_18:1(d7)</StandardName>
 				<Concentration>106.224</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>753.106</MolecularWeight>
@@ -1465,7 +1465,7 @@
 				<TargetClass>PC</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>3.52</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -1473,7 +1473,7 @@
 				<TargetClass>PE</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PC 15:0_18:1(d7)</StandardName>
+				<StandardName>PC 33:1(d7)|PC 15:0_18:1(d7)</StandardName>
 				<Concentration>106.224</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>753.106</MolecularWeight>
@@ -1481,7 +1481,7 @@
 				<TargetClass>EtherPC</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>3.52</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -1489,7 +1489,7 @@
 				<TargetClass>EtherPE</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PS 15:0_18:1(d7)</StandardName>
+				<StandardName>PS 33:1(d7)|PS 15:0_18:1(d7)</StandardName>
 				<Concentration>3.216</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>755.034</MolecularWeight>
@@ -1497,7 +1497,7 @@
 				<TargetClass>PS</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>19.632</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>742.035</MolecularWeight>
@@ -1505,7 +1505,7 @@
 				<TargetClass>PG</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PI 15:0_18:1(d7)</StandardName>
+				<StandardName>PI 33:1(d7)|PI 15:0_18:1(d7)</StandardName>
 				<Concentration>5.904</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>830.097</MolecularWeight>
@@ -1513,7 +1513,7 @@
 				<TargetClass>PI</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PA 15:0_18:1(d7)</StandardName>
+				<StandardName>PA 33:1(d7)|PA 15:0_18:1(d7)</StandardName>
 				<Concentration>5.072</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>667.956</MolecularWeight>
@@ -1569,7 +1569,7 @@
 				<TargetClass>MG</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>DG 15:0_18:1(d7)</StandardName>
+				<StandardName>DG 33:1(d7)|DG 15:0_18:1(d7)</StandardName>
 				<Concentration>8.496</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>587.978</MolecularWeight>
@@ -1577,7 +1577,7 @@
 				<TargetClass>DG</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>TG 15:0_18:1(d7)_15:0</StandardName>
+				<StandardName>TG 48:1(d7)|TG 15:0_18:1(d7)_15:0</StandardName>
 				<Concentration>33.856</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>812.366</MolecularWeight>
@@ -1585,7 +1585,7 @@
 				<TargetClass>TG</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>SM 18:1;2O/18:1(d9)</StandardName>
+				<StandardName>SM 36:1;2O(d9)|SM 18:1;2O/18:1(d9)</StandardName>
 				<Concentration>20.32</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>738.136</MolecularWeight>
@@ -1606,7 +1606,7 @@
 		<Label>SPLASH II LIPIDOMIX</Label>
 		<Lipids>
 			<Lipid>
-				<StandardName>PC 15:0_18:1(d7)</StandardName>
+				<StandardName>PC 33:1(d7)|PC 15:0_18:1(d7)</StandardName>
 				<Concentration>106.224</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>753.106</MolecularWeight>
@@ -1614,7 +1614,7 @@
 				<TargetClass>PC</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>3.52</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -1622,7 +1622,7 @@
 				<TargetClass>PE</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PS 15:0_18:1(d7)</StandardName>
+				<StandardName>PS 33:1(d7)|PS 15:0_18:1(d7)</StandardName>
 				<Concentration>5.1456</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>755.034</MolecularWeight>
@@ -1630,7 +1630,7 @@
 				<TargetClass>PS</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PI 15:0_18:1(d7)</StandardName>
+				<StandardName>PI 33:1(d7)|PI 15:0_18:1(d7)</StandardName>
 				<Concentration>4.7232</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>830.097</MolecularWeight>
@@ -1678,7 +1678,7 @@
 				<TargetClass>CE</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PC O-18:1_18:1(d7)</StandardName>
+				<StandardName>PC O-36:2(d7)|PC O-18:1_18:1(d7)</StandardName>
 				<Concentration>5.1203</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>781.201</MolecularWeight>
@@ -1686,7 +1686,7 @@
 				<TargetClass>EtherPC</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>DG 15:0_18:1(d7)</StandardName>
+				<StandardName>DG 33:1(d7)|DG 15:0_18:1(d7)</StandardName>
 				<Concentration>10.1952</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>587.978</MolecularWeight>
@@ -1694,7 +1694,7 @@
 				<TargetClass>DG</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>TG 15:0_18:1(d7)_15:0</StandardName>
+				<StandardName>TG 48:1(d7)|TG 15:0_18:1(d7)_15:0</StandardName>
 				<Concentration>33.856</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>812.366</MolecularWeight>
@@ -1702,7 +1702,7 @@
 				<TargetClass>TG</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>SM 18:1;2O/18:1(d9)</StandardName>
+				<StandardName>SM 36:1;2O(d9)|SM 18:1;2O/18:1(d9)</StandardName>
 				<Concentration>20.32</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>738.136</MolecularWeight>
@@ -1724,7 +1724,7 @@
 		<IsLabPrivateVersion>true</IsLabPrivateVersion>
 		<Lipids>
 			<Lipid>
-				<StandardName>PC 15:0_18:1(d7)</StandardName>
+				<StandardName>PC 33:1(d7)|PC 15:0_18:1(d7)</StandardName>
 				<Concentration>132.7834</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>753.106</MolecularWeight>
@@ -1732,7 +1732,7 @@
 				<TargetClass>PC</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>140.642</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -1740,7 +1740,7 @@
 				<TargetClass>PE</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PC 15:0_18:1(d7)</StandardName>
+				<StandardName>PC 33:1(d7)|PC 15:0_18:1(d7)</StandardName>
 				<Concentration>132.7834</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>753.106</MolecularWeight>
@@ -1748,7 +1748,7 @@
 				<TargetClass>EtherPC</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>140.642</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -1756,7 +1756,7 @@
 				<TargetClass>EtherPE</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PS 15:0_18:1(d7)</StandardName>
+				<StandardName>PS 33:1(d7)|PS 15:0_18:1(d7)</StandardName>
 				<Concentration>128.6968</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>777.02</MolecularWeight>
@@ -1764,7 +1764,7 @@
 				<TargetClass>PS</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>130.8868</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -1772,7 +1772,7 @@
 				<TargetClass>PG</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>PI 15:0_18:1(d7)</StandardName>
+				<StandardName>PI 33:1(d7)|PI 15:0_18:1(d7)</StandardName>
 				<Concentration>118.0456</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>847.13</MolecularWeight>
@@ -1828,7 +1828,7 @@
 				<TargetClass>MG</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>DG 15:0_18:1(d7)</StandardName>
+				<StandardName>DG 33:1(d7)|DG 15:0_18:1(d7)</StandardName>
 				<Concentration>170.0744</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>587.978</MolecularWeight>
@@ -1836,7 +1836,7 @@
 				<TargetClass>DG</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>TG 15:0_18:1(d7)_15:0</StandardName>
+				<StandardName>TG 48:1(d7)|TG 15:0_18:1(d7)_15:0</StandardName>
 				<Concentration>123.0972</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>812.366</MolecularWeight>
@@ -1844,7 +1844,7 @@
 				<TargetClass>TG</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>SM 18:1;2O/18:1(d9)</StandardName>
+				<StandardName>SM 36:1;2O(d9)|SM 18:1;2O/18:1(d9)</StandardName>
 				<Concentration>135.4764</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>738.136</MolecularWeight>
@@ -1852,7 +1852,7 @@
 				<TargetClass>SM</TargetClass>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -2453,7 +2453,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PC 15:0_18:1(d7)</StandardName>
+				<StandardName>PC 33:1(d7)|PC 15:0_18:1(d7)</StandardName>
 				<Concentration>132.7834</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>753.106</MolecularWeight>
@@ -2462,7 +2462,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PC 15:0_18:1(d7)</StandardName>
+				<StandardName>PC 33:1(d7)|PC 15:0_18:1(d7)</StandardName>
 				<Concentration>132.7834</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>753.106</MolecularWeight>
@@ -2471,7 +2471,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>140.642</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -2480,7 +2480,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>140.642</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -2489,7 +2489,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>140.642</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -2498,7 +2498,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>130.8868</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -2507,7 +2507,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>130.8868</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -2516,7 +2516,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>130.8868</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -2525,7 +2525,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>130.8868</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -2534,7 +2534,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>130.8868</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -2543,7 +2543,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>130.8868</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -2552,7 +2552,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>130.8868</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -2561,7 +2561,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PG 15:0_18:1(d7)</StandardName>
+				<StandardName>PG 33:1(d7)|PG 15:0_18:1(d7)</StandardName>
 				<Concentration>130.8868</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>764.02</MolecularWeight>
@@ -2570,7 +2570,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PI 15:0_18:1(d7)</StandardName>
+				<StandardName>PI 33:1(d7)|PI 15:0_18:1(d7)</StandardName>
 				<Concentration>118.0456</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>847.13</MolecularWeight>
@@ -2579,7 +2579,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PI 15:0_18:1(d7)</StandardName>
+				<StandardName>PI 33:1(d7)|PI 15:0_18:1(d7)</StandardName>
 				<Concentration>118.0456</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>847.13</MolecularWeight>
@@ -2588,7 +2588,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PI 15:0_18:1(d7)</StandardName>
+				<StandardName>PI 33:1(d7)|PI 15:0_18:1(d7)</StandardName>
 				<Concentration>118.0456</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>847.13</MolecularWeight>
@@ -2597,7 +2597,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PS 15:0_18:1(d7)</StandardName>
+				<StandardName>PS 33:1(d7)|PS 15:0_18:1(d7)</StandardName>
 				<Concentration>128.6968</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>777.02</MolecularWeight>
@@ -2606,7 +2606,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PS 15:0_18:1(d7)</StandardName>
+				<StandardName>PS 33:1(d7)|PS 15:0_18:1(d7)</StandardName>
 				<Concentration>128.6968</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>777.02</MolecularWeight>
@@ -2615,7 +2615,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PS 15:0_18:1(d7)</StandardName>
+				<StandardName>PS 33:1(d7)|PS 15:0_18:1(d7)</StandardName>
 				<Concentration>128.6968</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>777.02</MolecularWeight>
@@ -2624,7 +2624,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PS 15:0_18:1(d7)</StandardName>
+				<StandardName>PS 33:1(d7)|PS 15:0_18:1(d7)</StandardName>
 				<Concentration>128.6968</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>777.02</MolecularWeight>
@@ -2633,7 +2633,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>SM 18:1;2O/18:1(d9)</StandardName>
+				<StandardName>SM 36:1;2O(d9)|SM 18:1;2O/18:1(d9)</StandardName>
 				<Concentration>135.4764</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>738.136</MolecularWeight>
@@ -2642,7 +2642,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>TG 15:0_18:1(d7)_15:0</StandardName>
+				<StandardName>TG 48:1(d7)|TG 15:0_18:1(d7)_15:0</StandardName>
 				<Concentration>123.0972</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>812.366</MolecularWeight>
@@ -2831,7 +2831,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>140.642</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -2840,7 +2840,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PE 15:0_18:1(d7)</StandardName>
+				<StandardName>PE 33:1(d7)|PE 15:0_18:1(d7)</StandardName>
 				<Concentration>140.642</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>711.025</MolecularWeight>
@@ -2849,7 +2849,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>PI 15:0_18:1(d7)</StandardName>
+				<StandardName>PI 33:1(d7)|PI 15:0_18:1(d7)</StandardName>
 				<Concentration>115.6718</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>847.13</MolecularWeight>
@@ -2858,7 +2858,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>TG 15:0_18:1(d7)_15:0</StandardName>
+				<StandardName>TG 48:1(d7)|TG 15:0_18:1(d7)_15:0</StandardName>
 				<Concentration>123.0972</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>812.366</MolecularWeight>
@@ -2867,7 +2867,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>TG 15:0_18:1(d7)_15:0</StandardName>
+				<StandardName>TG 48:1(d7)|TG 15:0_18:1(d7)_15:0</StandardName>
 				<Concentration>123.0972</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>812.366</MolecularWeight>
@@ -2876,7 +2876,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -2885,7 +2885,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -2894,7 +2894,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -2903,7 +2903,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -2912,7 +2912,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -2921,7 +2921,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -2930,7 +2930,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -2939,7 +2939,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -2948,7 +2948,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -2957,7 +2957,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -2966,7 +2966,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -2975,7 +2975,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -2984,7 +2984,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -2993,7 +2993,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3002,7 +3002,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3011,7 +3011,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3020,7 +3020,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3029,7 +3029,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3038,7 +3038,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3047,7 +3047,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3056,7 +3056,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3065,7 +3065,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3074,7 +3074,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3083,7 +3083,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3092,7 +3092,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3101,7 +3101,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3110,7 +3110,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3119,7 +3119,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3128,7 +3128,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3137,7 +3137,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>Cer 18:1;2O/15:0(d7)</StandardName>
+				<StandardName>Cer 33:1;2O(d7)|Cer 18:1;2O/15:0(d7)</StandardName>
 				<Concentration>188.3487</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>530.93</MolecularWeight>
@@ -3146,7 +3146,7 @@
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
-				<StandardName>DG 15:0_18:1(d7)</StandardName>
+				<StandardName>DG 33:1(d7)|DG 15:0_18:1(d7)</StandardName>
 				<Concentration>170.0744</Concentration>
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>587.978</MolecularWeight>

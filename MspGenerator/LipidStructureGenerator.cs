@@ -503,7 +503,7 @@ namespace CompMs.MspGenerator
             if (chainString.Contains("P-"))
             {
                 chainDictionary = AcylChainDic.etherChainPlasmenylDictionary;
-                doubleNum = doubleNum - 1;
+                doubleNum = doubleNum + 1;
             }
             else if (chainString.Contains("O-"))
             {
@@ -623,10 +623,6 @@ namespace CompMs.MspGenerator
         }
 
 
-
-
-
-
         private static List<string> acylChainStringSeparatorVS2(string moleculeString)
         {
 
@@ -656,6 +652,11 @@ namespace CompMs.MspGenerator
             }
             List<string> chains = null;
             string[] acylArray = null;
+
+            // d-substituted compound support 20220920
+            //Regex reg = new Regex(@"\(d([0-9]*)\)");
+            //chainString = reg.Replace(chainString, "");
+            if (chainString.Contains('|')) return null;
 
             var pattern2 = @"(\()(?<chain1>.+?)(\))(?<chain2>.+?)(/)(?<chain3>.+?$)";
             var pattern3 = @"(?<chain1>.+?)(\(FA )(?<chain2>.+?)(\))";
