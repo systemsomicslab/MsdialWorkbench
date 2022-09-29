@@ -228,7 +228,7 @@ namespace CompMs.App.Msdial.Model.Setting
                         var task = Task.Run(() =>
                         {
                             var dbModel = group.Key;
-                            EadLipidDatabase db = dbModel.CreateEieioLipidDatabase();
+                            EadLipidDatabase db = dbModel.DBSource == DataBaseSource.OadLipid ? dbModel.CreateOadLipidDatabase() : dbModel.CreateEieioLipidDatabase();
                             if (db is null) {
                                 return;
                             }

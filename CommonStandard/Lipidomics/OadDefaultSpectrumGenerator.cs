@@ -32,8 +32,28 @@ namespace CompMs.Common.Lipidomics {
             var spectrum = new List<SpectrumPeak>() {
                 new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor }
             };
-            if (lipid.Chains is MolecularSpeciesLevelChains mlChains) {
-                spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct));
+            //if (lipid.Chains is MolecularSpeciesLevelChains mlChains) {
+            //    spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct));
+            //}
+            var nlMass = 0.0;
+            var abundance = 30.0;
+            if (lipid.Chains is PositionLevelChains plChains)
+            {
+                foreach (var chain in plChains.Chains)
+                {
+                    if (chain is AcylChain acyl)
+                    {
+                        spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acyl, adduct, nlMass, abundance));
+                    }
+                    else if (chain is AlkylChain alkyl)
+                    {
+                        spectrum.AddRange(spectrumGenerator.GetAlkylDoubleBondSpectrum(lipid, alkyl, adduct, nlMass, abundance));
+                    }
+                    if (chain is SphingoChain sphingo)
+                    {
+                        spectrum.AddRange(spectrumGenerator.GetSphingoDoubleBondSpectrum(lipid, sphingo, adduct, nlMass, abundance));
+                    }
+                }
             }
             spectrum = spectrum.GroupBy(spec => spec, comparer)
                 .Select(specs => new SpectrumPeak(specs.First().Mass, specs.Sum(n => n.Intensity), string.Join(", ", specs.Select(spec => spec.Comment)), specs.Aggregate(SpectrumComment.none, (a, b) => a | b.SpectrumComment)))

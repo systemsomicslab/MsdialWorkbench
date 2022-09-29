@@ -114,7 +114,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             ValidateBase(result, property, reference, parameter);
             if (omics == TargetOmics.Lipidomics) {
-                if (collisionType == CollisionType.EIEIO) {
+                if (collisionType == CollisionType.EIEIO || collisionType == CollisionType.OAD) {
                     ValidateOnEadLipidomics(result, scan, reference, parameter);
                 }
                 else {
