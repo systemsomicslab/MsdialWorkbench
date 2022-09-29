@@ -112,10 +112,10 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
             _taskProgressCollection = new TaskProgressCollection();
             _taskProgressCollection.ShowWhileSwitchOn(Model.NowSaving, "Saving...").AddTo(Disposables);
+            _taskProgressCollection.ShowWhileSwitchOn(Model.NowLoading, "Loading...").AddTo(Disposables);
             _broker.ToObservable<ITaskNotification>()
                 .Subscribe(_taskProgressCollection.Update)
                 .AddTo(Disposables);
-            
         }
 
         private readonly IMessageBroker _broker;

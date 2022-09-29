@@ -117,6 +117,18 @@ namespace Rfx.Riken.OsakaUniv
             }
         }
 
+        private void Button_Delete_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = (ExtractedIonChromatogramDisplaySetVM)DataContext;
+            for (int i = 0; i < vm.EicDisplaySettingBeanCollection.Count; i++)
+            {
+                var query = vm.EicDisplaySettingBeanCollection[i];
+                query.EicName = null;
+                query.ExactMass = null;
+                query.MassTolerance = null;
+            }
+        }
+
         private void Button_Cancel_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
