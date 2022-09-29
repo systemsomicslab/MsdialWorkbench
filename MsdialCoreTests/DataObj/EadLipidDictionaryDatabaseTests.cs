@@ -14,7 +14,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
         [DataTestMethod]
         [DynamicData(nameof(GetGeneratesDifferentAdductTests), DynamicDataSourceType.Method)]
         public void GeneratesDifferentAdductTests(ILipid lipid1, AdductIon adduct1, ILipid lipid2, AdductIon adduct2, ILipid seed) {
-            var db = new EadLipidDictionaryDatabase("stubPath", "stubId", TODO);
+            var db = new EadLipidDictionaryDatabase("stubPath", "stubId", Common.DataObj.Result.DataBaseSource.EieioLipid);
             var stubReference1 = new MoleculeMsReference { AdductType = adduct1, };
             var lipids1 = db.Generates(new[] { lipid1, }, seed, adduct1, stubReference1);
             var stubReference2 = new MoleculeMsReference { AdductType = adduct2, };

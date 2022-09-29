@@ -1015,7 +1015,6 @@ namespace CompMs.MsdialCore.Algorithm {
                 spot.PeakAreaAboveBaseline = peakAreaAboveBaseline * 60.0;
                 spot.PeakAreaAboveZero = peakAreaAboveZero * 60.0;
 
-                spot.ChromXs = sPeaklist[maxID].ChromXs;
                 spot.ChromXsTop = sPeaklist[maxID].ChromXs;
                 spot.ChromXsLeft = sPeaklist[minLeftId].ChromXs;
                 spot.ChromXsRight = sPeaklist[minRightId].ChromXs;
