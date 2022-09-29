@@ -89,6 +89,10 @@ namespace CompMs.MsdialCore.DataObj.Tests
         [Key(43)]
         public double Mass { get; set; }
 
+        public double PeakWidth() {
+            throw new NotImplementedException();
+        }
+
         public double PeakWidth(ChromXType type) {
             throw new NotImplementedException();
         }

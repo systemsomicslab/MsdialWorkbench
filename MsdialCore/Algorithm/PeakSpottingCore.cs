@@ -882,12 +882,12 @@ namespace CompMs.MsdialCore.Algorithm {
             var minDatapoint = 3;
             // var counter = 0;
             var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), _parameter.IonMode, _parameter.AcquisitionType);
-            foreach (var spot in chromPeakFeatures) {
+            foreach ((ChromatogramPeakFeature peakFeature, IChromatogramPeakFeature peak) in chromPeakFeatures.Zip(chromPeakFeatures)) {
                 //get EIC chromatogram
-                var peakWidth = spot.PeakWidth();
-                var peakWidthMargin = spot.PeakWidth() * 0.5;
-                var chromatogramRange = new ChromatogramRange(spot.ChromXsLeft.Value - peakWidthMargin, spot.ChromXsRight.Value + peakWidthMargin, spot.ChromXs.Type, spot.ChromXs.Unit);
-                var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(spot.Mass, _parameter.CentroidMs1Tolerance, chromatogramRange);
+                var peakWidth = peak.PeakWidth();
+                var peakWidthMargin = peak.PeakWidth() * 0.5;
+                var chromatogramRange = new ChromatogramRange(peak.ChromXsLeft.Value - peakWidthMargin, peak.ChromXsRight.Value + peakWidthMargin, peak.ChromXsTop.Type, peak.ChromXsTop.Unit);
+                var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(peak.Mass, _parameter.CentroidMs1Tolerance, chromatogramRange);
 
                 var sPeaklist = chromatogram.Smoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel);
                 var maxID = -1;
@@ -897,8 +897,8 @@ namespace CompMs.MsdialCore.Algorithm {
                 var peakAreaAboveZero = 0.0;
                 var peakAreaAboveBaseline = 0.0;
                 for (int i = 0; i < sPeaklist.Count - 1; i++) {
-                    if (Math.Abs(sPeaklist[i].ChromXs.Value - spot.ChromXs.Value) < minRtValue) {
-                        minRtValue = Math.Abs(sPeaklist[i].ChromXs.Value - spot.ChromXs.Value);
+                    if (Math.Abs(sPeaklist[i].ChromXs.Value - peak.ChromXsTop.Value) < minRtValue) {
+                        minRtValue = Math.Abs(sPeaklist[i].ChromXs.Value - peak.ChromXsTop.Value);
                         minRtId = i;
                     }
                 }
@@ -951,7 +951,7 @@ namespace CompMs.MsdialCore.Algorithm {
                     var minOriginalLeftID = maxID - minDatapoint;
                     if (minOriginalLeftID < 0) minOriginalLeftID = 0;
                     for (int i = maxID; i >= 0; i--) {
-                        var diff = Math.Abs(sPeaklist[i].ChromXs.Value - spot.ChromXsLeft.Value);
+                        var diff = Math.Abs(sPeaklist[i].ChromXs.Value - peak.ChromXsLeft.Value);
                         if (diff < minOriginalLeftRtDiff) {
                             minOriginalLeftRtDiff = diff;
                             minOriginalLeftID = i;
@@ -981,7 +981,7 @@ namespace CompMs.MsdialCore.Algorithm {
                     var minOriginalRightID = maxID + minDatapoint;
                     if (minOriginalRightID > sPeaklist.Count - 1) minOriginalRightID = sPeaklist.Count - 1;
                     for (int i = maxID; i < sPeaklist.Count; i++) {
-                        var diff = Math.Abs(sPeaklist[i].ChromXs.Value - spot.ChromXsRight.Value);
+                        var diff = Math.Abs(sPeaklist[i].ChromXs.Value - peak.ChromXsRight.Value);
                         if (diff < minOriginalRightRtDiff) {
                             minOriginalRightRtDiff = diff;
                             minOriginalRightID = i;
@@ -1012,32 +1012,33 @@ namespace CompMs.MsdialCore.Algorithm {
                 peakAreaAboveBaseline = peakAreaAboveZero - (sPeaklist[minLeftId].Intensity + sPeaklist[minRightId].Intensity) *
                     (sPeaklist[minRightId].ChromXs.Value - sPeaklist[minLeftId].ChromXs.Value) / 2;
 
-                spot.PeakAreaAboveBaseline = peakAreaAboveBaseline * 60.0;
-                spot.PeakAreaAboveZero = peakAreaAboveZero * 60.0;
+                peak.PeakAreaAboveBaseline = peakAreaAboveBaseline * 60.0;
+                peak.PeakAreaAboveZero = peakAreaAboveZero * 60.0;
 
-                spot.ChromXsTop = sPeaklist[maxID].ChromXs;
-                spot.ChromXsLeft = sPeaklist[minLeftId].ChromXs;
-                spot.ChromXsRight = sPeaklist[minRightId].ChromXs;
+                peak.ChromXsTop = sPeaklist[maxID].ChromXs;
+                peak.ChromXsLeft = sPeaklist[minLeftId].ChromXs;
+                peak.ChromXsRight = sPeaklist[minRightId].ChromXs;
 
-                spot.PeakHeightTop = sPeaklist[maxID].Intensity;
-                spot.PeakHeightLeft = sPeaklist[minLeftId].Intensity;
-                spot.PeakHeightRight = sPeaklist[minRightId].Intensity;
+                peak.PeakHeightTop = sPeaklist[maxID].Intensity;
+                peak.PeakHeightLeft = sPeaklist[minLeftId].Intensity;
+                peak.PeakHeightRight = sPeaklist[minRightId].Intensity;
 
-                spot.ChromScanIdTop = sPeaklist[maxID].ID;
-                spot.ChromScanIdLeft = sPeaklist[minLeftId].ID;
-                spot.ChromScanIdRight = sPeaklist[minRightId].ID;
-
-                spot.MS1RawSpectrumIdTop = chromatogram.Peaks[maxID].ID;
-                spot.MS1RawSpectrumIdLeft = chromatogram.Peaks[minLeftId].ID;
-                spot.MS1RawSpectrumIdRight = chromatogram.Peaks[minRightId].ID;
+                peak.ChromScanIdTop = sPeaklist[maxID].ID;
+                peak.ChromScanIdLeft = sPeaklist[minLeftId].ID;
+                peak.ChromScanIdRight = sPeaklist[minRightId].ID;
 
                 var peakHeightFromBaseline = Math.Max(sPeaklist[maxID].Intensity - sPeaklist[minLeftId].Intensity, sPeaklist[maxID].Intensity - sPeaklist[minRightId].Intensity);
-                spot.PeakShape.SignalToNoise = (float)(peakHeightFromBaseline / spot.PeakShape.EstimatedNoise);
+                peakFeature.PeakShape.SignalToNoise = (float)(peakHeightFromBaseline / peakFeature.PeakShape.EstimatedNoise);
 
-                if (spot.DriftChromFeatures == null) { // meaning not ion mobility data
-                    SetMS2RawSpectrumIDs2ChromatogramPeakFeature(spot, provider, spot.MS1RawSpectrumIdLeft, spot.MS1RawSpectrumIdTop, spot.MS1RawSpectrumIdRight);
+                if (peakFeature.DriftChromFeatures == null) { // meaning not ion mobility data
+                    SetMS2RawSpectrumIDs2ChromatogramPeakFeature(peakFeature, provider, chromatogram.Peaks[minLeftId].ID, chromatogram.Peaks[maxID].ID, chromatogram.Peaks[minRightId].ID);
                 }
-                recalculatedPeakspots.Add(spot);
+
+                peakFeature.MS1RawSpectrumIdLeft = chromatogram.Peaks[minLeftId].ID;
+                peakFeature.MS1RawSpectrumIdTop = chromatogram.Peaks[maxID].ID;
+                peakFeature.MS1RawSpectrumIdRight = chromatogram.Peaks[minRightId].ID;
+
+                recalculatedPeakspots.Add(peakFeature);
             }
             return recalculatedPeakspots;
         }

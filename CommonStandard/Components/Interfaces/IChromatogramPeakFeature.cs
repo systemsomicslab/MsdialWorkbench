@@ -16,6 +16,7 @@ namespace CompMs.Common.Interfaces {
         double PeakAreaAboveZero { get; set; }
         double PeakAreaAboveBaseline { get; set; }
         double Mass { get; set; }
+        double PeakWidth();
         double PeakWidth(ChromXType type);
     }
 }

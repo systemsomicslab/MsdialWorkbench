@@ -50,7 +50,7 @@ namespace CompMs.MsdialCore.Algorithm
                     var feature = chromPeakFeatures[i];
                     var peakRt = feature.ChromXs.RT.Value > 0 ? feature.ChromXs.RT.Value : 0;
                     var peakMz = feature.Mass;
-                    var startScanIndex = SearchCollection.LowerBound(chromPeakFeatures, new ChromatogramPeakFeature() { Mass = peakMz - parameter.CentroidMs1Tolerance }, (a, b) => a.Mass.CompareTo(b.Mass));
+                    var startScanIndex = SearchCollection.LowerBound(chromPeakFeatures, peakMz - parameter.CentroidMs1Tolerance, (a, b) => a.Mass.CompareTo(b));
                     var searchedPeakSpots = new List<ChromatogramPeakFeature>() { feature };
 
                     for (int j = startScanIndex; j < chromPeakFeatures.Count; j++) {

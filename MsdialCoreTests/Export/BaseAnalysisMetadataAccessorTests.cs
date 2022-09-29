@@ -58,14 +58,17 @@ namespace CompMs.MsdialCore.Export.Tests
             var parameter = new ParameterBase { CentroidMs1Tolerance = 0.01f, MS2DataType = MSDataType.Centroid, };
             var refer = new MockRefer();
             var accessor = new TestAnalysisMetadataAccessor(refer, parameter, ExportspectraType.deconvoluted);
-            var feature = new ChromatogramPeakFeature
+            var basePeak = new BaseChromatogramPeakFeature
+            {
+                PeakHeightTop = 1000.1,
+                PeakAreaAboveZero = 900.2,
+                Mass = 700d,
+            };
+            var feature = new ChromatogramPeakFeature(basePeak)
             {
                 MasterPeakID = 100,
                 Name = "Metabolite",
                 MS1RawSpectrumIdTop = 2,
-                PeakHeightTop = 1000.1,
-                PeakAreaAboveZero = 900.2,
-                PrecursorMz = 700d,
                 AdductType = AdductIonParser.GetAdductIonBean("[M+H]+"),
                 Comment = "nice comment",
                 MatchResults = new MsScanMatchResultContainer

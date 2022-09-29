@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.Components;
 using CompMs.MsdialCore.DataObj;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reactive.Bindings;
@@ -28,19 +29,23 @@ namespace CompMs.App.Msdial.Model.Information.Tests
 
         public static IEnumerable<object[]> InitialValueTestData {
             get {
-                var x = new ChromatogramPeakFeature
+                var x = new ChromatogramPeakFeature(new BaseChromatogramPeakFeature
+                {
+                    Mass = 500d,
+                    PeakHeightTop = 1000d,
+                })
                 {
                     Name = "Test 1",
-                    PrecursorMz = 500d,
-                    PeakHeightTop = 1000d,
                 };
                 var y = new ChromatogramPeakFeatureModel(x);
                 yield return new object[] { new ReactivePropertySlim<ChromatogramPeakFeatureModel>(y), y, };
-                var z = new ChromatogramPeakFeature
+                var z = new ChromatogramPeakFeature(new BaseChromatogramPeakFeature
+                {
+                    Mass = 1000d,
+                    PeakHeightTop = 2000d,
+                })
                 {
                     Name = "Test 2",
-                    PrecursorMz = 1000d,
-                    PeakHeightTop = 2000d,
                 };
                 var w = new ChromatogramPeakFeatureModel(z);
                 yield return new object[] { Observable.Return(w).ToReactiveProperty(), w, };
@@ -65,33 +70,41 @@ namespace CompMs.App.Msdial.Model.Information.Tests
 
         public static IEnumerable<object[]> NextValueTestData {
             get {
-                var x = new ChromatogramPeakFeature
+                var x = new ChromatogramPeakFeature(new BaseChromatogramPeakFeature
+                {
+                    Mass = 500d,
+                    PeakHeightTop = 1000d,
+                })
                 {
                     Name = "Test 1",
-                    PrecursorMz = 500d,
-                    PeakHeightTop = 1000d,
                 };
                 var y = new ChromatogramPeakFeatureModel(x);
-                var x2 = new ChromatogramPeakFeature
+                var x2 = new ChromatogramPeakFeature(new BaseChromatogramPeakFeature
+                {
+                    Mass = 501d,
+                    PeakHeightTop = 1001d,
+                })
                 {
                     Name = "Test 1-2",
-                    PrecursorMz = 501d,
-                    PeakHeightTop = 1001d,
                 };
                 var y2 = new ChromatogramPeakFeatureModel(x2);
                 yield return new object[] { Observable.Return(y).ToReactiveProperty(), y2, };
-                var z = new ChromatogramPeakFeature
+                var z = new ChromatogramPeakFeature(new BaseChromatogramPeakFeature
+                {
+                    Mass = 1000d,
+                    PeakHeightTop = 2000d,
+                })
                 {
                     Name = "Test 2",
-                    PrecursorMz = 1000d,
-                    PeakHeightTop = 2000d,
                 };
                 var w = new ChromatogramPeakFeatureModel(z);
-                var z2 = new ChromatogramPeakFeature
+                var z2 = new ChromatogramPeakFeature(new BaseChromatogramPeakFeature
+                {
+                    Mass = 1001d,
+                    PeakHeightTop = 2001d,
+                })
                 {
                     Name = "Test 2-2",
-                    PrecursorMz = 1001d,
-                    PeakHeightTop = 2001d,
                 };
                 var w2 = new ChromatogramPeakFeatureModel(z2);
                 yield return new object[] { Observable.Return(w).ToReactiveProperty(), w2, };
@@ -118,19 +131,23 @@ namespace CompMs.App.Msdial.Model.Information.Tests
 
         public static IEnumerable<object[]> UpdateValueTestData {
             get {
-                var x = new ChromatogramPeakFeature
+                var x = new ChromatogramPeakFeature(new BaseChromatogramPeakFeature
+                {
+                    Mass = 500d,
+                    PeakHeightTop = 1000d,
+                })
                 {
                     Name = "Test 1",
-                    PrecursorMz = 500d,
-                    PeakHeightTop = 1000d,
                 };
                 var y = new ChromatogramPeakFeatureModel(x);
                 yield return new object[] { Observable.Return(y).ToReactiveProperty(), "Test 1-2", 501d, 1001d, };
-                var z = new ChromatogramPeakFeature
+                var z = new ChromatogramPeakFeature(new BaseChromatogramPeakFeature
+                {
+                    Mass = 1000d,
+                    PeakHeightTop = 2000d,
+                })
                 {
                     Name = "Test 2",
-                    PrecursorMz = 1000d,
-                    PeakHeightTop = 2000d,
                 };
                 var w = new ChromatogramPeakFeatureModel(z);
                 yield return new object[] { Observable.Return(w).ToReactiveProperty(), "Test 2-2", 1001d, 2001d, };
