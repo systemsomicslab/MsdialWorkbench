@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Utility;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -187,28 +188,19 @@ namespace CompMs.Common.Lipidomics
             return rec(candidate.CarbonCount, candidate.DoubleBondCount, candidate.OxidizedCount, MinLength, -1, -1, candidate.ChainCount);
         }
 
-        private readonly Dictionary<(int, int, int), SphingoChain> sphingoCache = new Dictionary<(int, int, int), SphingoChain>();
+        private readonly ConcurrentDictionary<(int, int, int), SphingoChain> _sphingoCache = new ConcurrentDictionary<(int, int, int), SphingoChain>();
         private SphingoChain CreateSphingoChain(int carbon, int db, int ox) {
-            if (sphingoCache.TryGetValue((carbon, db, ox), out var chain)) {
-                return chain;
-            }
-            return sphingoCache[(carbon, db, ox)] = new SphingoChain(carbon, new DoubleBond(db), new Oxidized(ox, 1, 3));
+            return _sphingoCache.GetOrAdd((carbon, db, ox), triple => new SphingoChain(triple.Item1, new DoubleBond(triple.Item2), new Oxidized(triple.Item3, 1)));
         }
 
-        private readonly Dictionary<(int, int, int), AcylChain> acylCache = new Dictionary<(int, int, int), AcylChain>();
+        private readonly ConcurrentDictionary<(int, int, int), AcylChain> _acylCache = new ConcurrentDictionary<(int, int, int), AcylChain>();
         private AcylChain CreateAcylChain(int carbon, int db, int ox) {
-            if (acylCache.TryGetValue((carbon, db, ox), out var chain)) {
-                return chain;
-            }
-            return acylCache[(carbon, db, ox)] = new AcylChain(carbon, new DoubleBond(db), new Oxidized(ox));
+            return _acylCache.GetOrAdd((carbon, db, ox), triple => new AcylChain(triple.Item1, new DoubleBond(triple.Item2), new Oxidized(triple.Item3)));
         }
 
-        private readonly Dictionary<(int, int, int), AlkylChain> alkylCache = new Dictionary<(int, int, int), AlkylChain>();
+        private readonly ConcurrentDictionary<(int, int, int), AlkylChain> _alkylCache = new ConcurrentDictionary<(int, int, int), AlkylChain>();
         private AlkylChain CreateAlkylChain(int carbon, int db, int ox) {
-            if (alkylCache.TryGetValue((carbon, db, ox), out var chain)) {
-                return chain;
-            }
-            return alkylCache[(carbon, db, ox)] = new AlkylChain(carbon, new DoubleBond(db), new Oxidized(ox));
+            return _alkylCache.GetOrAdd((carbon, db, ox), triple => new AlkylChain(triple.Item1, new DoubleBond(triple.Item2), new Oxidized(triple.Item3)));
         }
 
         private static readonly PositionLevelChainEqualityCompaerer ChainsComparer = new PositionLevelChainEqualityCompaerer();
