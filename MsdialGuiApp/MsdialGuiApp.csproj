@@ -183,6 +183,7 @@
     <Compile Include="Model\Loader\BarItemsLoaderData.cs" />
     <Compile Include="Model\Loader\IChromatogramLoader.cs" />
     <Compile Include="Model\Loader\MsSelectionItem.cs" />
+    <Compile Include="Model\Service\ShortMessageRequest.cs" />
     <Compile Include="Model\Statistics\InternalStandardLowessNormalizeModel.cs" />
     <Compile Include="Model\Statistics\InternalStandardNormalizeModel.cs" />
     <Compile Include="Model\Statistics\IonAbundance.cs" />

@@ -8,7 +8,7 @@
         Name="MessageWindow"
         Title="Message" Height="100" Width="250">
     <Grid>
-        <TextBox Name="Label_MessageTitle" Text="{Binding Text, ElementName=MessageWindow}" 
+        <TextBox Name="Label_MessageTitle" Text="{Binding Text, ElementName=MessageWindow, Mode=OneWay}" 
                VerticalAlignment="Center" HorizontalAlignment="Center" Width="200"
                Margin="0,0,0,0" IsReadOnly="True" BorderThickness="0" />
     </Grid>

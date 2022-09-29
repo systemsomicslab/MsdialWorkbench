@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Notification;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.App.Msdial.View.Setting;
@@ -52,6 +53,10 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowMultiProgressBarWindow);
             broker.ToObservable<ProgressBarRequest>()
                 .Subscribe(ShowProgressBarWindow);
+            broker.ToObservable<ShortMessageRequest>()
+                .Subscribe(ShowShortMessageDialog);
+            broker.ToObservable<ProcessMessageRequest>()
+                .Subscribe(ShowProcessMessageDialog);
             broker.ToObservable<ExperimentSpectrumViewModel>()
                 .Subscribe(OpenExperimentSpectrumView);
             broker.ToObservable<ProteinGroupTableViewModel>()
@@ -122,6 +127,37 @@ namespace CompMs.App.Msdial.View.Core
                 };
                 dialog.ShowDialog();
             }
+        }
+
+        private void ShowShortMessageDialog(ShortMessageRequest request) {
+            var dialog = new ShortMessageWindow
+            {
+                DataContext = request.Content,
+                Text = request.Content,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            request.Result = dialog.ShowDialog();
+        }
+
+        private void ShowProcessMessageDialog(ProcessMessageRequest request) {
+            var dialog = new ShortMessageWindow
+            {
+                DataContext = request.Content,
+                Text = request.Content,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            dialog.Loaded += async (s, e) =>
+            {
+                await request.AsyncAction();
+                dialog.Dispatcher.Invoke(() =>
+                {
+                    dialog.DialogResult = true;
+                    dialog.Close();
+                });
+            };
+            request.Result = dialog.ShowDialog();
         }
 
         private void OpenExperimentSpectrumView(ExperimentSpectrumViewModel viewmodel) {
