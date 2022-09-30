@@ -228,6 +228,7 @@
             </RibbonButton>
             <RibbonButton Label="Class property setting" LargeImageSource="{StaticResource Class_property_setting_is}"
                           IsEnabled="False"
+                          Command="{Binding DataContext.DatasetViewModel.Value.FileClassSettingCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="C">
                 <RibbonButton.ToolTip>
                     The class properties including the color and the order in chart can be modified here.

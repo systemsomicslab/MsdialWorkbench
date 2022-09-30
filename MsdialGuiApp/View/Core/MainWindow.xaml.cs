@@ -57,6 +57,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(ShowShortMessageDialog);
             broker.ToObservable<ProcessMessageRequest>()
                 .Subscribe(ShowProcessMessageDialog);
+            broker.ToObservable<FileClassSetViewModel>()
+                .Subscribe(ShowFileClassSetView);
             broker.ToObservable<ExperimentSpectrumViewModel>()
                 .Subscribe(OpenExperimentSpectrumView);
             broker.ToObservable<ProteinGroupTableViewModel>()
@@ -158,6 +160,21 @@ namespace CompMs.App.Msdial.View.Core
                 });
             };
             request.Result = dialog.ShowDialog();
+        }
+
+        private void ShowFileClassSetView(FileClassSetViewModel viewmodel) {
+            var dialog = new Window
+            {
+                Height = 450, Width = 400,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Content = new FileClassSetView
+                {
+                    DataContext = viewmodel,
+                    Margin = new Thickness(8),
+                }
+            };
+            dialog.Show();
         }
 
         private void OpenExperimentSpectrumView(ExperimentSpectrumViewModel viewmodel) {

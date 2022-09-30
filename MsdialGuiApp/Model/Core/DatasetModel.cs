@@ -28,6 +28,7 @@ namespace CompMs.App.Msdial.Model.Core
             _broker = broker;
             _projectBaseParameter = new ProjectBaseParameterModel(Storage.Parameter.ProjectParam);
             AnalysisFilePropertySetModel = new AnalysisFilePropertySetModel(Storage.AnalysisFiles, _projectBaseParameter);
+            FileClassSetModel = new FileClassSetModel(_projectBaseParameter);
 
             AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, HandlerAsync, _projectBaseParameter, broker);
             IdentificationProcessMethodSettingModel = new MethodSettingModel(ProcessOption.IdentificationPlusAlignment, Storage, HandlerAsync, _projectBaseParameter, broker);
@@ -74,6 +75,7 @@ namespace CompMs.App.Msdial.Model.Core
         }
 
         public AnalysisFilePropertySetModel AnalysisFilePropertySetModel { get; }
+        public FileClassSetModel FileClassSetModel { get; }
 
         public void AnalysisFilePropertyUpdate() {
             AnalysisFilePropertySetModel.Update();

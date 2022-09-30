@@ -48,6 +48,10 @@ namespace CompMs.App.Msdial.ViewModel.Core
             FilePropertyResetCommand = new ReactiveCommand()
                 .WithSubscribe(FilePropertyResetting)
                 .AddTo(Disposables);
+            var fileClassSetViewModel = new FileClassSetViewModel(model.FileClassSetModel).AddTo(Disposables);
+            FileClassSettingCommand = new ReactiveCommand()
+                .WithSubscribe(() => messageBroker.Publish(fileClassSetViewModel))
+                .AddTo(Disposables);
         }
 
         public IDatasetModel Model { get; }
@@ -64,6 +68,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 }
             }
         }
+
+        public ReactiveCommand FileClassSettingCommand { get; }
 
         private MethodViewModel ConvertToViewModel(IMethodModel model) {
             switch (model) {
