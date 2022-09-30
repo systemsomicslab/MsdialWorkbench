@@ -22,4 +22,25 @@ namespace CompMs.Graphics.Base
             throw new NotSupportedException($"Type {key.GetType()} is not suported.");
         }
     }
+
+    public static class BrushMapperExtensions {
+        public static IBrushMapper<U> Contramap<T, U>(this IBrushMapper<T> mapper, Func<U, T> consumer) {
+            return new ContravariantBrushMapper<U, T>(mapper, consumer);
+        }
+
+        class ContravariantBrushMapper<T, U> : IBrushMapper<T>
+        {
+            private readonly IBrushMapper<U> _mapper;
+            private readonly Func<T, U> _consumer;
+
+            public ContravariantBrushMapper(IBrushMapper<U> mapper, Func<T, U> consumer) {
+                _mapper = mapper;
+                _consumer = consumer;
+            }
+
+            public Brush Map(T key) => _mapper.Map(_consumer(key));
+
+            public Brush Map(object key) => _mapper.Map(_consumer((T)key));
+        }
+    }
 }

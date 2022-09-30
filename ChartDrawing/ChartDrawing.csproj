@@ -65,6 +65,8 @@
     <Compile Include="Adorner\ScatterFocusAdorner.cs" />
     <Compile Include="Adorner\ChartSelectionRubberAdorner.cs" />
     <Compile Include="AxisManager\BaseSelectableLogScaleLabelGenerator.cs" />
+    <Compile Include="AxisManager\Generic\DefectAxisManager.cs" />
+    <Compile Include="AxisManager\Generic\RelativeAxisManager.cs" />
     <Compile Include="AxisManager\ILabelGenerator.cs" />
     <Compile Include="AxisManager\LabelGeneratorBase.cs" />
     <Compile Include="AxisManager\LabelType.cs" />

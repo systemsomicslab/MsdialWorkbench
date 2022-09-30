@@ -2,6 +2,7 @@
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
+using CompMs.Graphics.Helper;
 using System;
 using System.Collections;
 using System.Collections.Specialized;
@@ -89,6 +90,7 @@ namespace CompMs.Graphics.Chart
             CoerceXProperty(newValue, HorizontalProperty);
             CoerceYProperty(newValue, VerticalProperty);
             CoerceTree();
+            CoerceHueProperty(newValue, HueProperty);
         }
 
         public string HorizontalProperty {
@@ -219,6 +221,39 @@ namespace CompMs.Graphics.Chart
 
             // var result = System.Linq.Expressions.Expression.Property(val, nameof(AxisValue.Value));
             return System.Linq.Expressions.Expression.Lambda<Func<object, IAxisManager, AxisValue>>(val, parameter, axis);
+        }
+
+        public static readonly DependencyProperty HuePropertyProperty =
+            DependencyProperty.Register(
+                nameof(HueProperty), typeof(string), typeof(ScatterControlSlim),
+                new PropertyMetadata(null, OnHuePropertyChanged));
+
+        public string HueProperty {
+            get => (string)GetValue(HuePropertyProperty);
+            set => SetValue(HuePropertyProperty, value);
+        }
+
+        private static void OnHuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var c = (ScatterControlSlim)d;
+            c.OnHuePropertyChanged((string)e.OldValue, (string)e.NewValue);
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
+        private void OnHuePropertyChanged(string oldValue, string newValue) {
+            CoerceHueProperty(DataType, newValue);
+        }
+
+        private Lazy<Func<object, object>> hueLambda;
+
+        private void CoerceHueProperty(Type type, string hueProperty) {
+            if (type == null
+                || string.IsNullOrEmpty(hueProperty)
+                || !type.GetProperties().Any(m => m.Name == hueProperty)) {
+                hueLambda = null;
+                return;
+            }
+            var lambda = ExpressionHelper.GetPropertyGetterExpression(type, hueProperty);
+            hueLambda = new Lazy<Func<object, object>>(lambda.Compile);
         }
 
         public double Radius {
@@ -352,7 +387,7 @@ namespace CompMs.Graphics.Chart
                     var x = haxis.TranslateToRenderPoint(item.X, flippedX, actualWidth);
                     var y = vaxis.TranslateToRenderPoint(item.Y, flippedY, actualHeight);
                     // drawingContext.DrawRectangle(brush.Map(item.Item), null, new Rect(x - radius, y - radius, radius * 2, radius * 2));
-                    drawingContext.DrawEllipse(brush.Map(item.Item), null, new Point(x, y), radius, radius);
+                    drawingContext.DrawEllipse(brush.Map(hueLambda?.Value?.Invoke(item.Item) ?? item.Item), null, new Point(x, y), radius, radius);
                 }
                 UpdateSelectedPoint();
             }
