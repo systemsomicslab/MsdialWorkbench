@@ -373,6 +373,10 @@
     <Compile Include="ViewModel\Loader\MultiMsRawSpectrumLoaderViewModel.cs" />
     <Compile Include="ViewModel\MsResult\SummarizedSpectrumViewModel.cs" />
     <Compile Include="Model\Search\PeakFilterModel.cs" />
+    <Compile Include="Model\Setting\FileClassPropertyModel.cs" />
+    <Compile Include="ViewModel\Setting\FileClassPropertyViewModel.cs" />
+    <Compile Include="Model\Setting\FileClassSetModel.cs" />
+    <Compile Include="ViewModel\Setting\FileClassSettingViewModel.cs" />
     <Compile Include="ViewModel\Statistics\SplashProductViewModel.cs" />
     <Compile Include="ViewModel\Search\PeakFilterViewModel.cs" />
     <Compile Include="ViewModel\Search\FocusNavigatorViewModel.cs" />
@@ -591,6 +595,9 @@
     </Compile>
     <Compile Include="View\MsResult\SummarizedSpectrumView.xaml.cs">
       <DependentUpon>SummarizedSpectrumView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Setting\FileClassSetView.xaml.cs">
+      <DependentUpon>FileClassSetView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Statistics\NormalizationSetView.xaml.cs">
       <DependentUpon>NormalizationSetView.xaml</DependentUpon>
@@ -1022,6 +1029,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\MsResult\SummarizedSpectrumView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\FileClassSetView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
