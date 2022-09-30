@@ -5,6 +5,7 @@ using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Reactive.Bindings;
+using Reactive.Bindings.Notifiers;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -119,7 +120,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting.Tests
         }
 
         private IdentifySettingModel BuildModel() {
-            return new IdentifySettingModel(new ParameterBase(), new MockAnnotatorSettingModelFactory(), ProcessOption.All);
+            return new IdentifySettingModel(new ParameterBase(), new MockAnnotatorSettingModelFactory(), ProcessOption.All, MessageBroker.Default);
         }
 
         private IdentifySettingViewModel BuildViewModel(IdentifySettingModel model) {
