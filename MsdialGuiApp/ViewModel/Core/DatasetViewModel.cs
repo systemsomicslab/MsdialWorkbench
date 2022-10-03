@@ -64,10 +64,11 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public ReactiveCommand FilePropertyResetCommand { get; }
 
         private void FilePropertyResetting() {
-            using (var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetViewModel(Model.AnalysisFilePropertySetModel)) {
+            var model = Model.AnalysisFilePropertySetModel;
+            using (var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetViewModel(model)) {
                 var afpsw_result = analysisFilePropertyResetService.ShowDialog(analysisFilePropertySetWindowVM);
                 if (afpsw_result == true) {
-                    Model.AnalysisFilePropertyUpdate();
+                    model.Update();
                 }
             }
         }

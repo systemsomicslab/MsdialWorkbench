@@ -14,7 +14,7 @@ using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    public class DatasetFileSettingViewModel : ViewModelBase, ISettingViewModel
+    internal class DatasetFileSettingViewModel : ViewModelBase, ISettingViewModel
     {
         public DatasetFileSettingViewModel(DatasetFileSettingModel model, IObservable<bool> isEnabled) {
             Model = model ?? throw new ArgumentNullException(nameof(model));

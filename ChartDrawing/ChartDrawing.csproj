@@ -181,6 +181,7 @@
     <Compile Include="Base\Utility.cs" />
     <Compile Include="Base\DataPoint.cs" />
     <Compile Include="Chart\ScatterControl.cs" />
+    <Compile Include="Template\ComboBoxItemTemplateSelector.cs" />
     <Compile Include="UI\ColorPicker.cs" />
     <Compile Include="UI\ExecutableBar.cs" />
     <Compile Include="UI\LabeledBar.cs" />

@@ -41,10 +41,10 @@
                                     Binding="{Binding Name}"
                                     IsReadOnly="True"
                                     Width="*"/>
-                <DataGridTemplateColumn Header="Color" Width="*" IsReadOnly="True">
+                <DataGridTemplateColumn Header="Color" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="{x:Type vm:FileClassPropertyViewModel}">
-                            <ui:ColorPicker SelectedColor="{Binding Color.Value, UpdateSourceTrigger=PropertyChanged}"/>
+                            <ui:ColorPicker SelectedColor="{Binding Color.Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -58,8 +58,9 @@
                     HorizontalAlignment="Right"
                     Margin="0,8,0,0"
                     Grid.Row="1">
-            <Button Content="Finish"/>
-            <Button Content="Cancel"/>
+            <Button Content="Apply" Command="{Binding ApplyCommand, Mode=OneTime}"/>
+            <Button Content="Finish" Command="{Binding ApplyCommand, Mode=OneTime}" Click="FinishClose"/>
+            <Button Content="Cancel" Click="CancelClose"/>
         </StackPanel>
     </Grid>
 </UserControl>
