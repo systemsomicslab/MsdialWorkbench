@@ -20,6 +20,17 @@ namespace CompMs.MsdialGcMsApi.DataObj
             MessagePackDefaultHandler.SaveToStream(this, stream);
         }
 
+        public Task SaveParameterAsync(Stream stream) {
+            MessagePackDefaultHandler.SaveToStream(MsdialGcmsParameter, stream);
+            return Task.CompletedTask;
+        }
+
+        public Task LoadParameterAsync(Stream stream) {
+            var parameter = MessagePackDefaultHandler.LoadFromStream<MsdialGcmsParameter>(stream);
+            MsdialGcmsParameter = parameter;
+            return Task.CompletedTask;
+        }
+
         public static IMsdialSerializer Serializer { get; } = new MsdialGcmsSerializer();
 
         class MsdialGcmsSerializer : MsdialSerializer, IMsdialSerializer

@@ -1,5 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.UI.Message;
@@ -77,10 +79,6 @@ namespace CompMs.App.Msdial.Model.Core
         public AnalysisFilePropertySetModel AnalysisFilePropertySetModel { get; }
         public FileClassSetModel FileClassSetModel { get; }
 
-        public void AnalysisFilePropertyUpdate() {
-            AnalysisFilePropertySetModel.Update();
-        }
-
         public Task SaveAsync() {
             // TODO: implement process when project save failed.
             var streamManager = new DirectoryTreeStreamManager(Storage.Parameter.ProjectFolderPath);
@@ -149,6 +147,23 @@ namespace CompMs.App.Msdial.Model.Core
             message.Close();
 
             return result;
+        }
+
+        public async Task SaveParameterAsAsync() {
+            await Task.Yield();
+            var saveFileRequest = new SaveFileNameRequest(file =>
+            {
+                var shortMessageRequest = new ProcessMessageRequest("Saving the parameter as...",
+                    async () =>
+                    {
+                        using (var stream = File.Open(file, FileMode.Create)) {
+                            await Storage.SaveParameterAsync(stream).ConfigureAwait(false);
+                        }
+                    });
+
+                _broker.Publish(shortMessageRequest);
+            });
+            _broker.Publish(saveFileRequest);
         }
 
         private static async Task<IMsdialDataStorage<ParameterBase>> LoadProjectFromPathAsync(string projectfile) {

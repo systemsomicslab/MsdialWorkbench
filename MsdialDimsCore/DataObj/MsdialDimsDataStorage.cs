@@ -25,6 +25,17 @@ namespace CompMs.MsdialDimsCore.DataObj
 
         }
 
+        public Task SaveParameterAsync(Stream stream) {
+            MessagePackDefaultHandler.SaveToStream(MsdialDimsParameter, stream);
+            return Task.CompletedTask;
+        }
+
+        public Task LoadParameterAsync(Stream stream) {
+            var parameter = MessagePackDefaultHandler.LoadFromStream<MsdialDimsParameter>(stream);
+            MsdialDimsParameter = parameter;
+            return Task.CompletedTask;
+        }
+
         public static IMsdialSerializer Serializer { get; } = new MsdialDimsSerializer();
 
         class MsdialDimsSerializer : MsdialSerializer, IMsdialSerializer

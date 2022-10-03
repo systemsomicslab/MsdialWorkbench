@@ -155,6 +155,14 @@ namespace CompMs.MsdialCore.DataObj.Tests
         public Task SaveAsync(IStreamManager streamManager, string projectTitle, string prefix) {
             throw new NotImplementedException();
         }
+
+        public Task SaveParameterAsync(Stream stream) {
+            throw new NotImplementedException();
+        }
+
+        public Task LoadParameterAsync(Stream stream) {
+            throw new NotImplementedException();
+        }
     }
 
     class MockSerializer : IMsdialSerializer
