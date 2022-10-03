@@ -65,6 +65,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(OpenProteinGroupTable);
             broker.ToObservable<SaveFileNameRequest>()
                 .Subscribe(GetSaveFilePath);
+            broker.ToObservable<OpenFileRequest>()
+                .Subscribe(OpenFileDialog);
             broker.ToObservable<ErrorMessageBoxRequest>()
                 .Subscribe(ShowErrorComfirmationMessage);
             broker.ToObservable<AlignedChromatogramModificationViewModelLegacy>()
@@ -235,6 +237,18 @@ namespace CompMs.App.Msdial.View.Core
 
             if (sfd.ShowDialog(this) == true) {
                 request.Run(sfd.FileName);
+            }
+        }
+
+        private void OpenFileDialog(OpenFileRequest request) {
+            var ofd = new OpenFileDialog
+            {
+                Title = request.Title,
+                Filter = request.Filter,
+            };
+
+            if (ofd.ShowDialog(this) == true) {
+                request.Run(ofd.FileName);
             }
         }
 

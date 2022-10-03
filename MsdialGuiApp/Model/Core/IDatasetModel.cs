@@ -28,5 +28,6 @@ namespace CompMs.App.Msdial.Model.Core
         Task SaveAsAsync();
 
         Task LoadAsync();
+        Task SaveParameterAsAsync();
     }
 }

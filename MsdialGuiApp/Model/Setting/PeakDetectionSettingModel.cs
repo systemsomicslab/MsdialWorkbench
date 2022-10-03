@@ -82,5 +82,26 @@ namespace CompMs.App.Msdial.Model.Setting
             parameter.MinimumDatapoints = MinimumDatapoints;
             parameter.ExcludedMassList = ExcludedMassList.ToList();
         }
+
+        public void LoadParameter(PeakPickBaseParameter parameter) {
+            if (IsReadOnly) {
+                return;
+            }
+            MinimumAmplitude = parameter.MinimumAmplitude;
+            MassSliceWidth = parameter.MassSliceWidth;
+            SmoothingMethod = parameter.SmoothingMethod;
+            SmoothingLevel = parameter.SmoothingLevel;
+            MinimumDatapoints = parameter.MinimumDatapoints;
+            ExcludedMassList.Clear();
+            foreach (var query in parameter.ExcludedMassList) {
+                ExcludedMassList.Add(new MzSearchQuery
+                {
+                    Mass = query.Mass,
+                    RelativeIntensity = query.RelativeIntensity,
+                    SearchType = query.SearchType,
+                    MassTolerance = query.MassTolerance,
+                });
+            }
+        }
     }
 }

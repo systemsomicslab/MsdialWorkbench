@@ -26,10 +26,8 @@ namespace CompMs.MsdialLcImMsApi.DataObj
             return Task.CompletedTask;
         }
 
-        public Task LoadParameterAsync(Stream stream) {
-            var parameter = MessagePackDefaultHandler.LoadFromStream<MsdialLcImMsParameter>(stream);
-            MsdialLcImMsParameter = parameter;
-            return Task.CompletedTask;
+        public MsdialLcImMsParameter LoadParameter(Stream stream) {
+            return MessagePackDefaultHandler.LoadFromStream<MsdialLcImMsParameter>(stream);
         }
 
         public static IMsdialSerializer Serializer { get; } = new MsdialLcImMsSerializerInner();

@@ -30,10 +30,8 @@ namespace CompMs.MsdialDimsCore.DataObj
             return Task.CompletedTask;
         }
 
-        public Task LoadParameterAsync(Stream stream) {
-            var parameter = MessagePackDefaultHandler.LoadFromStream<MsdialDimsParameter>(stream);
-            MsdialDimsParameter = parameter;
-            return Task.CompletedTask;
+        public MsdialDimsParameter LoadParameter(Stream stream) {
+            return MessagePackDefaultHandler.LoadFromStream<MsdialDimsParameter>(stream);
         }
 
         public static IMsdialSerializer Serializer { get; } = new MsdialDimsSerializer();

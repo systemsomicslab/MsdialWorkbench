@@ -162,7 +162,11 @@ namespace CompMs.App.Msdial.Model.Core
                     });
 
                 _broker.Publish(shortMessageRequest);
-            });
+            })
+            {
+                Filter = "Msdial parameter file(*.mdparameter)|*.mdparameter",
+                Title = "Save parameter dialog",
+            };
             _broker.Publish(saveFileRequest);
         }
 
@@ -174,6 +178,10 @@ namespace CompMs.App.Msdial.Model.Core
             var storage = await serializer.LoadAsync(streamManager, projectFileName, projectFolder, string.Empty);
             storage.FixDatasetFolder(projectFolder);
             return storage;
+        }
+
+        public void AnalysisFilePropertyUpdate() {
+            AnalysisFilePropertySetModel.Update();
         }
     }
 }

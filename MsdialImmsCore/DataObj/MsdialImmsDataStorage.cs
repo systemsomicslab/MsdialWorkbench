@@ -26,10 +26,8 @@ namespace CompMs.MsdialImmsCore.DataObj
             return Task.CompletedTask;
         }
 
-        public Task LoadParameterAsync(Stream stream) {
-            var parameter = MessagePackDefaultHandler.LoadFromStream<MsdialImmsParameter>(stream);
-            MsdialImmsParameter = parameter;
-            return Task.CompletedTask;
+        public MsdialImmsParameter LoadParameter(Stream stream) {
+            return MessagePackDefaultHandler.LoadFromStream<MsdialImmsParameter>(stream);
         }
 
         public static IMsdialSerializer Serializer { get; } = new MsdialImmsSerializer();

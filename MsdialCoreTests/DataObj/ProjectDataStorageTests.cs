@@ -160,7 +160,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             throw new NotImplementedException();
         }
 
-        public Task LoadParameterAsync(Stream stream) {
+        public ParameterBase LoadParameter(Stream stream) {
             throw new NotImplementedException();
         }
     }

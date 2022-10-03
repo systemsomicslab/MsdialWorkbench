@@ -26,7 +26,7 @@ namespace CompMs.MsdialCore.DataObj
 
         Task SaveAsync(IStreamManager streamManager, string projectTitle, string prefix);
         Task SaveParameterAsync(Stream stream);
-        Task LoadParameterAsync(Stream stream);
+        T LoadParameter(Stream stream);
 
         void FixDatasetFolder(string projectFolder);
     }
@@ -207,10 +207,8 @@ namespace CompMs.MsdialCore.DataObj
             return Task.CompletedTask;
         }
 
-        public Task LoadParameterAsync(Stream stream) {
-            var parameter = MessagePackDefaultHandler.LoadFromStream<ParameterBase>(stream);
-            ParameterBase = parameter;
-            return Task.CompletedTask;
+        public ParameterBase LoadParameter(Stream stream) {
+            return MessagePackDefaultHandler.LoadFromStream<ParameterBase>(stream);
         }
     }
 }

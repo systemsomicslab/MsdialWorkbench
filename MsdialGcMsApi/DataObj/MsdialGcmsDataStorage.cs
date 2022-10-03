@@ -25,10 +25,8 @@ namespace CompMs.MsdialGcMsApi.DataObj
             return Task.CompletedTask;
         }
 
-        public Task LoadParameterAsync(Stream stream) {
-            var parameter = MessagePackDefaultHandler.LoadFromStream<MsdialGcmsParameter>(stream);
-            MsdialGcmsParameter = parameter;
-            return Task.CompletedTask;
+        public MsdialGcmsParameter LoadParameter(Stream stream) {
+            return MessagePackDefaultHandler.LoadFromStream<MsdialGcmsParameter>(stream);
         }
 
         public static IMsdialSerializer Serializer { get; } = new MsdialGcmsSerializer();
