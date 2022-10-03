@@ -25,6 +25,15 @@ namespace CompMs.MsdialLcMsApi.DataObj
 
         }
 
+        public Task SaveParameterAsync(Stream stream) {
+            MessagePackDefaultHandler.SaveToStream(MsdialLcmsParameter, stream);
+            return Task.CompletedTask;
+        }
+
+        public MsdialLcmsParameter LoadParameter(Stream stream) {
+            return MessagePackDefaultHandler.LoadFromStream<MsdialLcmsParameter>(stream);
+        }
+
         public static IMsdialSerializer Serializer { get; } = new MsdialLcmsSerializer();
 
         class MsdialLcmsSerializer : MsdialSerializer, IMsdialSerializer

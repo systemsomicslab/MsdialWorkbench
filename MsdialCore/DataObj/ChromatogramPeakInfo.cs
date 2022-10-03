@@ -60,6 +60,10 @@ namespace CompMs.MsdialCore.DataObj
             ChromXsRight = new ChromXs(chromRight.Value, chromRight.Type, chromLeft.Unit);
         }
 
+        public double PeakWidth() {
+            return ChromXsRight.Value - ChromXsLeft.Value;
+        }
+
         public double PeakWidth(ChromXType type) {
             switch (type) {
                 case ChromXType.RT: return ChromXsRight.RT.Value - ChromXsLeft.RT.Value;
@@ -68,7 +72,6 @@ namespace CompMs.MsdialCore.DataObj
                 case ChromXType.Drift: return ChromXsRight.Drift.Value - ChromXsLeft.Drift.Value;
                 default: return ChromXsRight.Value - ChromXsLeft.Value;
             }
-                
         }
     }
 }

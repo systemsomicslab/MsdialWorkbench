@@ -61,11 +61,14 @@ namespace CompMs.MsdialDimsCore.Export.Tests
             var parameter = new ParameterBase { CentroidMs1Tolerance = 0.01f, MS2DataType = MSDataType.Centroid, };
             var refer = new MockRefer();
             var accessor = new DimsAnalysisMetadataAccessor(refer, parameter);
-            var feature = new ChromatogramPeakFeature
+            var basePeak = new BaseChromatogramPeakFeature
             {
                 ChromXsLeft = new ChromXs(699.99951, ChromXType.Mz, ChromXUnit.Mz),
                 ChromXsRight = new ChromXs(700.00051, ChromXType.Mz, ChromXUnit.Mz),
-                PrecursorMz = 700.00001,
+                Mass = 700.00001,
+            };
+            var feature = new ChromatogramPeakFeature(basePeak)
+            {
                 MatchResults = new MsScanMatchResultContainer
                 {
                     MatchResults = new List<MsScanMatchResult>

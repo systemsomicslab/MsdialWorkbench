@@ -66,13 +66,16 @@ namespace CompMs.MsdialImmsCore.Export.Tests
             var parameter = new ParameterBase { CentroidMs1Tolerance = 0.01f, MS2DataType = MSDataType.Centroid, };
             var refer = new MockRefer();
             var accessor = new ImmsAnalysisMetadataAccessor(refer, parameter);
-            var feature = new ChromatogramPeakFeature
+            var basePeak = new BaseChromatogramPeakFeature
             {
                 ChromXsLeft = new ChromXs(100.991, ChromXType.Drift, ChromXUnit.Msec),
-                ChromXs = new ChromXs(101.001, ChromXType.Drift, ChromXUnit.Msec),
+                ChromXsTop = new ChromXs(101.001, ChromXType.Drift, ChromXUnit.Msec),
                 ChromXsRight = new ChromXs(101.011, ChromXType.Drift, ChromXUnit.Msec),
+                Mass = 700.00001,
+            };
+            var feature = new ChromatogramPeakFeature(basePeak)
+            {
                 CollisionCrossSection = 12.001f,
-                PrecursorMz = 700.00001,
                 MatchResults = new MsScanMatchResultContainer
                 {
                     MatchResults = new List<MsScanMatchResult>

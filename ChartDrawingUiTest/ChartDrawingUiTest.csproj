@@ -164,6 +164,9 @@
     <Compile Include="UI\BindingStaticResource.xaml.cs">
       <DependentUpon>BindingStaticResource.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\ColorPicker.xaml.cs">
+      <DependentUpon>ColorPicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\DependencyPropertyTest.xaml.cs">
       <DependentUpon>DependencyPropertyTest.xaml</DependentUpon>
     </Compile>
@@ -301,6 +304,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\BindingStaticResource.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\ColorPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

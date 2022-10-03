@@ -54,7 +54,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             ExcuteRtCorrection = Model.ToReactivePropertySlimAsSynchronized(m => m.ExcuteRtCorrection).AddTo(Disposables);
 
-            DataCollectionRangeSettings = Model.DataCollectionRangeSettings.Select(DataCollectionRangeSettingViewModelFactory.Create).ToList().AsReadOnly();
+            DataCollectionRangeSettings = Model.DataCollectionRangeSettings.ToReadOnlyReactiveCollection(DataCollectionRangeSettingViewModelFactory.Create).AddTo(Disposables); // TODO: change to readonlyreactivecollection
 
             DimsDataCollectionSettingViewModel = Model.DimsProviderFactoryParameter is null
                 ? null
@@ -87,8 +87,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 IsBrClConsideredForIsotopes.ToUnit(),
                 NumberOfThreads.ToUnit(),
                 DataCollectionRangeSettings.Select(vm => vm.PropertyChangedAsObservable().ToUnit()).Merge(),
-                DimsDataCollectionSettingViewModel?.PropertyChangedAsObservable().ToUnit() ?? Observable.Return(Unit.Default),  // TODO: is this correct?
-                ImmsDataCollectionSettingViewModel?.PropertyChangedAsObservable().ToUnit() ?? Observable.Return(Unit.Default),
+                DimsDataCollectionSettingViewModel?.PropertyChangedAsObservable().ToUnit() ?? Observable.Never<Unit>(),
+                ImmsDataCollectionSettingViewModel?.PropertyChangedAsObservable().ToUnit() ?? Observable.Never<Unit>(),
             }.Merge();
 
             decide = new Subject<Unit>().AddTo(Disposables);
@@ -129,7 +129,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactivePropertySlim<bool> ExcuteRtCorrection { get; }
 
-        public ReadOnlyCollection<DataCollectionRangeSettingViewModel> DataCollectionRangeSettings { get; }
+        public ReadOnlyReactiveCollection<DataCollectionRangeSettingViewModel> DataCollectionRangeSettings { get; }
 
         public DimsDataCollectionSettingViewModel DimsDataCollectionSettingViewModel { get; }
         public bool CanSetDimsDataCollectionSettingViewModel { get; }

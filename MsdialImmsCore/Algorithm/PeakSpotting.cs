@@ -597,7 +597,9 @@ namespace CompMs.MsdialImmsCore.Algorithm
             return realMaxID;
         }
 
-        private static void SetPeakProperty(ChromatogramPeakFeature spot, List<ChromatogramPeak> sPeaklist, int maxID, int minLeftId, int minRightId) {
+        private static void SetPeakProperty(ChromatogramPeakFeature peakFeature, List<ChromatogramPeak> sPeaklist, int maxID, int minLeftId, int minRightId) {
+            IChromatogramPeakFeature peak = peakFeature;
+
             // calculating peak area 
             var peakAreaAboveZero = 0.0;
             for (int i = minLeftId; i <= minRightId - 1; i++) {
@@ -607,24 +609,23 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var peakAreaAboveBaseline = peakAreaAboveZero - (sPeaklist[minLeftId].Intensity + sPeaklist[minRightId].Intensity) *
                 (sPeaklist[minRightId].ChromXs.Value - sPeaklist[minLeftId].ChromXs.Value) / 2;
 
-            spot.PeakAreaAboveBaseline = peakAreaAboveBaseline * 60.0;
-            spot.PeakAreaAboveZero = peakAreaAboveZero * 60.0;
+            peak.PeakAreaAboveBaseline = peakAreaAboveBaseline * 60.0;
+            peak.PeakAreaAboveZero = peakAreaAboveZero * 60.0;
 
-            spot.ChromXs = sPeaklist[maxID].ChromXs;
-            spot.ChromXsTop = sPeaklist[maxID].ChromXs;
-            spot.ChromXsLeft = sPeaklist[minLeftId].ChromXs;
-            spot.ChromXsRight = sPeaklist[minRightId].ChromXs;
+            peak.ChromXsLeft = sPeaklist[minLeftId].ChromXs;
+            peak.ChromXsTop = sPeaklist[maxID].ChromXs;
+            peak.ChromXsRight = sPeaklist[minRightId].ChromXs;
 
-            spot.PeakHeightTop = sPeaklist[maxID].Intensity;
-            spot.PeakHeightLeft = sPeaklist[minLeftId].Intensity;
-            spot.PeakHeightRight = sPeaklist[minRightId].Intensity;
+            peak.PeakHeightLeft = sPeaklist[minLeftId].Intensity;
+            peak.PeakHeightTop = sPeaklist[maxID].Intensity;
+            peak.PeakHeightRight = sPeaklist[minRightId].Intensity;
 
-            spot.ChromScanIdTop = sPeaklist[maxID].ID;
-            spot.ChromScanIdLeft = sPeaklist[minLeftId].ID;
-            spot.ChromScanIdRight = sPeaklist[minRightId].ID;
+            peak.ChromScanIdLeft = sPeaklist[minLeftId].ID;
+            peak.ChromScanIdTop = sPeaklist[maxID].ID;
+            peak.ChromScanIdRight = sPeaklist[minRightId].ID;
 
-            var peakHeightFromBaseline = Math.Max(sPeaklist[maxID].Intensity - sPeaklist[minLeftId].Intensity, sPeaklist[maxID].Intensity - sPeaklist[minRightId].Intensity);
-            spot.PeakShape.SignalToNoise = (float)(peakHeightFromBaseline / spot.PeakShape.EstimatedNoise);
+            var peakHeightFromBaseline = Math.Max(peak.PeakHeightTop - peak.PeakHeightLeft, peak.PeakHeightTop - peak.PeakHeightRight);
+            peakFeature.PeakShape.SignalToNoise = (float)(peakHeightFromBaseline / peakFeature.PeakShape.EstimatedNoise);
         }
 
         private static void SetRawPeakProperty(ChromatogramPeakFeature spot, IReadOnlyList<IChromatogramPeak> peaklist, int maxID, int minLeftId, int minRightId) {

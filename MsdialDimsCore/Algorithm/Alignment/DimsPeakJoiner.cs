@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Extension;
+﻿using CompMs.Common.Components;
+using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
@@ -41,7 +42,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Alignment
             // prepare master list and add sentinel
             var master = new LinkedList<IMSScanProperty>(
                 new IMSScanProperty[] {
-                    new ChromatogramPeakFeature { Mass = double.MaxValue },
+                    new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { Mass = double.MaxValue }),
             });
 
             var reference = accessor.GetMSScanProperties(referenceFile);

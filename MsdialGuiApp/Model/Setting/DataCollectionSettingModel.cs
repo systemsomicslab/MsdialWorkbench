@@ -11,6 +11,7 @@ using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcmsApi.Parameter;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
@@ -29,7 +30,7 @@ namespace CompMs.App.Msdial.Model.Setting
             IsBrClConsideredForIsotopes = parameter.PeakPickBaseParam.IsBrClConsideredForIsotopes;
             NumberOfThreads = parameter.ProcessBaseParam.NumThreads;
             ExcuteRtCorrection = parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection;
-            DataCollectionRangeSettings = PrepareRangeSettings(parameter);
+            DataCollectionRangeSettings = new ObservableCollection<IDataCollectionRangeSetting>(PrepareRangeSettings(parameter));
         }
 
         public DataCollectionSettingModel(MsdialDimsParameter parameter, IReadOnlyList<AnalysisFileBean> analysisFiles, ProcessOption process) : this((ParameterBase)parameter, analysisFiles, process) {
@@ -54,7 +55,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private float ms2Tolerance;
 
-        public List<IDataCollectionRangeSetting> DataCollectionRangeSettings { get; }
+        public ObservableCollection<IDataCollectionRangeSetting> DataCollectionRangeSettings { get; }
 
         public int MaxChargeNumber {
             get => maxChargeNumber;
@@ -98,7 +99,9 @@ namespace CompMs.App.Msdial.Model.Setting
             parameter.PeakPickBaseParam.MaxChargeNumber = MaxChargeNumber;
             parameter.PeakPickBaseParam.IsBrClConsideredForIsotopes = IsBrClConsideredForIsotopes;
             parameter.ProcessBaseParam.NumThreads = NumberOfThreads;
-            DataCollectionRangeSettings.ForEach(s => s.Commit());
+            foreach (var s in DataCollectionRangeSettings) {
+                s.Commit(); 
+            }
             switch (parameter) {
                 case MsdialDimsParameter dimsParameter:
                     dimsParameter.ProviderFactoryParameter = DimsProviderFactoryParameter.CreateDataProviderFactoryParameter();
@@ -108,6 +111,28 @@ namespace CompMs.App.Msdial.Model.Setting
                     break;
             }
             return true;
+        }
+
+        public void LoadParameter(ParameterBase parameter) {
+            if (IsReadOnly) {
+                return;
+            }
+            Ms1Tolerance = parameter.PeakPickBaseParam.CentroidMs1Tolerance;
+            Ms2Tolerance = parameter.PeakPickBaseParam.CentroidMs2Tolerance;
+            MaxChargeNumber = parameter.PeakPickBaseParam.MaxChargeNumber;
+            IsBrClConsideredForIsotopes = parameter.PeakPickBaseParam.IsBrClConsideredForIsotopes;
+            NumberOfThreads = parameter.ProcessBaseParam.NumThreads;
+            ExcuteRtCorrection = parameter.AdvancedProcessOptionBaseParam.RetentionTimeCorrectionCommon.RetentionTimeCorrectionParam.ExcuteRtCorrection;
+            DataCollectionRangeSettings.Clear();
+            foreach (var s in PrepareRangeSettings(parameter)) {
+                DataCollectionRangeSettings.Add(s);
+            }
+            if (DimsProviderFactoryParameter != null) {
+                DimsProviderFactoryParameter?.LoadParameter(((MsdialDimsParameter)parameter).ProviderFactoryParameter);
+            }
+            if (ImmsProviderFactoryParameter != null) {
+                ImmsProviderFactoryParameter?.LoadParameter(((MsdialImmsParameter)parameter).ProviderFactoryParameter);
+            }
         }
 
         private static List<IDataCollectionRangeSetting> PrepareRangeSettings(ParameterBase parameter) {

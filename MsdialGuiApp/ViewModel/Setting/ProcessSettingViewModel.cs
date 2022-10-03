@@ -373,10 +373,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }
             switch (parent) {
                 case ProjectSettingViewModel _:
-                    SelectedSettingViewModel.Value = DatasetSettingViewModel.Value.SettingViewModels.FirstOrDefault();
+                    SelectedSettingViewModel.Value = DatasetSettingViewModel.Value?.SettingViewModels.FirstOrDefault() ?? SelectedSettingViewModel.Value;
                     break;
                 case DatasetSettingViewModel _:
-                    SelectedSettingViewModel.Value = MethodSettingViewModel.Value.SettingViewModels.FirstOrDefault();
+                    SelectedSettingViewModel.Value = MethodSettingViewModel.Value?.SettingViewModels.FirstOrDefault() ?? SelectedSettingViewModel.Value;
                     break;
                 case MethodSettingViewModel _:
                     break;
