@@ -26,7 +26,10 @@ namespace CompMs.App.Msdial.Model.Setting {
 
             IsAlignSpotViewSelected = new ReactivePropertySlim<bool>(isAlignSpotViewSelected);
 
-            values.AddRange(Enumerable.Range(0, 100).Select(_ => new PeakFeatureSearchValue()));
+            values.AddRange(Enumerable.Range(0, 100).Select(_ => new PeakFeatureSearchValue()
+            {
+                PeakFeatureQueryLevel = PeakFeatureQueryLevel.MS2,
+            }));
             FragmentQuerySettingValues = new ObservableCollection<PeakFeatureSearchValue>(values);
         }
 
