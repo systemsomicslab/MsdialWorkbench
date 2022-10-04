@@ -21,20 +21,20 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double? ChromXRightValue => innerModel.ChromXsRight.Value;
         public double CollisionCrossSection => innerModel.CollisionCrossSection;
         public double Mass {
-            get => innerModel.Mass;
+            get => innerModel.PeakFeature.Mass;
             set {
-                if (innerModel.Mass != value) {
-                    innerModel.Mass = value;
+                if (innerModel.PeakFeature.Mass != value) {
+                    innerModel.PeakFeature.Mass = value;
                     OnPropertyChanged(nameof(Mass));
                 }
             }
         }
 
         public double Intensity {
-            get => innerModel.PeakHeightTop;
+            get => innerModel.PeakFeature.PeakHeightTop;
             set {
-                if (innerModel.PeakHeightTop != value) {
-                    innerModel.PeakHeightTop = value;
+                if (innerModel.PeakFeature.PeakHeightTop != value) {
+                    innerModel.PeakFeature.PeakHeightTop = value;
                     OnPropertyChanged(nameof(Intensity));
                 }
             }

@@ -41,18 +41,21 @@ Num Peaks: 4
 
 ";
 
-            var chromPeakFeature = new ChromatogramPeakFeature
+            var basePeak = new BaseChromatogramPeakFeature
+            {
+                ChromXsTop = new ChromXs(3),
+                Mass = 200,
+                PeakHeightTop = 10_000,
+                PeakAreaAboveZero = 20_000,
+            };
+            var chromPeakFeature = new ChromatogramPeakFeature(basePeak)
             {
                 Name = "XXX",
                 MasterPeakID = 100,
                 MS1RawSpectrumIdTop = 1000,
                 MS2RawSpectrumID = 2000,
-                ChromXsTop = new ChromXs(3),
-                PrecursorMz = 200,
                 AdductType = Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+"),
                 IonMode = Common.Enum.IonMode.Positive,
-                PeakHeightTop = 10_000,
-                PeakAreaAboveZero = 20_000,
                 PeakCharacter = new IonFeatureCharacter
                 {
                     IsotopeWeightNumber = 1,
@@ -123,15 +126,18 @@ Num Peaks: 4
 
 ";
 
-            var chromPeakFeature = new ChromatogramPeakFeature
+            var basePeak = new BaseChromatogramPeakFeature
             {
-                Name = string.Empty,
                 ChromScanIdTop = 100,
                 ChromXsTop = new ChromXs(3),
-                PrecursorMz = 200,
+                PeakHeightTop = 10_000,
+                Mass = 200,
+            };
+            var chromPeakFeature = new ChromatogramPeakFeature(basePeak)
+            {
+                Name = string.Empty,
                 AdductType = Common.Parser.AdductIonParser.GetAdductIonBean("[M+H]+"),
                 IonMode = Common.Enum.IonMode.Positive,
-                PeakHeightTop = 10_000,
                 PeakCharacter = new IonFeatureCharacter
                 {
                     IsotopeWeightNumber = 1,

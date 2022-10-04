@@ -151,6 +151,7 @@
     <Compile Include="Chart\HeatmapControl.cs" />
     <Compile Include="Chart\LineChartControl.cs" />
     <Compile Include="Chart\LineSpectrumControl.cs" />
+    <Compile Include="Helper\ColorHelper.cs" />
     <Compile Include="Helper\ExpressionHelper.cs" />
     <Compile Include="IO\CopyImageAsCommand.cs" />
     <Compile Include="IO\CopyImageAsDialog.xaml.cs">
@@ -180,6 +181,7 @@
     <Compile Include="Base\Utility.cs" />
     <Compile Include="Base\DataPoint.cs" />
     <Compile Include="Chart\ScatterControl.cs" />
+    <Compile Include="UI\ColorPicker.cs" />
     <Compile Include="UI\ExecutableBar.cs" />
     <Compile Include="UI\LabeledBar.cs" />
     <Compile Include="UI\LabeledContent.cs" />

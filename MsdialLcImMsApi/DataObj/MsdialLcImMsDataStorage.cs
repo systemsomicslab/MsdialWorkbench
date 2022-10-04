@@ -21,6 +21,15 @@ namespace CompMs.MsdialLcImMsApi.DataObj
             MessagePackDefaultHandler.SaveToStream(this, stream);
         }
 
+        public Task SaveParameterAsync(Stream stream) {
+            MessagePackDefaultHandler.SaveToStream(MsdialLcImMsParameter, stream);
+            return Task.CompletedTask;
+        }
+
+        public MsdialLcImMsParameter LoadParameter(Stream stream) {
+            return MessagePackDefaultHandler.LoadFromStream<MsdialLcImMsParameter>(stream);
+        }
+
         public static IMsdialSerializer Serializer { get; } = new MsdialLcImMsSerializerInner();
 
         class MsdialLcImMsSerializerInner : MsdialSerializer, IMsdialSerializer

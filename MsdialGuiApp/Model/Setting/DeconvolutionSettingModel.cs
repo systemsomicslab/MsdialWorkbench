@@ -60,5 +60,16 @@ namespace CompMs.App.Msdial.Model.Setting
             parameter.KeptIsotopeRange = KeptIsotopeRange;
             parameter.KeepOriginalPrecursorIsotopes = KeepOriginalPrecurosrIsotopes;
         }
+
+        public void LoadParameter(ChromDecBaseParameter parameter) {
+            if (IsReadOnly) {
+                return;
+            }
+            SigmaWindowValue = parameter.SigmaWindowValue;
+            AmplitudeCutoff = parameter.AmplitudeCutoff;
+            RemoveAfterPrecursor = parameter.RemoveAfterPrecursor;
+            KeptIsotopeRange = parameter.KeptIsotopeRange;
+            KeepOriginalPrecurosrIsotopes = parameter.KeepOriginalPrecursorIsotopes;
+        }
     }
 }

@@ -12,21 +12,7 @@ namespace CompMs.App.Msdial.Model.Imms
             ProcessParameter = parameter.ProcessBaseParam;
             PeakPickParameter = parameter.PeakPickBaseParam;
 
-            switch (parameter.ProviderFactoryParameter) {
-                case ImmsTicDataProviderFactoryParameter ticParameter:
-                    UseMs1WithHighestTic = true;
-                    TimeBegin = ticParameter.TimeBegin;
-                    TimeEnd = ticParameter.TimeEnd;
-                    break;
-                case ImmsAverageDataProviderFactoryParameter averageParameter:
-                    UseMs1WithHighestTic = false;
-                    UseAverageMs1 = true;
-                    TimeBegin = averageParameter.TimeBegin;
-                    TimeEnd = averageParameter.TimeEnd;
-                    MassTolerance = averageParameter.MassTolerance;
-                    DriftTolerance = averageParameter.DriftTolerance;
-                    break;
-            }
+            PrepareFactoryParameter(parameter.ProviderFactoryParameter);
         }
 
         public bool UseMs1WithHighestTic {
@@ -65,6 +51,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
         private double driftTolerance = 0.002;
 
+        // TODO: Why are these parameters being used?
         public MsdialImmsParameter Parameter { get; }
         public ProcessBaseParameter ProcessParameter { get; }
         public PeakPickBaseParameter PeakPickParameter { get; }
@@ -77,6 +64,28 @@ namespace CompMs.App.Msdial.Model.Imms
                 return new ImmsTicDataProviderFactoryParameter(TimeBegin, TimeEnd);
             }
             throw new NotSupportedException();
+        }
+
+        public void LoadParameter(IImmsDataProviderFactoryParameter factoryParameter) {
+            PrepareFactoryParameter(factoryParameter);
+        }
+
+        private void PrepareFactoryParameter(IImmsDataProviderFactoryParameter factoryParameter) {
+            switch (factoryParameter) {
+                case ImmsTicDataProviderFactoryParameter ticParameter:
+                    UseMs1WithHighestTic = true;
+                    TimeBegin = ticParameter.TimeBegin;
+                    TimeEnd = ticParameter.TimeEnd;
+                    break;
+                case ImmsAverageDataProviderFactoryParameter averageParameter:
+                    UseMs1WithHighestTic = false;
+                    UseAverageMs1 = true;
+                    TimeBegin = averageParameter.TimeBegin;
+                    TimeEnd = averageParameter.TimeEnd;
+                    MassTolerance = averageParameter.MassTolerance;
+                    DriftTolerance = averageParameter.DriftTolerance;
+                    break;
+            }
         }
     }
 }

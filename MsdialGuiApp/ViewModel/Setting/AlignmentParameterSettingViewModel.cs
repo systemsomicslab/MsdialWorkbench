@@ -28,8 +28,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .SetValidateAttribute(() => ReferenceFile)
                 .AddTo(Disposables);
             EqualityParameterSettings = Model.EqualityParameterSettings
-                .Select(PeakEqualityParameterSettingViewModelFactory.Create)
-                .ToList().AsReadOnly();
+                .ToReadOnlyReactiveCollection(PeakEqualityParameterSettingViewModelFactory.Create)
+                .AddTo(Disposables);
             PeakCountFilter = Model.ToReactivePropertyAsSynchronized(
                 m => m.PeakCountFilter,
                 m => (m * 100).ToString(),
@@ -110,7 +110,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         [Required(ErrorMessage = "Reference file is required.")]
         public ReactiveProperty<AnalysisFileBean> ReferenceFile { get; }
 
-        public ReadOnlyCollection<PeakEqualityParameterSettingViewModel> EqualityParameterSettings { get; }
+        public ReadOnlyReactiveCollection<PeakEqualityParameterSettingViewModel> EqualityParameterSettings { get; }
 
         [Required(ErrorMessage = "Peak count filter required.")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid format.")]

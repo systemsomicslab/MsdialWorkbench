@@ -78,6 +78,10 @@ namespace CompMs.MsdialCore.DataObj
         [Key(22)]
         public double Mass { get; set; } // for quant mass in gcms
 
+        public double PeakWidth() {
+            return ChromXsRight.Value - ChromXsLeft.Value;
+        }
+
         public double PeakWidth(ChromXType type) {
             switch (type) {
                 case ChromXType.RT: return ChromXsRight.RT.Value - ChromXsLeft.RT.Value;

@@ -17,6 +17,10 @@ namespace CompMs.Common.Components
         public double PeakAreaAboveBaseline { get; set; }
         public double Mass { get; set; }
 
+        public double PeakWidth() {
+            return ChromXsRight.Value - ChromXsLeft.Value;
+        }
+
         public double PeakWidth(ChromXType type) {
             switch (type) {
                 case ChromXType.RT: return ChromXsRight.RT.Value - ChromXsLeft.RT.Value;

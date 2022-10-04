@@ -50,7 +50,7 @@ namespace CompMs.MsdialCore.Algorithm {
                 var focusedMass = peak.PrecursorMz;
                 var focusedXValue = isDriftAxis ? peak.ChromXsTop.Drift.Value : peak.ChromXsTop.RT.Value;
 
-                var startScanIndex = SearchCollection.LowerBound(peakFeatures, new ChromatogramPeakFeature() { Mass = focusedMass - param.CentroidMs1Tolerance }, (a, b) => a.Mass.CompareTo(b.Mass));
+                var startScanIndex = SearchCollection.LowerBound(peakFeatures, focusedMass - param.CentroidMs1Tolerance, (a, b) => a.Mass.CompareTo(b));
                 //DataAccess.GetScanStartIndexByMz((float)focusedMass - param.CentroidMs1Tolerance, peakFeatures);
                 var isotopeCandidates = new List<ChromatogramPeakFeature>() { peak };
 

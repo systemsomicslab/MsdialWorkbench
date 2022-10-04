@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
@@ -86,6 +87,22 @@ namespace CompMs.App.Msdial.Model.DataObj
             var classNumAve = files.GroupBy(analysisfile => analysisfile.AnalysisFileType)
                                    .Average(group => group.Count());
             IsBoxPlotForAlignmentResult = classNumAve > 4;
+        }
+
+        public void SetClassOrderProperties(IReadOnlyDictionary<string, int> classnameToOrder) {
+            _classnameToOrder.Clear();
+            foreach (var kvp in classnameToOrder) {
+                _classnameToOrder[kvp.Key] = kvp.Value;
+            }
+            OnPropertyChanged(nameof(ClassnameToOrder));
+        }
+
+        public void SetClassColorProperties(IReadOnlyDictionary<string, Color> classnameToColor) {
+            _classnameToColorBytes.Clear();
+            foreach (var kvp in classnameToColor) {
+                _classnameToColorBytes[kvp.Key] = new List<byte> { kvp.Value.R, kvp.Value.G, kvp.Value.B, kvp.Value.A };
+            }
+            OnPropertyChanged(nameof(ClassnameToColorBytes));
         }
     }
 }
