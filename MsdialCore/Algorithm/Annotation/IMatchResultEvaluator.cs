@@ -15,15 +15,15 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
     public static class MatchResultEvaluatorExtension {
         public static IMatchResultEvaluator<TSource> Contramap<TSource, TTarget>(this IMatchResultEvaluator<TTarget> evaluator, Func<TSource, TTarget> consumer) {
-            return new EvaluatorImpl<TSource, TTarget>(evaluator, consumer);
+            return new ConsumingEvaluatorImpl<TSource, TTarget>(evaluator, consumer);
         }
 
-        class EvaluatorImpl<TSource, TTarget> : IMatchResultEvaluator<TSource>
+        class ConsumingEvaluatorImpl<TSource, TTarget> : IMatchResultEvaluator<TSource>
         {
             private readonly IMatchResultEvaluator<TTarget> _evaluator;
             private readonly Func<TSource, TTarget> _consumer;
 
-            public EvaluatorImpl(IMatchResultEvaluator<TTarget> evaluator, Func<TSource, TTarget> consumer) {
+            public ConsumingEvaluatorImpl(IMatchResultEvaluator<TTarget> evaluator, Func<TSource, TTarget> consumer) {
                 _evaluator = evaluator;
                 _consumer = consumer;
             }
@@ -51,6 +51,28 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 var target = _evaluator.SelectTopHit(pairs.Select(pair => pair.target));
                 return pairs.FirstOrDefault(pair => Equals(pair.target, target)).result;
             }
+        }
+
+        public static IMatchResultEvaluator<TSource> Contramap<TSource, TTarget>(this IMatchResultEvaluator<TTarget> evaluator, Func<TSource, TTarget> consume, Func<IMatchResultEvaluator<TTarget>, TSource, bool> isRefMatched, Func<IMatchResultEvaluator<TTarget>, TSource, bool> isSuggested) {
+            return new ContramapEvaluatorImpl<TSource>(evaluator.Contramap(consume), t => isRefMatched(evaluator, t), t => isSuggested(evaluator, t));
+        }
+
+        class ContramapEvaluatorImpl<TTarget> : IMatchResultEvaluator<TTarget> {
+            private readonly IMatchResultEvaluator<TTarget> _evaluator;
+            private readonly Func<TTarget, bool> _isRefMatchted;
+            private readonly Func<TTarget, bool> _isSuggested;
+
+            public ContramapEvaluatorImpl(IMatchResultEvaluator<TTarget> evaluator, Func<TTarget, bool> isRefMatchted, Func<TTarget, bool> isSuggested) {
+                _evaluator = evaluator;
+                _isRefMatchted = isRefMatchted;
+                _isSuggested = isSuggested;
+            }
+
+            public List<TTarget> FilterByThreshold(IEnumerable<TTarget> results) => _evaluator.FilterByThreshold(results);
+            public bool IsAnnotationSuggested(TTarget result) => _isSuggested(result);
+            public bool IsReferenceMatched(TTarget result) => _isRefMatchted(result);
+            public List<TTarget> SelectReferenceMatchResults(IEnumerable<TTarget> results) => _evaluator.SelectReferenceMatchResults(results);
+            public TTarget SelectTopHit(IEnumerable<TTarget> results) => _evaluator.SelectTopHit(results);
         }
     }
 }

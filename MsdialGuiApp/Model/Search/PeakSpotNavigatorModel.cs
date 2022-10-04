@@ -41,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Search
 
             PeakSpots = peakSpots ?? throw new ArgumentNullException(nameof(peakSpots));
             PeakFilterModel = peakFilterModel ?? throw new ArgumentNullException(nameof(peakFilterModel));
-            _evaluator = evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative);
+            _evaluator = evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative, (e, f) => f.MatchResults.IsReferenceMatched(e), (e, f) => f.MatchResults.IsAnnotationSuggested(e));
             AmplitudeLowerValue = 0d;
             AmplitudeUpperValue = 1d;
             if (peakSpots is INotifyCollectionChanged notifyCollection) {

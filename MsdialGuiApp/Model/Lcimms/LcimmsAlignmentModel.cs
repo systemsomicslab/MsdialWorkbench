@@ -113,8 +113,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var peakSpotNavigator = new PeakSpotNavigatorModel(driftProps, peakFilterModel, evaluator, status: FilterEnableStatus.All).AddTo(Disposables);
             var accEvaluator = new AccumulatedPeakEvaluator(evaluator);
-            peakSpotNavigator.AttachFilter(propModels, peakFilterModel, status: FilterEnableStatus.All, evaluator: evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative));
-            peakSpotNavigator.AttachFilter(accumulatedPropModels, accumulatedPeakFilterModel, status: FilterEnableStatus.None, evaluator: accEvaluator.Contramap<IFilterable, AlignmentSpotProperty>(filterable => ((AlignmentSpotPropertyModel)filterable).innerModel));
+            var filterableEvaluator = evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative, (e, f) => f.MatchResults.IsReferenceMatched(e), (e, f) => f.MatchResults.IsAnnotationSuggested(e));
+            peakSpotNavigator.AttachFilter(propModels, peakFilterModel, status: FilterEnableStatus.All, evaluator: filterableEvaluator);
+            var accFilterableEvaluator = accEvaluator.Contramap<IFilterable, AlignmentSpotProperty>(filterable => ((AlignmentSpotPropertyModel)filterable).innerModel);
+            peakSpotNavigator.AttachFilter(accumulatedPropModels, accumulatedPeakFilterModel, status: FilterEnableStatus.None, evaluator: accFilterableEvaluator);
             PeakSpotNavigatorModel = peakSpotNavigator;
 
             var ontologyBrush = new BrushMapData<AlignmentSpotPropertyModel>(
