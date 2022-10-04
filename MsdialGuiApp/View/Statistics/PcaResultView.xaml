@@ -205,6 +205,7 @@
                                               DataType="{x:Type vm:ComponentScoreViewModel}"
                                               HorizontalProperty="ComponentX"
                                               VerticalProperty="ComponentY"
+                                              PointBrush="{Binding ClassBrush.Value}"
                                               Radius="{Binding SpotSizeSample.Value}"/>
                 </Grid>
             </chart:SimpleChartControl>

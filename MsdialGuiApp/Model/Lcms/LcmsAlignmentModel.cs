@@ -205,7 +205,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                         kvp => kvp.Key,
                         kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
                     ),
-                    Colors.Blue));
+                    Colors.Blue))
+                .ToReactiveProperty()
+                .AddTo(Disposables);
             var barBrush = classBrush.Select(bm => bm.Contramap((BarItem item) => item.Class));
             BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush).AddTo(Disposables);
 
@@ -260,7 +262,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
 
-            PcaSettingModel = new PcaSettingModel(parameter, Ms1Spots, evaluator, files);
+            PcaSettingModel = new PcaSettingModel(parameter, Ms1Spots, evaluator, files, classBrush);
         }
 
         public ParameterBase Parameter { get; }

@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -84,6 +85,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             //Brushes = model.Brushes.AsReadOnly();
             //Brush = model.Brush.AsReadOnly();
             Brush = model.SelectedBrush;
+            ClassBrush = model.PointBrush;
 
             LabelTypesSample = new List<IReadOnlyReactiveProperty<LabelTypeViewModel>>
             {
@@ -154,6 +156,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public ReactiveCollection<ComponentLoadingViewModel> Loadings { get; }
         public ReactiveCollection<ComponentScoreViewModel> Scores { get; }
         public BrushMapData<ComponentLoadingViewModel> Brush { get; }
+        public IObservable<IBrushMapper<ComponentScoreViewModel>> ClassBrush { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingHorizontalAxis { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingVerticalAxis { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> ScoreHorizontalAxis { get; }
