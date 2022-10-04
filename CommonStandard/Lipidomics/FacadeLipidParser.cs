@@ -58,6 +58,8 @@ namespace CompMs.Common.Lipidomics
                         new DGLipidParser(),
                         new EtherPCLipidParser(),
                         new EtherPELipidParser(),
+                        new EtherLPCLipidParser(),
+                        new EtherLPELipidParser(),
                         new SMLipidParser(),
                         new CeramideLipidParser(),
                         new HexCerLipidParser(),

@@ -27,12 +27,13 @@ namespace CompMs.Common.Lipidomics
                     );
                     break;
                 case LbmClass.LPC:
+                case LbmClass.EtherLPC:
                     spectrum.AddRange
                     (
                         new[] {
                             new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
-                            new SpectrumPeak(adduct.ConvertToMz(C5H14NO4P), 200d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
-                            new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - H2O), 500d, "Precursor - H2O") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
+                            new SpectrumPeak(adduct.ConvertToMz(C5H14NO4P), 100d, "Header") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
+                            //new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - H2O), 500d, "Precursor - H2O") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
                         }
                     );
                     break;
@@ -83,12 +84,13 @@ namespace CompMs.Common.Lipidomics
                     }
                     break;
                 case LbmClass.LPE:
+                case LbmClass.EtherLPE:
                     spectrum.AddRange
                     (
                         new[] {
                             new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
                             new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C2H8NO4P), 100d, "Precursor -C2H8NO4P") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
-                            new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - H2O), 200d, "Precursor - H2O") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
+                            //new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - H2O), 200d, "Precursor - H2O") { SpectrumComment = SpectrumComment.metaboliteclass, IsAbsolutelyRequiredFragmentForAnnotation = true },
                         }
                     );
                     break;

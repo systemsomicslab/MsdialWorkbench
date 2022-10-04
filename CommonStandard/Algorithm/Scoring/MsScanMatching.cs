@@ -151,6 +151,10 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.LDGTS:
                     return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.EtherLPC:
+                    return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.EtherLPE:
+                    return OadDefaultCharacterization.Characterize4DiacylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.SM:
                     return OadDefaultCharacterization.Characterize4Ceramides(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.Cer_NS:

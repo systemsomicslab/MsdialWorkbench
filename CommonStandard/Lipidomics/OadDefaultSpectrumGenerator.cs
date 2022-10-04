@@ -43,7 +43,7 @@ namespace CompMs.Common.Lipidomics
             //    spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct));
             //}
             var nlMass = 0.0;
-            var abundance = 100.0;
+            var abundance = 200.0;
             var oadLipidSpectrumGenerator = new OadLipidSpectrumGenerator();
 
             spectrum.AddRange(oadLipidSpectrumGenerator.GetClassFragmentSpectrum(lipid, adduct));
