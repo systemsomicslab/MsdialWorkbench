@@ -55,7 +55,6 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
             this.analysisFilePropertyResetService = analysisFilePropertyResetService;
             this.processSettingService = processSettingSerivce ?? throw new ArgumentNullException(nameof(processSettingSerivce));
-            parameter = new ReactivePropertySlim<ParameterBase>().AddTo(Disposables);
             Model = new MainWindowModel(_broker);
 
             var projectViewModel = Model.ObserveProperty(m => m.CurrentProject)
@@ -121,7 +120,6 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private readonly IMessageBroker _broker;
         private readonly IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService;
         private readonly IWindowService<ProcessSettingViewModel> processSettingService;
-        private readonly ReactivePropertySlim<ParameterBase> parameter;
 
         public MainWindowModel Model { get; }
 
@@ -227,22 +225,6 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
                 message.Close();
                 Mouse.OverrideCursor = null;
-            }
-        }
-
-        public DelegateCommand FilePropertyResetCommand => filePropertyResetCommand ?? (filePropertyResetCommand = new DelegateCommand(FilePropertyResettingWindow));
-        private DelegateCommand filePropertyResetCommand;
-
-        private void FilePropertyResettingWindow() {
-            var storage = DatasetViewModel.Value.Model.Storage;
-            var files = storage.AnalysisFiles;
-            var analysisFilePropertySetModel = new AnalysisFilePropertySetModel(files, new ProjectBaseParameterModel(Storage.Parameter.ProjectParam));
-            using (var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetViewModel(analysisFilePropertySetModel)) {
-                var afpsw_result = analysisFilePropertyResetService.ShowDialog(analysisFilePropertySetWindowVM);
-                if (afpsw_result == true) {
-                    analysisFilePropertySetModel.Update();
-                    parameter.ForceNotify();
-                }
             }
         }
 

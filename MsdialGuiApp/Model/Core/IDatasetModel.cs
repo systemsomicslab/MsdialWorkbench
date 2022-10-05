@@ -21,8 +21,6 @@ namespace CompMs.App.Msdial.Model.Core
         AnalysisFilePropertySetModel AnalysisFilePropertySetModel { get; }
         FileClassSetModel FileClassSetModel { get; }
 
-        void AnalysisFilePropertyUpdate();
-
         Task SaveAsync();
 
         Task SaveAsAsync();

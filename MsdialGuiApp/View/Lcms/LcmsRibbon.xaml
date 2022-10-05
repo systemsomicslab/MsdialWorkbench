@@ -227,7 +227,7 @@
                 </RibbonButton.ToolTip>
             </RibbonButton>
             <RibbonButton Label="Class property setting" LargeImageSource="{StaticResource Class_property_setting_is}"
-                          IsEnabled="False"
+                          IsEnabled="True"
                           Command="{Binding DataContext.DatasetViewModel.Value.FileClassSettingCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="C">
                 <RibbonButton.ToolTip>

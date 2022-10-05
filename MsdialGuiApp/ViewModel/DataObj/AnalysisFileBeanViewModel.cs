@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;
 using CompMs.MsdialCore.DataObj;
@@ -29,7 +30,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         private bool isSelected;
     }
 
-    public class AnalysisFileBeanViewModel : FileBeanViewModel<AnalysisFileBean>
+    internal sealed class AnalysisFileBeanViewModel : FileBeanViewModel<AnalysisFileBean>
     {
         [Required(ErrorMessage = "AnalysisFilePath is required.")]
         [PathExists(IsDirectory = true, IsFile = true)]
@@ -75,87 +76,91 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
 
         public IObservable<Unit> ObserveChanges { get; }
 
-        public AnalysisFileBeanViewModel(AnalysisFileBean file) : base(file) {
-            AnalysisFilePath = new ReactiveProperty<string>(File.AnalysisFilePath)
+        public AnalysisFileBeanViewModel(AnalysisFileBean file) : this(file, new AnalysisFileBeanModel(file)) {
+
+        }
+
+        public AnalysisFileBeanViewModel(AnalysisFileBean file, AnalysisFileBeanModel model) : base(file) {
+            AnalysisFilePath = new ReactiveProperty<string>(file.AnalysisFilePath)
                 .SetValidateAttribute(() => AnalysisFilePath)
                 .AddTo(Disposables);
             CommitAsObservable
                 .WithLatestFrom(AnalysisFilePath, (_, x) => x)
-                .Subscribe(x => File.AnalysisFilePath = x)
+                .Subscribe(x => file.AnalysisFilePath = x)
                 .AddTo(Disposables);
 
             var invalidChars = Path.GetInvalidFileNameChars();
-            AnalysisFileName = new ReactiveProperty<string>(File.AnalysisFileName)
+            AnalysisFileName = new ReactiveProperty<string>(file.AnalysisFileName)
                 .SetValidateAttribute(() => AnalysisFileName)
                 .SetValidateNotifyError(name => name.IndexOfAny(invalidChars) >= 0 ? $"{name} contains invalid character(s)" : null)
                 .AddTo(Disposables);
             CommitAsObservable
                 .WithLatestFrom(AnalysisFileName, (_, x) => x)
-                .Subscribe(x => File.AnalysisFileName = x)
+                .Subscribe(x => file.AnalysisFileName = x)
                 .AddTo(Disposables);
 
-            AnalysisFileType = new ReactiveProperty<AnalysisFileType>(File.AnalysisFileType)
+            AnalysisFileType = new ReactiveProperty<AnalysisFileType>(model.AnalysisFileType)
                 .SetValidateAttribute(() => AnalysisFileType)
                 .AddTo(Disposables);
             CommitAsObservable
                 .WithLatestFrom(AnalysisFileType, (_, x) => x)
-                .Subscribe(x => File.AnalysisFileType = x)
+                .Subscribe(x => model.AnalysisFileType = x)
                 .AddTo(Disposables);
 
-            AnalysisFileClass = new ReactiveProperty<string>(File.AnalysisFileClass)
+            AnalysisFileClass = new ReactiveProperty<string>(model.AnalysisFileClass)
                 .SetValidateAttribute(() => AnalysisFileClass)
                 .AddTo(Disposables);
             CommitAsObservable
                 .WithLatestFrom(AnalysisFileClass, (_, x) => x)
-                .Subscribe(x => File.AnalysisFileClass = x)
+                .Subscribe(x => model.AnalysisFileClass = x)
                 .AddTo(Disposables);
 
-            AnalysisFileAnalyticalOrder = new ReactiveProperty<string>(File.AnalysisFileAnalyticalOrder.ToString())
+            AnalysisFileAnalyticalOrder = new ReactiveProperty<string>(model.AnalysisFileAnalyticalOrder.ToString())
                 .SetValidateAttribute(() => AnalysisFileAnalyticalOrder)
                 .AddTo(Disposables);
             CommitAsObservable
                 .WithLatestFrom(AnalysisFileAnalyticalOrder, (_, x) => x)
-                .Subscribe(x => File.AnalysisFileAnalyticalOrder = int.Parse(x))
+                .Subscribe(x => model.AnalysisFileAnalyticalOrder = int.Parse(x))
                 .AddTo(Disposables);
 
-            AnalysisFileId = new ReactiveProperty<string>(File.AnalysisFileId.ToString())
+            AnalysisFileId = new ReactiveProperty<string>(file.AnalysisFileId.ToString())
                 .SetValidateAttribute(() => AnalysisFileId)
                 .AddTo(Disposables);
             CommitAsObservable
                 .WithLatestFrom(AnalysisFileId, (_, x) => x)
-                .Subscribe(x => File.AnalysisFileId = int.Parse(x))
+                .Subscribe(x => file.AnalysisFileId = int.Parse(x))
                 .AddTo(Disposables);
 
-            AnalysisFileIncluded = new ReactiveProperty<bool>(File.AnalysisFileIncluded)
+            AnalysisFileIncluded = new ReactiveProperty<bool>(model.AnalysisFileIncluded)
                 .SetValidateAttribute(() => AnalysisFileIncluded)
                 .AddTo(Disposables);
             CommitAsObservable
                 .WithLatestFrom(AnalysisFileIncluded, (_, x) => x)
-                .Subscribe(x => File.AnalysisFileIncluded = x)
+                .Subscribe(x => model.AnalysisFileIncluded = x)
                 .AddTo(Disposables);
 
-            AnalysisBatch = new ReactiveProperty<string>(File.AnalysisBatch.ToString())
+            AnalysisBatch = new ReactiveProperty<string>(model.AnalysisBatch.ToString())
                 .SetValidateAttribute(() => AnalysisBatch)
                 .AddTo(Disposables);
             CommitAsObservable
                 .WithLatestFrom(AnalysisBatch, (_, x) => x)
-                .Subscribe(x => File.AnalysisBatch = int.Parse(x))
+                .Subscribe(x => model.AnalysisBatch = int.Parse(x))
                 .AddTo(Disposables);
 
-            DilutionFactor = new ReactiveProperty<string>(File.DilutionFactor.ToString())
+            DilutionFactor = new ReactiveProperty<string>(model.DilutionFactor.ToString())
                 .SetValidateAttribute(() => DilutionFactor)
                 .AddTo(Disposables);
             CommitAsObservable
                 .WithLatestFrom(DilutionFactor, (_, x) => x)
-                .Subscribe(x => File.DilutionFactor = double.Parse(x))
+                .Subscribe(x => model.DilutionFactor = double.Parse(x))
                 .AddTo(Disposables);
 
-            ResponseVariable = new ReactiveProperty<string>(File.ResponseVariable.ToString())
+            ResponseVariable = new ReactiveProperty<string>(model.ResponseVariable.ToString())
                 .SetValidateAttribute(() => ResponseVariable)
                 .AddTo(Disposables);
             CommitAsObservable
                 .WithLatestFrom(ResponseVariable, (_, x) => x)
-                .Subscribe(x => File.ResponseVariable = double.Parse(x))
+                .Subscribe(x => model.ResponseVariable = double.Parse(x))
                 .AddTo(Disposables);
 
             HasErrors = new[]

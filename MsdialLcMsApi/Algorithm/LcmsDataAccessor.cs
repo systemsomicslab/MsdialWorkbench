@@ -38,8 +38,8 @@ namespace CompMs.MsdialLcMsApi.Algorithm
             var tLeftRt = timeMin - peakWidth * 1.5F;
             var tRightRt = timeMax + peakWidth * 1.5F;
             if (tRightRt - tLeftRt > 5 && lcmsParameter.RetentionTimeAlignmentTolerance <= 2.5) {
-                tRightRt = spot.TimesCenter.Value - 2.5;
-                tLeftRt = spot.TimesCenter.Value + 2.5;
+                tLeftRt = spot.TimesCenter.Value - 2.5;
+                tRightRt = spot.TimesCenter.Value + 2.5;
             }
             
             var chromatogramRange = new ChromatogramRange(tLeftRt, tRightRt, ChromXType.RT, ChromXUnit.Min);

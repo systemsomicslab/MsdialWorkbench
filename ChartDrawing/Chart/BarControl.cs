@@ -68,7 +68,10 @@ namespace CompMs.Graphics.Chart
         public static readonly DependencyProperty BrushMapperProperty =
             DependencyProperty.Register(
                 nameof(BrushMapper), typeof(IBrushMapper), typeof(BarControl),
-                new PropertyMetadata(null, OnBrushMapperChanged));
+                new FrameworkPropertyMetadata(
+                    null,
+                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    OnBrushMapperChanged));
 
         public IBrushMapper BrushMapper {
             get => (IBrushMapper)GetValue(BrushMapperProperty);

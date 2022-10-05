@@ -168,6 +168,7 @@ namespace CompMs.App.Msdial.View.Core
             var dialog = new Window
             {
                 Height = 450, Width = 400,
+                Title = "Class property setting",
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 Content = new FileClassSetView
