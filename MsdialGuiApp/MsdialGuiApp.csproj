@@ -192,6 +192,7 @@
     <Compile Include="Model\Statistics\LowessNormalizeModel.cs" />
     <Compile Include="Model\Statistics\MticNormalize.cs" />
     <Compile Include="Model\Statistics\NoneNormalizeModel.cs" />
+    <Compile Include="Model\Statistics\NormalizationInternalStandardSetModel.cs" />
     <Compile Include="Model\Statistics\NormalizationSetModel.cs" />
     <Compile Include="Model\Statistics\SplashProduct.cs" />
     <Compile Include="Model\Statistics\TicNormalizeModel.cs" />
@@ -379,6 +380,7 @@
     <Compile Include="ViewModel\Setting\FileClassPropertyViewModel.cs" />
     <Compile Include="Model\Setting\FileClassSetModel.cs" />
     <Compile Include="ViewModel\Setting\FileClassSettingViewModel.cs" />
+    <Compile Include="ViewModel\Statistics\NormalizationInternalStandardSetViewModel.cs" />
     <Compile Include="ViewModel\Statistics\SplashProductViewModel.cs" />
     <Compile Include="ViewModel\Search\PeakFilterViewModel.cs" />
     <Compile Include="ViewModel\Search\FocusNavigatorViewModel.cs" />
@@ -600,6 +602,9 @@
     </Compile>
     <Compile Include="View\Setting\FileClassSetView.xaml.cs">
       <DependentUpon>FileClassSetView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Statistics\NormalizationInternalStandardSetView.xaml.cs">
+      <DependentUpon>NormalizationInternalStandardSetView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Statistics\NormalizationSetView.xaml.cs">
       <DependentUpon>NormalizationSetView.xaml</DependentUpon>
@@ -1035,6 +1040,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\FileClassSetView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Statistics\NormalizationInternalStandardSetView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
