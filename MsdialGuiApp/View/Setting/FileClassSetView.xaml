@@ -60,7 +60,7 @@
                     Grid.Row="1">
             <Button Content="Apply" Command="{Binding ApplyCommand, Mode=OneTime}"/>
             <Button Content="Finish" Command="{Binding ApplyCommand, Mode=OneTime}" Click="FinishClose"/>
-            <Button Content="Cancel" Click="CancelClose"/>
+            <Button Content="Cancel" Command="{Binding CancelCommand, Mode=OneTime}" Click="CancelClose"/>
         </StackPanel>
     </Grid>
 </UserControl>

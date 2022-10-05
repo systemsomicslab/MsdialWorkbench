@@ -12,10 +12,24 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public FileClassSetViewModel(FileClassSetModel model) {
             _model = model;
             FileClassProperties = _model.FileClassProperties.ToReadOnlyReactiveCollection(m => new FileClassPropertyViewModel(m)).AddTo(Disposables);
-            ApplyCommand = new ReactiveCommand().WithSubscribe(model.Commit).AddTo(Disposables);
+            ApplyCommand = new ReactiveCommand().WithSubscribe(Apply).AddTo(Disposables);
+            CancelCommand = new ReactiveCommand().WithSubscribe(Cancel).AddTo(Disposables);
         }
 
         public ReadOnlyReactiveCollection<FileClassPropertyViewModel> FileClassProperties { get; }
         public ReactiveCommand ApplyCommand { get; }
+
+        private void Apply() {
+            foreach (var property in FileClassProperties) {
+                property.Commit();
+            }
+        }
+
+        public ReactiveCommand CancelCommand { get; }
+        private void Cancel() {
+            foreach (var property in FileClassProperties) {
+                property.Discard();
+            }
+        }
     }
 }

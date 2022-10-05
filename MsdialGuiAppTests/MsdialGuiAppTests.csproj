@@ -45,6 +45,7 @@
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.2.1.1\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="ReactiveProperty, Version=7.10.0.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
       <HintPath>..\packages\ReactiveProperty.7.10.0\lib\netstandard2.0\ReactiveProperty.dll</HintPath>
     </Reference>
@@ -85,6 +86,7 @@
     <Compile Include="ViewModel\MsRefSearchParameterBaseViewModelTests.cs" />
     <Compile Include="ViewModel\Service\TaskProgressCollectionTests.cs" />
     <Compile Include="ViewModel\Service\TaskProgressPublisherTests.cs" />
+    <Compile Include="ViewModel\Setting\FileClassPropertyViewModelTests.cs" />
     <Compile Include="ViewModel\Setting\IdentifySettingViewModelTests.cs" />
   </ItemGroup>
   <ItemGroup>
