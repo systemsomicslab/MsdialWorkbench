@@ -74,11 +74,11 @@
             <RibbonApplicationSplitMenuItem Header="Save" ImageSource="{StaticResource Save_is}"
                                             Command="{Binding SaveProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                             KeyTip="S">
-            <RibbonApplicationMenuItem Header="Save as..." ImageSource="{StaticResource Save_as_is}"
-                                       Command="{Binding SaveAsProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                       KeyTip="A"/>
-            <RibbonApplicationMenuItem Header="Save parameter as..."
-                                       Command="{Binding SaveParameterCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                <RibbonApplicationMenuItem Header="Save as..." ImageSource="{StaticResource Save_as_is}"
+                                           Command="{Binding SaveAsProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                           KeyTip="A"/>
+                <RibbonApplicationMenuItem Header="Save parameter as..."
+                                           Command="{Binding DataContext.DatasetViewModel.Value.SaveParameterAsCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
             </RibbonApplicationSplitMenuItem>
         </RibbonApplicationMenu>
     </Ribbon.ApplicationMenu>
@@ -197,7 +197,7 @@
         <RibbonGroup>
             <RibbonButton Label="File property setting" LargeImageSource="{StaticResource File_property_setting_is}"
                           IsEnabled="True"
-                          Command="{Binding DataContext.FilePropertyResetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                          Command="{Binding DataContext.DatasetViewModel.Value.FilePropertyResetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="F">
                 <RibbonButton.ToolTip>
                     The file properties including type, analytical order, class, and included/not included can be modified here.

@@ -19,13 +19,13 @@ namespace CompMs.App.Msdial.Model.Core
         MethodSettingModel AlignmentProcessMethodSettingModel { get; }
 
         AnalysisFilePropertySetModel AnalysisFilePropertySetModel { get; }
-
-        void AnalysisFilePropertyUpdate();
+        FileClassSetModel FileClassSetModel { get; }
 
         Task SaveAsync();
 
         Task SaveAsAsync();
 
         Task LoadAsync();
+        Task SaveParameterAsAsync();
     }
 }

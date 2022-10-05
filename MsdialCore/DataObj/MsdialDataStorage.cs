@@ -25,6 +25,8 @@ namespace CompMs.MsdialCore.DataObj
         DataBaseStorage DataBases { get; set; }
 
         Task SaveAsync(IStreamManager streamManager, string projectTitle, string prefix);
+        Task SaveParameterAsync(Stream stream);
+        T LoadParameter(Stream stream);
 
         void FixDatasetFolder(string projectFolder);
     }
@@ -198,6 +200,15 @@ namespace CompMs.MsdialCore.DataObj
 
         protected override void SaveMsdialDataStorageCore(Stream stream) {
             MessagePackDefaultHandler.SaveToStream(this, stream);
+        }
+
+        public Task SaveParameterAsync(Stream stream) {
+            MessagePackDefaultHandler.SaveToStream(ParameterBase, stream);
+            return Task.CompletedTask;
+        }
+
+        public ParameterBase LoadParameter(Stream stream) {
+            return MessagePackDefaultHandler.LoadFromStream<ParameterBase>(stream);
         }
     }
 }

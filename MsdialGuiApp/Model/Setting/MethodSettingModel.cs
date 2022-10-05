@@ -1,11 +1,13 @@
 ﻿using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Service;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,7 +18,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public MethodSettingModel(ProcessOption option, IMsdialDataStorage<ParameterBase> storage, Func<MethodSettingModel, IMethodModel, CancellationToken, Task> asyncHandler, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker) {
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _asyncHandler = asyncHandler;
-
+            _broker = broker;
             settingModelFactory = new MethodSettingModelFactory(Storage, projectBaseParameter, option, broker);
             DataCollectionSettingModel = settingModelFactory.CreateDataCollectionSetting();
             PeakDetectionSettingModel = settingModelFactory.CreatePeakDetectionSetting();
@@ -36,6 +38,7 @@ namespace CompMs.App.Msdial.Model.Setting
         public IMsdialDataStorage<ParameterBase> Storage { get; }
 
         private readonly Func<MethodSettingModel, IMethodModel, CancellationToken, Task> _asyncHandler;
+        private readonly IMessageBroker _broker;
         private readonly IMethodSettingModelFactory settingModelFactory;
 
         public ProcessOption Option {
@@ -100,6 +103,28 @@ namespace CompMs.App.Msdial.Model.Setting
                 await _asyncHandler(this, method, token).ConfigureAwait(false);
             }
             return true;
+        }
+
+        public void LoadParameter() {
+            var request = new OpenFileRequest(
+                file =>
+                {
+                    using (var stream = File.Open(file, FileMode.Open)) {
+                        var parameter = Storage.LoadParameter(stream);
+                        DataCollectionSettingModel.LoadParameter(parameter);
+                        PeakDetectionSettingModel.LoadParameter(parameter.PeakPickBaseParam);
+                        DeconvolutionSettingModel.LoadParameter(parameter.ChromDecBaseParam);
+                        AdductIonSettingModel.LoadParameter(parameter);
+                        AlignmentParameterSettingModel.LoadParameter(parameter);
+                        // MobilitySettingModel.LoadParameter();
+                        // IsotopeTrackSettingModel.LoadParameter();
+                    }
+                })
+            {
+                Title = "Load parameter file",
+                Filter = "Msdial parameter file(*.mdparameter)|*.mdparameter",
+            };
+            _broker.Publish(request);           
         }
     }
 }

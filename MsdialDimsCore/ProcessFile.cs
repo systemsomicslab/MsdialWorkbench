@@ -4,6 +4,7 @@ using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -78,11 +79,12 @@ namespace CompMs.MsdialDimsCore
             foreach (var result in peakPickResults) {
                 var peakFeature = DataAccess.GetChromatogramPeakFeature(result, ChromXType.Mz, ChromXUnit.Mz, ms1Spectrum.Spectrum[result.ScanNumAtPeakTop].Mz);
                 var chromScanID = peakFeature.ChromScanIdTop;
+
+                IChromatogramPeakFeature peak = peakFeature;
+                peak.Mass = ms1Spectrum.Spectrum[chromScanID].Mz;
+                peak.ChromXsTop = new ChromXs(peakFeature.Mass, ChromXType.Mz, ChromXUnit.Mz);
+
                 peakFeature.IonMode = ms1Spectrum.ScanPolarity == ScanPolarity.Positive ? IonMode.Positive : IonMode.Negative;
-                peakFeature.PrecursorMz = ms1Spectrum.Spectrum[chromScanID].Mz;
-                peakFeature.Mass = ms1Spectrum.Spectrum[chromScanID].Mz;
-                peakFeature.ChromXs = new ChromXs(peakFeature.Mass, ChromXType.Mz, ChromXUnit.Mz);
-                peakFeature.ChromXsTop = new ChromXs(peakFeature.Mass, ChromXType.Mz, ChromXUnit.Mz);
                 peakFeature.MS1RawSpectrumIdTop = ms1Spectrum.Index;
                 peakFeature.ScanID = ms1Spectrum.ScanNumber;
                 switch (type) {

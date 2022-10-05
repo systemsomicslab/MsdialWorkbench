@@ -26,21 +26,21 @@ namespace CompMs.MsdialCore.Algorithm.Alignment.Tests
                 {
                     new List<IMSScanProperty>
                     {
-                        new ChromatogramPeakFeature{ ChromXs = new ChromXs(0), Mass = 100, ChromXsLeft = new ChromXs(0), ChromXsTop = new ChromXs(0), ChromXsRight = new ChromXs(0) },
-                        new ChromatogramPeakFeature{ ChromXs = new ChromXs(0), Mass = 200, ChromXsLeft = new ChromXs(0), ChromXsTop = new ChromXs(0), ChromXsRight = new ChromXs(0) },
-                        new ChromatogramPeakFeature{ ChromXs = new ChromXs(0), Mass = 300, ChromXsLeft = new ChromXs(0), ChromXsTop = new ChromXs(0), ChromXsRight = new ChromXs(0) },
+                        new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { Mass = 100, ChromXsLeft = new ChromXs(0), ChromXsTop = new ChromXs(0), ChromXsRight = new ChromXs(0) }),
+                        new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { Mass = 200, ChromXsLeft = new ChromXs(0), ChromXsTop = new ChromXs(0), ChromXsRight = new ChromXs(0) }),
+                        new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { Mass = 300, ChromXsLeft = new ChromXs(0), ChromXsTop = new ChromXs(0), ChromXsRight = new ChromXs(0) }),
                     },
                     new List<IMSScanProperty>
                     {
-                        new ChromatogramPeakFeature{ ChromXs = new ChromXs(0.5), Mass = 100, ChromXsLeft = new ChromXs(0.5), ChromXsTop = new ChromXs(0.5), ChromXsRight = new ChromXs(0.5) },
-                        new ChromatogramPeakFeature{ ChromXs = new ChromXs(1.0), Mass = 200, ChromXsLeft = new ChromXs(1.0), ChromXsTop = new ChromXs(1.0), ChromXsRight = new ChromXs(1.0) },
-                        new ChromatogramPeakFeature{ ChromXs = new ChromXs(1.5), Mass = 300, ChromXsLeft = new ChromXs(1.5), ChromXsTop = new ChromXs(1.5), ChromXsRight = new ChromXs(1.5) },
+                        new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { Mass = 100, ChromXsLeft = new ChromXs(0.5), ChromXsTop = new ChromXs(0.5), ChromXsRight = new ChromXs(0.5) }),
+                        new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { Mass = 200, ChromXsLeft = new ChromXs(1.0), ChromXsTop = new ChromXs(1.0), ChromXsRight = new ChromXs(1.0) }),
+                        new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { Mass = 300, ChromXsLeft = new ChromXs(1.5), ChromXsTop = new ChromXs(1.5), ChromXsRight = new ChromXs(1.5) }),
                     },
                     new List<IMSScanProperty>
                     {
-                        new ChromatogramPeakFeature{ ChromXs = new ChromXs(1.0), Mass = 200, ChromXsLeft = new ChromXs(1.0), ChromXsTop = new ChromXs(1.0), ChromXsRight = new ChromXs(1.0) },
-                        new ChromatogramPeakFeature{ ChromXs = new ChromXs(2.0), Mass = 200, ChromXsLeft = new ChromXs(2.0), ChromXsTop = new ChromXs(2.0), ChromXsRight = new ChromXs(2.0) },
-                        new ChromatogramPeakFeature{ ChromXs = new ChromXs(3.0), Mass = 200, ChromXsLeft = new ChromXs(3.0), ChromXsTop = new ChromXs(3.0), ChromXsRight = new ChromXs(3.0) },
+                        new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { Mass = 200, ChromXsLeft = new ChromXs(1.0), ChromXsTop = new ChromXs(1.0), ChromXsRight = new ChromXs(1.0) }),
+                        new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { Mass = 200, ChromXsLeft = new ChromXs(2.0), ChromXsTop = new ChromXs(2.0), ChromXsRight = new ChromXs(2.0) }),
+                        new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { Mass = 200, ChromXsLeft = new ChromXs(3.0), ChromXsTop = new ChromXs(3.0), ChromXsRight = new ChromXs(3.0) }),
                     },
                 }
             );

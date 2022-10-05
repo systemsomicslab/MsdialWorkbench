@@ -14,8 +14,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             IReactiveProperty<double> massLower, IReactiveProperty<double> massUpper,
             IReactiveProperty<double> driftLower, IReactiveProperty<double> driftUpper,
             IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword)
-            : base(model, metaboliteFilterKeyword, commentFilterKeyword) {
+            IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty<string> ontologyFilterKeyword,
+            IReactiveProperty<string> adductFilterKeyword)
+            : base(model, metaboliteFilterKeyword, commentFilterKeyword, ontologyFilterKeyword, adductFilterKeyword) {
             if (massLower is null) {
                 throw new ArgumentNullException(nameof(massLower));
             }
@@ -63,9 +65,13 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             IReactiveProperty<double> massUpper,
             IReactiveProperty<double> driftLower,
             IReactiveProperty<double> driftUpper,
-            IReactiveProperty<string> metaboliteFilterKeyword, IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty<string> metaboliteFilterKeyword, 
+            IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty<string> ontologyFilterKeyword,
+            IReactiveProperty<string> adductFilterKeyword,
             IReactiveProperty<bool> isEditting)
-            : base(model, massLower, massUpper, driftLower, driftUpper, metaboliteFilterKeyword, commentFilterKeyword) {
+            : base(model, massLower, massUpper, driftLower, driftUpper, metaboliteFilterKeyword, 
+                  commentFilterKeyword, ontologyFilterKeyword, adductFilterKeyword) {
             if (eicLoader is null) {
                 throw new ArgumentNullException(nameof(eicLoader));
             }
@@ -88,6 +94,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             IReactiveProperty<double> driftUpper,
             IReactiveProperty<string> metaboliteFilterKeyword,
             IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty<string> ontologyFilterKeyword,
+            IReactiveProperty<string> adductFilterKeyword,
             IReactiveProperty<bool> isEditting)
             : base(
                   model,
@@ -96,7 +104,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                   driftLower,
                   driftUpper,
                   metaboliteFilterKeyword,
-                  commentFilterKeyword) {
+                  commentFilterKeyword,
+                  ontologyFilterKeyword,
+                  adductFilterKeyword) {
             IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
         }
 

@@ -71,5 +71,16 @@ namespace CompMs.App.Msdial.Model.Setting
             referenceParameter.SearchedAdductIons = AdductIons.ToList();
             return true;
         }
+
+        public void LoadParameter(ParameterBase parameter) {
+            if (IsReadOnly) {
+                return;
+            }
+            var referenceParameter = parameter.ReferenceFileParam;
+            AdductIons.Clear();
+            foreach (var ion in referenceParameter.SearchedAdductIons) {
+                AdductIons.Add(ion);
+            }
+        }
     }
 }

@@ -22,22 +22,22 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment.Tests
             {
                 new List<IMSScanProperty>
                 {
-                    new ChromatogramPeakFeature { ChromXs = new ChromXs(0d), Mass = 100d },
-                    new ChromatogramPeakFeature { ChromXs = new ChromXs(2d + rtTol * 0.9), Mass = 200d },
-                    new ChromatogramPeakFeature { ChromXs = new ChromXs(4d), Mass = 300d + mzTol * 0.9 },
-                    new ChromatogramPeakFeature { ChromXs = new ChromXs(6d + rtTol * 0.9), Mass = 400d + mzTol * 0.9 },
-                    new ChromatogramPeakFeature { ChromXs = new ChromXs(8d), Mass = 500d + mzTol * 0.9 },
-                    new ChromatogramPeakFeature { ChromXs = new ChromXs(8d), Mass = 500d + mzTol * 0.5 },
-                    new ChromatogramPeakFeature { ChromXs = new ChromXs(10d), Mass = 601d },
+                    new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { ChromXsTop = new ChromXs(0d), Mass = 100d }),
+                    new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { ChromXsTop = new ChromXs(2d + rtTol * 0.9), Mass = 200d }),
+                    new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { ChromXsTop = new ChromXs(4d), Mass = 300d + mzTol * 0.9 }),
+                    new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { ChromXsTop = new ChromXs(6d + rtTol * 0.9), Mass = 400d + mzTol * 0.9 }),
+                    new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { ChromXsTop = new ChromXs(8d), Mass = 500d + mzTol * 0.9 }),
+                    new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { ChromXsTop = new ChromXs(8d), Mass = 500d + mzTol * 0.5 }),
+                    new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { ChromXsTop = new ChromXs(10d), Mass = 601d }),
                 },
                 new List<IMSScanProperty>
                 {
-                    new ChromatogramPeakFeature { ChromXs = new ChromXs(0d), Mass = 100d },
-                    new ChromatogramPeakFeature { ChromXs = new ChromXs(2d), Mass = 200d },
-                    new ChromatogramPeakFeature { ChromXs = new ChromXs(4d), Mass = 300d },
-                    new ChromatogramPeakFeature { ChromXs = new ChromXs(6d), Mass = 400d },
-                    new ChromatogramPeakFeature { ChromXs = new ChromXs(8d), Mass = 500d },
-                    new ChromatogramPeakFeature { ChromXs = new ChromXs(10d), Mass = 600d },
+                    new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { ChromXsTop = new ChromXs(0d), Mass = 100d }),
+                    new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { ChromXsTop = new ChromXs(2d), Mass = 200d }),
+                    new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { ChromXsTop = new ChromXs(4d), Mass = 300d }),
+                    new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { ChromXsTop = new ChromXs(6d), Mass = 400d }),
+                    new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { ChromXsTop = new ChromXs(8d), Mass = 500d }),
+                    new ChromatogramPeakFeature(new BaseChromatogramPeakFeature { ChromXsTop = new ChromXs(10d), Mass = 600d }),
                 },
             };
             var files = new List<AnalysisFileBean>

@@ -92,9 +92,23 @@
                         <Setter Property="Width" Value="64"/>
                     </Style>
                 </StackPanel.Resources>
-                <Button Content="Cancel" Command="ApplicationCommands.Close"/>
+                <Button Content="Load parameter"
+                        Command="{Binding MethodSettingViewModel.Value.LoadParameterCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Margin" Value="8,0"/>
+                            <Setter Property="IsEnabled" Value="True"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding MethodSettingViewModel.Value.LoadParameterCommand}" Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
                 <Button Content="Next" Command="{Binding ContinueCommand, Mode=OneTime}"/>
                 <Button Content="Run" Command="{Binding RunCommand, Mode=OneTime}" Click="RunButton_Click"/>
+                <Button Content="Cancel" Command="ApplicationCommands.Close"/>
             </StackPanel>
             <ContentControl Content="{Binding /, Source={StaticResource SettingViewModels}}"
                             IsTabStop="False">

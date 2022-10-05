@@ -8,6 +8,7 @@ using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.Utility;
 using MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,35 +25,47 @@ namespace CompMs.MsdialCore.DataObj
             PeakFeature = peakFeature;
         }
 
-        // basic property of IChromatogramPeakFeature
         [IgnoreMember]
-        public IChromatogramPeakFeature PeakFeature { get; }
+        public IChromatogramPeakFeature PeakFeature { get; set; }
+        // basic property of IChromatogramPeakFeature
+        // The following IChromatogramPeakFeature property is written only for serialize and deserialize by MessagePack. Do not use them.
+        // Use the PeakFeature property instead of them.
         [Key(0)]
+        [Obsolete("Use PeakFeature property instead.")]
         public int ChromScanIdLeft { get => PeakFeature.ChromScanIdLeft; set => PeakFeature.ChromScanIdLeft = value; }
         [Key(1)]
+        [Obsolete("Use PeakFeature property instead.")]
         public int ChromScanIdTop { get => PeakFeature.ChromScanIdTop; set => PeakFeature.ChromScanIdTop = value; }
         [Key(2)]
+        [Obsolete("Use PeakFeature property instead.")]
         public int ChromScanIdRight { get => PeakFeature.ChromScanIdRight; set => PeakFeature.ChromScanIdRight = value; }
         [Key(3)]
+        [Obsolete("Use PeakFeature property instead.")]
         public ChromXs ChromXsLeft { get => PeakFeature.ChromXsLeft; set => PeakFeature.ChromXsLeft = value; }
         [Key(4)]
+        [Obsolete("Use PeakFeature property instead.")]
         public ChromXs ChromXsTop { get => PeakFeature.ChromXsTop; set => PeakFeature.ChromXsTop = value; }
         [Key(5)]
+        [Obsolete("Use PeakFeature property instead.")]
         public ChromXs ChromXsRight { get => PeakFeature.ChromXsRight; set => PeakFeature.ChromXsRight = value; }
         [Key(6)]
+        [Obsolete("Use PeakFeature property instead.")]
         public double PeakHeightLeft { get => PeakFeature.PeakHeightLeft; set => PeakFeature.PeakHeightLeft = value; }
         [Key(7)]
+        [Obsolete("Use PeakFeature property instead.")]
         public double PeakHeightTop { get => PeakFeature.PeakHeightTop; set => PeakFeature.PeakHeightTop = value; }
         [Key(8)]
+        [Obsolete("Use PeakFeature property instead.")]
         public double PeakHeightRight { get => PeakFeature.PeakHeightRight; set => PeakFeature.PeakHeightRight = value; }
         [Key(9)]
+        [Obsolete("Use PeakFeature property instead.")]
         public double PeakAreaAboveZero { get => PeakFeature.PeakAreaAboveZero; set => PeakFeature.PeakAreaAboveZero = value; }
         [Key(10)]
+        [Obsolete("Use PeakFeature property instead.")]
         public double PeakAreaAboveBaseline { get => PeakFeature.PeakAreaAboveBaseline; set => PeakFeature.PeakAreaAboveBaseline = value; }
-
         [Key(43)]
+        [Obsolete("Use PeakFeature property instead.")]
         public double Mass { get => PeakFeature.Mass; set => PeakFeature.Mass = value; }
-
         public double PeakWidth(ChromXType type) {
             switch (type) {
                 case ChromXType.RT: return ChromXsRight.RT.Value - ChromXsLeft.RT.Value;
@@ -61,10 +74,10 @@ namespace CompMs.MsdialCore.DataObj
                 default: return ChromXsRight.Value - ChromXsLeft.Value;
             }
         }
-
         public double PeakWidth() {
             return ChromXsRight.Value - ChromXsLeft.Value;
         }
+
         // basic ID metadata
         [Key(11)]
         public int MasterPeakID { get; set; } // sequential IDs parsing all peak features extracted from an MS data
@@ -113,7 +126,7 @@ namespace CompMs.MsdialCore.DataObj
         [Key(22)]
         public IonMode IonMode { get; set; }
         [IgnoreMember]
-        public ChromXs ChromXs { get => ChromXsTop; set => ChromXsTop = value; } // same as ChromXsTop
+        public ChromXs ChromXs { get => PeakFeature.ChromXsTop; set => PeakFeature.ChromXsTop = value; } // same as ChromXsTop
         [Key(24)]
         public List<SpectrumPeak> Spectrum { get; set; } = new List<SpectrumPeak>();
         public void AddPeak(double mass, double intensity, string comment = null) {
@@ -450,8 +463,8 @@ namespace CompMs.MsdialCore.DataObj
 
         // ISpectrumPeak
         double ISpectrumPeak.Intensity {
-            get => PeakHeightTop;
-            set => PeakHeightTop = value;
+            get => PeakFeature.PeakHeightTop;
+            set => PeakFeature.PeakHeightTop = value;
         }
 
         double ISpectrumPeak.Mass {
@@ -465,8 +478,8 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         ChromXs IChromatogramPeak.ChromXs {
-            get => ChromXsTop;
-            set => ChromXsTop = value;
+            get => PeakFeature.ChromXsTop;
+            set => PeakFeature.ChromXsTop = value;
         }
     }
 

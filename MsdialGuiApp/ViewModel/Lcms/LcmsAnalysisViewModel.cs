@@ -116,6 +116,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.RtUpperValue,
                 PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
                 PeakSpotNavigatorViewModel.CommentFilterKeyword,
+                PeakSpotNavigatorViewModel.OntologyFilterKeyword,
+                PeakSpotNavigatorViewModel.AdductFilterKeyword,
                 PeakSpotNavigatorViewModel.IsEditting)
             .AddTo(Disposables);
 
@@ -129,6 +131,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.ProteinFilterKeyword,
                 PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
                 PeakSpotNavigatorViewModel.CommentFilterKeyword,
+                PeakSpotNavigatorViewModel.OntologyFilterKeyword,
+                PeakSpotNavigatorViewModel.AdductFilterKeyword,
                 PeakSpotNavigatorViewModel.IsEditting)
             .AddTo(Disposables);
 

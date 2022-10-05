@@ -127,6 +127,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 case DataBaseSource.Text:
                     return new DimsMetabolomicsAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
                 case DataBaseSource.EieioLipid:
+                case DataBaseSource.OadLipid:
                     return new DimsEadLipidAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
                 default:
                     throw new NotSupportedException(nameof(dataBaseSettingModel.DBSource));

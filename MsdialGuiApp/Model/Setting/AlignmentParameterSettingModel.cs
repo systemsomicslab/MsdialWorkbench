@@ -27,7 +27,7 @@ namespace CompMs.App.Msdial.Model.Setting
             AlignmentResultFileName = $"AlignmentResult_{now:yyyy_MM_dd_HH_mm_ss}";
             AnalysisFiles = files.AsReadOnly();
             ReferenceFile = AnalysisFiles.FirstOrDefault(f => f.AnalysisFileId == parameter.AlignmentReferenceFileID);
-            EqualityParameterSettings = PrepareEqualityParameterSettings(parameter);
+            EqualityParameterSettings = new ObservableCollection<IPeakEqualityParameterSetting>(PrepareEqualityParameterSettings(parameter));
             PeakCountFilter = parameter.PostProcessBaseParam.PeakCountFilter;
             NPercentDetectedInOneGroup = parameter.PostProcessBaseParam.NPercentDetectedInOneGroup;
             BlankFiltering = parameter.PostProcessBaseParam.BlankFiltering;
@@ -61,7 +61,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private AnalysisFileBean referenceFile;
 
-        public List<IPeakEqualityParameterSetting> EqualityParameterSettings { get; }
+        public ObservableCollection<IPeakEqualityParameterSetting> EqualityParameterSettings { get; }
 
         public float PeakCountFilter {
             get => peakCountFilter;
@@ -172,9 +172,30 @@ namespace CompMs.App.Msdial.Model.Setting
             postProcessParameter.IsKeepSuggestedMetaboliteFeatures = IsKeepSuggestedMetaboliteFeatures;
             postProcessParameter.IsKeepRemovableFeaturesAndAssignedTagForChecking = IsKeepRemovableFeaturesAndAssignedTagForChecking;
             postProcessParameter.IsForceInsertForGapFilling = IsForceInsertForGapFilling;
-            EqualityParameterSettings.ForEach(s => s.Commit());
+            foreach (var s in EqualityParameterSettings) {
+                s.Commit();
+            }
             IsCompleted = true;
             return true;
+        }
+
+        public void LoadParameter(ParameterBase parameter) {
+            if (IsReadOnly) {
+                return;
+            }
+            EqualityParameterSettings.Clear();
+            foreach (var s in PrepareEqualityParameterSettings(parameter)) {
+                EqualityParameterSettings.Add(s);
+            }
+            PeakCountFilter = parameter.PostProcessBaseParam.PeakCountFilter;
+            NPercentDetectedInOneGroup = parameter.PostProcessBaseParam.NPercentDetectedInOneGroup;
+            BlankFiltering = parameter.PostProcessBaseParam.BlankFiltering;
+            IsRemoveFeatureBasedOnBlankPeakHeightFoldChange = parameter.PostProcessBaseParam.IsRemoveFeatureBasedOnBlankPeakHeightFoldChange;
+            FoldChangeForBlankFiltering = parameter.PostProcessBaseParam.FoldChangeForBlankFiltering;
+            IsKeepRefMatchedMetaboliteFeatures = parameter.PostProcessBaseParam.IsKeepRefMatchedMetaboliteFeatures;
+            IsKeepSuggestedMetaboliteFeatures = parameter.PostProcessBaseParam.IsKeepSuggestedMetaboliteFeatures;
+            IsKeepRemovableFeaturesAndAssignedTagForChecking = parameter.PostProcessBaseParam.IsKeepRemovableFeaturesAndAssignedTagForChecking;
+            IsForceInsertForGapFilling = parameter.PostProcessBaseParam.IsForceInsertForGapFilling;
         }
 
         private static List<IPeakEqualityParameterSetting> PrepareEqualityParameterSettings(ParameterBase parameter) {

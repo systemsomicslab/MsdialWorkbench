@@ -3,6 +3,7 @@
                     xmlns:chart="clr-namespace:CompMs.Graphics.Chart"
                     xmlns:control="clr-namespace:CompMs.Graphics.Controls"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI"
+                    xmlns:template="clr-namespace:CompMs.Graphics.Template"
                     xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior">
 
     <!--FileOpenControl-->
@@ -322,6 +323,138 @@
                                 VerticalAlignment="Center"
                                 Grid.Column="2"/>
                     </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ui:ColorPicker}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ui:ColorPicker}">
+                    <ControlTemplate.Resources>
+                        <DataTemplate x:Key="SelectedItemTemplate" DataType="{x:Type ui:ColorPickerItem}">
+                            <Border x:Name="SelectedBorder"
+                                    Margin="0" MinWidth="14" MinHeight="14" 
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                                    BorderThickness="1" BorderBrush="LightGray"
+                                    DataContext="{Binding SelectedColor, RelativeSource={RelativeSource AncestorType={x:Type ui:ColorPicker}}}"
+                                    ToolTip="{Binding}">
+                                <Border.Background>
+                                    <SolidColorBrush Color="{Binding Path=DataContext, FallbackValue={x:Static Colors.White}, ElementName=SelectedBorder}"/>
+                                </Border.Background>
+                            </Border>
+                        </DataTemplate>
+                        <DataTemplate x:Key="DropDownItemTemplate" DataType="{x:Type ui:ColorPickerItem}">
+                            <Border x:Name="DropDownBorder"
+                                    Margin="0" MinWidth="14" MinHeight="14" 
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                                    BorderThickness="1" BorderBrush="LightGray"
+                                    ToolTip="{Binding Color}">
+                                <Border.Background>
+                                    <SolidColorBrush Color="{Binding Path=DataContext.Color, FallbackValue={x:Static Colors.White}, ElementName=DropDownBorder}"/>
+                                </Border.Background>
+                            </Border>
+                        </DataTemplate>
+                        <template:ComboBoxItemTemplateSelector x:Key="ItemTemplateSelector"
+                                                               DropDownTemplate="{StaticResource DropDownItemTemplate}"
+                                                               SelectedTemplate="{StaticResource SelectedItemTemplate}"/>
+                        <Style x:Key="ColorPickerStyle" TargetType="ComboBox">
+                        <!--<Style x:Key="ColorPickerStyle" TargetType="ListBox">-->
+                            <Style.Triggers>
+                                <Trigger Property="IsEditable" Value="False">
+                                    <Setter Property="Background" Value="White"/>
+                                </Trigger>
+                            </Style.Triggers>
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                            <Setter Property="ItemsPanel">
+                                <Setter.Value>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="12" Margin="0,0,4,0"/>
+                                    </ItemsPanelTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="ItemContainerStyle">
+                                <Setter.Value>
+                                    <Style TargetType="{x:Type ComboBoxItem}">
+                                    <!--<Style TargetType="{x:Type ListBoxItem}">-->
+                                        <Setter Property="Margin" Value="0"/>
+                                        <Setter Property="Padding" Value="1"/>
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                                                <!--<ControlTemplate TargetType="{x:Type ListBoxItem}">-->
+                                                    <Border x:Name="Border"
+                                                            Padding="2"
+                                                            SnapsToDevicePixels="true"
+                                                            Background="{TemplateBinding Background}">
+                                                        <ContentPresenter/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="LightGray"/>
+                                            </Trigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="Cyan"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Setter.Value>
+                            </Setter>
+
+                            <Setter Property="ItemTemplateSelector" Value="{StaticResource ItemTemplateSelector}"/>
+                            <!--
+                            <Setter Property="ItemTemplate" Value="{StaticResource DropDownItemTemplate}"/>
+                            -->
+                        </Style>
+                        <DataTemplate x:Key="ColorPickerHeaderTemplate">
+                            <Border Margin="0,4,0,0"/>
+                        </DataTemplate>
+                    </ControlTemplate.Resources>
+                    <ComboBox ItemsSource="{Binding ColorPickerItems, RelativeSource={RelativeSource TemplatedParent}}"
+                              SelectedIndex="-1"
+                              SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource TemplatedParent}}"
+                              Style="{StaticResource ColorPickerStyle}">
+                        <ComboBox.GroupStyle>
+                            <GroupStyle HeaderTemplate="{StaticResource ColorPickerHeaderTemplate}"/>
+                        </ComboBox.GroupStyle>
+                    </ComboBox>
+                    <!--
+                    <Grid>
+                        <ToggleButton x:Name="presenter"
+                                      IsChecked="{Binding IsOpen, ElementName=palette}">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=palette, Path=IsOpen}" Value="True">
+                                            <Setter Property="IsHitTestVisible" Value="False"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ToggleButton.Style>
+                            <Rectangle>
+                                <Rectangle.Fill>
+                                    <SolidColorBrush Color="{Binding SelectedColor, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </ToggleButton>
+                        <Popup x:Name="palette"
+                               PlacementTarget="{Binding ElementName=presenter}"
+                               StaysOpen="False">
+                            <ListBox ItemsSource="{Binding ColorPickerItems, RelativeSource={RelativeSource TemplatedParent}}"
+                                     Style="{StaticResource ColorPickerStyle}">
+                                <ListBox.GroupStyle>
+                                    <GroupStyle HeaderTemplate="{StaticResource ColorPickerHeaderTemplate}"/>
+                                </ListBox.GroupStyle>
+                            </ListBox>
+                        </Popup>
+                    </Grid>
+                    -->
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

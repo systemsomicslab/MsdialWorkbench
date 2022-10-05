@@ -18,8 +18,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReactiveProperty<double> rtLower,
             IReactiveProperty<double> rtUpper,
             IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword)
-            : base(model, metaboliteFilterKeyword, commentFilterKeyword) {
+            IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty<string> ontologyFilterKeyword,
+            IReactiveProperty<string> adductFilterKeyword
+            )
+            : base(model, metaboliteFilterKeyword, commentFilterKeyword, ontologyFilterKeyword, adductFilterKeyword) {
             if (massLower is null) {
                 throw new ArgumentNullException(nameof(massLower));
             }
@@ -69,6 +72,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReactiveProperty<string> proteinFilterKeyword,
             IReactiveProperty<string> peptideFilterKeyword,
             IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty<string> ontologyFilterKeyword,
+            IReactiveProperty<string> adductFilterKeyword,
             IReactiveProperty<bool> isEditting)
             : base(
                   model,
@@ -77,7 +82,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   rtLower,
                   rtUpper,
                   peptideFilterKeyword,
-                  commentFilterKeyword) {
+                  commentFilterKeyword,
+                  ontologyFilterKeyword,
+                  adductFilterKeyword) {
             if (eicLoader is null) {
                 throw new ArgumentNullException(nameof(eicLoader));
             }
@@ -103,6 +110,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReactiveProperty<double> rtUpper,
             IReactiveProperty<string> metaboliteFilterKeyword,
             IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty<string> ontologyFilterKeyword,
+            IReactiveProperty<string> adductFilterKeyword,
             IReactiveProperty<bool> isEditting)
             : base(
                   model,
@@ -111,7 +120,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   rtLower,
                   rtUpper,
                   metaboliteFilterKeyword,
-                  commentFilterKeyword) {
+                  commentFilterKeyword,
+                  ontologyFilterKeyword,
+                  adductFilterKeyword) {
             if (eicLoader is null) {
                 throw new ArgumentNullException(nameof(eicLoader));
             }
@@ -132,6 +143,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReactiveProperty<double> rtUpper,
             IReactiveProperty<string> metaboliteFilterKeyword,
             IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty<string> ontologyFilterKeyword,
+            IReactiveProperty<string> adductFilterKeyword,
             IReactiveProperty<bool> isEditting)
             : base(
                   model,
@@ -140,7 +153,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   rtLower,
                   rtUpper,
                   metaboliteFilterKeyword,
-                  commentFilterKeyword) {
+                  commentFilterKeyword,
+                  ontologyFilterKeyword,
+                  adductFilterKeyword) {
             ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
         }
@@ -159,6 +174,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReactiveProperty<string> proteinFilterKeyword,
             IReactiveProperty<string> peptideFilterKeyword,
             IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty<string> ontologyFilterKeyword,
+            IReactiveProperty<string> adductFilterKeyword,
             IReactiveProperty<bool> isEditting)
             : base(
                   model,
@@ -167,7 +184,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   rtLower,
                   rtUpper,
                   peptideFilterKeyword,
-                  commentFilterKeyword) {
+                  commentFilterKeyword, 
+                  ontologyFilterKeyword,
+                  adductFilterKeyword) {
             ProteinFilterKeyword = proteinFilterKeyword;
             IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
         }

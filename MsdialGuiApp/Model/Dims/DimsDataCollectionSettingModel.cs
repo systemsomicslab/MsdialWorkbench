@@ -11,26 +11,7 @@ namespace CompMs.App.Msdial.Model.Dims
             ProcessParameter = processParameter;
             PeakPickParameter = peakPickParameter;
 
-            switch (factoryParameter) {
-                case DimsTicDataProviderFactoryParameter ticParameter:
-                    UseMs1WithHighestTic = true;
-                    TimeBegin = ticParameter.TimeBegin;
-                    TimeEnd = ticParameter.TimeEnd;
-                    break;
-                case DimsBpiDataProviderFactoryParameter bpiParameter:
-                    UseMs1WithHighestTic = false;
-                    UseMs1WithHighestBpi = true;
-                    TimeBegin = bpiParameter.TimeBegin;
-                    TimeEnd = bpiParameter.TimeEnd;
-                    break;
-                case DimsAverageDataProviderFactoryParameter averageParameter:
-                    UseMs1WithHighestTic = false;
-                    UseAverageMs1 = true;
-                    TimeBegin = averageParameter.TimeBegin;
-                    TimeEnd = averageParameter.TimeEnd;
-                    MassTolerance = averageParameter.MassTolerance;
-                    break;
-            }
+            PrepareProviderFactoryParameter(factoryParameter);
         }
 
         public bool UseMs1WithHighestTic {
@@ -69,6 +50,7 @@ namespace CompMs.App.Msdial.Model.Dims
         }
         private double massTolerance = 0.01;
 
+        // TODO: Why are these parameters being used?
         public ProcessBaseParameter ProcessParameter { get; }
         public PeakPickBaseParameter PeakPickParameter { get; }
 
@@ -83,6 +65,33 @@ namespace CompMs.App.Msdial.Model.Dims
                 return new DimsAverageDataProviderFactoryParameter(TimeBegin, TimeEnd, MassTolerance);
             }
             throw new NotSupportedException();
+        }
+
+        public void LoadParameter(IDimsDataProviderFactoryParameter factoryParameter) {
+            PrepareProviderFactoryParameter(factoryParameter);
+        }
+
+        private void PrepareProviderFactoryParameter(IDimsDataProviderFactoryParameter factoryParameter) {
+            switch (factoryParameter) {
+                case DimsTicDataProviderFactoryParameter ticParameter:
+                    UseMs1WithHighestTic = true;
+                    TimeBegin = ticParameter.TimeBegin;
+                    TimeEnd = ticParameter.TimeEnd;
+                    break;
+                case DimsBpiDataProviderFactoryParameter bpiParameter:
+                    UseMs1WithHighestTic = false;
+                    UseMs1WithHighestBpi = true;
+                    TimeBegin = bpiParameter.TimeBegin;
+                    TimeEnd = bpiParameter.TimeEnd;
+                    break;
+                case DimsAverageDataProviderFactoryParameter averageParameter:
+                    UseMs1WithHighestTic = false;
+                    UseAverageMs1 = true;
+                    TimeBegin = averageParameter.TimeBegin;
+                    TimeEnd = averageParameter.TimeEnd;
+                    MassTolerance = averageParameter.MassTolerance;
+                    break;
+            }
         }
     }
 }

@@ -57,6 +57,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .Switch(_ => SettingViewModels.Select(vm => vm.ObserveChangeAfterDecision).CombineLatestValuesAreAnyTrue())
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+
+            LoadParameterCommand = new ReactiveCommand().WithSubscribe(model.LoadParameter).AddTo(Disposables);
         }
 
         public MethodSettingModel Model { get; }
@@ -68,6 +70,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 
         public ReadOnlyReactivePropertySlim<bool> ObserveChangeAfterDecision { get; }
+
+        public ReactiveCommand LoadParameterCommand { get; }
 
         public bool IsReadOnlyPeakPickParameter { get; }
 

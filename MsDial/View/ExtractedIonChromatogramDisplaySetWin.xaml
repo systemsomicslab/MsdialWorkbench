@@ -135,6 +135,6 @@
 
         <Button x:Name="Button_Finish" Content="Display" Command="{Binding OkCommand}" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Margin="5,5,80,5" />
         <Button x:Name="Button_Cancel" Content="Cancel" Click="Button_Cancel_Click" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center" Height="25" Width="70" Margin="5,5,5,5" />
-
+        <Button x:Name="Burron_Delete" Content="Delete" Click="Button_Delete_Click" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Width="70" Margin="5,5,5,5" />
     </Grid>
 </Window>

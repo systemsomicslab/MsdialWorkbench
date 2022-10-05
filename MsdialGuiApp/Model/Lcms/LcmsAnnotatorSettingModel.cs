@@ -127,7 +127,10 @@ namespace CompMs.App.Msdial.Model.Lcms
 
     public sealed class LcmsEadLipidAnnotatorSettingModel : BindableBase, IEadLipidAnnotatorSettingModel
     {
-        public LcmsEadLipidAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter) {
+        public LcmsEadLipidAnnotatorSettingModel(
+            DataBaseSettingModel dataBaseSettingModel, 
+            string annotatorID, 
+            MsRefSearchParameterBase searchParameter) {
             DataBaseSettingModel = dataBaseSettingModel;
             AnnotatorID = annotatorID;
             SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
@@ -170,6 +173,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 case DataBaseSource.Fasta:
                     return new LcmsProteomicsAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
                 case DataBaseSource.EieioLipid:
+                case DataBaseSource.OadLipid:
                     return new LcmsEadLipidAnnotatorSettingModel(dataBaseSettingModel, annotatorID, searchParameter);
                 default:
                     throw new NotSupportedException(nameof(dataBaseSettingModel.DBSource));

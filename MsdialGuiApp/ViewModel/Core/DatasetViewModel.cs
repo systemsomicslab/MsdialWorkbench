@@ -48,6 +48,13 @@ namespace CompMs.App.Msdial.ViewModel.Core
             FilePropertyResetCommand = new ReactiveCommand()
                 .WithSubscribe(FilePropertyResetting)
                 .AddTo(Disposables);
+            var fileClassSetViewModel = new FileClassSetViewModel(model.FileClassSetModel).AddTo(Disposables);
+            FileClassSettingCommand = new ReactiveCommand()
+                .WithSubscribe(() => messageBroker.Publish(fileClassSetViewModel))
+                .AddTo(Disposables);
+            SaveParameterAsCommand = new ReactiveCommand()
+                .WithSubscribe(() => model.SaveParameterAsAsync())
+                .AddTo(Disposables);
         }
 
         public IDatasetModel Model { get; }
@@ -57,13 +64,18 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public ReactiveCommand FilePropertyResetCommand { get; }
 
         private void FilePropertyResetting() {
-            using (var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetViewModel(Model.AnalysisFilePropertySetModel)) {
+            var model = Model.AnalysisFilePropertySetModel;
+            using (var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetViewModel(model)) {
                 var afpsw_result = analysisFilePropertyResetService.ShowDialog(analysisFilePropertySetWindowVM);
                 if (afpsw_result == true) {
-                    Model.AnalysisFilePropertyUpdate();
+                    model.Update();
                 }
             }
         }
+
+        public ReactiveCommand FileClassSettingCommand { get; }
+
+        public ReactiveCommand SaveParameterAsCommand { get; }
 
         private MethodViewModel ConvertToViewModel(IMethodModel model) {
             switch (model) {

@@ -38,12 +38,15 @@ namespace CompMs.MsdialLcMsApi.Export.Tests
             var parameter = new ParameterBase { CentroidMs1Tolerance = 0.01f, MS2DataType = MSDataType.Centroid, };
             var refer = new MockRefer();
             var accessor = new LcmsAnalysisMetadataAccessor(refer, parameter);
-            var feature = new ChromatogramPeakFeature
+            var basePeak = new BaseChromatogramPeakFeature
             {
                 ChromXsLeft = new ChromXs(100.991, ChromXType.RT, ChromXUnit.Min),
-                ChromXs = new ChromXs(101.001, ChromXType.RT, ChromXUnit.Min),
+                ChromXsTop = new ChromXs(101.001, ChromXType.RT, ChromXUnit.Min),
                 ChromXsRight = new ChromXs(101.011, ChromXType.RT, ChromXUnit.Min),
-                PrecursorMz = 700.00001,
+                Mass = 700.00001,
+            };
+            var feature = new ChromatogramPeakFeature(basePeak)
+            {
                 MatchResults = new MsScanMatchResultContainer
                 {
                     MatchResults = new List<MsScanMatchResult>

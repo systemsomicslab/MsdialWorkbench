@@ -27,6 +27,8 @@ namespace CompMs.App.Msdial.Model.Search
         Protein = 0x10,
         Comment = 0x20,
         Amplitude = 0x40,
+        Ontology = 0x80,
+        Adduct = 0x100,
         All = ~None,
     }
 
@@ -39,7 +41,7 @@ namespace CompMs.App.Msdial.Model.Search
 
             PeakSpots = peakSpots ?? throw new ArgumentNullException(nameof(peakSpots));
             PeakFilterModel = peakFilterModel ?? throw new ArgumentNullException(nameof(peakFilterModel));
-            _evaluator = evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative);
+            _evaluator = evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative, (e, f) => f.MatchResults.IsReferenceMatched(e), (e, f) => f.MatchResults.IsAnnotationSuggested(e));
             AmplitudeLowerValue = 0d;
             AmplitudeUpperValue = 1d;
             if (peakSpots is INotifyCollectionChanged notifyCollection) {
@@ -70,6 +72,10 @@ namespace CompMs.App.Msdial.Model.Search
             ProteinFilterKeywords = proteinFilterKeywords.AsReadOnly();
             commentFilterKeywords = new List<string>();
             CommentFilterKeywords = commentFilterKeywords.AsReadOnly();
+            ontologyFilterKeywords = new List<string>();
+            OntologyFilterKeywords = ontologyFilterKeywords.AsReadOnly();
+            adductFilterKeywords = new List<string>();
+            AdductFilterKeywords = adductFilterKeywords.AsReadOnly();
 
             AttachFilter(peakSpots, peakFilterModel, status: status, evaluator: _evaluator);
         }
@@ -192,6 +198,49 @@ namespace CompMs.App.Msdial.Model.Search
             commentFilterKeywords.AddRange(keywords);
         }
 
+        public ReadOnlyCollection<string> OntologyFilterKeywords { get; }
+        private readonly List<string> ontologyFilterKeywords;
+
+        private readonly SemaphoreSlim ontologySemaphore = new SemaphoreSlim(1, 1);
+        public async Task SetOntologyKeywordsAsync(IEnumerable<string> keywords, CancellationToken token) {
+            token.ThrowIfCancellationRequested();
+            await ontologySemaphore.WaitAsync().ConfigureAwait(false);
+            try {
+                token.ThrowIfCancellationRequested();
+                SetOntologyKeywords(keywords);
+            }
+            finally {
+                ontologySemaphore.Release();
+            }
+        }
+
+        private void SetOntologyKeywords(IEnumerable<string> keywords) {
+            ontologyFilterKeywords.Clear();
+            ontologyFilterKeywords.AddRange(keywords);
+        }
+
+        public ReadOnlyCollection<string> AdductFilterKeywords { get; }
+        private readonly List<string> adductFilterKeywords;
+
+        private readonly SemaphoreSlim adductSemaphore = new SemaphoreSlim(1, 1);
+        public async Task SetAdductKeywordsAsync(IEnumerable<string> keywords, CancellationToken token) {
+            token.ThrowIfCancellationRequested();
+            await adductSemaphore.WaitAsync().ConfigureAwait(false);
+            try {
+                token.ThrowIfCancellationRequested();
+                SetAdductKeywords(keywords);
+            }
+            finally {
+                adductSemaphore.Release();
+            }
+        }
+
+        private void SetAdductKeywords(IEnumerable<string> keywords) {
+            adductFilterKeywords.Clear();
+            adductFilterKeywords.AddRange(keywords);
+        }
+
+
         public PeakFilterModel PeakFilterModel { get; }
 
         private readonly Dictionary<ICollectionView, Predicate<object>> _viewToPredicate = new Dictionary<ICollectionView, Predicate<object>>();
@@ -267,6 +316,15 @@ namespace CompMs.App.Msdial.Model.Search
                 results.Add(filterable => CommentFilter(filterable, CommentFilterKeywords));
             }
 
+            if ((status & FilterEnableStatus.Adduct) != FilterEnableStatus.None) {
+                results.Add(filterable => AdductFilter(filterable, AdductFilterKeywords));
+            }
+
+            if ((status & FilterEnableStatus.Ontology) != FilterEnableStatus.None) {
+                results.Add(filterable => OntologyFilter(filterable, OntologyFilterKeywords));
+            }
+
+
             return (object obj) => obj is IFilterable filterable && results.All(pred => pred(filterable));
         }
 
@@ -292,6 +350,14 @@ namespace CompMs.App.Msdial.Model.Search
 
         private bool CommentFilter(IFilterable peak, IEnumerable<string> keywords) {
             return keywords.All(keyword => string.IsNullOrEmpty(keyword) || (peak.Comment?.Contains(keyword) ?? false));
+        }
+
+        private bool OntologyFilter(IFilterable peak, IEnumerable<string> keywords) {
+            return keywords.All(keyword => string.IsNullOrEmpty(keyword) || peak.Ontology == keyword);
+        }
+
+        private bool AdductFilter(IFilterable peak, IEnumerable<string> keywords) {
+            return keywords.All(keyword => peak.AdductIonName?.Contains(keyword) ?? true);
         }
 
         private bool AmplitudeFilter(IFilterable peak) {

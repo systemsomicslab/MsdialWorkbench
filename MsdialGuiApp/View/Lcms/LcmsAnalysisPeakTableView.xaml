@@ -11,7 +11,7 @@
              xmlns:converter="clr-namespace:CompMs.App.Msdial.ViewModel.Converter"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              d:DataContext="{d:DesignInstance Type=vm:LcmsAnalysisPeakTableViewModel}"
-             d:DesignHeight="450" d:DesignWidth="1200">
+             d:DesignHeight="450" d:DesignWidth="1400">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>
@@ -34,6 +34,8 @@
         <Grid Margin="5" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="110"/>
+                <ColumnDefinition />
+                <ColumnDefinition />
                 <ColumnDefinition />
                 <ColumnDefinition />
                 <ColumnDefinition Width="210"/>
@@ -70,6 +72,20 @@
 
             <StackPanel Margin="5,0,0,0"
                         Grid.Column="2">
+                <TextBlock Text="Ontology filter"/>
+                <TextBox Text="{Binding OntologyFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
+                         HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <StackPanel Margin="5,0,0,0"
+                        Grid.Column="3">
+                <TextBlock Text="Adduct filter"/>
+                <TextBox Text="{Binding AdductFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
+                         HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <StackPanel Margin="5,0,0,0"
+                        Grid.Column="4">
                 <TextBlock Text="Comment filter"/>
                 <TextBox Text="{Binding CommentFilterKeyword.Value, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"/>
@@ -82,7 +98,7 @@
                             UpperValue="{Binding MassUpper.Value, Mode=TwoWay}"
                             Style="{StaticResource EditableRangeSlider}"
                             Margin="8,0"
-                            Grid.Column="3"/>
+                            Grid.Column="5"/>
             <rs:RangeSlider Tag="Retention time"
                             Minimum="{Binding RtMin, Mode=OneWay}"
                             Maximum="{Binding RtMax, Mode=OneWay}"
@@ -90,7 +106,7 @@
                             UpperValue="{Binding RtUpper.Value, Mode=TwoWay}"
                             Style="{StaticResource EditableRangeSlider}"
                             Margin="8,0"
-                            Grid.Column="4"/>
+                            Grid.Column="6"/>
         </Grid>
 
         <DataGrid x:Name="PeakSpotView"
@@ -146,6 +162,12 @@
                         </Style>
                     </DataGridTextColumn.CellStyle>
                 </DataGridTextColumn>
+
+                <DataGridTextColumn Header="Ontology"
+                                    Binding="{Binding Path=Ontology}"
+                                    IsReadOnly="True"
+                                    Width="1.5*" />
+                
                 <DataGridTextColumn Header="Comment"
                                     Binding="{Binding Path=Comment}"
                                     IsReadOnly="False"
@@ -165,7 +187,7 @@
                 <DataGridTextColumn Header="Match score"
                                     Binding="{Binding Path=ScanMatchResult.TotalScore, StringFormat=F4}"
                                     IsReadOnly="True"
-                                    Width="70" />
+                                    Width="80" />
                 <DataGridTextColumn Header="Gaussian"
                                     Binding="{Binding Path=InnerModel.PeakShape.GaussianSimilarityValue, StringFormat=F3}"
                                     IsReadOnly="True"

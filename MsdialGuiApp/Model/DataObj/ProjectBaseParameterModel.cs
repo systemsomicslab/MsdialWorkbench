@@ -8,10 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    internal class ProjectBaseParameterModel : BindableBase
+    internal sealed class ProjectBaseParameterModel : BindableBase
     {
         private readonly ProjectBaseParameter _projectParameter;
 
@@ -37,6 +38,9 @@ namespace CompMs.App.Msdial.Model.DataObj
                 _projectParameter.ClassnameToColorBytes = new Dictionary<string, List<byte>>();
             }
             _classnameToColorBytes = _projectParameter.ClassnameToColorBytes;
+
+            _fileClasses = new ObservableCollection<string>(Enumerable.Union(_classnameToOrder.Keys, _classnameToColorBytes.Keys));
+            FileClasses = new ReadOnlyObservableCollection<string>(_fileClasses);
         }
 
         public ReadOnlyDictionary<int, AnalysisFileType> FileIdToAnalysisFileType => new ReadOnlyDictionary<int, AnalysisFileType>(_fileIdToAnalysisFileType);
@@ -50,6 +54,9 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public ReadOnlyDictionary<string, List<byte>> ClassnameToColorBytes => new ReadOnlyDictionary<string, List<byte>>(_classnameToColorBytes);
         private readonly Dictionary<string, List<byte>> _classnameToColorBytes;
+
+        public ReadOnlyObservableCollection<string> FileClasses { get; }
+        private readonly ObservableCollection<string> _fileClasses;
 
         public bool IsBoxPlotForAlignmentResult {
             get => _isBoxPlotForAlignmentResult;
@@ -70,22 +77,74 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
             OnPropertyChanged(nameof(FileIdToClassName));
 
-            _classnameToOrder.Clear();
-            foreach (var (classId, idx) in files.Select(analysisfile => analysisfile.AnalysisFileClass).Distinct().WithIndex()) {
-                _classnameToOrder[classId] = idx;
+            var newClasses = files.Select(analysisFile => analysisFile.AnalysisFileClass).ToHashSet();
+            {
+                foreach (var fileClass in _fileClasses.Where(fileClass => !newClasses.Contains(fileClass)).ToArray()) {
+                    _fileClasses.Remove(fileClass);
+                }
+                foreach (var newClass in newClasses.Where(newClass => !_fileClasses.Contains(newClass))) {
+                    _fileClasses.Add(newClass);
+                }
             }
-            OnPropertyChanged(nameof(ClassnameToOrder));
 
-            _classnameToColorBytes.Clear();
-            foreach (var (classId, idx) in files.Select(analysisfile => analysisfile.AnalysisFileClass).Distinct().WithIndex()) {
-                var brush = ChartBrushes.SolidColorBrushList[idx];
-                _classnameToColorBytes[classId] = new List<byte> { brush.Color.R, brush.Color.G, brush.Color.B, brush.Color.A };
+            {
+                foreach (var fileClass in _classnameToOrder.Keys.Where(key => !newClasses.Contains(key)).ToArray()) {
+                    _classnameToOrder.Remove(fileClass);
+                }
+                var order = _classnameToOrder.Values.Max() + 1;
+                foreach (var fileClass in newClasses) {
+                    if (!_classnameToOrder.ContainsKey(fileClass)) {
+                        _classnameToOrder[fileClass] = order++;
+                    }
+                }
+                OnPropertyChanged(nameof(ClassnameToOrder));
             }
-            OnPropertyChanged(nameof(ClassnameToColorBytes));
+
+            {
+                foreach (var fileClass in _classnameToColorBytes.Keys.Where(key => !newClasses.Contains(key)).ToArray()) {
+                    _classnameToColorBytes.Remove(fileClass);
+                }
+                var colors = _classnameToColorBytes.Values.Select(color => Color.FromArgb(color[3], color[0], color[1], color[2])).ToHashSet();
+                var idx = 0;
+                foreach (var fileClass in newClasses) {
+                    if (!_classnameToColorBytes.ContainsKey(fileClass)) {
+                        while (idx < ChartBrushes.SolidColorBrushList.Count && colors.Contains(ChartBrushes.SolidColorBrushList[idx].Color)) {
+                            idx++;
+                        }
+                        var color = idx < ChartBrushes.SolidColorBrushList.Count ? ChartBrushes.SolidColorBrushList[idx++].Color : Colors.Gray;
+                        _classnameToColorBytes[fileClass] = new List<byte> { color.R, color.G, color.B, color.A, };
+                    }
+                }
+                OnPropertyChanged(nameof(ClassnameToColorBytes));
+            }
 
             var classNumAve = files.GroupBy(analysisfile => analysisfile.AnalysisFileType)
                                    .Average(group => group.Count());
             IsBoxPlotForAlignmentResult = classNumAve > 4;
+        }
+
+        public void SetClassOrderProperties(IReadOnlyDictionary<string, int> classnameToOrder) {
+            foreach (var name in _classnameToOrder.Keys.ToArray()) {
+                if (!classnameToOrder.ContainsKey(name)) {
+                    _classnameToOrder.Remove(name);
+                }
+            }
+            foreach (var kvp in classnameToOrder) {
+                _classnameToOrder[kvp.Key] = kvp.Value;
+            }
+            OnPropertyChanged(nameof(ClassnameToOrder));
+        }
+
+        public void SetClassColorProperties(IReadOnlyDictionary<string, Color> classnameToColor) {
+            foreach (var name in _classnameToColorBytes.Keys.ToArray()) {
+                if (!classnameToColor.ContainsKey(name)) {
+                    _classnameToColorBytes.Remove(name);
+                }
+            }
+            foreach (var kvp in classnameToColor) {
+                _classnameToColorBytes[kvp.Key] = new List<byte> { kvp.Value.R, kvp.Value.G, kvp.Value.B, kvp.Value.A };
+            }
+            OnPropertyChanged(nameof(ClassnameToColorBytes));
         }
     }
 }

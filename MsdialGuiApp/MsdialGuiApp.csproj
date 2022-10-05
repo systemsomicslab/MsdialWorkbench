@@ -156,6 +156,7 @@
     <Compile Include="Model\Chart\Ms2ChromatogramsModel.cs" />
     <Compile Include="Model\Chart\MsSpectrum.cs" />
     <Compile Include="Model\Chart\SampleImageModel.cs" />
+    <Compile Include="Model\DataObj\AnalysisFileBeanModel.cs" />
     <Compile Include="Model\Imaging\ImagingImageModel.cs" />
     <Compile Include="Model\Imaging\ImagingRoiModel.cs" />
     <Compile Include="Model\Imaging\ImaginRoiCompareModel.cs" />
@@ -183,6 +184,8 @@
     <Compile Include="Model\Loader\BarItemsLoaderData.cs" />
     <Compile Include="Model\Loader\IChromatogramLoader.cs" />
     <Compile Include="Model\Loader\MsSelectionItem.cs" />
+    <Compile Include="Model\Service\OpenFileRequest.cs" />
+    <Compile Include="Model\Service\ShortMessageRequest.cs" />
     <Compile Include="Model\Statistics\InternalStandardLowessNormalizeModel.cs" />
     <Compile Include="Model\Statistics\InternalStandardNormalizeModel.cs" />
     <Compile Include="Model\Statistics\IonAbundance.cs" />
@@ -372,6 +375,10 @@
     <Compile Include="ViewModel\Loader\MultiMsRawSpectrumLoaderViewModel.cs" />
     <Compile Include="ViewModel\MsResult\SummarizedSpectrumViewModel.cs" />
     <Compile Include="Model\Search\PeakFilterModel.cs" />
+    <Compile Include="Model\Setting\FileClassPropertyModel.cs" />
+    <Compile Include="ViewModel\Setting\FileClassPropertyViewModel.cs" />
+    <Compile Include="Model\Setting\FileClassSetModel.cs" />
+    <Compile Include="ViewModel\Setting\FileClassSettingViewModel.cs" />
     <Compile Include="ViewModel\Statistics\SplashProductViewModel.cs" />
     <Compile Include="ViewModel\Search\PeakFilterViewModel.cs" />
     <Compile Include="ViewModel\Search\FocusNavigatorViewModel.cs" />
@@ -590,6 +597,9 @@
     </Compile>
     <Compile Include="View\MsResult\SummarizedSpectrumView.xaml.cs">
       <DependentUpon>SummarizedSpectrumView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Setting\FileClassSetView.xaml.cs">
+      <DependentUpon>FileClassSetView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Statistics\NormalizationSetView.xaml.cs">
       <DependentUpon>NormalizationSetView.xaml</DependentUpon>
@@ -1021,6 +1031,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\MsResult\SummarizedSpectrumView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Setting\FileClassSetView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

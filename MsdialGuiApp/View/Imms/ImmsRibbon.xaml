@@ -53,7 +53,7 @@
                                            Command="{Binding DataContext.SaveAsProjectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                            KeyTip="A"/>
                 <RibbonApplicationMenuItem Header="Save parameter as..."
-                                           Command="{Binding DataContext.SaveParameterCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                           Command="{Binding DataContext.DatasetViewModel.Value.SaveParameterAsCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
             </RibbonApplicationSplitMenuItem>
         </RibbonApplicationMenu>
     </Ribbon.ApplicationMenu>
@@ -167,7 +167,7 @@
         <RibbonGroup>
             <RibbonButton Label="File property setting" LargeImageSource="{StaticResource File_property_setting_is}"
                           IsEnabled="True"
-                          Command="{Binding DataContext.FilePropertyResetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                          Command="{Binding DataContext.DatasetViewModel.Value.FilePropertyResetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="F">
                 <RibbonButton.ToolTip>
                     The file properties including type, analytical order, class, and included/not included can be modified here.

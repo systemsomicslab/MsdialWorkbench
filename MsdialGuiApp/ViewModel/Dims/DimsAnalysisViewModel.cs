@@ -63,6 +63,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 PeakSpotNavigatorViewModel.MzUpperValue,
                 PeakSpotNavigatorViewModel.MetaboliteFilterKeyword,
                 PeakSpotNavigatorViewModel.CommentFilterKeyword,
+                PeakSpotNavigatorViewModel.OntologyFilterKeyword,
+                PeakSpotNavigatorViewModel.AdductFilterKeyword,
                 PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
 

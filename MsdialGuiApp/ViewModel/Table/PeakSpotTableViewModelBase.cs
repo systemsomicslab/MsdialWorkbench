@@ -14,7 +14,9 @@ namespace CompMs.App.Msdial.ViewModel.Table
         public PeakSpotTableViewModelBase(
             IPeakSpotTableModelBase model,
             IReactiveProperty<string> metaboliteFilterKeyword,
-            IReactiveProperty<string> commentFilterKeyword) {
+            IReactiveProperty<string> commentFilterKeyword,
+            IReactiveProperty<string> ontologyFilterKeyword,
+            IReactiveProperty<string> adductFilterKeyword) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -27,11 +29,21 @@ namespace CompMs.App.Msdial.ViewModel.Table
                 throw new ArgumentNullException(nameof(commentFilterKeyword));
             }
 
+            if (ontologyFilterKeyword is null) {
+                throw new ArgumentNullException(nameof(ontologyFilterKeyword));
+            }
+
+            if (adductFilterKeyword is null) {
+                throw new ArgumentNullException(nameof(adductFilterKeyword));
+            }
+
             this.model = model;
             PeakSpotsView = CollectionViewSource.GetDefaultView(this.model.PeakSpots);
             Target = this.model.Target;
             MetaboliteFilterKeyword = metaboliteFilterKeyword;
             CommentFilterKeyword = commentFilterKeyword;
+            OntologyFilterKeyword = ontologyFilterKeyword;
+            AdductFilterKeyword = adductFilterKeyword;
         }
 
         public ICollectionView PeakSpotsView {
@@ -45,5 +57,9 @@ namespace CompMs.App.Msdial.ViewModel.Table
         public IReactiveProperty<string> MetaboliteFilterKeyword { get; }
 
         public IReactiveProperty<string> CommentFilterKeyword { get; }
+
+        public IReactiveProperty<string> OntologyFilterKeyword { get; }
+
+        public IReactiveProperty<string> AdductFilterKeyword { get; }
     }
 }
