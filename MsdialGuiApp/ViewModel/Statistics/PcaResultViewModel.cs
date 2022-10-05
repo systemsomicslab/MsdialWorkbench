@@ -89,7 +89,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
             LabelTypesSample = new List<IReadOnlyReactiveProperty<LabelTypeViewModel>>
             {
-                new ReactivePropertySlim<LabelTypeViewModel>(new LabelTypeViewModel("Sample", null /*nameof(ComponentScoreViewModel.Label)*/)),
+                new ReactivePropertySlim<LabelTypeViewModel>(new LabelTypeViewModel("Sample", nameof(ComponentScoreViewModel.Label))),
                 ComponentX.Select(i => new LabelTypeViewModel($"Component {i}", null /*nameof(ComponentScoreViewModel.ComponentX)*/)).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
                 ComponentY.Select(i => new LabelTypeViewModel($"Component {i}", null /*nameof(ComponentScoreViewModel.ComponentY)*/)).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
                 new ReactivePropertySlim<LabelTypeViewModel>(new LabelTypeViewModel("None", null)),

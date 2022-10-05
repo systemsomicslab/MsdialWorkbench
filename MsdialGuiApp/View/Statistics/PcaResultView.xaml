@@ -207,6 +207,12 @@
                                               VerticalProperty="ComponentY"
                                               PointBrush="{Binding ClassBrush.Value}"
                                               Radius="{Binding SpotSizeSample.Value}"/>
+                    <chart:Annotator ItemsSource="{Binding Scores}"
+                                     HorizontalPropertyName="ComponentX"
+                                     VerticalPropertyName="ComponentY"
+                                     LabelPropertyName="{Binding LabelTypeSample.Value.PropertyName}"
+                                     Brush="Red"
+                                     ContentAlignment="BottomCenter"/>
                 </Grid>
             </chart:SimpleChartControl>
 
