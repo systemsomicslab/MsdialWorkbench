@@ -211,7 +211,7 @@
                                      HorizontalPropertyName="ComponentX"
                                      VerticalPropertyName="ComponentY"
                                      LabelPropertyName="{Binding LabelTypeSample.Value.PropertyName}"
-                                     Brush="Red"
+                                     Brush="Black"
                                      ContentAlignment="BottomCenter"/>
                 </Grid>
             </chart:SimpleChartControl>
@@ -233,7 +233,7 @@
                                      HorizontalPropertyName="ComponentX"
                                      VerticalPropertyName="ComponentY"
                                      LabelPropertyName="{Binding LabelTypeMetabolite.Value.PropertyName}"
-                                     Brush="Red"
+                                     Brush="Black"
                                      ContentAlignment="BottomCenter"/>
                 </Grid>
             </chart:SimpleChartControl>
