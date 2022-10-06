@@ -4,11 +4,11 @@ using System.Windows.Controls;
 namespace CompMs.App.Msdial.View.Statistics
 {
     /// <summary>
-    /// Interaction logic for NormalizationInternalStandardSetView.xaml
+    /// Interaction logic for InternalStandardSetView.xaml
     /// </summary>
-    public partial class NormalizationInternalStandardSetView : UserControl
+    public partial class InternalStandardSetView : UserControl
     {
-        public NormalizationInternalStandardSetView() {
+        public InternalStandardSetView() {
             InitializeComponent();
         }
 

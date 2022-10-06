@@ -195,6 +195,7 @@
     <Compile Include="Model\Statistics\NormalizationInternalStandardSetModel.cs" />
     <Compile Include="Model\Statistics\NormalizationSetModel.cs" />
     <Compile Include="Model\Statistics\SplashProduct.cs" />
+    <Compile Include="Model\DataObj\TargetMsMethod.cs" />
     <Compile Include="Model\Statistics\TicNormalizeModel.cs" />
     <Compile Include="Model\Search\CompoundSearcher.cs" />
     <Compile Include="Model\Search\CompoundSearcherCollection.cs" />
