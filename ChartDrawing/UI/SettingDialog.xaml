@@ -18,6 +18,7 @@
                     <ContentPresenter Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"  Grid.Row="0"/>
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Right"
+                                Margin="0,8,0,0"
                                 Grid.Row="1">
                         <StackPanel.Resources>
                             <Style TargetType="Button">

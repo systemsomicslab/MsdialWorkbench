@@ -11,11 +11,6 @@
              d:Background="White"
              d:DesignHeight="450" d:DesignWidth="400">
     <UserControl.Resources>
-        <Style TargetType="Button">
-            <Setter Property="Width" Value="64"/>
-            <Setter Property="Padding" Value="4"/>
-            <Setter Property="Margin" Value="4,0,0,0"/>
-        </Style>
         <Style TargetType="DataGrid">
             <Setter Property="CanUserAddRows" Value="False"/>
             <Setter Property="CanUserDeleteRows" Value="False"/>
@@ -30,37 +25,22 @@
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
         </Style>
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <DataGrid ItemsSource="{Binding FileClassProperties}" Grid.Row="0">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Class name"
-                                    Binding="{Binding Name}"
-                                    IsReadOnly="True"
-                                    Width="*"/>
-                <DataGridTemplateColumn Header="Color" Width="*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate DataType="{x:Type vm:FileClassPropertyViewModel}">
-                            <ui:ColorPicker SelectedColor="{Binding Color.Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Order"
-                                    Binding="{Binding Order.Value, UpdateSourceTrigger=PropertyChanged}"
-                                    Width="*"/>
-            </DataGrid.Columns>
-        </DataGrid>
-
-        <StackPanel Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Margin="0,8,0,0"
-                    Grid.Row="1">
-            <Button Content="Apply" Command="{Binding ApplyCommand, Mode=OneTime}"/>
-            <Button Content="Finish" Command="{Binding ApplyCommand, Mode=OneTime}" Click="FinishClose"/>
-            <Button Content="Cancel" Command="{Binding CancelCommand, Mode=OneTime}" Click="CancelClose"/>
-        </StackPanel>
-    </Grid>
+    <DataGrid ItemsSource="{Binding FileClassProperties}">
+        <DataGrid.Columns>
+            <DataGridTextColumn Header="Class name"
+                                Binding="{Binding Name}"
+                                IsReadOnly="True"
+                                Width="*"/>
+            <DataGridTemplateColumn Header="Color" Width="*">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate DataType="{x:Type vm:FileClassPropertyViewModel}">
+                        <ui:ColorPicker SelectedColor="{Binding Color.Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTextColumn Header="Order"
+                                Binding="{Binding Order.Value, UpdateSourceTrigger=PropertyChanged}"
+                                Width="*"/>
+        </DataGrid.Columns>
+    </DataGrid>
 </UserControl>

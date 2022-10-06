@@ -15,11 +15,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <Style TargetType="Button">
-                <Setter Property="Width" Value="64"/>
-                <Setter Property="Padding" Value="4"/>
-                <Setter Property="Margin" Value="4,0,0,0"/>
-            </Style>
             <Style TargetType="DataGrid">
                 <Setter Property="CanUserAddRows" Value="False"/>
                 <Setter Property="CanUserDeleteRows" Value="False"/>
@@ -35,56 +30,41 @@
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        <DataGrid ItemsSource="{Binding Spots}" Grid.Row="0">
-            <DataGrid.Resources>
-                <common:BindingProxy x:Key="TargetMsMethod"  Data="{Binding TargetMsMethod}"/>
-            </DataGrid.Resources>
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Alignment ID"
-                                    Binding="{Binding Id}"
-                                    IsReadOnly="True"
-                                    Width="80"/>
-                <DataGridTextColumn Header="Precursor m/z"
-                                    Binding="{Binding Mz, StringFormat=F5}"
-                                    IsReadOnly="True"
-                                    Visibility="{Binding Data.UseMz, Source={StaticResource TargetMsMethod}, Converter={StaticResource BooleanToVisibility}}"
-                                    Width="*"/>
-                <DataGridTextColumn Header="Retention time"
-                                    Binding="{Binding Rt, StringFormat=F3}"
-                                    IsReadOnly="True"
-                                    Visibility="{Binding Data.UseRt, Source={StaticResource TargetMsMethod}, Converter={StaticResource BooleanToVisibility}}"
-                                    Width="*"/>
-                <DataGridTextColumn Header="Mobility"
-                                    Binding="{Binding Mobility, StringFormat=F4}"
-                                    IsReadOnly="True"
-                                    Visibility="{Binding Data.UseMobility, Source={StaticResource TargetMsMethod}, Converter={StaticResource BooleanToVisibility}}"
-                                    Width="*"/>
-                <DataGridTextColumn Header="Adduct ion"
-                                    Binding="{Binding Adduct}"
-                                    IsReadOnly="True"
-                                    Width="*"/>
-                <DataGridTextColumn Header="Metabolite"
-                                    Binding="{Binding Metabolite}"
-                                    IsReadOnly="True"
-                                    Width="2*"/>
-                <DataGridTextColumn Header="Target ID"
-                                    Binding="{Binding InternalStandardId.Value}"
-                                    Width="*"/>
-            </DataGrid.Columns>
-        </DataGrid>
-
-        <StackPanel Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Margin="0,8,0,0"
-                    Grid.Row="1">
-            <Button Content="Finish" Command="{Binding ApplyCommand, Mode=OneTime}" Click="FinishClose"/>
-            <Button Content="Cancel" Command="{Binding CancelCommand, Mode=OneTime}" Click="CancelClose"/>
-        </StackPanel>
-    </Grid>
+    <DataGrid ItemsSource="{Binding Spots}" Grid.Row="0">
+        <DataGrid.Resources>
+            <common:BindingProxy x:Key="TargetMsMethod"  Data="{Binding TargetMsMethod}"/>
+        </DataGrid.Resources>
+        <DataGrid.Columns>
+            <DataGridTextColumn Header="Alignment ID"
+                                Binding="{Binding Id}"
+                                IsReadOnly="True"
+                                Width="80"/>
+            <DataGridTextColumn Header="Precursor m/z"
+                                Binding="{Binding Mz, StringFormat=F5}"
+                                IsReadOnly="True"
+                                Visibility="{Binding Data.UseMz, Source={StaticResource TargetMsMethod}, Converter={StaticResource BooleanToVisibility}}"
+                                Width="*"/>
+            <DataGridTextColumn Header="Retention time"
+                                Binding="{Binding Rt, StringFormat=F3}"
+                                IsReadOnly="True"
+                                Visibility="{Binding Data.UseRt, Source={StaticResource TargetMsMethod}, Converter={StaticResource BooleanToVisibility}}"
+                                Width="*"/>
+            <DataGridTextColumn Header="Mobility"
+                                Binding="{Binding Mobility, StringFormat=F4}"
+                                IsReadOnly="True"
+                                Visibility="{Binding Data.UseMobility, Source={StaticResource TargetMsMethod}, Converter={StaticResource BooleanToVisibility}}"
+                                Width="*"/>
+            <DataGridTextColumn Header="Adduct ion"
+                                Binding="{Binding Adduct}"
+                                IsReadOnly="True"
+                                Width="*"/>
+            <DataGridTextColumn Header="Metabolite"
+                                Binding="{Binding Metabolite}"
+                                IsReadOnly="True"
+                                Width="2*"/>
+            <DataGridTextColumn Header="Target ID"
+                                Binding="{Binding InternalStandardId.Value}"
+                                Width="*"/>
+        </DataGrid.Columns>
+    </DataGrid>
 </UserControl>
