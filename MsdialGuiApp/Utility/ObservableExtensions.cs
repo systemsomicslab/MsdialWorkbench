@@ -1,9 +1,12 @@
-﻿using Reactive.Bindings.Extensions;
+﻿using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reactive;
 using System.Reactive.Linq;
 
@@ -50,6 +53,20 @@ namespace CompMs.App.Msdial.Utility
 
         public static IObservable<T> TakeFirstAfterEach<T, U>(this IObservable<T> source, IObservable<U> other) {
             return source.SkipUntil(other).Take(1).Repeat();
+        }
+
+        public static ReactiveProperty<TProperty> ToReactivePropertyWithCommit<TSubject, TProperty, TCommit, TDiscard>(this TSubject subject, Expression<Func<TSubject, TProperty>> propertySelector, IObservable<TCommit> commit, IObservable<TDiscard> discard, ReactivePropertyMode mode = ReactivePropertyMode.Default, bool ignoreValidationErrorValue = false) where TSubject : INotifyPropertyChanged {
+            return subject.ToReactivePropertyAsSynchronized(
+                propertySelector,
+                op => op.Select(p => discard.Select(_ => p).StartWith(p)).Switch(),
+                op => op.Sample(commit),
+                mode,
+                ignoreValidationErrorValue
+            );
+        }
+
+        public static ReactiveProperty<TProperty> ToReactivePropertyWithCommit<TSubject, TProperty, TCommit>(this TSubject subject, Expression<Func<TSubject, TProperty>> propertySelector, IObservable<TCommit> commit, ReactivePropertyMode mode = ReactivePropertyMode.Default, bool ignoreValidationErrorValue = false) where TSubject : INotifyPropertyChanged {
+            return subject.ToReactivePropertyWithCommit(propertySelector, commit, Observable.Never<Unit>(), mode, ignoreValidationErrorValue);
         }
     }
 }

@@ -83,6 +83,7 @@
     <Compile Include="Model\Loader\MSDecLoaderTests.cs" />
     <Compile Include="Model\Core\MainWindowModelTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\ObservableExtensionsTests.cs" />
     <Compile Include="ViewModel\MsRefSearchParameterBaseViewModelTests.cs" />
     <Compile Include="ViewModel\Service\TaskProgressCollectionTests.cs" />
     <Compile Include="ViewModel\Service\TaskProgressPublisherTests.cs" />
