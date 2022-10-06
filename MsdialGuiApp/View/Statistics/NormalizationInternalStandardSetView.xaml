@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
+             xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Statistics"
              mc:Ignorable="d" 
              d:Background="White"
@@ -25,7 +26,7 @@
                 <Setter Property="CanUserReorderColumns" Value="False"/>
                 <Setter Property="CanUserSortColumns" Value="True"/>
                 <Setter Property="AutoGenerateColumns" Value="False"/>
-                <Setter Property="SelectionUnit" Value="Cell"/>
+                <Setter Property="SelectionUnit" Value="FullRow"/>
                 <Setter Property="behavior:DataGridCommitBehavior.Enable" Value="True"/>
                 <Setter Property="behavior:DataGridPasteBehavior.Enable" Value="True"/>
             </Style>
@@ -41,25 +42,28 @@
         </Grid.RowDefinitions>
 
         <DataGrid ItemsSource="{Binding Spots}" Grid.Row="0">
+            <DataGrid.Resources>
+                <common:BindingProxy x:Key="TargetMsMethod"  Data="{Binding TargetMsMethod}"/>
+            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Alignment ID"
                                     Binding="{Binding Id}"
                                     IsReadOnly="True"
                                     Width="80"/>
                 <DataGridTextColumn Header="Precursor m/z"
-                                    Binding="{Binding Mz}"
+                                    Binding="{Binding Mz, StringFormat=F5}"
                                     IsReadOnly="True"
-                                    Visibility="{Binding DataContext.TargetMsMethod.UseMz, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource BooleanToVisibility}}"
+                                    Visibility="{Binding Data.UseMz, Source={StaticResource TargetMsMethod}, Converter={StaticResource BooleanToVisibility}}"
                                     Width="*"/>
                 <DataGridTextColumn Header="Retention time"
-                                    Binding="{Binding Rt}"
+                                    Binding="{Binding Rt, StringFormat=F3}"
                                     IsReadOnly="True"
-                                    Visibility="{Binding DataContext.TargetMsMethod.UseRt, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource BooleanToVisibility}}"
+                                    Visibility="{Binding Data.UseRt, Source={StaticResource TargetMsMethod}, Converter={StaticResource BooleanToVisibility}}"
                                     Width="*"/>
                 <DataGridTextColumn Header="Mobility"
-                                    Binding="{Binding Mobility}"
+                                    Binding="{Binding Mobility, StringFormat=F4}"
                                     IsReadOnly="True"
-                                    Visibility="{Binding DataContext.TargetMsMethod.UseMobility, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource BooleanToVisibility}}"
+                                    Visibility="{Binding Data.UseMobility, Source={StaticResource TargetMsMethod}, Converter={StaticResource BooleanToVisibility}}"
                                     Width="*"/>
                 <DataGridTextColumn Header="Adduct ion"
                                     Binding="{Binding Adduct}"
@@ -70,13 +74,14 @@
                                     IsReadOnly="True"
                                     Width="2*"/>
                 <DataGridTextColumn Header="Target ID"
-                                    Binding="{Binding InternalStandardId}"
+                                    Binding="{Binding InternalStandardId.Value}"
                                     Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
 
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
+                    Margin="0,8,0,0"
                     Grid.Row="1">
             <Button Content="Finish" Command="{Binding ApplyCommand, Mode=OneTime}" Click="FinishClose"/>
             <Button Content="Cancel" Command="{Binding CancelCommand, Mode=OneTime}" Click="CancelClose"/>

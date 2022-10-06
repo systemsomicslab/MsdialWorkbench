@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Statistics;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.DataStructure;
@@ -118,6 +119,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var accFilterableEvaluator = accEvaluator.Contramap<IFilterable, AlignmentSpotProperty>(filterable => ((AlignmentSpotPropertyModel)filterable).innerModel);
             peakSpotNavigator.AttachFilter(accumulatedPropModels, accumulatedPeakFilterModel, status: FilterEnableStatus.None, evaluator: accFilterableEvaluator);
             PeakSpotNavigatorModel = peakSpotNavigator;
+
+            InternalStandardSetModel = new NormalizationInternalStandardSetModel(driftProps, TargetMsMethod.Lcimms);
 
             var ontologyBrush = new BrushMapData<AlignmentSpotPropertyModel>(
                     new KeyBrushMapper<AlignmentSpotPropertyModel, string>(
@@ -300,7 +303,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
-
+        public NormalizationInternalStandardSetModel InternalStandardSetModel { get; }
         public AlignmentPeakPlotModel RtMzPlotModel { get; }
         public AlignmentPeakPlotModel DtMzPlotModel { get; }
 

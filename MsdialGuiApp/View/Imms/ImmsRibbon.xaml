@@ -6,6 +6,7 @@
         mc:Ignorable="d" 
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Imms"
         xmlns:vmchart="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
+        xmlns:common="clr-namespace:CompMs.CommonMVVM;assembly=CommonMVVM"
         xmlns:chartSetting="clr-namespace:CompMs.App.Msdial.View.ChartSetting"
         Background="{StaticResource MainThemeColor}"
         d:Background="White"
@@ -166,7 +167,6 @@
                KeyTip="O">
         <RibbonGroup>
             <RibbonButton Label="File property setting" LargeImageSource="{StaticResource File_property_setting_is}"
-                          IsEnabled="True"
                           Command="{Binding DataContext.DatasetViewModel.Value.FilePropertyResetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="F">
                 <RibbonButton.ToolTip>
@@ -175,13 +175,14 @@
             </RibbonButton>
             <RibbonButton Label="Class property setting" LargeImageSource="{StaticResource Class_property_setting_is}"
                           IsEnabled="False"
+                          Command="{Binding DataContext.DatasetViewModel.Value.FileClassSettingCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="C">
                 <RibbonButton.ToolTip>
                     The class properties including the color and the order in chart can be modified here.
                 </RibbonButton.ToolTip>
             </RibbonButton>
             <RibbonButton Label="Alignment result property setting" LargeImageSource="{StaticResource Alignment_result_property_setting_is}"
-                          IsEnabled="False"
+                          Command="{Binding AlignmentViewModel.Value.InternalStandardSetCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
                           KeyTip="L">
                 <RibbonButton.ToolTip>
                     The internal standard information can be added to each peak. Please add the suitable alignment ID to each peak.

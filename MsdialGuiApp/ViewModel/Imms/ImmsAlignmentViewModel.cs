@@ -4,6 +4,7 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -80,6 +81,9 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             SetUnknownCommand = Target.Select(t => !(t is null)).ToReactiveCommand()
                 .WithSubscribe(() => Target.Value.SetUnknown())
                 .AddTo(Disposables);
+
+            var internalStandardSetViewModel = new NormalizationInternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
+            InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(_ => messageBroker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
         }
 
         public Chart.AlignmentPeakPlotViewModel PlotViewModel {
@@ -136,6 +140,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             }
         }
 
+        public ICommand InternalStandardSetCommand { get; }
+
         public ICommand ShowIonTableCommand => _showIonTableCommand ?? (_showIonTableCommand = new DelegateCommand(ShowIonTable));
         private DelegateCommand _showIonTableCommand;
 
@@ -144,6 +150,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         public ICommand SaveSpectraCommand => _saveSpectraCommand ?? (_saveSpectraCommand = new DelegateCommand(SaveSpectra, CanSaveSpectra));
+
         private DelegateCommand _saveSpectraCommand;
 
         private void SaveSpectra() {

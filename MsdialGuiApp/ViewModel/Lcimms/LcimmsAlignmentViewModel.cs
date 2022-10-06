@@ -5,11 +5,13 @@ using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -29,7 +31,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             LcimmsAlignmentModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            FocusControlManager focusControlManager) {
+            FocusControlManager focusControlManager,
+            IMessageBroker broker) {
             if (compoundSearchService is null) {
                 throw new ArgumentNullException(nameof(compoundSearchService));
             }
@@ -106,6 +109,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
+
+            var internalStandardSetViewModel = new NormalizationInternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
+            InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
         }
 
         public AlignmentPeakPlotViewModel RtMzPlotViewModel { get; }
@@ -133,6 +139,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
+
+        public ICommand InternalStandardSetCommand { get; }
 
         public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }

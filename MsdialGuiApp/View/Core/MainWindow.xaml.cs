@@ -73,14 +73,18 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(CreateAlignedChromatogramModificationDialog);
             broker.ToObservable<SampleTableViewerInAlignmentViewModelLegacy>()
                 .Subscribe(CreateSampleTableViewerDialog);
+            broker.ToObservable<NormalizationInternalStandardSetViewModel>()
+                .Subscribe(OpenInternalStandardSetView);
             broker.ToObservable<NormalizationSetViewModel>()
                 .Subscribe(OpenNormalizationSetView);
             broker.ToObservable<PcaSettingViewModel>()
                 .Subscribe(OpenPcaSettingView);
             broker.ToObservable<PcaResultViewModel>()
                 .Subscribe(OpenPcaView);
-#if DEBUG
+#if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
+#elif DEBUG
+            System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Warning;
 #endif
         }
 
@@ -187,6 +191,22 @@ namespace CompMs.App.Msdial.View.Core
 
         private void OpenProteinGroupTable(ProteinGroupTableViewModel viewmodel) {
             var dialog = new ProteinGroupTable() { Owner = this, DataContext = viewmodel, };
+            dialog.Show();
+        }
+
+        private void OpenInternalStandardSetView(NormalizationInternalStandardSetViewModel viewmodel) {
+            var dialog = new Window
+            {
+                Height = 600, Width = 800,
+                Title = "Internal standard settting",
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Content = new InternalStandardSetView
+                {
+                    DataContext = viewmodel,
+                    Margin = new Thickness(8),
+                },
+            };
             dialog.Show();
         }
 

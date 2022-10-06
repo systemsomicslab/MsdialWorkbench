@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Statistics;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -58,6 +59,8 @@ namespace CompMs.App.Msdial.Model.Imms
             var BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, observableBarItemsLoader)));
+
+            InternalStandardSetModel = new NormalizationInternalStandardSetModel(Ms1Spots, TargetMsMethod.Imms);
 
             Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
             {
@@ -207,7 +210,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
-
+        public NormalizationInternalStandardSetModel InternalStandardSetModel { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
