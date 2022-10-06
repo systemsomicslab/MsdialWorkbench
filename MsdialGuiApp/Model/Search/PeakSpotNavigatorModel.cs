@@ -341,23 +341,23 @@ namespace CompMs.App.Msdial.Model.Search
         }
 
         private bool ProteinFilter(IFilterable peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => peak.Protein?.Contains(keyword) ?? true);
+            return keywords.All(keyword => peak.Protein?.ToLower().Contains(keyword.ToLower()) ?? true);
         }
 
         private bool MetaboliteFilter(IMoleculeProperty peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => peak.Name.Contains(keyword));
+            return keywords.All(keyword => peak.Name.ToLower().Contains(keyword.ToLower()));
         }
 
         private bool CommentFilter(IFilterable peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => string.IsNullOrEmpty(keyword) || (peak.Comment?.Contains(keyword) ?? false));
+            return keywords.All(keyword => string.IsNullOrEmpty(keyword) || (peak.Comment?.ToLower().Contains(keyword.ToLower()) ?? false));
         }
 
         private bool OntologyFilter(IFilterable peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => string.IsNullOrEmpty(keyword) || peak.Ontology == keyword);
+            return keywords.All(keyword => string.IsNullOrEmpty(keyword) || peak.Ontology?.ToLower() == keyword.ToLower());
         }
 
         private bool AdductFilter(IFilterable peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => peak.AdductIonName?.Contains(keyword) ?? true);
+            return keywords.All(keyword => peak.AdductIonName?.ToLower().Contains(keyword.ToLower()) ?? true);
         }
 
         private bool AmplitudeFilter(IFilterable peak) {
