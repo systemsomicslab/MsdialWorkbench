@@ -14,6 +14,7 @@ namespace CompMs.Common.Lipidomics
         public SpectrumPeak[] GetClassFragmentSpectrum(ILipid lipid, AdductIon adduct)
         {
             var spectrum = new List<SpectrumPeak>();
+
             switch (lipid.LipidClass)
             {
                 case LbmClass.PC:
@@ -94,17 +95,37 @@ namespace CompMs.Common.Lipidomics
                         }
                     );
                     break;
-                default:
-                    spectrum.AddRange
-                    (
-                        new[] {
-                            new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor },
+                case LbmClass.TG:
+                    spectrum.Add(new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor });
+                    if (lipid.Chains is PositionLevelChains tgChains)
+                    {
+                        foreach (var chain in tgChains.Chains)
+                        {
+                            spectrum.Add(new SpectrumPeak(lipid.Mass - chain.Mass - MassDiffDictionary.OxygenMass, 200d, $"{chain} loss") { SpectrumComment = SpectrumComment.acylchain });
                         }
-                    );
+                    }
+                    break;
+                case LbmClass.DG:
+                    spectrum.Add(new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 100d, "Precursor") { SpectrumComment = SpectrumComment.precursor });
+                    spectrum.Add(new SpectrumPeak(lipid.Mass + MassDiffDictionary.ProtonMass, 200d, "[M+H]+") { SpectrumComment = SpectrumComment.metaboliteclass });
+                    spectrum.Add(new SpectrumPeak(lipid.Mass -H2O+ MassDiffDictionary.ProtonMass, 999d, "[M+H]+ -H2O") { SpectrumComment = SpectrumComment.metaboliteclass });
+                    if (lipid.Chains is PositionLevelChains dgChains)
+                    {
+                        foreach (var chain in dgChains.Chains)
+                        {
+                            spectrum.Add(new SpectrumPeak(lipid.Mass - chain.Mass - MassDiffDictionary.OxygenMass - Electron, 800d, $"{chain} loss") { SpectrumComment = SpectrumComment.acylchain });
+                        }
+                    }
+                    break;
+                default:
+                    spectrum.Add(new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor });
                     break;
             }
+
             return spectrum.ToArray();
         }
+
+        private static readonly double Electron = 0.00054858026;
 
         private static readonly double H2O = new[]
         {

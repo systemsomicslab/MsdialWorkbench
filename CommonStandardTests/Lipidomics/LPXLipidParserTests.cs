@@ -1,5 +1,7 @@
-﻿using CompMs.Common.Enum;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using CompMs.Common.Enum;
+using System.Linq;
+using CompMs.Common.Parser;
 
 namespace CompMs.Common.Lipidomics.Tests
 {
@@ -126,6 +128,18 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(465.3219, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.EtherLPE, lipid.LipidClass);
         }
+        [TestMethod()]
+        public void reParseTest()
+        {
+            var alkyl = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
+            var lipid = new Lipid(LbmClass.EtherLPC, 521.348140016, new PositionLevelChains(alkyl));
+
+            var parser = new EtherLPELipidParser();
+            //var lipid = parser.Parse("LPE O-18:1");
+            Assert.AreEqual(465.3219, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.EtherLPE, lipid.LipidClass);
+        }
+
     }
 
 }

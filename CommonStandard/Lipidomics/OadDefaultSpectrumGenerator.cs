@@ -1,5 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
+using CompMs.Common.Enum;
+using CompMs.Common.FormulaGenerator.DataObj;
 using CompMs.Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -36,13 +38,15 @@ namespace CompMs.Common.Lipidomics
 
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null)
         {
-            var spectrum = new List<SpectrumPeak>() {
-                new SpectrumPeak(adduct.ConvertToMz(lipid.Mass), 999d, "Precursor") { SpectrumComment = SpectrumComment.precursor }
-            };
+            var spectrum = new List<SpectrumPeak>();
             //if (lipid.Chains is MolecularSpeciesLevelChains mlChains) {
             //    spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct));
             //}
             var nlMass = 0.0;
+            if (nlMassDic.ContainsKey(lipid.LipidClass))
+            {
+                nlMass = nlMassDic[lipid.LipidClass];
+            };
             var abundance = 200.0;
             var oadLipidSpectrumGenerator = new OadLipidSpectrumGenerator();
 
@@ -92,5 +96,11 @@ namespace CompMs.Common.Lipidomics
         }
 
         private static readonly IEqualityComparer<SpectrumPeak> comparer = new SpectrumEqualityComparer();
+
+        private static Dictionary<LbmClass, double> nlMassDic = new Dictionary<LbmClass, double>()
+        {
+            {LbmClass.DG ,MassDiffDictionary.NitrogenMass+MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass*5}
+        }
+        ;
     }
 }

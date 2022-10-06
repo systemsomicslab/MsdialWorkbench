@@ -88,6 +88,7 @@ namespace CompMs.Common.Lipidomics {
             }
             return (obj, new double[2] { score, counter });
 
+            
             //if (!result.IsChainIonsExisted) { // chain existed expected: SM 18:1(4);2O/18:1(9)
             //    var obj = new Lipid(molecule.LipidClass, molecule.Mass, new TotalChain(chains.CarbonCount, chains.DoubleBondCount, chains.OxidizedCount, 1, 0, 1));
             //    return (obj, new double[2] { score, counter });

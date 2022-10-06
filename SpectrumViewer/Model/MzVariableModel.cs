@@ -83,7 +83,7 @@ namespace CompMs.App.SpectrumViewer.Model
                         case "Precursor":
                             return cache = new PrecursorMz();
                         case "All chains":
-                            return cache = new MolecularLevelChainMz();
+                            return cache = new MolecularLevelChains();
                         case "Specific chain":
                             return cache = new PositionChainMz(ChainPosition);
                     }
