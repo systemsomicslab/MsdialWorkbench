@@ -64,6 +64,7 @@
     <Compile Include="Common\DataGridWithCheckBox.cs" />
     <Compile Include="Common\DisposableModelBase.cs" />
     <Compile Include="Common\DynamicViewModelBase.cs" />
+    <Compile Include="Common\IdentityCommand.cs" />
     <Compile Include="Common\MappedObservableCollection.cs" />
     <Compile Include="Common\MappedReadOnlyObservableCollection.cs" />
     <Compile Include="Common\NeverCommand.cs" />
