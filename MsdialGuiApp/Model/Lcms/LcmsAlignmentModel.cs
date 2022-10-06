@@ -247,8 +247,8 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var peakInformationModel = new PeakInformationAlignmentModel(Target).AddTo(Disposables);
             peakInformationModel.Add(
-                t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d),
-                t => new MzPoint(t?.MassCenter ?? 0d));
+                t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RT.Value),
+                t => new MzPoint(t?.MassCenter ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz));
             peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
             PeakInformationModel = peakInformationModel;
 

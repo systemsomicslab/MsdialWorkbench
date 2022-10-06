@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class ChromatogramPeakFeatureModel : BindableBase, IFilterable, IChromatogramPeak
+    public class ChromatogramPeakFeatureModel : BindableBase, IFilterable, IChromatogramPeak, IAnnotatedObject
     {
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;
@@ -45,10 +45,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public int MS1RawSpectrumIdLeft => innerModel.MS1RawSpectrumIdLeft;
         public int MS1RawSpectrumIdRight => innerModel.MS1RawSpectrumIdRight;
         public int MS2RawSpectrumId => innerModel.MS2RawSpectrumID;
-        public MsScanMatchResultContainer MatchResults {
-            get => innerModel.MatchResults;
-            set => innerModel.MatchResults = value;
-        }
+        public MsScanMatchResultContainer MatchResults => innerModel.MatchResults;
         public MsScanMatchResult MspBasedMatchResult => innerModel.MspBasedMatchResult;
         public MsScanMatchResult TextDbBasedMatchResult => innerModel.TextDbBasedMatchResult;
         public MsScanMatchResult ScanMatchResult => innerModel.MatchResults?.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;

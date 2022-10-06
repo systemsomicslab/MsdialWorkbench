@@ -251,8 +251,8 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var peakInformationModel = new PeakInformationAnalysisModel(Target).AddTo(Disposables);
             peakInformationModel.Add(
-                t => new RtPoint(t?.InnerModel.ChromXsTop.RT.Value ?? 0d),
-                t => new MzPoint(t?.Mass ?? 0d));
+                t => new RtPoint(t?.InnerModel.ChromXs.RT.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RT.Value),
+                t => new MzPoint(t?.Mass ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz));
             peakInformationModel.Add(
                 t => new HeightAmount(t?.Intensity ?? 0d),
                 t => new AreaAmount(t?.PeakArea ?? 0d));

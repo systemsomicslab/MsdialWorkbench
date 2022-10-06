@@ -317,10 +317,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var peakInformationModel = new PeakInformationAnalysisModel(target).AddTo(Disposables);
             peakInformationModel.Add(
-                t => new RtPoint(t?.InnerModel.ChromXsTop.RT.Value ?? 0d),
-                t => new MzPoint(t?.Mass ?? 0d),
-                t => new DriftPoint(t?.InnerModel.ChromXsTop.Drift.Value ?? 0d),
-                t => new CcsPoint(t?.InnerModel.CollisionCrossSection ?? 0d));
+                t => new RtPoint(t?.InnerModel.ChromXs.RT.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RT.Value),
+                t => new MzPoint(t?.Mass ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz),
+                t => new DriftPoint(t?.InnerModel.ChromXs.Drift.Value ?? 0d),
+                t => new CcsPoint(t?.CollisionCrossSection ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.CollisionCrossSection));
             peakInformationModel.Add(
                 t => new HeightAmount(t?.Intensity ?? 0d),
                 t => new AreaAmount(t?.PeakArea ?? 0d));

@@ -7,7 +7,7 @@ namespace CompMs.MsdialCore.DataObj
 {
     public interface IAnnotatedObject
     {
-        MsScanMatchResultContainer MatchResults { get; set; }
+        MsScanMatchResultContainer MatchResults { get; }
     }
 
     public static class AnnotatedObjectExtensions
@@ -30,6 +30,10 @@ namespace CompMs.MsdialCore.DataObj
 
         public static string GetProtein(this IAnnotatedObject self, IMatchResultRefer<PeptideMsReference, MsScanMatchResult> refer) {
             return self.MatchResults.RepresentativeProtein(refer);
+        }
+
+        public static T Refer<T>(this IAnnotatedObject self, IMatchResultRefer<T, MsScanMatchResult> refer) {
+            return refer.Refer(self?.MatchResults.Representative);
         }
     }
 }

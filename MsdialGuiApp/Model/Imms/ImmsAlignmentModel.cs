@@ -191,9 +191,9 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var peakInformationModel = new PeakInformationAlignmentModel(Target).AddTo(Disposables);
             peakInformationModel.Add(
-                t => new MzPoint(t?.MassCenter ?? 0d),
+                t => new MzPoint(t?.MassCenter ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz),
                 t => new DriftPoint(t?.innerModel.TimesCenter.Drift.Value ?? 0d),
-                t => new CcsPoint(t?.innerModel.CollisionCrossSection ?? 0d));
+                t => new CcsPoint(t?.CollisionCrossSection ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.CollisionCrossSection));
             peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
             PeakInformationModel = peakInformationModel;
 

@@ -211,7 +211,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
             var peakInformationModel = new PeakInformationAlignmentModel(Target).AddTo(Disposables);
             peakInformationModel.Add(
-                t => new MzPoint(t?.innerModel.TimesCenter.Mz.Value ?? 0d));
+                t => new MzPoint(t?.innerModel.TimesCenter.Mz.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz));
             peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
             PeakInformationModel = peakInformationModel;
 
