@@ -227,8 +227,13 @@ namespace CompMs.App.Msdial.Model.Information
     {
         private const string RT_LABEL = "RT [min]";
 
-        public RtPoint(double rt) {
-            Point = rt.ToString("F3");
+        public RtPoint(double rt, double? reference = null) {
+            if (reference is null) {
+                Point = rt.ToString("F3");
+            }
+            else {
+                Point = $"{rt:F3}|ref={reference:F3}|diff={Math.Abs(rt - reference.Value):F2}";
+            }
         }
 
         public string Label => RT_LABEL;
@@ -239,8 +244,13 @@ namespace CompMs.App.Msdial.Model.Information
     {
         private const string MZ_LABEL = "m/z";
 
-        public MzPoint(double mz) {
-            Point = mz.ToString("F5");
+        public MzPoint(double mz, double? reference = null) {
+            if (reference is null) {
+                Point = mz.ToString("F5");
+            }
+            else {
+                Point = $"{mz:F5}|ref={reference:F5}|diff(mDa)={Math.Abs(mz-reference.Value) * 1000:F3}";
+            }
         }
 
         public string Label => MZ_LABEL;
@@ -263,8 +273,13 @@ namespace CompMs.App.Msdial.Model.Information
     {
         private const string CCS_LABEL = "CCS";
 
-        public CcsPoint(double ccs) {
-            Point = ccs.ToString("F3");
+        public CcsPoint(double ccs, double? reference = null) {
+            if (reference is null) {
+                Point = ccs.ToString("F3");
+            }
+            else {
+                Point = $"{ccs:F3}|ref={reference:F3}|diff={Math.Abs(ccs - reference.Value):F2}";
+            }
         }
 
         public string Label => CCS_LABEL;

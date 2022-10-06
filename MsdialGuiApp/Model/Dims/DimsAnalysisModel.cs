@@ -172,7 +172,7 @@ namespace CompMs.App.Msdial.Model.Dims
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, mzSpotFocus);
 
             var peakInformationModel = new PeakInformationAnalysisModel(Target).AddTo(Disposables);
-            peakInformationModel.Add(t => new MzPoint(t?.InnerModel.ChromXsTop.Mz.Value ?? 0d));
+            peakInformationModel.Add(t => new MzPoint(t?.InnerModel.ChromXs.Mz.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz));
             peakInformationModel.Add(
                 t => new HeightAmount(t?.Intensity ?? 0d),
                 t => new AreaAmount(t?.PeakArea ?? 0d));
