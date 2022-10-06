@@ -8,9 +8,9 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {
-    internal sealed class NormalizationInternalStandardSetModel : BindableBase
+    internal sealed class InternalStandardSetModel : BindableBase
     {
-        public NormalizationInternalStandardSetModel(IEnumerable<AlignmentSpotPropertyModel> spots, TargetMsMethod targetMsMethod) {
+        public InternalStandardSetModel(IEnumerable<AlignmentSpotPropertyModel> spots, TargetMsMethod targetMsMethod) {
             if (spots is null) {
                 throw new ArgumentNullException(nameof(spots));
             }

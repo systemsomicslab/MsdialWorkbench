@@ -85,7 +85,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 .WithSubscribe(() => model.Target.Value.SetUnknown())
                 .AddTo(Disposables);
 
-            var internalStandardSetViewModel = new NormalizationInternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
+            var internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
             InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(_ => broker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
         }
 

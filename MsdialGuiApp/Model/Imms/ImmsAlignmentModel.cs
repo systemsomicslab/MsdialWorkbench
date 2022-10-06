@@ -60,7 +60,7 @@ namespace CompMs.App.Msdial.Model.Imms
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, observableBarItemsLoader)));
 
-            InternalStandardSetModel = new NormalizationInternalStandardSetModel(Ms1Spots, TargetMsMethod.Imms);
+            InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Imms);
 
             Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
             {
@@ -210,7 +210,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
-        public NormalizationInternalStandardSetModel InternalStandardSetModel { get; }
+        public InternalStandardSetModel InternalStandardSetModel { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }

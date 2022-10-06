@@ -110,7 +110,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
             PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
 
-            var internalStandardSetViewModel = new NormalizationInternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
+            var internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
             InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(() => broker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
         }
 

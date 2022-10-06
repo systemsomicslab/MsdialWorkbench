@@ -259,7 +259,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
 
-            InternalStandardSetModel = new NormalizationInternalStandardSetModel(Ms1Spots, TargetMsMethod.Lcms);
+            InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Lcms);
             PcaSettingModel = new PcaSettingModel(parameter, Ms1Spots, evaluator, files);
         }
 
@@ -267,7 +267,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
-        public NormalizationInternalStandardSetModel InternalStandardSetModel { get; }
+        public InternalStandardSetModel InternalStandardSetModel { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
         public AlignmentPeakPlotModel PlotModel { get; }

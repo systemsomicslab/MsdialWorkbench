@@ -70,7 +70,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper, parameter.PeakPickBaseParam);
 
-            InternalStandardSetModel = new NormalizationInternalStandardSetModel(Ms1Spots, TargetMsMethod.Dims);
+            InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Dims);
 
             var barItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
             var observableBarItemsLoader = Observable.Return(barItemsLoader);
@@ -245,7 +245,7 @@ namespace CompMs.App.Msdial.Model.Dims
             return new CompoundSearchModel<AlignmentSpotProperty>(_files[Target.Value.RepresentativeFileID], Target.Value.innerModel, _msdecResult.Value, _compoundSearchers.Items);
         }
 
-        public NormalizationInternalStandardSetModel InternalStandardSetModel { get; }
+        public InternalStandardSetModel InternalStandardSetModel { get; }
 
         public NormalizationSetModel BuildNormalizeSetModel() {
             return new NormalizationSetModel(Container, _files, _dataBaseMapper, _matchResultEvaluator, _parameter, _broker);

@@ -10,9 +10,9 @@ using System.Reactive;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics
 {
-    internal sealed class NormalizationInternalStandardSetViewModel : ViewModelBase
+    internal sealed class InternalStandardSetViewModel : ViewModelBase
     {
-        public NormalizationInternalStandardSetViewModel(NormalizationInternalStandardSetModel model) {
+        public InternalStandardSetViewModel(InternalStandardSetModel model) {
             ApplyCommand = new ReactiveCommand().AddTo(Disposables);
             CancelCommand = new ReactiveCommand().AddTo(Disposables);
 

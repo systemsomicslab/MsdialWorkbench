@@ -73,7 +73,7 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(CreateAlignedChromatogramModificationDialog);
             broker.ToObservable<SampleTableViewerInAlignmentViewModelLegacy>()
                 .Subscribe(CreateSampleTableViewerDialog);
-            broker.ToObservable<NormalizationInternalStandardSetViewModel>()
+            broker.ToObservable<InternalStandardSetViewModel>()
                 .Subscribe(OpenInternalStandardSetView);
             broker.ToObservable<NormalizationSetViewModel>()
                 .Subscribe(OpenNormalizationSetView);
@@ -194,7 +194,7 @@ namespace CompMs.App.Msdial.View.Core
             dialog.Show();
         }
 
-        private void OpenInternalStandardSetView(NormalizationInternalStandardSetViewModel viewmodel) {
+        private void OpenInternalStandardSetView(InternalStandardSetViewModel viewmodel) {
             var dialog = new Window
             {
                 Height = 600, Width = 800,

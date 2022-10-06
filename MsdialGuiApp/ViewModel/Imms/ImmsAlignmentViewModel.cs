@@ -82,7 +82,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                 .WithSubscribe(() => Target.Value.SetUnknown())
                 .AddTo(Disposables);
 
-            var internalStandardSetViewModel = new NormalizationInternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
+            var internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
             InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(_ => messageBroker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
         }
 

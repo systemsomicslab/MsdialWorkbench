@@ -120,7 +120,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             peakSpotNavigator.AttachFilter(accumulatedPropModels, accumulatedPeakFilterModel, status: FilterEnableStatus.None, evaluator: accFilterableEvaluator);
             PeakSpotNavigatorModel = peakSpotNavigator;
 
-            InternalStandardSetModel = new NormalizationInternalStandardSetModel(driftProps, TargetMsMethod.Lcimms);
+            InternalStandardSetModel = new InternalStandardSetModel(driftProps, TargetMsMethod.Lcimms);
 
             var ontologyBrush = new BrushMapData<AlignmentSpotPropertyModel>(
                     new KeyBrushMapper<AlignmentSpotPropertyModel, string>(
@@ -303,7 +303,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
-        public NormalizationInternalStandardSetModel InternalStandardSetModel { get; }
+        public InternalStandardSetModel InternalStandardSetModel { get; }
         public AlignmentPeakPlotModel RtMzPlotModel { get; }
         public AlignmentPeakPlotModel DtMzPlotModel { get; }
 
