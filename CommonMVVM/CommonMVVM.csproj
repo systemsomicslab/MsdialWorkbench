@@ -59,6 +59,7 @@
       <DependentUpon>ColorPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\BindableBase.cs" />
+    <Compile Include="Common\BindingProxy.cs" />
     <Compile Include="Common\DisposableCollection.cs" />
     <Compile Include="Common\DataGridWithCheckBox.cs" />
     <Compile Include="Common\DisposableModelBase.cs" />
