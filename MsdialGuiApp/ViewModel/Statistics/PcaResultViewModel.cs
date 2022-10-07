@@ -10,13 +10,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reflection;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics
 {
     internal sealed class ComponentLoadingViewModel : ViewModelBase
     {
         private readonly ComponentLoadingModel _model;
-
 
         public ComponentLoadingViewModel(ComponentLoadingModel model, int xIndex, int yIndex) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
@@ -30,8 +30,6 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public double ComponentY { get; }
         public ComponentLoadingModel Model => _model;
     }
-
-
 
     internal sealed class ComponentScoreViewModel : ViewModelBase
     {
@@ -49,12 +47,33 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public double ComponentX { get; }
         public double ComponentY { get; }
         public ComponentScoreModel Model => _model;
-
     }
 
-    internal sealed class ComponentContributionViewModel : ViewModelBase {
-
+    internal sealed class Pc1LoadingViewModel : ViewModelBase {
+        private readonly ComponentLoadingModel _model;
+        public Pc1LoadingViewModel(ComponentLoadingModel model, int pc1Index)
+        {
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            ComponentX = _model.Label;
+            ComponentY = _model.Loading[pc1Index];
+        }
+        public string ComponentX { get; }
+        public double ComponentY { get; }
     }
+
+    internal sealed class Pc2LoadingViewModel : ViewModelBase {
+        private readonly ComponentLoadingModel _model;
+        public Pc2LoadingViewModel(ComponentLoadingModel model, int pc2Index)
+        {
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            ComponentX = _model.Label;
+            ComponentY = _model.Loading[pc2Index];
+        }
+        public string ComponentX { get; }
+        public double ComponentY { get; }
+    }
+
+
 
     internal sealed class LabelTypeViewModel : ViewModelBase {
         public LabelTypeViewModel(string displayName, string propertyName) {
@@ -131,8 +150,21 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
                 }).AddTo(Disposables);
 
+            //Contributions = new ReactiveCollection<ComponentContributionViewModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
+            //Observable.CombineLatest(ComponentX, ComponentY)
+            //    .Throttle(TimeSpan.FromSeconds(.05d))
+            //    .Subscribe(xy =>
+            //    {
+            //        Contributions.ClearOnScheduler();
+            //        Contributions.AddRangeOnScheduler(_model.Contributions.Select(contribution => new ComponentContributionViewModel(contribution, xy[0] - 1, xy[1] - 1)));
+
+            //    }).AddTo(Disposables);
+
             ScoreHorizontalAxis = ComponentX.Select(i => model.ScoreAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             ScoreVerticalAxis = ComponentY.Select(i => model.ScoreAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            PCXLabelAxis = ComponentX.Select(x => model.PCAxises[x - 1]).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            PCYLabelAxis = ComponentY.Select(y => model.PCAxises[y - 1]).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
 
 
@@ -155,6 +187,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
         public ReactiveCollection<ComponentLoadingViewModel> Loadings { get; }
         public ReactiveCollection<ComponentScoreViewModel> Scores { get; }
+        //public ReactiveCollection<ComponentContributionViewModel> Contributions { get; }
         public BrushMapData<ComponentLoadingViewModel> Brush { get; }
         public IObservable<IBrushMapper<ComponentScoreViewModel>> ClassBrush { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingHorizontalAxis { get; }
@@ -165,8 +198,9 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public IAxisManager<double> ComponentXLoadingVerticalAxis { get; }
         public IAxisManager<double> ComponentYLoadingHorizontalAxis { get; }
         public IAxisManager<double> ComponentYLoadingVerticalAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<string>> PCXLabelAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<string>> PCYLabelAxis { get; }
 
-        public ReadOnlyReactiveCollection<ComponentContributionViewModel> Contributions { get; }
         public IAxisManager<double> ContributionHorizontalAxis { get; }
         public IAxisManager<double> ContributionVerticalAxis { get; }
 

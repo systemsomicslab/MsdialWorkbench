@@ -238,12 +238,20 @@
                 </Grid>
             </chart:SimpleChartControl>
 
-            <chart:SimpleChartControl HorizontalAxis="{Binding ComponentXLoadingHorizontalAxis}"
-                                      VerticalAxis="{Binding ComponentXLoadingVerticalAxis}"
+            <chart:SimpleChartControl HorizontalAxis="{Binding PCXLabelAxis.Value}"
+                                      VerticalAxis="{Binding LoadingHorizontalAxis.Value}"
                                       GraphTitle="{Binding ComponentX.Value, StringFormat=Component {0} loading plot}"
                                       HorizontalTitle="{Binding ComponentX.Value}"
                                       VerticalTitle="Value"
-                                      Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                      Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                <Grid>
+                    <chart:BarControl x:Name="bar"
+                                      
+                              ItemsSource="{Binding Loadings}"
+                              HorizontalPropertyName="Label"
+                              VerticalPropertyName="ComponentX"/>
+                </Grid>
+            </chart:SimpleChartControl>
             <chart:SimpleChartControl HorizontalAxis="{Binding ComponentYLoadingHorizontalAxis}"
                                       VerticalAxis="{Binding ComponentYLoadingVerticalAxis}"
                                       GraphTitle="{Binding ComponentY.Value, StringFormat={}{0} loading plot}"

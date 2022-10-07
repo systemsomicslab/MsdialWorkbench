@@ -33,7 +33,6 @@ namespace CompMs.App.Msdial.Model.Statistics
         public double[] Loading { get; }
         public string Label { get; }
         public AlignmentSpotPropertyModel Spot { get; }
-
     }
     internal sealed class ComponentScoreModel : BindableBase {
         public ComponentScoreModel(double[] score, string label, AnalysisFileBean bean)
@@ -46,7 +45,6 @@ namespace CompMs.App.Msdial.Model.Statistics
         public double[] Score { get; }
         public string Label { get; }
         public AnalysisFileBean Bean { get; }
-
     }
 
     internal sealed class PcaResultModel : BindableBase {
@@ -80,6 +78,15 @@ namespace CompMs.App.Msdial.Model.Statistics
             ScoreAxises = multivariateAnalysisResult.TPreds
                 .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new ContinuousAxisManager<double>(pc_loadings, new ConstantMargin(10))))
                 .ToList().AsReadOnly();
+
+            var pcAxises = new ObservableCollection<IAxisManager<string>>();
+            for (int i = 0; i < NumberOfComponents; i++)
+            {
+                pcAxises.Add(new CategoryAxisManager<string>(Loadings.OrderByDescending(loading => Math.Abs(loading.Loading[i])).Select(loading => loading.Label).ToArray()));
+            }
+            PCAxises = pcAxises;
+                
+            //multivariateAnalysisResult.Contributions.OrderByDescending(d => d).Select(d => new ComponentContributionModel()));
 
             PointBrush = brushmaps.Select(bm => bm.Contramap((ComponentScoreViewModel csvm) => csvm.Model.Bean.AnalysisFileClass)).ToReactiveProperty();
 
@@ -116,6 +123,7 @@ namespace CompMs.App.Msdial.Model.Statistics
 
         public ObservableCollection<ComponentLoadingModel> Loadings { get; }
         public ObservableCollection<ComponentScoreModel> Scores { get; }
+        public ObservableCollection<IAxisManager<string>> PCAxises { get; }
         public ReadOnlyCollection<Lazy<IAxisManager<double>>> LoadingAxises { get; }
         public ReadOnlyCollection<Lazy<IAxisManager<double>>> ScoreAxises { get; }
         public List<BrushMapData<ComponentLoadingViewModel>> Brushes { get; }
