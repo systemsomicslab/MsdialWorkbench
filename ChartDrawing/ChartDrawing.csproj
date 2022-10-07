@@ -195,6 +195,9 @@
       <DependentUpon>ProgressBarWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\RangeSlider.cs" />
+    <Compile Include="UI\SettingDialog.xaml.cs">
+      <DependentUpon>SettingDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\ShortMessageWindow.xaml.cs">
       <DependentUpon>ShortMessageWindow.xaml</DependentUpon>
     </Compile>
@@ -225,6 +228,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\ProgressBarWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\SettingDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,5 +1,6 @@
 ﻿using CompMs.CommonMVVM;
 using CompMs.Graphics.Helper;
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -68,10 +69,13 @@ namespace CompMs.Graphics.UI
         public static Color[,] ExtraColors { get; }
         private static ColorPickerItem[] DefaultColorPickerItems { get; }
 
+        private readonly CustomColorPickerItem _custom;
+
         public ColorPicker() {
-            var cv = new ListCollectionView(DefaultColorPickerItems);
+            _custom = new CustomColorPickerItem("Custom");
+            var cv = new ListCollectionView(DefaultColorPickerItems.Append<object>(_custom).ToArray());
             cv.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ColorPickerItem.Category)));
-            (cv as ICollectionView).MoveCurrentTo(null);
+            (cv as ICollectionView).MoveCurrentTo(_custom);
             ColorPickerItems = cv;
         }
 
@@ -92,7 +96,12 @@ namespace CompMs.Graphics.UI
         }
 
         private static void OnSelectedColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var cp = (ColorPicker)d;
+            cp.OnSelectedColorChanged((Color)e.OldValue, (Color)e.NewValue);
+        }
 
+        private void OnSelectedColorChanged(Color oldValue, Color newValue) {
+            _custom.Color = newValue;
         }
 
         private static object CoerceSelectedColor(DependencyObject d, object value) {
@@ -105,31 +114,49 @@ namespace CompMs.Graphics.UI
         public static readonly DependencyProperty SelectedItemProperty =
             DependencyProperty.Register(
                 nameof(SelectedItem),
-                typeof(ColorPickerItem),
+                typeof(IColorPickerItem),
                 typeof(ColorPicker),
                 new FrameworkPropertyMetadata(
                     null,
                     OnSelectedItemChanged));
 
-        internal ColorPickerItem SelectedItem {
-            get => (ColorPickerItem)GetValue(SelectedItemProperty);
+        internal IColorPickerItem SelectedItem {
+            get => (IColorPickerItem)GetValue(SelectedItemProperty);
             set => SetValue(SelectedItemProperty, value);
         }
 
         private static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            if (e.NewValue is ColorPickerItem item) {
+            if (e.NewValue is IColorPickerItem item) {
                 d.SetValue(SelectedColorProperty, item.Color);
             }
         }
     }
 
-    internal sealed class ColorPickerItem : ViewModelBase {
+    public interface IColorPickerItem {
+        Color Color { get; }
+        string Category { get; }
+    }
+
+    public sealed class ColorPickerItem : ViewModelBase, IColorPickerItem {
         public ColorPickerItem(Color color, string category) {
             Color = color;
             Category = category;
         }
 
         public Color Color { get; }
+        public string Category { get; }
+    }
+
+    public sealed class CustomColorPickerItem : ViewModelBase, IColorPickerItem {
+        public CustomColorPickerItem(string category) {
+            Category = category;
+        }
+
+        public Color Color {
+            get => _color;
+            set => SetProperty(ref _color, value);
+        }
+        private Color _color = Colors.White;
         public string Category { get; }
     }
 }

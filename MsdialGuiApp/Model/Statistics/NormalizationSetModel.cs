@@ -52,14 +52,14 @@ namespace CompMs.App.Msdial.Model.Statistics
 
             CanNormalizeProperty = new[]
             {
-                this.ObserveProperty(m => m.IsNormalizeNone).Where(x => x).Select(_ => NoneNormalizeModel.CanNormalizeProperty.Prepend(NoneNormalizeModel.CanNormalizeProperty.Value)).Switch(),
-                this.ObserveProperty(m => m.IsNormalizeIS).Where(x => x).Select(_ => InternalStandardNormalizeModel.CanNormalizeProperty.Prepend(InternalStandardNormalizeModel.CanNormalizeProperty.Value)).Switch(),
-                this.ObserveProperty(m => m.IsNormalizeLowess).Where(x => x).Select(_ => LowessNormalizeModel.CanNormalizeProperty.Prepend(LowessNormalizeModel.CanNormalizeProperty.Value)).Switch(),
-                this.ObserveProperty(m => m.IsNormalizeIsLowess).Where(x => x).Select(_ => InternalStandardLowessNormalizeModel.CanNormalizeProperty.Prepend(InternalStandardLowessNormalizeModel.CanNormalizeProperty.Value)).Switch(),
-                this.ObserveProperty(m => m.IsNormalizeSplash).Where(x => x).Select(_ => SplashSetModel.CanNormalizeProperty.Prepend(SplashSetModel.CanNormalizeProperty.Value)).Switch(),
-                this.ObserveProperty(m => m.IsNormalizeTic).Where(x => x).Select(_ => TicNormalizeModel.CanNormalizeProperty.Prepend(TicNormalizeModel.CanNormalizeProperty.Value)).Switch(),
-                this.ObserveProperty(m => m.IsNormalizeMTic).Where(x => x).Select(_ => MticNormalizeModel.CanNormalizeProperty.Prepend(MticNormalizeModel.CanNormalizeProperty.Value)).Switch(),
-            }.Merge()
+                this.ObserveProperty(m => m.IsNormalizeNone).Where(x => x).Select(_ => NoneNormalizeModel.CanNormalizeProperty.Prepend(NoneNormalizeModel.CanNormalizeProperty.Value)),
+                this.ObserveProperty(m => m.IsNormalizeIS).Where(x => x).Select(_ => InternalStandardNormalizeModel.CanNormalizeProperty.Prepend(InternalStandardNormalizeModel.CanNormalizeProperty.Value)),
+                this.ObserveProperty(m => m.IsNormalizeLowess).Where(x => x).Select(_ => LowessNormalizeModel.CanNormalizeProperty.Prepend(LowessNormalizeModel.CanNormalizeProperty.Value)),
+                this.ObserveProperty(m => m.IsNormalizeIsLowess).Where(x => x).Select(_ => InternalStandardLowessNormalizeModel.CanNormalizeProperty.Prepend(InternalStandardLowessNormalizeModel.CanNormalizeProperty.Value)),
+                this.ObserveProperty(m => m.IsNormalizeSplash).Where(x => x).Select(_ => SplashSetModel.CanNormalizeProperty.Prepend(SplashSetModel.CanNormalizeProperty.Value)),
+                this.ObserveProperty(m => m.IsNormalizeTic).Where(x => x).Select(_ => TicNormalizeModel.CanNormalizeProperty.Prepend(TicNormalizeModel.CanNormalizeProperty.Value)),
+                this.ObserveProperty(m => m.IsNormalizeMTic).Where(x => x).Select(_ => MticNormalizeModel.CanNormalizeProperty.Prepend(MticNormalizeModel.CanNormalizeProperty.Value)),
+            }.Merge().Switch()
             .ToReadOnlyReactivePropertySlim(initialValue: false)
             .AddTo(Disposables);
         }

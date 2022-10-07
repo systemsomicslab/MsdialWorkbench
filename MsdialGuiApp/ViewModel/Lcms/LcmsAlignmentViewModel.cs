@@ -103,7 +103,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             ProteinResultContainerAsObservable = Observable.Return(model.ProteinResultContainerModel);
 
-            NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel).AddTo(Disposables);
+            var internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
+            InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(_ => broker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
+
+            NormalizationSetViewModel = new NormalizationSetViewModel(model.NormalizationSetModel, internalStandardSetViewModel).AddTo(Disposables);
             ShowNormalizationSettingCommand = new ReactiveCommand()
                 .WithSubscribe(() => broker.Publish(NormalizationSetViewModel))
                 .AddTo(Disposables);
@@ -133,7 +136,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
         public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable { get; }
-
+        public ICommand InternalStandardSetCommand { get; }
         public NormalizationSetViewModel NormalizationSetViewModel { get; }
         public ReactiveCommand ShowNormalizationSettingCommand { get; }
 

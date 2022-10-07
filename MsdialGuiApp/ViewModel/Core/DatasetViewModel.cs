@@ -86,7 +86,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
                 case DimsMethodModel di:
                     return DimsMethodViewModel.Create(di, compoundSearchService, peakSpotTableService, _messageBroker);
                 case LcimmsMethodModel lcim:
-                    return LcimmsMethodViewModel.Create(lcim, compoundSearchService, peakSpotTableService);
+                    return LcimmsMethodViewModel.Create(lcim, compoundSearchService, peakSpotTableService, _messageBroker);
                 // case GcmsMethodModel _:
                 case ImagingImmsMethodModel iim:
                     return new ImagingMainViewModel(iim);

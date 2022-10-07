@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Statistics;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.DataStructure;
@@ -118,6 +119,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var accFilterableEvaluator = accEvaluator.Contramap<IFilterable, AlignmentSpotProperty>(filterable => ((AlignmentSpotPropertyModel)filterable).innerModel);
             peakSpotNavigator.AttachFilter(accumulatedPropModels, accumulatedPeakFilterModel, status: FilterEnableStatus.None, evaluator: accFilterableEvaluator);
             PeakSpotNavigatorModel = peakSpotNavigator;
+
+            InternalStandardSetModel = new InternalStandardSetModel(driftProps, TargetMsMethod.Lcimms);
 
             var ontologyBrush = new BrushMapData<AlignmentSpotPropertyModel>(
                     new KeyBrushMapper<AlignmentSpotPropertyModel, string>(
@@ -272,10 +275,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var peakInformationModel = new PeakInformationAlignmentModel(target).AddTo(Disposables);
             peakInformationModel.Add(
-                t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d),
-                t => new MzPoint(t?.MassCenter ?? 0d),
+                t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RT.Value),
+                t => new MzPoint(t?.MassCenter ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz),
                 t => new DriftPoint(t?.innerModel.TimesCenter.Drift.Value ?? 0d),
-                t => new CcsPoint(t?.innerModel.CollisionCrossSection ?? 0d));
+                t => new CcsPoint(t?.CollisionCrossSection ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.CollisionCrossSection));
             peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
             PeakInformationModel = peakInformationModel;
 
@@ -300,7 +303,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
-
+        public InternalStandardSetModel InternalStandardSetModel { get; }
         public AlignmentPeakPlotModel RtMzPlotModel { get; }
         public AlignmentPeakPlotModel DtMzPlotModel { get; }
 

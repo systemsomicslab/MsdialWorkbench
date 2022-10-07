@@ -59,10 +59,12 @@
       <DependentUpon>ColorPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\BindableBase.cs" />
+    <Compile Include="Common\BindingProxy.cs" />
     <Compile Include="Common\DisposableCollection.cs" />
     <Compile Include="Common\DataGridWithCheckBox.cs" />
     <Compile Include="Common\DisposableModelBase.cs" />
     <Compile Include="Common\DynamicViewModelBase.cs" />
+    <Compile Include="Common\IdentityCommand.cs" />
     <Compile Include="Common\MappedObservableCollection.cs" />
     <Compile Include="Common\MappedReadOnlyObservableCollection.cs" />
     <Compile Include="Common\NeverCommand.cs" />

@@ -16,7 +16,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="*" MaxHeight="600"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -42,11 +42,18 @@
             </StackPanel>
         </GroupBox>
 
-        <local:SplashSetView DataContext="{Binding SplashViewModel, Mode=OneTime}"
-                             Visibility="{Binding DataContext.IsNormalizeSplash.Value, Converter={StaticResource BooleanToVisibility}, RelativeSource={RelativeSource AncestorType=Window}}"
-                             d:Visibility="Visible"
-                             Margin="8"
-                             Grid.Row="1"/>
+        <ContentControl Visibility="{Binding IsNormalizeSplash.Value, Converter={StaticResource BooleanToVisibility}}"
+                        d:Visibility="Collapsed"
+                        Margin="8"
+                        Grid.Row="1">
+            <local:SplashSetView DataContext="{Binding SplashViewModel, Mode=OneTime}"/>
+        </ContentControl>
+        <ContentControl Visibility="{Binding IsSetViewModelVisible.Value, Converter={StaticResource BooleanToVisibility}}"
+                        d:Visibility="Visible"
+                        Margin="8"
+                        Grid.Row="1">
+            <local:InternalStandardSetView DataContext="{Binding IsSetViewModel, Mode=OneTime}"/>
+        </ContentControl>
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
