@@ -18,8 +18,13 @@ namespace CompMs.App.Msdial.Utility
             return source.CombineLatestValuesAreAllFalse().Inverse();
         }
 
-        public static IObservable<T> Gate<T>(this IObservable<T> source, IObservable<bool> condition) {
-            return source.WithLatestFrom(condition).Where(p => p.Second).Select(p => p.First);
+        public static IObservable<T> Gate<T>(this IObservable<T> source, IObservable<bool> condition, bool observeWhenEnabled = false) {
+            if (observeWhenEnabled) {
+                return source.CombineLatest(condition).Where(p => p.Second).Select(p => p.First);
+            }
+            else {
+                return source.WithLatestFrom(condition).Where(p => p.Second).Select(p => p.First);
+            }
         }
 
         public static IObservable<U> ObserveCollectionItems<T, U>(T collection) where T : IEnumerable<U>, INotifyCollectionChanged {

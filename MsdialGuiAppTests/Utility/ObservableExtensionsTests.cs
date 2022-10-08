@@ -1,5 +1,7 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.App.Msdial.Utility;
+using CompMs.CommonMVVM;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Reactive.Bindings;
 using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Subjects;
@@ -93,6 +95,64 @@ namespace CompMs.App.Msdial.Utility.Tests
             commit.OnNext(Unit.Default);
             Assert.AreEqual(0, property.Value);
             Assert.AreEqual(0, model.Value);
+        }
+
+        [TestMethod()]
+        public void GateTest() {
+            var ox = new Subject<int>();
+            var sw = new Subject<bool>();
+            var property = ox.Gate(sw).ToReadOnlyReactivePropertySlim(1);
+
+            Assert.AreEqual(1, property.Value);
+
+            sw.OnNext(true);
+            ox.OnNext(2);
+            Assert.AreEqual(2, property.Value);
+
+            ox.OnNext(3);
+            Assert.AreEqual(3, property.Value);
+
+            sw.OnNext(false);
+            ox.OnNext(4);
+            Assert.AreEqual(3, property.Value);
+
+            ox.OnNext(5);
+            Assert.AreEqual(3, property.Value);
+
+            sw.OnNext(true);
+            Assert.AreEqual(3, property.Value);
+
+            ox.OnNext(6);
+            Assert.AreEqual(6, property.Value);
+        }
+
+        [TestMethod()]
+        public void GateWithObserveWhenEnabledTest() {
+            var ox = new Subject<int>();
+            var sw = new Subject<bool>();
+            var property = ox.Gate(sw, observeWhenEnabled: true).ToReadOnlyReactivePropertySlim(1);
+
+            Assert.AreEqual(1, property.Value);
+
+            sw.OnNext(true);
+            ox.OnNext(2);
+            Assert.AreEqual(2, property.Value);
+
+            ox.OnNext(3);
+            Assert.AreEqual(3, property.Value);
+
+            sw.OnNext(false);
+            ox.OnNext(4);
+            Assert.AreEqual(3, property.Value);
+
+            ox.OnNext(5);
+            Assert.AreEqual(3, property.Value);
+
+            sw.OnNext(true);
+            Assert.AreEqual(5, property.Value);
+
+            ox.OnNext(6);
+            Assert.AreEqual(6, property.Value);
         }
     }
 
