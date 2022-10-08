@@ -260,7 +260,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             CompoundDetailModel = compoundDetailModel;
 
             InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Lcms);
-            PcaSettingModel = new PcaSettingModel(parameter, Ms1Spots, evaluator, files);
+            PcaSettingModel = new PcaSettingModel(parameter, Ms1Spots, evaluator, files, classBrush);
         }
 
         public ParameterBase Parameter { get; }

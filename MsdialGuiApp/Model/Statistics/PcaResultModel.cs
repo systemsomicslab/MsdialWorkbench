@@ -5,15 +5,20 @@ using CompMs.Common.Mathematics.Statistics;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
+using Microsoft.Windows.Themes;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Statistics
@@ -28,7 +33,6 @@ namespace CompMs.App.Msdial.Model.Statistics
         public double[] Loading { get; }
         public string Label { get; }
         public AlignmentSpotPropertyModel Spot { get; }
-
     }
     internal sealed class ComponentScoreModel : BindableBase {
         public ComponentScoreModel(double[] score, string label, AnalysisFileBean bean)
@@ -41,7 +45,6 @@ namespace CompMs.App.Msdial.Model.Statistics
         public double[] Score { get; }
         public string Label { get; }
         public AnalysisFileBean Bean { get; }
-
     }
 
     internal sealed class PcaResultModel : BindableBase {
@@ -49,12 +52,14 @@ namespace CompMs.App.Msdial.Model.Statistics
         private readonly ParameterBase _parameter;
         private readonly ObservableCollection<AlignmentSpotPropertyModel> _spotprops;
         private readonly List<AnalysisFileBean> _analysisfiles;
+        private readonly IObservable<KeyBrushMapper<string>> _classBrush;
 
         public PcaResultModel(
             MultivariateAnalysisResult multivariateAnalysisResult,
             ParameterBase parameter,
             ObservableCollection<AlignmentSpotPropertyModel> spotprops,
-            List<AnalysisFileBean> analysisfiles
+            List<AnalysisFileBean> analysisfiles,
+            IObservable<KeyBrushMapper<string>> brushmaps
             ) {
 
             _multivariateAnalysisResult = multivariateAnalysisResult ?? throw new ArgumentNullException(nameof(multivariateAnalysisResult));
@@ -73,6 +78,17 @@ namespace CompMs.App.Msdial.Model.Statistics
             ScoreAxises = multivariateAnalysisResult.TPreds
                 .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new ContinuousAxisManager<double>(pc_loadings, new ConstantMargin(10))))
                 .ToList().AsReadOnly();
+
+            var pcAxises = new ObservableCollection<IAxisManager<string>>();
+            for (int i = 0; i < NumberOfComponents; i++)
+            {
+                pcAxises.Add(new CategoryAxisManager<string>(Loadings.OrderByDescending(loading => Math.Abs(loading.Loading[i])).Select(loading => loading.Label).ToArray()));
+            }
+            PCAxises = pcAxises;
+                
+            //multivariateAnalysisResult.Contributions.OrderByDescending(d => d).Select(d => new ComponentContributionModel()));
+
+            PointBrush = brushmaps.Select(bm => bm.Contramap((ComponentScoreViewModel csvm) => csvm.Model.Bean.AnalysisFileClass)).ToReactiveProperty();
 
             var ontology = new BrushMapData<ComponentLoadingViewModel>(
                 new KeyBrushMapper<ComponentLoadingViewModel, string>(
@@ -107,6 +123,7 @@ namespace CompMs.App.Msdial.Model.Statistics
 
         public ObservableCollection<ComponentLoadingModel> Loadings { get; }
         public ObservableCollection<ComponentScoreModel> Scores { get; }
+        public ObservableCollection<IAxisManager<string>> PCAxises { get; }
         public ReadOnlyCollection<Lazy<IAxisManager<double>>> LoadingAxises { get; }
         public ReadOnlyCollection<Lazy<IAxisManager<double>>> ScoreAxises { get; }
         public List<BrushMapData<ComponentLoadingViewModel>> Brushes { get; }
@@ -117,6 +134,13 @@ namespace CompMs.App.Msdial.Model.Statistics
             set => SetProperty(ref _selectedBrush, value);
         }
         private BrushMapData<ComponentLoadingViewModel> _selectedBrush;
+
+        public IObservable<IBrushMapper<ComponentScoreViewModel>> PointBrush
+        {
+            get => _pointBrush;
+            set => SetProperty(ref _pointBrush, value);
+        }
+        private IObservable<IBrushMapper<ComponentScoreViewModel>> _pointBrush;
 
         public int NumberOfComponents => _multivariateAnalysisResult.PPreds.Count;
     }
