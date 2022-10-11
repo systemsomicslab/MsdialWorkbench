@@ -37,9 +37,9 @@ namespace CompMs.App.Msdial.Model.Loader
                 var eicChromatograms = Observable.CombineLatest(
                     _id2ClsAsObservable,
                     _cls2ColorAsObservable,
-                    (id2cls, cls2color) => itemss
-                        .Zip(target.AlignedPeakPropertiesModel,
-                            (pair, peakProperty) =>
+                    target.AlignedPeakPropertiesModelAsObservable.Where(props => props != null),
+                    (id2cls, cls2color, peakProperties) => itemss
+                        .Zip(peakProperties, (pair, peakProperty) =>
                             peakProperty.ObserveProperty(p => p.ChromXsLeft).Merge(
                                 peakProperty.ObserveProperty(p => p.ChromXsRight))
                             .Throttle(TimeSpan.FromMilliseconds(50))
