@@ -9,6 +9,7 @@ using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
+using Reactive.Bindings;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -25,8 +26,12 @@ namespace CompMs.App.Msdial.Model.DataObj
         public ChromXUnit ChromXUnit => innerModel.TimesCenter.Unit;
         public double MassCenter => innerModel.MassCenter;
         public double HeightAverage => innerModel.HeightAverage;
+        [Obsolete("Use AlignedPeakPropertiesModelAsObservable property.")]
         public ReadOnlyCollection<AlignmentChromPeakFeature> AlignedPeakProperties => innerModel.AlignedPeakProperties.AsReadOnly();
-        public ReadOnlyCollection<AlignmentChromPeakFeatureModel> AlignedPeakPropertiesModel { get; }
+        [Obsolete("Use AlignedPeakPropertiesModelAsObservable property.")]
+        public ReadOnlyCollection<AlignmentChromPeakFeatureModel> AlignedPeakPropertiesModel => _alignedPeakPropertiesModelProperty.Value;
+        public IObservable<ReadOnlyCollection<AlignmentChromPeakFeatureModel>> AlignedPeakPropertiesModelAsObservable => _alignedPeakPropertiesModelProperty;
+        private readonly ReactiveProperty<ReadOnlyCollection<AlignmentChromPeakFeatureModel>> _alignedPeakPropertiesModelProperty;
 
         public double RT => innerModel.TimesCenter.RT.Value;
         public double Drift => innerModel.TimesCenter.Drift.Value;
@@ -233,7 +238,9 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public AlignmentSpotPropertyModel(AlignmentSpotProperty innerModel, IObservable<IBarItemsLoader> barItemsLoader) {
             this.innerModel = innerModel;
-            this.AlignedPeakPropertiesModel = this.innerModel.AlignedPeakProperties.Select(n => new AlignmentChromPeakFeatureModel(n)).ToList().AsReadOnly();
+            _alignedPeakPropertiesModelProperty = Observable.FromAsync(() => innerModel.AlignedPeakPropertiesTask)
+                .Select(props => new ReadOnlyCollection<AlignmentChromPeakFeatureModel>(props.Select(prop => new AlignmentChromPeakFeatureModel(prop)).ToArray()))
+                .ToReactiveProperty(); // TODO: Dispose
 
             BarItemCollection = BarItemCollection.Create(this, barItemsLoader);
         }
