@@ -14,6 +14,7 @@ using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM.WindowService;
+using CompMs.Graphics.UI;
 using CompMs.Graphics.UI.Message;
 using CompMs.Graphics.UI.ProgressBar;
 using Microsoft.Win32;
@@ -73,14 +74,18 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(CreateAlignedChromatogramModificationDialog);
             broker.ToObservable<SampleTableViewerInAlignmentViewModelLegacy>()
                 .Subscribe(CreateSampleTableViewerDialog);
+            broker.ToObservable<InternalStandardSetViewModel>()
+                .Subscribe(OpenInternalStandardSetView);
             broker.ToObservable<NormalizationSetViewModel>()
                 .Subscribe(OpenNormalizationSetView);
             broker.ToObservable<PcaSettingViewModel>()
                 .Subscribe(OpenPcaSettingView);
             broker.ToObservable<PcaResultViewModel>()
                 .Subscribe(OpenPcaView);
-#if DEBUG
+#if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
+#elif DEBUG
+            System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Warning;
 #endif
         }
 
@@ -165,7 +170,7 @@ namespace CompMs.App.Msdial.View.Core
         }
 
         private void ShowFileClassSetView(FileClassSetViewModel viewmodel) {
-            var dialog = new Window
+            var dialog = new SettingDialog
             {
                 Height = 450, Width = 400,
                 Title = "Class property setting",
@@ -174,8 +179,10 @@ namespace CompMs.App.Msdial.View.Core
                 Content = new FileClassSetView
                 {
                     DataContext = viewmodel,
-                    Margin = new Thickness(8),
-                }
+                },
+                ApplyCommand = viewmodel.ApplyCommand,
+                FinishCommand = viewmodel.ApplyCommand,
+                CancelCommand = viewmodel.CancelCommand,
             };
             dialog.Show();
         }
@@ -187,6 +194,24 @@ namespace CompMs.App.Msdial.View.Core
 
         private void OpenProteinGroupTable(ProteinGroupTableViewModel viewmodel) {
             var dialog = new ProteinGroupTable() { Owner = this, DataContext = viewmodel, };
+            dialog.Show();
+        }
+
+        private void OpenInternalStandardSetView(InternalStandardSetViewModel viewmodel) {
+            var dialog = new SettingDialog
+            {
+                Height = 600, Width = 800,
+                Title = "Internal standard settting",
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Content = new InternalStandardSetView
+                {
+                    DataContext = viewmodel,
+                },
+                ApplyCommand = null,
+                FinishCommand = viewmodel.ApplyCommand,
+                CancelCommand = viewmodel.CancelCommand,
+            };
             dialog.Show();
         }
 

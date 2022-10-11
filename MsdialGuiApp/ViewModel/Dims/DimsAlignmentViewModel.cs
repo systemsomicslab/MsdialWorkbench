@@ -84,6 +84,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 .ToReactiveCommand()
                 .WithSubscribe(() => model.Target.Value.SetUnknown())
                 .AddTo(Disposables);
+
+            var internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
+            InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(_ => broker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -134,6 +137,9 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         public DelegateCommand<Window> NormalizeCommand => _normalizeCommand ?? (_normalizeCommand = new DelegateCommand<Window>(Normalize));
+
+        public ICommand InternalStandardSetCommand { get; }
+
         private DelegateCommand<Window> _normalizeCommand;
 
         private void Normalize(Window owner) {

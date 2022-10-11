@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Statistics;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -58,6 +59,8 @@ namespace CompMs.App.Msdial.Model.Imms
             var BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, observableBarItemsLoader)));
+
+            InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Imms);
 
             Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
             {
@@ -188,9 +191,9 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var peakInformationModel = new PeakInformationAlignmentModel(Target).AddTo(Disposables);
             peakInformationModel.Add(
-                t => new MzPoint(t?.MassCenter ?? 0d),
+                t => new MzPoint(t?.MassCenter ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz),
                 t => new DriftPoint(t?.innerModel.TimesCenter.Drift.Value ?? 0d),
-                t => new CcsPoint(t?.innerModel.CollisionCrossSection ?? 0d));
+                t => new CcsPoint(t?.CollisionCrossSection ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.CollisionCrossSection));
             peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
             PeakInformationModel = peakInformationModel;
 
@@ -207,7 +210,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
-
+        public InternalStandardSetModel InternalStandardSetModel { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public ReadOnlyReactivePropertySlim<MSDecResult> MsdecResult { get; }

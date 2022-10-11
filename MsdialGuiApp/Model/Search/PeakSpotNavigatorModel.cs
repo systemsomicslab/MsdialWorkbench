@@ -144,7 +144,7 @@ namespace CompMs.App.Msdial.Model.Search
             await metaboliteSemaphore.WaitAsync().ConfigureAwait(false);
             try {
                 token.ThrowIfCancellationRequested();
-                SetMetaboliteKeywords(keywords);
+                SetMetaboliteKeywords(keywords.Where(keyword => !string.IsNullOrEmpty(keyword)).Select(keyword => keyword.ToLower()));
             }
             finally {
                 metaboliteSemaphore.Release();
@@ -165,7 +165,7 @@ namespace CompMs.App.Msdial.Model.Search
             await proteinSemaphore.WaitAsync().ConfigureAwait(false);
             try {
                 token.ThrowIfCancellationRequested();
-                SetProteinKeywords(keywords);
+                SetProteinKeywords(keywords.Where(keyword => !string.IsNullOrEmpty(keyword)).Select(keyword => keyword.ToLower()));
             }
             finally {
                 proteinSemaphore.Release();
@@ -186,7 +186,7 @@ namespace CompMs.App.Msdial.Model.Search
             await commentSemaphore.WaitAsync().ConfigureAwait(false);
             try {
                 token.ThrowIfCancellationRequested();
-                SetCommentKeywords(keywords);
+                SetCommentKeywords(keywords.Where(keyword => !string.IsNullOrEmpty(keyword)).Select(keyword => keyword.ToLower()));
             }
             finally {
                 commentSemaphore.Release();
@@ -207,7 +207,7 @@ namespace CompMs.App.Msdial.Model.Search
             await ontologySemaphore.WaitAsync().ConfigureAwait(false);
             try {
                 token.ThrowIfCancellationRequested();
-                SetOntologyKeywords(keywords);
+                SetOntologyKeywords(keywords.Where(keyword => !string.IsNullOrEmpty(keyword)));
             }
             finally {
                 ontologySemaphore.Release();
@@ -216,7 +216,7 @@ namespace CompMs.App.Msdial.Model.Search
 
         private void SetOntologyKeywords(IEnumerable<string> keywords) {
             ontologyFilterKeywords.Clear();
-            ontologyFilterKeywords.AddRange(keywords);
+            ontologyFilterKeywords.AddRange(keywords.Where(keyword => !string.IsNullOrEmpty(keyword)));
         }
 
         public ReadOnlyCollection<string> AdductFilterKeywords { get; }
@@ -341,23 +341,26 @@ namespace CompMs.App.Msdial.Model.Search
         }
 
         private bool ProteinFilter(IFilterable peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => peak.Protein?.Contains(keyword) ?? true);
+            var protein = peak.Protein?.ToLower();
+            return keywords.All(keyword => protein?.Contains(keyword) ?? true);
         }
 
         private bool MetaboliteFilter(IMoleculeProperty peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => peak.Name.Contains(keyword));
+            var name = peak.Name.ToLower();
+            return keywords.All(keyword => name.Contains(keyword));
         }
 
         private bool CommentFilter(IFilterable peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => string.IsNullOrEmpty(keyword) || (peak.Comment?.Contains(keyword) ?? false));
+            var comment = peak.Comment?.ToLower();
+            return keywords.All(keyword => (comment?.Contains(keyword) ?? false));
         }
 
         private bool OntologyFilter(IFilterable peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => string.IsNullOrEmpty(keyword) || peak.Ontology == keyword);
+            return !keywords.Any() || keywords.Any(keyword => peak.Ontology == keyword);
         }
 
         private bool AdductFilter(IFilterable peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => peak.AdductIonName?.Contains(keyword) ?? true);
+            return keywords.All(keyword => peak.AdductIonName?.ToLower().Contains(keyword.ToLower()) ?? true);
         }
 
         private bool AmplitudeFilter(IFilterable peak) {

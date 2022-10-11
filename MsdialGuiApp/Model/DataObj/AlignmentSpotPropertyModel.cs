@@ -16,7 +16,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class AlignmentSpotPropertyModel : BindableBase, IFilterable
+    public class AlignmentSpotPropertyModel : BindableBase, IFilterable, IAnnotatedObject
     {
         public int AlignmentID => innerModel.AlignmentID;
         public int MasterAlignmentID => innerModel.MasterAlignmentID;
@@ -125,10 +125,8 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double FillPercentage => innerModel.FillParcentage;
         public double AnovaPvalue => innerModel.AnovaPvalue;
         public double FoldChange => innerModel.FoldChange;
-        public MsScanMatchResultContainer MatchResults {
-            get => innerModel.MatchResults;
-            set => innerModel.MatchResults = value;
-        }
+        public MsScanMatchResultContainer MatchResults => innerModel.MatchResults;
+
         public MsScanMatchResult MspBasedMatchResult => innerModel.MspBasedMatchResult;
         public MsScanMatchResult TextDbBasedMatchResult => innerModel.TextDbBasedMatchResult;
         public MsScanMatchResult ScanMatchResult => innerModel.MatchResults?.Representative ?? innerModel.TextDbBasedMatchResult ?? innerModel.MspBasedMatchResult;

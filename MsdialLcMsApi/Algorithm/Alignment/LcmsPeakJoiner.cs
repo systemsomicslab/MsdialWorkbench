@@ -180,7 +180,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Alignment
                     MassCenter = scanProp.PrecursorMz, // temporary, after alignment, set true center.
                     IonMode = scanProp.IonMode,
                 };
-                spot.InternalStandardAlignmentID = spot.MasterAlignmentID;
+                spot.InternalStandardAlignmentID = -1;
 
                 var peaks = new List<AlignmentChromPeakFeature>();
                 foreach (var file in analysisFiles) {

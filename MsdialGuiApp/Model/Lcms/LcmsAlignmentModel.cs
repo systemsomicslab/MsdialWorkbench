@@ -198,21 +198,20 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Observable.Return(lowerSpecBrush)).AddTo(Disposables);
 
             // Class intensity bar chart
-            var classBrush = projectBaseParameter
-                .ObserveProperty(p => p.ClassnameToColorBytes)
-                .Select(classToColor => new KeyBrushMapper<string>(
-                    classToColor.ToDictionary(
-                        kvp => kvp.Key,
-                        kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
-                    ),
-                    Colors.Blue));
+            var classToColorAsObservable = Observable.Return(projectBaseParameter.ClassProperties)
+                .SelectMany(
+                properties => new[] {
+                    properties.ObserveElementProperty(property => property.Color).ToUnit(),
+                    properties.CollectionChangedAsObservable().ToUnit(),
+                }.Merge().Throttle(TimeSpan.FromMilliseconds(50)),
+                (properties, _) => properties.ToDictionary(property => property.Name, property => property.Color));
+            var classBrush = classToColorAsObservable
+                .Select(dict => new KeyBrushMapper<string>(dict, Colors.Blue))
+                .ToReactiveProperty().AddTo(Disposables);
             var barBrush = classBrush.Select(bm => bm.Contramap((BarItem item) => item.Class));
             BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush).AddTo(Disposables);
 
             // Class eic
-            var classToColorAsObservable = projectBaseParameter
-                .ObserveProperty(p => p.ClassnameToColorBytes)
-                .Select(classToColor => classToColor.ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])));
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target,
                 new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, projectBaseParameter.ObserveProperty(p => p.FileIdToClassName), classToColorAsObservable).AddTo(Disposables),
@@ -248,8 +247,8 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var peakInformationModel = new PeakInformationAlignmentModel(Target).AddTo(Disposables);
             peakInformationModel.Add(
-                t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d),
-                t => new MzPoint(t?.MassCenter ?? 0d));
+                t => new RtPoint(t?.innerModel.TimesCenter.RT.Value ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.ChromXs.RT.Value),
+                t => new MzPoint(t?.MassCenter ?? 0d, t.Refer<MoleculeMsReference>(mapper)?.PrecursorMz));
             peakInformationModel.Add(t => new HeightAmount(t?.HeightAverage ?? 0d));
             PeakInformationModel = peakInformationModel;
 
@@ -260,6 +259,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
 
+            InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Lcms);
             PcaSettingModel = new PcaSettingModel(parameter, Ms1Spots, evaluator, files);
         }
 
@@ -267,7 +267,7 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
         public ReactivePropertySlim<AlignmentSpotPropertyModel> Target { get; }
-
+        public InternalStandardSetModel InternalStandardSetModel { get; }
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
         public FocusNavigatorModel FocusNavigatorModel { get; }
         public AlignmentPeakPlotModel PlotModel { get; }
