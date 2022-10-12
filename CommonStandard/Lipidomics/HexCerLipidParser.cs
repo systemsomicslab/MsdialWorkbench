@@ -46,6 +46,9 @@ namespace CompMs.Common.Lipidomics
                                 case "3":
                                     classString = classString + "B";
                                     break;
+                                default:
+                                    classString = classString + "H";
+                                    break;
                             }
                         }
                         else

@@ -30,6 +30,10 @@ namespace CompMs.Common.Lipidomics
         public static TotalChainParser BuildEtherParser(int chainCount) {
             return new TotalChainParser(chainCount, chainCount, false, true, false);
         }
+        public static TotalChainParser BuildLysoEtherParser(int chainCount, int capacity)
+        {
+            return new TotalChainParser(chainCount, capacity, false, true, true);
+        }
 
         public static TotalChainParser BuildCeramideParser(int chainCount) {
             return new TotalChainParser(chainCount, chainCount, true, false, false);

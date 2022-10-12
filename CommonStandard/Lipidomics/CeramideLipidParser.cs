@@ -39,6 +39,9 @@ namespace CompMs.Common.Lipidomics
                                 case "3":
                                     classString = classString + "B";
                                     break;
+                                default:
+                                    classString = classString + "H";
+                                    break;
                             }
                         }
                         else
@@ -46,12 +49,12 @@ namespace CompMs.Common.Lipidomics
                             classString = classString + "H";
                         }
                     }
-                    else 
+                    else
                     {
                         classString = classString + "N";
                     }
 
-                    if (classGroup["d"].Value=="0")
+                    if (classGroup["d"].Value == "0")
                     {
                         classString = classString + "D";
                     }
