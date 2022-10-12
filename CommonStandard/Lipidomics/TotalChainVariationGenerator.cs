@@ -190,7 +190,7 @@ namespace CompMs.Common.Lipidomics
 
         private readonly ConcurrentDictionary<(int, int, int), SphingoChain> _sphingoCache = new ConcurrentDictionary<(int, int, int), SphingoChain>();
         private SphingoChain CreateSphingoChain(int carbon, int db, int ox) {
-            return _sphingoCache.GetOrAdd((carbon, db, ox), triple => new SphingoChain(triple.Item1, new DoubleBond(triple.Item2), new Oxidized(triple.Item3, 1)));
+            return _sphingoCache.GetOrAdd((carbon, db, ox), triple => new SphingoChain(triple.Item1, new DoubleBond(triple.Item2), new Oxidized(triple.Item3, 1, 3)));
         }
 
         private readonly ConcurrentDictionary<(int, int, int), AcylChain> _acylCache = new ConcurrentDictionary<(int, int, int), AcylChain>();
