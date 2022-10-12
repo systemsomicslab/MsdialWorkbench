@@ -82,6 +82,7 @@
     <Compile Include="Base\RangeSelection.cs" />
     <Compile Include="Behavior\AddMovabilityBehavior.cs" />
     <Compile Include="Behavior\AreaSelectBehavior.cs" />
+    <Compile Include="Behavior\AxisRangeRecalculationBehavior.cs" />
     <Compile Include="Behavior\DataGridIsEdittingBehavior.cs" />
     <Compile Include="Chart\AreaChartControl.cs" />
     <Compile Include="AxisManager\AutoContinuousAxisManager.cs" />
