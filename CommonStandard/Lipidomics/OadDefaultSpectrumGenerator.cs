@@ -38,19 +38,12 @@ namespace CompMs.Common.Lipidomics
 
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null)
         {
-            var spectrum = new List<SpectrumPeak>();
-            //if (lipid.Chains is MolecularSpeciesLevelChains mlChains) {
-            //    spectrum.AddRange(GetAcylDoubleBondSpectrum(lipid, mlChains.Chains.OfType<AcylChain>().Where(c => c.DoubleBond.UnDecidedCount == 0 && c.Oxidized.UnDecidedCount == 0), adduct));
-            //}
-            var nlMass = 0.0;
-            if (nlMassDic.ContainsKey(lipid.LipidClass))
-            {
-                nlMass = nlMassDic[lipid.LipidClass];
-            };
-            var abundance = 200.0;
             var oadLipidSpectrumGenerator = new OadLipidSpectrumGenerator();
+            var abundance = 200.0;
 
-            spectrum.AddRange(oadLipidSpectrumGenerator.GetClassFragmentSpectrum(lipid, adduct));
+            var oadClassFragment = oadLipidSpectrumGenerator.GetClassFragmentSpectrum(lipid, adduct);
+            var spectrum = new List<SpectrumPeak>(oadClassFragment.spectrum);
+            var nlMass = oadClassFragment.nlMass;
 
             if (lipid.Chains is PositionLevelChains plChains)
             {
@@ -97,10 +90,11 @@ namespace CompMs.Common.Lipidomics
 
         private static readonly IEqualityComparer<SpectrumPeak> comparer = new SpectrumEqualityComparer();
 
-        private static Dictionary<LbmClass, double> nlMassDic = new Dictionary<LbmClass, double>()
-        {
-            {LbmClass.DG ,MassDiffDictionary.NitrogenMass+MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass*5}
-        }
-        ;
+    }
+    public class OadClassFragment
+    {
+        public double nlMass { get; set; }
+        public List<SpectrumPeak> spectrum { get; set; }
     }
 }
+
