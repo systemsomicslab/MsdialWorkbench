@@ -4,30 +4,53 @@ using CompMs.Common.Interfaces;
 using MessagePack;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CompMs.Common.Components {
     [MessagePackObject]
     public class MoleculeMsReference: IMoleculeMsProperty {
+        public MoleculeMsReference() {
+            ChromXs = new ChromXs();
+            Spectrum = new List<SpectrumPeak>();
+            Formula = new Formula();
+            AdductType = new AdductIon();
+        }
 
-        public MoleculeMsReference() { }
+        [SerializationConstructor]
+        [Obsolete("This constructor is for MessagePack only, don't use.")]
+        public MoleculeMsReference(
+            int scanID, double precursorMz, ChromXs chromXs, IonMode ionMode, List<SpectrumPeak> spectrum,
+            string name, Formula formula, string ontology, string sMILES, string inChIKey,
+            AdductIon adductType) {
+            ScanID = scanID;
+            PrecursorMz = precursorMz;
+            ChromXs = chromXs;
+            IonMode = ionMode;
+            Spectrum = spectrum;
+            Name = name;
+            Formula = formula;
+            Ontology = ontology;
+            SMILES = sMILES;
+            InChIKey = inChIKey;
+            AdductType = adductType;
+        }
+
         // set for IMMScanProperty
         [Key(0)]
         public int ScanID { get; set; }
         [Key(1)]
         public double PrecursorMz { get; set; }
         [Key(2)]
-        public ChromXs ChromXs { get; set; } = new ChromXs();
+        public ChromXs ChromXs { get; set; }
         [Key(3)]
         public IonMode IonMode { get; set; }
         [Key(4)]
-        public List<SpectrumPeak> Spectrum { get; set; } = new List<SpectrumPeak>();
+        public List<SpectrumPeak> Spectrum { get; set; }
 
         // set for IMoleculeProperty
         [Key(5)]
         public string Name { get; set; } = string.Empty;
         [Key(6)]
-        public Formula Formula { get; set; } = new Formula();
+        public Formula Formula { get; set; }
         [Key(7)]
         public string Ontology { get; set; } = string.Empty;
         [Key(8)]
@@ -37,7 +60,7 @@ namespace CompMs.Common.Components {
 
         // ion physiochemical information
         [Key(10)]
-        public AdductIon AdductType { get; set; } = new AdductIon();
+        public AdductIon AdductType { get; set; }
         [Key(11)]
         public double CollisionCrossSection { get; set; }
         [Key(12)]

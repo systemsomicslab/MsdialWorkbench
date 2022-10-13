@@ -60,7 +60,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Select(model_ => model_.AlignedPeakPropertiesModelAsObservable.Where(props => props?.Any() ?? false).Select(_ => model_))
                 .Switch()
                 .CombineLatest(
-                    chromatoramSource.Where(chromatogram => chromatogram != null && chromatogram.Count > 0),
+                    EicChromatograms.Where(chromatogram => chromatogram != null && chromatogram.Count > 0),
                     (model_, chromatogram) => new AlignedChromatogramModificationModelLegacy(model_, chromatogram, analysisFiles, parameter));
             AlignedChromatogramModificationModel = alignedChromatogramModificationModel;
 
@@ -68,7 +68,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Select(model_ => model_.AlignedPeakPropertiesModelAsObservable.Where(props => props?.Any() ?? false).Select(_ => model_))
                 .Switch()
                 .CombineLatest(
-                    chromatoramSource.Where(chromatogram => chromatogram != null && chromatogram.Count > 0),
+                    EicChromatograms.Where(chromatogram => chromatogram != null && chromatogram.Count > 0),
                     (model_, chromatogram) => new SampleTableViewerInAlignmentModelLegacy(model_, chromatogram, analysisFiles, parameter));
             SampleTableViewerInAlignmentModel = sampleTableViewerInAlignmentModelLegacy;
         }
