@@ -106,6 +106,10 @@
       <DependentUpon>MultiChart1.xaml</DependentUpon>
     </Compile>
     <Compile Include="Chart\MultiChartVM1.cs" />
+    <Compile Include="Chart\MultiLineChartControl1.xaml.cs">
+      <DependentUpon>MultiLineChartControl1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Chart\MultiLineChartControlViewModel1.cs" />
     <Compile Include="Chart\RangeSelector.xaml.cs">
       <DependentUpon>RangeSelector.xaml</DependentUpon>
     </Compile>
@@ -225,6 +229,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Chart\MultiChart1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Chart\MultiLineChartControl1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
