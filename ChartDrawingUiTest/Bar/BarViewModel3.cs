@@ -11,7 +11,7 @@ namespace ChartDrawingUiTest.Bar
         public BarViewModel3() {
             collection = new ObservableCollection<DataPoint>();
             Collection = new ReadOnlyObservableCollection<DataPoint>(collection);
-            Number = 5;
+            Number = 0;
             random = new Random();
 
             AddCommand = new DelegateCommand(Add);
@@ -69,7 +69,7 @@ namespace ChartDrawingUiTest.Bar
             get => newNumber;
             set => SetProperty(ref newNumber, value);
         }
-        private double newNumber = 5;
+        private double newNumber = 0;
 
         public DelegateCommand SetCommand { get; }
 

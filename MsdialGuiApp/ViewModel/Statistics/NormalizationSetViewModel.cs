@@ -2,6 +2,7 @@
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics
 {
@@ -9,10 +10,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
     {
         private readonly NormalizationSetModel _model;
 
-        public NormalizationSetViewModel(NormalizationSetModel model) {
-
+        public NormalizationSetViewModel(NormalizationSetModel model, InternalStandardSetViewModel isSetViewModel) {
             _model = model;
-            SplashViewModel = new SplashSetViewModel(_model.SplashSetModel).AddTo(Disposables);
 
             IsNormalizeNone = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeNone).AddTo(Disposables);
             IsNormalizeIS = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeIS).AddTo(Disposables);
@@ -21,6 +20,10 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             IsNormalizeSplash = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeSplash).AddTo(Disposables);
             IsNormalizeTic = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeTic).AddTo(Disposables);
             IsNormalizeMTic = model.ToReactivePropertySlimAsSynchronized(m => m.IsNormalizeMTic).AddTo(Disposables);
+
+            SplashViewModel = new SplashSetViewModel(_model.SplashSetModel).AddTo(Disposables);
+            IsSetViewModel = isSetViewModel;
+            IsSetViewModelVisible = IsNormalizeIS.CombineLatest(IsNormalizeIsLowess, (a, b) => a || b).ToReadOnlyReactivePropertySlim(false).AddTo(Disposables);
 
             NormalizeCommand = model.CanNormalizeProperty
                 .ToReactiveCommand()
@@ -37,6 +40,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public ReactivePropertySlim<bool> IsNormalizeMTic { get; }
 
         public SplashSetViewModel SplashViewModel { get; }
+        public InternalStandardSetViewModel IsSetViewModel { get; }
+        public ReadOnlyReactivePropertySlim<bool> IsSetViewModelVisible { get; }
 
         public ReactiveCommand NormalizeCommand { get; }
     }

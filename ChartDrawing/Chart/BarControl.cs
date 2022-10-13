@@ -227,11 +227,6 @@ namespace CompMs.Graphics.Chart
             chart.cv = null;
 
             if (chart.ItemsSource == null) return;
-
-            var enumerator = chart.ItemsSource.GetEnumerator();
-            if (!enumerator.MoveNext()) return;
-
-            chart.dataType = enumerator.Current.GetType();
             chart.cv = CollectionViewSource.GetDefaultView(chart.ItemsSource) as CollectionView;
 
             chart.SetDrawingVisuals();
@@ -241,6 +236,10 @@ namespace CompMs.Graphics.Chart
             if (e.NewValue is INotifyCollectionChanged newCollection) {
                 newCollection.CollectionChanged += chart.OnItemsSourceCollectionChanged;
             }
+
+            var enumerator = chart.ItemsSource.GetEnumerator();
+            if (!enumerator.MoveNext()) return;
+            chart.dataType = enumerator.Current.GetType();
 
             if (chart.HorizontalPropertyName != null)
                 chart.hPropertyReflection = chart.dataType.GetProperty(chart.HorizontalPropertyName);
@@ -253,6 +252,17 @@ namespace CompMs.Graphics.Chart
         }
 
         private void OnItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            if (dataType == null) {
+                dataType = cv.OfType<object>().FirstOrDefault()?.GetType();
+                if (dataType != null) {
+                    if (HorizontalPropertyName != null)
+                        hPropertyReflection = dataType.GetProperty(HorizontalPropertyName);
+                    if (VerticalPropertyName != null)
+                        vPropertyReflection = dataType.GetProperty(VerticalPropertyName);
+                    if (SelectedItem != null)
+                        cv.MoveCurrentTo(SelectedItem);
+                }
+            }
             SetDrawingVisuals();
             if (SelectedItem != null && cv.Contains(SelectedItem))
                 cv.MoveCurrentTo(SelectedItem);

@@ -2,10 +2,12 @@
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Mathematics.Statistics;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialImmsCore.Parameter;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -18,13 +20,19 @@ namespace CompMs.App.Msdial.Model.Statistics
         private readonly ObservableCollection<AlignmentSpotPropertyModel> _spotprops;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly List<AnalysisFileBean> _analysisfiles;
+        private readonly IObservable<KeyBrushMapper<string>> _brushmaps;
 
-        public PcaSettingModel(ParameterBase parameter, ObservableCollection<AlignmentSpotPropertyModel> spotprops,
-            IMatchResultEvaluator<MsScanMatchResult> evaluator, List<AnalysisFileBean> analysisfiles) {
+        public PcaSettingModel(ParameterBase parameter,
+            ObservableCollection<AlignmentSpotPropertyModel> spotprops,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            List<AnalysisFileBean> analysisfiles,
+            IObservable<KeyBrushMapper<string>> brushmaps
+            ) {
             _parameter = parameter ?? throw new System.ArgumentNullException(nameof(parameter));
             _spotprops = spotprops ?? throw new System.ArgumentNullException(nameof(spotprops));
             _analysisfiles = analysisfiles ?? throw new System.ArgumentNullException(nameof(analysisfiles));
             _evaluator = evaluator ?? throw new System.ArgumentNullException(nameof(evaluator));
+            _brushmaps = brushmaps ?? throw new System.ArgumentNullException(nameof(brushmaps));
             maxPcNumber = 5;
         }
 
@@ -120,7 +128,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             //}
 
             var pcaResult = StatisticsMathematics.PrincipalComponentAnalysis(statObj, MultivariateAnalysisOption.Pca, MaxPcNumber);
-            PcaResultModel = new PcaResultModel(pcaResult, _parameter, metaboliteSpotProps, _analysisfiles);
+            PcaResultModel = new PcaResultModel(pcaResult, _parameter, metaboliteSpotProps, _analysisfiles, _brushmaps);
         }
     }
 }
