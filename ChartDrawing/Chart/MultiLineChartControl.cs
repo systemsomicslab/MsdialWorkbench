@@ -309,7 +309,7 @@ namespace CompMs.Graphics.Chart
 
         protected override void OnRender(DrawingContext drawingContext) {
             base.OnRender(drawingContext);
-            if (_lazySerieses is null) {
+            if (_lazySerieses is null || HorizontalAxis is null || VerticalAxis is null) {
                 return;
             }
 

@@ -3,12 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              mc:Ignorable="d" 
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              Name="AlignedEicView"
              d:DataContext="{d:DesignInstance Type=vm:AlignmentEicViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -27,6 +27,83 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
+        <chart:SimpleChartControl GraphTitle="{Binding GraphTitle.Value}"
+                                  HorizontalTitle="{Binding HorizontalTitle.Value}"
+                                  HorizontalAxis="{Binding HorizontalAxis}"
+                                  VerticalAxis="{Binding VerticalAxis}"
+                                  Style="{StaticResource BasicChart}">
+            <chart:SimpleChartControl.VerticalTitle>
+                <MultiBinding StringFormat="{}{0}({1})">
+                    <MultiBinding.Bindings>
+                        <Binding Path="VerticalTitle.Value"/>
+                        <Binding Path="VerticalAxis.UnitLabel"/>
+                    </MultiBinding.Bindings>
+                </MultiBinding>
+            </chart:SimpleChartControl.VerticalTitle>
+            <chart:SimpleChartControl.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Peak curation (EICs overlay)"
+                              Command="{Binding ShowPeakCurationWinByOverlayEICsCommand, Mode=OneTime}"/>
+                    <MenuItem Header="Peak curation (Sample table)"
+                              Command="{Binding ShowPeakCurationWinBySampleTableCommand, Mode=OneTime}"/>
+                    <Separator/>
+                    <MenuItem Header="Save image using dialog"
+                              Command="{x:Static graphio:SaveImageAsWithDialogCommand.Instance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Save image as...">
+                        <MenuItem Header="Save as emf"
+                                  Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Save as png"
+                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                    <MenuItem Header="Copy image using dialog"
+                              Command="{x:Static graphio:CopyImageAsWithDialogCommand.Instance}"
+                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    <MenuItem Header="Copy image as...">
+                        <MenuItem Header="Copy as emf"
+                                  Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                        <MenuItem Header="Copy as png"
+                                  Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                    </MenuItem>
+                </ContextMenu>
+            </chart:SimpleChartControl.ContextMenu>
+            <Grid>
+                <chart:MultiLineChartControl ItemsSources="{Binding EicChromatograms.Value}"
+                                             CollectionDataType="{x:Type do:Chromatogram}"
+                                             ItemsProperty="Peaks"
+                                             ItemsDataType="{x:Type do:PeakItem}"
+                                             HorizontalProperty="{Binding HorizontalProperty.Value}"
+                                             VerticalProperty="{Binding VerticalProperty.Value}"
+                                             LineBrush="{Binding Brush}"
+                                             LineThickness="1">
+                    <!--
+                    <chart:MultiLineChartControl.ToolTip>
+                        <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Class: "/>
+                                <TextBlock Text="{Binding DataContext.Class, Mode=OneWay}"/>
+                            </StackPanel>
+                        </ToolTip>
+                    </chart:MultiLineChartControl.ToolTip>
+                    -->
+                </chart:MultiLineChartControl>
+                <chart:MultiAreaChartControl ItemsSources="{Binding EicChromatograms.Value}"
+                                             CollectionDataType="{x:Type do:Chromatogram}"
+                                             ItemsProperty="PeakArea"
+                                             ItemsDataType="{x:Type do:PeakItem}"
+                                             HorizontalProperty="{Binding HorizontalProperty.Value}"
+                                             VerticalProperty="{Binding VerticalProperty.Value}"
+                                             AreaBrush="{Binding Brush}"
+                                             AreaOpacity="0.25"
+                                             IsHitTestVisible="False"/>
+            </Grid>
+        </chart:SimpleChartControl>
+                                  
+        <!--
         <chart:MultiChart Name="Eics"
                           GraphTitle="{Binding GraphTitle.Value}"
                           HorizontalTitle="{Binding HorizontalTitle.Value}"
@@ -99,5 +176,6 @@
                 </MultiBinding>
             </chart:MultiChart.VerticalTitle>
         </chart:MultiChart>
+        -->
     </Grid>
 </UserControl>

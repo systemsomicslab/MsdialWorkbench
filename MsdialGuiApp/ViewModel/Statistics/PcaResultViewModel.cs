@@ -108,12 +108,10 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
             Loadings = new ReactiveCollection<ComponentLoadingViewModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
             Observable.CombineLatest(ComponentX, ComponentY)
-                .Throttle(TimeSpan.FromSeconds(.05d))
                 .Subscribe(xy =>
                 {
                     Loadings.ClearOnScheduler();
                     Loadings.AddRangeOnScheduler(_model.Loadings.Select(loading => new ComponentLoadingViewModel(loading, xy[0] - 1, xy[1] - 1)));
-
                 }).AddTo(Disposables);
 
             LoadingHorizontalAxis = ComponentX.Select(i => model.LoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -121,12 +119,10 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
             Scores = new ReactiveCollection<ComponentScoreViewModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
             Observable.CombineLatest(ComponentX, ComponentY)
-                .Throttle(TimeSpan.FromSeconds(.05d))
                 .Subscribe(xy =>
                 {
                     Scores.ClearOnScheduler();
                     Scores.AddRangeOnScheduler(_model.Scores.Select(score => new ComponentScoreViewModel(score, xy[0] - 1, xy[1] - 1)));
-
                 }).AddTo(Disposables);
 
             ScoreHorizontalAxis = ComponentX.Select(i => model.ScoreAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);

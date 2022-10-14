@@ -41,9 +41,10 @@ namespace CompMs.App.Msdial.Model.Chart
             }
 
             EicChromatograms = chromatoramSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables); ;
+            var eicChromatograms = chromatoramSource.Throttle(TimeSpan.FromSeconds(.05d)).ToReactiveProperty().AddTo(Disposables);
 
-            var peaksox = EicChromatograms
-                .Select(chroms => chroms.SelectMany(chrom => chrom.Peaks).ToArray());
+            var peaksox = eicChromatograms
+                .Select(chroms => chroms?.SelectMany(chrom => chrom.Peaks).ToArray() ?? new PeakItem[0]);
 
             var nopeak = peaksox.Where(peaks => !peaks.Any()).Select(_ => new Range(0, 1));
 
@@ -60,7 +61,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Select(model_ => model_.AlignedPeakPropertiesModelAsObservable.Where(props => props?.Any() ?? false).Select(_ => model_))
                 .Switch()
                 .CombineLatest(
-                    EicChromatograms.Where(chromatogram => chromatogram != null && chromatogram.Count > 0),
+                    eicChromatograms.Where(chromatogram => chromatogram != null && chromatogram.Count > 0),
                     (model_, chromatogram) => new AlignedChromatogramModificationModelLegacy(model_, chromatogram, analysisFiles, parameter));
             AlignedChromatogramModificationModel = alignedChromatogramModificationModel;
 
@@ -68,7 +69,7 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Select(model_ => model_.AlignedPeakPropertiesModelAsObservable.Where(props => props?.Any() ?? false).Select(_ => model_))
                 .Switch()
                 .CombineLatest(
-                    EicChromatograms.Where(chromatogram => chromatogram != null && chromatogram.Count > 0),
+                    eicChromatograms.Where(chromatogram => chromatogram != null && chromatogram.Count > 0),
                     (model_, chromatogram) => new SampleTableViewerInAlignmentModelLegacy(model_, chromatogram, analysisFiles, parameter));
             SampleTableViewerInAlignmentModel = sampleTableViewerInAlignmentModelLegacy;
         }

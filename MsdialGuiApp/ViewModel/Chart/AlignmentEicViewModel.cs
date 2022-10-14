@@ -4,12 +4,15 @@ using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Design;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
@@ -66,7 +69,9 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             var alignedChromatogramModificationViewModelLegacy = 
                 new AlignedChromatogramModificationViewModelLegacy(model.AlignedChromatogramModificationModel).AddTo(Disposables);
 
-            ShowPeakCurationWinByOverlayEICsCommand = new ReactiveCommand().AddTo(Disposables);
+            Brush = new DelegateBrushMapper<Chromatogram>(chromatogram => chromatogram.Color);
+
+            ShowPeakCurationWinByOverlayEICsCommand = model.AlignedChromatogramModificationModel.Select(m => !(m is null)).ToReactiveCommand().AddTo(Disposables);
             ShowPeakCurationWinByOverlayEICsCommand
                 .Subscribe(_ => MessageBroker.Default.Publish(alignedChromatogramModificationViewModelLegacy))
                 .AddTo(Disposables);
@@ -74,7 +79,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             var sampleTableViewerInAlignmentViewModelLegacy =
                 new SampleTableViewerInAlignmentViewModelLegacy(model.SampleTableViewerInAlignmentModel).AddTo(Disposables);
 
-            ShowPeakCurationWinBySampleTableCommand = new ReactiveCommand().AddTo(Disposables);
+            ShowPeakCurationWinBySampleTableCommand = model.SampleTableViewerInAlignmentModel.Select(m => !(m is null)).ToReactiveCommand().AddTo(Disposables);
             ShowPeakCurationWinBySampleTableCommand
                 .Subscribe(_ => MessageBroker.Default.Publish(sampleTableViewerInAlignmentViewModelLegacy))
                 .AddTo(Disposables);
@@ -87,6 +92,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
         public IAxisManager<double> HorizontalAxis { get; }
 
         public IAxisManager<double> VerticalAxis { get; }
+
+        public IBrushMapper<Chromatogram> Brush { get; }
 
         public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
 

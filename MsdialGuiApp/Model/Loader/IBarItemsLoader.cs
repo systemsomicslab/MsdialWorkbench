@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Loader
@@ -39,7 +40,6 @@ namespace CompMs.App.Msdial.Model.Loader
                                 (cls, peaks) => peaks
                                     .Select(peak => peak.ObserveProperty(expression))
                                     .CombineLatest()
-                                    .Throttle(TimeSpan.FromMilliseconds(50))
                                     .Select(_ =>
                                         new BarItem(
                                             cls,

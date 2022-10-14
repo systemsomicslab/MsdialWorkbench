@@ -215,8 +215,6 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
-        public BarItemCollection BarItemCollection { get; }
-
         internal readonly AlignmentSpotProperty innerModel;
 
         public static readonly double KMIupacUnit;
@@ -232,17 +230,11 @@ namespace CompMs.App.Msdial.Model.DataObj
             KMNominalUnit = Math.Round(KMIupacUnit);
         }
 
-        public AlignmentSpotPropertyModel(AlignmentSpotProperty innerModel) : this(innerModel, Observable.Return((IBarItemsLoader)null)) {
-
-        }
-
-        public AlignmentSpotPropertyModel(AlignmentSpotProperty innerModel, IObservable<IBarItemsLoader> barItemsLoader) {
+        public AlignmentSpotPropertyModel(AlignmentSpotProperty innerModel) {
             this.innerModel = innerModel;
             _alignedPeakPropertiesModelProperty = Observable.FromAsync(() => innerModel.AlignedPeakPropertiesTask)
                 .Select(props => new ReadOnlyCollection<AlignmentChromPeakFeatureModel>(props.Select(prop => new AlignmentChromPeakFeatureModel(prop)).ToArray()))
                 .ToReactiveProperty(); // TODO: Dispose
-
-            BarItemCollection = BarItemCollection.Create(this, barItemsLoader);
         }
 
         public void SetUnknown() {

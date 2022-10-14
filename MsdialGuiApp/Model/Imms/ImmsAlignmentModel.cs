@@ -58,7 +58,7 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
-            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, observableBarItemsLoader)));
+            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
 
             InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Imms);
 
@@ -156,7 +156,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 ),
                 item => item.Class,
                 Colors.Blue);
-            var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", Observable.Return(BarItemsLoader), Observable.Return(true));
+            var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", observableBarItemsLoader, Observable.Return(true));
             var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
             BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
 
@@ -174,7 +174,7 @@ namespace CompMs.App.Msdial.Model.Imms
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target).AddTo(Disposables);
+            AlignmentSpotTableModel = new ImmsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), observableBarItemsLoader).AddTo(Disposables);
 
             MsdecResult = Target.Where(t => t != null)
                 .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))

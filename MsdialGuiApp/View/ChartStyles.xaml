@@ -63,8 +63,9 @@
                                     behavior:ZoomByDragBehavior.IsEnabled="True"
                                     behavior:ZoomByWheelBehavior.IsEnabled="True"
                                     behavior:MoveByDragBehavior.IsEnabled="True"
-                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True">
-                                <ContentPresenter/>
+                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"
+                                    behavior:AxisRangeRecalculationBehavior.IsEnabled="True">
+                                <ContentPresenter behavior:AxisRangeRecalculationBehavior.IsEnabled="False"/>
                             </Border>
                         </Border>
 

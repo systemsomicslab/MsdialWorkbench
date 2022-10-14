@@ -61,11 +61,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
 
             var props = Container.AlignmentSpotProperties;
-            var orderedProps = props.OrderBy(prop => prop.TimesCenter.RT.Value).Select(prop => new AlignmentSpotPropertyModel(prop, observableBarItemsLoader)).ToArray();
+            var orderedProps = props.OrderBy(prop => prop.TimesCenter.RT.Value).Select(prop => new AlignmentSpotPropertyModel(prop)).ToArray();
             var propTree = new SegmentTree<IEnumerable<AlignmentSpotPropertyModel>>(props.Count, Enumerable.Empty<AlignmentSpotPropertyModel>(), Enumerable.Concat);
             using (propTree.LazyUpdate()) {
                 foreach (var (prop, index) in orderedProps.WithIndex()) {
-                    propTree[index] = prop.innerModel.AlignmentDriftSpotFeatures.Select(dprop => new AlignmentSpotPropertyModel(dprop, observableBarItemsLoader)).ToArray();
+                    propTree[index] = prop.innerModel.AlignmentDriftSpotFeatures.Select(dprop => new AlignmentSpotPropertyModel(dprop)).ToArray();
                 }
             }
             var driftProps = new ObservableCollection<AlignmentSpotPropertyModel>(propTree.Query(0, props.Count));
@@ -248,12 +248,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 Observable.Return(lowerSpecBrush)).AddTo(Disposables);
 
             var classBrush = new KeyBrushMapper<BarItem, string>(classToColor, item => item.Class, Colors.Blue);
-            var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", Observable.Return(BarItemsLoader), Observable.Return(true));
+            var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", observableBarItemsLoader, Observable.Return(true));
             var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
             RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
             DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
 
-            AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(driftProps, target, Observable.Return(classBrush)).AddTo(Disposables);
+            AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(driftProps, target, Observable.Return(classBrush), observableBarItemsLoader).AddTo(Disposables);
 
             MsdecResult = target.Where(t => t != null)
                 .Select(t => loader.LoadMSDecResult(t.MasterAlignmentID))

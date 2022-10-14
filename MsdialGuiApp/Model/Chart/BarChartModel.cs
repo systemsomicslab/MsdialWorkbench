@@ -17,12 +17,14 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class BarChartModel : DisposableModelBase {
         public BarChartModel(IObservable<AlignmentSpotPropertyModel> source, IReactiveProperty<BarItemsLoaderData> barItemsLoaderData, IList<BarItemsLoaderData> barItemsLoaderDatas, IObservable<IBrushMapper<BarItem>> classBrush) {
-            var barItemsLoader = barItemsLoaderData.Where(data => !(data is null)).Select(data => data.ObservableLoader).Switch();
+            var barItemsLoader = barItemsLoaderData.Where(data => !(data is null)).Select(data => data.ObservableLoader).Switch().ToReactiveProperty().AddTo(Disposables);
             BarItemsSource = source.CombineLatest(barItemsLoader,
                     (src, loader) => src is null || loader is null
                         ? Observable.Return(new List<BarItem>())
                         : loader.LoadBarItemsAsObservable(src))
-                .Switch();
+                .Switch()
+                .ToReactiveProperty()
+                .AddTo(Disposables);
             if (classBrush is null) {
                 classBrush = BarItemsSource.Select(
                     items => new KeyBrushMapper<BarItem>(
