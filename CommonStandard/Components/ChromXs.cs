@@ -29,21 +29,43 @@ namespace CompMs.Common.Components
         }
 
         [IgnoreMember]
-        public RetentionTime RT { get; set; } = new RetentionTime(-1);
+        public RetentionTime RT { get; set; }
 
         [IgnoreMember]
-        public RetentionIndex RI { get; set; } = new RetentionIndex(-1);
+        public RetentionIndex RI { get; set; }
 
         [IgnoreMember]
-        public DriftTime Drift { get; set; } = new DriftTime(-1);
+        public DriftTime Drift { get; set; }
 
         [IgnoreMember]
-        public MzValue Mz { get; set; } = new MzValue(-1);
+        public MzValue Mz { get; set; }
 
         [Key(4)]
         public ChromXType MainType { get; set; } = ChromXType.RT;
-        public ChromXs () { }
+
+        [SerializationConstructor]
+        [Obsolete("This constructor is for MessagePack only, don't use.")]
+        public ChromXs(IChromX innerRT, IChromX innerRI, IChromX innerDrift, IChromX innerMz, ChromXType mainType) {
+            InnerRT = innerRT;
+            InnerRI = innerRI;
+            InnerDrift = innerDrift;
+            InnerMz = innerMz;
+            MainType = mainType;
+        }
+
+        public ChromXs () {
+            RT = new RetentionTime(-1);
+            RI = new RetentionIndex(-1);
+            Drift = new DriftTime(-1);
+            Mz = new MzValue(-1);
+            MainType = ChromXType.RT;
+        }
+
         public ChromXs(double value, ChromXType type = ChromXType.RT, ChromXUnit unit = ChromXUnit.Min) {
+            RT = new RetentionTime(-1);
+            RI = new RetentionIndex(-1);
+            Drift = new DriftTime(-1);
+            Mz = new MzValue(-1);
             switch (type) {
                 case ChromXType.RT:
                     RT = new RetentionTime(value, unit);
@@ -65,6 +87,10 @@ namespace CompMs.Common.Components
 
         public ChromXs(IChromX chromX)
         {
+            RT = new RetentionTime(-1);
+            RI = new RetentionIndex(-1);
+            Drift = new DriftTime(-1);
+            Mz = new MzValue(-1);
             switch (chromX) {
                 case RetentionTime rt:
                     RT = rt;
@@ -83,29 +109,29 @@ namespace CompMs.Common.Components
             }
             MainType = chromX.Type;
         }
-   
-        public ChromXs(RetentionTime retentionTime)
-        {
-            RT = retentionTime;
-            MainType = retentionTime.Type;
-        }
-   
-        public ChromXs(RetentionIndex retentionIndex)
-        {
-            RI = retentionIndex;
-            MainType = retentionIndex.Type;
-        }
-   
-        public ChromXs(DriftTime driftTime)
-        {
-            Drift = driftTime;
-            MainType = driftTime.Type;
-        }
-   
-        public ChromXs(MzValue mz)
-        {
+
+        public ChromXs(RetentionTime rt, RetentionIndex ri, DriftTime dt, MzValue mz, ChromXType type) {
+            RT = rt;
+            RI = ri;
+            Drift = dt;
             Mz = mz;
-            MainType = mz.Type;
+            MainType = type;
+        }
+   
+        public ChromXs(RetentionTime retentionTime) : this(retentionTime, new RetentionIndex(-1), new DriftTime(-1), new MzValue(-1), retentionTime.Type) {
+
+        }
+   
+        public ChromXs(RetentionIndex retentionIndex) : this(new RetentionTime(-1), retentionIndex, new DriftTime(-1), new MzValue(-1), retentionIndex.Type) {
+
+        }
+   
+        public ChromXs(DriftTime driftTime) : this(new RetentionTime(-1), new RetentionIndex(-1), driftTime, new MzValue(-1), driftTime.Type) {
+
+        }
+   
+        public ChromXs(MzValue mz) : this(new RetentionTime(-1), new RetentionIndex(-1), new DriftTime(-1), mz, mz.Type) {
+
         }
    
         public IChromX GetRepresentativeXAxis()

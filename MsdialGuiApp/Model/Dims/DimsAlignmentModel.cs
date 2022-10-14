@@ -74,7 +74,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
             var barItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
             var observableBarItemsLoader = Observable.Return(barItemsLoader);
-            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop, observableBarItemsLoader)));
+            Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: ~(FilterEnableStatus.Rt | FilterEnableStatus.Dt)).AddTo(Disposables);
 
@@ -169,7 +169,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 ),
                 item => item.Class,
                 Colors.Blue);
-            var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", Observable.Return(barItemsLoader), Observable.Return(true));
+            var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", observableBarItemsLoader, Observable.Return(true));
             var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
             BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
 
@@ -187,7 +187,7 @@ namespace CompMs.App.Msdial.Model.Dims
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
-            AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, Target).AddTo(Disposables);
+            AlignmentSpotTableModel = new DimsAlignmentSpotTableModel(Ms1Spots, Target, Observable.Return(classBrush), observableBarItemsLoader).AddTo(Disposables);
 
             _msdecResult = Target.Where(t => t != null)
                 .Select(t => decLoader.LoadMSDecResult(t.MasterAlignmentID))

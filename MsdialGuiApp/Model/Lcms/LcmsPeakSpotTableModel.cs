@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Table;
 using CompMs.Graphics.Base;
 using Reactive.Bindings;
@@ -47,14 +48,17 @@ namespace CompMs.App.Msdial.Model.Lcms
         public LcmsAlignmentSpotTableModel(
             ObservableCollection<AlignmentSpotPropertyModel> peakSpots,
             IReactiveProperty<AlignmentSpotPropertyModel> target,
-            IObservable<IBrushMapper<BarItem>> classBrush)
+            IObservable<IBrushMapper<BarItem>> classBrush,
+            IObservable<IBarItemsLoader> barItemsLoader)
             : base(peakSpots, target,
                   peakSpots.DefaultIfEmpty().Min(peakSpot => peakSpot?.MassCenter) ?? 0d, peakSpots.DefaultIfEmpty().Max(peakSpot => peakSpot?.MassCenter) ?? 0d,
                   peakSpots.DefaultIfEmpty().Min(peakSpot => peakSpot?.TimesCenter) ?? 0d, peakSpots.DefaultIfEmpty().Max(peakSpot => peakSpot?.TimesCenter) ?? 0d) {
             ClassBrush = classBrush;
+            BarItemsLoader = barItemsLoader;
         }
 
         public IObservable<IBrushMapper<BarItem>> ClassBrush { get; }
+        public IObservable<IBarItemsLoader> BarItemsLoader { get; }
     }
 
     sealed class LcmsAnalysisPeakTableModel : LcmsPeakSpotTableModel<ChromatogramPeakFeatureModel>

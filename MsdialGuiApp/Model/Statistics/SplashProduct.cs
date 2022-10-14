@@ -28,8 +28,7 @@ namespace CompMs.App.Msdial.Model.Statistics
 
         public IObservable<bool> CanNormalize(IReadOnlyList<AlignmentSpotProperty> spots) {
             return Lipids.ObserveElementPropertyChanged()
-                .Select(_ => Observable.Defer(() => Observable.Return(Lipids.Any(lipid => lipid.IsRequiredFieldFilled(spots)))))
-                .Switch();
+                .Select(_ => Lipids.Any(lipid => lipid.IsRequiredFieldFilled(spots)));
         }
 
         public static SplashProduct BuildPublicProduct(XElement element) {

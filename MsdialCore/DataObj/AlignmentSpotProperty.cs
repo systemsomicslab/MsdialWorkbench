@@ -11,6 +11,7 @@ using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
@@ -36,7 +37,12 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(7)]
         public int InternalStandardAlignmentID { get; set; } // masteralignmentid is inserted.
         [Key(8)]
-        public List<AlignmentChromPeakFeature> AlignedPeakProperties { get; set; } = new List<AlignmentChromPeakFeature>();
+        public List<AlignmentChromPeakFeature> AlignedPeakProperties {
+            get => AlignedPeakPropertiesTask.Result;
+            set => AlignedPeakPropertiesTask = Task.FromResult(value);
+        }
+        [IgnoreMember]
+        public Task<List<AlignmentChromPeakFeature>> AlignedPeakPropertiesTask { get; set; } = Task.FromResult(new List<AlignmentChromPeakFeature>());
         [Key(9)]
         public List<AlignmentSpotProperty> AlignmentDriftSpotFeatures { get; set; } = null;
         [Key(53)]

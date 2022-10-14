@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 using MessagePack;
 using Rfx.Riken.OsakaUniv;
 
@@ -48,11 +49,24 @@ namespace CompMs.Common.MessagePack {
             }
             return res;
         }
+
         public static List<T> LoadLargerListFromStream<T>(Stream s) {
             return LargeListMessagePack.Deserialize<T>(s);
         }
 
+        public static IEnumerable<List<T>> LoadIncrementalLargerListFromFile<T>(string path)
+        {
+            using (var fs = new FileStream(path, FileMode.Open))
+            {
+                foreach (var res in LoadIncrementalLargerListFromStream<T>(fs)) {
+                    yield return res;
+                }
+            }
+        }
 
+        public static IEnumerable<List<T>> LoadIncrementalLargerListFromStream<T>(Stream s) {
+            return LargeListMessagePack.DeserializeIncremental<T>(s);
+        }
     }
 
     public static class MessagePackMsFinderHandler

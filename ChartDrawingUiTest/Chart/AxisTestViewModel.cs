@@ -69,10 +69,12 @@ namespace ChartDrawingUiTest.Chart
             axisY.ChartMargin = new ConstantMargin(20, 50);
             var logAxisY = LogScaleAxisManager<double>.Build(Series, p => p.Y);
             logAxisY.ChartMargin = new ConstantMargin(20, 50);
+            var relativeY = new RelativeAxisManager(xs.Min(dp => dp.Y), xs.Max(dp => dp.Y), new ConstantMargin(20, 50));
+            var defectY = new DefectAxisManager(100d, new ConstantMargin(20, 50));
 
             AxisYs = new ObservableCollection<IAxisManager>(new IAxisManager[]
             {
-                axisY, logAxisY,
+                axisY, logAxisY, relativeY, defectY,
             });
 
             AxisX = axisX;

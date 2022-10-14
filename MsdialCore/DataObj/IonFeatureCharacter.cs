@@ -1,17 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using CompMs.Common.DataObj.Property;
+﻿using CompMs.Common.DataObj.Property;
 using MessagePack;
+using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
     public class IonFeatureCharacter {
+        public IonFeatureCharacter() {
+            AdductType = new AdductIon();
+            AdductTypeByAmalgamationProgram = new AdductIon();
+            PeakLinks = new List<LinkedPeakFeature>();
+        }
+
+        [SerializationConstructor]
+        public IonFeatureCharacter(
+            AdductIon adductType, AdductIon adductTypeByAmalgamationProgram, int charge, List<LinkedPeakFeature> peakLinks, int isotopeWeightNumber,
+            int isotopeParentPeakID, int peakGroupID, bool isLinked, int adductParent) {
+
+            AdductType = adductType;
+            AdductTypeByAmalgamationProgram = adductTypeByAmalgamationProgram;
+            Charge = charge;
+            PeakLinks = peakLinks;
+            IsotopeWeightNumber = isotopeWeightNumber;
+            IsotopeParentPeakID = isotopeParentPeakID;
+            PeakGroupID = peakGroupID;
+            IsLinked = isLinked;
+            AdductParent = adductParent;
+        }
+
         // ion feature
         [Key(0)]
-        public AdductIon AdductType { get; set; } = new AdductIon();
+        public AdductIon AdductType { get; set; }
         [Key(1)]
-        public AdductIon AdductTypeByAmalgamationProgram { get; set; } = new AdductIon();
+        public AdductIon AdductTypeByAmalgamationProgram { get; set; }
         [Key(2)]
         public int Charge { get; set; } = 1;
         [Key(3)]
@@ -26,9 +46,5 @@ namespace CompMs.MsdialCore.DataObj {
         public bool IsLinked { get; set; } = false;
         [Key(8)]
         public int AdductParent { get; set; } = -1; // the peak id which is used to annotate the adduct type for this peak is insearted.
-
-        public IonFeatureCharacter() {
-            PeakLinks = new List<LinkedPeakFeature>();
-        }
     }
 }

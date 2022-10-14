@@ -2,13 +2,14 @@
 using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 
 namespace CompMs.App.Msdial.ViewModel.Dims
 {
-    abstract class DimsPeakSpotTableViewModel : PeakSpotTableViewModelBase
+    internal abstract class DimsPeakSpotTableViewModel : PeakSpotTableViewModelBase
     {
         protected DimsPeakSpotTableViewModel(
             IDimsPeakSpotTableModel model,
@@ -41,7 +42,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public IReactiveProperty<double> MassUpper { get; }
     }
 
-    sealed class DimsAnalysisPeakTableViewModel : DimsPeakSpotTableViewModel
+    internal sealed class DimsAnalysisPeakTableViewModel : DimsPeakSpotTableViewModel
     {
         public DimsAnalysisPeakTableViewModel(
             DimsPeakSpotTableModel<ChromatogramPeakFeatureModel> model,
@@ -66,10 +67,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public ReadOnlyReactivePropertySlim<EicLoader> EicLoader { get; }
     }
 
-    sealed class DimsAlignmentSpotTableViewModel : DimsPeakSpotTableViewModel
+    internal sealed class DimsAlignmentSpotTableViewModel : DimsPeakSpotTableViewModel
     {
         public DimsAlignmentSpotTableViewModel(
-            DimsPeakSpotTableModel<AlignmentSpotPropertyModel> model,
+            DimsAlignmentSpotTableModel model,
             IReactiveProperty<double> massLower,
             IReactiveProperty<double> massUpper,
             IReactiveProperty<string> metaboliteFilterKeyword,
@@ -78,9 +79,13 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             IReactiveProperty<string> adductFilterKeyword,
             IReactiveProperty isEdittng)
             : base(model, massLower, massUpper, metaboliteFilterKeyword, commentFilterKeyword, ontologyFilterKeyword, adductFilterKeyword) {
+            BarItemsLoader = model.BarItemsLoader;
+            ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             IsEdittng = isEdittng ?? throw new ArgumentNullException(nameof(isEdittng));
         }
 
         public IReactiveProperty IsEdittng { get; }
+        public IObservable<IBarItemsLoader> BarItemsLoader { get; }
+        public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> ClassBrush { get; }
     }
 }

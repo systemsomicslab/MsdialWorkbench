@@ -193,7 +193,14 @@
                                         Width="150">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <chart:SmallClassBarChart DataContext="{Binding BarItemCollection, Converter={StaticResource CollectionToViewModel}}"/>
+                            <chart:SmallClassBarChart ClassBrush="{Binding DataContext.ClassBrush.Value, RelativeSource={RelativeSource AncestorType=DataGrid}}">
+                                <chart:SmallClassBarChart.DataContext>
+                                    <MultiBinding Converter="{StaticResource CollectionToViewModel}">
+                                        <Binding/>
+                                        <Binding Path="DataContext.BarItemsLoader" RelativeSource="{RelativeSource AncestorType=DataGrid}"/>
+                                    </MultiBinding>
+                                </chart:SmallClassBarChart.DataContext>
+                            </chart:SmallClassBarChart>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

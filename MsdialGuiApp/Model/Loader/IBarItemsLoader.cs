@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Loader
@@ -32,19 +33,18 @@ namespace CompMs.App.Msdial.Model.Loader
             var selector = expression.Compile();
             IObservable<List<BarItem>> LoadBarItemsAsObservable(AlignmentSpotPropertyModel target) {
                 return id2clsObservable
-                    .Select(id2cls => target
-                        .AlignedPeakPropertiesModel
-                        .GroupBy(peak =>
-                            id2cls[peak.FileID],
-                            (cls, peaks) => peaks
-                                .Select(peak => peak.ObserveProperty(expression))
-                                .CombineLatest()
-                                .Throttle(TimeSpan.FromMilliseconds(50))
-                                .Select(_ =>
-                                    new BarItem(
-                                        cls,
-                                        peaks.Average(selector),
-                                        BasicMathematics.Stdev(peaks.Select(selector).ToArray()))))
+                    .CombineLatest(target.AlignedPeakPropertiesModelAsObservable.Where(props => props != null),
+                        (id2cls, properties) => properties
+                            .GroupBy(peak =>
+                                id2cls[peak.FileID],
+                                (cls, peaks) => peaks
+                                    .Select(peak => peak.ObserveProperty(expression))
+                                    .CombineLatest()
+                                    .Select(_ =>
+                                        new BarItem(
+                                            cls,
+                                            peaks.Average(selector),
+                                            BasicMathematics.Stdev(peaks.Select(selector).ToArray()))))
                         .CombineLatest())
                     .Switch()
                     .Select(items => items.ToList());

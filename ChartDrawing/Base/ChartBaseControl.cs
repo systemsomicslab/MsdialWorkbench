@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Graphics.Behavior;
+using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -34,7 +35,6 @@ namespace CompMs.Graphics.Core.Base
             if (e.OldValue != e.NewValue) {
                 if (d is ChartBaseControl bc) {
                     bc.OnHorizontalAxisChanged((IAxisManager)e.OldValue, (IAxisManager)e.NewValue);
-                    bc.InvalidateVisual();
                 }
             }
         }
@@ -42,24 +42,16 @@ namespace CompMs.Graphics.Core.Base
         protected virtual void OnHorizontalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             if (oldValue != null) {
                 oldValue.RangeChanged -= OnHorizontalRangeChanged;
-                oldValue.InitialRangeChanged -= OnHorizontalInitialRangeChanged;
+                AxisRangeRecalculationBehavior.SetHorizontalAxis(this, null);
             }
 
             if (newValue != null) {
                 newValue.RangeChanged += OnHorizontalRangeChanged;
-                newValue.InitialRangeChanged += OnHorizontalInitialRangeChanged;
-                newValue.Recalculate(ActualWidth);
-                newValue.Reset();
+                AxisRangeRecalculationBehavior.SetHorizontalAxis(this, newValue);
             }
         }
 
         void OnHorizontalRangeChanged(object sender, EventArgs e) {
-            InvalidateVisual();
-        }
-
-        void OnHorizontalInitialRangeChanged(object sender, EventArgs e) {
-            HorizontalAxis.Recalculate(ActualWidth);
-            HorizontalAxis.Reset();
             InvalidateVisual();
         }
 
@@ -89,7 +81,6 @@ namespace CompMs.Graphics.Core.Base
             if (e.OldValue != e.NewValue) {
                 if (d is ChartBaseControl bc) {
                     bc.OnVerticalAxisChanged((IAxisManager)e.OldValue, (IAxisManager)e.NewValue);
-                    bc.InvalidateVisual();
                 }
             }
         }
@@ -97,24 +88,16 @@ namespace CompMs.Graphics.Core.Base
         protected virtual void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
             if (oldValue != null) {
                 oldValue.RangeChanged -= OnVerticalRangeChanged;
-                oldValue.InitialRangeChanged -= OnVerticalInitialRangeChanged;
+                AxisRangeRecalculationBehavior.SetVerticalAxis(this, null);
             }
 
             if (newValue != null) {
                 newValue.RangeChanged += OnVerticalRangeChanged;
-                newValue.InitialRangeChanged += OnVerticalInitialRangeChanged;
-                newValue.Recalculate(ActualHeight);
-                newValue.Reset();
+                AxisRangeRecalculationBehavior.SetVerticalAxis(this, newValue);
             }
         }
 
         void OnVerticalRangeChanged(object sender, EventArgs e) {
-            InvalidateVisual();
-        }
-
-        void OnVerticalInitialRangeChanged(object sender, EventArgs e) {
-            VerticalAxis.Recalculate(ActualHeight);
-            VerticalAxis.Reset();
             InvalidateVisual();
         }
 
@@ -195,22 +178,6 @@ namespace CompMs.Graphics.Core.Base
             }
         }
 
-        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) {
-            base.OnRenderSizeChanged(sizeInfo);
-            if (!(HorizontalAxis is null)) {
-                HorizontalAxis.Recalculate(sizeInfo.NewSize.Width);
-                if (sizeInfo.PreviousSize.Width == 0) {
-                    HorizontalAxis.Reset();
-                }
-            }
-            if (!(VerticalAxis is null)) {
-                VerticalAxis.Recalculate(sizeInfo.NewSize.Height);
-                if (sizeInfo.PreviousSize.Height == 0) {
-                    VerticalAxis.Reset();
-                }
-            }
-        }
-
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e) {
             base.OnMouseLeftButtonUp(e);
             if (Focusable && !IsKeyboardFocused) {
@@ -232,7 +199,6 @@ namespace CompMs.Graphics.Core.Base
             }
         }
 
-        #region VisualCollection
         protected override int VisualChildrenCount => visualChildren.Count;
         protected override Visual GetVisualChild(int index)
         {
@@ -240,6 +206,5 @@ namespace CompMs.Graphics.Core.Base
                 throw new ArgumentOutOfRangeException();
             return visualChildren[index];
         }
-        #endregion
     }
 }

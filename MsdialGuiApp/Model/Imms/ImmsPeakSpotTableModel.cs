@@ -1,6 +1,9 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Table;
+using CompMs.Graphics.Base;
 using Reactive.Bindings;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -39,19 +42,25 @@ namespace CompMs.App.Msdial.Model.Imms
         public double DriftMax { get; }
     }
 
-    sealed class ImmsAlignmentSpotTableModel : ImmsPeakSpotTableModel<AlignmentSpotPropertyModel>
+    internal sealed class ImmsAlignmentSpotTableModel : ImmsPeakSpotTableModel<AlignmentSpotPropertyModel>
     {
         public ImmsAlignmentSpotTableModel(
             ObservableCollection<AlignmentSpotPropertyModel> spots,
-            IReactiveProperty<AlignmentSpotPropertyModel> target)
+            IReactiveProperty<AlignmentSpotPropertyModel> target,
+            IObservable<IBrushMapper<BarItem>> classBrush,
+            IObservable<IBarItemsLoader> barItemsLoader)
             : base(spots, target,
                   spots.Select(peak => peak.MassCenter).DefaultIfEmpty().Min(), spots.Select(peak => peak.MassCenter).DefaultIfEmpty().Max(),
                   spots.Select(peak => peak.TimesCenter).DefaultIfEmpty().Min(), spots.Select(peak => peak.TimesCenter).DefaultIfEmpty().Max()) {
-
+            ClassBrush = classBrush;
+            BarItemsLoader = barItemsLoader;
         }
+
+        public IObservable<IBrushMapper<BarItem>> ClassBrush { get; }
+        public IObservable<IBarItemsLoader> BarItemsLoader { get; }
     }
 
-    sealed class ImmsAnalysisPeakTableModel : ImmsPeakSpotTableModel<ChromatogramPeakFeatureModel>
+    internal sealed class ImmsAnalysisPeakTableModel : ImmsPeakSpotTableModel<ChromatogramPeakFeatureModel>
     {
         public ImmsAnalysisPeakTableModel(ObservableCollection<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target)
             : base(peaks, target,
