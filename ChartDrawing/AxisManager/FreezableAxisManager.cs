@@ -1,6 +1,7 @@
 ﻿using CompMs.Graphics.Core.Base;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 
 namespace CompMs.Graphics.AxisManager
@@ -181,8 +182,12 @@ namespace CompMs.Graphics.AxisManager
                 var axVal = TranslateToAxisValue(value);
                 result.Add(TranslateToRelativePointCore(axVal, min, max));
             }
-
             return result;
+        }
+
+        private List<double> TranslateToRelativePoints(IEnumerable<AxisValue> values) {
+            double max = Max, min = Min;
+            return values.Select(axVal => TranslateToRelativePointCore(axVal, min, max)).ToList();
         }
 
         public double TranslateToRenderPoint(AxisValue value, bool isFlipped, double drawableLength) {
@@ -190,6 +195,14 @@ namespace CompMs.Graphics.AxisManager
         }
 
         public List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped, double drawableLength) {
+            var results = TranslateToRelativePoints(values);
+            for (var i = 0; i < results.Count; i++) {
+                results[i] = FlipRelative(results[i], isFlipped) * drawableLength;
+            }
+            return results;
+        }
+
+        public List<double> TranslateToRenderPoints(IEnumerable<AxisValue> values, bool isFlipped, double drawableLength) {
             var results = TranslateToRelativePoints(values);
             for (var i = 0; i < results.Count; i++) {
                 results[i] = FlipRelative(results[i], isFlipped) * drawableLength;

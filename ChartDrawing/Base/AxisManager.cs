@@ -27,6 +27,7 @@ namespace CompMs.Graphics.Core.Base
         AxisValue TranslateToAxisValue(object value);
         double TranslateToRenderPoint(AxisValue value, bool isFlipped, double drawableLength);
         List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped, double drawableLength);
+        List<double> TranslateToRenderPoints(IEnumerable<AxisValue> values, bool isFlipped, double drawableLength);
         AxisValue TranslateFromRenderPoint(double value, bool isFlipped, double drawableLength);
 
         bool Contains(AxisValue value);

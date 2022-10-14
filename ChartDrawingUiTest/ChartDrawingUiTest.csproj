@@ -102,10 +102,17 @@
       <DependentUpon>LineSpectrumControlSlimTest1.xaml</DependentUpon>
     </Compile>
     <Compile Include="Chart\LineSpectrumControlSlimTestViewModel1.cs" />
+    <Compile Include="Chart\MultiAreaChartControl1.xaml.cs">
+      <DependentUpon>MultiAreaChartControl1.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Chart\MultiChart1.xaml.cs">
       <DependentUpon>MultiChart1.xaml</DependentUpon>
     </Compile>
     <Compile Include="Chart\MultiChartVM1.cs" />
+    <Compile Include="Chart\MultiLineChartControl1.xaml.cs">
+      <DependentUpon>MultiLineChartControl1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Chart\MultiLineChartControlViewModel1.cs" />
     <Compile Include="Chart\RangeSelector.xaml.cs">
       <DependentUpon>RangeSelector.xaml</DependentUpon>
     </Compile>
@@ -224,7 +231,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Chart\MultiAreaChartControl1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Chart\MultiChart1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Chart\MultiLineChartControl1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

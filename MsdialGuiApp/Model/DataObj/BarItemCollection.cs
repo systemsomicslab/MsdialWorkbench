@@ -9,7 +9,7 @@ namespace CompMs.App.Msdial.Model.DataObj
     public class BarItemCollection : ReadOnlyObservableCollection<BarItem>, IDisposable
     {
         private BarItemCollection(AlignmentSpotPropertyModel spot, IObservable<IBarItemsLoader> loader, ReactiveCollection<BarItem> collection) : base(collection) {
-            unsubscriber = loader
+            _unsubscriber = loader
                 .Where(loader_ => !(loader_ is null))
                 .Select(loader_ => loader_.LoadBarItemsAsObservable(spot))
                 .Switch()
@@ -17,17 +17,17 @@ namespace CompMs.App.Msdial.Model.DataObj
                     collection.ClearOnScheduler();
                     collection.AddRangeOnScheduler(items);
                 });
-            this.collection = collection;
+            _collection = collection;
         }
 
-        private IDisposable unsubscriber;
-        private ReactiveCollection<BarItem> collection;
+        private IDisposable _unsubscriber;
+        private ReactiveCollection<BarItem> _collection;
 
         public void Dispose() {
-            unsubscriber.Dispose();
-            unsubscriber = null;
-            collection.Dispose();
-            collection = null;
+            _unsubscriber.Dispose();
+            _unsubscriber = null;
+            _collection.Dispose();
+            _collection = null;
         }
 
         public static BarItemCollection Create(AlignmentSpotPropertyModel spot, IObservable<IBarItemsLoader> loader) {

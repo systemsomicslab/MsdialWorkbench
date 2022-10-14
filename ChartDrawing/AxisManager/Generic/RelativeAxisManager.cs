@@ -88,6 +88,8 @@ namespace CompMs.Graphics.AxisManager.Generic
             return TranslateToRenderPoints(values.OfType<double>(), isFlipped, drawableLength);
         }
 
+        public List<double> TranslateToRenderPoints(IEnumerable<AxisValue> values, bool isFlipped, double drawableLength) => _axisManagerImpl.TranslateToRenderPoints(values, isFlipped, drawableLength);
+
         public static IAxisManager<double> CreateBaseAxis() {
             return new ContinuousAxisManager<double>(RELATIVE_RANGE);
         }
