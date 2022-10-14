@@ -319,12 +319,12 @@ namespace CompMs.MspGenerator
                                 GlycerolipidFragmentation.etherPcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 name = "PC O-" + chain1String + "_" + chain2String;
                                 shortName = "PC O-" + totalChain + ":" + totalBond;
-                                if (adductIon == "[M+H]+")
-                                {
-                                    if (shortNameList.Contains(shortName)) { continue; }
-                                    shortNameList.Add(shortName);
-                                    name = shortName;
-                                }
+                                //if (adductIon == "[M+H]+")
+                                //{
+                                //    if (shortNameList.Contains(shortName)) { continue; }
+                                //    shortNameList.Add(shortName);
+                                //    name = shortName;
+                                //}
                                 break;
                             case "EtherPE":
                                 GlycerolipidFragmentation.etherPePFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);

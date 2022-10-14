@@ -2361,6 +2361,11 @@ namespace CompMs.MspGenerator
                 var fra03int = 999;
                 var fra03comment = "C5H14NO4P";
                 fragmentList.Add(fra03mass + "\t" + fra03int + "\t" + fra03comment);
+
+                var fra04mass = fra01mass - chain2Mass;
+                var fra04int = 20;
+                var fra04comment = "acyl loss";
+                fragmentList.Add(fra04mass + "\t" + fra04int + "\t" + fra04comment);
             }
         }
 

@@ -7,6 +7,7 @@ using CompMs.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -2045,8 +2046,32 @@ namespace CompMs.Common.Lipidomics
                     //var molecule = getSingleacylchainwithsuffixMoleculeObjAsLevel2("PC", LbmClass.EtherPC, totalCarbon,
                     //                totalDoubleBond, averageIntensity, "e");
                     //candidates.Add(molecule);
+                    for (int sn1Carbon = minSnCarbon; sn1Carbon <= maxSnCarbon; sn1Carbon++)
+                    {
+                        for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
+                        {
+                            var sn2Carbon = totalCarbon - sn1Carbon;
+                            var sn2Double = totalDoubleBond - sn1Double;
 
-                    return returnAnnotationResult("PC", LbmClass.EtherPC, "e", theoreticalMz, adduct,
+                            var acylLoss = theoreticalMz - acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
+
+                            var query = new List<SpectrumPeak> {
+                                new SpectrumPeak() { Mass = acylLoss, Intensity = 0.1 },
+                             };
+
+                            var foundCount = 0;
+                            var averageIntensity = 0.0;
+                            countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+
+                            if (foundCount == 1)
+                            { // 
+                                var molecule = getEtherPhospholipidMoleculeObjAsLevel2("PC", LbmClass.EtherPC, sn1Carbon, sn1Double,
+                                    sn2Carbon, sn2Double, averageIntensity, "e");
+                                candidates.Add(molecule);
+                            }
+                        }
+                    }
+                            return returnAnnotationResult("PC", LbmClass.EtherPC, "e", theoreticalMz, adduct,
                         totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
                 else if (adduct.AdductIonName == "[M+Na]+")
