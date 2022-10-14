@@ -15,16 +15,18 @@ namespace CompMs.App.Msdial.Model.Loader
 {
     internal sealed class AlignmentEicLoader : DisposableModelBase
     {
-        public AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, string eicFile, IObservable<IReadOnlyDictionary<int, string>> id2clsAsObservable, IObservable<IReadOnlyDictionary<string, Color>> cls2colorAsObservable) {
+        public AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, string eicFile, IObservable<IReadOnlyDictionary<int, string>> id2clsAsObservable, IObservable<IReadOnlyDictionary<string, Color>> cls2colorAsObservable, IObservable<IReadOnlyDictionary<int, string>> id2NameAsObservable) {
 
             _chromatogramSpotSerializer = chromatogramSpotSerializer;
             _eicFile = eicFile;
+            _id2NameAsObservable = id2NameAsObservable.ToReactiveProperty().AddTo(Disposables);
             _id2ClsAsObservable = id2clsAsObservable.ToReactiveProperty().AddTo(Disposables);
             _cls2ColorAsObservable = cls2colorAsObservable.ToReactiveProperty().AddTo(Disposables);
         }
 
         private readonly ChromatogramSerializer<ChromatogramSpotInfo> _chromatogramSpotSerializer;
         private readonly string _eicFile;
+        private readonly IObservable<IReadOnlyDictionary<int, string>> _id2NameAsObservable;
         private readonly IObservable<IReadOnlyDictionary<int, string>> _id2ClsAsObservable;
         private readonly IObservable<IReadOnlyDictionary<string, Color>> _cls2ColorAsObservable;
 
@@ -38,6 +40,7 @@ namespace CompMs.App.Msdial.Model.Loader
                     var chromatogramsAsObservable = new List<IObservable<Chromatogram>>();
                     foreach (var (pair, i) in itemss.WithIndex()) {
                         var clsAsObservable = GetClass(pair.FileID);
+                        var fileAsObservable = GetFileName(pair.FileID);
                         var clsColorAsObservable = GetClassColor(clsAsObservable);
 
                         var peakAreaAsObservable = Observable.Return(new List<PeakItem>(0));
@@ -52,15 +55,17 @@ namespace CompMs.App.Msdial.Model.Loader
 
                         var chromatogramAsObservable = Observable.CombineLatest(
                             peakAreaAsObservable,
+                            fileAsObservable,
                             clsAsObservable,
                             clsColorAsObservable,
-                            (peakArea, cls_, color) => new Chromatogram(
+                            (peakArea, fileName, cls_, color) => new Chromatogram(
                                 peaks: pair.Peaks,
                                 peakArea: peakArea,
                                 class_: cls_,
                                 color: color,
                                 type: target.ChromXType,
-                                unit: target.ChromXUnit));
+                                unit: target.ChromXUnit,
+                                description: fileName));
                         chromatogramsAsObservable.Add(chromatogramAsObservable);
                     }
                     return chromatogramsAsObservable.CombineLatest().Select(xs => xs.ToList());
@@ -70,6 +75,10 @@ namespace CompMs.App.Msdial.Model.Loader
             else {
                 return Observable.Return(new List<Chromatogram>());
             }
+        }
+
+        private IObservable<string> GetFileName(int fileId) {
+            return _id2NameAsObservable.Select(id2Name => id2Name.TryGetValue(fileId, out var name) ? name : string.Empty);
         }
 
         private IObservable<string> GetClass(int fileId) {

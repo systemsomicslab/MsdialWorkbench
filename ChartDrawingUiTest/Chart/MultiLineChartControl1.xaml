@@ -13,16 +13,47 @@
         <local:MultiLineChartControlViewModel1/>
     </Page.DataContext>
     <Grid>
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="Margin" Value="0,0,4,0"/>
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         <chart:SimpleChartControl HorizontalAxis="{Binding HorizontalAxis}"
-                                  VerticalAxis="{Binding VerticalAxis}">
-            <chart:MultiLineChartControl ItemsSources="{Binding Serieses}"
+                                  VerticalAxis="{Binding VerticalAxis}"
+                                  Grid.Row="0">
+            <chart:MultiLineChartControl x:Name="Lines"
+                                         ItemsSources="{Binding Serieses}"
                                          CollectionDataType="{x:Type local:Series}"
                                          ItemsDataType="{x:Type core:DataPoint}"
                                          ItemsProperty="Data"
                                          HorizontalProperty="X"
                                          VerticalProperty="Y"
                                          LineBrush="{Binding Brush}"
-                                         LineThickness="1.5"/>
-        </chart:SimpleChartControl>   
+                                         LineThickness="1.5"
+                                         IsHitTestVisible="True"/>
+        </chart:SimpleChartControl>
+        <GroupBox Header="Focused" Grid.Row="1">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding FocusedSeries.Type, ElementName=Lines, StringFormat=Series: Type\={0}}"/>
+                <TextBlock Text="{Binding FocusedItem.Type, ElementName=Lines, StringFormat=DataPoint: Type\={0}}"/>
+                <TextBlock Text="{Binding FocusedPoint.X, ElementName=Lines, StringFormat=X\={0}}"/>
+                <TextBlock Text="{Binding FocusedPoint.Y, ElementName=Lines, StringFormat=Y\={0}}"/>
+                <TextBlock Text="{Binding IsMouseDirectlyOver, ElementName=Lines, StringFormat=IsMouseDirectoryOver\={0}}"/>
+                <TextBlock Text="{Binding IsMouseOver, ElementName=Lines, StringFormat=IsMouseOver\={0}}"/>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Selected" Grid.Row="2">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding SelectedSeries.Type, ElementName=Lines, StringFormat=Series: Type\={0}}"/>
+                <TextBlock Text="{Binding SelectedItem.Type, ElementName=Lines, StringFormat=DataPoint: Type\={0}}"/>
+                <TextBlock Text="{Binding SelectedPoint.X, ElementName=Lines, StringFormat=X\={0}}"/>
+                <TextBlock Text="{Binding SelectedPoint.Y, ElementName=Lines, StringFormat=Y\={0}}"/>
+            </StackPanel>
+        </GroupBox>
     </Grid>
 </Page>

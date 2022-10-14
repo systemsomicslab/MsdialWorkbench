@@ -19,7 +19,7 @@ namespace ChartDrawingUiTest.Chart
                     .Select(i => new Series(
                         Enumerable.Range(0, datapoints)
                             .Select(r => Math.PI / datapoints * r * 2)
-                            .Select(r => new DataPoint { X = r + i / 6d * Math.PI, Y = Math.Sin(r), })
+                            .Select((r, j) => new DataPoint { X = r + i / 6d * Math.PI, Y = Math.Sin(r), Type = i * datapoints + j, })
                             .ToArray()) { Type = i, }));
 
             HorizontalAxis = new ContinuousAxisManager<double>(0, 4 * Math.PI, new ConstantMargin(10));

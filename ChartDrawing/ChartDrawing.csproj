@@ -155,6 +155,7 @@
     <Compile Include="Chart\HeatmapControl.cs" />
     <Compile Include="Chart\LineChartControl.cs" />
     <Compile Include="Chart\LineSpectrumControl.cs" />
+    <Compile Include="Helper\ChartDistanceCalculator.cs" />
     <Compile Include="Helper\ColorHelper.cs" />
     <Compile Include="Helper\ExpressionHelper.cs" />
     <Compile Include="Helper\NotifyCollectionChangedHelper.cs" />
