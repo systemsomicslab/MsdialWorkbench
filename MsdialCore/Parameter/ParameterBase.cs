@@ -273,7 +273,7 @@ namespace CompMs.MsdialCore.Parameter {
         [IgnoreMember]
         public List<Enzyme> EnzymesForDigestion { get => ProteomicsParam.EnzymesForDigestion; set => ProteomicsParam.EnzymesForDigestion = value; }
         [IgnoreMember]
-        public CollisionType CollistionType { get => ProteomicsParam.CollistionType; set => ProteomicsParam.CollistionType = value; }
+        public CollisionType CollistionType { get => ProteomicsParam.CollisionType; set => ProteomicsParam.CollisionType = value; }
         [IgnoreMember]
         public float FalseDiscoveryRateForPeptide { get => ProteomicsParam.FalseDiscoveryRateForPeptide; set => ProteomicsParam.FalseDiscoveryRateForPeptide = value; }
         [IgnoreMember]
@@ -286,6 +286,8 @@ namespace CompMs.MsdialCore.Parameter {
         public int MinimumPeptideLength { get => ProteomicsParam.MinimumPeptideLength; set => ProteomicsParam.MinimumPeptideLength = value; }
         [IgnoreMember]
         public float MaxPeptideMass { get => ProteomicsParam.MaxPeptideMass; set => ProteomicsParam.MaxPeptideMass = value; }
+        [IgnoreMember]
+        public float MinPeptideMass { get => ProteomicsParam.MinPeptideMass; set => ProteomicsParam.MinPeptideMass = value; }
 
         //[IgnoreMember]
         //public MsRefSearchParameterBase ProteoMs2RefSearchParam { get => ProteomicsParam.MsRefSearchParam; set => ProteomicsParam.MsRefSearchParam = value; }
@@ -799,9 +801,9 @@ namespace CompMs.MsdialCore.Parameter {
         [Key(10)]
         public AcquisitionType AcquisitionType { get; set; } = AcquisitionType.DDA;
         [Key(11)]
-        public MSDataType MSDataType { get; set; } = MSDataType.Profile;
+        public MSDataType MSDataType { get; set; } = MSDataType.Centroid;
         [Key(12)]
-        public MSDataType MS2DataType { get; set; } = MSDataType.Profile;
+        public MSDataType MS2DataType { get; set; } = MSDataType.Centroid;
         [Key(13)]
         public IonMode IonMode { get; set; } = IonMode.Positive;
         [Key(14)]
@@ -846,7 +848,7 @@ namespace CompMs.MsdialCore.Parameter {
         [Key(6)]
         public List<Enzyme> EnzymesForDigestion { get; set; } = new List<Enzyme>();
         [Key(7)]
-        public CollisionType CollistionType { get; set; } = CollisionType.HCD;
+        public CollisionType CollisionType { get; set; } = CollisionType.HCD;
         [Key(8)]
         public float FalseDiscoveryRateForPeptide { get; set; } = 1.0F; //%
         [Key(9)]
@@ -859,6 +861,12 @@ namespace CompMs.MsdialCore.Parameter {
         public int MinimumPeptideLength { get; set; } = 7;
         [Key(13)]
         public float MaxPeptideMass { get; set; } = 4600;
+        [Key(14)]
+        public float MinPeptideMass { get; set; } = 300;
+        [Key(15)]
+        public float MaxMs2Mz { get; set; } = 1500;
+        [Key(16)]
+        public float MinMs2Mz { get; set; } = 100;
 
         //// other basic parameter
         //[Key(10)]

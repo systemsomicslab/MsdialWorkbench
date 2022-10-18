@@ -57,12 +57,13 @@ namespace CompMs.Common.Proteomics.Function {
         public static List<Peptide> Sequence2Peptides(
             Peptide peptide, 
             ModificationContainer container, 
-            int maxNumberOfModificationsPerPeptide = 2, 
+            int maxNumberOfModificationsPerPeptide = 2,
+            double minPeptideMass = 300,
             double maxPeptideMass = 4600) {
             var fmPeptide = Sequence2PeptideByFixedModifications(peptide, container, maxPeptideMass);
             if (fmPeptide == null) return null;
             if (fmPeptide.CountModifiedAminoAcids() > maxNumberOfModificationsPerPeptide) return null;
-            return Sequence2PeptidesByVariableModifications(peptide, container, maxNumberOfModificationsPerPeptide, maxPeptideMass);
+            return Sequence2PeptidesByVariableModifications(peptide, container, maxNumberOfModificationsPerPeptide, minPeptideMass, maxPeptideMass);
         }
 
         public static List<Peptide> Sequence2FastPeptides(
@@ -173,7 +174,8 @@ namespace CompMs.Common.Proteomics.Function {
         /// <returns></returns>
         public static List<Peptide> Sequence2PeptidesByVariableModifications(Peptide peptide, 
             ModificationContainer container,
-            int maxNumberOfModificationsPerPeptide = 2, 
+            int maxNumberOfModificationsPerPeptide = 2,
+            double minPeptideMass = 300,
             double maxPeptideMass = 4600) {
             //var sequence = peptide.Sequence;
             if (container.IsEmptyOrNull()) return new List<Peptide>() { Sequence2Peptide(peptide) };
@@ -191,6 +193,7 @@ namespace CompMs.Common.Proteomics.Function {
                 //nPep.SequenceObj = result;
                 var formula = CalculatePeptideFormula(result);
                 if (formula.Mass > maxPeptideMass) continue;
+                if (formula.Mass < minPeptideMass) continue;
                 nPep.ExactMass = formula.Mass;
                 nPep.ResidueCodeIndexToModificationIndex = GetResidueCodeIndexToModificationIndexDictionary(nPep, container);
                 peptides.Add(nPep);

@@ -67,17 +67,17 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private DataBaseSource dBSource = DataBaseSource.None;
 
-        public double MassRangeBegin {
-            get => massRangeBegin;
-            set => SetProperty(ref massRangeBegin, value);
-        }
-        private double massRangeBegin;
+        //public double MassRangeBegin {
+        //    get => massRangeBegin;
+        //    set => SetProperty(ref massRangeBegin, value);
+        //}
+        //private double massRangeBegin;
 
-        public double MassRangeEnd {
-            get => massRangeEnd;
-            set => SetProperty(ref massRangeEnd, value);
-        }
-        private double massRangeEnd;
+        //public double MassRangeEnd {
+        //    get => massRangeEnd;
+        //    set => SetProperty(ref massRangeEnd, value);
+        //}
+        //private double massRangeEnd;
 
         public LipidQueryBean LipidQueryContainer { get; }
 
@@ -85,6 +85,7 @@ namespace CompMs.App.Msdial.Model.Setting
 
         private readonly ParameterBase parameter;
         public TargetOmics TargetOmics => parameter.TargetOmics;
+        public CollisionType CollisionType => parameter.CollistionType;
 
         public bool IsLoaded { get; }
 
@@ -131,7 +132,8 @@ namespace CompMs.App.Msdial.Model.Setting
         public ShotgunProteomicsDB CreatePorteomicsDB() {
             switch (DBSource) {
                 case DataBaseSource.Fasta:
-                    return proteomicsDB ?? new ShotgunProteomicsDB(DataBasePath, DataBaseID, ProteomicsParameter, this.parameter.ProjectFolderPath, this.parameter.Ms2MassRangeBegin, this.parameter.Ms2MassRangeEnd, this.parameter.CollistionType);
+                    return proteomicsDB ?? new ShotgunProteomicsDB(DataBasePath, DataBaseID, 
+                        ProteomicsParameter, this.parameter.ProjectFolderPath);
                 default:
                     return null;
             }

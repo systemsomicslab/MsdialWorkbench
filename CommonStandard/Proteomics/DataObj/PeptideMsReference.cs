@@ -4,6 +4,7 @@ using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parser;
+using CompMs.Common.Proteomics.Function;
 using MessagePack;
 using System;
 using System.Collections.Generic;
@@ -19,15 +20,21 @@ namespace CompMs.Common.Proteomics.DataObj {
         public Stream Fs { get; set; }
         [Key(1)]
         public long SeekPoint2MS { get; set; }
+        [IgnoreMember]
+        public float MinMs2 { get; set; }
+        [IgnoreMember]
+        public float MaxMs2 { get; set; }
+        [IgnoreMember]
+        public CollisionType CollisionType { get; set; }
 
         public PeptideMsReference(Peptide peptide) {
             Peptide = peptide;
         }
 
-        public PeptideMsReference(Peptide peptide, Stream fs, long seekPoint, AdductIon adduct, int id) {
+        public PeptideMsReference(Peptide peptide, Stream fs, long seekPoint, AdductIon adduct, int id, float minMs2, float maxMs2, CollisionType type) {
             Peptide = peptide; Fs = fs; SeekPoint2MS = seekPoint; AdductType = adduct;
             PrecursorMz = adduct.ConvertToMz(peptide.ExactMass);
-            ScanID = id;
+            ScanID = id; MinMs2 = minMs2; MaxMs2 = maxMs2; CollisionType = type;
         }
 
         [Key(2)]
@@ -36,18 +43,26 @@ namespace CompMs.Common.Proteomics.DataObj {
         public List<SpectrumPeak> Spectrum {
             get {
                 if (cacheSpectrum is null) {
-                    cacheSpectrum = ReadSpectrum(Fs, SeekPoint2MS);
+                    //cacheSpectrum = ReadSpectrum(Fs, SeekPoint2MS);
+                    cacheSpectrum = ReadSpectrum();
                     return cacheSpectrum;
                 }
                 return cacheSpectrum; 
             }
             set => new NotSupportedException(); 
         }
+
+        
+
         private List<SpectrumPeak> cacheSpectrum = null;
         private List<SpectrumPeak> ReadSpectrum(Stream fs, long seekPoint) {
             lock (fs) {
                 return MsfPepFileParser.ReadSpectrumPeaks(fs, seekPoint);
             }
+        }
+
+        private List<SpectrumPeak> ReadSpectrum() {
+            return SequenceToSpec.Convert2SpecPeaks(Peptide, AdductType, CollisionType, MinMs2, MaxMs2);
         }
 
         public void AddPeak(double mass, double intensity, string comment = null) {
