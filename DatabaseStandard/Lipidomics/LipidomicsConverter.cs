@@ -82,6 +82,9 @@ namespace Riken.Metabolomics.Lipidomics
                 case "PS":
                     setDoubleAcylChainsLipidAnnotation(molecule, query);
                     break;
+                case "PT":
+                    setDoubleAcylChainsLipidAnnotation(molecule, query);
+                    break;
                 case "PA":
                     setDoubleAcylChainsLipidAnnotation(molecule, query);
                     break;
@@ -670,6 +673,13 @@ namespace Riken.Metabolomics.Lipidomics
                     }
                     break;
                 case "PS":
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
+                        if (lipidsemicoronCount == querysemicoronCount)
+                            level = "Chain resolved";
+                    }
+                    break;
+                case "PT":
                     if (adduct == "[M+H]+" || adduct == "[M-H]-")
                     {
                         if (lipidsemicoronCount == querysemicoronCount)
@@ -1352,6 +1362,13 @@ namespace Riken.Metabolomics.Lipidomics
                             level = "Chain resolved";
                     }
                     break;
+                case "PT":
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
+                        if (lipidsemicoronCount == 2)
+                            level = "Chain resolved";
+                    }
+                    break;
                 case "PA":
                     if (adduct == "[M-H]-")
                     {
@@ -2024,6 +2041,13 @@ namespace Riken.Metabolomics.Lipidomics
                     }
                     break;
                 case "PS":
+                    if (adduct == "[M+H]+" || adduct == "[M-H]-")
+                    {
+                        if (lipidsemicoronCount == 1)
+                            level = "Chain resolved";
+                    }
+                    break;
+                case "PT":
                     if (adduct == "[M+H]+" || adduct == "[M-H]-")
                     {
                         if (lipidsemicoronCount == 1)
@@ -3875,6 +3899,7 @@ namespace Riken.Metabolomics.Lipidomics
                 case LbmClass.PG: return "PG";
                 case LbmClass.PI: return "PI";
                 case LbmClass.PS: return "PS";
+                case LbmClass.PT: return "PT";
                 case LbmClass.BMP: return "BMP";
                 case LbmClass.HBMP: return "HBMP";
                 case LbmClass.CL: return "CL";
@@ -4027,6 +4052,7 @@ namespace Riken.Metabolomics.Lipidomics
                 case LbmClass.PG: return "PG";
                 case LbmClass.PI: return "PI";
                 case LbmClass.PS: return "PS";
+                case LbmClass.PT: return "PT";
                 case LbmClass.BMP: return "BMP";
                 case LbmClass.HBMP: return "HBMP";
                 case LbmClass.CL: return "CL";
@@ -4220,6 +4246,7 @@ namespace Riken.Metabolomics.Lipidomics
                 case "PG": return LbmClass.PG;
                 case "PI": return LbmClass.PI;
                 case "PS": return LbmClass.PS;
+                case "PT": return LbmClass.PT;
                 case "BMP": return LbmClass.BMP;
                 case "HBMP": return LbmClass.HBMP;
                 case "CL": return LbmClass.CL;
@@ -4435,6 +4462,7 @@ namespace Riken.Metabolomics.Lipidomics
                 case "PG": return LbmClass.PG;
                 case "PI": return LbmClass.PI;
                 case "PS": return LbmClass.PS;
+                case "PT": return LbmClass.PT;
                 case "BMP": return LbmClass.BMP;
                 case "HBMP": return LbmClass.HBMP;
                 case "CL": return LbmClass.CL;
@@ -4672,6 +4700,7 @@ namespace Riken.Metabolomics.Lipidomics
                 case "PG": return "Phospholipid";
                 case "PI": return "Phospholipid";
                 case "PS": return "Phospholipid";
+                case "PT": return "Phospholipid";
                 case "BMP": return "Phospholipid";
                 case "HBMP": return "Phospholipid";
                 case "CL": return "Phospholipid";
@@ -4909,6 +4938,7 @@ namespace Riken.Metabolomics.Lipidomics
                 case "PG": return "Glycerophospholipids";
                 case "PI": return "Glycerophospholipids";
                 case "PS": return "Glycerophospholipids";
+                case "PT": return "Glycerophospholipids";
                 case "BMP": return "Glycerophospholipids";
                 case "HBMP": return "Glycerophospholipids";
                 case "CL": return "Glycerophospholipids";

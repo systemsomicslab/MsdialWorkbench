@@ -11,6 +11,7 @@ PI	[M+NH4]+	Positive	TRUE
 PI	[M+Na]+	Positive	TRUE
 PS	[M+H]+	Positive	TRUE
 PS	[M+Na]+	Positive	TRUE
+PT	[M+H]+	Positive	FALSE
 PG	[M+NH4]+	Positive	TRUE
 BMP	[M+NH4]+	Positive	TRUE
 HBMP	[M+NH4]+	Positive	FALSE
@@ -171,6 +172,7 @@ PE	[M-H]-	Negative	TRUE
 PG	[M-H]-	Negative	TRUE
 PI	[M-H]-	Negative	TRUE
 PS	[M-H]-	Negative	TRUE
+PT	[M-H]-	Negative	FALSE
 OxPC	[M+CH3COO]-	Negative	TRUE
 OxPC	[M+HCOO]-	Negative	TRUE
 OxPE	[M-H]-	Negative	TRUE

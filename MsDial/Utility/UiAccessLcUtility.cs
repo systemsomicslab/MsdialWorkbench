@@ -330,6 +330,7 @@ namespace Rfx.Riken.OsakaUniv
                 case "PG": return new SolidColorBrush(Color.FromArgb(180, 184, 134, 11)); // darkgoldenrod
                 case "PI": return new SolidColorBrush(Color.FromArgb(180, 255, 0, 255)); // fuchsia
                 case "PS": return new SolidColorBrush(Color.FromArgb(180, 0, 255, 255)); // aqua
+                case "PT": return new SolidColorBrush(Color.FromArgb(180, 35, 255, 255)); // aqua modified
                 case "OxPA": return new SolidColorBrush(Color.FromArgb(180, 228, 122, 224)); // orchid
                 case "OxPC": return new SolidColorBrush(Color.FromArgb(180, 60, 215, 60)); // limegreen
                 case "OxPE": return new SolidColorBrush(Color.FromArgb(180, 138, 10, 138)); // purple

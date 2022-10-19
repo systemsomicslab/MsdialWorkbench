@@ -303,6 +303,7 @@ namespace CompMs.MspGenerator
                 case "PG":
                 case "PI":
                 case "PS":
+                case "PT":
                 case "PA":
                 case "PEtOH":
                 case "PMeOH":
