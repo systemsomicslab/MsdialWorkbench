@@ -123,7 +123,7 @@ namespace CompMs.Common.Lipidomics
         }
     }
 
-    public class MolecularLevelChainMz : IMzVariable
+    public class MolecularLevelChains : IMzVariable
     {
         public IEnumerable<double> Evaluate(ILipid lipid, AdductIon adduct) {
             if (lipid is Lipid lipid_ && lipid_.Chains is SeparatedChains chains) {

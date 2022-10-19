@@ -2021,9 +2021,35 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     //var molecule = getSingleacylchainwithsuffixMoleculeObjAsLevel2("PC", LbmClass.EtherPC, totalCarbon,
                     //                totalDoubleBond, averageIntensity, "e");
                     //candidates.Add(molecule);
+                    for (int sn1Carbon = minSnCarbon; sn1Carbon <= maxSnCarbon; sn1Carbon++)
+                    {
+                        for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
+                        {
 
+                            var sn2Carbon = totalCarbon - sn1Carbon;
+                            var sn2Double = totalDoubleBond - sn1Double;
+
+                            var acylLoss = theoreticalMz - acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
+
+                            var query = new List<Peak> {
+                                new Peak() { Mz = acylLoss, Intensity = 0.1 },
+                             };
+
+                            var foundCount = 0;
+                            var averageIntensity = 0.0;
+                            countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+
+                            if (foundCount == 1)
+                            { // 
+                                var molecule = getEtherPhospholipidMoleculeObjAsLevel2("PC", LbmClass.EtherPC, sn1Carbon, sn1Double,
+                                    sn2Carbon, sn2Double, averageIntensity, "e");
+                                candidates.Add(molecule);
+                            }
+                        }
+                    }
                     return returnAnnotationResult("PC", LbmClass.EtherPC, "e", theoreticalMz, adduct,
-                        totalCarbon, totalDoubleBond, 0, candidates, 2);
+                           totalCarbon, totalDoubleBond, 0, candidates, 2);
+
                 }
                 else if (adduct.AdductIonName == "[M+Na]+")
                 {

@@ -1,7 +1,9 @@
 ﻿using CompMs.App.Msdial.Model.Statistics;
+using CompMs.Common.Mathematics.Statistics;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Notifiers;
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics
@@ -18,6 +20,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             this.model = model;
             _broker = broker;
             this.MaxPcNumber = model.MaxPcNumber.ToString();
+            this.ScaleMethod = model.ScaleMethod;
         }
 
         [Required(ErrorMessage = "Max principal component number must be a positive int value.")]
@@ -35,6 +38,32 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             }
         }
         private string _maxPcNumber;
+
+        public ScaleMethod ScaleMethod {
+            get => _scaleMethod;
+            set
+            {
+                if (SetProperty(ref _scaleMethod, value)) {
+                    if (!ContainsError(nameof(ScaleMethod))) {
+                        model.ScaleMethod = value;
+                    }
+                }
+            }
+        }
+        private ScaleMethod _scaleMethod;
+
+        public TransformMethod TransformMethod {
+            get => _transformMethod;
+            set
+            {
+                if (SetProperty(ref _transformMethod, value)) {
+                    if (!ContainsError(nameof(TransformMethod))) {
+                        model.TransformMethod = value;
+                    }
+                }
+            }
+        }
+        private TransformMethod _transformMethod;
 
         public bool IsIdentifiedImportedInStatistics {
             get => _isIdentifiedImportedInStatistics;

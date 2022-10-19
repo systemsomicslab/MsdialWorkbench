@@ -13,7 +13,7 @@ namespace CompMs.Common.Lipidomics {
             float tolerance, float mzBegin, float mzEnd) {
 
             var defaultResult = OadMsCharacterizationUtility.GetDefaultScore(
-                    scan, reference, tolerance, mzBegin, mzEnd, 2, 2, 1, 0.5);
+                    scan, reference, tolerance, mzBegin, mzEnd, 1, 0, 1, 0.5);
             return StandardMsCharacterizationUtility.GetDefaultCharacterizationResultForAlkylAcylGlycerols(molecule, defaultResult);
         }
 
@@ -22,7 +22,7 @@ namespace CompMs.Common.Lipidomics {
             float tolerance, float mzBegin, float mzEnd) {
 
             var defaultResult = OadMsCharacterizationUtility.GetDefaultScore(
-                    scan, reference, tolerance, mzBegin, mzEnd, 2, 2, 1, 0.5);
+                    scan, reference, tolerance, mzBegin, mzEnd, 1, 0, 0, 0.5);
             return StandardMsCharacterizationUtility.GetDefaultCharacterizationResultForCeramides(molecule, defaultResult);
         }
 
@@ -31,7 +31,7 @@ namespace CompMs.Common.Lipidomics {
             float tolerance, float mzBegin, float mzEnd) {
 
             var defaultResult = OadMsCharacterizationUtility.GetDefaultScore(
-                    scan, reference, tolerance, mzBegin, mzEnd, 2, 2, 1, 0.5);
+                    scan, reference, tolerance, mzBegin, mzEnd, 1, 0, 1, 0.5);
             return StandardMsCharacterizationUtility.GetDefaultCharacterizationResultForGlycerophospholipid(molecule, defaultResult);
         }
 
@@ -40,7 +40,7 @@ namespace CompMs.Common.Lipidomics {
             float tolerance, float mzBegin, float mzEnd) {
 
             var defaultResult = OadMsCharacterizationUtility.GetDefaultScore(
-                    scan, reference, tolerance, mzBegin, mzEnd, 2, 2, 1, 0.5);
+                    scan, reference, tolerance, mzBegin, mzEnd, 1, 0, 1, 0.5);
             return StandardMsCharacterizationUtility.GetDefaultCharacterizationResultForTriacylGlycerols(molecule, defaultResult);
         }
     }

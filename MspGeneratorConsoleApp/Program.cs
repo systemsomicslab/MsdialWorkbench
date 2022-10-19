@@ -28,8 +28,8 @@ namespace CompMs.MspGenerator
 
 
             ///// RTCCS Prediction
-            //var workingDirectry = @"d:\mikikot\Desktop\Tsugawa-san_work\20220912_lipid_library\RTCCS_Prediction\padel\";//作業用フォルダ
-            //var toPredictFileName = workingDirectry + @"\txt\20220912143534_notfound.txt"; // 計算させたいInChIKeyとSMILESのリスト
+            //var workingDirectry = @"D:\mikikot\Desktop\Tsugawa-san_work\20221013_EtherPC\descriptor\";//作業用フォルダ
+            //var toPredictFileName = workingDirectry + @"\txt\20221013143423_conventional_notfound.txt"; // 計算させたいInChIKeyとSMILESのリスト
 
             //var predictionWorkingDirectry = @"F:\takahashi\RTprediction\~from_MSP\setting\";
             //var padelDescriptortypes = predictionWorkingDirectry + @"\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
@@ -46,7 +46,7 @@ namespace CompMs.MspGenerator
 
             //RtCcsPredictManager.runPaDEL(workingDirectry, padelDescriptortypes, padelProgramPath, toPredictFileName);//networkDriveではうまくいかない？
 
-            //var padelOutFileName = workingDirectry + @"\PadelResult\20220912143534_notfound.csv"; // PaDELで出力されたファイル(csv)
+            //var padelOutFileName = workingDirectry + @"\PadelResult\20221013143423_conventional_notfound.csv"; // PaDELで出力されたファイル(csv)
 
             //RtCcsPredictManager.selectDescriptor(workingDirectry, padelOutFileName, descriptorSelecerRTFile, descriptorSelecerCSSFile);
 
@@ -57,14 +57,14 @@ namespace CompMs.MspGenerator
             ///////////////// CCS predict
             ////////////RtCcsPredictOnR.runCcsPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, ccsModelingRdsFile); 
 
-            /////////RT and CCS predict
+            /////RT and CCS predict
             //RtCcsPredictOnR.runPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile);
 
-            ////////// 上記で算出したpredict結果をmerge
+            //////// 上記で算出したpredict結果をmerge
             //RtCcsPredictManager.mergeRtAndCcsResultFiles(workingDirectry, toPredictFileName);
 
             //var predictedFilesDirectry = workingDirectry + @"\predictResult\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
-            //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_20220912_conventional.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
+            //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_20221013_conventional.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
 
             //MergeRTandCCSintoMsp.generateDicOfPredictVs2(predictedFilesDirectry, dbFileName);
 
@@ -113,8 +113,8 @@ namespace CompMs.MspGenerator
             //////////// 複数作成可　配列リストでRT CCS予測ファイルとファイル名オプションを渡す。
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMspVs3(
             //    workingDirectry + "\\" + exportFileName,
-            //    new List<string[]>{ new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20220912_conventional.txt","conventional" },
-            //                        new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_NCDK_20220913_TUAT.txt" , "TUAT"} },
+            //    new List<string[]>{ new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20221013_conventional.txt","conventional" },
+            //                        new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_NCDK_20221013_TUAT.txt" , "TUAT"} },
             //    workingDirectry);
 
             ////上書き用　ファイル名オプション
@@ -148,7 +148,7 @@ namespace CompMs.MspGenerator
             var faChain2 = new List<string>();
             var faChain3 = new List<string>();
 
-            var outputFolder = @"d:\mikikot\Desktop\Tsugawa-san_work\20220912_lipid_library\msp\";
+            var outputFolder = @"D:\mikikot\Desktop\Tsugawa-san_work\20221013_EtherPC\msp\";
 
             //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";
@@ -601,11 +601,11 @@ namespace CompMs.MspGenerator
                 //// 1行目(ヘッダー行)が"SMILES"となっている列を認識してdescriptorを算出する。
                 /// RtCcsPredictOnDotNet.GenerateQsarDescriptorFileVS2();//--old
                 //var workingFolder =
-                // @"D:\mikikot\Desktop\Tsugawa-san_work\20220912_lipid_library\RTCCS_Prediction\TUAT_NCDK\";
+                // @"D:\mikikot\Desktop\Tsugawa-san_work\20221013_EtherPC\NCDK\";
 
                 //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
-                //    (workingFolder + @"\txt\20220913111218_notfound.txt",
-                //     workingFolder + @"\20220913111218_notfound_descriptor_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
+                //    (workingFolder + @"\txt\errored.txt",
+                //     workingFolder + @"\txt\errored_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
 
                 //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
                 //    (@"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeySmilesRtList.txt",
@@ -647,10 +647,10 @@ namespace CompMs.MspGenerator
 
                 //// RT、CCSの予測結果を求め、mspGeneratorで使っている形式で出力する
                 //// NCDKの結果は 235 descriptor(adductScoreを含まない)
-                //var workingFolder1 = @"D:\takahashi\desktop\Tsugawa-san_work\20210401_descriptorCalc\calculated\all\";
+                //var workingFolder = @"D:\mikikot\Desktop\Tsugawa-san_work\20221013_EtherPC\NCDK\txt\";
                 //var workingFolder2 = @"D:\takahashi\desktop\Tsugawa-san_work\20210430_RTprediction\calc\";
                 //var rtTrainModel = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\NCDK_TUAT_RT_202209061305.model";
-                //var rtTestFile = workingFolder + @"\20220913111218_notfound_descriptor.txt";
+                //var rtTestFile = workingFolder + @"\20221013121341_notfound_descriptor_20221013134852.txt";
                 //var ccsTrainModel = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\masterCCS_NCDK_202101081945.model";
                 //var ccsTestFile = rtTestFile;
                 //var resultFile = rtTestFile + @"_predicted.txt";

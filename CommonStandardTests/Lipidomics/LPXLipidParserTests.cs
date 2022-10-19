@@ -1,5 +1,7 @@
-﻿using CompMs.Common.Enum;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using CompMs.Common.Enum;
+using System.Linq;
+using CompMs.Common.Parser;
 
 namespace CompMs.Common.Lipidomics.Tests
 {
@@ -9,7 +11,8 @@ namespace CompMs.Common.Lipidomics.Tests
         [TestMethod()]
         [DataRow("LPC 18:1", 521.34814000, LbmClass.LPC, 2)]
         [DataRow("LPC 18:1/0:0", 521.34814000, LbmClass.LPC, 3)]
-        public void ParseTest(string lipidName, double expectedMass, LbmClass lipidClass, int expectedLevel) {
+        public void ParseTest(string lipidName, double expectedMass, LbmClass lipidClass, int expectedLevel)
+        {
             var parser = new LPCLipidParser();
 
             var lipid = parser.Parse(lipidName);
@@ -96,5 +99,47 @@ namespace CompMs.Common.Lipidomics.Tests
         }
     }
 
-  
+    [TestClass()]
+    public class EtherLPCLipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new EtherLPCLipidParser();
+            var lipid = parser.Parse("LPC O-18:1");
+            Assert.AreEqual(507.3689, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.EtherLPC, lipid.LipidClass);
+
+            var lipid2 = parser.Parse("LPC P-18:0");
+            Assert.AreEqual(507.3689, lipid2.Mass, 0.01);
+            Assert.AreEqual(LbmClass.EtherLPC, lipid2.LipidClass);
+
+        }
+    }
+
+    [TestClass()]
+    public class EtherLPELipidParserTests
+    {
+        [TestMethod()]
+        public void ParseTest()
+        {
+            var parser = new EtherLPELipidParser();
+            var lipid = parser.Parse("LPE O-18:1");
+            Assert.AreEqual(465.3219, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.EtherLPE, lipid.LipidClass);
+        }
+        [TestMethod()]
+        public void reParseTest()
+        {
+            var alkyl = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
+            var lipid = new Lipid(LbmClass.EtherLPC, 521.348140016, new PositionLevelChains(alkyl));
+
+            var parser = new EtherLPELipidParser();
+            //var lipid = parser.Parse("LPE O-18:1");
+            Assert.AreEqual(465.3219, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.EtherLPE, lipid.LipidClass);
+        }
+
+    }
+
 }

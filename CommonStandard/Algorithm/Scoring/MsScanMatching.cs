@@ -166,6 +166,10 @@ namespace CompMs.Common.Algorithm.Scoring {
                     return OadDefaultCharacterization.Characterize4AlkylAcylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.EtherPE:
                     return OadDefaultCharacterization.Characterize4AlkylAcylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.EtherLPC:
+                    return OadDefaultCharacterization.Characterize4AlkylAcylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.EtherLPE:
+                    return OadDefaultCharacterization.Characterize4AlkylAcylGlycerols(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
 
                 case LbmClass.SHexCer:
                     return OadDefaultCharacterization.Characterize4Ceramides(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
@@ -666,7 +670,11 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
 
                 SpectrumPeak spectrumPeak = maxRefID >= 0 ? peaks2[maxRefID].Clone() : null;
-                if (spectrumPeak == null) continue;
+                if (spectrumPeak == null) {
+                    focusedMz = peaks2[remaindIndexL].Mass;
+                    if (remaindIndexL == peaks2.Count - 1) break;
+                    continue;
+                }
                 var sumintensity = 0.0;
                 for (int i = remaindIndexM; i < peaks1.Count; i++) {
                     if (peaks1[i].Mass < focusedMz - bin) continue;

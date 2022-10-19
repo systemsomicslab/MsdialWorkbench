@@ -13,6 +13,7 @@ namespace CompMs.App.SpectrumViewer.Model
         public LipidReferenceCollection() {
             Adducts = new List<AdductIon> {
                 AdductIon.GetAdductIon("[M+H]+"),
+                AdductIon.GetAdductIon("[M+NH4]+"),
                 AdductIon.GetAdductIon("[M+Na]+"),
             }.AsReadOnly();
             Adduct = Adducts.First();

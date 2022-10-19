@@ -360,7 +360,7 @@ namespace CompMs.App.Msdial.Model.Search
         }
 
         private bool AdductFilter(IFilterable peak, IEnumerable<string> keywords) {
-            return keywords.All(keyword => peak.AdductIonName?.Contains(keyword) ?? true);
+            return keywords.All(keyword => peak.AdductIonName?.ToLower().Contains(keyword.ToLower()) ?? true);
         }
 
         private bool AmplitudeFilter(IFilterable peak) {

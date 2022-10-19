@@ -92,17 +92,20 @@ namespace CompMs.App.Msdial.Model.Lcms
         public LcmsProteomicsAnnotatorSettingModel(DataBaseSettingModel dataBaseSettingModel, string annotatorID, MsRefSearchParameterBase searchParameter) {
             DataBaseSettingModel = dataBaseSettingModel;
             AnnotatorID = annotatorID;
-            SearchParameter = searchParameter ?? new MsRefSearchParameterBase
-            {
+            SearchParameter = searchParameter ?? new MsRefSearchParameterBase {
                 SimpleDotProductCutOff = 0.0F,
                 WeightedDotProductCutOff = 0.0F,
                 ReverseDotProductCutOff = 0.0F,
                 MatchedPeaksPercentageCutOff = 0.0F,
                 MinimumSpectrumMatch = 0.0F,
                 TotalScoreCutoff = 0.0F,
-                AndromedaScoreCutOff = 0.0F
+                AndromedaScoreCutOff = 0.0F,
+                MassRangeBegin = 100,
+                MassRangeEnd = 1250
             };
+            dataBaseSettingModel.ProteomicsParameter.CollisionType = dataBaseSettingModel.CollisionType;
             ProteomicsParameter = dataBaseSettingModel.ProteomicsParameter;
+
         }
 
         public DataBaseSettingModel DataBaseSettingModel { get; }

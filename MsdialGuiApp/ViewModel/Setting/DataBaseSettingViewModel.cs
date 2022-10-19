@@ -83,19 +83,19 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             ProteomicsParameterVM = new ProteomicsParameterVM(model.ProteomicsParameter);
 
-            MassRangeBegin = Model.ToReactivePropertyAsSynchronized(
-                m => m.MassRangeBegin,
-                m => m.ToString(),
-                mv => double.Parse(mv))
-                .SetValidateAttribute(() => MassRangeBegin)
-                .AddTo(Disposables);
+            //MassRangeBegin = Model.ToReactivePropertyAsSynchronized(
+            //    m => m.MassRangeBegin,
+            //    m => m.ToString(),
+            //    mv => double.TryParse(mv, out double result) ? result : 0)
+            //    .SetValidateAttribute(() => MassRangeBegin)
+            //    .AddTo(Disposables);
 
-            MassRangeEnd = Model.ToReactivePropertyAsSynchronized(
-                m => m.MassRangeEnd,
-                m => m.ToString(),
-                mv => double.Parse(mv))
-                .SetValidateAttribute(() => MassRangeEnd)
-                .AddTo(Disposables);
+            //MassRangeEnd = Model.ToReactivePropertyAsSynchronized(
+            //    m => m.MassRangeEnd,
+            //    m => m.ToString(),
+            //    mv => double.TryParse(mv, out double result) ? result : 0)
+            //    .SetValidateAttribute(() => MassRangeEnd)
+            //    .AddTo(Disposables);
 
             var commonNoError = new[]
             {
@@ -106,8 +106,8 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
             var proteomicsNoError = new[]
             {
-                MassRangeBegin.ObserveHasErrors,
-                MassRangeEnd.ObserveHasErrors,
+                //MassRangeBegin.ObserveHasErrors,
+                //MassRangeEnd.ObserveHasErrors,
                 ProteomicsParameterVM.ObserveHasErrors,
             }.CombineLatestValuesAreAllFalse()
             .ToReadOnlyReactivePropertySlim()
@@ -162,11 +162,11 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ProteomicsParameterVM ProteomicsParameterVM { get; }
 
-        [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid format.")]
-        public ReactiveProperty<string> MassRangeBegin { get; }
+        //[RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid format.")]
+        //public ReactiveProperty<string> MassRangeBegin { get; }
 
-        [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid format.")]
-        public ReactiveProperty<string> MassRangeEnd { get; }
+        //[RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid format.")]
+        //public ReactiveProperty<string> MassRangeEnd { get; }
 
         public ReadOnlyReactivePropertySlim<bool> IsEditable { get; }
 

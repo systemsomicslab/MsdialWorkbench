@@ -34,6 +34,26 @@ namespace CompMs.App.Msdial.ViewModel {
         [Range(0d, double.MaxValue, ErrorMessage = "Positive value required.")]
         public ReactiveProperty<string> FalseDiscoveryRateForProtein { get; }
 
+        [Required(ErrorMessage = "Minimum peptide mass required.")]
+        [RegularExpression("[0-9]*\\.?[0-9]+", ErrorMessage = "Invalid format.")]
+        [Range(0d, double.MaxValue, ErrorMessage = "Positive value required.")]
+        public ReactiveProperty<string> MinPeptideMass { get; }
+
+        [Required(ErrorMessage = "Max peptide mass required.")]
+        [RegularExpression("[0-9]*\\.?[0-9]+", ErrorMessage = "Invalid format.")]
+        [Range(0d, double.MaxValue, ErrorMessage = "Positive value required.")]
+        public ReactiveProperty<string> MaxPeptideMass { get; }
+
+        [Required(ErrorMessage = "Minimum MS2 m/z value required.")]
+        [RegularExpression("[0-9]*\\.?[0-9]+", ErrorMessage = "Invalid format.")]
+        [Range(0d, double.MaxValue, ErrorMessage = "Positive value required.")]
+        public ReactiveProperty<string> MinMs2Mz { get; }
+
+        [Required(ErrorMessage = "Max MS2 m/z value required.")]
+        [RegularExpression("[0-9]*\\.?[0-9]+", ErrorMessage = "Invalid format.")]
+        [Range(0d, double.MaxValue, ErrorMessage = "Positive value required.")]
+        public ReactiveProperty<string> MaxMs2Mz { get; }
+
         private readonly ProteomicsParameter model;
 
         public List<Enzyme> Enzymes { get => model.EnzymesForDigestion; }
@@ -79,12 +99,50 @@ namespace CompMs.App.Msdial.ViewModel {
                 .Subscribe(x => this.model.FalseDiscoveryRateForProtein = x)
                 .AddTo(Disposables);
 
+            MinPeptideMass = new ReactiveProperty<string>(model.MinPeptideMass.ToString())
+                .SetValidateAttribute(() => MinPeptideMass)
+                .AddTo(Disposables);
+            MinPeptideMass.Where(_ => !MinPeptideMass.HasErrors)
+                .Select(x => int.Parse(x))
+                .Subscribe(x => this.model.MinPeptideMass = x)
+                .AddTo(Disposables);
+
+            MaxPeptideMass = new ReactiveProperty<string>(model.MaxPeptideMass.ToString())
+                .SetValidateAttribute(() => MaxPeptideMass)
+                .AddTo(Disposables);
+            MaxPeptideMass.Where(_ => !MaxPeptideMass.HasErrors)
+                .Select(x => int.Parse(x))
+                .Subscribe(x => this.model.MaxPeptideMass = x)
+                .AddTo(Disposables);
+
+            MinMs2Mz = new ReactiveProperty<string>(model.MinMs2Mz.ToString())
+               .SetValidateAttribute(() => MinMs2Mz)
+               .AddTo(Disposables);
+            MinMs2Mz.Where(_ => !MinMs2Mz.HasErrors)
+                .Select(x => int.Parse(x))
+                .Subscribe(x => this.model.MinMs2Mz = x)
+                .AddTo(Disposables);
+
+            MaxMs2Mz = new ReactiveProperty<string>(model.MaxMs2Mz.ToString())
+               .SetValidateAttribute(() => MaxMs2Mz)
+               .AddTo(Disposables);
+            MaxMs2Mz.Where(_ => !MaxMs2Mz.HasErrors)
+                .Select(x => int.Parse(x))
+                .Subscribe(x => this.model.MaxMs2Mz = x)
+                .AddTo(Disposables);
+
+
             ObserveHasErrors = new[]
             {
                 AndromedaDelta.ObserveHasErrors,
                 AndromedaMaxPeaks.ObserveHasErrors,
                 FalseDiscoveryRateForPeptide.ObserveHasErrors,
                 FalseDiscoveryRateForProtein.ObserveHasErrors,
+                MinPeptideMass.ObserveHasErrors,
+                MaxPeptideMass.ObserveHasErrors,
+                MinMs2Mz.ObserveHasErrors,
+                MaxMs2Mz.ObserveHasErrors,
+
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()

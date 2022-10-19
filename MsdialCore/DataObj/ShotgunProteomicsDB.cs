@@ -1,6 +1,7 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.Common.Parameter;
 using CompMs.Common.Parser;
@@ -79,13 +80,13 @@ namespace CompMs.MsdialCore.DataObj {
         [IgnoreMember]
         string IMatchResultRefer<PeptideMsReference, MsScanMatchResult>.Key => Id;
 
-        [Key(16)]
-        public double MassRangeBegin { get; set; } = 0;
+        //[Key(16)]
+        //public double MinPeptideMass { get; set; } = 100;
 
-        [Key(17)]
-        public double MassRangeEnd { get; set; } = 2000;
-        [Key(18)]
-        public CollisionType CollisionType { get; set; } = CollisionType.HCD;
+        //[Key(17)]
+        //public double MassRangeEnd { get; set; } = 1250;
+        //[Key(18)]
+        //public CollisionType CollisionType { get; set; } = CollisionType.HCD;
 
         PeptideMsReference IMatchResultRefer<PeptideMsReference, MsScanMatchResult>.Refer(MsScanMatchResult result) {
             if (result.IsDecoy) {
@@ -115,15 +116,11 @@ namespace CompMs.MsdialCore.DataObj {
 
         }
 
-        public ShotgunProteomicsDB(string file, string id, ProteomicsParameter proteomicsParam, string projectFolder,
-            double massRangeBegin, double massRangeEnd, CollisionType type) {
+        public ShotgunProteomicsDB(string file, string id, ProteomicsParameter proteomicsParam, string projectFolder) {
             FastaFile = file;
             Id = id;
             ProteomicsParameter = proteomicsParam;
-            MassRangeBegin = massRangeBegin;
-            MassRangeEnd = massRangeEnd;
             DataBaseSource = DataBaseSource.Fasta;
-            CollisionType = type;
 
             var dt = DateTime.Now;
             var refid = "_" + dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString();
@@ -166,9 +163,9 @@ namespace CompMs.MsdialCore.DataObj {
 
             Console.WriteLine("Preparing peptide queries");
             var peptides = LibraryHandler.GenerateFastTargetPeptideReference(FastaQueries, CleavageSites, ModificationContainer, ProteomicsParameter);
-            FastPeptideMsReference = MsfPepFileParser.GeneratePeptideMsObjcts(FastPeptideMsFile, FastPeptidesBinaryFile, peptides, ModificationContainer.Code2ID, MassRangeBegin, MassRangeEnd, CollisionType, out Stream pFS);
-
+            FastPeptideMsReference = MsfPepFileParser.GenerateFastPeptideMsObjcts(FastPeptideMsFile, FastPeptidesBinaryFile, peptides, ModificationContainer.Code2ID, ProteomicsParameter.MinMs2Mz, ProteomicsParameter.MaxMs2Mz, ProteomicsParameter.CollisionType, out Stream pFS);
             FastPeptideMsStream = pFS;
+
             Console.WriteLine("Peptide count {0}", peptides.Count);
             Console.WriteLine("Save");
             Save_v2();
@@ -193,8 +190,8 @@ namespace CompMs.MsdialCore.DataObj {
             Console.WriteLine("Peptide count {0}", peptides.Count);
 
             Console.WriteLine("MS peptide queries");
-            PeptideMsRef = MsfPepFileParser.GeneratePeptideMsObjcts(PeptideMsFile, PeptidesBinaryFile, peptides, ModificationContainer.Code2ID, MassRangeBegin, MassRangeEnd, CollisionType, out Stream pFS);
-            DecoyPeptideMsRef = MsfPepFileParser.GeneratePeptideMsObjcts(DecoyMsFile, DecoyPeptidesBinaryFile, decoyPeptides, ModificationContainer.Code2ID, MassRangeBegin, MassRangeEnd, CollisionType, out Stream dFS);
+            PeptideMsRef = MsfPepFileParser.GeneratePeptideMsObjcts(PeptideMsFile, PeptidesBinaryFile, peptides, ModificationContainer.Code2ID, ProteomicsParameter.MinMs2Mz, ProteomicsParameter.MaxMs2Mz, ProteomicsParameter.CollisionType, out Stream pFS);
+            DecoyPeptideMsRef = MsfPepFileParser.GeneratePeptideMsObjcts(DecoyMsFile, DecoyPeptidesBinaryFile, decoyPeptides, ModificationContainer.Code2ID, ProteomicsParameter.MinMs2Mz, ProteomicsParameter.MaxMs2Mz, ProteomicsParameter.CollisionType, out Stream dFS);
 
             //for (int i = 0; i < PeptideMsRef.Count; i++) {
             //    var forward = PeptideMsRef[i];
@@ -283,11 +280,27 @@ namespace CompMs.MsdialCore.DataObj {
             using (var fs = File.Open(PeptidesSerializeFile, FileMode.Open)) {
                 this.PeptideMsRef = LargeListMessagePack.Deserialize<PeptideMsReference>(fs);
             }
+            if (!this.PeptideMsRef.IsEmptyOrNull()) {
+                foreach (var ms in this.PeptideMsRef) {
+                    ms.MinMs2 = this.ProteomicsParameter.MinMs2Mz;
+                    ms.MaxMs2 = this.ProteomicsParameter.MaxMs2Mz;
+                    ms.CollisionType = this.ProteomicsParameter.CollisionType;
+                }
+            }
+
             MsfPepFileParser.LoadPeptideInformation(PeptidesBinaryFile, PeptideMsRef, ModificationContainer.ID2Code, ModificationContainer.Code2AminoAcidObj);
 
             using (var fs = File.Open(DecoyPeptidesSerializeFile, FileMode.Open)) {
                 this.DecoyPeptideMsRef = LargeListMessagePack.Deserialize<PeptideMsReference>(fs);
             }
+            if (!this.DecoyPeptideMsRef.IsEmptyOrNull()) {
+                foreach (var ms in this.DecoyPeptideMsRef) {
+                    ms.MinMs2 = this.ProteomicsParameter.MinMs2Mz;
+                    ms.MaxMs2 = this.ProteomicsParameter.MaxMs2Mz;
+                    ms.CollisionType = this.ProteomicsParameter.CollisionType;
+                }
+            }
+
             MsfPepFileParser.LoadPeptideInformation(DecoyPeptidesBinaryFile, DecoyPeptideMsRef, ModificationContainer.ID2Code, ModificationContainer.Code2AminoAcidObj);
             PeptideMsStream = File.Open(PeptideMsFile, FileMode.Open, FileAccess.ReadWrite);
             DecoyMsStream = File.Open(DecoyMsFile, FileMode.Open, FileAccess.ReadWrite);

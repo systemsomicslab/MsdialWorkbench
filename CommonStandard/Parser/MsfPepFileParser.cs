@@ -1,5 +1,6 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Proteomics.Function;
 using System;
@@ -13,7 +14,9 @@ namespace CompMs.Common.Parser {
         private MsfPepFileParser() { }
 
         private static int MSRefStorageFileVersionNumber = 1;
-        public static List<PeptideMsReference> GeneratePeptideMsObjcts(string msfile, string pepfile, List<Peptide> peptides, Dictionary<string, int> Code2ID, double minMz, double maxMz, CollisionType type, out Stream fs) {
+        public static List<PeptideMsReference> GeneratePeptideMsObjcts(
+            string msfile, string pepfile, List<Peptide> peptides, 
+            Dictionary<string, int> Code2ID, double minMz, double maxMz, CollisionType type, out Stream fs) {
             var pepMsQueries = new List<PeptideMsReference>();
             var adduct = AdductIonParser.GetAdductIonBean("[M+H]+");
 
@@ -25,11 +28,12 @@ namespace CompMs.Common.Parser {
                 foreach (var pep in peptides.OrderBy(n => n.ExactMass)) {
                     var sp = fs.Position;
                     var psp = ps.Position;
-                    var spec = SequenceToSpec.Convert2SpecPeaks(pep, adduct, type, minMz, maxMz);
-                    var msObj = new PeptideMsReference(pep, fs, sp, adduct, counter);
+                    //var spec = SequenceToSpec.Convert2SpecPeaks(pep, adduct, type, minMz, maxMz);
+                    var msObj = new PeptideMsReference(pep, fs, sp, adduct, counter, (float)minMz, (float)maxMz, type);
                     pepMsQueries.Add(msObj);
 
-                    WriteMsfData(fs, spec);
+                    //WriteMsfData(fs, spec);
+                    WriteMsfData(fs, null);
 
                     var aaIDs = GetIDs(pep, Code2ID);
                     WritePepData(ps, aaIDs);
@@ -56,7 +60,7 @@ namespace CompMs.Common.Parser {
                 foreach (var pep in peptides.OrderBy(n => n.ExactMass)) {
                     var sp = fs.Position;
                     var psp = ps.Position;
-                    var msObj = new PeptideMsReference(pep, fs, sp, adduct, counter);
+                    var msObj = new PeptideMsReference(pep, fs, sp, adduct, counter, (float)minMz, (float)maxMz, type);
                     pepMsQueries.Add(msObj);
 
                     WriteMsfData(fs, null);
@@ -108,6 +112,10 @@ namespace CompMs.Common.Parser {
         }
 
         private static void WriteMsfData(Stream fs, List<SpectrumPeak> spec) {
+            if (spec.IsEmptyOrNull()) {
+                fs.Write(BitConverter.GetBytes(0), 0, 4);
+                return;
+            }
             fs.Write(BitConverter.GetBytes((int)spec.Count), 0, 4);
             if (spec == null) return;
             foreach (var peak in spec) {

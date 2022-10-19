@@ -262,7 +262,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
 
-            PcaSettingModel = new PcaSettingModel(parameter, Ms1Spots, evaluator, files);
+            PcaSettingModel = new PcaSettingModel(parameter, Ms1Spots, evaluator, files, classBrush);
         }
 
         public ParameterBase Parameter { get; }

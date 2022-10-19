@@ -128,6 +128,11 @@ namespace CompMs.Common.Lipidomics.Tests
             var lipid = parser.Parse("Cer 18:1;2O/24:0;O"); // 
             Assert.AreEqual(665.6322102, lipid.Mass, 0.01);
             Assert.AreEqual(LbmClass.Cer_HS, lipid.LipidClass);
+
+            lipid = parser.Parse("Cer 18:1(4);2O/24:0;24OH"); // 
+            Assert.AreEqual(665.6322102, lipid.Mass, 0.01);
+            Assert.AreEqual(LbmClass.Cer_HS, lipid.LipidClass);
+
         }
         [TestMethod()]
         public void CerHDSParseTest()

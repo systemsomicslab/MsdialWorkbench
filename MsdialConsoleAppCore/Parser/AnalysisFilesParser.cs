@@ -18,6 +18,9 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
             if ((attributes & FileAttributes.Directory) == FileAttributes.Directory) {
                 Debug.WriteLine(String.Format("{0} is folder", input));
                 analysisFiles = AnalysisFilesParser.ReadFolderContents(input);
+            } else if (isCsv(input)) {
+                Debug.WriteLine(String.Format("{0} is CSV", input));
+                analysisFiles = AnalysisFilesParser.ReadCsvContents(input);
             }
             else {
                 Debug.WriteLine(String.Format("{0} is file", input));
@@ -57,6 +60,15 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
 
             if (extensions.Count > 1) return true;
             else return false;
+        }
+
+        public static bool isCsv(string input) {
+            if (System.IO.File.Exists(input)) {
+                var extension = System.IO.Path.GetExtension(input).ToLower();
+                return extension == ".csv";
+            } else {
+                return false;
+            }
         }
 
         public static List<AnalysisFileBean> ReadFolderContents(string folderpath)
@@ -112,6 +124,131 @@ namespace Riken.Metabolomics.MsdialConsoleApp.Parser
                 });
                 counter++;
             }
+            return analysisFiles;
+        }
+
+        public static List<AnalysisFileBean> ReadCsvContents(string filepath)
+        {
+            var csvData = new List<string[]>();
+            // read csv file
+            using (var sr = new StreamReader(filepath, System.Text.Encoding.ASCII))
+            {
+                string[] searchHeaderNames = { "file_path", "file_name", "type", "class_id", "batch", "analytical_order", "inject_volume" };
+                var headerOrder = new List<int>();
+                while (!sr.EndOfStream)
+                {
+                    var header = sr.ReadLine();
+                    //if (header == null)
+                    //    break;
+                    // find first line that doesn't start with '#'
+                    if (header.StartsWith('#'))
+                        continue;
+
+                    Debug.WriteLine("Header: {0}", header, "");
+
+                    var splitHeader = header.Split(',');
+                    var headerFields = new List<string>();
+                    foreach (var h in splitHeader)
+                    {
+                        var h1 = h.ToLowerInvariant();
+                        var h2 = h1.Trim();
+                        var h3 = h2.Replace(' ', '_');
+                        headerFields.Add(h3);
+                    }
+
+                    for(var i = 0; i < searchHeaderNames.Length; i++)
+                    {
+                        var name = searchHeaderNames[i];
+                        var index = headerFields.IndexOf(name);
+                        Debug.WriteLine("  Index of {0}: {1}", name, index);
+                        headerOrder.Add(index);
+                    }
+
+                    break;
+                }
+                while (!sr.EndOfStream)
+                {
+                    var line = sr.ReadLine();
+                    //if (line == null)
+                    //    break;
+                    // skip lines that start with '#'
+                    if (line.StartsWith('#'))
+                        continue;
+
+                    var fields = line.Split(',');
+                    var data = new List<string>();
+                    for (var i = 0; i < searchHeaderNames.Length; i++)
+                    {
+                        var index = headerOrder[i];
+                        if (index < 0)
+                            data.Add(null);
+                        else if (index >= fields.Length)
+                            data.Add(null);
+                        else
+                            data.Add(fields[index]);
+                    }
+                    csvData.Add(data.ToArray());
+                    Debug.WriteLine("File line: ->{0}<- converted to: ->{1}<-", line, string.Join("<=>", data));
+                }
+            }
+
+            // create list of AnalysisFileBeans as 'createAnalysisFileBeans' would do but with more options
+            var analysisFiles = new List<AnalysisFileBean>();
+            int counter = 0;
+            var dt = DateTime.Now;
+            var dtString = dt.Year.ToString() + dt.Month.ToString() + dt.Day.ToString() + dt.Hour.ToString() + dt.Minute.ToString();
+
+            foreach (var line in csvData)
+            {
+                // 0          , 1          , 2     , 3         , 4      , 5,                , 6
+                // "file_path", "file_name", "type", "class_id", "batch", "analytical_order", "inject_volume"
+                var afFilepath = Path.GetFullPath(line[0], Path.GetDirectoryName(Path.GetFullPath(filepath)));
+                Debug.WriteLine("afFilepath: {0}", afFilepath, "");
+                var afFilename = line[1] ?? System.IO.Path.GetFileNameWithoutExtension(afFilepath);
+
+                AnalysisFileType afType;
+                var afTypeRes = Enum.TryParse(line[2], true, out afType);
+                if (!afTypeRes)
+                    afType = AnalysisFileType.Sample;
+                
+                var afClassId = line[3] ?? counter.ToString();
+
+                int afBatch;
+                var afBatchRes = int.TryParse(line[4], out afBatch);
+                if (!afBatchRes)
+                    afBatch = 1;
+
+                int afAnalyticalOrder;
+                var afAnalyticalOrderRes = int.TryParse(line[5], out afAnalyticalOrder);
+                if (!afAnalyticalOrderRes)
+                    afAnalyticalOrder = counter + 1;
+
+                double afInjectVolume;
+                var afInjectVolumeRes = double.TryParse(line[6], out afInjectVolume);
+                if (!afInjectVolumeRes)
+                    afInjectVolume = 1.0;
+
+                var fileDir = System.IO.Path.GetDirectoryName(afFilepath);
+                analysisFiles.Add(new AnalysisFileBean()
+                {
+                    AnalysisFilePropertyBean = new AnalysisFilePropertyBean()
+                    {
+                        AnalysisFileId = counter,
+                        AnalysisFileIncluded = true,
+                        AnalysisFileName = afFilename,
+                        AnalysisFilePath = afFilepath,
+                        AnalysisFileAnalyticalOrder = afAnalyticalOrder,
+                        AnalysisFileClass = afClassId,
+                        AnalysisFileType = afType,
+                        DeconvolutionFilePath = Path.Combine(fileDir, afFilename + "_" + dtString + ".dcl"),
+                        PeakAreaBeanInformationFilePath = Path.Combine(fileDir, afFilename + "_" + dtString + ".pai"),
+                        AnalysisBatch = afBatch,
+                        InjectionVolume = afInjectVolume
+                    }
+                });
+                counter++;
+            }
+
             return analysisFiles;
         }
 
