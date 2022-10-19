@@ -1,14 +1,17 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {
-    internal sealed class InternalStandardSetModel : BindableBase
+    internal sealed class InternalStandardSetModel : DisposableModelBase
     {
         public InternalStandardSetModel(IEnumerable<AlignmentSpotPropertyModel> spots, TargetMsMethod targetMsMethod) {
             if (spots is null) {
@@ -18,10 +21,20 @@ namespace CompMs.App.Msdial.Model.Statistics
             var spotModels = spots.Select(spot => new NormalizationSpotPropertyModel(spot.innerModel));
             Spots = new ObservableCollection<NormalizationSpotPropertyModel>(spotModels);
             TargetMsMethod = targetMsMethod ?? throw new ArgumentNullException(nameof(targetMsMethod));
+
+            var ids = Spots.Select(s => s.Id).ToHashSet();
+            SomeSpotSetInternalStandard = Spots
+                .Select(spot => spot.ObserveProperty(s => s.InternalStandardId).Select(ids.Contains))
+                .CombineLatestValuesAreAllFalse()
+                .Inverse()
+                .ToReactiveProperty(false)
+                .AddTo(Disposables);
         }
 
         public ObservableCollection<NormalizationSpotPropertyModel> Spots { get; }
         public TargetMsMethod TargetMsMethod { get; }
+
+        public IObservable<bool> SomeSpotSetInternalStandard { get; }
     }
 
     internal sealed class NormalizationSpotPropertyModel : BindableBase

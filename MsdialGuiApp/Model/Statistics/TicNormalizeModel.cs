@@ -29,6 +29,6 @@ namespace CompMs.App.Msdial.Model.Statistics
             }
         }
 
-        public ReadOnlyReactivePropertySlim<bool> CanNormalizeProperty = new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true));
+        public ReadOnlyReactivePropertySlim<bool> CanNormalizeProperty { get; } = new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true));
     }
 }
