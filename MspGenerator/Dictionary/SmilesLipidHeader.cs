@@ -17,6 +17,7 @@ namespace CompMs.MspGenerator
             {"PG", "C(O)(CO)COP(O)(=O)OCC(O%11)C(O%10)."},
             {"PI", "C(O%10)C(O%11)COP(O)(=O)OC1C(O)C(O)C(O)C(O)C1O."},
             {"PS", "C(N)(COP(O)(=O)OCC(O%11)C(O%10))C(O)=O."},
+            {"PT", "CC(OP(O)(=O)OCC(CO%10)O%11)C(N)C(O)=O."},
             {"PEtOH", "C(O%10)C(O%11)COP(O)(OCC)=O."},
             {"PMeOH", "C(O%10)C(O%11)COP(O)(OC)=O."},
 

@@ -3774,6 +3774,7 @@ namespace CompMs.Common.Lipidomics
                 case LbmClass.PG: return "PG";
                 case LbmClass.PI: return "PI";
                 case LbmClass.PS: return "PS";
+                case LbmClass.PT: return "PT";
                 case LbmClass.BMP: return "BMP";
                 case LbmClass.HBMP: return "HBMP";
                 case LbmClass.CL: return "CL";
@@ -4145,6 +4146,7 @@ namespace CompMs.Common.Lipidomics
                 case "PG": return LbmClass.PG;
                 case "PI": return LbmClass.PI;
                 case "PS": return LbmClass.PS;
+                case "PT": return LbmClass.PT;
                 case "BMP": return LbmClass.BMP;
                 case "HBMP": return LbmClass.HBMP;
                 case "CL": return LbmClass.CL;
@@ -4597,6 +4599,7 @@ namespace CompMs.Common.Lipidomics
                 case "PG": return "Glycerophospholipids";
                 case "PI": return "Glycerophospholipids";
                 case "PS": return "Glycerophospholipids";
+                case "PT": return "Glycerophospholipids";
                 case "BMP": return "Glycerophospholipids";
                 case "HBMP": return "Glycerophospholipids";
                 case "CL": return "Glycerophospholipids";
