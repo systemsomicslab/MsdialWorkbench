@@ -101,22 +101,18 @@ namespace CompMs.MsdialCore.DataObj {
                         collection[i].AlignmentDriftSpotFeatures = alignmentChromPeakFeature;
                     }
                 }
-            }
-            result.LoadAlginedPeakPropertiesTask = Task.Run(async () =>
-            {
-                if (collection != null && collection.Count > 0 && collection[0].AlignedPeakProperties is null) {
-                    var chromatogramPeakFile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_PeakProperties" + Path.GetExtension(file.FilePath));
-                    if (File.Exists(chromatogramPeakFile)) {
-                        var alignmentChromPeakFeatures = MessagePackDefaultHandler.LoadIncrementalLargerListFromFile<List<AlignmentChromPeakFeature>>(chromatogramPeakFile).SelectMany(featuress => featuress);
-                        var enumerator = alignmentChromPeakFeatures.GetEnumerator();
-                        var task = Task.FromResult<List<AlignmentChromPeakFeature>>(null);
-                        foreach (var c in collection) {
-                            c.AlignedPeakPropertiesTask = task = task.ContinueWith(_ => enumerator.MoveNext() ? enumerator.Current : new List<AlignmentChromPeakFeature>(0));
-                        }
-                        await task.ConfigureAwait(false);
+
+                var chromatogramPeakFile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_PeakProperties" + Path.GetExtension(file.FilePath));
+                if (File.Exists(chromatogramPeakFile)) {
+                    var task = Task.FromResult<List<AlignmentChromPeakFeature>>(null);
+                    var alignmentChromPeakFeatures = MessagePackDefaultHandler.LoadIncrementalLargerListFromFile<List<AlignmentChromPeakFeature>>(chromatogramPeakFile).SelectMany(featuress => featuress);
+                    var enumerator = alignmentChromPeakFeatures.GetEnumerator();
+                    foreach (var c in collection) {
+                        c.AlignedPeakPropertiesTask = task = task.ContinueWith(_ => enumerator.MoveNext() ? enumerator.Current : new List<AlignmentChromPeakFeature>(0));
                     }
+                    result.LoadAlginedPeakPropertiesTask = Task.Run(async () => await task.ConfigureAwait(false));
                 }
-            });
+            }
             return result;
         }
     }
