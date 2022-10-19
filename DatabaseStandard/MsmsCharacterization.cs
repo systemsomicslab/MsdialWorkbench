@@ -550,7 +550,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                             var nl_NS2_H2O = nl_SN2 - H2O;
 
                             var nl_HD_SN1 = diagnosticMz - acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
-                            var nl_HD_SN2 = diagnosticMz - acylCainMass(sn1Carbon, sn1Double) + MassDiffDictionary.HydrogenMass;
+                            var nl_HD_SN2 = diagnosticMz - acylCainMass(sn2Carbon, sn2Double) + MassDiffDictionary.HydrogenMass;
 
                             var query = new List<Peak> {
                                 new Peak() { Mz = nl_SN1, Intensity = 0.01 },
