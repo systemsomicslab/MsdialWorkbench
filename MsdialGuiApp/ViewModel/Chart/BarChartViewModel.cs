@@ -91,6 +91,8 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .Throttle(TimeSpan.FromMilliseconds(50))
                 .Subscribe(_ => Application.Current.Dispatcher.Invoke(() => cv?.Refresh()))
                 .AddTo(Disposables);
+
+            IsLoading = model.IsLoading.ToReadOnlyReactivePropertySlim(true).AddTo(Disposables);
         }
 
         public ReadOnlyReactivePropertySlim<List<BarItem>> BarItems { get; }
@@ -116,5 +118,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public IReactiveProperty<BarItemsLoaderDataViewModel> BarItemsLoaderDataViewModel { get; }
         public ReadOnlyObservableCollection<BarItemsLoaderDataViewModel> BarItemsLoaderDataViewModels { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> IsLoading { get; }
     }
 }

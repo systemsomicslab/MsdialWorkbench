@@ -5,50 +5,59 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Loader
 {
     public interface IBarItemsLoader
     {
-        IObservable<List<BarItem>> LoadBarItemsAsObservable(AlignmentSpotPropertyModel target);
+        BarItemCollection LoadBarItemsAsObservable(AlignmentSpotPropertyModel target);
     }
 
-    class BarItemsLoader : IBarItemsLoader
+    internal class BarItemsLoader : IBarItemsLoader
     {
+        private readonly Func<AlignmentSpotPropertyModel, BarItemCollection> _loadBarItemCollection;
+
         public BarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2clsObservable, Expression<Func<AlignmentChromPeakFeatureModel, double>> expression) {
-            loadBarItemsAsObservable = LoadBarItemsAsObserbleBySpot(id2clsObservable, expression);
+            _loadBarItemCollection = LoadBarItemCollectionBySpot(id2clsObservable, expression);
         }
 
-        private readonly Func<AlignmentSpotPropertyModel, IObservable<List<BarItem>>> loadBarItemsAsObservable;
-
-        public IObservable<List<BarItem>> LoadBarItemsAsObservable(AlignmentSpotPropertyModel target) {
-            return loadBarItemsAsObservable(target);
+        public BarItemCollection LoadBarItemsAsObservable(AlignmentSpotPropertyModel target) {
+            return _loadBarItemCollection(target);
         }
 
-        protected static Func<AlignmentSpotPropertyModel, IObservable<List<BarItem>>> LoadBarItemsAsObserbleBySpot(
+        protected static Func<AlignmentSpotPropertyModel, BarItemCollection> LoadBarItemCollectionBySpot(
             IObservable<IReadOnlyDictionary<int, string>> id2clsObservable,
             Expression<Func<AlignmentChromPeakFeatureModel, double>> expression) {
             var selector = expression.Compile();
-            IObservable<List<BarItem>> LoadBarItemsAsObservable(AlignmentSpotPropertyModel target) {
-                return id2clsObservable
-                    .CombineLatest(target.AlignedPeakPropertiesModelAsObservable.Where(props => props != null),
-                        (id2cls, properties) => properties
-                            .GroupBy(peak =>
-                                id2cls[peak.FileID],
-                                (cls, peaks) => peaks
-                                    .Select(peak => peak.ObserveProperty(expression))
+            BarItemCollection LoadBarItemsAsObservable(AlignmentSpotPropertyModel target) {
+                var loading = target.AlignedPeakPropertiesModelAsObservable.Select(props => props is null);
+                var propertiesAsObserable = new[]
+                {
+                    target.AlignedPeakPropertiesModelAsObservable.Where(props => props is null).Select(_ => Enumerable.Empty<AlignmentChromPeakFeatureModel>()),
+                    target.AlignedPeakPropertiesModelAsObservable.Where(props => !(props is null)),
+                }.Merge();
+
+                var barItems = Observable.CombineLatest(
+                    id2clsObservable,
+                    propertiesAsObserable,
+                    (id2cls, properties) =>
+                        properties.GroupBy(
+                            peak => id2cls[peak.FileID],
+                            (cls, peaks) =>
+                                peaks.Select(peak => peak.ObserveProperty(expression))
                                     .CombineLatest()
                                     .Select(_ =>
                                         new BarItem(
                                             cls,
                                             peaks.Average(selector),
                                             BasicMathematics.Stdev(peaks.Select(selector).ToArray()))))
-                        .CombineLatest())
+                        .CombineLatest().StartWith(new List<BarItem>(0)))
                     .Switch()
                     .Select(items => items.ToList());
+                return new BarItemCollection(barItems, loading);
             }
+
             return LoadBarItemsAsObservable;
         }
     }
@@ -60,7 +69,7 @@ namespace CompMs.App.Msdial.Model.Loader
         }
     }
 
-    internal sealed class AreaAboveBaseLineBarItemsLoader : BarItemsLoader, IBarItemsLoader
+    internal sealed class AreaAboveBaseLineBarItemsLoader : BarItemsLoader
     {
         public AreaAboveBaseLineBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(Observable.Return(id2cls), p => p.PeakAreaAboveBaseline) {
 
@@ -81,14 +90,14 @@ namespace CompMs.App.Msdial.Model.Loader
         }
     }
 
-    internal sealed class NormalizedAreaAboveBaseLineBarItemsLoader : BarItemsLoader, IBarItemsLoader
+    internal sealed class NormalizedAreaAboveBaseLineBarItemsLoader : BarItemsLoader
     {
         public NormalizedAreaAboveBaseLineBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(Observable.Return(id2cls), peak => peak.NormalizedPeakAreaAboveBaseline) {
 
         }
     }
 
-    internal sealed class NormalizedAreaAboveZeroBarItemsLoader : BarItemsLoader, IBarItemsLoader
+    internal sealed class NormalizedAreaAboveZeroBarItemsLoader : BarItemsLoader
     {
         public NormalizedAreaAboveZeroBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(Observable.Return(id2cls), peak => peak.NormalizedPeakAreaAboveBaseline) {
 
