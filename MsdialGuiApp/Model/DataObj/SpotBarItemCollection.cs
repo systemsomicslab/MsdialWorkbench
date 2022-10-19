@@ -6,9 +6,9 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class BarItemCollection : ReadOnlyObservableCollection<BarItem>, IDisposable
+    public sealed class SpotBarItemCollection : ReadOnlyObservableCollection<BarItem>, IDisposable
     {
-        private BarItemCollection(AlignmentSpotPropertyModel spot, IObservable<IBarItemsLoader> loader, ReactiveCollection<BarItem> collection) : base(collection) {
+        private SpotBarItemCollection(AlignmentSpotPropertyModel spot, IObservable<IBarItemsLoader> loader, ReactiveCollection<BarItem> collection) : base(collection) {
             _unsubscriber = loader
                 .Where(loader_ => !(loader_ is null))
                 .Select(loader_ => loader_.LoadBarItemsAsObservable(spot))
@@ -30,9 +30,9 @@ namespace CompMs.App.Msdial.Model.DataObj
             _collection = null;
         }
 
-        public static BarItemCollection Create(AlignmentSpotPropertyModel spot, IObservable<IBarItemsLoader> loader) {
+        public static SpotBarItemCollection Create(AlignmentSpotPropertyModel spot, IObservable<IBarItemsLoader> loader) {
             var collection = new ReactiveCollection<BarItem>();
-            return new BarItemCollection(spot, loader, collection);
+            return new SpotBarItemCollection(spot, loader, collection);
         }
     }
 }
