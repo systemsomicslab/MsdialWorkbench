@@ -283,7 +283,7 @@ namespace CompMs.App.Msdial.View.PeakCuration {
         }
 
         public SampleTableViewerInAlignmentViewModelLegacy(IObservable<SampleTableViewerInAlignmentModelLegacy> model) {
-            model.ObserveOnDispatcher().Subscribe(UpdateModel).AddTo(Disposables);
+            model.Subscribe(UpdateModel).AddTo(Disposables);
         }
 
         public void IsPropertyChanged() {

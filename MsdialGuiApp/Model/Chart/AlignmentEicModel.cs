@@ -14,8 +14,12 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Chart
 {
-    class AlignmentEicModel : DisposableModelBase
+    internal sealed class AlignmentEicModel : DisposableModelBase
     {
+        private readonly List<AnalysisFileBean> _analysisFiles;
+        private readonly ParameterBase _parameter;
+        private readonly ReactiveProperty<(AlignmentSpotPropertyModel First, List<Chromatogram> Second)> _modelAndChromatogram;
+
         public AlignmentEicModel(
             IObservable<AlignmentSpotPropertyModel> model,
             IObservable<List<Chromatogram>> chromatoramSource,
@@ -40,6 +44,9 @@ namespace CompMs.App.Msdial.Model.Chart
                 throw new ArgumentNullException(nameof(verticalSelector));
             }
 
+            _analysisFiles = analysisFiles;
+            _parameter = parameter;
+
             EicChromatograms = chromatoramSource.ToReadOnlyReactivePropertySlim().AddTo(Disposables); ;
             var eicChromatograms = chromatoramSource.Throttle(TimeSpan.FromSeconds(.05d)).ToReactiveProperty().AddTo(Disposables);
 
@@ -57,22 +64,32 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalRange = hrox.Merge(nopeak).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             VerticalRange = vrox.Merge(nopeak).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            var alignedChromatogramModificationModel = model.Where(model_ => model_ != null)
-                .Select(model_ => model_.AlignedPeakPropertiesModelAsObservable.Where(props => props?.Any() ?? false).Select(_ => model_))
-                .Switch()
-                .CombineLatest(
-                    eicChromatograms.Where(chromatogram => chromatogram != null && chromatogram.Count > 0),
-                    (model_, chromatogram) => new AlignedChromatogramModificationModelLegacy(model_, chromatogram, analysisFiles, parameter));
-            AlignedChromatogramModificationModel = alignedChromatogramModificationModel;
+            var isSelected = model.Select(m => !(m is null)).ToReactiveProperty().AddTo(Disposables);
+            IsSelected = isSelected;
+            var isLoaded = model.Where(m => !(m is null)).Select(m => m.AlignedPeakPropertiesModelAsObservable).Switch().Select(props => props?.Any() ?? false);
+            IsPeakLoaded = new[]
+            {
+                isSelected,
+                isLoaded,
+            }.CombineLatestValuesAreAllTrue()
+            .ToReactiveProperty().AddTo(Disposables);
 
-            var sampleTableViewerInAlignmentModelLegacy = model.Where(model_ => model_ != null)
-                .Select(model_ => model_.AlignedPeakPropertiesModelAsObservable.Where(props => props?.Any() ?? false).Select(_ => model_))
-                .Switch()
-                .CombineLatest(
-                    eicChromatograms.Where(chromatogram => chromatogram != null && chromatogram.Count > 0),
-                    (model_, chromatogram) => new SampleTableViewerInAlignmentModelLegacy(model_, chromatogram, analysisFiles, parameter));
-            SampleTableViewerInAlignmentModel = sampleTableViewerInAlignmentModelLegacy;
+            var modelAndChromatogram = model.CombineLatest(eicChromatograms).ToReactiveProperty().AddTo(Disposables);
+            _modelAndChromatogram = modelAndChromatogram;
+            CanShow = modelAndChromatogram.Select(mc =>
+                new[]
+                {
+                    mc.First?.AlignedPeakPropertiesModelAsObservable.Select(features => features?.Any() ?? false)
+                        ?? Observable.Return(false),
+                    Observable.Return(mc.Second?.Any() ?? false),
+                }.CombineLatestValuesAreAllTrue().StartWith(false)
+            ).Switch().ToReactiveProperty().AddTo(Disposables);
         }
+
+        public IObservable<bool> CanShow { get; }
+
+        public IObservable<bool> IsSelected { get; }
+        public IObservable<bool> IsPeakLoaded { get; }
 
         public ReadOnlyReactivePropertySlim<List<Chromatogram>> EicChromatograms { get; }
         public ReadOnlyReactivePropertySlim<Range> HorizontalRange { get; }
@@ -80,8 +97,13 @@ namespace CompMs.App.Msdial.Model.Chart
 
         public GraphElements Elements { get; } = new GraphElements();
 
-        public IObservable<AlignedChromatogramModificationModelLegacy> AlignedChromatogramModificationModel { get; }
-        public IObservable<SampleTableViewerInAlignmentModelLegacy> SampleTableViewerInAlignmentModel { get; }
+        public AlignedChromatogramModificationModelLegacy GetAlignedChromatogramModificationModel() {
+            return new AlignedChromatogramModificationModelLegacy(_modelAndChromatogram.Value.First, _modelAndChromatogram.Value.Second, _analysisFiles, _parameter);
+        }
+
+        public SampleTableViewerInAlignmentModelLegacy GetSampleTableViewerInAlignmentModel() {
+            return new SampleTableViewerInAlignmentModelLegacy(_modelAndChromatogram.Value.First, _modelAndChromatogram.Value.Second, _analysisFiles, _parameter);
+        }
 
         public static AlignmentEicModel Create(
             IObservable<AlignmentSpotPropertyModel> source,
