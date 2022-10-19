@@ -23,8 +23,8 @@ namespace CompMs.App.Msdial.Model.DataObj
             Description = description;
         }
 
-        public Chromatogram(List<PeakItem> peaks, List<PeakItem> peakArea, string class_, Color color, ChromXType type, ChromXUnit unit)
-            : this(peaks, peakArea, peakArea.DefaultIfEmpty().Argmax(item => item?.Intensity ?? 0d), class_, color, type, unit) {
+        public Chromatogram(List<PeakItem> peaks, List<PeakItem> peakArea, string class_, Color color, ChromXType type, ChromXUnit unit, string description = "")
+            : this(peaks, peakArea, peakArea.DefaultIfEmpty().Argmax(item => item?.Intensity ?? 0d), class_, color, type, unit, description) {
 
         }
 

@@ -1,10 +1,12 @@
 ﻿using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using MessagePack;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
@@ -20,6 +22,8 @@ namespace CompMs.MsdialCore.DataObj {
         public ObservableCollection<AlignmentSpotProperty> AlignmentSpotProperties { get; set; }
         [Key(4)]
         public bool IsNormalized { get; set; }
+        [IgnoreMember]
+        public Task LoadAlginedPeakPropertiesTask { get; private set; } = Task.CompletedTask;
         //public AnalysisParametersBean AnalysisParamForLC { get; set; }
         //public AnalysisParamOfMsdialGcms AnalysisParamForGC { get; set; }
 
@@ -78,6 +82,41 @@ namespace CompMs.MsdialCore.DataObj {
                     }
                 }
             }
+            return result;
+        }
+
+        public static AlignmentResultContainer LoadLazy(AlignmentFileBean file) {
+            var containerFile = file.FilePath;
+            var result = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(containerFile);
+            if (result is null) {
+                return null;
+            }
+
+            var collection = result.AlignmentSpotProperties;
+            if (collection != null && collection.Count > 0 && collection[0].AlignedPeakProperties is null) {
+                var driftSpotFile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_DriftSopts" + Path.GetExtension(file.FilePath));
+                if (File.Exists(driftSpotFile)) {
+                    var alignmentDriftSpotProperties = MessagePackDefaultHandler.LoadLargerListFromFile<List<AlignmentSpotProperty>>(driftSpotFile);
+                    foreach (var (alignmentChromPeakFeature, i) in alignmentDriftSpotProperties.WithIndex()) {
+                        collection[i].AlignmentDriftSpotFeatures = alignmentChromPeakFeature;
+                    }
+                }
+            }
+            result.LoadAlginedPeakPropertiesTask = Task.Run(async () =>
+            {
+                if (collection != null && collection.Count > 0 && collection[0].AlignedPeakProperties is null) {
+                    var chromatogramPeakFile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_PeakProperties" + Path.GetExtension(file.FilePath));
+                    if (File.Exists(chromatogramPeakFile)) {
+                        var alignmentChromPeakFeatures = MessagePackDefaultHandler.LoadIncrementalLargerListFromFile<List<AlignmentChromPeakFeature>>(chromatogramPeakFile).SelectMany(featuress => featuress);
+                        var enumerator = alignmentChromPeakFeatures.GetEnumerator();
+                        var task = Task.FromResult<List<AlignmentChromPeakFeature>>(null);
+                        foreach (var c in collection) {
+                            c.AlignedPeakPropertiesTask = task = task.ContinueWith(_ => enumerator.MoveNext() ? enumerator.Current : new List<AlignmentChromPeakFeature>(0));
+                        }
+                        await task.ConfigureAwait(false);
+                    }
+                }
+            });
             return result;
         }
     }

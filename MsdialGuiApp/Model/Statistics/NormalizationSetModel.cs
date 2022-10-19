@@ -30,7 +30,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             _dataNormalizationParameter = parameter.DataNormalizationBaseParam;
 
             _normalized = new Subject<Unit>().AddTo(Disposables);
-            IsNormalized = _normalized.ToConstant(true)
+            IsNormalized = _normalized.Take(1).ToConstant(true)
                 .ToReadOnlyReactivePropertySlim(initialValue: container.IsNormalized)
                 .AddTo(Disposables);
 

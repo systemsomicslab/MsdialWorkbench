@@ -1,6 +1,8 @@
-﻿using CompMs.App.Msdial.Model.Imms;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -107,9 +109,13 @@ namespace CompMs.App.Msdial.ViewModel.Imms
                   commentFilterKeyword,
                   ontologyFilterKeyword,
                   adductFilterKeyword) {
+            BarItemsLoader = model.BarItemsLoader;
+            ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
         }
 
+        public IObservable<IBarItemsLoader> BarItemsLoader { get; }
+        public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> ClassBrush { get; }
         public IReactiveProperty<bool> IsEditting { get; }
     }
 }

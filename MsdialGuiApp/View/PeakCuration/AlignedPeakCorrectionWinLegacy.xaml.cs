@@ -89,7 +89,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 var chromatogram = chromatoramSource[i].Convert();
                 var speaks = chromatogram.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
                 var peakProp = new PeakPropertyLegacy(model.AlignedPeakPropertiesModel[i], brush, speaks);
-                var offset = model.AlignedPeakProperties[i].ChromXsTop.Value - model.TimesCenter;
+                var offset = model.AlignedPeakPropertiesModel[i].ChromXsTop.Value - model.TimesCenter;
                 peakProp.SetAlignOffSet((float)offset);
                 peakPropArr[i] = peakProp;
             });

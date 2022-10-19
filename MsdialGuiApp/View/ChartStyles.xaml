@@ -63,8 +63,9 @@
                                     behavior:ZoomByDragBehavior.IsEnabled="True"
                                     behavior:ZoomByWheelBehavior.IsEnabled="True"
                                     behavior:MoveByDragBehavior.IsEnabled="True"
-                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True">
-                                <ContentPresenter/>
+                                    behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True"
+                                    behavior:AxisRangeRecalculationBehavior.IsEnabled="True">
+                                <ContentPresenter behavior:AxisRangeRecalculationBehavior.IsEnabled="False"/>
                             </Border>
                         </Border>
 
@@ -578,11 +579,14 @@
                                 BorderThickness="1,0,0,1"
                                 Grid.Row="1" Grid.Column="2">
                             <Border Background="{TemplateBinding Background}"
+                                    behavior:AxisRangeRecalculationBehavior.HorizontalAxis="{TemplateBinding HorizontalAxis}"
+                                    behavior:AxisRangeRecalculationBehavior.VerticalAxis="{TemplateBinding VerticalAxis}"
                                     behavior:ZoomByDragBehavior.IsEnabled="True"
                                     behavior:ZoomByWheelBehavior.IsEnabled="True"
                                     behavior:MoveByDragBehavior.IsEnabled="True"
                                     behavior:ResetRangeByDoubleClickBehavior.IsEnabled="True">
-                                <Grid IsItemsHost="True"/>
+                                <Grid IsItemsHost="True"
+                                      behavior:AxisRangeRecalculationBehavior.IsEnabled="False"/>
                             </Border>
                         </Border>
 

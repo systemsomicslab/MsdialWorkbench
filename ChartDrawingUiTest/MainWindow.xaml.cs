@@ -30,7 +30,9 @@ namespace ChartDrawingUiTest
             InitializeComponent();
             Type[] pages = {
                 typeof(LineChart4),
+                typeof(MultiLineChartControl1),
                 typeof(AreaChart1),
+                typeof(MultiAreaChartControl1),
                 typeof(Scatter3),
                 typeof(Scatter4),
                 typeof(ScatterControlSlimTest1),

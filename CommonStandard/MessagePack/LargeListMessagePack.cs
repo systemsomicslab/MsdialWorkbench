@@ -4,6 +4,7 @@ using System.IO;
 using MessagePack;
 using MessagePack.Resolvers;
 using MessagePack.LZ4;
+using System.Threading.Tasks;
 
 namespace CompMs.Common.MessagePack {
     public static class LargeListMessagePack
@@ -131,6 +132,10 @@ namespace CompMs.Common.MessagePack {
             return DeserializeCore<T>(stream, resolver);
         }
 
+        public static IEnumerable<List<T>> DeserializeIncremental<T>(Stream stream, IFormatterResolver resolver = null) {
+            return DeserializeIncrementalCore<T>(stream, resolver);
+        }
+
         static bool FillFromStream(Stream input, ref byte[] buffer, int offset, int readSize)
         {
             int length = 0;
@@ -163,6 +168,15 @@ namespace CompMs.Common.MessagePack {
                 }
             }
             return res;
+        }
+
+        private static IEnumerable<List<T>> DeserializeIncrementalCore<T>(Stream stream, IFormatterResolver resolver) {
+            var buffer = GetBuffer();
+            // HeaderSize: extension header(always 6 bytes) + length(always 5 bytes) = 11
+            while (FillFromStream(stream, ref buffer, 0, HeaderSize))
+            {
+                yield return DeserializeEach<T>(stream, buffer, resolver);
+            }
         }
 
         static void AddList<T>(List<T> original, List<T> tmp)

@@ -4,7 +4,9 @@ using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Design;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -13,7 +15,7 @@ using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.ViewModel.Chart
 {
-    sealed class AlignmentEicViewModel : ViewModelBase
+    internal sealed class AlignmentEicViewModel : ViewModelBase
     {
         public AlignmentEicViewModel(
             AlignmentEicModel model,
@@ -23,70 +25,73 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
-            this.model = model;
 
             if (horizontalAxis is null) {
-                horizontalAxis = this.model.HorizontalRange
+                horizontalAxis = model.HorizontalRange
                     .ToReactiveAxisManager<double>()
                     .AddTo(Disposables);
             }
             HorizontalAxis = horizontalAxis;
 
             if (verticalAxis is null) {
-                verticalAxis = this.model.VerticalRange
+                verticalAxis = model.VerticalRange
                     .ToReactiveAxisManager<double>(new RelativeMargin(0, 0.05), new Range(0, 0), LabelType.Order)
                     .AddTo(Disposables);
             }
             VerticalAxis = verticalAxis;
 
-            EicChromatograms = this.model.EicChromatograms
+            EicChromatograms = model.EicChromatograms
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            GraphTitle = this.model.Elements.ObserveProperty(m => m.GraphTitle)
+            GraphTitle = model.Elements.ObserveProperty(m => m.GraphTitle)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            HorizontalTitle = this.model.Elements.ObserveProperty(m => m.HorizontalTitle)
+            HorizontalTitle = model.Elements.ObserveProperty(m => m.HorizontalTitle)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            VerticalTitle = this.model.Elements.ObserveProperty(m => m.VerticalTitle)
+            VerticalTitle = model.Elements.ObserveProperty(m => m.VerticalTitle)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            HorizontalProperty = this.model.Elements.ObserveProperty(m => m.HorizontalProperty)
+            HorizontalProperty = model.Elements.ObserveProperty(m => m.HorizontalProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            VerticalProperty = this.model.Elements.ObserveProperty(m => m.VerticalProperty)
+            VerticalProperty = model.Elements.ObserveProperty(m => m.VerticalProperty)
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            var alignedChromatogramModificationViewModelLegacy = 
-                new AlignedChromatogramModificationViewModelLegacy(model.AlignedChromatogramModificationModel).AddTo(Disposables);
+            Brush = new DelegateBrushMapper<Chromatogram>(chromatogram => chromatogram.Color);
+            IsPeakLoaded = model.IsPeakLoaded.ToReadOnlyReactivePropertySlim(initialValue: false).AddTo(Disposables);
 
-            ShowPeakCurationWinByOverlayEICsCommand = new ReactiveCommand().AddTo(Disposables);
-            ShowPeakCurationWinByOverlayEICsCommand
-                .Subscribe(_ => MessageBroker.Default.Publish(alignedChromatogramModificationViewModelLegacy))
+            ShowPeakCurationWinByOverlayEICsCommand = model.CanShow.ToReactiveCommand()
+                .WithSubscribe(() =>
+                {
+                    var m = model.GetAlignedChromatogramModificationModel();
+                    var vm = new AlignedChromatogramModificationViewModelLegacy(m);
+                    MessageBroker.Default.Publish(vm);
+                })
                 .AddTo(Disposables);
 
-            var sampleTableViewerInAlignmentViewModelLegacy =
-                new SampleTableViewerInAlignmentViewModelLegacy(model.SampleTableViewerInAlignmentModel).AddTo(Disposables);
-
-            ShowPeakCurationWinBySampleTableCommand = new ReactiveCommand().AddTo(Disposables);
-            ShowPeakCurationWinBySampleTableCommand
-                .Subscribe(_ => MessageBroker.Default.Publish(sampleTableViewerInAlignmentViewModelLegacy))
+            ShowPeakCurationWinBySampleTableCommand = model.CanShow.ToReactiveCommand()
+                .WithSubscribe(() => {
+                    var m = model.GetSampleTableViewerInAlignmentModel();
+                    var vm = new SampleTableViewerInAlignmentViewModelLegacy(m);
+                    MessageBroker.Default.Publish(vm);
+                })
                 .AddTo(Disposables);
         }
-
-        private AlignmentEicModel model;
 
         public ReadOnlyReactivePropertySlim<List<Chromatogram>> EicChromatograms { get; }
 
         public IAxisManager<double> HorizontalAxis { get; }
 
         public IAxisManager<double> VerticalAxis { get; }
+
+        public IBrushMapper<Chromatogram> Brush { get; }
 
         public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
 
@@ -100,5 +105,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 
         public ReactiveCommand ShowPeakCurationWinByOverlayEICsCommand { get; }
         public ReactiveCommand ShowPeakCurationWinBySampleTableCommand { get; }
+
+        public ReadOnlyReactivePropertySlim<bool> IsPeakLoaded { get; }
     }
 }

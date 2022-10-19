@@ -137,10 +137,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                   commentFilterKeyword,
                   ontologyFilterKeyword,
                   adductFilterKeyword) {
+            BarItemsLoader = model.BarItemsLoader;
             ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
         }
 
+        public IObservable<IBarItemsLoader> BarItemsLoader { get; }
         public ReadOnlyReactivePropertySlim<IBrushMapper<BarItem>> ClassBrush { get; }
         public IReactiveProperty<bool> IsEditting { get; }
     }

@@ -15,16 +15,18 @@ namespace CompMs.App.Msdial.Model.Loader
 {
     internal sealed class AlignmentEicLoader : DisposableModelBase
     {
-        public AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, string eicFile, IObservable<IReadOnlyDictionary<int, string>> id2clsAsObservable, IObservable<IReadOnlyDictionary<string, Color>> cls2colorAsObservable) {
+        public AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, string eicFile, IObservable<IReadOnlyDictionary<int, string>> id2clsAsObservable, IObservable<IReadOnlyDictionary<string, Color>> cls2colorAsObservable, IObservable<IReadOnlyDictionary<int, string>> id2NameAsObservable) {
 
             _chromatogramSpotSerializer = chromatogramSpotSerializer;
             _eicFile = eicFile;
+            _id2NameAsObservable = id2NameAsObservable.ToReactiveProperty().AddTo(Disposables);
             _id2ClsAsObservable = id2clsAsObservable.ToReactiveProperty().AddTo(Disposables);
             _cls2ColorAsObservable = cls2colorAsObservable.ToReactiveProperty().AddTo(Disposables);
         }
 
         private readonly ChromatogramSerializer<ChromatogramSpotInfo> _chromatogramSpotSerializer;
         private readonly string _eicFile;
+        private readonly IObservable<IReadOnlyDictionary<int, string>> _id2NameAsObservable;
         private readonly IObservable<IReadOnlyDictionary<int, string>> _id2ClsAsObservable;
         private readonly IObservable<IReadOnlyDictionary<string, Color>> _cls2ColorAsObservable;
 
@@ -32,32 +34,59 @@ namespace CompMs.App.Msdial.Model.Loader
             if (target != null) {
                 // maybe using file pointer is better
                 var spotinfo = _chromatogramSpotSerializer.DeserializeAtFromFile(_eicFile, target.MasterAlignmentID);
-                var itemss = spotinfo.PeakInfos.Select(peakinfo => (peakinfo.FileID, peakinfo.Chromatogram.Select(chrom => new PeakItem(chrom)).ToList()));
+                var itemss = spotinfo.PeakInfos.Select(peakinfo => (peakinfo.FileID, Peaks:peakinfo.Chromatogram.Select(chrom => new PeakItem(chrom)).ToList()));
 
-                var eicChromatograms = Observable.CombineLatest(
-                    _id2ClsAsObservable,
-                    _cls2ColorAsObservable,
-                    (id2cls, cls2color) => itemss
-                        .Zip(target.AlignedPeakPropertiesModel,
-                            (pair, peakProperty) =>
-                            peakProperty.ObserveProperty(p => p.ChromXsLeft).Merge(
-                                peakProperty.ObserveProperty(p => p.ChromXsRight))
-                            .Throttle(TimeSpan.FromMilliseconds(50))
-                            .Select(_ => new Chromatogram(
-                                peaks: pair.Item2,
-                                peakArea: pair.Item2.Where(item => peakProperty.ChromXsLeft.Value <= item.Time && item.Time <= peakProperty.ChromXsRight.Value).ToList(),
-                                class_: id2cls[pair.Item1],
-                                color: cls2color.TryGetValue(id2cls[pair.Item1], out var color) ? color : Colors.Blue,
+                var eicChromatograms = target.AlignedPeakPropertiesModelAsObservable.Select(peakProperties => {
+                    var chromatogramsAsObservable = new List<IObservable<Chromatogram>>();
+                    foreach (var (pair, i) in itemss.WithIndex()) {
+                        var clsAsObservable = GetClass(pair.FileID);
+                        var fileAsObservable = GetFileName(pair.FileID);
+                        var clsColorAsObservable = GetClassColor(clsAsObservable);
+
+                        var peakAreaAsObservable = Observable.Return(new List<PeakItem>(0));
+                        if (peakProperties != null && i < peakProperties.Count) {
+                            peakAreaAsObservable = new[]
+                            {
+                                peakProperties[i].ObserveProperty(p => p.ChromXsLeft),
+                                peakProperties[i].ObserveProperty(p => p.ChromXsRight),
+                            }.Merge()
+                            .Select(_ => pair.Peaks.Where(item => peakProperties[i].ChromXsLeft.Value <= item.Time && item.Time <= peakProperties[i].ChromXsRight.Value).ToList());
+                        }
+
+                        var chromatogramAsObservable = Observable.CombineLatest(
+                            peakAreaAsObservable,
+                            fileAsObservable,
+                            clsAsObservable,
+                            clsColorAsObservable,
+                            (peakArea, fileName, cls_, color) => new Chromatogram(
+                                peaks: pair.Peaks,
+                                peakArea: peakArea,
+                                class_: cls_,
+                                color: color,
                                 type: target.ChromXType,
-                                unit: target.ChromXUnit)))
-                        .CombineLatest()
-                        .Select(xs => xs.ToList()))
-                    .Switch();
+                                unit: target.ChromXUnit,
+                                description: fileName));
+                        chromatogramsAsObservable.Add(chromatogramAsObservable);
+                    }
+                    return chromatogramsAsObservable.CombineLatest().Select(xs => xs.ToList());
+                }).Switch();
                 return eicChromatograms;
             }
             else {
                 return Observable.Return(new List<Chromatogram>());
             }
+        }
+
+        private IObservable<string> GetFileName(int fileId) {
+            return _id2NameAsObservable.Select(id2Name => id2Name.TryGetValue(fileId, out var name) ? name : string.Empty);
+        }
+
+        private IObservable<string> GetClass(int fileId) {
+            return _id2ClsAsObservable.Select(id2Cls => id2Cls.TryGetValue(fileId, out var cls) ? cls : string.Empty);
+        }
+
+        private IObservable<Color> GetClassColor(IObservable<string> clsAsObservable) {
+            return Observable.CombineLatest(clsAsObservable, _cls2ColorAsObservable, (cls, cls2Color) => cls2Color.TryGetValue(cls, out var color) ? color : Colors.Blue);
         }
     }
 }

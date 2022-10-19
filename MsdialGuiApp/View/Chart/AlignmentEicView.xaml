@@ -3,39 +3,37 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              mc:Ignorable="d" 
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
-             xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
+             xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              Name="AlignedEicView"
+             d:Background="White"
              d:DataContext="{d:DesignInstance Type=vm:AlignmentEicViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <d:DesignerProperties.DesignStyle>
-        <Style TargetType="UserControl">
-            <Setter Property="Background" Value="White"/>
-        </Style>
-    </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <converter:ColorToBrushConverter x:Key="ColorToBrushConverter" Opacity="0.25"/>
-            <converter:ColorToPenConverter x:Key="ColorToPenConverter" Thickness="2"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <chart:MultiChart Name="Eics"
-                          GraphTitle="{Binding GraphTitle.Value}"
-                          HorizontalTitle="{Binding HorizontalTitle.Value}"
-                          HorizontalAxis="{Binding HorizontalAxis}"
-                          VerticalAxis="{Binding VerticalAxis}"
-                          AlternationCount="1"
-                          ItemsSource="{Binding EicChromatograms.Value}"
-                          Style="{StaticResource OverlapChart}">
-            <chart:MultiChart.ContextMenu>
+        <chart:SimpleChartControl GraphTitle="{Binding GraphTitle.Value}"
+                                  HorizontalTitle="{Binding HorizontalTitle.Value}"
+                                  HorizontalAxis="{Binding HorizontalAxis}"
+                                  VerticalAxis="{Binding VerticalAxis}"
+                                  Style="{StaticResource BasicChart}">
+            <chart:SimpleChartControl.VerticalTitle>
+                <MultiBinding StringFormat="{}{0}({1})">
+                    <MultiBinding.Bindings>
+                        <Binding Path="VerticalTitle.Value"/>
+                        <Binding Path="VerticalAxis.UnitLabel"/>
+                    </MultiBinding.Bindings>
+                </MultiBinding>
+            </chart:SimpleChartControl.VerticalTitle>
+            <chart:SimpleChartControl.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Peak curation (EICs overlay)"
                               Command="{Binding ShowPeakCurationWinByOverlayEICsCommand, Mode=OneTime}"/>
@@ -65,39 +63,46 @@
                                   CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                     </MenuItem>
                 </ContextMenu>
-            </chart:MultiChart.ContextMenu>
-            <chart:MultiChart.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <chart:LineChartControl ItemsSource="{Binding Peaks}"
-                                                LinePen="{Binding Color, Converter={StaticResource ColorToPenConverter}}"
-                                                HorizontalPropertyName="{Binding DataContext.HorizontalProperty.Value, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
-                                                VerticalPropertyName="{Binding DataContext.VerticalProperty.Value, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}">
-                            <chart:LineChartControl.ToolTip>
-                                <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Class: "/>
-                                        <TextBlock Text="{Binding DataContext.Class, Mode=OneWay}"/>
-                                    </StackPanel>
-                                </ToolTip>
-                            </chart:LineChartControl.ToolTip>
-                        </chart:LineChartControl>
-                        <chart:AreaChartControl ItemsSource="{Binding PeakArea}"
-                                                AreaBrush="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"
-                                                HorizontalPropertyName="{Binding DataContext.HorizontalProperty.Value, RelativeSource={RelativeSource AncestorType=chart:MultiChart}}"
-                                                VerticalPropertyName="{Binding DataContext.VerticalProperty.Value, RelativeSource={RelativeSource AncestorType=chart:MultiChart}}"
-                                                IsHitTestVisible="False"/>
-                    </Grid>
-                </DataTemplate>
-            </chart:MultiChart.ItemTemplate>
-            <chart:MultiChart.VerticalTitle>
-                <MultiBinding StringFormat="{}{0}({1})">
-                    <MultiBinding.Bindings>
-                        <Binding Path="VerticalTitle.Value"/>
-                        <Binding Path="VerticalAxis.UnitLabel"/>
-                    </MultiBinding.Bindings>
-                </MultiBinding>
-            </chart:MultiChart.VerticalTitle>
-        </chart:MultiChart>
+            </chart:SimpleChartControl.ContextMenu>
+            <Grid>
+                <chart:MultiLineChartControl ItemsSources="{Binding EicChromatograms.Value}"
+                                             CollectionDataType="{x:Type do:Chromatogram}"
+                                             ItemsProperty="Peaks"
+                                             ItemsDataType="{x:Type do:PeakItem}"
+                                             HorizontalProperty="{Binding HorizontalProperty.Value}"
+                                             VerticalProperty="{Binding VerticalProperty.Value}"
+                                             LineBrush="{Binding Brush}"
+                                             LineThickness="1">
+                    <chart:MultiLineChartControl.ToolTip>
+                        <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                            <StackPanel>
+                                <StackPanel.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Margin" Value="2,0,2,0"/>
+                                    </Style>
+                                </StackPanel.Resources>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding FocusedSeries.Description, StringFormat=File:{0}}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding FocusedSeries.Class, StringFormat=Class:{0}}"/>
+                                    <TextBlock Text="{Binding FocusedItem.Time, StringFormat=X:{0:F3}}"/>
+                                    <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Y:{0}}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ToolTip>
+                    </chart:MultiLineChartControl.ToolTip>
+                </chart:MultiLineChartControl>
+                <chart:MultiAreaChartControl ItemsSources="{Binding EicChromatograms.Value}"
+                                             CollectionDataType="{x:Type do:Chromatogram}"
+                                             ItemsProperty="PeakArea"
+                                             ItemsDataType="{x:Type do:PeakItem}"
+                                             HorizontalProperty="{Binding HorizontalProperty.Value}"
+                                             VerticalProperty="{Binding VerticalProperty.Value}"
+                                             AreaBrush="{Binding Brush}"
+                                             AreaOpacity="0.25"
+                                             IsHitTestVisible="False"/>
+            </Grid>
+        </chart:SimpleChartControl>
     </Grid>
 </UserControl>

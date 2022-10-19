@@ -65,6 +65,7 @@
     <Compile Include="Adorner\ScatterFocusAdorner.cs" />
     <Compile Include="Adorner\ChartSelectionRubberAdorner.cs" />
     <Compile Include="AxisManager\BaseSelectableLogScaleLabelGenerator.cs" />
+    <Compile Include="AxisManager\Generic\AbsoluteAxisManager.cs" />
     <Compile Include="AxisManager\Generic\DefectAxisManager.cs" />
     <Compile Include="AxisManager\Generic\RelativeAxisManager.cs" />
     <Compile Include="AxisManager\ILabelGenerator.cs" />
@@ -81,12 +82,15 @@
     <Compile Include="Base\RangeSelection.cs" />
     <Compile Include="Behavior\AddMovabilityBehavior.cs" />
     <Compile Include="Behavior\AreaSelectBehavior.cs" />
+    <Compile Include="Behavior\AxisRangeRecalculationBehavior.cs" />
     <Compile Include="Behavior\DataGridIsEdittingBehavior.cs" />
     <Compile Include="Chart\AreaChartControl.cs" />
     <Compile Include="AxisManager\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\Generic\AutoContinuousAxisManager.cs" />
     <Compile Include="AxisManager\Generic\BaseAxisManager.cs" />
     <Compile Include="Chart\LineSpectrumControlSlim.cs" />
+    <Compile Include="Chart\MultiAreaChartControl.cs" />
+    <Compile Include="Chart\MultiLineChartControl.cs" />
     <Compile Include="Chart\SpotLinkedAnnotator.cs" />
     <Compile Include="Chart\RangeSelector.cs" />
     <Compile Include="Chart\ScatterControlSlim.cs" />
@@ -151,8 +155,10 @@
     <Compile Include="Chart\HeatmapControl.cs" />
     <Compile Include="Chart\LineChartControl.cs" />
     <Compile Include="Chart\LineSpectrumControl.cs" />
+    <Compile Include="Helper\ChartDistanceCalculator.cs" />
     <Compile Include="Helper\ColorHelper.cs" />
     <Compile Include="Helper\ExpressionHelper.cs" />
+    <Compile Include="Helper\NotifyCollectionChangedHelper.cs" />
     <Compile Include="IO\CopyImageAsCommand.cs" />
     <Compile Include="IO\CopyImageAsDialog.xaml.cs">
       <DependentUpon>CopyImageAsDialog.xaml</DependentUpon>

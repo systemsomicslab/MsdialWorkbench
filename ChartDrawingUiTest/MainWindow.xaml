@@ -9,7 +9,7 @@
         Title="MainWindow" Height="600" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*" MaxWidth="100"/>
+            <ColumnDefinition Width="2*" MaxWidth="200"/>
             <ColumnDefinition Width="8*"/>
         </Grid.ColumnDefinitions>
         <ListView x:Name="navbar" Grid.Column="0" SelectionChanged="navbar_SelectionChanged"/>

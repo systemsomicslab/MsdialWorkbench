@@ -17,12 +17,22 @@ namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class BarChartModel : DisposableModelBase {
         public BarChartModel(IObservable<AlignmentSpotPropertyModel> source, IReactiveProperty<BarItemsLoaderData> barItemsLoaderData, IList<BarItemsLoaderData> barItemsLoaderDatas, IObservable<IBrushMapper<BarItem>> classBrush) {
-            var barItemsLoader = barItemsLoaderData.Where(data => !(data is null)).Select(data => data.ObservableLoader).Switch();
-            BarItemsSource = source.CombineLatest(barItemsLoader,
+            var barItemsLoader = barItemsLoaderData.Where(data => !(data is null)).Select(data => data.ObservableLoader).Switch().ToReactiveProperty().AddTo(Disposables);
+            var barItemCollectionSource = source.CombineLatest(barItemsLoader,
                     (src, loader) => src is null || loader is null
-                        ? Observable.Return(new List<BarItem>())
+                        ? new BarItemCollection()
                         : loader.LoadBarItemsAsObservable(src))
+                .ToReactiveProperty()
+                .AddTo(Disposables);
+            BarItemsSource = barItemCollectionSource
+                .Select(collection => collection.ObservableItems)
+                .Switch()
+                .ToReactiveProperty()
+                .AddTo(Disposables);
+            IsLoading = barItemCollectionSource
+                .Select(collection => collection.ObservableLoading)
                 .Switch();
+
             if (classBrush is null) {
                 classBrush = BarItemsSource.Select(
                     items => new KeyBrushMapper<BarItem>(
@@ -64,5 +74,7 @@ namespace CompMs.App.Msdial.Model.Chart
         public IReactiveProperty<BarItemsLoaderData> BarItemsLoaderData { get; }
         public IList<BarItemsLoaderData> BarItemsLoaderDatas { get; }
         public GraphElements Elements { get; } = new GraphElements();
+
+        public IObservable<bool> IsLoading { get; }
     }
 }

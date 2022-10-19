@@ -6,6 +6,7 @@ using CompMs.Common.Extension;
 using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Normalize;
 using MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,6 +14,22 @@ namespace CompMs.MsdialCore.DataObj
 {
     [MessagePackObject]
     public class AlignmentChromPeakFeature : IChromatogramPeakFeature, IMSIonProperty, IAnnotatedObject, INormalizableValue {
+
+        public AlignmentChromPeakFeature() {
+            Formula = new Formula();
+            PeakCharacter = new IonFeatureCharacter();
+            PeakShape = new ChromatogramPeakShape();
+        }
+
+        [SerializationConstructor]
+        [Obsolete("This constructor is for MessagePack only, don't use.")]
+        public AlignmentChromPeakFeature(int fileID, string fileName, int masterPeakID, int peakID, int parentPeakID) {
+            FileID = fileID;
+            FileName = fileName;
+            MasterPeakID = masterPeakID;
+            PeakID = peakID;
+            ParentPeakID = parentPeakID;
+        }
 
         // ID metadata
         [Key(0)]
@@ -99,7 +116,7 @@ namespace CompMs.MsdialCore.DataObj
         [Key(24)]
         public string Name { get; set; } = string.Empty;
         [Key(25)]
-        public Formula Formula { get; set; } = new Formula();
+        public Formula Formula { get; set; }
         [Key(26)]
         public string Ontology { get; set; } = string.Empty;
         [Key(27)]
@@ -192,16 +209,13 @@ namespace CompMs.MsdialCore.DataObj
             get => matchResults ?? (matchResults = new MsScanMatchResultContainer());
             set => matchResults = value;
         }
-
-        [Key(48)]
         private MsScanMatchResultContainer matchResults;
-
 
         // peak characters
         [Key(36)]
-        public IonFeatureCharacter PeakCharacter { get; set; } = new IonFeatureCharacter();
+        public IonFeatureCharacter PeakCharacter { get; set; }
         [Key(37)]
-        public ChromatogramPeakShape PeakShape { get; set; } = new ChromatogramPeakShape();
+        public ChromatogramPeakShape PeakShape { get; set; }
         [Key(44)]
         public double NormalizedPeakHeight { get; set; }
         [Key(45)]

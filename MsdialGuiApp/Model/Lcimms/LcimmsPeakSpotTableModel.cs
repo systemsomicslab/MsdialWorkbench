@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Table;
 using CompMs.Graphics.Base;
 using Reactive.Bindings;
@@ -46,29 +47,32 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public double DtMax { get; }
     }
 
-    sealed class LcimmsAlignmentSpotTableModel : LcimmsPeakSpotTableModel<AlignmentSpotPropertyModel>
+    internal sealed class LcimmsAlignmentSpotTableModel : LcimmsPeakSpotTableModel<AlignmentSpotPropertyModel>
     {
         public LcimmsAlignmentSpotTableModel(
             ObservableCollection<AlignmentSpotPropertyModel> peakSpots,
             IReactiveProperty<AlignmentSpotPropertyModel> target,
-            IObservable<IBrushMapper<BarItem>> classBrush)
+            IObservable<IBrushMapper<BarItem>> classBrush,
+            IObservable<IBarItemsLoader> barItemsLoader)
             : base(peakSpots, target,
                   peakSpots.DefaultIfEmpty().Min(peak => peak?.MassCenter) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.MassCenter) ?? 0d,
                   peakSpots.DefaultIfEmpty().Min(peak => peak?.RT) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.RT) ?? 0d,
                   peakSpots.DefaultIfEmpty().Min(peak => peak?.Drift) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.Drift) ?? 0d) {
             ClassBrush = classBrush;
+            BarItemsLoader = barItemsLoader;
         }
 
         public IObservable<IBrushMapper<BarItem>> ClassBrush { get; }
+        public IObservable<IBarItemsLoader> BarItemsLoader { get; }
     }
 
-    sealed class LcimmsAnalysisPeakTableModel : LcimmsPeakSpotTableModel<ChromatogramPeakFeatureModel>
+    internal sealed class LcimmsAnalysisPeakTableModel : LcimmsPeakSpotTableModel<ChromatogramPeakFeatureModel>
     {
         public LcimmsAnalysisPeakTableModel(ObservableCollection<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel> target)
             : base(peakSpots, target,
                 peakSpots.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d,
-                peakSpots.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXsTop.RT.Value) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.InnerModel.ChromXsTop.RT.Value) ?? 0d,
-                peakSpots.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXsTop.Drift.Value) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.InnerModel.ChromXsTop.Drift.Value) ?? 0d) {
+                peakSpots.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXs.RT.Value) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.InnerModel.ChromXsTop.RT.Value) ?? 0d,
+                peakSpots.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXs.Drift.Value) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.InnerModel.ChromXsTop.Drift.Value) ?? 0d) {
         }
     }
 }

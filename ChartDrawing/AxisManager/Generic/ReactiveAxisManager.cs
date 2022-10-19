@@ -70,6 +70,8 @@ namespace CompMs.Graphics.AxisManager.Generic
 
         public List<double> TranslateToRenderPoints(IEnumerable<object> values, bool isFlipped, double drawableLength) => AxisManagerImpl.TranslateToRenderPoints(values, isFlipped, drawableLength);
 
+        public List<double> TranslateToRenderPoints(IEnumerable<AxisValue> values, bool isFlipped, double drawableLength) => AxisManagerImpl.TranslateToRenderPoints(values, isFlipped, drawableLength);
+
         class RangeObserver : IObserver<Range>, IObserver<(T, T)>, IDisposable
         {
             private BaseAxisManager<T> axis;

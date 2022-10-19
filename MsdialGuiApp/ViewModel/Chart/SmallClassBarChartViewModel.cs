@@ -11,7 +11,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
 {
     public class SmallClassBarChartViewModel : ViewModelBase
     {
-        public SmallClassBarChartViewModel(BarItemCollection collection) {
+        public SmallClassBarChartViewModel(SpotBarItemCollection collection) {
             Collection = collection;
             var collectionChanged = Collection
                 .CollectionChangedAsObservable()
@@ -29,7 +29,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .AddTo(Disposables);
         }
 
-        public BarItemCollection Collection { get; }
+        public SpotBarItemCollection Collection { get; }
 
         public IAxisManager<string> HorizontalAxis { get; }
 
