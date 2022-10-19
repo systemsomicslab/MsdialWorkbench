@@ -84,6 +84,10 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             var internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
             InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(_ => messageBroker.Publish(internalStandardSetViewModel)).AddTo(Disposables);
+
+            var notification = TaskNotification.Start("Loading alignment results...");
+            messageBroker.Publish(notification);
+            model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => messageBroker.Publish(TaskNotification.End(notification)));
         }
 
         public Chart.AlignmentPeakPlotViewModel PlotViewModel {

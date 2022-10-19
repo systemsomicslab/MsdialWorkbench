@@ -88,6 +88,10 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             _internalStandardSetViewModel = new InternalStandardSetViewModel(model.InternalStandardSetModel).AddTo(Disposables);
             InternalStandardSetCommand = new ReactiveCommand().WithSubscribe(_ => broker.Publish(_internalStandardSetViewModel)).AddTo(Disposables);
+
+            var notification = TaskNotification.Start("Loading alignment results...");
+            broker.Publish(notification);
+            model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }

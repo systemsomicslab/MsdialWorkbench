@@ -116,6 +116,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .ToReactiveCommand()
                 .WithSubscribe(() => broker.Publish(PcaSettingViewModel))
                 .AddTo(Disposables);
+
+            var notification = TaskNotification.Start("Loading alignment results...");
+            broker.Publish(notification);
+            model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }

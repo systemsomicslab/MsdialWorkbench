@@ -102,7 +102,7 @@ namespace CompMs.MsdialCore.DataObj {
                     }
                 }
             }
-            result.LoadAlginedPeakPropertiesTask = Task.Run(() =>
+            result.LoadAlginedPeakPropertiesTask = Task.Run(async () =>
             {
                 if (collection != null && collection.Count > 0 && collection[0].AlignedPeakProperties is null) {
                     var chromatogramPeakFile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_PeakProperties" + Path.GetExtension(file.FilePath));
@@ -113,6 +113,7 @@ namespace CompMs.MsdialCore.DataObj {
                         foreach (var c in collection) {
                             c.AlignedPeakPropertiesTask = task = task.ContinueWith(_ => enumerator.MoveNext() ? enumerator.Current : new List<AlignmentChromPeakFeature>(0));
                         }
+                        await task.ConfigureAwait(false);
                     }
                 }
             });
