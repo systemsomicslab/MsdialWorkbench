@@ -1,4 +1,5 @@
-﻿using CompMs.Graphics.Base;
+﻿using CompMs.Common.DataStructure;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.Graphics.Helper;
@@ -10,6 +11,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace CompMs.Graphics.Chart
@@ -147,6 +149,7 @@ namespace CompMs.Graphics.Chart
         }
 
         private Lazy<List<Series>> _lazySerieses;
+        private Lazy<KdTree<(Data, Series)>> _lazyKdTree;
         private void SetDatas() {
             _lazySerieses = new Lazy<List<Series>>(() =>
             {
@@ -162,11 +165,18 @@ namespace CompMs.Graphics.Chart
                 foreach (var series in _seriesesCV.OfType<object>()) {
                     var rawItems = _itemsGetter(series);
                     if (rawItems is IEnumerable<object> items) {
-                        results.Add(new Series() { raw = series, data = items.Select(item => new Data { x = xGetter(item, hAxis), y = yGetter(item, vAxis), }).ToArray() });
+                        results.Add(new Series() { raw = series, data = items.Select(item => new Data { x = xGetter(item, hAxis), y = yGetter(item, vAxis), raw = item, }).ToArray() });
                     }
                 }
                 return results;
             });
+
+            _lazyKdTree = new Lazy<KdTree<(Data, Series)>>(
+                () => KdTree.Build(
+                    _lazySerieses.Value.SelectMany(series => series.data, (series, data) => (data, series)),
+                    new ChartDistanceCalculator(this),
+                    pair => pair.data.x.Value,
+                    pair => pair.data.y.Value));
         }
 
         public static readonly DependencyProperty HorizontalPropertyProperty =
@@ -356,6 +366,167 @@ namespace CompMs.Graphics.Chart
             }
         }
 
+        public static readonly DependencyProperty SelectedSeriesProperty =
+            DependencyProperty.Register(
+                nameof(SelectedSeries), typeof(object), typeof(MultiLineChartControl),
+                new PropertyMetadata(null, OnSelectedSeriesChanged));
+
+        public object SelectedSeries {
+            get => GetValue(SelectedSeriesProperty);
+            set => SetValue(SelectedSeriesProperty, value);
+        }
+
+        private static void OnSelectedSeriesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var chart = (MultiLineChartControl)d;
+            chart.OnSelectedSeriesChanged(e.OldValue, e.NewValue);
+        } 
+
+        private void OnSelectedSeriesChanged(object oldValue, object newValue) {
+
+        }
+
+        public static readonly DependencyProperty SelectedItemProperty =
+            DependencyProperty.Register(
+                nameof(SelectedItem), typeof(object), typeof(MultiLineChartControl),
+                new PropertyMetadata(null, OnSelectedItemChanged));
+
+        public object SelectedItem {
+            get => GetValue(SelectedItemProperty);
+            set => SetValue(SelectedItemProperty, value);
+        }
+
+        private static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var chart = (MultiLineChartControl)d;
+            chart.OnSelectedItemChanged(e.OldValue, e.NewValue);
+        }
+
+        private void OnSelectedItemChanged(object oldValue, object newValue) {
+
+        }
+
+        public static readonly DependencyProperty SelectedPointProperty =
+            DependencyProperty.Register(
+                nameof(SelectedPoint), typeof(Point?), typeof(MultiLineChartControl),
+                new PropertyMetadata(null));
+
+        public Point? SelectedPoint {
+            get => (Point?)GetValue(SelectedPointProperty);
+            set => SetValue(SelectedPointProperty, value);
+        }
+
+        public static readonly DependencyProperty FocusedSeriesProperty =
+            DependencyProperty.Register(
+                nameof(FocusedSeries), typeof(object), typeof(MultiLineChartControl),
+                new PropertyMetadata(null, OnFocusedSeriesChanged));
+
+        public object FocusedSeries {
+            get => GetValue(FocusedSeriesProperty);
+            set => SetValue(FocusedSeriesProperty, value);
+        }
+
+        private static void OnFocusedSeriesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var chart = (MultiLineChartControl)d;
+            chart.OnFocusedSeriesChanged(e.OldValue, e.NewValue);
+        }
+
+        private void OnFocusedSeriesChanged(object oldValue, object newValue) {
+
+        }
+
+        public static readonly DependencyProperty FocusedItemProperty =
+            DependencyProperty.Register(
+                nameof(FocusedItem), typeof(object), typeof(MultiLineChartControl),
+                new PropertyMetadata(null, OnFocusedItemChanged));
+
+        public object FocusedItem {
+            get => GetValue(FocusedItemProperty);
+            set => SetValue(FocusedItemProperty, value);
+        }
+
+        private static void OnFocusedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var chart = (MultiLineChartControl)d;
+            chart.OnFocusedItemChanged(e.OldValue, e.NewValue);
+        }
+
+        private  void OnFocusedItemChanged(object oldValue, object newValue) {
+
+        }
+
+        public static readonly DependencyProperty FocusedPointProperty =
+            DependencyProperty.Register(
+                nameof(FocusedPoint), typeof(Point?), typeof(MultiLineChartControl),
+                new PropertyMetadata(null));
+
+        public Point? FocusedPoint {
+            get => (Point?)GetValue(FocusedPointProperty);
+            set => SetValue(FocusedPointProperty, value);
+        }
+
+        private static readonly double ITEM_SELECT_MAXIMUM_DISTANCE = 3d;
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) {
+            base.OnMouseLeftButtonDown(e);
+            if (e.ClickCount == 1) {
+                if (_lazyKdTree != null && HorizontalAxis is IAxisManager haxis && VerticalAxis is IAxisManager vaxis) {
+                    var pt = e.GetPosition(this);
+                    var flippedX = FlippedX;
+                    var flippedY = FlippedY;
+                    var width = ActualWidth;
+                    var height = ActualHeight;
+
+                    var spot = _lazyKdTree.Value.NearestNeighbor(new[]
+                        {
+                            haxis.TranslateFromRenderPoint(pt.X, flippedX, width).Value,
+                            vaxis.TranslateFromRenderPoint(pt.Y, flippedY, height).Value,
+                        });
+
+                    if (Math.Pow(haxis.TranslateToRenderPoint(spot.Item1.x, flippedX, width) - pt.X, 2)
+                        + Math.Pow(vaxis.TranslateToRenderPoint(spot.Item1.y, flippedY, height) - pt.Y, 2)
+                        <= Math.Pow(ITEM_SELECT_MAXIMUM_DISTANCE, 2)) {
+                        if (SelectedItem != spot.Item1.raw) {
+                            SelectedSeries = spot.Item2.raw;
+                            SelectedItem = spot.Item1.raw;
+                            SelectedPoint = pt;
+                        }
+                    }
+                }
+            }
+        }
+
+        private static readonly double ITEM_FOCUSE_MAXIMUM_DISTANCE = 3d;
+        protected override void OnMouseMove(MouseEventArgs e) {
+            base.OnMouseMove(e);
+            if (_lazyKdTree != null && HorizontalAxis is IAxisManager haxis && VerticalAxis is IAxisManager vaxis) {
+                var pt = e.GetPosition(this);
+                var flippedX = FlippedX;
+                var flippedY = FlippedY;
+                var width = ActualWidth;
+                var height = ActualHeight;
+
+                var spot = _lazyKdTree.Value.NearestNeighbor(new[]
+                    {
+                        haxis.TranslateFromRenderPoint(pt.X, flippedX, width).Value,
+                        vaxis.TranslateFromRenderPoint(pt.Y, flippedY, height).Value,
+                    });
+
+                if (Math.Pow(haxis.TranslateToRenderPoint(spot.Item1.x, flippedX, width) - pt.X, 2)
+                    + Math.Pow(vaxis.TranslateToRenderPoint(spot.Item1.y, flippedY, height) - pt.Y, 2)
+                    <= Math.Pow(ITEM_FOCUSE_MAXIMUM_DISTANCE, 2)) {
+                    if (FocusedItem != spot.Item1.raw) {
+                        FocusedSeries = spot.Item2.raw;
+                        FocusedItem = spot.Item1.raw;
+                        FocusedPoint = pt;
+                    }
+                }
+            }
+        }
+
+        protected override void OnMouseLeave(MouseEventArgs e) {
+            base.OnMouseLeave(e);
+            FocusedSeries = null;
+            FocusedItem = null;
+            FocusedPoint = null;
+        }
+
         private static List<Point> ValuesToRenderPositions(Series s, double actualWidth, double actualHeight, IAxisManager horizontalAxis, IAxisManager verticalAxis, bool flippedX, bool flippedY) {
             if (horizontalAxis is null || verticalAxis is null) {
                 return new List<Point>(0);
@@ -374,6 +545,7 @@ namespace CompMs.Graphics.Chart
         private sealed class Data
         {
             public AxisValue x, y;
+            public object raw;
         }
     }
 }

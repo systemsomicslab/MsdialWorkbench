@@ -294,6 +294,7 @@ namespace CompMs.App.Msdial.View.Core
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 };
+                window.Closed += (s, e) => vm.Dispose();
                 window.Show();
             });
         }
@@ -304,6 +305,7 @@ namespace CompMs.App.Msdial.View.Core
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 };
+                window.Closed += (s, e) => vm.Dispose();
                 window.Show();
             });
         }

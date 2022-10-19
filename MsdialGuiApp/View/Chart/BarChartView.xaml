@@ -20,6 +20,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -98,5 +99,14 @@
                             ErrorCap="{Binding ActualBarWidth, ElementName=bar, Converter={StaticResource ByHalf}, Mode=OneWay}"
                             ClipToBounds="True"/>
         </chart:MultiChart>
+        <StackPanel Visibility="{Binding IsLoading.Value, Converter={StaticResource ResourceKey=BooleanToVisibility}}"
+                    VerticalAlignment="Center" MaxWidth="100">
+            <TextBlock Text="Loading..."
+                       HorizontalAlignment="Center"
+                       FontSize="16"/>
+            <ProgressBar IsIndeterminate="True"
+                         HorizontalAlignment="Center"
+                         Height="16" Width="100"/>
+        </StackPanel>
     </Grid>
 </UserControl>

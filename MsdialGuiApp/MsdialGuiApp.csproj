@@ -157,6 +157,7 @@
     <Compile Include="Model\Chart\MsSpectrum.cs" />
     <Compile Include="Model\Chart\SampleImageModel.cs" />
     <Compile Include="Model\DataObj\AnalysisFileBeanModel.cs" />
+    <Compile Include="Model\DataObj\BarItemCollection.cs" />
     <Compile Include="Model\Imaging\ImagingImageModel.cs" />
     <Compile Include="Model\Imaging\ImagingRoiModel.cs" />
     <Compile Include="Model\Imaging\ImaginRoiCompareModel.cs" />
@@ -205,7 +206,7 @@
     <Compile Include="Model\Search\PeakSpotNavigatorModel.cs" />
     <Compile Include="Model\Search\SpotFocus.cs" />
     <Compile Include="Model\DataObj\AlignmentChromPeakFeatureModel.cs" />
-    <Compile Include="Model\DataObj\BarItemCollection.cs" />
+    <Compile Include="Model\DataObj\SpotBarItemCollection.cs" />
     <Compile Include="Model\Loader\AlignmentEicLoader.cs" />
     <Compile Include="Model\Chart\AlignmentPeakPlotModel.cs" />
     <Compile Include="Model\Chart\AnalysisPeakPlotModel.cs" />

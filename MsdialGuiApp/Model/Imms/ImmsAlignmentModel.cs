@@ -163,7 +163,8 @@ namespace CompMs.App.Msdial.Model.Imms
             var eicFile = alignmentFileBean.EicFilePath;
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
-            var eicLoader = new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, eicFile, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor)).AddTo(Disposables);
+            var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
+            var eicLoader = new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, eicFile, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor), Observable.Return(fileIdToFileName)).AddTo(Disposables);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader, files, parameter,
                 peak => peak.Time,

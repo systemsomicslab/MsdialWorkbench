@@ -6,24 +6,17 @@
              mc:Ignorable="d" 
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
-             xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
              xmlns:graphio="clr-namespace:CompMs.Graphics.IO;assembly=ChartDrawing"
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
              Name="AlignedEicView"
+             d:Background="White"
              d:DataContext="{d:DesignInstance Type=vm:AlignmentEicViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <d:DesignerProperties.DesignStyle>
-        <Style TargetType="UserControl">
-            <Setter Property="Background" Value="White"/>
-        </Style>
-    </d:DesignerProperties.DesignStyle>
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <converter:ColorToBrushConverter x:Key="ColorToBrushConverter" Opacity="0.25"/>
-            <converter:ColorToPenConverter x:Key="ColorToPenConverter" Thickness="2"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -80,16 +73,25 @@
                                              VerticalProperty="{Binding VerticalProperty.Value}"
                                              LineBrush="{Binding Brush}"
                                              LineThickness="1">
-                    <!--
                     <chart:MultiLineChartControl.ToolTip>
                         <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Class: "/>
-                                <TextBlock Text="{Binding DataContext.Class, Mode=OneWay}"/>
+                            <StackPanel>
+                                <StackPanel.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Margin" Value="2,0,2,0"/>
+                                    </Style>
+                                </StackPanel.Resources>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding FocusedSeries.Description, StringFormat=File:{0}}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding FocusedSeries.Class, StringFormat=Class:{0}}"/>
+                                    <TextBlock Text="{Binding FocusedItem.Time, StringFormat=X:{0:F3}}"/>
+                                    <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Y:{0}}"/>
+                                </StackPanel>
                             </StackPanel>
                         </ToolTip>
                     </chart:MultiLineChartControl.ToolTip>
-                    -->
                 </chart:MultiLineChartControl>
                 <chart:MultiAreaChartControl ItemsSources="{Binding EicChromatograms.Value}"
                                              CollectionDataType="{x:Type do:Chromatogram}"
@@ -102,80 +104,5 @@
                                              IsHitTestVisible="False"/>
             </Grid>
         </chart:SimpleChartControl>
-                                  
-        <!--
-        <chart:MultiChart Name="Eics"
-                          GraphTitle="{Binding GraphTitle.Value}"
-                          HorizontalTitle="{Binding HorizontalTitle.Value}"
-                          HorizontalAxis="{Binding HorizontalAxis}"
-                          VerticalAxis="{Binding VerticalAxis}"
-                          AlternationCount="1"
-                          ItemsSource="{Binding EicChromatograms.Value}"
-                          Style="{StaticResource OverlapChart}">
-            <chart:MultiChart.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Peak curation (EICs overlay)"
-                              Command="{Binding ShowPeakCurationWinByOverlayEICsCommand, Mode=OneTime}"/>
-                    <MenuItem Header="Peak curation (Sample table)"
-                              Command="{Binding ShowPeakCurationWinBySampleTableCommand, Mode=OneTime}"/>
-                    <Separator/>
-                    <MenuItem Header="Save image using dialog"
-                              Command="{x:Static graphio:SaveImageAsWithDialogCommand.Instance}"
-                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    <MenuItem Header="Save image as...">
-                        <MenuItem Header="Save as emf"
-                                  Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"
-                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                        <MenuItem Header="Save as png"
-                                  Command="{x:Static graphio:SaveImageAsCommand.PngInstance}"
-                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    </MenuItem>
-                    <MenuItem Header="Copy image using dialog"
-                              Command="{x:Static graphio:CopyImageAsWithDialogCommand.Instance}"
-                              CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    <MenuItem Header="Copy image as...">
-                        <MenuItem Header="Copy as emf"
-                                  Command="{x:Static graphio:CopyImageAsCommand.EmfInstance}"
-                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                        <MenuItem Header="Copy as png"
-                                  Command="{x:Static graphio:CopyImageAsCommand.BitmapInstance}"
-                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                    </MenuItem>
-                </ContextMenu>
-            </chart:MultiChart.ContextMenu>
-            <chart:MultiChart.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <chart:LineChartControl ItemsSource="{Binding Peaks}"
-                                                LinePen="{Binding Color, Converter={StaticResource ColorToPenConverter}}"
-                                                HorizontalPropertyName="{Binding DataContext.HorizontalProperty.Value, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
-                                                VerticalPropertyName="{Binding DataContext.VerticalProperty.Value, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}">
-                            <chart:LineChartControl.ToolTip>
-                                <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Class: "/>
-                                        <TextBlock Text="{Binding DataContext.Class, Mode=OneWay}"/>
-                                    </StackPanel>
-                                </ToolTip>
-                            </chart:LineChartControl.ToolTip>
-                        </chart:LineChartControl>
-                        <chart:AreaChartControl ItemsSource="{Binding PeakArea}"
-                                                AreaBrush="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"
-                                                HorizontalPropertyName="{Binding DataContext.HorizontalProperty.Value, RelativeSource={RelativeSource AncestorType=chart:MultiChart}}"
-                                                VerticalPropertyName="{Binding DataContext.VerticalProperty.Value, RelativeSource={RelativeSource AncestorType=chart:MultiChart}}"
-                                                IsHitTestVisible="False"/>
-                    </Grid>
-                </DataTemplate>
-            </chart:MultiChart.ItemTemplate>
-            <chart:MultiChart.VerticalTitle>
-                <MultiBinding StringFormat="{}{0}({1})">
-                    <MultiBinding.Bindings>
-                        <Binding Path="VerticalTitle.Value"/>
-                        <Binding Path="VerticalAxis.UnitLabel"/>
-                    </MultiBinding.Bindings>
-                </MultiBinding>
-            </chart:MultiChart.VerticalTitle>
-        </chart:MultiChart>
-        -->
     </Grid>
 </UserControl>

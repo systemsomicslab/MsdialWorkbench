@@ -1,38 +1,23 @@
-﻿using CompMs.App.Msdial.Model.Loader;
-using Reactive.Bindings;
+﻿using CompMs.CommonMVVM;
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class BarItemCollection : ReadOnlyObservableCollection<BarItem>, IDisposable
+    public sealed class BarItemCollection : BindableBase
     {
-        private BarItemCollection(AlignmentSpotPropertyModel spot, IObservable<IBarItemsLoader> loader, ReactiveCollection<BarItem> collection) : base(collection) {
-            _unsubscriber = loader
-                .Where(loader_ => !(loader_ is null))
-                .Select(loader_ => loader_.LoadBarItemsAsObservable(spot))
-                .Switch()
-                .Subscribe(items => {
-                    collection.ClearOnScheduler();
-                    collection.AddRangeOnScheduler(items);
-                });
-            _collection = collection;
+        public BarItemCollection() {
+            ObservableItems = Observable.Return(new List<BarItem>(0));
+            ObservableLoading = Observable.Return(false);
         }
 
-        private IDisposable _unsubscriber;
-        private ReactiveCollection<BarItem> _collection;
-
-        public void Dispose() {
-            _unsubscriber.Dispose();
-            _unsubscriber = null;
-            _collection.Dispose();
-            _collection = null;
+        public BarItemCollection(IObservable<List<BarItem>> observableItems, IObservable<bool> observableLoading) {
+            ObservableItems = observableItems;
+            ObservableLoading = observableLoading;
         }
 
-        public static BarItemCollection Create(AlignmentSpotPropertyModel spot, IObservable<IBarItemsLoader> loader) {
-            var collection = new ReactiveCollection<BarItem>();
-            return new BarItemCollection(spot, loader, collection);
-        }
+        public IObservable<List<BarItem>> ObservableItems { get; }
+        public IObservable<bool> ObservableLoading { get; }
     }
 }

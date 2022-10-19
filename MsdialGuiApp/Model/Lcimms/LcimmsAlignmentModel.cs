@@ -167,7 +167,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .AddTo(Disposables);
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
-            var eicLoader = new AlignmentEicLoader(RT_CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor)).AddTo(Disposables);
+            var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
+            var eicLoader = new AlignmentEicLoader(RT_CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor), Observable.Return(fileIdToFileName)).AddTo(Disposables);
             RtAlignmentEicModel = AlignmentEicModel.Create(
                 accumulatedTarget, eicLoader, files, parameter,
                 peak => peak.Time,
@@ -193,7 +194,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                         : $"Spot ID: {t.MasterAlignmentID} Mass m/z: {t.MassCenter:F5} Mobility [1/K0]: {t.innerModel.TimesCenter.Drift.Value:F4}"))
                 .Subscribe(title => DtMzPlotModel.GraphTitle = title)
                 .AddTo(Disposables);
-            var dtEicLoader = new AlignmentEicLoader(DRIFT_CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor)).AddTo(Disposables);
+            var dtEicLoader = new AlignmentEicLoader(DRIFT_CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor), Observable.Return(fileIdToFileName)).AddTo(Disposables);
             DtAlignmentEicModel = AlignmentEicModel.Create(
                 target, dtEicLoader, files, parameter,
                 peak => peak.Time,
