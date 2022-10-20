@@ -110,7 +110,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: ~FilterEnableStatus.Dt).AddTo(Disposables);
+            PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Spots, peakFilterModel, evaluator, status: FilterEnableStatus.All & ~FilterEnableStatus.Dt).AddTo(Disposables);
 
             // Peak scatter plot
             var ontologyBrush = new BrushMapData<AlignmentSpotPropertyModel>(

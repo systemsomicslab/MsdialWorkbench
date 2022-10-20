@@ -14,10 +14,11 @@ namespace CompMs.App.Msdial.Model.DataObj
         private readonly ProteinResultContainer _resultContainer;
         private readonly ObservableCollection<ProteinGroupModel> _proteinGroups;
 
-        public ProteinResultContainerModel(ProteinResultContainer resultContainer, IReadOnlyList<ChromatogramPeakFeatureModel> spots, IReactiveProperty<ChromatogramPeakFeatureModel> target)
+        public ProteinResultContainerModel(ProteinResultContainer resultContainer, IReadOnlyList<ChromatogramPeakFeatureModel> peaks, IReactiveProperty<ChromatogramPeakFeatureModel> target)
         {
+            var orderedPeaks = peaks.OrderBy(peak => peak.MasterPeakID).ToList();
             _resultContainer = resultContainer;
-            _proteinGroups = new ObservableCollection<ProteinGroupModel>(resultContainer.ProteinGroups.Select(group => new ProteinGroupModel(group, spots)));
+            _proteinGroups = new ObservableCollection<ProteinGroupModel>(resultContainer.ProteinGroups.Select(group => new ProteinGroupModel(group, orderedPeaks)));
             Target = new ReactivePropertySlim<object>();
             Target.OfType<ChromatogramPeakFeatureModel>().Subscribe(t => target.Value = t);
 
@@ -25,8 +26,9 @@ namespace CompMs.App.Msdial.Model.DataObj
 
         public ProteinResultContainerModel(ProteinResultContainer resultContainer, IReadOnlyList<AlignmentSpotPropertyModel> spots, IReactiveProperty<AlignmentSpotPropertyModel> target)
         {
+            var orderedSpots = spots.OrderBy(spot => spot.MasterAlignmentID).ToList();
             _resultContainer = resultContainer;
-            _proteinGroups = new ObservableCollection<ProteinGroupModel>(resultContainer.ProteinGroups.Select(group => new ProteinGroupModel(group, spots)));
+            _proteinGroups = new ObservableCollection<ProteinGroupModel>(resultContainer.ProteinGroups.Select(group => new ProteinGroupModel(group, orderedSpots)));
             Target = new ReactivePropertySlim<object>();
             Target.OfType<AlignmentSpotPropertyModel>().Subscribe(t => target.Value = t);
         }
