@@ -70,7 +70,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databaseStorage, mapper, parameter.PeakPickBaseParam);
 
-            InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Dims);
+            InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Dims).AddTo(Disposables);
 
             var barItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
             var observableBarItemsLoader = Observable.Return(barItemsLoader);
@@ -249,7 +249,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public InternalStandardSetModel InternalStandardSetModel { get; }
 
         public NormalizationSetModel BuildNormalizeSetModel() {
-            return new NormalizationSetModel(Container, _files, _dataBaseMapper, _matchResultEvaluator, _parameter, _broker);
+            return new NormalizationSetModel(Container, _files, _dataBaseMapper, _matchResultEvaluator, InternalStandardSetModel, _parameter, _broker);
         }
 
         public bool CanSaveSpectra() => Target.Value.innerModel != null && _msdecResult.Value != null;

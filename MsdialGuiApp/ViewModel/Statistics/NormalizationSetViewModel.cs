@@ -29,6 +29,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
                 .ToReactiveCommand()
                 .WithSubscribe(model.Normalize)
                 .AddTo(Disposables);
+            CancelCommand = isSetViewModel.CancelCommand;
         }
 
         public ReactivePropertySlim<bool> IsNormalizeNone { get; }
@@ -44,5 +45,6 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public ReadOnlyReactivePropertySlim<bool> IsSetViewModelVisible { get; }
 
         public ReactiveCommand NormalizeCommand { get; }
+        public ReactiveCommand CancelCommand { get; }
     }
 }

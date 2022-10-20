@@ -3,10 +3,8 @@ using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Normalize;
-using Reactive.Bindings;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {
@@ -15,9 +13,14 @@ namespace CompMs.App.Msdial.Model.Statistics
         private readonly AlignmentResultContainer _container;
         private readonly IMessageBroker _messageBroker;
 
-        public InternalStandardNormalizeModel(AlignmentResultContainer container, IMessageBroker messageBroker) {
+        public InternalStandardNormalizeModel(AlignmentResultContainer container, InternalStandardSetModel internalStandardSetModel, IMessageBroker messageBroker) {
+            if (internalStandardSetModel is null) {
+                throw new ArgumentNullException(nameof(internalStandardSetModel));
+            }
+
             _container = container ?? throw new ArgumentNullException(nameof(container));
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
+            CanNormalize = internalStandardSetModel.SomeSpotSetInternalStandard;
         }
 
         public void Normalize() {
@@ -30,6 +33,6 @@ namespace CompMs.App.Msdial.Model.Statistics
             }
         }
 
-        public ReadOnlyReactivePropertySlim<bool> CanNormalizeProperty = new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true));
+        public IObservable<bool> CanNormalize { get; }
     }
 }

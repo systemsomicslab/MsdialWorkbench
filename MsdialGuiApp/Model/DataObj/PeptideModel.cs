@@ -1,8 +1,9 @@
-﻿using CompMs.MsdialCore.DataObj;
+﻿using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
-using CompMs.Common.DataObj;
+using CompMs.Common.Interfaces;
+using CompMs.Common.Utility;
+using CompMs.MsdialCore.DataObj;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
@@ -28,9 +29,10 @@ namespace CompMs.App.Msdial.Model.DataObj
         //public object PeptideSeq { get; }
         private readonly PeptideMsResult _peptideMsResult;
 
-        public PeptideModel(PeptideMsResult peptideMsResult, IReadOnlyList<ChromatogramPeakFeatureModel> spots)
+        public PeptideModel(PeptideMsResult peptideMsResult, IReadOnlyList<ChromatogramPeakFeatureModel> orderedPeaks)
         {
-            var peak = spots.FirstOrDefault(spot => spot.InnerModel.MasterPeakID == peptideMsResult.ChromatogramPeakFeature.MasterPeakID);
+            var idx = orderedPeaks.BinarySearch(peptideMsResult.ChromatogramPeakFeature, COMPARER);
+            var peak = idx >= 0 ? orderedPeaks[idx] : null;
             AnnotatedSpot = peak;
             AdductType = peak.AdductIonName;
             PeptideSeq = peptideMsResult.Peptide.Sequence;
@@ -48,9 +50,10 @@ namespace CompMs.App.Msdial.Model.DataObj
             CountModifiedAminoAcids = peptideMsResult.Peptide.CountModifiedAminoAcids();
         }
 
-        public PeptideModel(PeptideMsResult peptideMsResult, IReadOnlyList<AlignmentSpotPropertyModel> spots)
+        public PeptideModel(PeptideMsResult peptideMsResult, IReadOnlyList<AlignmentSpotPropertyModel> orderedSpots)
         {
-            var peak = spots.FirstOrDefault(spot => spot.innerModel.MasterAlignmentID == peptideMsResult.AlignmentSpotProperty.MasterAlignmentID);
+            var idx = orderedSpots.BinarySearch(peptideMsResult.AlignmentSpotProperty, COMPARER);
+            var peak = idx >= 0 ? orderedSpots[idx] : null;
             AnnotatedSpot = peak;
             AdductType = peak.AdductIonName;
             PeptideSeq = peptideMsResult.Peptide.Sequence;
@@ -66,6 +69,15 @@ namespace CompMs.App.Msdial.Model.DataObj
             MissedCleavages = peptideMsResult.Peptide.MissedCleavages;
             SamePeptideNumberInSearchedProteins = peptideMsResult.Peptide.SamePeptideNumberInSearchedProteins;
             CountModifiedAminoAcids = peptideMsResult.Peptide.CountModifiedAminoAcids();
+        }
+
+        private static readonly IComparer<IChromatogramPeak> COMPARER = new ChromatogramPeakComparer();
+
+        private class ChromatogramPeakComparer : IComparer<IChromatogramPeak>
+        {
+            public int Compare(IChromatogramPeak x, IChromatogramPeak y) {
+                return x.ID.CompareTo(y.ID);
+            }
         }
     }
 }

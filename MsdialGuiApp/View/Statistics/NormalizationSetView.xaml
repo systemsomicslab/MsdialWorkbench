@@ -50,6 +50,7 @@
         </ContentControl>
         <ContentControl Visibility="{Binding IsSetViewModelVisible.Value, Converter={StaticResource BooleanToVisibility}}"
                         d:Visibility="Visible"
+                        Height="200"
                         Margin="8"
                         Grid.Row="1">
             <local:InternalStandardSetView DataContext="{Binding IsSetViewModel, Mode=OneTime}"/>
@@ -67,7 +68,7 @@
                 </Style>
             </StackPanel.Resources>
             <Button Content="Normalize" Command="{Binding NormalizeCommand}" Click="Invoke_Normalize"/>
-            <Button Content="Cancel" Command="Close"/>
+            <Button Content="Cancel" Command="{Binding CancelCommand}" Click="Click_Cancel"/>
         </StackPanel>
     </Grid>
 </Window>

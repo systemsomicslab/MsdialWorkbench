@@ -89,6 +89,40 @@ namespace CompMs.Common.Utility
             return UpperBound(collection, value, 0, collection.Count, comparer.Compare);
         }
 
+        public static int BinarySearch<T, U>(this IReadOnlyList<T> collection, U value, int start, int end, Func<T, U, int> compare)
+        {
+            var idx = LowerBound(collection, value, start, end, compare);
+            if (idx >= end || compare(collection[idx], value) != 0) {
+                return -1;
+            }
+            return idx;
+        }
+
+        public static int BinarySearch<T, U>(this IReadOnlyList<T> collection, U value, Func<T, U, int> compare)
+        {
+            return BinarySearch(collection, value, 0, collection.Count, compare);
+        }
+
+        public static int BinarySearch<T>(this IReadOnlyList<T> collection, T value, int start, int end, IComparer<T> comparer)
+        {
+            return BinarySearch(collection, value, start, end, comparer.Compare);
+        }
+
+        public static int BinarySearch<T>(this IReadOnlyList<T> collection, T value) where T : IComparable
+        {
+            return BinarySearch(collection, value, 0, collection.Count, Comparer<T>.Default.Compare);
+        }
+
+        public static int BinarySearch<T>(this IReadOnlyList<T> collection, T value, int start, int end) where T : IComparable
+        {
+            return BinarySearch(collection, value, start, end, Comparer<T>.Default.Compare);
+        }
+
+        public static int BinarySearch<T>(this IReadOnlyList<T> collection, T value, IComparer<T> comparer)
+        {
+            return BinarySearch(collection, value, 0, collection.Count, comparer.Compare);
+        }
+
         public static IEnumerable<T[]> Permutations<T>(IReadOnlyList<T> collection) {
             var n = collection.Count;
             var used = new bool[n];
