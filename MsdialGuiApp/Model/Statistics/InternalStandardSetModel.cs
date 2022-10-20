@@ -4,10 +4,13 @@ using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {
@@ -23,12 +26,23 @@ namespace CompMs.App.Msdial.Model.Statistics
             TargetMsMethod = targetMsMethod ?? throw new ArgumentNullException(nameof(targetMsMethod));
 
             var ids = Spots.Select(s => s.Id).ToHashSet();
-            SomeSpotSetInternalStandard = Spots
-                .Select(spot => spot.ObserveProperty(s => s.InternalStandardId).Select(ids.Contains))
-                .CombineLatestValuesAreAllFalse()
-                .Inverse()
-                .ToReactiveProperty(false)
-                .AddTo(Disposables);
+            var isPositive = new ConcurrentDictionary<NormalizationSpotPropertyModel, byte>();
+            var someSpotSet = new Subject<bool>().AddTo(Disposables);
+            Spots.ObserveElementProperty(s => s.InternalStandardId)
+                .Subscribe(pack =>
+                {
+                    if (ids.Contains(pack.Value)) {
+                        if (isPositive.TryAdd(pack.Instance, 0x0)) {
+                            someSpotSet.OnNext(isPositive.Count > 0);
+                        }
+                    }
+                    else {
+                        if (isPositive.TryRemove(pack.Instance, out _)) {
+                            someSpotSet.OnNext(isPositive.Count > 0);
+                        }
+                    }
+                }).AddTo(Disposables);
+            SomeSpotSetInternalStandard = someSpotSet.ToReactiveProperty(false).AddTo(Disposables);
         }
 
         public ObservableCollection<NormalizationSpotPropertyModel> Spots { get; }

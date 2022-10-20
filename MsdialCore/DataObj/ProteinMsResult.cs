@@ -5,6 +5,7 @@ using CompMs.Common.Proteomics.DataObj;
 using MessagePack;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace CompMs.MsdialCore.DataObj {
     [MessagePackObject]
@@ -55,16 +56,14 @@ namespace CompMs.MsdialCore.DataObj {
         public string SequenceWithMatchedInfo { get; set; }
         public string GetSequenceWithMatchedInfo() {
             var aaSeq = MatchedAminoAcidSequence;
-            var sequence = string.Empty;
+            var sequenceBuilder = new StringBuilder();
             for(int i = 0; i < aaSeq.Count; i++) {
+                sequenceBuilder.Append(aaSeq[i].AminoAcidCode.ToString());
                 if (aaSeq[i].IsMatched) {
-                    sequence += aaSeq[i].AminoAcidCode.ToString() + "'";
-                }
-                else {
-                    sequence += aaSeq[i].AminoAcidCode.ToString();
+                    sequenceBuilder.Append("'");
                 }
             }
-            return sequence;
+            return sequenceBuilder.ToString();
         }
 
         [IgnoreMember]

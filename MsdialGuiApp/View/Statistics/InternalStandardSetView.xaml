@@ -63,7 +63,7 @@
                                 IsReadOnly="True"
                                 Width="2*"/>
             <DataGridTextColumn Header="Target ID"
-                                Binding="{Binding InternalStandardId.Value}"
+                                Binding="{Binding InternalStandardId}"
                                 Width="*"/>
         </DataGrid.Columns>
     </DataGrid>
