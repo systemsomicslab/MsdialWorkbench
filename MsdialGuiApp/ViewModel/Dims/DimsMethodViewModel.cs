@@ -83,7 +83,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private DisplayFilter displayFilters = 0;
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
-            if (analysisFile?.File == null || _model.AnalysisFile == analysisFile.File) {
+            if (analysisFile?.File == null || _model.AnalysisFileModel == analysisFile.File) {
                 return Task.CompletedTask;
             }
             return _model.LoadAnalysisFileAsync(analysisFile.File, token);

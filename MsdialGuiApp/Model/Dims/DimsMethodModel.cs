@@ -135,7 +135,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 }
             }
 
-            await LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
+            await LoadAnalysisFileAsync(AnalysisFileModels.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
         private bool RunAnnotationAll(List<AnalysisFileBean> analysisFiles, ProcessBaseParameter parameter) {
@@ -209,14 +209,14 @@ namespace CompMs.App.Msdial.Model.Dims
             }
         }
 
-        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
             return AnalysisModel = new DimsAnalysisModel(
-                analysisFile,
-                ProviderFactory.Create(analysisFile),
+                analysisFile.File,
+                ProviderFactory.Create(analysisFile.File),
                 matchResultEvaluator,
                 Storage.DataBases,
                 Storage.DataBaseMapper,

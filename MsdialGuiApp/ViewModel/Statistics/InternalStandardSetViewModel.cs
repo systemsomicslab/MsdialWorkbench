@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Statistics;
-using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;

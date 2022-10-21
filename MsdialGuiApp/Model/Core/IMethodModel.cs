@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.ObjectModel;
@@ -9,15 +10,15 @@ using System.Threading.Tasks;
 namespace CompMs.App.Msdial.Model.Core
 {
     public interface IMethodModel : INotifyPropertyChanged, IDisposable {
-        ObservableCollection<AnalysisFileBean> AnalysisFiles { get; }
+        ObservableCollection<AnalysisFileBeanModel> AnalysisFileModels { get; }
 
-        AnalysisFileBean AnalysisFile { get; }
+        AnalysisFileBeanModel AnalysisFileModel { get; }
 
         ObservableCollection<AlignmentFileBean> AlignmentFiles { get; }
 
         AlignmentFileBean AlignmentFile { get; }
 
-        Task LoadAnalysisFileAsync(AnalysisFileBean analysisFile, CancellationToken token);
+        Task LoadAnalysisFileAsync(AnalysisFileBeanModel analysisFile, CancellationToken token);
 
         Task SaveAsync();
         Task RunAsync(ProcessOption option, CancellationToken token);

@@ -99,14 +99,14 @@ namespace CompMs.App.Msdial.Model.Lcms
         private LcmsAlignmentModel alignmentModel;
 
 
-        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
-            var provider = providerFactory.Create(analysisFile);
+            var provider = providerFactory.Create(analysisFile.File);
             return AnalysisModel = new LcmsAnalysisModel(
-                analysisFile,
+                analysisFile.File,
                 provider,
                 Storage.DataBases,
                 Storage.DataBaseMapper,
@@ -170,7 +170,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     return;
             }
 
-            await LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
+            await LoadAnalysisFileAsync(AnalysisFileModels.FirstOrDefault(), token).ConfigureAwait(false);
 
 #if DEBUG
             Console.WriteLine(string.Join("\n", Storage.Parameter.ParametersAsText()));

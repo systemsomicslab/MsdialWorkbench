@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Utility;
+﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;

@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
                   new ReactiveProperty<IAnalysisResultViewModel>(), new ReactiveProperty<IAlignmentResultViewModel>(),
                   new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>(), new IObservable<ViewModelBase>[0]),
                   new ViewModelSwitcher(Observable.Never<ViewModelBase>(), Observable.Never<ViewModelBase>(), new IObservable<ViewModelBase>[0])) {
-            _model = model ?? throw new System.ArgumentNullException(nameof(model));
+            _model = model ?? throw new ArgumentNullException(nameof(model));
             ImageViewModels = model.ImageModels.ToReadOnlyReactiveCollection(m => new ImagingImageViewModel(m)).AddTo(Disposables);
             RoiCompareViewModels = new ReadOnlyObservableCollection<ImagingRoiCompareViewModel>(new ObservableCollection<ImagingRoiCompareViewModel>());
         }
