@@ -5,6 +5,7 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -80,6 +81,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
 
+            var filePropertySetModel = new AnalysisFilePropertySetModel(files, projectBaseParameter);
             InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Lcms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, files, mapper, evaluator, InternalStandardSetModel, parameter, messageBroker).AddTo(Disposables);
 

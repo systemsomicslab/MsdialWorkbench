@@ -114,7 +114,7 @@ namespace CompMs.App.Msdial.Model.Imms
                     return Task.CompletedTask;
             }
 
-            return LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token);
+            return LoadAnalysisFileAsync(AnalysisFileModels.FirstOrDefault(), token);
         }
 
         private bool ProcessAnnotaion(IMsdialDataStorage<MsdialImmsParameter> storage) {
@@ -189,15 +189,15 @@ namespace CompMs.App.Msdial.Model.Imms
             }
         }
 
-        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
 
-            var provider = ProviderFactory.Create(analysisFile);
+            var provider = ProviderFactory.Create(analysisFile.File);
             AnalysisModel = new ImmsAnalysisModel(
-                analysisFile,
+                analysisFile.File,
                 provider,
                 matchResultEvaluator,
                 Storage.DataBases,

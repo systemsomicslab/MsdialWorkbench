@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.ViewModel
     {
         public MethodViewModel(IMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisFileViewModel, IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels) {
             Model = model;
-            var analysisFilesView = model.AnalysisFiles.ToReadOnlyReactiveCollection(file => new AnalysisFileBeanViewModel(file));
+            var analysisFilesView = model.AnalysisFileModels.ToReadOnlyReactiveCollection(file => new AnalysisFileBeanViewModel(file));
             AnalysisFilesView = CollectionViewSource.GetDefaultView(analysisFilesView);
             var alignmentFilesView = model.AlignmentFiles.ToReadOnlyReactiveCollection(file => new AlignmentFileBeanViewModel(file));
             AlignmentFilesView = CollectionViewSource.GetDefaultView(alignmentFilesView);
@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.ViewModel
 
             SelectedAnalysisFile = new ReactivePropertySlim<AnalysisFileBeanViewModel>(analysisFilesView.FirstOrDefault()).AddTo(Disposables);
             SelectedAlignmentFile = new ReactivePropertySlim<AlignmentFileBeanViewModel>().AddTo(Disposables);
-            model.ObserveProperty(m => m.AnalysisFile)
+            model.ObserveProperty(m => m.AnalysisFileModel)
                 .Do(_ => {
                     foreach (var file in analysisFilesView) {
                         file.IsSelected = false;

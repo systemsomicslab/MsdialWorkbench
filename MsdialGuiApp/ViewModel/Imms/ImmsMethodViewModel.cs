@@ -79,7 +79,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
-            if (analysisFile?.File == null || analysisFile.File == model.AnalysisFile) {
+            if (analysisFile?.File == null || analysisFile.File == model.AnalysisFileModel) {
                 return Task.CompletedTask;
             }
             return model.LoadAnalysisFileAsync(analysisFile.File, token);
