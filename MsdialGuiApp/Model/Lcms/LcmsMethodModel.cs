@@ -294,7 +294,10 @@ namespace CompMs.App.Msdial.Model.Lcms
                 streams = files.Select(file => System.IO.File.OpenRead(file.DeconvolutionFilePath)).ToList();
                 foreach (var spot in spots.OrEmptyIfNull()) {
                     var repID = spot.RepresentativeFileID;
-                    var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
+                    var peakID = spot.AlignedPeakProperties[repID].MSDecResultIdUsed;
+
+                    Console.WriteLine("RepID {0}, Peak ID {1}", repID, peakID);
+
                     var decResult = MsdecResultsReader.ReadMSDecResult(
                         streams[repID], pointerss[repID].pointers[peakID],
                         pointerss[repID].version, pointerss[repID].isAnnotationInfo);
