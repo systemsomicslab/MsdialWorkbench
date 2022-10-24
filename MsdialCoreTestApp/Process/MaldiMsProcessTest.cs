@@ -26,12 +26,12 @@ namespace CompMs.App.MsdialConsole.Process
     public sealed class MaldiMsProcessTest {
         private MaldiMsProcessTest() { }
         public static void TimsOnTest() {
-            var filepath = @"E:\6_Projects\PROJECT_ImagingMS\20210122_timsTOF flex-data\Brain-C-3-9AA-ON\Brain-C-3-9AA-TIMS-ON-1.d";
-            var reffile = @"E:\6_Projects\PROJECT_ImagingMS\Lipid reference library\20220725_timsTOFpro_TextLibrary_Brain_Neg.txt";
-            var outputfile = @"E:\6_Projects\PROJECT_ImagingMS\20210122_timsTOF flex-data\Brain-C-3-9AA-ON\Brain-C-3-9AA-TIMS-ON-1.mddata";
+            var filepath = @"E:\6_Projects\PROJECT_ImagingMS\20211005_Bruker_timsTOFfleX-selected\Eye_Neg\20211005_Eye_Acsl_HZ_KO_Neg\20211005_Eye_Acsl_HZ_KO_Neg.d";
+            var reffile = @"E:\6_Projects\PROJECT_ImagingMS\Lipid reference library\20220725_timsTOFpro_TextLibrary_Eye_Neg.txt";
+            var outputfile = @"E:\6_Projects\PROJECT_ImagingMS\20211005_Bruker_timsTOFfleX-selected\Eye_Neg\20211005_Eye_Acsl_HZ_KO_Neg\20211005_Eye_Acsl_HZ_KO_Neg.mddata";
             var filename = Path.GetFileNameWithoutExtension(filepath);
             var fileDir = Path.GetDirectoryName(filepath);
-            var projectParameter = new ProjectParameter(DateTime.Now, @"E:\6_Projects\PROJECT_ImagingMS\20210122_timsTOF flex-data\Brain-C-3-9AA-ON\", "Brain-C-3-9AA-TIMS-ON-1.mdproject");
+            var projectParameter = new ProjectParameter(DateTime.Now, @"E:\6_Projects\PROJECT_ImagingMS\20211005_Bruker_timsTOFfleX-selected\Eye_Neg\20211005_Eye_Acsl_HZ_KO_Neg\", "20211004_Acsl6_leftHZ_rightKO_Eye.mdproject");
             var storage = new ProjectDataStorage(projectParameter);
             var file = new AnalysisFileBean() {
                 AnalysisFileId = 0,
@@ -41,17 +41,17 @@ namespace CompMs.App.MsdialConsole.Process
                 AnalysisFileAnalyticalOrder = 1,
                 AnalysisFileClass = "0",
                 AnalysisFileType = AnalysisFileType.Sample,
-                DeconvolutionFilePath = Path.Combine(fileDir, filename + "_test220906" + ".dcl"),
-                PeakAreaBeanInformationFilePath = Path.Combine(fileDir, filename + "_test220906" + ".pai"),
+                DeconvolutionFilePath = Path.Combine(fileDir, filename + "_test221023" + ".dcl"),
+                PeakAreaBeanInformationFilePath = Path.Combine(fileDir, filename + "_test221023" + ".pai"),
             };
 
             var param = new MsdialImmsParameter() {
                 ProjectFolderPath = Path.GetDirectoryName(outputfile),
                 ProjectFileName = Path.GetFileName(outputfile),
-                MachineCategory = MachineCategory.IIMMS,
+                MachineCategory = MachineCategory.IMMS,
                 TextDBFilePath = reffile,
                 IonMode = IonMode.Negative,
-                MinimumAmplitude = 10000,
+                MinimumAmplitude = 1000,
                 FileID2CcsCoefficients = new Dictionary<int, CoefficientsForCcsCalculation>() {
                     { 0, new CoefficientsForCcsCalculation() { IsBrukerIM = true } }
                 }
@@ -63,6 +63,8 @@ namespace CompMs.App.MsdialConsole.Process
                 out var txtDB, 
                 out var isotopeTextDB, 
                 out var compoundsInTargetMode);
+            param.TextDbSearchParam.CcsTolerance = 20.0F;
+            param.TextDbSearchParam.IsUseCcsForAnnotationFiltering = true;
 
             RawMeasurement rawobj = null;
             Console.WriteLine("Reading data...");

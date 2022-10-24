@@ -113,7 +113,8 @@ namespace CompMs.MsdialCore.DataObj {
             else {
                 this.PeakAreaList.Add(std.SamplePeakAreaBean.PeakAreaAboveZero);
                 this.PeakHeightList.Add(std.SamplePeakAreaBean.PeakHeightTop);
-                this.PeakWidthList.Add(std.SamplePeakAreaBean.ChromXsRight.Value - std.SamplePeakAreaBean.ChromXsLeft.Value);
+                if (std.SamplePeakAreaBean.ChromXsRight != null && std.SamplePeakAreaBean.ChromXsLeft != null)
+                    this.PeakWidthList.Add(std.SamplePeakAreaBean.ChromXsRight.Value - std.SamplePeakAreaBean.ChromXsLeft.Value);
                 this.RetentionTimeList.Add(std.SamplePeakAreaBean.ChromXsTop.Value);
                 this.MzList.Add(std.SamplePeakAreaBean.PrecursorMz);
 

@@ -99,7 +99,7 @@ namespace CompMs.App.MsdialConsole {
             //new TestProteomicsProcess().PDFTest();
             //new TestProteomicsProcess().ProcessTest();
             //MaldiMsProcessTest.TimsOffTest();
-            //MaldiMsProcessTest.TimsOnTest();
+            MaldiMsProcessTest.TimsOnTest();
 
             //FormulaStringParcer.Convert2FormulaObjV2("C6H12O6");
             //FormulaStringParcer.Convert2FormulaObjV2("CH3COONa");
@@ -218,9 +218,9 @@ namespace CompMs.App.MsdialConsole {
             //MspCurator.AddRT2MspQueries(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Neg-VS15.msp", @"E:\6_Projects\2_metabolome_protocol\PFPP_NEG.txt");
             //MspCurator.AddRT2MspQueries(@"E:\7_MassSpecCuration\Distributed MSPs\MSMS-RIKEN-Pos-VS15.msp", @"E:\6_Projects\2_metabolome_protocol\PFPP_POS.txt");
 
-            RnaSeqProcess.Convert2Csv4ViolinPlot(
-                @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\log_met_subtract_median.csv",
-                @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\log_met_subtract_median_violin.csv");
+            //RnaSeqProcess.Convert2Csv4ViolinPlot(
+            //    @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\log_met_subtract_median.csv",
+            //    @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\log_met_subtract_median_violin.csv");
 
             //RnaSeqProcess.Convert2Csv4ViolinPlot(
             //    @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\transcriptome.csv",

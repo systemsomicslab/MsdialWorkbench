@@ -15,7 +15,7 @@ namespace CompMs.Common.Parameter {
         [Key(3)]
         public float RiTolerance { get; set; } = 100.0F;
         [Key(4)]
-        public float CcsTolerance { get; set; } = 10.0F;
+        public float CcsTolerance { get; set; } = 20.0F;
         [Key(5)]
         public float Ms1Tolerance { get; set; } = 0.01F;
         [Key(6)]
