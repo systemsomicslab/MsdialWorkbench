@@ -32,22 +32,17 @@ using System.Windows.Media;
 namespace CompMs.App.Msdial.Model.Lcms
 {
     internal sealed class LcmsAnalysisModel : AnalysisModelBase {
-        private readonly IDataProvider provider;
+        private readonly IDataProvider _provider;
 
         public LcmsAnalysisModel(
-            AnalysisFileBean analysisFile,
+            AnalysisFileBeanModel analysisFileModel,
             IDataProvider provider,
             DataBaseStorage databases,
             DataBaseMapper mapper,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             ParameterBase parameter,
-            IObserver<ProteinResultContainerModel> proteinResultContainerModelObserver,
             PeakFilterModel peakFilterModel)
-            : base(analysisFile) {
-            if (analysisFile is null) {
-                throw new ArgumentNullException(nameof(analysisFile));
-            }
-
+            : base(analysisFileModel) {
             if (provider is null) {
                 throw new ArgumentNullException(nameof(provider));
             }
@@ -64,17 +59,16 @@ namespace CompMs.App.Msdial.Model.Lcms
                 throw new ArgumentNullException(nameof(parameter));
             }
 
-            this.provider = provider;
+            _provider = provider;
             DataBaseMapper = mapper;
             Parameter = parameter;
             CompoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, DataBaseMapper, parameter.PeakPickBaseParam).Items;
 
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 // These 3 lines must be moved to somewhere for swithcing/updating the alignment result
-                var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(analysisFile.ProteinAssembledResultFilePath);
+                var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(analysisFileModel.ProteinAssembledResultFilePath);
                 var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Peaks, Target);
                 ProteinResultContainerModel = proteinResultContainerModel;
-                //proteinResultContainerModelObserver.OnNext(proteinResultContainerModel);
             }
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~FilterEnableStatus.Dt).AddTo(Disposables);
@@ -117,7 +111,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             }.AddTo(Disposables);
             Target.Select(
-                t =>  $"File: {analysisFile.AnalysisFileName}" +
+                t =>  $"File: {analysisFileModel.AnalysisFileName}" +
                     (t is null
                         ? string.Empty
                         : $" Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}"))
@@ -125,8 +119,8 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .AddTo(Disposables);
 
             // Eic chart
-            var eicLoader = EicLoader.BuildForAllRange(this.provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
-            EicLoader = EicLoader.BuildForPeakRange(this.provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            var eicLoader = EicLoader.BuildForAllRange(this._provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
+            EicLoader = EicLoader.BuildForPeakRange(this._provider, Parameter, ChromXType.RT, ChromXUnit.Min, Parameter.RetentionTimeBegin, Parameter.RetentionTimeEnd);
             EicModel = new EicModel(Target, eicLoader) {
                 HorizontalTitle = PlotModel.HorizontalTitle,
                 VerticalTitle = "Abundance",
@@ -140,7 +134,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 .DisposePreviousValue()
                 .CombineLatest(
                     Target.Where(t => t != null),
-                    (model, t) => new ExperimentSpectrumModel(model, AnalysisFile, provider, t.InnerModel, DataBaseMapper, Parameter))
+                    (model, t) => new ExperimentSpectrumModel(model, AnalysisFileModel, provider, t.InnerModel, DataBaseMapper, Parameter))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
@@ -301,7 +295,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
 
             return new LcmsCompoundSearchModel<ChromatogramPeakFeature>(
-                AnalysisFile,
+                AnalysisFileModel,
                 Target.Value.InnerModel,
                 MsdecResult.Value,
                 CompoundSearchers);
@@ -327,7 +321,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     file,
                     Target.Value.InnerModel,
                     MsdecResult.Value,
-                    provider.LoadMs1Spectrums(),
+                    _provider.LoadMs1Spectrums(),
                     DataBaseMapper,
                     Parameter);
             }
@@ -344,7 +338,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     file,
                     target.InnerModel,
                     new MSScanProperty() { Spectrum = spectrum },
-                    provider.LoadMs1Spectrums(),
+                    _provider.LoadMs1Spectrums(),
                     DataBaseMapper,
                     Parameter);
             }
@@ -357,10 +351,10 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public void GoToMsfinderMethod() {
             MsDialToExternalApps.SendToMsFinderProgram(
-                this.AnalysisFile,
+                AnalysisFileModel,
                 Target.Value.InnerModel,
                 MsdecResult.Value,
-                this.provider.LoadMs1Spectrums(),
+                _provider.LoadMs1Spectrums(),
                 DataBaseMapper,
                 Parameter);
         }

@@ -197,9 +197,8 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var provider = ProviderFactory.Create(analysisFile.File);
             AnalysisModel = new ImmsAnalysisModel(
-                analysisFile.File,
-                provider,
-                matchResultEvaluator,
+                analysisFile,
+                provider, matchResultEvaluator,
                 Storage.DataBases,
                 Storage.DataBaseMapper,
                 Storage.Parameter,

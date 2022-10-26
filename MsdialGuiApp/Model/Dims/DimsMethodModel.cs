@@ -21,7 +21,6 @@ using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -80,6 +79,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private DimsAlignmentModel alignmentModel;
 
         public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; private set; }
+        private IDataProviderFactory<AnalysisFileBeanModel> ProviderFactory2 => ProviderFactory.ContraMap((AnalysisFileBeanModel file) => file.File);
 
         public void Load() {
             ProviderFactory = Storage.Parameter.ProviderFactoryParameter.Create(retry: 5, isGuiProcess: true);
@@ -215,8 +215,8 @@ namespace CompMs.App.Msdial.Model.Dims
                 Disposables.Remove(AnalysisModel);
             }
             return AnalysisModel = new DimsAnalysisModel(
-                analysisFile.File,
-                ProviderFactory.Create(analysisFile.File),
+                analysisFile,
+                ProviderFactory2.Create(analysisFile),
                 matchResultEvaluator,
                 Storage.DataBases,
                 Storage.DataBaseMapper,

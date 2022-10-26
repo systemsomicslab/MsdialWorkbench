@@ -89,9 +89,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
-            var rawObj = DataAccess.LoadMeasurement(analysisFile.File, isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000);
+            var rawObj = analysisFile.File.LoadRawMeasurement(isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000);
             return AnalysisModel = new LcimmsAnalysisModel(
-                analysisFile.File,
+                analysisFile,
                 providerFactory.Create(rawObj),
                 accProviderFactory.Create(rawObj),
                 Storage.DataBases,

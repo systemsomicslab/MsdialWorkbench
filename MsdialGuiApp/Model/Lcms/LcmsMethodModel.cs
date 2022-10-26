@@ -106,13 +106,12 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
             var provider = providerFactory.Create(analysisFile.File);
             return AnalysisModel = new LcmsAnalysisModel(
-                analysisFile.File,
+                analysisFile,
                 provider,
                 Storage.DataBases,
                 Storage.DataBaseMapper,
                 matchResultEvaluator,
                 Storage.Parameter,
-                _proteinResultContainerModelSubject,
                 PeakFilterModel)
             .AddTo(Disposables);
         }

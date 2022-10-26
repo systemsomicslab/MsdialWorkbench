@@ -38,18 +38,14 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly ParameterBase _parameter;
 
         public DimsAnalysisModel(
-            AnalysisFileBean analysisFile,
+            AnalysisFileBeanModel analysisFileModel,
             IDataProvider provider,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databaseStorage,
             DataBaseMapper mapper,
             ParameterBase parameter,
             PeakFilterModel peakFilterModel)
-            : base(analysisFile) {
-            if (analysisFile is null) {
-                throw new ArgumentNullException(nameof(analysisFile));
-            }
-
+            : base(analysisFileModel) {
             if (evaluator is null) {
                 throw new ArgumentNullException(nameof(evaluator));
             }
@@ -104,7 +100,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 HorizontalTitle = "m/z",
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             }.AddTo(Disposables);
-            Target.Select(t => $"File: {analysisFile.AnalysisFileName}" + (t is null ? string.Empty : $"Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}"))
+            Target.Select(t => $"File: {analysisFileModel.AnalysisFileName}" + (t is null ? string.Empty : $"Spot ID: {t.MasterPeakID} Scan: {t.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:N5}"))
                 .Subscribe(title => PlotModel.GraphTitle = title);
 
             var eicLoader = DimsEicLoader.BuildForEicView(provider, parameter);
@@ -201,7 +197,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
 
         public CompoundSearchModel<ChromatogramPeakFeature> BuildCompoundSearchModel() {
-            return new CompoundSearchModel<ChromatogramPeakFeature>(AnalysisFile, Target.Value.InnerModel, MsdecResult.Value, _compoundSearchers.Items);
+            return new CompoundSearchModel<ChromatogramPeakFeature>(AnalysisFileModel, Target.Value.InnerModel, MsdecResult.Value, _compoundSearchers.Items);
         }
 
         public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;

@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings.Extensions;
 using System.Collections.ObjectModel;
 
@@ -15,7 +14,8 @@ namespace CompMs.App.Msdial.Model.Imaging
             ImageResult = new WholeImageResultModel(file).AddTo(Disposables);
 
             Roi = new RoiModel(file, file.File.GetMaldiFrames());
-            ImagingRoiModels.Add(new ImagingRoiModel(Roi, ImageResult.GetTargetElements(), ImageResult.Target, file.File.GetMaldiFrameLaserInfo()).AddTo(Disposables));
+            var frameLaserInfo = file.File.GetMaldiFrameLaserInfo();
+            ImagingRoiModels.Add(new ImagingRoiModel(Roi, ImageResult.GetTargetElements(), ImageResult.Target, frameLaserInfo).AddTo(Disposables));
 
             PeakInformationModel = new PeakInformationAnalysisModel(ImageResult.Target).AddTo(Disposables);
             PeakInformationModel.Add(
