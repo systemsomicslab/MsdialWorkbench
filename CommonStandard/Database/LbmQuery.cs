@@ -44,6 +44,7 @@ namespace Rfx.Riken.OsakaUniv
         ST,
         DGTA,LDGTA,
         NATau,NAPhe,
+        PT
 
 
         // new version

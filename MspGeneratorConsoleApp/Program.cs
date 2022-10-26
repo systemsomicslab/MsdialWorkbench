@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace CompMs.MspGenerator
 {
@@ -28,8 +29,8 @@ namespace CompMs.MspGenerator
 
 
             ///// RTCCS Prediction
-            //var workingDirectry = @"D:\mikikot\Desktop\Tsugawa-san_work\20221013_EtherPC\descriptor\";//作業用フォルダ
-            //var toPredictFileName = workingDirectry + @"\txt\20221013143423_conventional_notfound.txt"; // 計算させたいInChIKeyとSMILESのリスト
+            //var workingDirectry = @"D:\mikikot\Desktop\Tsugawa-san_work\20221018_new_lipid_PT\msp\prediction\";//作業用フォルダ
+            //var toPredictFileName = workingDirectry + @"\txt\20221018211141_conventional_notfound.txt"; // 計算させたいInChIKeyとSMILESのリスト
 
             //var predictionWorkingDirectry = @"F:\takahashi\RTprediction\~from_MSP\setting\";
             //var padelDescriptortypes = predictionWorkingDirectry + @"\para_RTCCS327.xml"; //PaDELに計算させるdescriptorを記述したファイル
@@ -43,28 +44,32 @@ namespace CompMs.MspGenerator
 
 
             //RtCcsPredictManager.smilesToSdfOnNCDK(workingDirectry, toPredictFileName);
+            //Task.WaitAll();
 
             //RtCcsPredictManager.runPaDEL(workingDirectry, padelDescriptortypes, padelProgramPath, toPredictFileName);//networkDriveではうまくいかない？
+            //Task.WaitAll();
 
-            //var padelOutFileName = workingDirectry + @"\PadelResult\20221013143423_conventional_notfound.csv"; // PaDELで出力されたファイル(csv)
+            //var padelOutFileName = workingDirectry + @"\PadelResult\20221018211141_conventional_notfound.csv"; // PaDELで出力されたファイル(csv)
 
             //RtCcsPredictManager.selectDescriptor(workingDirectry, padelOutFileName, descriptorSelecerRTFile, descriptorSelecerCSSFile);
+            //Task.WaitAll();
 
-            ////////////// modeling on R
-            //////////////RtCcsPredictOnR.generatePredictModel(workingDirectry, rLocationPath, rScriptAvdModelPath);  // modeling on R
-            //////////////// RT predict
-            ////////////RtCcsPredictOnR.runRTPredict(workingDirectry , rLocationPath, rScriptAvdModelPath, rtModelingRdsFile);
-            ///////////////// CCS predict
-            ////////////RtCcsPredictOnR.runCcsPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, ccsModelingRdsFile); 
+            //////////////// modeling on R
+            ////////////////RtCcsPredictOnR.generatePredictModel(workingDirectry, rLocationPath, rScriptAvdModelPath);  // modeling on R
+            ////////////////// RT predict
+            //////////////RtCcsPredictOnR.runRTPredict(workingDirectry , rLocationPath, rScriptAvdModelPath, rtModelingRdsFile);
+            /////////////////// CCS predict
+            //////////////RtCcsPredictOnR.runCcsPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, ccsModelingRdsFile); 
 
             /////RT and CCS predict
             //RtCcsPredictOnR.runPredict(workingDirectry, rLocationPath, rScriptAvdModelPath, rtModelingRdsFile, ccsModelingRdsFile);
+            //Task.WaitAll();
 
-            //////// 上記で算出したpredict結果をmerge
+            //////////// 上記で算出したpredict結果をmerge
             //RtCcsPredictManager.mergeRtAndCcsResultFiles(workingDirectry, toPredictFileName);
 
             //var predictedFilesDirectry = workingDirectry + @"\predictResult\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
-            //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_20221013_conventional.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
+            //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_20221018_conventional.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
 
             //MergeRTandCCSintoMsp.generateDicOfPredictVs2(predictedFilesDirectry, dbFileName);
 
@@ -103,19 +108,20 @@ namespace CompMs.MspGenerator
 
             //////// mtb-info上で最終的なmspを出力
             ////// 指定のフォルダの中にある.mspファイルを結合します。
-            //var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
+            var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
             //var exportFileName = "Msp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedmsp";
             //Common.jointMspFiles(mspFolder, exportFileName);
             ////////////結合したファイルを下記フォルダに移動
-            //var workingDirectry = mspFolder + @"\LBM\";
+            var workingDirectry = mspFolder + @"\LBM\";
             //System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
 
             //////////// 複数作成可　配列リストでRT CCS予測ファイルとファイル名オプションを渡す。
-            //MergeRTandCCSintoMsp.mergeRTandCCSintoMspVs3(
-            //    workingDirectry + "\\" + exportFileName,
-            //    new List<string[]>{ new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20221013_conventional.txt","conventional" },
-            //                        new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_NCDK_20221013_TUAT.txt" , "TUAT"} },
-            //    workingDirectry);
+            var exportFileName = @"\Msp20221018204720.jointedmsp";
+            MergeRTandCCSintoMsp.mergeRTandCCSintoMspVs3(
+                workingDirectry + "\\" + exportFileName,
+                new List<string[]>{ new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20221018_conventional.txt","conventional" },
+                                    new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_NCDK_20221018_TUAT.txt" , "TUAT"} },
+                workingDirectry);
 
             ////上書き用　ファイル名オプション
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + @"Msp20220912142947.jointedmsp",
@@ -148,7 +154,7 @@ namespace CompMs.MspGenerator
             var faChain2 = new List<string>();
             var faChain3 = new List<string>();
 
-            var outputFolder = @"D:\mikikot\Desktop\Tsugawa-san_work\20221013_EtherPC\msp\";
+            var outputFolder = @"D:\mikikot\Desktop\Tsugawa-san_work\20221018_new_lipid_PT\msp\";
 
             //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";
@@ -273,6 +279,7 @@ namespace CompMs.MspGenerator
             //Common.switchingLipid(faChain1, "PG", outputFolder);
             //Common.switchingLipid(faChain1, "PI", outputFolder);
             //Common.switchingLipid(faChain1, "PS", outputFolder);
+            //Common.switchingLipid(faChain1, "PT", outputFolder);
 
 
             ////faChain1 = minimumChains;
@@ -601,11 +608,11 @@ namespace CompMs.MspGenerator
                 //// 1行目(ヘッダー行)が"SMILES"となっている列を認識してdescriptorを算出する。
                 /// RtCcsPredictOnDotNet.GenerateQsarDescriptorFileVS2();//--old
                 //var workingFolder =
-                // @"D:\mikikot\Desktop\Tsugawa-san_work\20221013_EtherPC\NCDK\";
+                // @"D:\mikikot\Desktop\Tsugawa-san_work\20221018_new_lipid_PT\msp\NCDK\";
 
                 //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
-                //    (workingFolder + @"\txt\errored.txt",
-                //     workingFolder + @"\txt\errored_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
+                //    (workingFolder + @"\txt\PT_InChIKey-smiles.txt",
+                //     workingFolder + @"\txt\PT_InChIKey-smiles_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
 
                 //qsarDescriptorOnNcdk.GenerateQsarDescriptorFileVS4
                 //    (@"E:\6_Projects\PROJECT_CASMI2022\PFP_DB\InChIKeySmilesRtList.txt",
@@ -647,15 +654,20 @@ namespace CompMs.MspGenerator
 
                 //// RT、CCSの予測結果を求め、mspGeneratorで使っている形式で出力する
                 //// NCDKの結果は 235 descriptor(adductScoreを含まない)
-                //var workingFolder = @"D:\mikikot\Desktop\Tsugawa-san_work\20221013_EtherPC\NCDK\txt\";
-                //var workingFolder2 = @"D:\takahashi\desktop\Tsugawa-san_work\20210430_RTprediction\calc\";
+                //var workingFolder = @"D:\mikikot\Desktop\Tsugawa-san_work\20221018_new_lipid_PT\msp\NCDK\txt\";
                 //var rtTrainModel = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\NCDK_TUAT_RT_202209061305.model";
-                //var rtTestFile = workingFolder + @"\20221013121341_notfound_descriptor_20221013134852.txt";
+                //var rtTestFile = workingFolder + @"\PT_InChIKey-smiles_20221018153518.txt";
                 //var ccsTrainModel = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\NCDK_predictionModel\masterCCS_NCDK_202101081945.model";
                 //var ccsTestFile = rtTestFile;
                 //var resultFile = rtTestFile + @"_predicted.txt";
 
-                //RtCcsPredictOnDotNet.mergeRtAndCcsResultFilesVS2(resultFile, rtTrainModel, rtTestFile, ccsTrainModel, ccsTestFile);
+                //// RtCcsPredictOnDotNet.mergeRtAndCcsResultFilesVS2(resultFile, rtTrainModel, rtTestFile, ccsTrainModel, ccsTestFile);
+
+                //var predictedFilesDirectry = workingFolder + @"\predictResult\";//predict結果の入っているフォルダ。前回作成したものと直近に作成したものを入れておく
+                //var dbFileName = predictedFilesDirectry + "\\predictedRTCCSAll_NCDK_20221018_TUAT.txt"; //すべてのpredict結果を格納するDictionaryファイルの名前
+
+                //MergeRTandCCSintoMsp.generateDicOfPredictVs2(predictedFilesDirectry, dbFileName);
+
 
                 //フォルダ内実行
                 //var files = Directory.GetFiles(@"D:\mikikot\Desktop\Tsugawa-san_work\20220707_RTpredictionForTUAT\prediction\calced\", "*.txt");

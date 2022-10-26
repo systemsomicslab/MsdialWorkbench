@@ -52,6 +52,7 @@ namespace CompMs.MspGenerator
                 {   "PG" ,    new List<string>(){ "[M-H]-", "[M+NH4]+"}    },
                 {   "PI" ,    new List<string>(){ "[M-H]-", "[M+Na]+", "[M+NH4]+"}    },
                 {   "PS" ,    new List<string>(){ "[M-H]-", "[M+H]+", "[M+Na]+"}    },
+                {   "PT" ,    new List<string>(){ "[M-H]-", "[M+H]+"}    },
                 {   "PA" ,    new List<string>(){ "[M-H]-" }    },
                 {   "PMeOH" ,    new List<string>(){ "[M-H]-", "[M+NH4]+" }    }, 
                 {   "PEtOH" ,    new List<string>(){ "[M-H]-", "[M+NH4]+" }   },

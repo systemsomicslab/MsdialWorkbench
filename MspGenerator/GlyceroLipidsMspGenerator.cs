@@ -126,6 +126,9 @@ namespace CompMs.MspGenerator
                                 }
                                 GlycerolipidFragmentation.psFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;
+                            case "PT": // 
+                                GlycerolipidFragmentation.ptFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
+                                break;
                             case "PA": // 
                                 GlycerolipidFragmentation.paFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
                                 break;

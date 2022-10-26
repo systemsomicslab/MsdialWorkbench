@@ -381,10 +381,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                     var decoyRepresentive = feature.MatchResults.DecoyRepresentative;
 
                     var refSpec = refer.Refer(representative);
-                    var decoySpec = refer.Refer(decoyRepresentive);
+                    //var decoySpec = refer.Refer(decoyRepresentive);
 
                     var refPepScore = GetPeptideScore(fileID, feature.MasterPeakID, representative, refSpec);
-                    var decoyScore = GetPeptideScore(fileID, feature.MasterPeakID, decoyRepresentive, decoySpec);
+                    var decoyScore = refPepScore.Clone();
+                    decoyScore.IsDecoy = true; decoyScore.AndromedaScore = decoyRepresentive.AndromedaScore;
+                    //var decoyScore = GetPeptideScore(fileID, feature.MasterPeakID, decoyRepresentive, decoySpec);
                     scores.Add(refPepScore);
                     scores.Add(decoyScore);
                 }

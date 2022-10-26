@@ -998,6 +998,11 @@ namespace Msdial.Lcms.Dataprocess.Scoring
                 case LbmClass.NATau:
                         return LipidMsmsCharacterization.JudgeIfNAcylTauFa(spectrum, ms2tol, refMz,
                          totalCarbon, totalDbBond, totalOxidized, adduct);
+                //20221019
+                case LbmClass.PT:
+                    return LipidMsmsCharacterization.JudgeIfPhosphatidylThreonine(spectrum, ms2tol, refMz,
+                        totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
                 default:
                     return null;
             }
