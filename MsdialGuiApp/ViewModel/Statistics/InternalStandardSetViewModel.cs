@@ -19,8 +19,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             ApplyCommand = isEditting.ToReactiveCommand().AddTo(Disposables);
             CancelCommand = new ReactiveCommand().AddTo(Disposables);
 
-            var commit = ApplyCommand.ToUnit().Publish().RefCount();
-            var discard = CancelCommand.ToUnit().Publish().RefCount();
+            var commit = ApplyCommand.ToUnit().ToReactiveProperty().AddTo(Disposables);
+            var discard = CancelCommand.ToUnit().ToReactiveProperty().AddTo(Disposables);
             Spots = model.Spots.ToReadOnlyReactiveCollection(m => new NormalizationSpotPropertyViewModel(m, commit, discard)).AddTo(Disposables);
             TargetMsMethod = model.TargetMsMethod;
 
@@ -45,8 +45,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public NormalizationSpotPropertyViewModel(NormalizationSpotPropertyModel model, IObservable<Unit> commit, IObservable<Unit> discard) {
             _model = model;
             InternalStandardId = model.InternalStandardId;
-            commit.Subscribe(_ => model.InternalStandardId = InternalStandardId);
-            discard.Subscribe(_ => InternalStandardId =  model.InternalStandardId);
+            commit.Subscribe(_ => model.InternalStandardId = InternalStandardId).AddTo(Disposables);
+            discard.Subscribe(_ => InternalStandardId =  model.InternalStandardId).AddTo(Disposables);
         }
 
         public int Id => _model.Id;
