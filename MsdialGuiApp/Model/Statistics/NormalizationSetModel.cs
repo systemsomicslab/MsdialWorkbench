@@ -1,4 +1,4 @@
-﻿using CompMs.App.Msdial.Model.Setting;
+﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -24,6 +24,7 @@ namespace CompMs.App.Msdial.Model.Statistics
         public NormalizationSetModel(
             AlignmentResultContainer container,
             IReadOnlyList<AnalysisFileBean> files,
+            AnalysisFileBeanModelCollection fileCollection,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             InternalStandardSetModel isSetModel,
@@ -46,8 +47,8 @@ namespace CompMs.App.Msdial.Model.Statistics
 
             NoneNormalizeModel = new NoneNormalizeModel(container, broker);
             InternalStandardNormalizeModel = new InternalStandardNormalizeModel(container, isSetModel, broker);
-            LowessNormalizeModel = new LowessNormalizeModel(container, files, broker);
-            InternalStandardLowessNormalizeModel = new InternalStandardLowessNormalizeModel(container, files, isSetModel, broker);
+            LowessNormalizeModel = new LowessNormalizeModel(container, files, fileCollection, broker).AddTo(Disposables);
+            InternalStandardLowessNormalizeModel = new InternalStandardLowessNormalizeModel(container, files, fileCollection, isSetModel, broker).AddTo(Disposables);
             SplashSetModel = new SplashSetModel(container, refer, parameter, evaluator, broker).AddTo(Disposables);
             TicNormalizeModel = new TicNormalizeModel(container, broker);
             MticNormalizeModel = new MticNormalizeModel(container, evaluator, broker);

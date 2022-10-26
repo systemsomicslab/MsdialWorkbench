@@ -2,6 +2,7 @@
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,7 +25,7 @@ namespace CompMs.App.Msdial.Model.Core
             }
 
             AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles ?? new AlignmentFileBean[] { });
-            AnalysisFileModels = new ObservableCollection<AnalysisFileBeanModel>(analysisFiles?.Select(file => new AnalysisFileBeanModel(file)) ?? new AnalysisFileBeanModel[0]);
+            AnalysisFileModelCollection = new AnalysisFileBeanModelCollection(analysisFiles?.Select(file => new AnalysisFileBeanModel(file)) ?? new AnalysisFileBeanModel[0]).AddTo(Disposables);
         }
 
         public AnalysisFileBeanModel AnalysisFileModel {
@@ -32,7 +33,8 @@ namespace CompMs.App.Msdial.Model.Core
             set => SetProperty(ref analysisFileModel, value);
         }
         private AnalysisFileBeanModel analysisFileModel;
-        public ObservableCollection<AnalysisFileBeanModel> AnalysisFileModels { get; }
+
+        public AnalysisFileBeanModelCollection AnalysisFileModelCollection { get; }
 
         public IAnalysisModel AnalysisModelBase {
             get => analysisModelBase;

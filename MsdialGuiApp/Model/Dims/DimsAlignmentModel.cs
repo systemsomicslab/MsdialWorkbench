@@ -46,6 +46,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
         private readonly ParameterBase _parameter;
         private readonly List<AnalysisFileBean> _files;
+        private readonly AnalysisFileBeanModelCollection _fileCollection;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly IMessageBroker _broker;
 
@@ -56,6 +57,7 @@ namespace CompMs.App.Msdial.Model.Dims
             DataBaseMapper mapper,
             ParameterBase parameter,
             List<AnalysisFileBean> files,
+            AnalysisFileBeanModelCollection fileCollection,
             PeakFilterModel peakFilterModel,
             IMessageBroker broker)
             : base(alignmentFileBean, alignmentFileBean.FilePath) {
@@ -64,6 +66,7 @@ namespace CompMs.App.Msdial.Model.Dims
 
             _parameter = parameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
+            _fileCollection = fileCollection ?? throw new ArgumentNullException(nameof(fileCollection));
             _broker = broker;
             _dataBaseMapper = mapper;
             _matchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
@@ -249,7 +252,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public InternalStandardSetModel InternalStandardSetModel { get; }
 
         public NormalizationSetModel BuildNormalizeSetModel() {
-            return new NormalizationSetModel(Container, _files, _dataBaseMapper, _matchResultEvaluator, InternalStandardSetModel, _parameter, _broker);
+            return new NormalizationSetModel(Container, _files, _fileCollection, _dataBaseMapper, _matchResultEvaluator, InternalStandardSetModel, _parameter, _broker);
         }
 
         public bool CanSaveSpectra() => Target.Value.innerModel != null && _msdecResult.Value != null;

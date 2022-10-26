@@ -29,7 +29,8 @@ namespace CompMs.App.Msdial.Model.Core
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _broker = broker;
             _projectBaseParameter = new ProjectBaseParameterModel(Storage.Parameter.ProjectParam);
-            AnalysisFilePropertySetModel = new AnalysisFilePropertySetModel(Storage.AnalysisFiles, _projectBaseParameter);
+            var files = new AnalysisFileBeanModelCollection(Storage.AnalysisFiles.Select(file => new AnalysisFileBeanModel(file)));
+            AnalysisFilePropertySetModel = new AnalysisFilePropertySetModel(Storage.AnalysisFiles, files, _projectBaseParameter);
             FileClassSetModel = new FileClassSetModel(_projectBaseParameter);
 
             AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, HandlerAsync, _projectBaseParameter, broker);
@@ -123,7 +124,7 @@ namespace CompMs.App.Msdial.Model.Core
             Method = await Task.Run(() =>
             {
                 var method = factory.BuildMethod();
-                method.LoadAnalysisFileAsync(method.AnalysisFileModels.FirstOrDefault(), default);
+                method.LoadAnalysisFileAsync(method.AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), default);
                 return method;
             });
         }

@@ -60,6 +60,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             MsdialLcmsParameter parameter,
             ProjectBaseParameterModel projectBaseParameter,
             List<AnalysisFileBean> files,
+            AnalysisFileBeanModelCollection fileCollection,
             IObserver<ProteinResultContainerModel> proteinResultContainerModelObserver,
             IMessageBroker messageBroker)
             : base(alignmentFileBean, alignmentFileBean.FilePath) {
@@ -81,9 +82,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
             Target = new ReactivePropertySlim<AlignmentSpotPropertyModel>().AddTo(Disposables);
 
-            var filePropertySetModel = new AnalysisFilePropertySetModel(files, projectBaseParameter);
             InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Lcms).AddTo(Disposables);
-            NormalizationSetModel = new NormalizationSetModel(Container, files, mapper, evaluator, InternalStandardSetModel, parameter, messageBroker).AddTo(Disposables);
+            NormalizationSetModel = new NormalizationSetModel(Container, files, fileCollection, mapper, evaluator, InternalStandardSetModel, parameter, messageBroker).AddTo(Disposables);
 
             var fileIdToClassNameAsObservable = projectBaseParameter.ObserveProperty(p => p.FileIdToClassName).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             var heightLoader = new BarItemsLoaderData("Peak height", Observable.Return("Height"), Observable.Return(new HeightBarItemsLoader(fileIdToClassNameAsObservable)), Observable.Return(true));

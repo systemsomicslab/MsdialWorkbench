@@ -131,6 +131,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.Parameter,
                 _projectBaseParameter,
                 Storage.AnalysisFiles,
+                AnalysisFileModelCollection,
                 _proteinResultContainerModelSubject,
                 _broker)
             .AddTo(Disposables);
@@ -169,7 +170,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     return;
             }
 
-            await LoadAnalysisFileAsync(AnalysisFileModels.FirstOrDefault(), token).ConfigureAwait(false);
+            await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
 
 #if DEBUG
             Console.WriteLine(string.Join("\n", Storage.Parameter.ParametersAsText()));

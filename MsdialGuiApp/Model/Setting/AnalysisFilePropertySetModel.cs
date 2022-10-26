@@ -18,6 +18,8 @@ namespace CompMs.App.Msdial.Model.Setting
 
         public ObservableCollection<AnalysisFileBean> AnalysisFilePropertyCollection { get; }
 
+        public AnalysisFileBeanModelCollection AnalysisFileModelCollection { get; }
+
         public void ReadImportedFiles(IReadOnlyList<string> filenames) {
             AnalysisFilePropertyCollection.Clear();
 
@@ -49,8 +51,9 @@ namespace CompMs.App.Msdial.Model.Setting
         // Parameter reset functions
         private readonly ProjectBaseParameterModel _projectParameter;
 
-        public AnalysisFilePropertySetModel(IEnumerable<AnalysisFileBean> files, ProjectBaseParameterModel projectParameter) {
+        public AnalysisFilePropertySetModel(IEnumerable<AnalysisFileBean> files, AnalysisFileBeanModelCollection fileCollection, ProjectBaseParameterModel projectParameter) {
             AnalysisFilePropertyCollection = files as ObservableCollection<AnalysisFileBean> ?? new ObservableCollection<AnalysisFileBean>(files);
+            AnalysisFileModelCollection = fileCollection;
             _projectParameter = projectParameter;
         }
 

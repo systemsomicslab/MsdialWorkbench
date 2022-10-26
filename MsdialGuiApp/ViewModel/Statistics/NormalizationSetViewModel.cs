@@ -25,9 +25,12 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             IsSetViewModel = isSetViewModel;
             IsSetViewModelVisible = IsNormalizeIS.CombineLatest(IsNormalizeIsLowess, (a, b) => a || b).ToReadOnlyReactivePropertySlim(false).AddTo(Disposables);
 
-            NormalizeCommand = model.CanNormalizeProperty
+            NormalizeCommand = new[]{
+                model.CanNormalizeProperty,
+                IsSetViewModelVisible.Select(v => v ? isSetViewModel.IsEditting.StartWith(isSetViewModel.IsEditting.Value).Inverse() : Observable.Return(true)).Switch(),
+            }.CombineLatestValuesAreAllTrue()
                 .ToReactiveCommand()
-                .WithSubscribe(model.Normalize)
+                .WithSubscribe(Normalize)
                 .AddTo(Disposables);
             CancelCommand = isSetViewModel.CancelCommand;
         }
@@ -46,5 +49,12 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
         public ReactiveCommand NormalizeCommand { get; }
         public ReactiveCommand CancelCommand { get; }
+
+        private void Normalize() {
+            if (IsSetViewModelVisible.Value) {
+                IsSetViewModel.ApplyCommand.Execute();
+            }
+            _model.Normalize();
+        }
     }
 }

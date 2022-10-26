@@ -135,7 +135,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 }
             }
 
-            await LoadAnalysisFileAsync(AnalysisFileModels.FirstOrDefault(), token).ConfigureAwait(false);
+            await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
         private bool RunAnnotationAll(List<AnalysisFileBean> analysisFiles, ProcessBaseParameter parameter) {
@@ -236,6 +236,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 Storage.DataBaseMapper,
                 Storage.Parameter,
                 Storage.AnalysisFiles,
+                AnalysisFileModelCollection,
                 PeakFilterModel,
                 _broker).AddTo(Disposables);
         }

@@ -114,7 +114,7 @@ namespace CompMs.App.Msdial.Model.Imms
                     return Task.CompletedTask;
             }
 
-            return LoadAnalysisFileAsync(AnalysisFileModels.FirstOrDefault(), token);
+            return LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token);
         }
 
         private bool ProcessAnnotaion(IMsdialDataStorage<MsdialImmsParameter> storage) {
