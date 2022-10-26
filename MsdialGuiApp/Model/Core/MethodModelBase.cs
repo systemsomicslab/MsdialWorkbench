@@ -2,11 +2,9 @@
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
-using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,15 +15,15 @@ namespace CompMs.App.Msdial.Model.Core
     internal abstract class MethodModelBase : BindableBase, IMethodModel, IDisposable
     {
         public MethodModelBase(
-            IEnumerable<AnalysisFileBean> analysisFiles,
+            AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
             IEnumerable<AlignmentFileBean> alignmentFiles,
             ProjectBaseParameterModel projectBaseParameter) {
             if (projectBaseParameter is null) {
                 throw new ArgumentNullException(nameof(projectBaseParameter));
             }
 
+            AnalysisFileModelCollection = analysisFileBeanModelCollection ?? throw new ArgumentNullException(nameof(analysisFileBeanModelCollection));
             AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles ?? new AlignmentFileBean[] { });
-            AnalysisFileModelCollection = new AnalysisFileBeanModelCollection(analysisFiles?.Select(file => new AnalysisFileBeanModel(file)) ?? new AnalysisFileBeanModel[0]).AddTo(Disposables);
         }
 
         public AnalysisFileBeanModel AnalysisFileModel {

@@ -56,11 +56,12 @@ namespace CompMs.App.Msdial.Model.Lcms
         private IAnnotationProcess annotationProcess;
 
         public LcmsMethodModel(
+            AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
             IMsdialDataStorage<MsdialLcmsParameter> storage,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
-            ProjectBaseParameterModel projectBaseParameter,
+            ProjectBaseParameterModel projectBaseParameter, 
             IMessageBroker broker)
-            : base(storage.AnalysisFiles, storage.AlignmentFiles, projectBaseParameter) {
+            : base(analysisFileBeanModelCollection, storage.AlignmentFiles, projectBaseParameter) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
             }

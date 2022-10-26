@@ -39,11 +39,12 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public DimsMethodModel(
             IMsdialDataStorage<MsdialDimsParameter> storage,
+            AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
             List<AnalysisFileBean> analysisFiles,
             List<AlignmentFileBean> alignmentFiles,
             ProjectBaseParameterModel projectBaseParameter,
             IMessageBroker broker)
-            : base(analysisFiles, alignmentFiles, projectBaseParameter) {
+            : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
             Storage = storage;
             _broker = broker;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);

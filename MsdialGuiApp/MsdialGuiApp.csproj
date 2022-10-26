@@ -648,9 +648,6 @@
     <Compile Include="View\Setting\AnalysisFilePropertyResettingWindow.xaml.cs">
       <DependentUpon>AnalysisFilePropertyResettingWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Setting\AnalysisFilePropertySetWindow.xaml.cs">
-      <DependentUpon>AnalysisFilePropertySetWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Utility\ParameterFactory.cs" />
     <Compile Include="ViewModel\Dims\DimsAlignmentViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsAnalysisViewModel.cs" />
@@ -1107,10 +1104,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\AnalysisFilePropertyResettingWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Setting\AnalysisFilePropertySetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

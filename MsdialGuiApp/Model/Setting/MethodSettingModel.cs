@@ -15,11 +15,11 @@ namespace CompMs.App.Msdial.Model.Setting
 {
     internal sealed class MethodSettingModel : BindableBase
     {
-        public MethodSettingModel(ProcessOption option, IMsdialDataStorage<ParameterBase> storage, Func<MethodSettingModel, IMethodModel, CancellationToken, Task> asyncHandler, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker) {
+        public MethodSettingModel(ProcessOption option, AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<ParameterBase> storage, Func<MethodSettingModel, IMethodModel, CancellationToken, Task> asyncHandler, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker) {
             Storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _asyncHandler = asyncHandler;
             _broker = broker;
-            settingModelFactory = new MethodSettingModelFactory(Storage, projectBaseParameter, option, broker);
+            settingModelFactory = new MethodSettingModelFactory(analysisFileBeanModelCollection, storage, projectBaseParameter, option, broker);
             DataCollectionSettingModel = settingModelFactory.CreateDataCollectionSetting();
             PeakDetectionSettingModel = settingModelFactory.CreatePeakDetectionSetting();
             DeconvolutionSettingModel = settingModelFactory.CreateDeconvolutionSetting();
