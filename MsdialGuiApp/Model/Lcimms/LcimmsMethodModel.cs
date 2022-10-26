@@ -44,8 +44,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
-        public LcimmsMethodModel(IMsdialDataStorage<MsdialLcImMsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
-            : base(storage.AnalysisFiles, storage.AlignmentFiles, projectBaseParameter) {
+        public LcimmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialLcImMsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
+            : base(analysisFileBeanModelCollection, storage.AlignmentFiles, projectBaseParameter) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
             }
@@ -89,9 +89,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
-            var rawObj = DataAccess.LoadMeasurement(analysisFile.File, isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000);
+            var rawObj = analysisFile.File.LoadRawMeasurement(isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000);
             return AnalysisModel = new LcimmsAnalysisModel(
-                analysisFile.File,
+                analysisFile,
                 providerFactory.Create(rawObj),
                 accProviderFactory.Create(rawObj),
                 Storage.DataBases,
@@ -140,7 +140,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }
             }
 
-            await LoadAnalysisFileAsync(AnalysisFileModels.FirstOrDefault(), token).ConfigureAwait(false);
+            await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
         private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {

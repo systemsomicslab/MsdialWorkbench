@@ -39,7 +39,7 @@ namespace CompMs.App.Msdial.View.Core
             var compoundSearchService = new DialogService<CompoundSearchWindow, CompoundSearchVM>(this);
             var peakSpotTableService = new DialogService<AlignmentSpotTable, PeakSpotTableViewModelBase>(this);
             var proteomicsTableService = new DialogService<ProteomicsSpotTable, PeakSpotTableViewModelBase>(this);
-            var analysisFilePropertyResetService = new DialogService<AnalysisFilePropertyResettingWindow, AnalysisFilePropertySetViewModel>(this);
+            var analysisFilePropertyResetService = new DialogService<AnalysisFilePropertyResettingWindow, AnalysisFilePropertyResetViewModel>(this);
             var processSettingDialogService = new DialogService<ProjectSettingDialog, ProcessSettingViewModel>(this);
             DataContext = new MainWindowVM(
                 compoundSearchService,

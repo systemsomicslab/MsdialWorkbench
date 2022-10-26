@@ -3,6 +3,7 @@ using CompMs.App.Msdial.Model.Statistics;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.Reactive;
@@ -13,18 +14,25 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
     internal sealed class InternalStandardSetViewModel : ViewModelBase
     {
         public InternalStandardSetViewModel(InternalStandardSetModel model) {
-            ApplyCommand = new ReactiveCommand().AddTo(Disposables);
+            var isEditting = new BooleanNotifier();
+            IsEditting = isEditting;
+            ApplyCommand = isEditting.ToReactiveCommand().AddTo(Disposables);
             CancelCommand = new ReactiveCommand().AddTo(Disposables);
 
             var commit = ApplyCommand.ToUnit().Publish().RefCount();
             var discard = CancelCommand.ToUnit().Publish().RefCount();
             Spots = model.Spots.ToReadOnlyReactiveCollection(m => new NormalizationSpotPropertyViewModel(m, commit, discard)).AddTo(Disposables);
             TargetMsMethod = model.TargetMsMethod;
+
+            Spots.ObserveElementPropertyChanged().Subscribe(_ => isEditting.TurnOn()).AddTo(Disposables);
+            commit.Subscribe(_ => isEditting.TurnOff()).AddTo(Disposables);
         }
 
         public ReadOnlyObservableCollection<NormalizationSpotPropertyViewModel> Spots { get; }
 
         public TargetMsMethod TargetMsMethod { get; }
+
+        public BooleanNotifier IsEditting { get; }
 
         public ReactiveCommand ApplyCommand { get; }
         public ReactiveCommand CancelCommand { get; }

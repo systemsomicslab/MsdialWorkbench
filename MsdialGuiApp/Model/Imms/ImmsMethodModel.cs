@@ -43,8 +43,8 @@ namespace CompMs.App.Msdial.Model.Imms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly IMessageBroker _broker;
 
-        public ImmsMethodModel(IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
-            : base(storage.AnalysisFiles, storage.AlignmentFiles, projectBaseParameter) {
+        public ImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
+            : base(analysisFileBeanModelCollection, storage.AlignmentFiles, projectBaseParameter) {
             Storage = storage;
             _broker = broker;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
@@ -114,7 +114,7 @@ namespace CompMs.App.Msdial.Model.Imms
                     return Task.CompletedTask;
             }
 
-            return LoadAnalysisFileAsync(AnalysisFileModels.FirstOrDefault(), token);
+            return LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token);
         }
 
         private bool ProcessAnnotaion(IMsdialDataStorage<MsdialImmsParameter> storage) {
@@ -197,9 +197,8 @@ namespace CompMs.App.Msdial.Model.Imms
 
             var provider = ProviderFactory.Create(analysisFile.File);
             AnalysisModel = new ImmsAnalysisModel(
-                analysisFile.File,
-                provider,
-                matchResultEvaluator,
+                analysisFile,
+                provider, matchResultEvaluator,
                 Storage.DataBases,
                 Storage.DataBaseMapper,
                 Storage.Parameter,

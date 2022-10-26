@@ -55,11 +55,12 @@ namespace CompMs.App.Msdial.Model.Lcms
         private IAnnotationProcess annotationProcess;
 
         public LcmsMethodModel(
+            AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
             IMsdialDataStorage<MsdialLcmsParameter> storage,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
-            ProjectBaseParameterModel projectBaseParameter,
+            ProjectBaseParameterModel projectBaseParameter, 
             IMessageBroker broker)
-            : base(storage.AnalysisFiles, storage.AlignmentFiles, projectBaseParameter) {
+            : base(analysisFileBeanModelCollection, storage.AlignmentFiles, projectBaseParameter) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
             }
@@ -104,7 +105,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
             var provider = providerFactory.Create(analysisFile.File);
             return AnalysisModel = new LcmsAnalysisModel(
-                analysisFile.File,
+                analysisFile,
                 provider,
                 Storage.DataBases,
                 Storage.DataBaseMapper,
@@ -129,6 +130,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.Parameter,
                 _projectBaseParameter,
                 Storage.AnalysisFiles,
+                AnalysisFileModelCollection,
                 _broker)
             .AddTo(Disposables);
         }
@@ -166,7 +168,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     return;
             }
 
-            await LoadAnalysisFileAsync(AnalysisFileModels.FirstOrDefault(), token).ConfigureAwait(false);
+            await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
 
 #if DEBUG
             Console.WriteLine(string.Join("\n", Storage.Parameter.ParametersAsText()));

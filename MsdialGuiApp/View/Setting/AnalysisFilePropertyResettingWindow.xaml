@@ -10,7 +10,7 @@
         xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
         xmlns:reactiveProperty="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisFilePropertySetViewModel}}"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisFilePropertyResetViewModel}}"
         Title="Analysis property setting" Height="700" Width="1000"
         Name="AnalysisFilePropertyResetView">
     <Window.Resources>
@@ -59,13 +59,7 @@
                   Grid.Row="0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" 
                   VerticalAlignment="Stretch" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserSortColumns="True" 
                   AutoGenerateColumns="False" SelectionMode="Extended" SelectionUnit="CellOrRowHeader"
-                  AllowDrop="True" Margin="20,5,20,5" >
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="Drop">
-                    <reactiveProperty:EventToReactiveCommand Command="{Binding DropFilesCommand, Mode=OneTime}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-
+                  Margin="20,5,20,5" >
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>

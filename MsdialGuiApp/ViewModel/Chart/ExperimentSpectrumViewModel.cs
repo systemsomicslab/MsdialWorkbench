@@ -4,6 +4,7 @@ using CompMs.App.Msdial.ViewModel.MsResult;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Core.Base;
+using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
@@ -67,7 +68,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 });
             }
             else {
-                var fileName = Path.GetFileNameWithoutExtension(model.AnalysisFile.AnalysisFileName);
+                var fileName = Path.GetFileNameWithoutExtension(model.AnalysisFile.FileName);
                 model.SaveSpectrumAsNist(Path.Combine(Resources.EXPORT_DIR, $"{fileName}.msp"));
             }
         }

@@ -110,6 +110,10 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
+        public string PeakAreaBeanInformationFilePath => _file.PeakAreaBeanInformationFilePath;
+        public string DeconvolutionFilePath => _file.DeconvolutionFilePath;
+        public string ProteinAssembledResultFilePath => _file.ProteinAssembledResultFilePath;
+
         int IFileBean.FileID => AnalysisFileId;
         string IFileBean.FileName => AnalysisFileName;
         string IFileBean.FilePath => AnalysisFilePath;

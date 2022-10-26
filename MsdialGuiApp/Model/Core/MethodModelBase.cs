@@ -5,7 +5,6 @@ using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,15 +15,15 @@ namespace CompMs.App.Msdial.Model.Core
     internal abstract class MethodModelBase : BindableBase, IMethodModel, IDisposable
     {
         public MethodModelBase(
-            IEnumerable<AnalysisFileBean> analysisFiles,
+            AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
             IEnumerable<AlignmentFileBean> alignmentFiles,
             ProjectBaseParameterModel projectBaseParameter) {
             if (projectBaseParameter is null) {
                 throw new ArgumentNullException(nameof(projectBaseParameter));
             }
 
+            AnalysisFileModelCollection = analysisFileBeanModelCollection ?? throw new ArgumentNullException(nameof(analysisFileBeanModelCollection));
             AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles ?? new AlignmentFileBean[] { });
-            AnalysisFileModels = new ObservableCollection<AnalysisFileBeanModel>(analysisFiles?.Select(file => new AnalysisFileBeanModel(file)) ?? new AnalysisFileBeanModel[0]);
         }
 
         public AnalysisFileBeanModel AnalysisFileModel {
@@ -32,7 +31,8 @@ namespace CompMs.App.Msdial.Model.Core
             set => SetProperty(ref analysisFileModel, value);
         }
         private AnalysisFileBeanModel analysisFileModel;
-        public ObservableCollection<AnalysisFileBeanModel> AnalysisFileModels { get; }
+
+        public AnalysisFileBeanModelCollection AnalysisFileModelCollection { get; }
 
         public IAnalysisModel AnalysisModelBase {
             get => analysisModelBase;

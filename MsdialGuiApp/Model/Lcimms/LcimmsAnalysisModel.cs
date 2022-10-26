@@ -42,13 +42,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly double DT_TOLELANCE = 0.01;
 
         private readonly ChromatogramPeakFeatureCollection _peakCollection;
-        private readonly AnalysisFileBean _analysisFile;
+        private readonly AnalysisFileBeanModel _analysisFileModel;
         private readonly IDataProvider _spectrumProvider;
         private readonly IDataProvider _accSpectrumProvider;
         private readonly MsdialLcImMsParameter _parameter;
 
         public LcimmsAnalysisModel(
-            AnalysisFileBean analysisFile,
+            AnalysisFileBeanModel analysisFileModel,
             IDataProvider spectrumProvider,
             IDataProvider accSpectrumProvider,
             DataBaseStorage databases,
@@ -57,19 +57,24 @@ namespace CompMs.App.Msdial.Model.Lcimms
             MsdialLcImMsParameter parameter,
             PeakFilterModel peakFilterModel,
             PeakFilterModel accumulatedPeakFilterModel) {
+            if (analysisFileModel is null) {
+                throw new ArgumentNullException(nameof(analysisFileModel));
+            }
+
             if (peakFilterModel is null) {
                 throw new ArgumentNullException(nameof(peakFilterModel));
             }
-            _analysisFile = analysisFile ?? throw new ArgumentNullException(nameof(analysisFile));
+
+            _analysisFileModel = analysisFileModel;
             _spectrumProvider = spectrumProvider;
             _accSpectrumProvider = accSpectrumProvider;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _parameter = parameter;
 
-            var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
+            var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFileModel.PeakAreaBeanInformationFilePath);
             _peakCollection = new ChromatogramPeakFeatureCollection(peaks);
 
-            var orderedPeaks = peaks.OrderBy(peak => peak.ChromXsTop.RT.Value).Select(peak => new ChromatogramPeakFeatureModel(peak)).ToArray();
+            var orderedPeaks = peaks.OrderBy(peak => peak.ChromXs.RT.Value).Select(peak => new ChromatogramPeakFeatureModel(peak)).ToArray();
             var peakTree = new SegmentTree<IEnumerable<ChromatogramPeakFeatureModel>>(peaks.Count, Enumerable.Empty<ChromatogramPeakFeatureModel>(), Enumerable.Concat);
             using (peakTree.LazyUpdate()) {
                 foreach (var (peak, index) in orderedPeaks.WithIndex()) {
@@ -162,7 +167,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             }.AddTo(Disposables);
             accumulatedTarget.Select(
-                t => $"File: {analysisFile.AnalysisFileName}" +
+                t => $"File: {analysisFileModel.AnalysisFileName}" +
                     (t is null
                         ? string.Empty
                         : $"Spot ID: {t.MasterPeakID} Mass m/z: {t.Mass:F5} RT: {t.InnerModel.ChromXsTop.RT.Value:F2} min"))
@@ -224,7 +229,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 },
                 true);
             var spectraExporter = new NistSpectraExporter(target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
-            var decLoader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
+            var decLoader = new MSDecLoader(analysisFileModel.DeconvolutionFilePath).AddTo(Disposables);
             var msdecResult = target.Where(t => !(t is null))
                 .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
                 .ToReadOnlyReactivePropertySlim()
@@ -311,8 +316,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 target.Select(t => t?.MasterPeakID ?? 0d),
                 "Region focus by ID",
                 (mzSpotFocus, peak => peak.Mass),
-                (rtSpotFocus, peak => peak.InnerModel.ChromXsTop.RT.Value),
-                (dtSpotFocus, peak => peak.InnerModel.ChromXsTop.Drift.Value)).AddTo(Disposables);
+                (rtSpotFocus, peak => peak.InnerModel.ChromXs.RT.Value),
+                (dtSpotFocus, peak => peak.InnerModel.ChromXs.Drift.Value)).AddTo(Disposables);
             FocusNavigatorModel = new FocusNavigatorModel(idSpotFocus, rtSpotFocus, mzSpotFocus, dtSpotFocus);
 
             var peakInformationModel = new PeakInformationAnalysisModel(target).AddTo(Disposables);
@@ -335,7 +340,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam);
             CompoundSearchModel = target
-                .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel<ChromatogramPeakFeature>(analysisFile, t.InnerModel, r, searcherCollection.Items))
+                .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel<ChromatogramPeakFeature>(analysisFileModel, t.InnerModel, r, searcherCollection.Items))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -400,7 +405,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private string _displayLabel = string.Empty;
 
         public Task SaveAsync(CancellationToken token) {
-            return _peakCollection.SerializeAsync(_analysisFile.PeakAreaBeanInformationFilePath, token);
+            return _peakCollection.SerializeAsync(_analysisFileModel.PeakAreaBeanInformationFilePath, token);
         }
     }
 }

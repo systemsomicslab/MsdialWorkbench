@@ -39,24 +39,24 @@ namespace CompMs.App.Msdial.Model.Setting
 
     internal sealed class MethodSettingModelFactory : IMethodSettingModelFactory
     {
-        public MethodSettingModelFactory(IMsdialDataStorage<ParameterBase> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker messageBroker) {
+        public MethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<ParameterBase> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker messageBroker) {
             switch (storage) {
                 case IMsdialDataStorage<MsdialLcImMsParameter> lcimmsStorage:
-                    factoryImpl = new LcimmsMethodSettingModelFactory(lcimmsStorage, projectBaseParameter, process, messageBroker);
+                    factoryImpl = new LcimmsMethodSettingModelFactory(analysisFileBeanModelCollection, lcimmsStorage, projectBaseParameter, process, messageBroker);
                     break;
                 case IMsdialDataStorage<MsdialLcmsParameter> lcmsStorage:
-                    factoryImpl = new LcmsMethodSettingModelFactory(lcmsStorage, projectBaseParameter, process, messageBroker);
+                    factoryImpl = new LcmsMethodSettingModelFactory(analysisFileBeanModelCollection, lcmsStorage, projectBaseParameter, process, messageBroker);
                     break;
                 case IMsdialDataStorage<MsdialImmsParameter> immsStorage:
                     if (immsStorage.Parameter.MachineCategory == MachineCategory.IIMMS) {
-                        factoryImpl = new ImagingImmsMethodSettingModelFactory(immsStorage, projectBaseParameter, process, messageBroker);
+                        factoryImpl = new ImagingImmsMethodSettingModelFactory(analysisFileBeanModelCollection, immsStorage, projectBaseParameter, process, messageBroker);
                     }
                     else {
-                        factoryImpl = new ImmsMethodSettingModelFactory(immsStorage, projectBaseParameter, process, messageBroker);
+                        factoryImpl = new ImmsMethodSettingModelFactory(analysisFileBeanModelCollection, immsStorage, projectBaseParameter, process, messageBroker);
                     }
                     break;
                 case IMsdialDataStorage<MsdialDimsParameter> dimsStorage:
-                    factoryImpl = new DimsMethodSettingModelFactory(dimsStorage, projectBaseParameter, process, messageBroker);
+                    factoryImpl = new DimsMethodSettingModelFactory(analysisFileBeanModelCollection, dimsStorage, projectBaseParameter, process, messageBroker);
                     break;
                 default:
                     throw new ArgumentException(nameof(storage));
@@ -79,12 +79,14 @@ namespace CompMs.App.Msdial.Model.Setting
 
     sealed class DimsMethodSettingModelFactory : IMethodSettingModelFactory
     {
+        private readonly AnalysisFileBeanModelCollection _analysisFileBeanModelCollection;
         private readonly IMsdialDataStorage<MsdialDimsParameter> storage;
         private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly ProcessOption process;
         private readonly IMessageBroker _messageBroker;
 
-        public DimsMethodSettingModelFactory(IMsdialDataStorage<MsdialDimsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker messageBroker) {
+        public DimsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialDimsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker messageBroker) {
+            _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
             this.storage = storage;
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             this.process = process;
@@ -156,7 +158,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            var method = new DimsMethodModel(storage, storage.AnalysisFiles, storage.AlignmentFiles, _projectBaseParameter, _messageBroker);
+            var method = new DimsMethodModel(storage, _analysisFileBeanModelCollection, storage.AnalysisFiles, storage.AlignmentFiles, _projectBaseParameter, _messageBroker);
             method.Load();
             return method;
         }
@@ -164,17 +166,19 @@ namespace CompMs.App.Msdial.Model.Setting
 
     sealed class LcmsMethodSettingModelFactory : IMethodSettingModelFactory
     {
+        private readonly AnalysisFileBeanModelCollection _analysisFileBeanModelCollection;
         private readonly IMsdialDataStorage<MsdialLcmsParameter> storage;
         private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly ProcessOption process;
         private readonly IMessageBroker _broker;
 
         public LcmsMethodSettingModelFactory(
+            AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
             IMsdialDataStorage<MsdialLcmsParameter> storage,
             ProjectBaseParameterModel projectBaseParameter,
             ProcessOption process,
             IMessageBroker broker) {
-
+            _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
             this.storage = storage;
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             this.process = process;
@@ -246,18 +250,20 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new LcmsMethodModel(storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true), _projectBaseParameter, _broker);
+            return new LcmsMethodModel(_analysisFileBeanModelCollection, storage, new StandardDataProviderFactory(retry: 5, isGuiProcess: true), _projectBaseParameter, _broker);
         }
     }
 
     sealed class ImmsMethodSettingModelFactory : IMethodSettingModelFactory
     {
+        private readonly AnalysisFileBeanModelCollection _analysisFileBeanModelCollection;
         private readonly IMsdialDataStorage<MsdialImmsParameter> storage;
         private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly ProcessOption process;
         private readonly IMessageBroker _broker;
 
-        public ImmsMethodSettingModelFactory(IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker broker) {
+        public ImmsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker broker) {
+            _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
             this.storage = storage;
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             this.process = process;
@@ -324,7 +330,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            var method = new ImmsMethodModel(storage, _projectBaseParameter, _broker);
+            var method = new ImmsMethodModel(_analysisFileBeanModelCollection, storage, _projectBaseParameter, _broker);
             method.Load();
             return method;
         }
@@ -332,12 +338,14 @@ namespace CompMs.App.Msdial.Model.Setting
 
     sealed class LcimmsMethodSettingModelFactory : IMethodSettingModelFactory
     {
+        private readonly AnalysisFileBeanModelCollection _analysisFileBeanModelCollection;
         private readonly IMsdialDataStorage<MsdialLcImMsParameter> storage;
         private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly ProcessOption process;
         private readonly IMessageBroker _broker;
 
-        public LcimmsMethodSettingModelFactory(IMsdialDataStorage<MsdialLcImMsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker broker) {
+        public LcimmsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialLcImMsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker broker) {
+            _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
             this.storage = storage;
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             this.process = process;
@@ -404,18 +412,20 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            return new LcimmsMethodModel(storage, _projectBaseParameter, _broker);
+            return new LcimmsMethodModel(_analysisFileBeanModelCollection, storage, _projectBaseParameter, _broker);
         }
     }
 
     sealed class ImagingImmsMethodSettingModelFactory : IMethodSettingModelFactory
     {
+        private readonly AnalysisFileBeanModelCollection _analysisFileBeanModelCollection;
         private readonly IMsdialDataStorage<MsdialImmsParameter> storage;
         private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly ProcessOption process;
         private readonly IMessageBroker _broker;
 
-        public ImagingImmsMethodSettingModelFactory(IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker broker) {
+        public ImagingImmsMethodSettingModelFactory(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, ProcessOption process, IMessageBroker broker) {
+            _analysisFileBeanModelCollection = analysisFileBeanModelCollection;
             this.storage = storage;
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             this.process = process;
@@ -482,7 +492,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            var method = new ImagingImmsMethodModel(storage);
+            var method = new ImagingImmsMethodModel(_analysisFileBeanModelCollection, storage);
             return method;
         }
     }

@@ -7,21 +7,16 @@ using CompMs.MsdialCore.Parameter;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Windows;
 
-namespace CompMs.App.Msdial.ExternalApp {
-    public sealed class MsDialToExternalApps
+namespace CompMs.App.Msdial.ExternalApp
+{
+    public static class MsDialToExternalApps
     {
-        private MsDialToExternalApps() { }
-
         public static void SendToMsFinderProgram(
-            AnalysisFileBean file,
+            IFileBean file,
             ChromatogramPeakFeature feature,
             IMSScanProperty scan,
             IReadOnlyList<RawSpectrum> spectrumList,
@@ -31,13 +26,13 @@ namespace CompMs.App.Msdial.ExternalApp {
             var msdialIni = MsDialIniParcer.Read();
             if (!checkFilePath(msdialIni)) return;
 
-            var msdialTempDir = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(msdialIni.MsfinderFilePath), "MSDIAL_TEMP");
+            var msdialTempDir = Path.Combine(Path.GetDirectoryName(msdialIni.MsfinderFilePath), "MSDIAL_TEMP");
             folderCheckInMsFinder(msdialTempDir);
 
             var dt = DateTime.Now;
             var timeString = dt.Year.ToString() + "_" + dt.Month.ToString() + "_" + dt.Day.ToString() + "_" + dt.Hour.ToString() + dt.Minute.ToString();
             var id = feature.MasterPeakID;
-            var fileString = file.AnalysisFileName;
+            var fileString = file.FileName;
             var filePath = Path.Combine(msdialTempDir, timeString + "_" + fileString + "_" + id + "." + ExportSpectraFileFormat.mat);
 
             using (var fileStream = File.Open(filePath, FileMode.Create)) {

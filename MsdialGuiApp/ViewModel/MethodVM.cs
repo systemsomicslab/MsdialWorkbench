@@ -22,7 +22,7 @@ namespace CompMs.App.Msdial.ViewModel
     {
         public MethodViewModel(IMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisFileViewModel, IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentFileViewModel, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels) {
             Model = model;
-            var analysisFilesView = model.AnalysisFileModels.ToReadOnlyReactiveCollection(file => new AnalysisFileBeanViewModel(file));
+            var analysisFilesView = model.AnalysisFileModelCollection.AnalysisFiles.ToReadOnlyReactiveCollection(file => new AnalysisFileBeanViewModel(file));
             AnalysisFilesView = CollectionViewSource.GetDefaultView(analysisFilesView);
             var alignmentFilesView = model.AlignmentFiles.ToReadOnlyReactiveCollection(file => new AlignmentFileBeanViewModel(file));
             AlignmentFilesView = CollectionViewSource.GetDefaultView(alignmentFilesView);
