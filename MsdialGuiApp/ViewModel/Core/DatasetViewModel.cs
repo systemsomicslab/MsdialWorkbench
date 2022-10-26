@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private readonly IWindowService<CompoundSearchVM> compoundSearchService;
         private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
         private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
-        private readonly IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService;
+        private readonly IWindowService<AnalysisFilePropertyResetViewModel> analysisFilePropertyResetService;
         private readonly IMessageBroker _messageBroker;
 
         public DatasetViewModel(
@@ -32,7 +32,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
-            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService,
+            IWindowService<AnalysisFilePropertyResetViewModel> analysisFilePropertyResetService,
             IMessageBroker messageBroker) {
             Model = model;
             this.compoundSearchService = compoundSearchService;
@@ -64,8 +64,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public ReactiveCommand FilePropertyResetCommand { get; }
 
         private void FilePropertyResetting() {
-            var model = Model.AnalysisFilePropertySetModel;
-            using (var analysisFilePropertySetWindowVM = new AnalysisFilePropertySetViewModel(model)) {
+            var model = Model.AnalysisFilePropertyResetModel;
+            using (var analysisFilePropertySetWindowVM = new AnalysisFilePropertyResetViewModel(model)) {
                 var afpsw_result = analysisFilePropertyResetService.ShowDialog(analysisFilePropertySetWindowVM);
                 if (afpsw_result == true) {
                     model.Update();

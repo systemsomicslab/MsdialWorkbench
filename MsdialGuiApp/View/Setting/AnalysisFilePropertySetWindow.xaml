@@ -10,7 +10,7 @@
         xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
         xmlns:reactiveProperty="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisFilePropertySetViewModel}}"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisFilePropertyResetViewModel}}"
         Title="New project window" Height="700" Width="1000"
         Name="AnalysisFilePropertySetView">
     <Window.Resources>

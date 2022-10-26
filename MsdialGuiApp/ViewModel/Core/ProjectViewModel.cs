@@ -17,7 +17,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
-            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService,
+            IWindowService<AnalysisFilePropertyResetViewModel> analysisFilePropertyResetService,
             IMessageBroker broker) {
             CurrentDataset = model.ToReactivePropertySlimAsSynchronized(m => m.CurrentDataset).AddTo(Disposables);
             Datasets = model.Datasets.ToReadOnlyReactiveCollection().AddTo(Disposables);

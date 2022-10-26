@@ -30,7 +30,7 @@ namespace CompMs.App.Msdial.Model.Core
             _broker = broker;
             _projectBaseParameter = new ProjectBaseParameterModel(Storage.Parameter.ProjectParam);
             var files = new AnalysisFileBeanModelCollection(Storage.AnalysisFiles.Select(file => new AnalysisFileBeanModel(file)));
-            AnalysisFilePropertySetModel = new AnalysisFilePropertySetModel(Storage.AnalysisFiles, files, _projectBaseParameter);
+            AnalysisFilePropertyResetModel = new AnalysisFilePropertyResetModel(Storage.AnalysisFiles, files, _projectBaseParameter);
             FileClassSetModel = new FileClassSetModel(_projectBaseParameter);
 
             AllProcessMethodSettingModel = new MethodSettingModel(ProcessOption.All, Storage, HandlerAsync, _projectBaseParameter, broker);
@@ -77,7 +77,7 @@ namespace CompMs.App.Msdial.Model.Core
             return Method.RunAsync(setting.Option, token);
         }
 
-        public AnalysisFilePropertySetModel AnalysisFilePropertySetModel { get; }
+        public AnalysisFilePropertyResetModel AnalysisFilePropertyResetModel { get; }
         public FileClassSetModel FileClassSetModel { get; }
 
         public Task SaveAsync() {

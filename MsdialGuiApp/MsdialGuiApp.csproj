@@ -279,7 +279,7 @@
     <Compile Include="Model\Core\MethodModelBase.cs" />
     <Compile Include="Model\Core\AnalysisParameterSetModelBase.cs" />
     <Compile Include="Model\Setting\IAnnotatorSettingModel.cs" />
-    <Compile Include="Model\Setting\AnalysisFilePropertySetModel.cs" />
+    <Compile Include="Model\Setting\AnalysisFilePropertyResetModel.cs" />
     <Compile Include="Model\Setting\DataBaseSettingModel.cs" />
     <Compile Include="Model\Lcms\LcmsAlignmentModel.cs" />
     <Compile Include="Model\Lcms\LcmsAnalysisModel.cs" />
@@ -632,7 +632,7 @@
       <DependentUpon>LipidDbSetWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\Core\MainWindowVM.cs" />
-    <Compile Include="ViewModel\Setting\AnalysisFilePropertySetViewModel.cs" />
+    <Compile Include="ViewModel\Setting\AnalysisFilePropertyResetViewModel.cs" />
     <Compile Include="View\Search\FocusNavigatorView.xaml.cs">
       <DependentUpon>FocusNavigatorView.xaml</DependentUpon>
     </Compile>

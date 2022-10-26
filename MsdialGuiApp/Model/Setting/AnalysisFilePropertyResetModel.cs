@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Setting
 {
-    internal class AnalysisFilePropertySetModel : BindableBase
+    internal class AnalysisFilePropertyResetModel : BindableBase
     {
         public string ProjectFolderPath { get; }
         public MachineCategory Category { get; }
@@ -51,7 +51,7 @@ namespace CompMs.App.Msdial.Model.Setting
         // Parameter reset functions
         private readonly ProjectBaseParameterModel _projectParameter;
 
-        public AnalysisFilePropertySetModel(IEnumerable<AnalysisFileBean> files, AnalysisFileBeanModelCollection fileCollection, ProjectBaseParameterModel projectParameter) {
+        public AnalysisFilePropertyResetModel(IEnumerable<AnalysisFileBean> files, AnalysisFileBeanModelCollection fileCollection, ProjectBaseParameterModel projectParameter) {
             AnalysisFilePropertyCollection = files as ObservableCollection<AnalysisFileBean> ?? new ObservableCollection<AnalysisFileBean>(files);
             AnalysisFileModelCollection = fileCollection;
             _projectParameter = projectParameter;

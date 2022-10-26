@@ -16,9 +16,9 @@ using Reactive.Bindings.Extensions;
 
 namespace CompMs.App.Msdial.ViewModel.Setting
 {
-    internal sealed class AnalysisFilePropertySetViewModel : ViewModelBase
+    internal sealed class AnalysisFilePropertyResetViewModel : ViewModelBase
     {
-        public AnalysisFilePropertySetViewModel(AnalysisFilePropertySetModel model) {
+        public AnalysisFilePropertyResetViewModel(AnalysisFilePropertyResetModel model) {
             Model = model ?? throw new ArgumentNullException(nameof(model));
             AnalysisFilePropertyCollection = Model.AnalysisFilePropertyCollection
                 .ToReadOnlyReactiveCollection(v => new AnalysisFileBeanViewModel(v))
@@ -69,7 +69,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .AddTo(Disposables);
         }
 
-        public AnalysisFilePropertySetModel Model { get; }
+        public AnalysisFilePropertyResetModel Model { get; }
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }
 

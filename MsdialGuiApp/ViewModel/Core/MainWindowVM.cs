@@ -31,7 +31,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public MainWindowVM(
             IWindowService<CompoundSearchVM> compoundSearchService,
             IWindowService<PeakSpotTableViewModelBase> peakSpotTableService,
-            IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService,
+            IWindowService<AnalysisFilePropertyResetViewModel> analysisFilePropertyResetService,
             IWindowService<PeakSpotTableViewModelBase> proteomicsTableService,
             IWindowService<ProcessSettingViewModel> processSettingSerivce) {
 
@@ -118,7 +118,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         }
 
         private readonly IMessageBroker _broker;
-        private readonly IWindowService<AnalysisFilePropertySetViewModel> analysisFilePropertyResetService;
+        private readonly IWindowService<AnalysisFilePropertyResetViewModel> analysisFilePropertyResetService;
         private readonly IWindowService<ProcessSettingViewModel> processSettingService;
 
         public MainWindowModel Model { get; }
