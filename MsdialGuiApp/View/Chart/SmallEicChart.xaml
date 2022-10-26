@@ -10,6 +10,7 @@
              xmlns:manager="clr-namespace:CompMs.Graphics.AxisManager;assembly=ChartDrawing"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              mc:Ignorable="d" 
+             x:Name="EicChartControl"
              d:DataContext="{d:DesignInstance Type={x:Type do:Chromatogram}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <d:DesignerProperties.DesignStyle>
@@ -22,21 +23,21 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/ChartStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <manager:AutoContinuousAxisManager x:Key="HorizontalAxis"
+                                               ItemsSource="{Binding DataContext.Peaks, TargetNullValue=x:Null, FallbackValue=x:Null, Source={x:Reference EicChartControl}}"
+                                               ValuePropertyName="Time"/>
+            <manager:AutoContinuousAxisManager x:Key="VerticalAxis"
+                                               ItemsSource="{Binding DataContext.Peaks, TargetNullValue=x:Null, FallbackValue=x:Null, Source={x:Reference EicChartControl}}"
+                                               ValuePropertyName="Intensity"
+                                               Bounds="0,0"
+                                               ChartMargin="0,0.10"/>
         </ResourceDictionary>   
     </UserControl.Resources>
     <Border Background="WhiteSmoke"
             BorderThickness="1,0,0,1">
-        <chart:MultiChart Style="{StaticResource OverlapChartOnly}">
-            <chart:MultiChart.HorizontalAxis>
-                <manager:AutoContinuousAxisManager ItemsSource="{Binding Peaks}"
-                                                   ValuePropertyName="Time"/>
-            </chart:MultiChart.HorizontalAxis>
-            <chart:MultiChart.VerticalAxis>
-                <manager:AutoContinuousAxisManager ItemsSource="{Binding Peaks}"
-                                                   ValuePropertyName="Intensity"
-                                                   Bounds="0,0"
-                                                   ChartMargin="0,0.10"/>
-            </chart:MultiChart.VerticalAxis>
+        <chart:MultiChart Style="{StaticResource OverlapChartOnly}"
+                          HorizontalAxis="{StaticResource HorizontalAxis}"
+                          VerticalAxis="{StaticResource VerticalAxis}">
             <chart:AreaChartControl ItemsSource="{Binding PeakArea}"
                                    HorizontalPropertyName="Time"
                                    VerticalPropertyName="Intensity">
