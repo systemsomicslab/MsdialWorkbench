@@ -43,13 +43,18 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .Subscribe(vm => broker.Publish(vm))
                 .AddTo(Disposables);
 
+            var selectedViewModel = this.ObserveProperty(vm => vm.SelectedViewModel)
+                .Select(vm => vm.StartWith(vm.Value))
+                .Switch()
+                .ToReactiveProperty()
+                .AddTo(Disposables);
             var proteinResultContainerAsObservable =
                 new[]
                 {
-                    SelectedViewModel.OfType<LcmsAnalysisViewModel>().Select(vm => vm.ProteinResultContainerAsObservable),
-                    SelectedViewModel.OfType<LcmsAlignmentViewModel>().Select(vm => vm.ProteinResultContainerAsObservable),
-
+                    selectedViewModel.OfType<LcmsAnalysisViewModel>().Select(vm => vm.ProteinResultContainerAsObservable),
+                    selectedViewModel.OfType<LcmsAlignmentViewModel>().Select(vm => vm.ProteinResultContainerAsObservable),
                 }.Merge().Switch();
+
             var _proteinGroupTableViewModel = new ProteinGroupTableViewModel(proteinResultContainerAsObservable).AddTo(Disposables);
             ShowProteinGroupTableCommand = model.CanShowProteinGroupTable.ToReactiveCommand().AddTo(Disposables);
             ShowProteinGroupTableCommand.Subscribe(() => broker.Publish(_proteinGroupTableViewModel)).AddTo(Disposables);

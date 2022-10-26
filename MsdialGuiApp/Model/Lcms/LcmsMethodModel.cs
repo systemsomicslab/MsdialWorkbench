@@ -52,7 +52,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
         private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly IMessageBroker _broker;
-        private readonly Subject<ProteinResultContainerModel> _proteinResultContainerModelSubject;
         private IAnnotationProcess annotationProcess;
 
         public LcmsMethodModel(
@@ -74,7 +73,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
-            _proteinResultContainerModelSubject = new Subject<ProteinResultContainerModel>().AddTo(Disposables);
             CanShowProteinGroupTable = Observable.Return(storage.Parameter.TargetOmics == TargetOmics.Proteomics);
         }
 
@@ -112,7 +110,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.DataBaseMapper,
                 matchResultEvaluator,
                 Storage.Parameter,
-                _proteinResultContainerModelSubject,
                 PeakFilterModel)
             .AddTo(Disposables);
         }
@@ -132,7 +129,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Storage.Parameter,
                 _projectBaseParameter,
                 Storage.AnalysisFiles,
-                _proteinResultContainerModelSubject,
                 _broker)
             .AddTo(Disposables);
         }

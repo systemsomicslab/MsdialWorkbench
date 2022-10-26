@@ -41,7 +41,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             DataBaseMapper mapper,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             ParameterBase parameter,
-            IObserver<ProteinResultContainerModel> proteinResultContainerModelObserver,
             PeakFilterModel peakFilterModel)
             : base(analysisFile) {
             if (analysisFile is null) {
@@ -74,7 +73,6 @@ namespace CompMs.App.Msdial.Model.Lcms
                 var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(analysisFile.ProteinAssembledResultFilePath);
                 var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Peaks, Target);
                 ProteinResultContainerModel = proteinResultContainerModel;
-                //proteinResultContainerModelObserver.OnNext(proteinResultContainerModel);
             }
 
             PeakSpotNavigatorModel = new PeakSpotNavigatorModel(Ms1Peaks, peakFilterModel, evaluator, status: ~FilterEnableStatus.Dt).AddTo(Disposables);

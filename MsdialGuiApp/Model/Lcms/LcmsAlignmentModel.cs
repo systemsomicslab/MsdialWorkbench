@@ -60,7 +60,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             MsdialLcmsParameter parameter,
             ProjectBaseParameterModel projectBaseParameter,
             List<AnalysisFileBean> files,
-            IObserver<ProteinResultContainerModel> proteinResultContainerModelObserver,
             IMessageBroker messageBroker)
             : base(alignmentFileBean, alignmentFileBean.FilePath) {
             if (databases is null) {
@@ -103,7 +102,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(alignmentFileBean.ProteinAssembledResultFilePath);
                 var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Spots, Target);
-                proteinResultContainerModelObserver.OnNext(proteinResultContainerModel);
+                ProteinResultContainerModel = proteinResultContainerModel;
             }
 
             _decLoader = new MSDecLoader(_alignmentFile.SpectraFilePath);
