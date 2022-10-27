@@ -67,13 +67,23 @@ namespace CompMs.Common.Lipidomics
                     return true;
                 }
             }
+            else if (lipid.LipidClass == LbmClass.Cer_AS || lipid.LipidClass == LbmClass.Cer_ADS
+                || lipid.LipidClass == LbmClass.Cer_HS || lipid.LipidClass == LbmClass.Cer_HDS
+                || lipid.LipidClass == LbmClass.Cer_BS || lipid.LipidClass == LbmClass.Cer_BDS
+                || lipid.LipidClass == LbmClass.Cer_NP || lipid.LipidClass == LbmClass.Cer_AP)
+            {
+                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
+                {
+                    return true;
+                }
+            }
             return false;
         }
 
         public IMSScanProperty Generate(Lipid lipid, AdductIon adduct, IMoleculeProperty molecule = null)
         {
             var spectrum = new List<SpectrumPeak>();
-            var nlmass = adduct.AdductIonName == "[M+H]+" ? H2O: 0.0;
+            var nlmass = adduct.AdductIonName == "[M+H]+" ? H2O : 0.0;
             spectrum.AddRange(GetCerNSSpectrum(lipid, adduct));
             if (lipid.Chains is PositionLevelChains plChains)
             {

@@ -150,7 +150,7 @@ namespace CompMs.Common.Lipidomics
             {
                 return Enumerable.Empty<SpectrumPeak>();
             }
-            var chainLoss = lipid.Mass - sphingo.Mass - nlMass + MassDiffDictionary.NitrogenMass + 12 * 2 + MassDiffDictionary.OxygenMass * 2 + MassDiffDictionary.HydrogenMass * 5;
+            var chainLoss = lipid.Mass - sphingo.Mass - nlMass + MassDiffDictionary.NitrogenMass + 12 * 2 + MassDiffDictionary.OxygenMass * sphingo.OxidizedCount + MassDiffDictionary.HydrogenMass * 5;
             var diffs = new double[sphingo.CarbonCount];
             for (int i = 0; i < sphingo.CarbonCount; i++)
             {
