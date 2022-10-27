@@ -240,8 +240,8 @@
 
             <chart:SimpleChartControl HorizontalAxis="{Binding PCXLabelAxis.Value}"
                                       VerticalAxis="{Binding PC1LoadingAbsoluteVerticalAxis.Value}"
-                                      GraphTitle="{Binding ComponentX.Value, StringFormat=Component {0} loading plot}"
-                                      HorizontalTitle="{Binding ComponentX.Value}"
+                                      GraphTitle="{Binding ComponentX.Value, StringFormat=PCA loading plot}"
+                                      HorizontalTitle="{Binding ComponentX.Value, StringFormat=Principal component {0}}"
                                       VerticalTitle="Value"
                                       Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
                 <Grid>
@@ -254,8 +254,8 @@
             </chart:SimpleChartControl>
             <chart:SimpleChartControl HorizontalAxis="{Binding PCYLabelAxis.Value}"
                                       VerticalAxis="{Binding PC2LoadingAbsoluteVerticalAxis.Value}"
-                                      GraphTitle="{Binding ComponentY.Value, StringFormat=Component {0} loading plot}"
-                                      HorizontalTitle="{Binding ComponentY.Value}"
+                                      GraphTitle="{Binding ComponentY.Value, StringFormat=PCA loading plot}"
+                                      HorizontalTitle="{Binding ComponentY.Value, StringFormat=Principal component {0}}"
                                       VerticalTitle="Value"
                                       Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
                 <Grid>
