@@ -72,6 +72,10 @@ namespace CompMs.App.Msdial.Model.Statistics
                 .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new ContinuousAxisManager<double>(pc_loadings, new ConstantMargin(10))))
                 .ToList().AsReadOnly();
 
+            LoadingAbsoluteAxises = multivariateAnalysisResult.PPreds
+                .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new AbsoluteAxisManager(new Range(0d, pc_loadings.DefaultIfEmpty().Max(Math.Abs)), new ConstantMargin(0, 10))))
+                .ToList().AsReadOnly();
+
             Scores = new ObservableCollection<ComponentScoreModel>(
                 statisticsObject.YLabels.Select((label, i) =>
                     new ComponentScoreModel(multivariateAnalysisResult.TPreds.Select(preds => preds[i]).ToArray(), label, analysisfiles[i])));
@@ -119,12 +123,16 @@ namespace CompMs.App.Msdial.Model.Statistics
                 SelectedBrush = amplitude;
             }
 
+            PosnegBrush = new DelegateBrushMapper<ComponentLoadingViewModel>(
+                    loading => loading.ComponentX > 0 ? Colors.Blue : Colors.Red);
+
         }
 
         public ObservableCollection<ComponentLoadingModel> Loadings { get; }
         public ObservableCollection<ComponentScoreModel> Scores { get; }
         public ObservableCollection<IAxisManager<string>> PCAxises { get; }
         public ReadOnlyCollection<Lazy<IAxisManager<double>>> LoadingAxises { get; }
+        public ReadOnlyCollection<Lazy<IAxisManager<double>>> LoadingAbsoluteAxises { get; }
         public ReadOnlyCollection<Lazy<IAxisManager<double>>> ScoreAxises { get; }
         public List<BrushMapData<ComponentLoadingViewModel>> Brushes { get; }
 
@@ -141,6 +149,13 @@ namespace CompMs.App.Msdial.Model.Statistics
             set => SetProperty(ref _pointBrush, value);
         }
         private IObservable<IBrushMapper<ComponentScoreViewModel>> _pointBrush;
+
+        public IBrushMapper<ComponentLoadingViewModel> PosnegBrush
+        {
+            get => _posnegBrush;
+            set => SetProperty(ref _posnegBrush, value);
+        }
+        private IBrushMapper<ComponentLoadingViewModel> _posnegBrush;
 
         public int NumberOfComponents => _multivariateAnalysisResult.PPreds.Count;
     }
