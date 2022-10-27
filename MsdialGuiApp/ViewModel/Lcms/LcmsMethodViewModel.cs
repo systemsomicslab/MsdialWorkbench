@@ -128,7 +128,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         private void MscleanrFilterSettingMethod(Window obj) {
             if (SelectedViewModel.Value is IAlignmentResultViewModel) {
-                model.ShowShowMscleanrFilterSettingView(obj, true);
+                model.ShowShowMscleanrFilterSettingView(obj);
             }
             else {
                 MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
