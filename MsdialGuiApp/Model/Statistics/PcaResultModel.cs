@@ -124,7 +124,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             }
 
             PosnegBrush = new DelegateBrushMapper<ComponentLoadingViewModel>(
-                    loading => loading.ComponentX > 0 ? Colors.Blue : Colors.Red);
+                    loading => loading.ComponentX > 0 ? Colors.Red : Colors.Blue);
 
         }
 
