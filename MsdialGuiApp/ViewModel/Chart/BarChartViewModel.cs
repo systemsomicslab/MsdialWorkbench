@@ -81,9 +81,11 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            BarItemsLoaderDataViewModels = new ReadOnlyObservableCollection<BarItemsLoaderDataViewModel>(new ObservableCollection<BarItemsLoaderDataViewModel>(_model.BarItemsLoaderDatas.Select(data => new BarItemsLoaderDataViewModel(data, _model.BarItemsLoaderData))));
-            BarItemsLoaderDataViewModel = _model.BarItemsLoaderData.Select(m => BarItemsLoaderDataViewModels.FirstOrDefault(vm => vm.Model == m)).ToReactiveProperty().AddTo(Disposables);
-            BarItemsLoaderDataViewModel.Subscribe(vm => _model.BarItemsLoaderData.Value = vm?.Model).AddTo(Disposables);
+            BarItemsLoaderDataViewModels = new ReadOnlyObservableCollection<BarItemsLoaderDataViewModel>(new ObservableCollection<BarItemsLoaderDataViewModel>(model.BarItemsLoaderDatas.Select(data => new BarItemsLoaderDataViewModel(data, model.BarItemsLoaderData))));
+            BarItemsLoaderDataViewModel = model.BarItemsLoaderData.ToReactivePropertyAsSynchronized(
+                m => m.Value,
+                m => m.Select(m_ => BarItemsLoaderDataViewModels.FirstOrDefault(vm => vm.Model == m_)),
+                vm => vm.Where(vm_ => !(vm_ is null)).Select(vm_ => vm_.Model)).AddTo(Disposables);
 
             var cv = CollectionViewSource.GetDefaultView(BarItemsLoaderDataViewModels);
             cv.Filter += o => ((BarItemsLoaderDataViewModel)o).IsEnabled.Value;

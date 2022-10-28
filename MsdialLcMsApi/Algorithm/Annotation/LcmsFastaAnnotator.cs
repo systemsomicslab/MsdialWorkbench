@@ -7,6 +7,7 @@ using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
 using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
+using CompMs.Common.Proteomics.Function;
 using CompMs.Common.Utility;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -23,17 +24,17 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
 
         private static readonly IComparer<IMSScanProperty> comparer = CompositeComparer.Build(MassComparer.Comparer, ChromXsComparer.RTComparer);
         private readonly IMatchResultRefer<PeptideMsReference, MsScanMatchResult> ReferObject;
-        private readonly List<PeptideMsReference> OriginalOrderedDecoyPeptideMsRef;
+        //private readonly List<PeptideMsReference> OriginalOrderedDecoyPeptideMsRef;
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
         public LcmsFastaAnnotator(ShotgunProteomicsDB reference, MsRefSearchParameterBase msrefSearchParameter, ProteomicsParameter proteomicsParameter,
             string annotatorID, SourceType type, int priority) : base(reference, msrefSearchParameter, proteomicsParameter, annotatorID, priority, type) {
             Id = annotatorID;
             PeptideMsRef.Sort(comparer);
-            DecoyPeptideMsRef.Sort(comparer);
+            //DecoyPeptideMsRef.Sort(comparer);
             ReferObject = reference;
 
-            OriginalOrderedDecoyPeptideMsRef = reference.DecoyPeptideMsRef;
+            //OriginalOrderedDecoyPeptideMsRef = reference.DecoyPeptideMsRef;
             evaluator = MsScanMatchResultEvaluator.CreateEvaluator(msrefSearchParameter);
         }
 
@@ -54,7 +55,11 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
             if (pepResults.IsEmptyOrNull()) return new List<MsScanMatchResult>();
 
             var repForwardResult = pepResults[0];
-            var repReverseRef = OriginalOrderedDecoyPeptideMsRef[repForwardResult.LibraryID];
+            var repPeptide = Refer(repForwardResult);
+            var decoyPep = DecoyCreator.Convert2DecoyPeptide(repPeptide.Peptide);
+            //var repReverseRef = OriginalOrderedDecoyPeptideMsRef[repForwardResult.LibraryID];
+            var repReverseRef = new PeptideMsReference(decoyPep, null, -1, repPeptide.AdductType,
+                repPeptide.ScanID, repPeptide.MinMs2, repPeptide.MaxMs2, repPeptide.CollisionType);
 
             var decoyResult = FindCandidatesCore(query.Property, query.Scan, query.Isotopes, query.IonFeature, repReverseRef, parameter, proteomicsParam);
             if (decoyResult is null) return new List<MsScanMatchResult>();

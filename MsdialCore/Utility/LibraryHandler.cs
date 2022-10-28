@@ -71,6 +71,7 @@ namespace CompMs.MsdialCore.Utility {
             var adduct = AdductIonParser.GetAdductIonBean("[M+H]+");
             var minimumPeptideLength = parameter.MinimumPeptideLength;
             var maxPeptideMass = parameter.MaxPeptideMass;
+            var minPeptideMass = parameter.MinPeptideMass;
             var char2AA = PeptideCalc.GetSimpleChar2AminoAcidDictionary();
             var syncObj = new object();
             var error = string.Empty;
@@ -82,7 +83,7 @@ namespace CompMs.MsdialCore.Utility {
                     var sequence = fQuery.Sequence;
                     var digestedPeptides = ProteinDigestion.GetDigestedPeptideSequences(sequence, cleavageSites, char2AA, maxMissedCleavage, fQuery.UniqueIdentifier, fQuery.Index);
                     if (!digestedPeptides.IsEmptyOrNull()) {
-                        var mPeptides = ModificationUtility.GetModifiedPeptides(digestedPeptides, modContainer, maxNumberOfModificationsPerPeptide);
+                        var mPeptides = ModificationUtility.GetModifiedPeptides(digestedPeptides, modContainer, maxNumberOfModificationsPerPeptide, minPeptideMass, maxPeptideMass);
                         lock (syncObj) {
                             foreach (var peptide in mPeptides) {
                                 peptides.Add(peptide);

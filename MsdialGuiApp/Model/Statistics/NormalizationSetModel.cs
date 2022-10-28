@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Utility;
+﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.Utility;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
@@ -25,6 +26,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             IReadOnlyList<AnalysisFileBean> files,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            InternalStandardSetModel isSetModel,
             ParameterBase parameter,
             IMessageBroker broker) {
             _dataNormalizationParameter = parameter.DataNormalizationBaseParam;
@@ -43,9 +45,9 @@ namespace CompMs.App.Msdial.Model.Statistics
             IsNormalizeMTic = _dataNormalizationParameter.IsNormalizeMTic;
 
             NoneNormalizeModel = new NoneNormalizeModel(container, broker);
-            InternalStandardNormalizeModel = new InternalStandardNormalizeModel(container, broker);
+            InternalStandardNormalizeModel = new InternalStandardNormalizeModel(container, isSetModel, broker);
             LowessNormalizeModel = new LowessNormalizeModel(container, files, broker);
-            InternalStandardLowessNormalizeModel = new InternalStandardLowessNormalizeModel(container, files, broker);
+            InternalStandardLowessNormalizeModel = new InternalStandardLowessNormalizeModel(container, files, isSetModel, broker);
             SplashSetModel = new SplashSetModel(container, refer, parameter, evaluator, broker).AddTo(Disposables);
             TicNormalizeModel = new TicNormalizeModel(container, broker);
             MticNormalizeModel = new MticNormalizeModel(container, evaluator, broker);
@@ -53,9 +55,9 @@ namespace CompMs.App.Msdial.Model.Statistics
             CanNormalizeProperty = new[]
             {
                 this.ObserveProperty(m => m.IsNormalizeNone).Where(x => x).Select(_ => NoneNormalizeModel.CanNormalizeProperty.Prepend(NoneNormalizeModel.CanNormalizeProperty.Value)),
-                this.ObserveProperty(m => m.IsNormalizeIS).Where(x => x).Select(_ => InternalStandardNormalizeModel.CanNormalizeProperty.Prepend(InternalStandardNormalizeModel.CanNormalizeProperty.Value)),
+                this.ObserveProperty(m => m.IsNormalizeIS).Where(x => x).WithLatestFrom(InternalStandardNormalizeModel.CanNormalize, (_, x) => InternalStandardNormalizeModel.CanNormalize.Prepend(x)),
                 this.ObserveProperty(m => m.IsNormalizeLowess).Where(x => x).Select(_ => LowessNormalizeModel.CanNormalizeProperty.Prepend(LowessNormalizeModel.CanNormalizeProperty.Value)),
-                this.ObserveProperty(m => m.IsNormalizeIsLowess).Where(x => x).Select(_ => InternalStandardLowessNormalizeModel.CanNormalizeProperty.Prepend(InternalStandardLowessNormalizeModel.CanNormalizeProperty.Value)),
+                this.ObserveProperty(m => m.IsNormalizeIsLowess).Where(x => x).WithLatestFrom(InternalStandardLowessNormalizeModel.CanNormalize, (_, x) => InternalStandardLowessNormalizeModel.CanNormalize.Prepend(x)),
                 this.ObserveProperty(m => m.IsNormalizeSplash).Where(x => x).Select(_ => SplashSetModel.CanNormalizeProperty.Prepend(SplashSetModel.CanNormalizeProperty.Value)),
                 this.ObserveProperty(m => m.IsNormalizeTic).Where(x => x).Select(_ => TicNormalizeModel.CanNormalizeProperty.Prepend(TicNormalizeModel.CanNormalizeProperty.Value)),
                 this.ObserveProperty(m => m.IsNormalizeMTic).Where(x => x).Select(_ => MticNormalizeModel.CanNormalizeProperty.Prepend(MticNormalizeModel.CanNormalizeProperty.Value)),

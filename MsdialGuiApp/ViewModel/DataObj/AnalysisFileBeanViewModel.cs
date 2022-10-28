@@ -14,7 +14,7 @@ using System.Reactive.Subjects;
 
 namespace CompMs.App.Msdial.ViewModel.DataObj
 {
-    public abstract class FileBeanViewModel<T> : ViewModelBase where T: IFileBean
+    public abstract class FileBeanViewModel<T> : ViewModelBase where T : IFileBean
     {
         public FileBeanViewModel(T file) {
             File = file;
@@ -30,7 +30,7 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         private bool isSelected;
     }
 
-    internal sealed class AnalysisFileBeanViewModel : FileBeanViewModel<AnalysisFileBean>
+    internal sealed class AnalysisFileBeanViewModel : FileBeanViewModel<AnalysisFileBeanModel>
     {
         [Required(ErrorMessage = "AnalysisFilePath is required.")]
         [PathExists(IsDirectory = true, IsFile = true)]
@@ -76,27 +76,27 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
 
         public IObservable<Unit> ObserveChanges { get; }
 
-        public AnalysisFileBeanViewModel(AnalysisFileBean file) : this(file, new AnalysisFileBeanModel(file)) {
+        public AnalysisFileBeanViewModel(AnalysisFileBean file) : this(new AnalysisFileBeanModel(file)) {
 
         }
 
-        public AnalysisFileBeanViewModel(AnalysisFileBean file, AnalysisFileBeanModel model) : base(file) {
-            AnalysisFilePath = new ReactiveProperty<string>(file.AnalysisFilePath)
+        public AnalysisFileBeanViewModel(AnalysisFileBeanModel model) : base(model) {
+            AnalysisFilePath = new ReactiveProperty<string>(model.AnalysisFilePath)
                 .SetValidateAttribute(() => AnalysisFilePath)
                 .AddTo(Disposables);
             CommitAsObservable
                 .WithLatestFrom(AnalysisFilePath, (_, x) => x)
-                .Subscribe(x => file.AnalysisFilePath = x)
+                .Subscribe(x => model.AnalysisFilePath = x)
                 .AddTo(Disposables);
 
             var invalidChars = Path.GetInvalidFileNameChars();
-            AnalysisFileName = new ReactiveProperty<string>(file.AnalysisFileName)
+            AnalysisFileName = new ReactiveProperty<string>(model.AnalysisFileName)
                 .SetValidateAttribute(() => AnalysisFileName)
                 .SetValidateNotifyError(name => name.IndexOfAny(invalidChars) >= 0 ? $"{name} contains invalid character(s)" : null)
                 .AddTo(Disposables);
             CommitAsObservable
                 .WithLatestFrom(AnalysisFileName, (_, x) => x)
-                .Subscribe(x => file.AnalysisFileName = x)
+                .Subscribe(x => model.AnalysisFileName = x)
                 .AddTo(Disposables);
 
             AnalysisFileType = new ReactiveProperty<AnalysisFileType>(model.AnalysisFileType)
@@ -123,12 +123,12 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
                 .Subscribe(x => model.AnalysisFileAnalyticalOrder = int.Parse(x))
                 .AddTo(Disposables);
 
-            AnalysisFileId = new ReactiveProperty<string>(file.AnalysisFileId.ToString())
+            AnalysisFileId = new ReactiveProperty<string>(model.AnalysisFileId.ToString())
                 .SetValidateAttribute(() => AnalysisFileId)
                 .AddTo(Disposables);
             CommitAsObservable
                 .WithLatestFrom(AnalysisFileId, (_, x) => x)
-                .Subscribe(x => file.AnalysisFileId = int.Parse(x))
+                .Subscribe(x => model.AnalysisFileId = int.Parse(x))
                 .AddTo(Disposables);
 
             AnalysisFileIncluded = new ReactiveProperty<bool>(model.AnalysisFileIncluded)

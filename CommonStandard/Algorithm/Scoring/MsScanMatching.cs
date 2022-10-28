@@ -670,7 +670,11 @@ namespace CompMs.Common.Algorithm.Scoring {
                 }
 
                 SpectrumPeak spectrumPeak = maxRefID >= 0 ? peaks2[maxRefID].Clone() : null;
-                if (spectrumPeak == null) continue;
+                if (spectrumPeak == null) {
+                    focusedMz = peaks2[remaindIndexL].Mass;
+                    if (remaindIndexL == peaks2.Count - 1) break;
+                    continue;
+                }
                 var sumintensity = 0.0;
                 for (int i = remaindIndexM; i < peaks1.Count; i++) {
                     if (peaks1[i].Mass < focusedMz - bin) continue;

@@ -1,12 +1,12 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Statistics;
-using CompMs.App.Msdial.Utility;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics
 {
@@ -16,7 +16,9 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             ApplyCommand = new ReactiveCommand().AddTo(Disposables);
             CancelCommand = new ReactiveCommand().AddTo(Disposables);
 
-            Spots = model.Spots.ToReadOnlyReactiveCollection(m => new NormalizationSpotPropertyViewModel(m, ApplyCommand.ToUnit(), CancelCommand.ToUnit())).AddTo(Disposables);
+            var commit = ApplyCommand.ToUnit().Publish().RefCount();
+            var discard = CancelCommand.ToUnit().Publish().RefCount();
+            Spots = model.Spots.ToReadOnlyReactiveCollection(m => new NormalizationSpotPropertyViewModel(m, commit, discard)).AddTo(Disposables);
             TargetMsMethod = model.TargetMsMethod;
         }
 
@@ -34,7 +36,9 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
         public NormalizationSpotPropertyViewModel(NormalizationSpotPropertyModel model, IObservable<Unit> commit, IObservable<Unit> discard) {
             _model = model;
-            InternalStandardId = _model.ToReactivePropertyWithCommit(m => m.InternalStandardId, commit, discard).AddTo(Disposables);
+            InternalStandardId = model.InternalStandardId;
+            commit.Subscribe(_ => model.InternalStandardId = InternalStandardId);
+            discard.Subscribe(_ => InternalStandardId =  model.InternalStandardId);
         }
 
         public int Id => _model.Id;
@@ -44,6 +48,10 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public double Mz => _model.Mz;
         public double Rt => _model.Rt;
         public double Mobility => _model.Mobility;
-        public ReactiveProperty<int> InternalStandardId { get; }
+        public int InternalStandardId {
+            get => _internalStandardId;
+            set => SetProperty(ref _internalStandardId, value);
+        }
+        private int _internalStandardId;
     }
 }

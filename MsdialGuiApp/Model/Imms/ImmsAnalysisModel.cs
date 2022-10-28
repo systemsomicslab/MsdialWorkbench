@@ -43,14 +43,14 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
 
         public ImmsAnalysisModel(
-            AnalysisFileBean analysisFile,
+            AnalysisFileBeanModel analysisFileModel,
             IDataProvider provider,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databases,
             DataBaseMapper mapper,
             ParameterBase parameter,
             PeakFilterModel peakFilterModel)
-            : base(analysisFile) {
+            : base(analysisFileModel) {
 
             _provider = provider;
             _dataBaseMapper = mapper;
@@ -97,7 +97,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             }.AddTo(Disposables);
             Target.Select(
-                t => $"File: {analysisFile.AnalysisFileName}" +
+                t => $"File: {analysisFileModel.AnalysisFileName}" +
                     (t is null
                         ? string.Empty
                         : $"Spot ID: {t.InnerModel.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.InnerModel.Mass:N5}"))
@@ -237,7 +237,7 @@ namespace CompMs.App.Msdial.Model.Imms
             }
 
             return new ImmsCompoundSearchModel<ChromatogramPeakFeature>(
-                AnalysisFile,
+                AnalysisFileModel,
                 Target.Value.InnerModel,
                 MsdecResult.Value,
                 _compoundSearchers);

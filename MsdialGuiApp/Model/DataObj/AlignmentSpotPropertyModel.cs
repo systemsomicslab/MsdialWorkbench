@@ -233,7 +233,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public AlignmentSpotPropertyModel(AlignmentSpotProperty innerModel) {
             this.innerModel = innerModel;
             _alignedPeakPropertiesModelProperty = Observable.FromAsync(() => innerModel.AlignedPeakPropertiesTask)
-                .Select(props => new ReadOnlyCollection<AlignmentChromPeakFeatureModel>(props.Select(prop => new AlignmentChromPeakFeatureModel(prop)).ToArray()))
+                .Select(peaks => peaks?.Select(peak => new AlignmentChromPeakFeatureModel(peak)).ToList().AsReadOnly())
                 .ToReactiveProperty(); // TODO: Dispose
         }
 

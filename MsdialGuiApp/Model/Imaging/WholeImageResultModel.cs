@@ -19,7 +19,7 @@ namespace CompMs.App.Msdial.Model.Imaging
     {
         private readonly ChromatogramPeakFeatureCollection _peaks;
 
-        public WholeImageResultModel(AnalysisFileBean file) {
+        public WholeImageResultModel(AnalysisFileBeanModel file) {
             File = file ?? throw new ArgumentNullException(nameof(file));
             _peaks = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath, default).Result;
             Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(_peaks.Items.Select(item => new ChromatogramPeakFeatureModel(item)));
@@ -49,7 +49,7 @@ namespace CompMs.App.Msdial.Model.Imaging
             }.AddTo(Disposables);
         }
 
-        public AnalysisFileBean File { get; }
+        public AnalysisFileBeanModel File { get; }
         public ObservableCollection<ChromatogramPeakFeatureModel> Peaks { get; }
         public AnalysisPeakPlotModel PeakPlotModel { get; }
         public ReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }

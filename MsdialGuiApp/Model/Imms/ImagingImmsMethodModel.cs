@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imaging;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
@@ -15,7 +16,8 @@ namespace CompMs.App.Msdial.Model.Imms
         public ImagingImmsMethodModel(IMsdialDataStorage<ParameterBase> storage) {
             var files = storage.AnalysisFiles;
             AnalysisFiles = new ObservableCollection<AnalysisFileBean>(files);
-            ImageModels = new ObservableCollection<ImagingImageModel>(files.Select(file => new ImagingImageModel(file)));
+            AnalysisFileModels = new ObservableCollection<AnalysisFileBeanModel>(files.Select(file => new AnalysisFileBeanModel(file)));
+            ImageModels = new ObservableCollection<ImagingImageModel>(AnalysisFileModels.Select(file => new ImagingImageModel(file)));
             Image = ImageModels.FirstOrDefault();
         }
 
@@ -28,15 +30,25 @@ namespace CompMs.App.Msdial.Model.Imms
         private ImagingImageModel _image;
 
         public ObservableCollection<AnalysisFileBean> AnalysisFiles { get; }
+
         public AnalysisFileBean AnalysisFile {
             get => _analysisFile;
             set => SetProperty(ref _analysisFile, value);
         }
         private AnalysisFileBean _analysisFile;
+
+        public ObservableCollection<AnalysisFileBeanModel> AnalysisFileModels { get; }
+
+        public AnalysisFileBeanModel AnalysisFileModel {
+            get => _analysisFileModel;
+            set => SetProperty(ref _analysisFileModel, value);
+        }
+        private AnalysisFileBeanModel _analysisFileModel;
+
         public ObservableCollection<AlignmentFileBean> AlignmentFiles { get; } = new ObservableCollection<AlignmentFileBean>();
         public AlignmentFileBean AlignmentFile => null;
 
-        public Task LoadAnalysisFileAsync(AnalysisFileBean analysisFile, CancellationToken token) {
+        public Task LoadAnalysisFileAsync(AnalysisFileBeanModel analysisFile, CancellationToken token) {
             Image = ImageModels.FirstOrDefault(image => image.File == analysisFile);
             return Task.CompletedTask;
         }

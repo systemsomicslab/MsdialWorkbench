@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using CompMs.Common.Utility;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -15,8 +16,7 @@ namespace CompMs.Common.Utility.Tests
         }
 
         [TestMethod]
-        public void LowerBoundBaseTest()
-        {
+        public void LowerBoundBaseTest() {
             var arr = new double[] { 1d, 2d, 3d, 4d, 5d, 6d, 7d };
             var value = 3d;
             var expected = 2;
@@ -28,8 +28,7 @@ namespace CompMs.Common.Utility.Tests
         }
 
         [TestMethod]
-        public void LowerBoundNotContainsValueTest()
-        {
+        public void LowerBoundNotContainsValueTest() {
             var arr = new double[] { 1d, 2d, 3d, 4d, 5d, 6d, 7d };
             var value = 2.5;
             var expected = 2;
@@ -41,8 +40,7 @@ namespace CompMs.Common.Utility.Tests
         }
 
         [TestMethod]
-        public void LowerBoundSmallestValueTest()
-        {
+        public void LowerBoundSmallestValueTest() {
             var arr = new double[] { 1d, 2d, 3d, 4d, 5d, 6d, 7d };
             var value = 0d;
             var expected = 0;
@@ -57,10 +55,9 @@ namespace CompMs.Common.Utility.Tests
             actual = SearchCollection.LowerBound(arr, value, 3, arr.Length);
             Assert.AreEqual(expected, actual);
         }
-        
+
         [TestMethod]
-        public void LowerBoundLargestValueTest()
-        {
+        public void LowerBoundLargestValueTest() {
             var arr = new double[] { 1d, 2d, 3d, 4d, 5d, 6d, 7d };
             var value = 100d;
             var expected = 7;
@@ -75,10 +72,9 @@ namespace CompMs.Common.Utility.Tests
             actual = SearchCollection.LowerBound(arr, value, 0, 2);
             Assert.AreEqual(expected, actual);
         }
-        
+
         [TestMethod]
-        public void LowerBoundFindFirstValueTest()
-        {
+        public void LowerBoundFindFirstValueTest() {
             var arr = new double[] { 1d, 2d, 3d, 3d, 3d, 3d, 7d };
             var value = 3d;
             var expected = 2;
@@ -90,8 +86,7 @@ namespace CompMs.Common.Utility.Tests
         }
 
         [TestMethod]
-        public void LowerBoundCustomComparisonTest()
-        {
+        public void LowerBoundCustomComparisonTest() {
             var arr1 = new (int, int)[] { (2, 3), (1, 5), (10000, 6), (-12, 9), (0, 12), (0, 13), (-4, 20) };
             var value1 = (-1, 6);
             var expected = 2;
@@ -109,8 +104,7 @@ namespace CompMs.Common.Utility.Tests
         }
 
         [TestMethod]
-        public void LowerBoundCollectionClassTest()
-        {
+        public void LowerBoundCollectionClassTest() {
             var arr = new double[] { 1d, 2d, 3d, 4d, 5d, 6d, 7d };
             var value = 3d;
             var expected = 2;
@@ -131,11 +125,9 @@ namespace CompMs.Common.Utility.Tests
         }
 
         [TestMethod]
-        public void LowerBoundStructTest()
-        {
+        public void LowerBoundStructTest() {
             var lst = new List<SampleStruct>();
-            for(int i = 0; i<10; i++)
-            {
+            for (int i = 0; i < 10; i++) {
                 lst.Add(new SampleStruct() { X = -i, Y = i });
             }
             var value = new SampleStruct() { X = 0, Y = 3 };
@@ -148,11 +140,9 @@ namespace CompMs.Common.Utility.Tests
         }
 
         [TestMethod]
-        public void LowerBoundDifferentTypeTest()
-        {
+        public void LowerBoundDifferentTypeTest() {
             var lst = new List<SampleStruct>();
-            for(int i = 0; i<10; i++)
-            {
+            for (int i = 0; i < 10; i++) {
                 lst.Add(new SampleStruct() { X = -i, Y = i });
             }
             var value = 3;
@@ -165,8 +155,7 @@ namespace CompMs.Common.Utility.Tests
         }
 
         [TestMethod]
-        public void UpperBoundBaseTest()
-        {
+        public void UpperBoundBaseTest() {
             var arr = new double[] { 1d, 2d, 3d, 4d, 5d, 6d, 7d };
             var value = 3d;
             var expected = 3;
@@ -178,8 +167,7 @@ namespace CompMs.Common.Utility.Tests
         }
 
         [TestMethod]
-        public void UpperBoundNotContainsValueTest()
-        {
+        public void UpperBoundNotContainsValueTest() {
             var arr = new double[] { 1d, 2d, 3d, 4d, 5d, 6d, 7d };
             var value = 2.5;
             var expected = 2;
@@ -191,8 +179,7 @@ namespace CompMs.Common.Utility.Tests
         }
 
         [TestMethod]
-        public void UpperBoundSmallestValueTest()
-        {
+        public void UpperBoundSmallestValueTest() {
             var arr = new double[] { 1d, 2d, 3d, 4d, 5d, 6d, 7d };
             var value = 0d;
             var expected = 0;
@@ -207,10 +194,9 @@ namespace CompMs.Common.Utility.Tests
             actual = SearchCollection.UpperBound(arr, value, 3, arr.Length);
             Assert.AreEqual(expected, actual);
         }
-        
+
         [TestMethod]
-        public void UpperBoundLargestValueTest()
-        {
+        public void UpperBoundLargestValueTest() {
             var arr = new double[] { 1d, 2d, 3d, 4d, 5d, 6d, 7d };
             var value = 100d;
             var expected = 7;
@@ -225,10 +211,9 @@ namespace CompMs.Common.Utility.Tests
             actual = SearchCollection.UpperBound(arr, value, 0, 2);
             Assert.AreEqual(expected, actual);
         }
-        
+
         [TestMethod]
-        public void UpperBoundFindFirstValueTest()
-        {
+        public void UpperBoundFindFirstValueTest() {
             var arr = new double[] { 1d, 2d, 3d, 3d, 3d, 3d, 7d };
             var value = 2d;
             var expected = 2;
@@ -240,11 +225,9 @@ namespace CompMs.Common.Utility.Tests
         }
 
         [TestMethod]
-        public void UpperBoundStructTest()
-        {
+        public void UpperBoundStructTest() {
             var lst = new List<SampleStruct>();
-            for(int i = 0; i<10; i++)
-            {
+            for (int i = 0; i < 10; i++) {
                 lst.Add(new SampleStruct() { X = -i, Y = i });
             }
             var value = new SampleStruct() { X = 0, Y = 3 };
@@ -257,11 +240,9 @@ namespace CompMs.Common.Utility.Tests
         }
 
         [TestMethod]
-        public void UpperBoundDifferentTypeTest()
-        {
+        public void UpperBoundDifferentTypeTest() {
             var lst = new List<SampleStruct>();
-            for(int i = 0; i<10; i++)
-            {
+            for (int i = 0; i < 10; i++) {
                 lst.Add(new SampleStruct() { X = -i, Y = i });
             }
             var value = 3;
@@ -271,6 +252,30 @@ namespace CompMs.Common.Utility.Tests
 
             actual = SearchCollection.UpperBound(lst.ToArray(), value, (a, b) => a.Y.CompareTo(b));
             Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void BinarySearchTest() {
+            var arr = new double[] { 1d, 2d, 3d, 4d, 5d, 6d, 7d };
+            var value = 3d;
+            var expected = 2;
+            var actual = SearchCollection.BinarySearch(arr, value, 0, arr.Length, Comparer<double>.Default.Compare);
+            Assert.AreEqual(expected, actual);
+
+            actual = SearchCollection.BinarySearch(arr, value);
+            Assert.AreEqual(expected, actual);
+
+            actual = SearchCollection.BinarySearch(arr, 1d);
+            Assert.AreEqual(0, actual);
+
+            actual = SearchCollection.BinarySearch(arr, 7d);
+            Assert.AreEqual(6, actual);
+
+            actual = SearchCollection.BinarySearch(arr, 0d);
+            Assert.AreEqual(-1, actual);
+
+            actual = SearchCollection.BinarySearch(arr, 8d);
+            Assert.AreEqual(-1, actual);
         }
 
         [TestMethod]

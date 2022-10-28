@@ -80,6 +80,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Action<double> reportAction) {
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
+                chromPeakFeature.MSDecResultIdUsed = i;
+
                 var msdecResult = msdecResults[i];
                 if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                     RunAnnotationCore(chromPeakFeature, msdecResult, provider);
@@ -104,6 +106,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 .WithDegreeOfParallelism(numThreads)
                 .ForAll(i => {
                     var chromPeakFeature = chromPeakFeatures[i];
+                    chromPeakFeature.MSDecResultIdUsed = i;
+
                     var msdecResult = msdecResults[i];
                     if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                         RunAnnotationCore(chromPeakFeature, msdecResult, provider);
@@ -124,6 +128,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var spectrums = provider.LoadMs1Spectrums();
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
+                chromPeakFeature.MSDecResultIdUsed = i;
+
                 var msdecResult = msdecResults[i];
                 if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                     await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token);
@@ -147,6 +153,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
                         try {
                             var chromPeakFeature = pair.Item1;
+                            chromPeakFeature.MSDecResultIdUsed = i;
+
                             var msdecResult = pair.Item2;
                             if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                                 await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token);

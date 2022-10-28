@@ -67,11 +67,19 @@ namespace CompMs.App.Msdial.Model.Loader
         public HeightBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(Observable.Return(id2cls), p => p.PeakHeightTop) {
 
         }
+
+        public HeightBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls) : base(id2cls, p => p.PeakHeightTop) {
+
+        }
     }
 
     internal sealed class AreaAboveBaseLineBarItemsLoader : BarItemsLoader
     {
         public AreaAboveBaseLineBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(Observable.Return(id2cls), p => p.PeakAreaAboveBaseline) {
+
+        }
+
+        public AreaAboveBaseLineBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls) : base(id2cls, p => p.PeakAreaAboveBaseline) {
 
         }
     }
@@ -81,11 +89,19 @@ namespace CompMs.App.Msdial.Model.Loader
         public AreaAboveZeroBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(Observable.Return(id2cls), p => p.PeakAreaAboveZero) {
 
         }
+
+        public AreaAboveZeroBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls) : base(id2cls, p => p.PeakAreaAboveZero) {
+
+        }
     }
 
     internal sealed class NormalizedHeightBarItemsLoader : BarItemsLoader
     {
         public NormalizedHeightBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(Observable.Return(id2cls), peak => peak.NormalizedPeakHeight) {
+
+        }
+
+        public NormalizedHeightBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls) : base(id2cls, peak => peak.NormalizedPeakHeight) {
 
         }
     }
@@ -95,11 +111,19 @@ namespace CompMs.App.Msdial.Model.Loader
         public NormalizedAreaAboveBaseLineBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(Observable.Return(id2cls), peak => peak.NormalizedPeakAreaAboveBaseline) {
 
         }
+
+        public NormalizedAreaAboveBaseLineBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls) : base(id2cls, peak => peak.NormalizedPeakAreaAboveBaseline) {
+
+        }
     }
 
     internal sealed class NormalizedAreaAboveZeroBarItemsLoader : BarItemsLoader
     {
         public NormalizedAreaAboveZeroBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(Observable.Return(id2cls), peak => peak.NormalizedPeakAreaAboveBaseline) {
+
+        }
+
+        public NormalizedAreaAboveZeroBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls) : base(id2cls, peak => peak.NormalizedPeakAreaAboveBaseline) {
 
         }
     }

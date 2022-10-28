@@ -20,13 +20,9 @@ namespace CompMs.App.Msdial.Model.Core {
     {
         private readonly ChromatogramPeakFeatureCollection _peakCollection;
 
-        public AnalysisModelBase(AnalysisFileBean analysisFile) {
-            if (analysisFile is null) {
-                throw new ArgumentNullException(nameof(analysisFile));
-            }
-
-            AnalysisFile = analysisFile;
-            var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFile.PeakAreaBeanInformationFilePath);
+        public AnalysisModelBase(AnalysisFileBeanModel analysisFileModel) {
+            AnalysisFileModel = analysisFileModel;
+            var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFileModel.PeakAreaBeanInformationFilePath);
             _peakCollection = new ChromatogramPeakFeatureCollection(peaks);
             Ms1Peaks = new ObservableCollection<ChromatogramPeakFeatureModel>(
                 peaks.Select(peak => new ChromatogramPeakFeatureModel(peak))
@@ -37,7 +33,7 @@ namespace CompMs.App.Msdial.Model.Core {
 
             Target = new ReactivePropertySlim<ChromatogramPeakFeatureModel>().AddTo(Disposables);
 
-            decLoader = new MSDecLoader(analysisFile.DeconvolutionFilePath).AddTo(Disposables);
+            decLoader = new MSDecLoader(analysisFileModel.DeconvolutionFilePath).AddTo(Disposables);
             MsdecResult = Target.Where(t => !(t is null))
                 .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
                 .ToReadOnlyReactivePropertySlim()
@@ -54,7 +50,7 @@ namespace CompMs.App.Msdial.Model.Core {
 
         protected readonly MSDecLoader decLoader;
 
-        public AnalysisFileBean AnalysisFile { get; }
+        public AnalysisFileBeanModel AnalysisFileModel { get; }
 
         public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 
@@ -71,7 +67,7 @@ namespace CompMs.App.Msdial.Model.Core {
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 
         public Task SaveAsync(CancellationToken token) {
-            return _peakCollection.SerializeAsync(AnalysisFile.PeakAreaBeanInformationFilePath, token);
+            return _peakCollection.SerializeAsync(AnalysisFileModel.PeakAreaBeanInformationFilePath, token);
         }
 
         // IDisposable fields and methods

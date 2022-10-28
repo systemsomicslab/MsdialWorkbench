@@ -4,13 +4,15 @@ using CompMs.MsdialCore.DataObj;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    internal sealed class AnalysisFileBeanModel : BindableBase, IFileBean
+    public sealed class AnalysisFileBeanModel : BindableBase, IFileBean
     {
         private readonly AnalysisFileBean _file;
 
         public AnalysisFileBeanModel(AnalysisFileBean file) {
             _file = file;
         }
+
+        public AnalysisFileBean File => _file;
 
         public AnalysisFileType AnalysisFileType {
             get => _file.AnalysisFileType;
@@ -78,9 +80,39 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
-        public string AnalysisFilePath => _file.AnalysisFilePath;
-        public string AnalysisFileName => _file.AnalysisFileName;
-        public int AnalysisFileId => _file.AnalysisFileId;
+        public string AnalysisFilePath {
+            get => _file.AnalysisFilePath;
+            set {
+                if (_file.AnalysisFilePath != value) {
+                    _file.AnalysisFilePath = value;
+                    OnPropertyChanged(nameof(AnalysisFilePath));
+                }
+            }
+        }
+
+        public string AnalysisFileName {
+            get => _file.AnalysisFileName;
+            set {
+                if (_file.AnalysisFileName != value) {
+                    _file.AnalysisFileName = value;
+                    OnPropertyChanged(nameof(AnalysisFileName));
+                }
+            }
+        }
+
+        public int AnalysisFileId {
+            get => _file.AnalysisFileId;
+            set {
+                if (_file.AnalysisFileId != value) {
+                    _file.AnalysisFileId = value;
+                    OnPropertyChanged(nameof(AnalysisFileId));
+                }
+            }
+        }
+
+        public string PeakAreaBeanInformationFilePath => _file.PeakAreaBeanInformationFilePath;
+        public string DeconvolutionFilePath => _file.DeconvolutionFilePath;
+        public string ProteinAssembledResultFilePath => _file.ProteinAssembledResultFilePath;
 
         int IFileBean.FileID => AnalysisFileId;
         string IFileBean.FileName => AnalysisFileName;

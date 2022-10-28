@@ -84,12 +84,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public PeakFilterModel AccumulatedPeakFilterModel { get; }
         public PeakFilterModel PeakFilterModel { get; }
 
-        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile) {
+        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             if (AnalysisModel != null) {
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
-            var rawObj = DataAccess.LoadMeasurement(analysisFile, isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000);
+            var rawObj = analysisFile.File.LoadRawMeasurement(isImagingMsData: false, isGuiProcess: true, retry: 5, sleepMilliSeconds: 5000);
             return AnalysisModel = new LcimmsAnalysisModel(
                 analysisFile,
                 providerFactory.Create(rawObj),
@@ -140,7 +140,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }
             }
 
-            await LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
+            await LoadAnalysisFileAsync(AnalysisFileModels.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
         private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {

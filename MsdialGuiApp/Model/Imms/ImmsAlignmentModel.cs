@@ -60,7 +60,7 @@ namespace CompMs.App.Msdial.Model.Imms
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
 
-            InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Imms);
+            InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Imms).AddTo(Disposables);
 
             Brushes = new List<BrushMapData<AlignmentSpotPropertyModel>>
             {

@@ -10,13 +10,17 @@ namespace CompMs.App.Msdial.View.Statistics
     {
         public NormalizationSetView() {
             InitializeComponent();
-            CommandBindings.Add(new CommandBinding(ApplicationCommands.Close, (s, e) => Close()));
         }
 
         public readonly static RoutedCommand DoneCommand = new RoutedCommand(nameof(DoneCommand), typeof(NormalizationSetView));
 
         private void Invoke_Normalize(object sender, RoutedEventArgs e) {
             DialogResult = true;
+            Close();
+        }
+
+        private void Click_Cancel(object sender, RoutedEventArgs e) {
+            DialogResult = false;
             Close();
         }
     }

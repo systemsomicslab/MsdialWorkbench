@@ -123,7 +123,7 @@ namespace CompMs.App.Msdial.Model.Core
             Method = await Task.Run(() =>
             {
                 var method = factory.BuildMethod();
-                method.LoadAnalysisFileAsync(Storage.AnalysisFiles.FirstOrDefault(), default);
+                method.LoadAnalysisFileAsync(method.AnalysisFileModels.FirstOrDefault(), default);
                 return method;
             });
         }
@@ -178,10 +178,6 @@ namespace CompMs.App.Msdial.Model.Core
             var storage = await serializer.LoadAsync(streamManager, projectFileName, projectFolder, string.Empty);
             storage.FixDatasetFolder(projectFolder);
             return storage;
-        }
-
-        public void AnalysisFilePropertyUpdate() {
-            AnalysisFilePropertySetModel.Update();
         }
     }
 }

@@ -109,7 +109,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 ProteomicsParameterVM.AndromedaDelta.ObserveHasErrors,
                 ProteomicsParameterVM.AndromedaMaxPeaks.ObserveHasErrors,
                 ProteomicsParameterVM.FalseDiscoveryRateForPeptide.ObserveHasErrors,
-                ProteomicsParameterVM.FalseDiscoveryRateForProtein.ObserveHasErrors
+                ProteomicsParameterVM.FalseDiscoveryRateForProtein.ObserveHasErrors,
+                ProteomicsParameterVM.MinPeptideMass.ObserveHasErrors,
+                ProteomicsParameterVM.MaxPeptideMass.ObserveHasErrors,
+                ProteomicsParameterVM.MinMs2Mz.ObserveHasErrors,
+                ProteomicsParameterVM.MaxMs2Mz.ObserveHasErrors,
+                ProteomicsParameterVM.MaxPeptideMass.ObserveHasErrors
             }.CombineLatestValuesAreAllFalse()
             .Inverse()
             .ToReadOnlyReactivePropertySlim()

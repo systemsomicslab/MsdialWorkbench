@@ -1,11 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,19 +23,16 @@ namespace CompMs.App.Msdial.Model.Core
                 throw new ArgumentNullException(nameof(projectBaseParameter));
             }
 
-            AnalysisFiles = new ObservableCollection<AnalysisFileBean>(analysisFiles ?? new AnalysisFileBean[] { });
             AlignmentFiles = new ObservableCollection<AlignmentFileBean>(alignmentFiles ?? new AlignmentFileBean[] { });
-
-            FilePropertySetModel = new AnalysisFilePropertySetModel(AnalysisFiles, projectBaseParameter);
+            AnalysisFileModels = new ObservableCollection<AnalysisFileBeanModel>(analysisFiles?.Select(file => new AnalysisFileBeanModel(file)) ?? new AnalysisFileBeanModel[0]);
         }
 
-        public AnalysisFileBean AnalysisFile {
-            get => analysisFile;
-            set => SetProperty(ref analysisFile, value);
+        public AnalysisFileBeanModel AnalysisFileModel {
+            get => analysisFileModel;
+            set => SetProperty(ref analysisFileModel, value);
         }
-        private AnalysisFileBean analysisFile;
-
-        public ObservableCollection<AnalysisFileBean> AnalysisFiles { get; }
+        private AnalysisFileBeanModel analysisFileModel;
+        public ObservableCollection<AnalysisFileBeanModel> AnalysisFileModels { get; }
 
         public IAnalysisModel AnalysisModelBase {
             get => analysisModelBase;
@@ -43,18 +40,18 @@ namespace CompMs.App.Msdial.Model.Core
         }
         private IAnalysisModel analysisModelBase;
 
-        public Task LoadAnalysisFileAsync(AnalysisFileBean analysisFile, CancellationToken token) {
-            if (AnalysisFile == analysisFile || analysisFile is null) {
+        public Task LoadAnalysisFileAsync(AnalysisFileBeanModel analysisFile, CancellationToken token) {
+            if (AnalysisFileModel == analysisFile || analysisFile is null) {
                 return Task.CompletedTask;
             }
             var task = AnalysisModelBase?.SaveAsync(token) ?? Task.CompletedTask;
-            AnalysisFile = analysisFile;
-            AnalysisModelBase = LoadAnalysisFileCore(AnalysisFile);
+            AnalysisFileModel = analysisFile;
+            AnalysisModelBase = LoadAnalysisFileCore(AnalysisFileModel);
 
             return task;
         }
 
-        protected abstract IAnalysisModel LoadAnalysisFileCore(AnalysisFileBean analysisFile);
+        protected abstract IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile);
 
         public AlignmentFileBean AlignmentFile {
             get => alignmentFile;
@@ -84,8 +81,6 @@ namespace CompMs.App.Msdial.Model.Core
         protected abstract IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile);
 
         public abstract Task RunAsync(ProcessOption option, CancellationToken token);
-
-        public AnalysisFilePropertySetModel FilePropertySetModel { get; }
 
         public virtual Task SaveAsync() {
             return Task.WhenAll(new List<Task>

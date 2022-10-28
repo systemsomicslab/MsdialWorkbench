@@ -62,7 +62,7 @@ namespace CompMs.App.Msdial.Model.Setting
             License = projectParameter.License;
             CollisionEnergy = projectParameter.CollisionEnergy;
             Comment = projectParameter.Comment;
-            CollisionType = parameter.ProteomicsParam.CollistionType;
+            CollisionType = parameter.ProteomicsParam.CollisionType;
 
             IsReadOnly = true;
         }
@@ -111,13 +111,13 @@ namespace CompMs.App.Msdial.Model.Setting
             get => ms1DataType;
             set => SetProperty(ref ms1DataType, value);
         }
-        private MSDataType ms1DataType = MSDataType.Profile;
+        private MSDataType ms1DataType = MSDataType.Centroid;
 
         public MSDataType MS2DataType {
             get => ms2DataType;
             set => SetProperty(ref ms2DataType, value);
         }
-        private MSDataType ms2DataType = MSDataType.Profile;
+        private MSDataType ms2DataType = MSDataType.Centroid;
 
         public IonMode IonMode {
             get => ionMode;
@@ -211,7 +211,7 @@ namespace CompMs.App.Msdial.Model.Setting
             projectParameter.Comment = Comment;
             parameter.IsDoMs2ChromDeconvolution = parameter.AcquisitionType != AcquisitionType.DDA;
 
-            parameter.ProteomicsParam.CollistionType = CollisionType;
+            parameter.ProteomicsParam.CollisionType = CollisionType;
 
             var storage = CreateDataStorage(parameter);
             storage.AnalysisFiles = fileSettingModel.IncludedFiles.ToList();

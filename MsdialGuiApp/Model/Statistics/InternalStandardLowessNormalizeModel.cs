@@ -2,11 +2,9 @@
 using CompMs.Common.Enum;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Normalize;
-using Reactive.Bindings;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
-using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {
@@ -16,10 +14,15 @@ namespace CompMs.App.Msdial.Model.Statistics
         private readonly IReadOnlyList<AnalysisFileBean> _files;
         private readonly IMessageBroker _messageBroker;
 
-        public InternalStandardLowessNormalizeModel(AlignmentResultContainer container, IReadOnlyList<AnalysisFileBean> files, IMessageBroker messageBroker) {
+        public InternalStandardLowessNormalizeModel(AlignmentResultContainer container, IReadOnlyList<AnalysisFileBean> files, InternalStandardSetModel internalStandardSetModel, IMessageBroker messageBroker) {
+            if (internalStandardSetModel is null) {
+                throw new ArgumentNullException(nameof(internalStandardSetModel));
+            }
+
             _container = container ?? throw new ArgumentNullException(nameof(container));
             _files = files;
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
+            CanNormalize = internalStandardSetModel.SomeSpotSetInternalStandard;
         }
 
         public void Normalize() {
@@ -32,6 +35,6 @@ namespace CompMs.App.Msdial.Model.Statistics
             }
         }
 
-        public ReadOnlyReactivePropertySlim<bool> CanNormalizeProperty = new ReadOnlyReactivePropertySlim<bool>(Observable.Return(true));
+        public IObservable<bool> CanNormalize { get; }
     }
 }
