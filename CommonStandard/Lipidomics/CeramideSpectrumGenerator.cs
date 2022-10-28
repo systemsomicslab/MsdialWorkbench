@@ -68,8 +68,9 @@ namespace CompMs.Common.Lipidomics
                 }
             }
             else if (lipid.LipidClass == LbmClass.Cer_AS || lipid.LipidClass == LbmClass.Cer_ADS
-                || lipid.LipidClass == LbmClass.Cer_HS || lipid.LipidClass == LbmClass.Cer_HDS
-                || lipid.LipidClass == LbmClass.Cer_BS || lipid.LipidClass == LbmClass.Cer_BDS)
+                || lipid.LipidClass == LbmClass.Cer_BS || lipid.LipidClass == LbmClass.Cer_BDS
+                //|| lipid.LipidClass == LbmClass.Cer_HS || lipid.LipidClass == LbmClass.Cer_HDS
+                )
             {
                 if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
                 {
