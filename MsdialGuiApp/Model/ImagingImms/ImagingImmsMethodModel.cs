@@ -10,9 +10,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CompMs.App.Msdial.Model.Imms
+namespace CompMs.App.Msdial.Model.ImagingImms
 {
-    internal sealed class ImagingImmsMethodModel : DisposableModelBase, IMethodModel {
+    internal sealed class ImagingImmsMethodModel : DisposableModelBase, IMethodModel
+    {
         public ImagingImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<ParameterBase> storage) {
             AnalysisFileModelCollection = analysisFileBeanModelCollection;
             ImageModels = new ObservableCollection<ImagingImageModel>(AnalysisFileModelCollection.AnalysisFiles.Select(file => new ImagingImageModel(file)));
