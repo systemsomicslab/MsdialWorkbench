@@ -3,14 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Export"
         xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Export"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type={x:Type vm:AnalysisResultExportViewModel}}"
         Title="Peak list export" Height="500" Width="600">
     <Window.Resources>
-        <ResourceDictionary Source="/View/MainWindowStyle.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/Msdial;component/View/MainWindowStyle.xaml"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -99,6 +98,7 @@
                 <ComboBox ItemsSource="{Binding ExportSpectraFileFormats, Mode=OneTime}"
                           SelectedValue="{Binding SelectedFileFormat, Mode=OneWayToSource}"
                           DisplayMemberPath="Format"
+                          SelectedIndex="0"
                           VerticalContentAlignment="Center"
                           Width="80"
                           Margin="8,0,0,0"/>
@@ -110,6 +110,7 @@
                 <ComboBox ItemsSource="{Binding ExportSpectraTypes, Mode=OneTime}"
                           SelectedValue="{Binding SelectedSpectraType, Mode=OneWayToSource}"
                           DisplayMemberPath="Type"
+                          SelectedIndex="0"
                           VerticalContentAlignment="Center"
                           Width="104"
                           Margin="8,0,0,0"/>

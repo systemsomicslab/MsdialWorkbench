@@ -64,7 +64,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ISettingViewModel Next(ISettingViewModel selected) {
             var current = SettingViewModels.IndexOf(selected);
             if (current >= 0) {
-                selected.Next(selected);
+                for (int i = 0; i <= current; i++) {
+                    SettingViewModels[i].Next(selected);
+                }
                 var next = current + 1;
                 if (next < SettingViewModels.Count) {
                     return SettingViewModels[next];

@@ -102,7 +102,7 @@ namespace CompMs.App.Msdial.Model.DataObj
                 foreach (var classProperty in _classProperties.Where(property => !newClasses.Contains(property.Name)).ToArray()) {
                     _classProperties.Remove(classProperty);
                 }
-                var order = _classProperties.Select(property => property.Order).Max();
+                var order = _classProperties.Select(property => property.Order).DefaultIfEmpty().Max();
                 var colors = _classProperties.Select(property => property.Color).ToHashSet();
                 var classes = _classProperties.Select(property => property.Name).ToHashSet();
                 var idx = 0;
