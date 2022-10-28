@@ -4,6 +4,7 @@ using CompMs.Common.FormulaGenerator.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 
 namespace CompMs.Common.Lipidomics
 {
@@ -17,7 +18,7 @@ namespace CompMs.Common.Lipidomics
 
         private IEnumerable<SpectrumPeak> GetDoubleBondSpectrum(ILipid lipid, IChain chain, AdductIon adduct, double nlMass, double abundance)
         {
-            if (chain.DoubleBond.UnDecidedCount != 0 || chain.CarbonCount == 0)
+            if (chain.DoubleBond.UnDecidedCount != 0 || chain.CarbonCount == 0 || chain.Oxidized.UnDecidedCount != 0)
             {
                 return Enumerable.Empty<SpectrumPeak>();
             }
@@ -26,6 +27,14 @@ namespace CompMs.Common.Lipidomics
             for (int i = 0; i < chain.CarbonCount; i++) // numbering from COOH. 18:2(9,12) -> 9 is 8 and 12 is 11 
             {
                 diffs[i] = CH2;
+            }
+
+            if (chain.Oxidized != null)
+            {
+                foreach (var ox in chain.Oxidized.Oxidises)
+                {
+                        diffs[ox - 1] = diffs[ox - 1] + MassDiffDictionary.OxygenMass;
+                }
             }
 
             var bondPositions = new List<int>();
@@ -146,15 +155,31 @@ namespace CompMs.Common.Lipidomics
 
         public IEnumerable<SpectrumPeak> GetSphingoDoubleBondSpectrum(ILipid lipid, SphingoChain sphingo, AdductIon adduct, double nlMass, double abundance)
         {
-            if (sphingo.DoubleBond.UnDecidedCount != 0 || sphingo.CarbonCount == 0)
+            if (sphingo.DoubleBond.UnDecidedCount != 0 || sphingo.CarbonCount == 0 || sphingo.Oxidized.UnDecidedCount != 0)
             {
                 return Enumerable.Empty<SpectrumPeak>();
             }
-            var chainLoss = lipid.Mass - sphingo.Mass - nlMass + MassDiffDictionary.NitrogenMass + 12 * 2 + MassDiffDictionary.OxygenMass * sphingo.OxidizedCount + MassDiffDictionary.HydrogenMass * 5;
+
+            var chainLoss = lipid.Mass - sphingo.Mass - nlMass
+                + MassDiffDictionary.NitrogenMass
+                + 12 * 2
+                + MassDiffDictionary.OxygenMass * (sphingo.OxidizedCount > 2 ? 2 : sphingo.OxidizedCount)
+                + MassDiffDictionary.HydrogenMass * 5;
             var diffs = new double[sphingo.CarbonCount];
             for (int i = 0; i < sphingo.CarbonCount; i++)
             {
                 diffs[i] = CH2;
+            }
+
+            if (sphingo.Oxidized != null)
+            {
+                foreach (var ox in sphingo.Oxidized.Oxidises)
+                {
+                    if (ox > 3)
+                    {
+                        diffs[ox - 1] = diffs[ox - 1] + MassDiffDictionary.OxygenMass;
+                    }
+                }
             }
 
             foreach (var bond in sphingo.DoubleBond.Bonds)
