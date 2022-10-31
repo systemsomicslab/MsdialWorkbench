@@ -33,7 +33,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -43,60 +42,51 @@ namespace CompMs.App.Msdial.Model.Lcms
 {
     internal sealed class LcmsMethodModel : MethodModelBase
     {
-        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
 
         static LcmsMethodModel() {
-            chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
+            CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.RT);
         }
 
-        private readonly IDataProviderFactory<AnalysisFileBean> providerFactory;
+        private readonly IDataProviderFactory<AnalysisFileBean> _providerFactory;
         private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly IMessageBroker _broker;
-        private readonly Subject<ProteinResultContainerModel> _proteinResultContainerModelSubject;
-        private IAnnotationProcess annotationProcess;
+        private readonly IMsdialDataStorage<MsdialLcmsParameter> _storage;
+        private readonly FacadeMatchResultEvaluator _matchResultEvaluator;
+        private IAnnotationProcess _annotationProcess;
 
         public LcmsMethodModel(
+            AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
             IMsdialDataStorage<MsdialLcmsParameter> storage,
             IDataProviderFactory<AnalysisFileBean> providerFactory,
-            ProjectBaseParameterModel projectBaseParameter,
+            ProjectBaseParameterModel projectBaseParameter, 
             IMessageBroker broker)
-            : base(storage.AnalysisFiles, storage.AlignmentFiles, projectBaseParameter) {
-            if (storage is null) {
-                throw new ArgumentNullException(nameof(storage));
-            }
+            : base(analysisFileBeanModelCollection, storage.AlignmentFiles, projectBaseParameter) {
 
-            if (providerFactory is null) {
-                throw new ArgumentNullException(nameof(providerFactory));
-            }
-            Storage = storage;
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
-            this.providerFactory = providerFactory;
+            _storage = storage ?? throw new ArgumentNullException(nameof(storage));
+            _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
+            _providerFactory = providerFactory ?? throw new ArgumentNullException(nameof(providerFactory));
             _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
-            _proteinResultContainerModelSubject = new Subject<ProteinResultContainerModel>().AddTo(Disposables);
             CanShowProteinGroupTable = Observable.Return(storage.Parameter.TargetOmics == TargetOmics.Proteomics);
         }
-
-        public IMsdialDataStorage<MsdialLcmsParameter> Storage { get; }
-
-        private FacadeMatchResultEvaluator matchResultEvaluator;
 
         public PeakFilterModel PeakFilterModel { get; }
 
         public IObservable<bool> CanShowProteinGroupTable { get; }
 
         public LcmsAnalysisModel AnalysisModel {
-            get => analysisModel;
-            private set => SetProperty(ref analysisModel, value);
+            get => _analysisModel;
+            private set => SetProperty(ref _analysisModel, value);
         }
-        private LcmsAnalysisModel analysisModel;
+        private LcmsAnalysisModel _analysisModel;
 
         public LcmsAlignmentModel AlignmentModel {
-            get => alignmentModel;
-            set => SetProperty(ref alignmentModel, value);
+            get => _alignmentModel;
+            set => SetProperty(ref _alignmentModel, value);
         }
-        private LcmsAlignmentModel alignmentModel;
+        private LcmsAlignmentModel _alignmentModel;
 
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
@@ -104,14 +94,14 @@ namespace CompMs.App.Msdial.Model.Lcms
                 AnalysisModel.Dispose();
                 Disposables.Remove(AnalysisModel);
             }
-            var provider = providerFactory.Create(analysisFile.File);
+            var provider = _providerFactory.Create(analysisFile.File);
             return AnalysisModel = new LcmsAnalysisModel(
                 analysisFile,
                 provider,
-                Storage.DataBases,
-                Storage.DataBaseMapper,
-                matchResultEvaluator,
-                Storage.Parameter,
+                _storage.DataBases,
+                _storage.DataBaseMapper,
+                _matchResultEvaluator,
+                _storage.Parameter,
                 PeakFilterModel)
             .AddTo(Disposables);
         }
@@ -124,55 +114,54 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             return AlignmentModel = new LcmsAlignmentModel(
                 alignmentFile,
-                matchResultEvaluator,
-                Storage.DataBases,
+                _matchResultEvaluator,
+                _storage.DataBases,
                 PeakFilterModel,
-                Storage.DataBaseMapper,
-                Storage.Parameter,
+                _storage.DataBaseMapper,
+                _storage.Parameter,
                 _projectBaseParameter,
-                Storage.AnalysisFiles,
-                _proteinResultContainerModelSubject,
+                _storage.AnalysisFiles,
+                AnalysisFileModelCollection,
                 _broker)
             .AddTo(Disposables);
         }
 
         public override async Task RunAsync(ProcessOption option, CancellationToken token) {
             // Set analysis param
-            var parameter = Storage.Parameter;
-            // matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
+            var parameter = _storage.Parameter;
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                annotationProcess = BuildProteoMetabolomicsAnnotationProcess(Storage.DataBases, parameter);
+                _annotationProcess = BuildProteoMetabolomicsAnnotationProcess(_storage.DataBases, parameter);
             }
             else if(parameter.TargetOmics == TargetOmics.Lipidomics && (parameter.CollistionType == CollisionType.EIEIO || parameter.CollistionType == CollisionType.OAD)) {
-                annotationProcess = BuildEadLipidomicsAnnotationProcess(Storage.DataBases, Storage.DataBaseMapper, parameter);
+                _annotationProcess = BuildEadLipidomicsAnnotationProcess(_storage.DataBases, _storage.DataBaseMapper, parameter);
             }
             else {
-                annotationProcess = BuildAnnotationProcess(Storage.DataBases, parameter.PeakPickBaseParam);
+                _annotationProcess = BuildAnnotationProcess(_storage.DataBases, parameter.PeakPickBaseParam);
             }
 
             var processOption = option;
             // Run Identification
             if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                if (!ProcessAnnotaion(Storage))
+                if (!ProcessAnnotaion(_storage))
                     return;
             }
 
             // Run second process
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
-                if (!ProcessSeccondAnnotaion4ShotgunProteomics(Application.Current.MainWindow, Storage))
+                if (!ProcessSeccondAnnotaion4ShotgunProteomics(_storage))
                     return;
             } 
             
             // Run Alignment
             if (processOption.HasFlag(ProcessOption.Alignment)) {
-                if (!ProcessAlignment(Storage))
+                if (!ProcessAlignment(_storage))
                     return;
             }
 
-            await LoadAnalysisFileAsync(AnalysisFileModels.FirstOrDefault(), token).ConfigureAwait(false);
+            await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
 
 #if DEBUG
-            Console.WriteLine(string.Join("\n", Storage.Parameter.ParametersAsText()));
+            Console.WriteLine(string.Join("\n", _storage.Parameter.ParametersAsText()));
 #endif
         }
 
@@ -220,7 +209,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var request = new ProgressBarMultiContainerRequest(
                 vm_ =>
                 {
-                    var processor = new MsdialLcMsApi.Process.FileProcess(providerFactory, storage, annotationProcess, matchResultEvaluator);
+                    var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, storage, _annotationProcess, _matchResultEvaluator);
                     return processor.RunAllAsync(
                         storage.AnalysisFiles,
                         vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
@@ -232,18 +221,18 @@ namespace CompMs.App.Msdial.Model.Lcms
             return request.Result ?? false;
         }
 
-        public bool ProcessSeccondAnnotaion4ShotgunProteomics(Window owner, IMsdialDataStorage<MsdialLcmsParameter> storage) {
+        public bool ProcessSeccondAnnotaion4ShotgunProteomics(IMsdialDataStorage<MsdialLcmsParameter> storage) {
             var request = new ProgressBarRequest("Process second annotation..", isIndeterminate: false,
                 async vm =>
                 {
                     var proteomicsAnnotator = new ProteomeDataAnnotator();
-                    proteomicsAnnotator.ExecuteSecondRoundAnnotationProcess(
+                    await Task.Run(() => proteomicsAnnotator.ExecuteSecondRoundAnnotationProcess(
                         storage.AnalysisFiles,
                         storage.DataBaseMapper,
-                        matchResultEvaluator,
+                        _matchResultEvaluator,
                         storage.DataBases,
                         storage.Parameter,
-                        v => vm.CurrentValue = v);
+                        v => vm.CurrentValue = v)).ConfigureAwait(false);
                 });
             _broker.Publish(request);
             return request.Result ?? false;
@@ -253,14 +242,16 @@ namespace CompMs.App.Msdial.Model.Lcms
             var request = new ProgressBarRequest("Process alignment..", isIndeterminate: false,
                 async vm =>
                 {
-                    var factory = new LcmsAlignmentProcessFactory(storage, matchResultEvaluator);
-                    factory.ReportAction = v => vm.CurrentValue = v;
+                    var factory = new LcmsAlignmentProcessFactory(storage, _matchResultEvaluator)
+                    {
+                        ReportAction = v => vm.CurrentValue = v
+                    };
 
                     var aligner = factory.CreatePeakAligner();
-                    aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
+                    aligner.ProviderFactory = _providerFactory; // TODO: I'll remove this later.
 
                     var alignmentFile = storage.AlignmentFiles.Last();
-                    var result = await Task.Run(() => aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer)).ConfigureAwait(false);
+                    var result = await Task.Run(() => aligner.Alignment(storage.AnalysisFiles, alignmentFile, CHROMATOGRAM_SPOT_SERIALIZER)).ConfigureAwait(false);
 
                     if (!storage.DataBaseMapper.PeptideAnnotators.IsEmptyOrNull()) {
                         new ProteomeDataAnnotator().MappingToProteinDatabase(
@@ -268,7 +259,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                             result,
                             storage.DataBases.ProteomicsDataBases,
                             storage.DataBaseMapper,
-                            matchResultEvaluator,
+                            _matchResultEvaluator,
                             storage.Parameter);
                     }
 
@@ -309,7 +300,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public void ExportAlignment(Window owner) {
-            var container = Storage;
+            var container = _storage;
             var vm = new AlignmentResultExport2VM(AlignmentFile, container.AlignmentFiles, container, _broker);
 
             if (container.Parameter.TargetOmics == TargetOmics.Proteomics) {
@@ -359,7 +350,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public void ExportAnalysis(Window owner) {
-            var container = Storage;
+            var container = _storage;
             var spectraTypes = new List<Export.SpectraType>
             {
                 new Export.SpectraType(
@@ -381,7 +372,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 container.AnalysisFiles, 
                 spectraTypes, 
                 spectraFormats, 
-                providerFactory)) {
+                _providerFactory)) {
                 var dialog = new AnalysisResultExportWin
                 {
                     DataContext = vm,
@@ -394,7 +385,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public void ShowTIC(Window owner) {
-            var container = Storage;
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
 
@@ -412,7 +402,6 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public void ShowBPC(Window owner) {
-            var container = Storage;
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
 
@@ -430,7 +419,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public void ShowEIC(Window owner) {
-            var container = Storage;
+            var container = _storage;
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
 
@@ -466,7 +455,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public void ShowTicBpcRepEIC(Window owner) {
-            var container = Storage;
+            var container = _storage;
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
 
@@ -493,7 +482,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public void ShowShowFragmentSearchSettingView(Window owner, bool isAlignmentViewSelected) {
-            var container = Storage;
+            var container = _storage;
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
             var alignmentModel = AlignmentModel;
@@ -523,7 +512,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public void ShowShowMassqlSearchSettingView(Window owner, bool isAlignmentViewSelected) {
-            var container = Storage;
+            var container = _storage;
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
             var alignmentModel = AlignmentModel;
@@ -540,19 +529,17 @@ namespace CompMs.App.Msdial.Model.Lcms
             var dialog = new MassqlSettingView()
             {
                 DataContext = vm,
-                //Owner = owner,
-                Owner = Application.Current.MainWindow,
+                Owner = owner,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             dialog.Show();
         }
 
-        public void ShowShowMscleanrFilterSettingView(Window owner, bool isAlignmentViewSelected) {
-            var container = Storage;
+        public void ShowShowMscleanrFilterSettingView(Window owner) {
+            var container = _storage;
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
             var alignmentModel = AlignmentModel;
-            var param = container.Parameter;
             var spotprops = alignmentModel.Ms1Spots;
 
             MscleanrSettingModel model;

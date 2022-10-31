@@ -39,11 +39,12 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public DimsMethodModel(
             IMsdialDataStorage<MsdialDimsParameter> storage,
+            AnalysisFileBeanModelCollection analysisFileBeanModelCollection,
             List<AnalysisFileBean> analysisFiles,
             List<AlignmentFileBean> alignmentFiles,
             ProjectBaseParameterModel projectBaseParameter,
             IMessageBroker broker)
-            : base(analysisFiles, alignmentFiles, projectBaseParameter) {
+            : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
             Storage = storage;
             _broker = broker;
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
@@ -135,7 +136,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 }
             }
 
-            await LoadAnalysisFileAsync(AnalysisFileModels.FirstOrDefault(), token).ConfigureAwait(false);
+            await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
         private bool RunAnnotationAll(List<AnalysisFileBean> analysisFiles, ProcessBaseParameter parameter) {
@@ -236,6 +237,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 Storage.DataBaseMapper,
                 Storage.Parameter,
                 Storage.AnalysisFiles,
+                AnalysisFileModelCollection,
                 PeakFilterModel,
                 _broker).AddTo(Disposables);
         }

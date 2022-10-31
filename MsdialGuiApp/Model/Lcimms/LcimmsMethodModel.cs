@@ -44,8 +44,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
 
-        public LcimmsMethodModel(IMsdialDataStorage<MsdialLcImMsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
-            : base(storage.AnalysisFiles, storage.AlignmentFiles, projectBaseParameter) {
+        public LcimmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialLcImMsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
+            : base(analysisFileBeanModelCollection, storage.AlignmentFiles, projectBaseParameter) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));
             }
@@ -140,7 +140,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 }
             }
 
-            await LoadAnalysisFileAsync(AnalysisFileModels.FirstOrDefault(), token).ConfigureAwait(false);
+            await LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token).ConfigureAwait(false);
         }
 
         private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {

@@ -1,20 +1,24 @@
-﻿using CompMs.App.Msdial.ViewModel.Service;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Enum;
+using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Normalize;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {
-    internal sealed class InternalStandardLowessNormalizeModel
+    internal sealed class InternalStandardLowessNormalizeModel : DisposableModelBase
     {
         private readonly AlignmentResultContainer _container;
         private readonly IReadOnlyList<AnalysisFileBean> _files;
         private readonly IMessageBroker _messageBroker;
 
-        public InternalStandardLowessNormalizeModel(AlignmentResultContainer container, IReadOnlyList<AnalysisFileBean> files, InternalStandardSetModel internalStandardSetModel, IMessageBroker messageBroker) {
+        public InternalStandardLowessNormalizeModel(AlignmentResultContainer container, IReadOnlyList<AnalysisFileBean> files, AnalysisFileBeanModelCollection fileCollection, InternalStandardSetModel internalStandardSetModel, IMessageBroker messageBroker) {
             if (internalStandardSetModel is null) {
                 throw new ArgumentNullException(nameof(internalStandardSetModel));
             }
@@ -22,7 +26,16 @@ namespace CompMs.App.Msdial.Model.Statistics
             _container = container ?? throw new ArgumentNullException(nameof(container));
             _files = files;
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
-            CanNormalize = internalStandardSetModel.SomeSpotSetInternalStandard;
+            CanNormalize = new[]
+            {
+                internalStandardSetModel.SomeSpotSetInternalStandard,
+                fileCollection.IsAnalyticalOrderUnique,
+                fileCollection.ContainsQualityCheck,
+                fileCollection.AreFirstAndLastQualityCheck,
+            }.CombineLatestValuesAreAllTrue()
+            .ToReactiveProperty()
+            .AddTo(Disposables);
+            
         }
 
         public void Normalize() {

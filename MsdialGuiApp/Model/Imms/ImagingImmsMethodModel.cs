@@ -13,11 +13,9 @@ using System.Threading.Tasks;
 namespace CompMs.App.Msdial.Model.Imms
 {
     internal sealed class ImagingImmsMethodModel : DisposableModelBase, IMethodModel {
-        public ImagingImmsMethodModel(IMsdialDataStorage<ParameterBase> storage) {
-            var files = storage.AnalysisFiles;
-            AnalysisFiles = new ObservableCollection<AnalysisFileBean>(files);
-            AnalysisFileModels = new ObservableCollection<AnalysisFileBeanModel>(files.Select(file => new AnalysisFileBeanModel(file)));
-            ImageModels = new ObservableCollection<ImagingImageModel>(AnalysisFileModels.Select(file => new ImagingImageModel(file)));
+        public ImagingImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<ParameterBase> storage) {
+            AnalysisFileModelCollection = analysisFileBeanModelCollection;
+            ImageModels = new ObservableCollection<ImagingImageModel>(AnalysisFileModelCollection.AnalysisFiles.Select(file => new ImagingImageModel(file)));
             Image = ImageModels.FirstOrDefault();
         }
 
@@ -29,15 +27,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
         private ImagingImageModel _image;
 
-        public ObservableCollection<AnalysisFileBean> AnalysisFiles { get; }
-
-        public AnalysisFileBean AnalysisFile {
-            get => _analysisFile;
-            set => SetProperty(ref _analysisFile, value);
-        }
-        private AnalysisFileBean _analysisFile;
-
-        public ObservableCollection<AnalysisFileBeanModel> AnalysisFileModels { get; }
+        public AnalysisFileBeanModelCollection AnalysisFileModelCollection { get; }
 
         public AnalysisFileBeanModel AnalysisFileModel {
             get => _analysisFileModel;

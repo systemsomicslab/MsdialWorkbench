@@ -105,6 +105,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             //Brush = model.Brush.AsReadOnly();
             Brush = model.SelectedBrush;
             ClassBrush = model.PointBrush;
+            PosnegBrush = model.PosnegBrush;
 
             LabelTypesSample = new List<IReadOnlyReactiveProperty<LabelTypeViewModel>>
             {
@@ -137,6 +138,9 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
             LoadingHorizontalAxis = ComponentX.Select(i => model.LoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             LoadingVerticalAxis = ComponentY.Select(i => model.LoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            PC1LoadingAbsoluteVerticalAxis = ComponentX.Select(i => model.LoadingAbsoluteAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            PC2LoadingAbsoluteVerticalAxis = ComponentY.Select(i => model.LoadingAbsoluteAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
             Scores = new ReactiveCollection<ComponentScoreViewModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
             Observable.CombineLatest(ComponentX, ComponentY)
@@ -186,8 +190,11 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         //public ReactiveCollection<ComponentContributionViewModel> Contributions { get; }
         public BrushMapData<ComponentLoadingViewModel> Brush { get; }
         public IObservable<IBrushMapper<ComponentScoreViewModel>> ClassBrush { get; }
+        public IBrushMapper<ComponentLoadingViewModel> PosnegBrush { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingHorizontalAxis { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingVerticalAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<double>> PC1LoadingAbsoluteVerticalAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<double>> PC2LoadingAbsoluteVerticalAxis { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> ScoreHorizontalAxis { get; }
         public ReadOnlyReactivePropertySlim<IAxisManager<double>> ScoreVerticalAxis { get; }
         public IAxisManager<double> ComponentXLoadingHorizontalAxis { get; }

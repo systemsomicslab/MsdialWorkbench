@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.ViewModel.Setting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,14 +12,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Setting
-{
+namespace CompMs.App.Msdial.View.Statistics {
     /// <summary>
-    /// Interaction logic for AnalysisFilePropertySetWin.xaml
+    /// PlsSettingView.xaml の相互作用ロジック
     /// </summary>
-    public partial class AnalysisFilePropertySetWindow : Window
-    {
-        public AnalysisFilePropertySetWindow() {
+    public partial class PlsSettingView : Window {
+        public PlsSettingView()
+        {
             InitializeComponent();
         }
     }

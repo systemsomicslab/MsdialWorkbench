@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace CompMs.App.Msdial.Model.Core
 {
     public interface IMethodModel : INotifyPropertyChanged, IDisposable {
-        ObservableCollection<AnalysisFileBeanModel> AnalysisFileModels { get; }
+        AnalysisFileBeanModelCollection AnalysisFileModelCollection { get; }
 
         AnalysisFileBeanModel AnalysisFileModel { get; }
 
