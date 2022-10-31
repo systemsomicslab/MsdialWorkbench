@@ -49,6 +49,17 @@ namespace CompMs.Common.Lipidomics
                     var isClassIonFound = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold);
                     if (isClassIonFound == false) return null;
 
+                    var PEHeaderLoss = theoreticalMz - 141.019094261;
+                    var PEspecific = MassDiffDictionary.CarbonMass * 5
+                        + MassDiffDictionary.HydrogenMass * 12
+                        + MassDiffDictionary.NitrogenMass
+                        + MassDiffDictionary.OxygenMass * 4
+                        + MassDiffDictionary.PhosphorusMass
+                        + Proton;
+                    var isClassIonFound2 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEHeaderLoss, 5.0);
+                    var isClassIonFound3 = isDiagnosticFragmentExist(spectrum, ms2Tolerance, PEspecific, 1.0);
+                    if (isClassIonFound2 && isClassIonFound3) return null;
+
                     // from here, acyl level annotation is executed.
                     var candidates = new List<LipidMolecule>();
                     for (int sn1Carbon = minSnCarbon; sn1Carbon <= maxSnCarbon; sn1Carbon++)
@@ -2179,8 +2190,8 @@ namespace CompMs.Common.Lipidomics
                             }
                         }
                     }
-                            return returnAnnotationResult("PC", LbmClass.EtherPC, "e", theoreticalMz, adduct,
-                        totalCarbon, totalDoubleBond, 0, candidates, 2);
+                    return returnAnnotationResult("PC", LbmClass.EtherPC, "e", theoreticalMz, adduct,
+                totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
                 else if (adduct.AdductIonName == "[M+Na]+")
                 {
