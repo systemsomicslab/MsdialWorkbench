@@ -213,6 +213,7 @@
                                      LabelPropertyName="{Binding LabelTypeSample.Value.PropertyName}"
                                      Brush="Black"
                                      ContentAlignment="BottomCenter"/>
+                    
                 </Grid>
             </chart:SimpleChartControl>
 

@@ -87,18 +87,27 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
 
             var scores = new List<double> { };
+            var dotProductFactor = 3.0;
+            var revesrseDotProdFactor = 2.0;
+            var presensePercentageFactor = 1.0;
+            var rtFactor = 1.0;
+            var ccsFactor = 1.0;
+            var massFactor = 1.0;
+            var isotopeFactor = 0.0;
+            if (omics == TargetOmics.Lipidomics) {
+                dotProductFactor = 1.0; revesrseDotProdFactor = 2.0; presensePercentageFactor = 3.0; rtFactor = 0.5; ccsFactor = 0.5;
+            }
+
             if (result.AcurateMassSimilarity >= 0)
-                scores.Add(result.AcurateMassSimilarity);
+                scores.Add(result.AcurateMassSimilarity * massFactor);
             if (result.WeightedDotProduct >= 0 && result.SimpleDotProduct >= 0 && result.ReverseDotProduct >= 0)
-                scores.Add((result.WeightedDotProduct + result.SimpleDotProduct + result.ReverseDotProduct) / 3);
-            if (result.MatchedPeaksPercentage >= 0)
-                scores.Add(result.MatchedPeaksPercentage);
+                scores.Add((result.WeightedDotProduct * dotProductFactor + result.SimpleDotProduct * dotProductFactor + result.ReverseDotProduct * revesrseDotProdFactor + result.MatchedPeaksPercentage * presensePercentageFactor) / 4);
             if (parameter.IsUseTimeForAnnotationScoring && result.RtSimilarity >= 0)
-                scores.Add(result.RtSimilarity);
+                scores.Add(result.RtSimilarity * rtFactor);
             if (parameter.IsUseCcsForAnnotationScoring && result.CcsSimilarity >= 0)
-                scores.Add(result.CcsSimilarity);
+                scores.Add(result.CcsSimilarity * ccsFactor);
             if (result.IsotopeSimilarity >= 0)
-                scores.Add(result.IsotopeSimilarity);
+                scores.Add(result.IsotopeSimilarity * isotopeFactor);
             result.TotalScore = (float)scores.DefaultIfEmpty().Average();
 
             Validate(result, property, scan, reference, parameter);

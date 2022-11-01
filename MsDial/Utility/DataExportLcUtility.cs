@@ -1026,7 +1026,7 @@ namespace Rfx.Riken.OsakaUniv
 
                     for (int i = 0; i < alignedSpots.Count; i++)
                     {
-                        if (blankFilter && !alignedSpots[i].IsBlankFiltered) continue;
+                        if (blankFilter && alignedSpots[i].IsBlankFiltered) continue;
                         if (alignedSpots[i].AlignmentID == 0) continue;
 
                         //ResultExportLcUtility.WriteDeconvolutedGnpsMgf(sw, fs, seekpointList, alignedSpots[i], i + 1);
@@ -1105,7 +1105,7 @@ namespace Rfx.Riken.OsakaUniv
                     //From the second
                     for (int i = 0; i < alignedSpots.Count; i++)
                     {
-                        if (blankFilter && !alignedSpots[i].IsBlankFiltered) continue;
+                        if (blankFilter && alignedSpots[i].IsBlankFiltered) continue;
                         if (alignedSpots[i].AlignmentID == 0) continue;
                         //ResultExportLcUtility.WriteDataMatrixMetaDataForGnps(sw, alignedSpots[i], alignedSpots, mspDB, textDB, fs, seekpointList, i + 1, mainWindow.AnalysisParamForLC);
                         ResultExportLcUtility.WriteDataMatrixMetaDataForGnps(sw, alignedSpots[i], alignedSpots, mspDB, textDB, fs, seekpointList, alignedSpots[i].AlignmentID, mainWindow.AnalysisParamForLC);
@@ -1162,7 +1162,7 @@ namespace Rfx.Riken.OsakaUniv
                     foreach (var alignedSpot in alignedSpots)
                     {
                         if (alignedSpot.MasterID == 0) continue;
-                        if (blankFilter && !alignedSpot.IsBlankFiltered) continue;
+                        if (blankFilter && alignedSpot.IsBlankFiltered) continue;
                         if (alignedSpot.PeakLinks != null && alignedSpot.PeakLinks.Count > 0)
                         {
                             foreach (var peak in alignedSpot.PeakLinks)
@@ -1252,7 +1252,7 @@ namespace Rfx.Riken.OsakaUniv
                     foreach (var alignedSpot in alignedSpots)
                     {
                         if (alignedSpot.AlignmentID == 0) continue;
-                        if (blankFilter && !alignedSpot.IsBlankFiltered) continue;
+                        if (blankFilter && alignedSpot.IsBlankFiltered) continue;
                         if (alignedSpot.PeakLinks != null && alignedSpot.PeakLinks.Count > 0)
                         {
                             foreach (var peak in alignedSpot.PeakLinks)
