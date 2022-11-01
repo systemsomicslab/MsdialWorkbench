@@ -39,6 +39,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var weightedDotProduct = MsScanMatching.GetWeightedDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var simpleDotProduct = MsScanMatching.GetSimpleDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             var reverseDotProduct = MsScanMatching.GetReverseDotProduct(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
+            var spectrumPenalty = reference.Spectrum != null && reference.Spectrum.Count == 1 ? true : false;
             double[] matchedPeaksScores = null;
             if (omics == TargetOmics.Lipidomics) {
                 if (this.collisionType == CollisionType.EIEIO) {
@@ -96,6 +97,12 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var isotopeFactor = 0.0;
             if (omics == TargetOmics.Lipidomics) {
                 dotProductFactor = 1.0; revesrseDotProdFactor = 2.0; presensePercentageFactor = 3.0; rtFactor = 0.5; ccsFactor = 0.5;
+            }
+            if (omics == TargetOmics.Metabolomics && spectrumPenalty == true) {
+                dotProductFactor = 1.5;
+                revesrseDotProdFactor = 1.0;
+                presensePercentageFactor = 0.5;
+
             }
 
             if (result.AcurateMassSimilarity >= 0)
