@@ -59,6 +59,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             var (barChartViewFocusAction, barChartViewFocused) = focusControlManager.Request();
             BarChartViewModel = new BarChartViewModel(_model.BarChartModel, barChartViewFocusAction, barChartViewFocused).AddTo(Disposables);
             AlignmentEicViewModel = new AlignmentEicViewModel(_model.AlignmentEicModel).AddTo(Disposables);
+
+            SetUnknownCommand = Target.Select(t => !(t is null)).ToReactiveCommand()
+                .WithSubscribe(() => Target.Value.SetUnknown())
+                .AddTo(Disposables);
             
             AlignmentSpotTableViewModel = new LcmsAlignmentSpotTableViewModel(
                 _model.AlignmentSpotTableModel,
@@ -70,6 +74,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.CommentFilterKeyword,
                 PeakSpotNavigatorViewModel.OntologyFilterKeyword,
                 PeakSpotNavigatorViewModel.AdductFilterKeyword,
+                SetUnknownCommand,
                 PeakSpotNavigatorViewModel.IsEditting)
                 .AddTo(Disposables);
             ProteomicsAlignmentTableViewModel = new LcmsProteomicsAlignmentTableViewModel(
@@ -83,11 +88,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.CommentFilterKeyword,
                 PeakSpotNavigatorViewModel.OntologyFilterKeyword,
                 PeakSpotNavigatorViewModel.AdductFilterKeyword,
+                SetUnknownCommand,
                 PeakSpotNavigatorViewModel.IsEditting)
-                .AddTo(Disposables);
-
-            SetUnknownCommand = Target.Select(t => !(t is null)).ToReactiveCommand()
-                .WithSubscribe(() => Target.Value.SetUnknown())
                 .AddTo(Disposables);
 
             SearchCompoundCommand = _model.CanSearchCompound

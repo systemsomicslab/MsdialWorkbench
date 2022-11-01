@@ -107,6 +107,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 this.model.SurveyScanModel,
                 horizontalAxis: PlotViewModel.VerticalAxis).AddTo(Disposables);
 
+            SetUnknownCommand = model.Target.Select(t => !(t is null))
+                .ToReactiveCommand()
+                .WithSubscribe(() => model.Target.Value.SetUnknown())
+                .AddTo(Disposables);
+
             PeakTableViewModel = new LcmsAnalysisPeakTableViewModel(
                 this.model.PeakTableModel,
                 Observable.Return(this.model.EicLoader),
@@ -118,6 +123,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.CommentFilterKeyword,
                 PeakSpotNavigatorViewModel.OntologyFilterKeyword,
                 PeakSpotNavigatorViewModel.AdductFilterKeyword,
+                SetUnknownCommand,
                 PeakSpotNavigatorViewModel.IsEditting)
             .AddTo(Disposables);
 
@@ -133,13 +139,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.CommentFilterKeyword,
                 PeakSpotNavigatorViewModel.OntologyFilterKeyword,
                 PeakSpotNavigatorViewModel.AdductFilterKeyword,
+                SetUnknownCommand,
                 PeakSpotNavigatorViewModel.IsEditting)
             .AddTo(Disposables);
 
-            SetUnknownCommand = model.Target.Select(t => !(t is null))
-                .ToReactiveCommand()
-                .WithSubscribe(() => model.Target.Value.SetUnknown())
-                .AddTo(Disposables);
             SearchCompoundCommand = this.model.CanSearchCompound
                 .ToReactiveCommand()
                 .WithSubscribe(SearchCompound)
