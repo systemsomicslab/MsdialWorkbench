@@ -69,7 +69,7 @@ namespace CompMs.App.Msdial.Model.Notification
             if (!NetworkInterface.GetIsNetworkAvailable()) {
                 return;
             }
-
+            
             // TODO: Show "Checking for updates" in status bar
             Uri updateUri = new Uri(Resources.VDD_URI);
             FetchVersionDescriptionDocument(updateUri, ShowUpdatePopup);
