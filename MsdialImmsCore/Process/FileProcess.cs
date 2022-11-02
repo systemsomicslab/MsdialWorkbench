@@ -1,6 +1,5 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -55,55 +54,12 @@ namespace CompMs.MsdialImmsCore.Process
 
             // annotations
             Console.WriteLine("Annotation started");
-            var parameter = storage.Parameter;
-            var annotatorContainers = storage.DataBases.MetabolomicsDataBases.SelectMany(Item => Item.Pairs.Select(pair => pair.ConvertToAnnotatorContainer())).ToArray();
-            PeakAnnotation(targetCE2MSDecResults, provider, chromPeakFeatures, annotatorContainers, mspAnnotator, textDBAnnotator, parameter, reportAction, token);
-
-            // characterizatin
-            PeakCharacterization(targetCE2MSDecResults, provider, chromPeakFeatures, evaluator, parameter, reportAction);
+            new PeakAnnotationProcess().Annotate(storage, provider, chromPeakFeatures, targetCE2MSDecResults, mspAnnotator, textDBAnnotator, evaluator, reportAction, token);
 
             // file save
             SaveToFile(file, chromPeakFeatures, targetCE2MSDecResults);
 
             reportAction?.Invoke(100);
-        }
-
-        private static void PeakAnnotation(
-            Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
-            IDataProvider provider,
-            List<ChromatogramPeakFeature> chromPeakFeatures,
-            IReadOnlyCollection<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
-            MsdialImmsParameter parameter,
-            Action<int> reportAction, CancellationToken token) {
-
-            var initial_annotation = 60.0;
-            var max_annotation = 30.0;
-            foreach (var (ce2msdecs, index) in targetCE2MSDecResults.WithIndex()) {
-                var targetCE = ce2msdecs.Key;
-                var msdecResults = ce2msdecs.Value;
-                var max_annotation_local = max_annotation / targetCE2MSDecResults.Count;
-                var initial_annotation_local = initial_annotation + max_annotation_local * index;
-                new AnnotationProcess(initial_annotation_local, max_annotation_local).Run(
-                    provider, chromPeakFeatures, msdecResults,
-                    annotatorContainers, mspAnnotator, textDBAnnotator, parameter,
-                    reportAction, parameter.NumThreads, token
-                );
-            }
-        }
-
-        private static void PeakCharacterization(
-            Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
-            IDataProvider provider,
-            List<ChromatogramPeakFeature> chromPeakFeatures,
-            IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            MsdialImmsParameter parameter,
-            Action<int> reportAction) {
-
-            new PeakCharacterEstimator(90, 10).Process(provider, chromPeakFeatures, targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
-                evaluator,
-                parameter, reportAction);
         }
 
         private static void SaveToFile(
