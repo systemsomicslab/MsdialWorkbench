@@ -3,11 +3,8 @@ using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
-using CompMs.MsdialLcMsApi.Algorithm;
-using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -20,15 +17,27 @@ namespace CompMs.MsdialLcMsApi.Process
 {
     public sealed class FileProcess {
         private readonly IDataProviderFactory<AnalysisFileBean> _factory;
-        private readonly IMsdialDataStorage<MsdialLcmsParameter> _storage;
-        private readonly IAnnotationProcess _annotationProcess;
-        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+        private readonly PeakPickProcess _peakPickProcess;
+        private readonly SpectrumDeconvolutionProcess _spectrumDeconvolutionProcess;
+        private readonly PeakAnnotationProcess _peakAnnotationProcess;
 
         public FileProcess(IDataProviderFactory<AnalysisFileBean> factory, IMsdialDataStorage<MsdialLcmsParameter> storage, IAnnotationProcess annotationProcess, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+            if (storage is null) {
+                throw new ArgumentNullException(nameof(storage));
+            }
+
+            if (annotationProcess is null) {
+                throw new ArgumentNullException(nameof(annotationProcess));
+            }
+
+            if (evaluator is null) {
+                throw new ArgumentNullException(nameof(evaluator));
+            }
+
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
-            _storage = storage ?? throw new ArgumentNullException(nameof(storage));
-            _annotationProcess = annotationProcess ?? throw new ArgumentNullException(nameof(annotationProcess));
-            _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
+            _peakPickProcess = new PeakPickProcess(storage);
+            _spectrumDeconvolutionProcess = new SpectrumDeconvolutionProcess(storage);
+            _peakAnnotationProcess = new PeakAnnotationProcess(annotationProcess, storage, evaluator);
         }       
 
         public Task RunAllAsync(IEnumerable<AnalysisFileBean> files, IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token = default) {
@@ -48,85 +57,25 @@ namespace CompMs.MsdialLcMsApi.Process
         }
 
         public void Run(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
-            Run(file, _factory.Create(file), _storage, _annotationProcess, _evaluator, true, reportAction, token);
-        }
-
-        public static void Run(
-            AnalysisFileBean file,
-            IDataProvider provider,
-            IMsdialDataStorage<MsdialLcmsParameter> storage,
-            IAnnotationProcess annotationProcess,
-            IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            bool isGuiProcess = false,
-            Action<int> reportAction = null,
-            CancellationToken token = default) {
-            var param = storage.Parameter;
-            var mspDB = storage.MspDB;
-            var textDB = storage.TextDB;
-            var isotopeTextDB = storage.IsotopeTextDB;
-            var iupacDB = storage.IupacDatabase;
-            var filepath = file.AnalysisFilePath;
-            var fileID = file.AnalysisFileId;
+            var provider = _factory.Create(file);
 
             // feature detections
             Console.WriteLine("Peak picking started");
-            var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, param, token, reportAction);
-            IsotopeEstimator.Process(chromPeakFeatures, param, iupacDB);
-            var summaryDto = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures);
-            var summary = ChromatogramPeaksDataSummary.ConvertFromDto(summaryDto);
+            var chromPeakFeatures = _peakPickProcess.Pick(provider, token, reportAction);
+
+            var summaryDto = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures.Items);
             file.ChromPeakFeaturesSummary = summaryDto;
 
             // chrom deconvolutions
             Console.WriteLine("Deconvolution started");
-            var targetCE2MSDecResults = new Dictionary<double, List<MSDecResult>>();
-            var initial_msdec = 30.0;
-            var max_msdec = 30.0;
-            var ceList = provider.LoadCollisionEnergyTargets();
-            if (storage.Parameter.AcquisitionType == Common.Enum.AcquisitionType.AIF) {
-                for (int i = 0; i < ceList.Count; i++) {
-                    var targetCE = Math.Round(ceList[i], 2); // must be rounded by 2 decimal points
-                    if (targetCE <= 0) {
-                        Console.WriteLine("No correct CE information in AIF-MSDEC");
-                        continue;
-                    }
-                    var max_msdec_aif = max_msdec / ceList.Count;
-                    var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
-                    targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
-                        provider, chromPeakFeatures, storage.Parameter, summary, storage.IupacDatabase, reportAction, token, targetCE);
-                }
-            }
-            else {
-                var targetCE = ceList.IsEmptyOrNull() ? -1 : ceList[0];
-                targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
-                    provider, chromPeakFeatures, storage.Parameter, summary, storage.IupacDatabase, reportAction, token);
-            }
+            var targetCE2MSDecResults = _spectrumDeconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, summaryDto, reportAction, token);
 
-                // annotations
-                Console.WriteLine("Annotation started");
-                var initial_annotation = 60.0;
-                var max_annotation = 30.0;
-                foreach (var (ce2msdecs, index) in targetCE2MSDecResults.WithIndex()) {
-                    var targetCE = ce2msdecs.Key;
-                    var msdecResults = ce2msdecs.Value;
-                    var max_annotation_local = max_annotation / targetCE2MSDecResults.Count;
-                    var initial_annotation_local = initial_annotation + max_annotation_local * index;
-                    annotationProcess.RunAnnotation(
-                        chromPeakFeatures,
-                        msdecResults,
-                        provider,
-                        param.NumThreads == 1 ? 1 : 2,
-                        token,
-                        v => reportAction?.Invoke((int)(initial_annotation_local + v * max_annotation_local)));
-                }
-
-                // characterizatin
-                new PeakCharacterEstimator(90, 10).Process(provider, chromPeakFeatures, targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
-                    evaluator,
-                    param, reportAction);
+            // annotations
+            Console.WriteLine("Annotation started");
+            _peakAnnotationProcess.Annotate(targetCE2MSDecResults, chromPeakFeatures.Items, provider, token, reportAction);
 
             // file save
-            var paifile = file.PeakAreaBeanInformationFilePath;
-            MsdialPeakSerializer.SaveChromatogramPeakFeatures(paifile, chromPeakFeatures);
+            chromPeakFeatures.SerializeAsync(file).Wait();
 
             var dclfile = file.DeconvolutionFilePath;
             var dclfiles = new List<string>();

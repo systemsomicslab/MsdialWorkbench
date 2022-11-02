@@ -123,8 +123,7 @@ namespace CompMs.MsdialImmsCore.Process
             ChromatogramPeakFeatureCollection chromPeakFeatures,
             Dictionary<double, List<MSDecResult>> targetCE2MSDecResults) {
 
-            var paifile = file.PeakAreaBeanInformationFilePath;
-            chromPeakFeatures.SerializeAsync(paifile).Wait();
+            chromPeakFeatures.SerializeAsync(file).Wait();
 
             var dclfile = file.DeconvolutionFilePath;
             var dclfiles = new List<string>();

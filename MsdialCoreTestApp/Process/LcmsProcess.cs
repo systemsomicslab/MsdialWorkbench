@@ -52,18 +52,21 @@ namespace CompMs.App.MsdialConsole.Process
             var evaluator = MsScanMatchResultEvaluator.CreateEvaluator(storage.Parameter.MspSearchParam);
             var database = new MoleculeDataBase(storage.MspDB, storage.Parameter.MspFilePath, DataBaseSource.Msp, SourceType.MspDB);
             var annotator = new LcmsMspAnnotator(database, storage.Parameter.MspSearchParam, storage.Parameter.TargetOmics, storage.Parameter.MspFilePath, 1);
+            var textdatabase = new MoleculeDataBase(storage.TextDB, storage.Parameter.TextDBFilePath, DataBaseSource.Text, SourceType.TextDB);
+            var textannotator = new LcmsTextDBAnnotator(database, storage.Parameter.TextDbSearchParam, storage.Parameter.TextDBFilePath, 2);
             var annotationProcess = new StandardAnnotationProcess<AnnotationQuery>(
                 new AnnotationQueryWithoutIsotopeFactory(annotator),
                 new IAnnotatorContainer<AnnotationQuery, MoleculeMsReference, MsScanMatchResult>[] {
-                    new AnnotatorContainer<AnnotationQuery, MoleculeMsReference, MsScanMatchResult>(annotator, storage.Parameter.MspSearchParam)
+                    new AnnotatorContainer<AnnotationQuery, MoleculeMsReference, MsScanMatchResult>(annotator, storage.Parameter.MspSearchParam),
+                    new AnnotatorContainer<AnnotationQuery, MoleculeMsReference, MsScanMatchResult>(textannotator, storage.Parameter.TextDbSearchParam),
                 });
+            var process = new FileProcess(new StandardDataProviderFactory(5, false), storage, annotationProcess, evaluator);
             var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
             foreach ((var file, var idx) in files.WithIndex()) {
                 tasks[idx] = Task.Run(async () => {
                     await sem.WaitAsync();
                     try {
-                        var provider = new StandardDataProvider(file, false, false, 5);
-                        FileProcess.Run(file, provider, storage, annotationProcess, evaluator);
+                        process.Run(file, null);
                     }
                     finally {
                         sem.Release();
