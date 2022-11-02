@@ -612,6 +612,9 @@
     <Compile Include="View\Statistics\NormalizationSetView.xaml.cs">
       <DependentUpon>NormalizationSetView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Statistics\PlsSettingView.xaml.cs">
+      <DependentUpon>PlsSettingView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Statistics\SplashSetView.xaml.cs">
       <DependentUpon>SplashSetView.xaml</DependentUpon>
     </Compile>
@@ -1048,6 +1051,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Statistics\NormalizationSetView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Statistics\PlsSettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

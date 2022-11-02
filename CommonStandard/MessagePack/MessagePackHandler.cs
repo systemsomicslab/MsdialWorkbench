@@ -43,7 +43,7 @@ namespace CompMs.Common.MessagePack {
         public static List<T> LoadLargerListFromFile<T>(string path)
         {
             List<T> res;
-            using (var fs = new FileStream(path, FileMode.Open))
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 res = LoadLargerListFromStream<T>(fs);
             }
@@ -56,7 +56,7 @@ namespace CompMs.Common.MessagePack {
 
         public static IEnumerable<List<T>> LoadIncrementalLargerListFromFile<T>(string path)
         {
-            using (var fs = new FileStream(path, FileMode.Open))
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 foreach (var res in LoadIncrementalLargerListFromStream<T>(fs)) {
                     yield return res;
