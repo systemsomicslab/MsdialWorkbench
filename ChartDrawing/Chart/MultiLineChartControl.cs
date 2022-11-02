@@ -492,9 +492,7 @@ namespace CompMs.Graphics.Chart
             }
         }
 
-        private static readonly double ITEM_FOCUSE_MAXIMUM_DISTANCE = 3d;
-        protected override void OnMouseMove(MouseEventArgs e) {
-            base.OnMouseMove(e);
+        private void MouseFocusItem(MouseEventArgs e) {
             if (_lazyKdTree != null && HorizontalAxis is IAxisManager haxis && VerticalAxis is IAxisManager vaxis) {
                 var pt = e.GetPosition(this);
                 var flippedX = FlippedX;
@@ -508,16 +506,22 @@ namespace CompMs.Graphics.Chart
                         vaxis.TranslateFromRenderPoint(pt.Y, flippedY, height).Value,
                     });
 
-                if (Math.Pow(haxis.TranslateToRenderPoint(spot.Item1.x, flippedX, width) - pt.X, 2)
-                    + Math.Pow(vaxis.TranslateToRenderPoint(spot.Item1.y, flippedY, height) - pt.Y, 2)
-                    <= Math.Pow(ITEM_FOCUSE_MAXIMUM_DISTANCE, 2)) {
-                    if (FocusedItem != spot.Item1.raw) {
-                        FocusedSeries = spot.Item2.raw;
-                        FocusedItem = spot.Item1.raw;
-                        FocusedPoint = pt;
-                    }
+                if (FocusedItem != spot.Item1.raw) {
+                    FocusedSeries = spot.Item2.raw;
+                    FocusedItem = spot.Item1.raw;
+                    FocusedPoint = pt;
                 }
             }
+        }
+
+        protected override void OnMouseEnter(MouseEventArgs e) {
+            base.OnMouseEnter(e);
+            MouseFocusItem(e);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e) {
+            base.OnMouseMove(e);
+            MouseFocusItem(e);
         }
 
         protected override void OnMouseLeave(MouseEventArgs e) {
