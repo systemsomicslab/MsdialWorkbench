@@ -53,10 +53,10 @@
                                     <RowDefinition Height="16"/>
                                     <RowDefinition/>
                                     <RowDefinition Height="16"/>
-                                    <RowDefinition Height="8"/>
+                                    <RowDefinition Height="17"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="17"/>
                                     <ColumnDefinition Width="32"/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
@@ -209,13 +209,10 @@
                                               Radius="{Binding SpotSizeSample.Value}">
                         <chart:ScatterControlSlim.ToolTip>
                             <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="X: "/>
-                                    <TextBlock Text="{Binding FocusedItem.ComponentX, StringFormat=0.00}"/>
-                                    <TextBlock Text="Y: "/>
-                                    <TextBlock Text="{Binding FocusedItem.ComponentY, StringFormat=0.00}"/>
-                                    <TextBlock Text="Label: "/>
-                                    <TextBlock Text="{Binding FocusedItem.Label}"/>
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="{Binding FocusedItem.ComponentX, StringFormat=X: {0:0.00}}"/>
+                                    <TextBlock Text="{Binding FocusedItem.ComponentY, StringFormat=Y: {0:0.00}}"/>
+                                    <TextBlock Text="{Binding FocusedItem.Label, StringFormat=Label: {0}}"/>
                                 </StackPanel>
                             </ToolTip>
                         </chart:ScatterControlSlim.ToolTip>
@@ -245,7 +242,17 @@
                                               HorizontalProperty="ComponentX"
                                               VerticalProperty="ComponentY"
                                               PointBrush="{Binding Brush.Mapper}"
-                                              Radius="{Binding SpotSizeMetabolite.Value}"/>
+                                              Radius="{Binding SpotSizeMetabolite.Value}">
+                        <chart:ScatterControlSlim.ToolTip>
+                            <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="{Binding FocusedItem.ComponentX, StringFormat=X: {0:0.00}}"/>
+                                    <TextBlock Text="{Binding FocusedItem.ComponentY, StringFormat=Y: {0:0.00}}"/>
+                                    <TextBlock Text="{Binding FocusedItem.Label, StringFormat=Label: {0}}"/>
+                                </StackPanel>
+                            </ToolTip>
+                        </chart:ScatterControlSlim.ToolTip>
+                    </chart:ScatterControlSlim>
                     <chart:Annotator ItemsSource="{Binding Loadings}"
                                      HorizontalPropertyName="ComponentX"
                                      VerticalPropertyName="ComponentY"
@@ -267,7 +274,16 @@
                                       ItemsSource="{Binding Loadings}"
                                       BrushMapper="{Binding PosnegBrush}"
                                       HorizontalPropertyName="Label"
-                                      VerticalPropertyName="ComponentX"/>
+                                      ClipToBounds="True"
+                                      VerticalPropertyName="ComponentX">
+                        <chart:BarControl.ToolTip>
+                            <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="{Binding FocusedItem.Label, StringFormat=Label: {0}}"/>
+                                </StackPanel>
+                            </ToolTip>
+                        </chart:BarControl.ToolTip>
+                    </chart:BarControl>
                 </Grid>
             </chart:SimpleChartControl>
             <chart:SimpleChartControl HorizontalAxis="{Binding PCYLabelAxis.Value}"
@@ -275,13 +291,22 @@
                                       GraphTitle="{Binding ComponentY.Value, StringFormat=PCA loading plot}"
                                       HorizontalTitle="{Binding ComponentY.Value, StringFormat=Principal component {0}}"
                                       VerticalTitle="Value"
+                                      ClipToBounds="True"
                                       Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
                 <Grid>
                     <chart:BarControl x:Name="bar2"
                                       ItemsSource="{Binding Loadings}"
                                       BrushMapper="{Binding PosnegBrush}"
                                       HorizontalPropertyName="Label"
-                                      VerticalPropertyName="ComponentY"/>
+                                      VerticalPropertyName="ComponentY">
+                        <chart:BarControl.ToolTip>
+                            <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="{Binding FocusedItem.Label, StringFormat=Label: {0}}"/>
+                                </StackPanel>
+                            </ToolTip>
+                        </chart:BarControl.ToolTip>
+                    </chart:BarControl>
                 </Grid>
             </chart:SimpleChartControl>
             <TextBlock Text="Red: positive correlation Blue: negative correlation" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"/>

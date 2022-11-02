@@ -69,7 +69,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                 statisticsObject.XLabels.Select((label, i) =>
                     new ComponentLoadingModel(multivariateAnalysisResult.PPreds.Select(preds => preds[i]).ToArray(), label, spotprops[i])));
             LoadingAxises = multivariateAnalysisResult.PPreds
-                .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new ContinuousAxisManager<double>(pc_loadings, new ConstantMargin(10))))
+                .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new ContinuousAxisManager<double>(pc_loadings, new ConstantMargin(20))))
                 .ToList().AsReadOnly();
 
             LoadingAbsoluteAxises = multivariateAnalysisResult.PPreds
@@ -80,7 +80,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                 statisticsObject.YLabels.Select((label, i) =>
                     new ComponentScoreModel(multivariateAnalysisResult.TPreds.Select(preds => preds[i]).ToArray(), label, analysisfiles[i])));
             ScoreAxises = multivariateAnalysisResult.TPreds
-                .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new ContinuousAxisManager<double>(pc_loadings, new ConstantMargin(10))))
+                .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new ContinuousAxisManager<double>(pc_loadings, new ConstantMargin(20))))
                 .ToList().AsReadOnly();
 
             var pcAxises = new ObservableCollection<IAxisManager<string>>();
