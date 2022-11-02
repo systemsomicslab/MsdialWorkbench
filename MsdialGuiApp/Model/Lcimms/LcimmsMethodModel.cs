@@ -25,6 +25,7 @@ using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Algorithm;
 using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
+using CompMs.MsdialLcImMsApi.Export;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Process;
 using Reactive.Bindings.Extensions;
@@ -62,7 +63,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
             AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, storage.AlignmentFiles, storage);
-            var metadataAccessor = (IMetadataAccessor)null; //new LcimmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
+            var metadataAccessor = new LcimmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
             AlignmentResultExportModel.AddExportTypes(
                 new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
                 new ExportType("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
