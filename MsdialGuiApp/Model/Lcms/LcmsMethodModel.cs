@@ -166,7 +166,11 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var processOption = option;
             // Run Identification
-            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
+            if (processOption.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
+                if (!ProcessPickAndAnnotaion(_storage))
+                    return;
+            }
+            else if (processOption.HasFlag(ProcessOption.Identification)) {
                 if (!ProcessAnnotaion(_storage))
                     return;
             }
@@ -230,12 +234,28 @@ namespace CompMs.App.Msdial.Model.Lcms
             return new EadLipidomicsAnnotationProcess<IAnnotationQuery>(containerPairs, eadAnnotationQueryFactoryTriple, mapper);
         }
 
-        public bool ProcessAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage) {
+        public bool ProcessPickAndAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage) {
             var request = new ProgressBarMultiContainerRequest(
                 vm_ =>
                 {
                     var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, storage, _annotationProcess, _matchResultEvaluator);
                     return processor.RunAllAsync(
+                        storage.AnalysisFiles,
+                        vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
+                        Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
+                        vm_.Increment);
+                },
+                storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
+            _broker.Publish(request);
+            return request.Result ?? false;
+        }
+
+        public bool ProcessAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage) {
+            var request = new ProgressBarMultiContainerRequest(
+                vm_ =>
+                {
+                    var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, storage, _annotationProcess, _matchResultEvaluator);
+                    return processor.AnnotateAllAsync(
                         storage.AnalysisFiles,
                         vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
                         Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
