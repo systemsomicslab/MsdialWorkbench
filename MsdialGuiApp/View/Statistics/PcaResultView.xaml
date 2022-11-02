@@ -206,12 +206,28 @@
                                               HorizontalProperty="ComponentX"
                                               VerticalProperty="ComponentY"
                                               PointBrush="{Binding ClassBrush.Value}"
-                                              Radius="{Binding SpotSizeSample.Value}"/>
+                                              Radius="{Binding SpotSizeSample.Value}">
+                        <chart:ScatterControlSlim.ToolTip>
+                            <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="X: "/>
+                                    <TextBlock Text="{Binding FocusedItem.ComponentX, StringFormat=0.00}"/>
+                                    <TextBlock Text="Y: "/>
+                                    <TextBlock Text="{Binding FocusedItem.ComponentY, StringFormat=0.00}"/>
+                                    <TextBlock Text="Label: "/>
+                                    <TextBlock Text="{Binding FocusedItem.Label}"/>
+                                </StackPanel>
+                            </ToolTip>
+                        </chart:ScatterControlSlim.ToolTip>
+
+
+                    </chart:ScatterControlSlim>
                     <chart:Annotator ItemsSource="{Binding Scores}"
                                      HorizontalPropertyName="ComponentX"
                                      VerticalPropertyName="ComponentY"
                                      LabelPropertyName="{Binding LabelTypeSample.Value.PropertyName}"
                                      Brush="Black"
+                                     ClipToBounds="True"
                                      ContentAlignment="BottomCenter"/>
                     
                 </Grid>
@@ -235,6 +251,7 @@
                                      VerticalPropertyName="ComponentY"
                                      LabelPropertyName="{Binding LabelTypeMetabolite.Value.PropertyName}"
                                      Brush="Black"
+                                     ClipToBounds="True"
                                      ContentAlignment="BottomCenter"/>
                 </Grid>
             </chart:SimpleChartControl>
