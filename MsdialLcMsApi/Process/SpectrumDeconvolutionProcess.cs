@@ -18,8 +18,8 @@ namespace CompMs.MsdialLcMsApi.Process
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 
-        public Dictionary<double, List<MSDecResult>> Deconvolute(IDataProvider provider, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, ChromatogramPeaksDataSummaryDto summaryDto, Action<int> reportAction, CancellationToken token) {
-            var targetCE2MSDecResults = new Dictionary<double, List<MSDecResult>>();
+        public List<MSDecResultCollection> Deconvolute(IDataProvider provider, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, ChromatogramPeaksDataSummaryDto summaryDto, Action<int> reportAction, CancellationToken token) {
+            var mSDecREsultCollections = new List<MSDecResultCollection>();
             var initial_msdec = 30.0;
             var max_msdec = 30.0;
             var ceList = provider.LoadCollisionEnergyTargets();
@@ -33,16 +33,18 @@ namespace CompMs.MsdialLcMsApi.Process
                     }
                     var max_msdec_aif = max_msdec / ceList.Count;
                     var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
-                    targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
+                    var results = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
                         provider, chromPeakFeatures, _storage.Parameter, summary, _storage.IupacDatabase, reportAction, token, targetCE);
+                    mSDecREsultCollections.Add(new MSDecResultCollection(results, targetCE));
                 }
             }
             else {
                 var targetCE = ceList.IsEmptyOrNull() ? -1 : ceList[0];
-                targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
+                var results = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
                     provider, chromPeakFeatures, _storage.Parameter, summary, _storage.IupacDatabase, reportAction, token);
+                mSDecREsultCollections.Add(new MSDecResultCollection(results, targetCE));
             }
-            return targetCE2MSDecResults;
+            return mSDecREsultCollections;
         }
     }
 }

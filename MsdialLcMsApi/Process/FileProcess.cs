@@ -4,12 +4,10 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -49,7 +47,7 @@ namespace CompMs.MsdialLcMsApi.Process
             return ProcessAllAsync(files, reportActions, numParallel, afterEachRun, token, Annotate);
         }
 
-        public Task ProcessAllAsync(IEnumerable<AnalysisFileBean> files, IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token, Action<AnalysisFileBean, Action<int>, CancellationToken> process) {
+        private Task ProcessAllAsync(IEnumerable<AnalysisFileBean> files, IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token, Action<AnalysisFileBean, Action<int>, CancellationToken> process) {
             var queue = new ConcurrentQueue<(AnalysisFileBean, Action<int>)>(files.Zip(reportActions, (file, report) => (file, report)));
             var tasks = new Task[numParallel];
             for (int i = 0; i < numParallel; i++) {
@@ -77,65 +75,45 @@ namespace CompMs.MsdialLcMsApi.Process
 
             // chrom deconvolutions
             Console.WriteLine("Deconvolution started");
-            var targetCE2MSDecResults = _spectrumDeconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, summaryDto, reportAction, token);
+            var mSDecResultCollections = _spectrumDeconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, summaryDto, reportAction, token);
 
             // annotations
             Console.WriteLine("Annotation started");
-            _peakAnnotationProcess.Annotate(targetCE2MSDecResults, chromPeakFeatures.Items, provider, token, reportAction);
+            _peakAnnotationProcess.Annotate(mSDecResultCollections, chromPeakFeatures.Items, provider, token, reportAction);
 
             // file save
-            SaveToFile(chromPeakFeatures, file, targetCE2MSDecResults);
+            SaveToFile(file, chromPeakFeatures, mSDecResultCollections);
             reportAction?.Invoke(100);
         }
 
         public void Annotate(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
-            var (chromPeakFeatures, targetCE2MSDecResults) = LoadFromFile(file);
+            var chromPeakFeatures = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).Result;
+            var mSDecResultCollections = Task.WhenAll(MSDecResultCollection.DeserializeAsync(file)).Result;
             var provider = _factory.Create(file);
 
             // annotations
             Console.WriteLine("Annotation started");
-            _peakAnnotationProcess.Annotate(targetCE2MSDecResults, chromPeakFeatures.Items, provider, token, reportAction);
+            _peakAnnotationProcess.Annotate(mSDecResultCollections, chromPeakFeatures.Items, provider, token, reportAction);
 
             // file save
-            SaveToFile(chromPeakFeatures, file, targetCE2MSDecResults);
+            SaveToFile(file, chromPeakFeatures, mSDecResultCollections);
             reportAction?.Invoke(100);
         }
 
-        private static (ChromatogramPeakFeatureCollection, Dictionary<double, List<MSDecResult>>) LoadFromFile(AnalysisFileBean file) {
-            var peaks = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).Result;
-            var decResults = new Dictionary<double, List<MSDecResult>>();
-            if (file.DeconvolutionFilePathList.Count == 1) {
-                var dclfile = file.DeconvolutionFilePath;
-                decResults[-1] = MsdecResultsReader.ReadMSDecResults(dclfile, out var _, out var _);
+        private static void SaveToFile(AnalysisFileBean file, ChromatogramPeakFeatureCollection chromPeakFeatures, IReadOnlyList<MSDecResultCollection> mSDecResultCollections) {
+            Task t1, t2;
+
+            t1 = chromPeakFeatures.SerializeAsync(file);
+
+            if (mSDecResultCollections.Count == 1) {
+                t2 = mSDecResultCollections[0].SerializeAsync(file);
             }
             else {
-                foreach (var dclfile in file.DeconvolutionFilePathList) {
-                    var fileName = Path.GetFileNameWithoutExtension(dclfile);
-                    var suffix = fileName.Split('_').Last();
-                    var ce = double.TryParse(suffix, out var ce_) ? ce_ / 100 : -1d; // 3450 -> CE 34.50
-                    decResults[ce] = MsdecResultsReader.ReadMSDecResults(dclfile, out var _, out var _);
-                }
+                file.DeconvolutionFilePathList.Clear();
+                t2 = Task.WhenAll(mSDecResultCollections.Select(mSDecResultCollection => mSDecResultCollection.SerializeWithCEAsync(file)));
             }
-            return (peaks, decResults);
-        }
 
-        private static void SaveToFile(ChromatogramPeakFeatureCollection chromPeakFeatures, AnalysisFileBean file, Dictionary<double, List<MSDecResult>> targetCE2MSDecResults) {
-            chromPeakFeatures.SerializeAsync(file).Wait();
-
-            var dclfile = file.DeconvolutionFilePath;
-            var dclfiles = new List<string>();
-            foreach (var ce2msdecs in targetCE2MSDecResults) {
-                if (targetCE2MSDecResults.Count == 1) {
-                    dclfiles.Add(dclfile);
-                    MsdecResultsWriter.Write(dclfile, ce2msdecs.Value);
-                }
-                else {
-                    var suffix = Math.Round(ce2msdecs.Key * 100, 0); // CE 34.50 -> 3450
-                    var dclfile_suffix = Path.Combine(Path.GetDirectoryName(dclfile), Path.GetFileNameWithoutExtension(dclfile) + "_" + suffix + ".dcl");
-                    dclfiles.Add(dclfile_suffix);
-                    MsdecResultsWriter.Write(dclfile_suffix, ce2msdecs.Value);
-                }
-            }
+            Task.WaitAll(t1, t2);
         }
     }
 }

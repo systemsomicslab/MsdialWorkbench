@@ -3,7 +3,6 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialLcmsApi.Parameter;
 using CompMs.MsdialLcMsApi.Algorithm;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 
 namespace CompMs.MsdialLcMsApi.Process

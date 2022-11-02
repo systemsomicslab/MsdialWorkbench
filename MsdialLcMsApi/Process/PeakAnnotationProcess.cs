@@ -24,13 +24,13 @@ namespace CompMs.MsdialLcMsApi.Process
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
         }
 
-        public void Annotate(Dictionary<double, List<MSDecResult>> targetCE2MSDecResults, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, CancellationToken token, Action<int> reportAction) {
+        public void Annotate(IReadOnlyList<MSDecResultCollection> mSDecResultCollections, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, CancellationToken token, Action<int> reportAction) {
             var initial_annotation = 60.0;
             var max_annotation = 30.0;
-            foreach (var (ce2msdecs, index) in targetCE2MSDecResults.WithIndex()) {
-                var targetCE = ce2msdecs.Key;
-                var msdecResults = ce2msdecs.Value;
-                var max_annotation_local = max_annotation / targetCE2MSDecResults.Count;
+            foreach (var (ce2msdecs, index) in mSDecResultCollections.WithIndex()) {
+                var targetCE = ce2msdecs.CollisionEnergy;
+                var msdecResults = ce2msdecs.MSDecResults;
+                var max_annotation_local = max_annotation / mSDecResultCollections.Count;
                 var initial_annotation_local = initial_annotation + max_annotation_local * index;
             _annotationProcess.RunAnnotation(
                     chromPeakFeatures,
@@ -42,7 +42,7 @@ namespace CompMs.MsdialLcMsApi.Process
             }
 
             // characterizatin
-            new PeakCharacterEstimator(90, 10).Process(provider, chromPeakFeatures, targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null, _evaluator, _storage.Parameter, reportAction);
+            new PeakCharacterEstimator(90, 10).Process(provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null, _evaluator, _storage.Parameter, reportAction);
         }
     }
 }

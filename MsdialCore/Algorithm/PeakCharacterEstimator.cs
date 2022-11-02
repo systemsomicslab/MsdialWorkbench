@@ -34,7 +34,7 @@ namespace CompMs.MsdialCore.Algorithm
         public List<AdductIon> SearchedAdducts { get; set; } = new List<AdductIon>();
 
         public void Process(IDataProvider provider, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
-            List<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase parameter, Action<int> reportAction) {
+            IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase parameter, Action<int> reportAction) {
             // some adduct features are automatically insearted even if users did not select any type of adduct
             SearchedAdductInitialize(parameter);
 
@@ -239,7 +239,7 @@ namespace CompMs.MsdialCore.Algorithm
         // here, each peak is evaluated.
         // the purpose is to group the ions which are recognized as the same metabolite
         private void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures,
-            IDataProvider provider, List<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
+            IDataProvider provider, IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return;
 
             // if the first inchikey is same, it's recognized as the same metabolite.
@@ -265,7 +265,7 @@ namespace CompMs.MsdialCore.Algorithm
             assignLinksBasedOnPartialMatchingOfMS1MS2(chromPeakFeatures, msdecResults, param);
         }
 
-        private void assignAdductByMsMs(List<ChromatogramPeakFeature> chromPeakFeatures, List<MSDecResult> msdecResults, ParameterBase param) {
+        private void assignAdductByMsMs(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, ParameterBase param) {
 
             var isAcetateAdduct = false;
             var isFormateAdduct = false;
@@ -331,7 +331,7 @@ namespace CompMs.MsdialCore.Algorithm
         // the peak of MS1 is assigned as "Found in upper MSMS"
         private void assignLinksBasedOnPartialMatchingOfMS1MS2(
             List<ChromatogramPeakFeature> chromPeakFeatures,
-            List<MSDecResult> msdecResults,
+            IReadOnlyList<MSDecResult> msdecResults,
             ParameterBase param) {
 
             chromPeakFeatures = chromPeakFeatures.OrderBy(chromPeakFeature => chromPeakFeature.Mass).ToList();
