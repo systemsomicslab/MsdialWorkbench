@@ -331,9 +331,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            var method = new ImmsMethodModel(_analysisFileBeanModelCollection, storage, _projectBaseParameter, _broker);
-            method.Load();
-            return method;
+            return new ImmsMethodModel(_analysisFileBeanModelCollection, storage, _projectBaseParameter, _broker);
         }
     }
 
