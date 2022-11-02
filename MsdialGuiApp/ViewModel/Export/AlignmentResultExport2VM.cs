@@ -1,94 +1,110 @@
-﻿using CompMs.App.Msdial.ViewModel.Service;
+﻿using CompMs.App.Msdial.Model.Export;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Enum;
-using CompMs.Common.Extension;
-using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM;
+using CompMs.CommonMVVM.Validator;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Parser;
 using Reactive.Bindings.Notifiers;
-using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
+using System.ComponentModel.DataAnnotations;
 using System.Windows;
 using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Export
 {
-    public class AlignmentResultExport2VM : ViewModelBase
+    public sealed class AlignmentResultExport2VM : ViewModelBase
     {
-        private readonly IMsdialDataStorage<ParameterBase> container;
         private readonly IMessageBroker _broker;
+        private readonly AlignmentResultExportModel _model;
+
+        internal AlignmentResultExport2VM(AlignmentResultExportModel model, IMessageBroker broker) {
+            _model = model ?? throw new System.ArgumentNullException(nameof(model));
+
+            AlignmentFiles = CollectionViewSource.GetDefaultView(_model.AlignmentFiles);
+            if (_model.AlignmentFile != null)
+                AlignmentFiles.MoveCurrentTo(_model.AlignmentFile);
+            _broker = broker ?? MessageBroker.Default;
+        }
 
         public AlignmentResultExport2VM(
             AlignmentFileBean alignmentFile,
-            ICollection<AlignmentFileBean> alignmentFiles,
+            IReadOnlyList<AlignmentFileBean> alignmentFiles,
             IMsdialDataStorage<ParameterBase> container,
-            IMessageBroker broker) {
-
-            this.alignmentFiles = CollectionViewSource.GetDefaultView(alignmentFiles);
-            if (alignmentFile != null)
-                this.alignmentFiles.MoveCurrentTo(alignmentFile);
-            this.container = container;
-            _broker = broker ?? MessageBroker.Default;
-            ExportTypes = new List<ExportType2>();
+            IMessageBroker broker) : this(new AlignmentResultExportModel(alignmentFile, alignmentFiles, container), broker) {
 
         }
 
+        [PathExists(ErrorMessage = "This folder does not exist.", IsDirectory = true)]
         public string ExportDirectory {
-            get => exportDirectory;
+            get => _exportDirectory;
             set {
-                if (SetProperty(ref exportDirectory, value)) {
+                if (SetProperty(ref _exportDirectory, value)) {
+                    if (!ContainsError(nameof(ExportDirectory))) {
+                        _model.ExportDirectory = _exportDirectory;
+                    }
                     ExportCommand?.RaiseCanExecuteChanged();
                 }
             }
         }
-        private string exportDirectory = string.Empty;
+        private string _exportDirectory = string.Empty;
 
-        public ExportFormat2 Format {
-            get => format;
-            set => SetProperty(ref format, value);
+        [Required(ErrorMessage = "Please select format.")]
+        public ExportFormat Format {
+            get => _format;
+            set {
+                if (SetProperty(ref _format, value)) {
+                    if (!ContainsError(nameof(Format))) {
+                        _model.Format = _format;
+                    }
+                    ExportCommand?.RaiseCanExecuteChanged();
+                }
+            }
         }
-        private ExportFormat2 format;
-        public List<ExportFormat2> Formats { get; } = new List<ExportFormat2> {
-            new ExportFormat2("txt", new AlignmentCSVExporter()),
-            new ExportFormat2("csv", new AlignmentCSVExporter(separator: ",")),
-            // mztabm
-        };
+        private ExportFormat _format;
+        public ReadOnlyObservableCollection<ExportFormat> Formats => _model.Formats;
 
+        [Required(ErrorMessage = "Please select spectra type.")]
         public ExportspectraType SpectraType {
-            get => spectraType;
-            set => SetProperty(ref spectraType, value);
-        }
-        private ExportspectraType spectraType = ExportspectraType.deconvoluted;
-        public List<ExportspectraType> SpectraTypes { get; } = new List<ExportspectraType> {
-            ExportspectraType.deconvoluted
-        };
-
-        public AlignmentFileBean AlignmentFile {
-            get => alignmentFile;
+            get => _spectraType;
             set {
-                if (SetProperty(ref alignmentFile, value)) {
+                if (SetProperty(ref _spectraType, value)) {
+                    if (!ContainsError(nameof(SpectraType))) {
+                        _model.SpectraType = _spectraType;
+                    }
                     ExportCommand?.RaiseCanExecuteChanged();
                 }
             }
         }
-        private AlignmentFileBean alignmentFile;
+        private ExportspectraType _spectraType = ExportspectraType.deconvoluted;
+        public ReadOnlyObservableCollection<ExportspectraType> SpectraTypes => _model.SpectraTypes;
 
-        public ICollectionView AlignmentFiles {
-            get => alignmentFiles;
-            set => SetProperty(ref alignmentFiles, value);
+        [Required(ErrorMessage = "Please select alignment file.")]
+        public AlignmentFileBean AlignmentFile {
+            get => _alignmentFile;
+            set {
+                if (SetProperty(ref _alignmentFile, value)) {
+                    if (!ContainsError(nameof(AlignmentFile))) {
+                        _model.AlignmentFile = _alignmentFile;
+                    }
+                    ExportCommand?.RaiseCanExecuteChanged();
+                }
+            }
         }
-        private ICollectionView alignmentFiles;
+        private AlignmentFileBean _alignmentFile;
 
-        public List<ExportType2> ExportTypes { get; } = new List<ExportType2>();
+        public ICollectionView AlignmentFiles { get; }
 
-        public DelegateCommand BrowseDirectoryCommand => browseDirectoryCommand ?? (browseDirectoryCommand = new DelegateCommand(BrowseDirectory));
-        private DelegateCommand browseDirectoryCommand;
+        public ReadOnlyObservableCollection<ExportType> ExportTypes => _model.ExportTypes;
+
+        public void AddExportTypes(params ExportType[] exportTypes) {
+            _model.AddExportTypes(exportTypes);
+        }
+
+        public DelegateCommand BrowseDirectoryCommand => _browseDirectoryCommand ?? (_browseDirectoryCommand = new DelegateCommand(BrowseDirectory));
+        private DelegateCommand _browseDirectoryCommand;
 
         private void BrowseDirectory() {
             var fbd = new Graphics.Window.SelectFolderDialog
@@ -101,121 +117,26 @@ namespace CompMs.App.Msdial.ViewModel.Export
             }
         }
 
-        public DelegateCommand ExportCommand => exportCommand ?? (exportCommand = new DelegateCommand(ExportAlignmentResult, CanExportAlignmentResult));
-        private DelegateCommand exportCommand;
+        public DelegateCommand ExportCommand => _exportCommand ?? (_exportCommand = new DelegateCommand(ExportAlignmentResult, CanExportAlignmentResult));
+        private DelegateCommand _exportCommand;
 
         private void ExportAlignmentResult() {
-            var files = container.AnalysisFiles;
-            var alignmentFile = AlignmentFile;
-            var dt = DateTime.Now;
-            var task = TaskNotification.Start($"Exporting {alignmentFile.FileName}");
+            var task = TaskNotification.Start($"Exporting {AlignmentFile.FileName}");
             _broker.Publish(task);
-
-            var resultContainer = AlignmentResultContainer.Load(alignmentFile);
-            var msdecResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
-
-            var exporter = Format.Exporter;
-            var exportTypes = ExportTypes.Where(type => type.IsSelected).ToArray();
-            
-            foreach (var (exportType, index) in exportTypes.WithIndex()) {
-                var outName = $"{exportType.FilePrefix}_{alignmentFile.FileID}_{dt:yyyy_MM_dd_HH_mm_ss}.txt";
-                var outfile = Path.Combine(ExportDirectory, outName);
-                _broker.Publish(TaskNotification.Progress(task, ((double)index) / exportTypes.Length, $"Exporting {outName}"));
-                using (var outstream = File.Open(outfile, FileMode.Create, FileAccess.Write)) {
-                    if (exportType.FilePrefix == "Protein") {
-                        var container = MsdialProteomicsSerializer.LoadProteinResultContainer(alignmentFile.ProteinAssembledResultFilePath);
-                        var header = new List<string>() {
-                            "Protein group ID", "Protein ID", "Protein name", "Protein description", "Coverage", "Score", "Peptide count", "Unique peptide count"
-                        };
-                        foreach (var file in files) header.Add(file.AnalysisFileName);
-                        using (var sw = new StreamWriter(outstream, Encoding.ASCII)) {
-                            sw.WriteLine(String.Join("\t", header));
-                            foreach (var group in container.ProteinGroups) {
-                                foreach (var protein in group.ProteinMsResults) {
-
-                                    var values = new List<string>() {
-                                        group.GroupID.ToString(), protein.FastaProperty.UniqueIdentifier, protein.FastaProperty.ProteinName, protein.FastaProperty.Description,
-                                        protein.PeptideCoverage.ToString(), protein.Score.ToString(), protein.MatchedPeptideResults.Count().ToString(), protein.UniquePeptides.Count().ToString()
-                                    };
-
-                                    foreach (var height in protein.PeakHeights) values.Add(height.ToString());
-                                    sw.WriteLine(String.Join("\t", values));
-                                }
-                            }
-                        }
-                    }
-                    else {
-                        exporter.Export(
-                        outstream,
-                        resultContainer.AlignmentSpotProperties,
-                        msdecResults,
-                        files,
-                        exportType.MetadataAccessor,
-                        exportType.QuantValueAccessor,
-                        exportType.Stats);
-                    }
-                }
-            }
+            _model.ExportAlignmentResult((progress, label) => _broker.Publish(TaskNotification.Progress(task, progress, label)));
             _broker.Publish(TaskNotification.End(task));
         }
 
         private bool CanExportAlignmentResult() {
-            if (AlignmentFile == null)
-                return false;
-
-            return Directory.Exists(ExportDirectory);
+            return !HasValidationErrors && _model.CanExportAlignmentResult();
         }
 
-        public DelegateCommand<Window> CancelCommand => cancelCommand ?? (cancelCommand = new DelegateCommand<Window>(Cancel));
-        private DelegateCommand<Window> cancelCommand;
+        public DelegateCommand<Window> CancelCommand => _cancelCommand ?? (_cancelCommand = new DelegateCommand<Window>(Cancel));
+        private DelegateCommand<Window> _cancelCommand;
 
         private void Cancel(Window window) {
             window.DialogResult = false;
             window.Close();
         }
-    }
-
-    public class ExportType2 : ViewModelBase {
-        public ExportType2(string label, IMetadataAccessor metadataAccessor, IQuantValueAccessor quantValueAccessor, string filePrefix, bool isSelected = false) {
-            Label = label;
-            MetadataAccessor = metadataAccessor;
-            QuantValueAccessor = quantValueAccessor;
-            FilePrefix = filePrefix;
-            IsSelected = isSelected;
-        }
-
-        public ExportType2(string label, IMetadataAccessor metadataAccessor, IQuantValueAccessor quantValueAccessor, string filePrefix, List<StatsValue> stats, bool isSelected = false) {
-            Label = label;
-            MetadataAccessor = metadataAccessor;
-            QuantValueAccessor = quantValueAccessor;
-            FilePrefix = filePrefix;
-            IsSelected = isSelected;
-            Stats = stats;
-        }
-
-        public string Label { get; }
-
-        public IMetadataAccessor MetadataAccessor { get; }
-
-        public IQuantValueAccessor QuantValueAccessor { get; }
-        public bool IsSelected {
-            get => isSelected;
-            set => SetProperty(ref isSelected, value);
-        }
-        private bool isSelected = false;
-        public string FilePrefix { get; }
-
-        public List<StatsValue> Stats { get; } = new List<StatsValue>();
-    }
-
-    public class ExportFormat2 : ViewModelBase
-    {
-        public ExportFormat2(string label, IAlignmentExporter exporter) {
-            Label = label;
-            Exporter = exporter;
-        }
-
-        public string Label { get; }
-        public IAlignmentExporter Exporter { get; }
     }
 }

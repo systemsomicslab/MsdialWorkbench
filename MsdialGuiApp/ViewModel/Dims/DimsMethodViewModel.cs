@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Dims;
+using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Core;
@@ -140,27 +141,26 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         private void ExportAlignment(Window owner) {
             var container = _model.Storage;
             var metadataAccessor = new DimsMetadataAccessor(container.DataBaseMapper, container.Parameter);
-            var vm = new AlignmentResultExport2VM(_model.AlignmentFile, _model.AlignmentFiles, container, _broker);
-            vm.ExportTypes.AddRange(
-                new List<ExportType2>
+            var model = new AlignmentResultExportModel(_model.AlignmentFile, _model.AlignmentFiles, container);
+            using (var vm = new AlignmentResultExport2VM(model, _broker)) {
+                vm.AddExportTypes(
+                        new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", container.Parameter), "Height", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }, true),
+                        new ExportType("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.Parameter), "Area", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
+                        new ExportType("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.Parameter), "NormalizedHeight", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
+                        new ExportType("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.Parameter), "NormalizedArea", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
+                        new ExportType("Alignment ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.Parameter), "PeakID"),
+                        new ExportType("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.Parameter), "Mz"),
+                        new ExportType("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.Parameter), "SN"),
+                        new ExportType("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.Parameter), "MsmsIncluded")
+                    );
+                var dialog = new AlignmentResultExportWin
                 {
-                    new ExportType2("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", container.Parameter), "Height", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }, true),
-                    new ExportType2("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.Parameter), "Area", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.Parameter), "NormalizedHeight", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.Parameter), "NormalizedArea", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Alignment ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.Parameter), "PeakID"),
-                    new ExportType2("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.Parameter), "Mz"),
-                    new ExportType2("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.Parameter), "SN"),
-                    new ExportType2("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.Parameter), "MsmsIncluded"),
-                });
-            var dialog = new AlignmentResultExportWin
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-
-            dialog.ShowDialog();
+                    DataContext = vm,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                dialog.ShowDialog();
+            }
         }
 
         private bool ReadDisplayFilter(DisplayFilter flag) {
