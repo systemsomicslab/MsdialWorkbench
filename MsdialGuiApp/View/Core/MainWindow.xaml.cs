@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Notification;
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.View.Chart;
+using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.View.Statistics;
@@ -8,6 +9,7 @@ using CompMs.App.Msdial.View.Table;
 using CompMs.App.Msdial.ViewModel;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
@@ -82,6 +84,8 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(OpenPcaSettingView);
             broker.ToObservable<PcaResultViewModel>()
                 .Subscribe(OpenPcaView);
+            broker.ToObservable<AlignmentResultExport2VM>()
+                .Subscribe(OpenAlignmentResultExportDialog);
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
 #elif DEBUG
@@ -308,6 +312,16 @@ namespace CompMs.App.Msdial.View.Core
                 window.Closed += (s, e) => vm.Dispose();
                 window.Show();
             });
+        }
+
+        private void OpenAlignmentResultExportDialog(AlignmentResultExport2VM vm) {
+            var dialog = new AlignmentResultExportWin
+            {
+                DataContext = vm,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            dialog.ShowDialog();
         }
 
         protected override void OnContentRendered(EventArgs e) {

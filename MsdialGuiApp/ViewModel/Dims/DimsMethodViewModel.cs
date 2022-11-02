@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.Dims;
-using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
@@ -48,39 +47,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             PeakFilterViewModel = new PeakFilterViewModel(model.PeakFilterModel).AddTo(Disposables);
         }
 
-        public bool RefMatchedChecked {
-            get => ReadDisplayFilter(DisplayFilter.RefMatched);
-            set => WriteDisplayFilter(DisplayFilter.RefMatched, value);
-        }
-        public bool SuggestedChecked {
-            get => ReadDisplayFilter(DisplayFilter.Suggested);
-            set => WriteDisplayFilter(DisplayFilter.Suggested, value);
-        }
-        public bool UnknownChecked {
-            get => ReadDisplayFilter(DisplayFilter.Unknown);
-            set => WriteDisplayFilter(DisplayFilter.Unknown, value);
-        }
-        public bool Ms2AcquiredChecked {
-            get => ReadDisplayFilter(DisplayFilter.Ms2Acquired);
-            set => WriteDisplayFilter(DisplayFilter.Ms2Acquired, value);
-        }
-        public bool MolecularIonChecked {
-            get => ReadDisplayFilter(DisplayFilter.MolecularIon);
-            set => WriteDisplayFilter(DisplayFilter.MolecularIon, value);
-        }
-        public bool BlankFilterChecked {
-            get => ReadDisplayFilter(DisplayFilter.Blank);
-            set => WriteDisplayFilter(DisplayFilter.Blank, value);
-        }
-        public bool UniqueIonsChecked {
-            get => ReadDisplayFilter(DisplayFilter.UniqueIons);
-            set => WriteDisplayFilter(DisplayFilter.UniqueIons, value);
-        }
-        public bool ManuallyModifiedChecked {
-            get => ReadDisplayFilter(DisplayFilter.ManuallyModified);
-            set => WriteDisplayFilter(DisplayFilter.ManuallyModified, value);
-        }
-        private DisplayFilter displayFilters = 0;
+        public PeakFilterViewModel PeakFilterViewModel { get; }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
             if (analysisFile?.File == null || _model.AnalysisFileModel == analysisFile.File) {
@@ -119,7 +86,6 @@ namespace CompMs.App.Msdial.ViewModel.Dims
             };
 
             using (var vm = new AnalysisResultExportViewModel(container.AnalysisFiles, spectraTypes, spectraFormats, _model.ProviderFactory)) {
-
                 var dialog = new AnalysisResultExportWin
                 {
                     DataContext = vm,
@@ -132,35 +98,12 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         }
 
         public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(ExportAlignment));
-
-        public PeakFilterViewModel PeakFilterViewModel { get; }
-
         private DelegateCommand<Window> exportAlignmentResultCommand;
 
         private void ExportAlignment(Window owner) {
             using (var vm = new AlignmentResultExport2VM(_model.AlignmentResultExportModel, _broker)) {
-                var dialog = new AlignmentResultExportWin
-                {
-                    DataContext = vm,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-                dialog.ShowDialog();
+                _broker.Publish(vm);
             }
-        }
-
-        private bool ReadDisplayFilter(DisplayFilter flag) {
-            return (displayFilters & flag) != 0;
-        }
-
-        private void WriteDisplayFilter(DisplayFilter flag, bool set) {
-            if (set) {
-                displayFilters |= flag;
-            }
-            else {
-                displayFilters &= (~flag);
-            }
-            OnPropertyChanged(nameof(displayFilters));
         }
 
         private static IReadOnlyReactiveProperty<DimsAnalysisViewModel> ConvertToAnalysisViewModel(

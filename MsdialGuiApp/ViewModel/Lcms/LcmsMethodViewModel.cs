@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
-using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
@@ -87,13 +86,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private void ExportAlignment(Window owner) {
             var model_ = model.AlignmentResultExportModel;
             using (var vm = new AlignmentResultExport2VM(model_, _broker)) {
-                var dialog = new AlignmentResultExportWin
-                {
-                    DataContext = vm,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-                dialog.ShowDialog();
+                _broker.Publish(vm);
             }
         }
 

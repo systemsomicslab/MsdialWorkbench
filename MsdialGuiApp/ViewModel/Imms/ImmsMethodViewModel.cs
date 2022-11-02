@@ -1,6 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.Imms;
-using CompMs.App.Msdial.Model.Search;
-using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
@@ -34,53 +32,6 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             _focusControlManager = focusControlmanager.AddTo(Disposables);
         }
 
-        public bool RefMatchedChecked {
-            get => ReadDisplayFilter(DisplayFilter.RefMatched);
-            set => WriteDisplayFilter(DisplayFilter.RefMatched, value);
-        }
-        public bool SuggestedChecked {
-            get => ReadDisplayFilter(DisplayFilter.Suggested);
-            set => WriteDisplayFilter(DisplayFilter.Suggested, value);
-        }
-        public bool UnknownChecked {
-            get => ReadDisplayFilter(DisplayFilter.Unknown);
-            set => WriteDisplayFilter(DisplayFilter.Unknown, value);
-        }
-        public bool CcsChecked {
-            get => ReadDisplayFilter(DisplayFilter.CcsMatched);
-            set => WriteDisplayFilter(DisplayFilter.CcsMatched, value);
-        }
-        public bool Ms2AcquiredChecked {
-            get => ReadDisplayFilter(DisplayFilter.Ms2Acquired);
-            set => WriteDisplayFilter(DisplayFilter.Ms2Acquired, value);
-        }
-        public bool MolecularIonChecked {
-            get => ReadDisplayFilter(DisplayFilter.MolecularIon);
-            set => WriteDisplayFilter(DisplayFilter.MolecularIon, value);
-        }
-        public bool BlankFilterChecked {
-            get => ReadDisplayFilter(DisplayFilter.Blank);
-            set => WriteDisplayFilter(DisplayFilter.Blank, value);
-        }
-        public bool UniqueIonsChecked {
-            get => ReadDisplayFilter(DisplayFilter.UniqueIons);
-            set => WriteDisplayFilter(DisplayFilter.UniqueIons, value);
-        }
-        public bool ManuallyModifiedChecked {
-            get => ReadDisplayFilter(DisplayFilter.ManuallyModified);
-            set => WriteDisplayFilter(DisplayFilter.ManuallyModified, value);
-        }
-        private DisplayFilter displayFilters = DisplayFilter.Unset;
-
-        private bool ReadDisplayFilter(DisplayFilter flag) {
-            return displayFilters.Read(flag);
-        }
-
-        private void WriteDisplayFilter(DisplayFilter flag, bool set) {
-            displayFilters.Write(flag, set);
-            OnPropertyChanged(nameof(displayFilters));
-        }
-
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
             if (analysisFile?.File == null || analysisFile.File == model.AnalysisFileModel) {
                 return Task.CompletedTask;
@@ -104,13 +55,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
         private void ExportAlignment(Window owner) {
             using (var vm = new AlignmentResultExport2VM(model.AlignmentResultExportModel, _broker)) {
-                var dialog = new AlignmentResultExportWin
-                {
-                    DataContext = vm,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-                dialog.ShowDialog();
+                _broker.Publish(vm);
             }
         }
 
