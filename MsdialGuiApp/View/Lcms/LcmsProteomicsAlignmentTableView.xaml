@@ -24,6 +24,9 @@
             <converter:BarItemCollectionToSmallClassBarChartViewModel x:Key="CollectionToViewModel"/>
         </ResourceDictionary>
     </UserControl.Resources>
+    <UserControl.InputBindings>
+        <KeyBinding Command="{Binding SetUnknownCommand}" Gesture="Ctrl+D"/>
+    </UserControl.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50" MinHeight="50"/>

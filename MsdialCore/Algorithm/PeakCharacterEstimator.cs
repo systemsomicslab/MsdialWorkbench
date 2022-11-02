@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -34,9 +33,8 @@ namespace CompMs.MsdialCore.Algorithm
         }
         public List<AdductIon> SearchedAdducts { get; set; } = new List<AdductIon>();
 
-        public void Process(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures,
+        public void Process(IDataProvider provider, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             List<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase parameter, Action<int> reportAction) {
-            
             // some adduct features are automatically insearted even if users did not select any type of adduct
             SearchedAdductInitialize(parameter);
 
@@ -78,7 +76,7 @@ namespace CompMs.MsdialCore.Algorithm
         // currently, the links for same metabolite, isotope, and adduct are grouped.
         // the others such as found in upper msms and chromatogram correlation are not grouped.
         // in future, I have to create the merge GUI for user side
-        private void AssignPutativePeakgroupIDs(List<ChromatogramPeakFeature> chromPeakFeatures) {
+        private void AssignPutativePeakgroupIDs(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures) {
             var groupID = 0;
             foreach (var peak in chromPeakFeatures) {
                 var peakCharacter = peak.PeakCharacter;
@@ -95,7 +93,7 @@ namespace CompMs.MsdialCore.Algorithm
             }
         }
 
-        private void recPeakGroupAssignment(ChromatogramPeakFeature peak, List<ChromatogramPeakFeature> peakSpots, int groupID, List<int> crawledPeaks) {
+        private void recPeakGroupAssignment(ChromatogramPeakFeature peak, IReadOnlyList<ChromatogramPeakFeature> peakSpots, int groupID, List<int> crawledPeaks) {
             var peakCharacter = peak.PeakCharacter;
             if (peakCharacter.PeakLinks == null || peakCharacter.PeakLinks.Count == 0) return;
             foreach (var linkedPeak in peak.PeakCharacter.PeakLinks) {
@@ -124,7 +122,7 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
 
-        private void Initialization(List<ChromatogramPeakFeature> chromPeakFeatures) {
+        private void Initialization(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures) {
             foreach (var peak in chromPeakFeatures) {
                 var character = peak.PeakCharacter;
                 if (character.IsotopeWeightNumber > 0) {
@@ -174,7 +172,7 @@ namespace CompMs.MsdialCore.Algorithm
             }
         }
 
-        private void FinalizationForAdduct(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
+        private void FinalizationForAdduct(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
             var defaultAdduct = SearchedAdducts[0];
 
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {

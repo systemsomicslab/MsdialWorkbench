@@ -90,7 +90,7 @@ namespace CompMs.App.MsdialConsole.Process
             storage.AddStorage(container);
 
             var evaluator = MsScanMatchResultEvaluator.CreateEvaluator(param.TextDbSearchParam);
-            MsdialImmsCore.Process.FileProcess.Run(file, container, null, null, provider, evaluator, false, null);
+            MsdialImmsCore.Process.FileProcess.Run(file, container, null, null, provider, evaluator, null);
             using (var fs = File.Open(storage.ProjectParameter.FilePath, FileMode.Create))
             using (var streamManager = ZipStreamManager.OpenCreate(fs)) {
                 var serializer = new MsdialIntegrateSerializer();

@@ -38,18 +38,22 @@ namespace CompMs.App.Msdial.Model.Imms
     internal sealed class ImmsMethodModel : MethodModelBase
     {
         static ImmsMethodModel() {
-            chromatogramSpotSerializer = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
+            CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
         }
-        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
+        private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
+
         private readonly IMessageBroker _broker;
+        private readonly IMsdialDataStorage<MsdialImmsParameter> _storage;
+        private readonly FacadeMatchResultEvaluator _matchResultEvaluator;
 
         public ImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
             : base(analysisFileBeanModelCollection, storage.AlignmentFiles, projectBaseParameter) {
-            Storage = storage;
+            _storage = storage;
             _broker = broker;
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
+            _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
+            _storage.DataBaseMapper = _storage.DataBases.CreateDataBaseMapper();
 
-            var parameter = Storage.Parameter;
+            var parameter = _storage.Parameter;
             if (parameter.ProviderFactoryParameter is null) {
                 parameter.ProviderFactoryParameter = new ImmsAverageDataProviderFactoryParameter(0.01, 0.002, 0, 100);
             }
@@ -58,78 +62,99 @@ namespace CompMs.App.Msdial.Model.Imms
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
         }
 
-        private FacadeMatchResultEvaluator matchResultEvaluator;
-
         public ImmsAnalysisModel AnalysisModel {
-            get => analysisModel;
+            get => _analysisModel;
             set {
-                var old = analysisModel;
-                if (SetProperty(ref analysisModel, value)) {
+                var old = _analysisModel;
+                if (SetProperty(ref _analysisModel, value)) {
                     old?.Dispose();
                 }
             }
         }
-        private ImmsAnalysisModel analysisModel;
+        private ImmsAnalysisModel _analysisModel;
 
         public ImmsAlignmentModel AlignmentModel {
-            get => alignmentModel;
+            get => _alignmentModel;
             set {
-                var old = alignmentModel;
-                if (SetProperty(ref alignmentModel, value)) {
+                var old = _alignmentModel;
+                if (SetProperty(ref _alignmentModel, value)) {
                     old?.Dispose();
                 }
             }
         }
-        private ImmsAlignmentModel alignmentModel;
+        private ImmsAlignmentModel _alignmentModel;
 
         public PeakFilterModel PeakFilterModel { get; }
 
-        public IMsdialDataStorage<MsdialImmsParameter> Storage { get; }
-
-        public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; private set; }
-
-        public void Load() {
-            var parameter = Storage.Parameter;
-            if (parameter.ProviderFactoryParameter is null) {
-                parameter.ProviderFactoryParameter = new ImmsAverageDataProviderFactoryParameter(0.001, 0.002, 0, 100);
-            }
-            ProviderFactory = parameter?.ProviderFactoryParameter.Create(5, true);
-        }
+        public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; }
 
         public override Task RunAsync(ProcessOption option, CancellationToken token) {
-            Storage.DataBaseMapper = Storage.DataBases.CreateDataBaseMapper();
-            matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(Storage.DataBases);
-            ProviderFactory = Storage.Parameter.ProviderFactoryParameter.Create(5, true);
-
             var processOption = option;
-            // Run Identification
-            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                if (!ProcessAnnotaion(Storage))
+            // Run PeakPick and Identification
+            if (processOption.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
+                if (!ProcessPeakPickAndAnnotation(_storage)) {
+                    return Task.CompletedTask;
+                }
+            }
+            else if (processOption.HasFlag(ProcessOption.Identification)) {
+                if (!ProcessAnnotation(_storage))
                     return Task.CompletedTask;
             }
 
             // Run Alignment
             if (processOption.HasFlag(ProcessOption.Alignment)) {
-                if (!ProcessAlignment(Storage))
+                if (!ProcessAlignment(_storage))
                     return Task.CompletedTask;
             }
 
             return LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token);
         }
 
-        private bool ProcessAnnotaion(IMsdialDataStorage<MsdialImmsParameter> storage) {
+        private bool ProcessPeakPickAndAnnotation(IMsdialDataStorage<MsdialImmsParameter> storage) {
             var request = new ProgressBarMultiContainerRequest(
                 async vm =>
                 {
                     var tasks = new List<Task>();
-                    var usable = Math.Max(Storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
+                    var usable = Math.Max(_storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
+                    var processor = new FileProcess(storage, null, null, _matchResultEvaluator);
                     using (var sem = new SemaphoreSlim(usable, usable)) {
                         foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
                             var task = Task.Run(async () =>
                             {
                                 await sem.WaitAsync();
                                 try {
-                                    FileProcess.Run(analysisfile, storage, null, null, ProviderFactory.Create(analysisfile), matchResultEvaluator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v);
+                                    processor.Run(analysisfile, ProviderFactory.Create(analysisfile), reportAction: v => pbvm.CurrentValue = v);
+                                    vm.Increment();
+                                }
+                                finally {
+                                    sem.Release();
+                                }
+                            });
+                            tasks.Add(task);
+                        }
+                        await Task.WhenAll(tasks).ConfigureAwait(false);
+                    }
+                },
+                storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
+            _broker.Publish(request);
+
+            return request.Result ?? false;
+        }
+
+        private bool ProcessAnnotation(IMsdialDataStorage<MsdialImmsParameter> storage) {
+            var request = new ProgressBarMultiContainerRequest(
+                async vm =>
+                {
+                    var tasks = new List<Task>();
+                    var usable = Math.Max(_storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
+                    var processor = new FileProcess(storage, null, null, _matchResultEvaluator);
+                    using (var sem = new SemaphoreSlim(usable, usable)) {
+                        foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
+                            var task = Task.Run(async () =>
+                            {
+                                await sem.WaitAsync();
+                                try {
+                                    processor.Annotate(analysisfile, ProviderFactory.Create(analysisfile), reportAction: v => pbvm.CurrentValue = v);
                                     vm.Increment();
                                 }
                                 finally {
@@ -151,11 +176,11 @@ namespace CompMs.App.Msdial.Model.Imms
             var request = new ProgressBarRequest("Process alignment..", isIndeterminate: true,
                 async _ =>
                 {
-                    var factory = new ImmsAlignmentProcessFactory(storage, matchResultEvaluator);
+                    var factory = new ImmsAlignmentProcessFactory(storage, _matchResultEvaluator);
                     var aligner = factory.CreatePeakAligner();
                     aligner.ProviderFactory = ProviderFactory; // TODO: I'll remove this later.
                     var alignmentFile = storage.AlignmentFiles.Last();
-                    var result = await Task.Run(() => aligner.Alignment(storage.AnalysisFiles, alignmentFile, chromatogramSpotSerializer)).ConfigureAwait(false);
+                    var result = await Task.Run(() => aligner.Alignment(storage.AnalysisFiles, alignmentFile, CHROMATOGRAM_SPOT_SERIALIZER)).ConfigureAwait(false);
                     result.Save(alignmentFile);
                     MsdecResultsWriter.Write(alignmentFile.SpectraFilePath, LoadRepresentativeDeconvolutions(storage, result.AlignmentSpotProperties).ToList());
                 });
@@ -198,10 +223,10 @@ namespace CompMs.App.Msdial.Model.Imms
             var provider = ProviderFactory.Create(analysisFile.File);
             AnalysisModel = new ImmsAnalysisModel(
                 analysisFile,
-                provider, matchResultEvaluator,
-                Storage.DataBases,
-                Storage.DataBaseMapper,
-                Storage.Parameter,
+                provider, _matchResultEvaluator,
+                _storage.DataBases,
+                _storage.DataBaseMapper,
+                _storage.Parameter,
                 PeakFilterModel)
             .AddTo(Disposables);
             return AnalysisModel;
@@ -215,17 +240,17 @@ namespace CompMs.App.Msdial.Model.Imms
 
             return AlignmentModel = new ImmsAlignmentModel(
                 alignmentFile,
-                matchResultEvaluator,
-                Storage.DataBases,
-                Storage.DataBaseMapper,
+                _matchResultEvaluator,
+                _storage.DataBases,
+                _storage.DataBaseMapper,
                 PeakFilterModel,
-                Storage.Parameter,
-                Storage.AnalysisFiles)
+                _storage.Parameter,
+                _storage.AnalysisFiles)
             .AddTo(Disposables);
         }
 
         public void ExportAlignment(Window owner) {
-            var container = Storage;
+            var container = _storage;
             var metadataAccessor = new ImmsMetadataAccessor(container.DataBaseMapper, container.Parameter);
             var vm = new AlignmentResultExport2VM(AlignmentFile, container.AlignmentFiles, container, _broker);
             vm.ExportTypes.AddRange(
@@ -251,7 +276,7 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void ExportAnalysis(Window owner) {
-            var container = Storage;
+            var container = _storage;
             var spectraTypes = new List<Export.SpectraType>
             {
                 new Export.SpectraType(
@@ -282,7 +307,6 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void ShowTIC(Window owner) {
-            var container = Storage;
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
 
@@ -299,7 +323,6 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void ShowBPC(Window owner) {
-            var container = Storage;
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
 
@@ -315,11 +338,10 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void ShowEIC(Window owner) {
-            var container = Storage;
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
 
-            var param = container.Parameter;
+            var param = _storage.Parameter;
             var model = new Setting.DisplayEicSettingModel(param);
             var dialog = new EICDisplaySettingView() {
                 DataContext = new DisplayEicSettingViewModel(model),
@@ -351,7 +373,6 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public void ShowTicBpcRepEIC(Window owner) {
-            var container = Storage;
             var analysisModel = AnalysisModel;
             if (analysisModel is null) return;
 

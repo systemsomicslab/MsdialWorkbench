@@ -1,4 +1,4 @@
-﻿using CompMs.App.Msdial.Model.Imms;
+﻿using CompMs.App.Msdial.Model.ImagingImms;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.CommonMVVM;

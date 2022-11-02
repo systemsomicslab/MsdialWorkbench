@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Dims;
+using CompMs.App.Msdial.Model.ImagingImms;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.Model.Lcms;
@@ -330,9 +331,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            var method = new ImmsMethodModel(_analysisFileBeanModelCollection, storage, _projectBaseParameter, _broker);
-            method.Load();
-            return method;
+            return new ImmsMethodModel(_analysisFileBeanModelCollection, storage, _projectBaseParameter, _broker);
         }
     }
 
