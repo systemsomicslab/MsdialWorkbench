@@ -16,28 +16,41 @@ namespace CompMs.MsdialImmsCore.Process
 {
     internal sealed class PeakAnnotationProcess
     {
-        public void Annotate(IMsdialDataStorage<MsdialImmsParameter> storage,
-            IDataProvider provider,
-            List<ChromatogramPeakFeature> chromPeakFeatures,
-            Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
-            IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            Action<int> reportAction,
-            CancellationToken token){
+        private readonly IMsdialDataStorage<MsdialImmsParameter> _storage;
+        private readonly IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> _mspAnnotator;
+        private readonly IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> _textDBAnnotator;
+        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
 
-            var parameter = storage.Parameter;
-            var annotatorContainers = storage.DataBases.MetabolomicsDataBases.SelectMany(Item => Item.Pairs.Select(pair => pair.ConvertToAnnotatorContainer())).ToArray();
-            PeakAnnotation(targetCE2MSDecResults, provider, chromPeakFeatures, annotatorContainers, mspAnnotator, textDBAnnotator, parameter, reportAction, token);
+        public PeakAnnotationProcess(
+            IMsdialDataStorage<MsdialImmsParameter> storage,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator) {
+            _storage = storage ?? throw new ArgumentNullException(nameof(storage));
+            _mspAnnotator = mspAnnotator;
+            _textDBAnnotator = textDBAnnotator;
+            _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
+        }
+
+        public void Annotate(
+            IDataProvider provider,
+            IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
+            Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
+            Action<int> reportAction,
+            CancellationToken token) {
+
+            var parameter = _storage.Parameter;
+            var annotatorContainers = _storage.DataBases.MetabolomicsDataBases.SelectMany(Item => Item.Pairs.Select(pair => pair.ConvertToAnnotatorContainer())).ToArray();
+            PeakAnnotation(targetCE2MSDecResults, provider, chromPeakFeatures, annotatorContainers, _mspAnnotator, _textDBAnnotator, parameter, reportAction, token);
 
             // characterizatin
-            PeakCharacterization(targetCE2MSDecResults, provider, chromPeakFeatures, evaluator, parameter, reportAction);
+            PeakCharacterization(targetCE2MSDecResults, provider, chromPeakFeatures, _evaluator, parameter, reportAction);
         }
 
         private static void PeakAnnotation(
             Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
             IDataProvider provider,
-            List<ChromatogramPeakFeature> chromPeakFeatures,
+            IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IReadOnlyCollection<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
@@ -62,7 +75,7 @@ namespace CompMs.MsdialImmsCore.Process
         private static void PeakCharacterization(
             Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
             IDataProvider provider,
-            List<ChromatogramPeakFeature> chromPeakFeatures,
+            IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             MsdialImmsParameter parameter,
             Action<int> reportAction) {

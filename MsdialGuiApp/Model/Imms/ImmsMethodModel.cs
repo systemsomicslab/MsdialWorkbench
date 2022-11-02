@@ -102,9 +102,14 @@ namespace CompMs.App.Msdial.Model.Imms
             ProviderFactory = Storage.Parameter.ProviderFactoryParameter.Create(5, true);
 
             var processOption = option;
-            // Run Identification
-            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
-                if (!ProcessAnnotaion(Storage))
+            // Run PeakPick and Identification
+            if (processOption.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
+                if (!ProcessPeakPickAndAnnotation(Storage)) {
+                    return Task.CompletedTask;
+                }
+            }
+            else if (processOption.HasFlag(ProcessOption.Identification)) {
+                if (!ProcessAnnotation(Storage))
                     return Task.CompletedTask;
             }
 
@@ -117,19 +122,51 @@ namespace CompMs.App.Msdial.Model.Imms
             return LoadAnalysisFileAsync(AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), token);
         }
 
-        private bool ProcessAnnotaion(IMsdialDataStorage<MsdialImmsParameter> storage) {
+        private bool ProcessPeakPickAndAnnotation(IMsdialDataStorage<MsdialImmsParameter> storage) {
             var request = new ProgressBarMultiContainerRequest(
                 async vm =>
                 {
                     var tasks = new List<Task>();
                     var usable = Math.Max(Storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
+                    var processor = new FileProcess(storage, null, null, matchResultEvaluator);
                     using (var sem = new SemaphoreSlim(usable, usable)) {
                         foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
                             var task = Task.Run(async () =>
                             {
                                 await sem.WaitAsync();
                                 try {
-                                    FileProcess.Run(analysisfile, storage, null, null, ProviderFactory.Create(analysisfile), matchResultEvaluator, reportAction: v => pbvm.CurrentValue = v);
+                                    processor.Run(analysisfile, ProviderFactory.Create(analysisfile), reportAction: v => pbvm.CurrentValue = v);
+                                    vm.Increment();
+                                }
+                                finally {
+                                    sem.Release();
+                                }
+                            });
+                            tasks.Add(task);
+                        }
+                        await Task.WhenAll(tasks).ConfigureAwait(false);
+                    }
+                },
+                storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
+            _broker.Publish(request);
+
+            return request.Result ?? false;
+        }
+
+        private bool ProcessAnnotation(IMsdialDataStorage<MsdialImmsParameter> storage) {
+            var request = new ProgressBarMultiContainerRequest(
+                async vm =>
+                {
+                    var tasks = new List<Task>();
+                    var usable = Math.Max(Storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
+                    var processor = new FileProcess(storage, null, null, matchResultEvaluator);
+                    using (var sem = new SemaphoreSlim(usable, usable)) {
+                        foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
+                            var task = Task.Run(async () =>
+                            {
+                                await sem.WaitAsync();
+                                try {
+                                    processor.Annotate(analysisfile, ProviderFactory.Create(analysisfile), reportAction: v => pbvm.CurrentValue = v);
                                     vm.Increment();
                                 }
                                 finally {
