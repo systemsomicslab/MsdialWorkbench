@@ -24,7 +24,7 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .AddTo(Disposables);
             VerticalAxis = collectionChanged
                 .Where(c => c.Count > 0)
-                .Select(c => (c.Min(item => item.Height), c.Max(item => item.Height)))
+                .Select(c => (0d, c.Max(item => item.Height)))
                 .ToReactiveContinuousAxisManager()
                 .AddTo(Disposables);
         }
