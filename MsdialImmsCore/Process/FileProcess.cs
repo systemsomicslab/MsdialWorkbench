@@ -1,15 +1,11 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
-using CompMs.Common.DataObj.Database;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
-using CompMs.Common.Parameter;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parser;
-using CompMs.MsdialCore.Utility;
 using CompMs.MsdialImmsCore.Algorithm;
 using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.Parameter;
@@ -54,12 +50,12 @@ namespace CompMs.MsdialImmsCore.Process
             file.ChromPeakFeaturesSummary = summary;
 
             Console.WriteLine("Deconvolution started");
-            var parameter = storage.Parameter;
-            var iupacDB = storage.IupacDatabase;
-            var targetCE2MSDecResults = SpectrumDeconvolution(provider, chromPeakFeatures, summary, parameter, iupacDB, reportAction, token);
+            var deconvolute = new DeconvolutionProcess(storage);
+            var targetCE2MSDecResults = deconvolute.Deconvolute(provider, chromPeakFeatures, summary, reportAction, token);
 
             // annotations
             Console.WriteLine("Annotation started");
+            var parameter = storage.Parameter;
             var annotatorContainers = storage.DataBases.MetabolomicsDataBases.SelectMany(Item => Item.Pairs.Select(pair => pair.ConvertToAnnotatorContainer())).ToArray();
             PeakAnnotation(targetCE2MSDecResults, provider, chromPeakFeatures, annotatorContainers, mspAnnotator, textDBAnnotator, parameter, reportAction, token);
 
@@ -70,40 +66,6 @@ namespace CompMs.MsdialImmsCore.Process
             SaveToFile(file, chromPeakFeatures, targetCE2MSDecResults);
 
             reportAction?.Invoke(100);
-        }
-
-        private static Dictionary<double, List<MSDecResult>> SpectrumDeconvolution(
-            IDataProvider provider,
-            List<ChromatogramPeakFeature> chromPeakFeatures,
-            ChromatogramPeaksDataSummaryDto summary,
-            MsdialImmsParameter parameter,
-            IupacDatabase iupac,
-            Action<int> reportAction,
-            CancellationToken token) {
-
-            var targetCE2MSDecResults = new Dictionary<double, List<MSDecResult>>();
-            var initial_msdec = 30.0;
-            var max_msdec = 30.0;
-            if (parameter.AcquisitionType == Common.Enum.AcquisitionType.AIF) {
-                var ceList = provider.LoadCollisionEnergyTargets();
-                for (int i = 0; i < ceList.Count; i++) {
-                    var targetCE = Math.Round(ceList[i], 2); // must be rounded by 2 decimal points
-                    if (targetCE <= 0) {
-                        Console.WriteLine("No correct CE information in AIF-MSDEC");
-                        continue;
-                    }
-                    var max_msdec_aif = max_msdec / ceList.Count;
-                    var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
-                    targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
-                        provider, chromPeakFeatures, parameter, summary, iupac, targetCE, reportAction, parameter.NumThreads, token);
-                }
-            }
-            else {
-                var targetCE = Math.Round(provider.GetMinimumCollisionEnergy(), 2);
-                targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
-                    provider, chromPeakFeatures, parameter, summary, iupac, -1, reportAction, parameter.NumThreads, token);
-            }
-            return targetCE2MSDecResults;
         }
 
         private static void PeakAnnotation(
