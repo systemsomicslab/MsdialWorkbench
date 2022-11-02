@@ -59,7 +59,7 @@ namespace CompMs.ImmsImagingCore.Process
                 AlignmentFiles = new List<AlignmentFileBean>(),
                 MsdialImmsParameter = param
             };
-            MsdialImmsCore.Process.FileProcess.Run(file, container, null, null, provider, null, false, null);
+            MsdialImmsCore.Process.FileProcess.Run(file, container, null, null, provider, null, null);
         }
     }
 }

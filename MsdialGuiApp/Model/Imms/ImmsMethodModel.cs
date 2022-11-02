@@ -129,7 +129,7 @@ namespace CompMs.App.Msdial.Model.Imms
                             {
                                 await sem.WaitAsync();
                                 try {
-                                    FileProcess.Run(analysisfile, storage, null, null, ProviderFactory.Create(analysisfile), matchResultEvaluator, isGuiProcess: true, reportAction: v => pbvm.CurrentValue = v);
+                                    FileProcess.Run(analysisfile, storage, null, null, ProviderFactory.Create(analysisfile), matchResultEvaluator, reportAction: v => pbvm.CurrentValue = v);
                                     vm.Increment();
                                 }
                                 finally {

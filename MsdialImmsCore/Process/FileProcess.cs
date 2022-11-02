@@ -33,7 +33,7 @@ namespace CompMs.MsdialImmsCore.Process
             var mspAnnotator = new ImmsMspAnnotator(new MoleculeDataBase(storage.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), storage.Parameter.MspSearchParam, storage.Parameter.TargetOmics, "MspDB", -1);
             var textDBAnnotator = new ImmsTextDBAnnotator(new MoleculeDataBase(storage.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), storage.Parameter.TextDbSearchParam, "TextDB", -1);
 
-            Run(file, storage, mspAnnotator, textDBAnnotator, new ImmsAverageDataProvider(file, 0.001, 0.002, retry: 5, isGuiProcess: isGuiProcess), evaluator, isGuiProcess, reportAction, token);
+            Run(file, storage, mspAnnotator, textDBAnnotator, new ImmsAverageDataProvider(file, 0.001, 0.002, retry: 5, isGuiProcess: isGuiProcess), evaluator, reportAction, token);
         }
 
         public static void Run(
@@ -43,27 +43,24 @@ namespace CompMs.MsdialImmsCore.Process
             IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             IDataProvider provider,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            bool isGuiProcess = false,
             Action<int> reportAction = null,
             CancellationToken token = default) {
 
-            var parameter = storage.Parameter;
-            var iupacDB = storage.IupacDatabase;
-            var annotatorContainers = storage.DataBases.MetabolomicsDataBases.SelectMany(Item => Item.Pairs.Select(pair => pair.ConvertToAnnotatorContainer())).ToArray();
-
             Console.WriteLine("Peak picking started");
-            parameter.FileID2CcsCoefficients.TryGetValue(file.AnalysisFileId, out var coeff);
-            var chromPeakFeatures = PeakSpotting(provider, parameter, iupacDB, coeff, reportAction);
+            var peakPicker = new PeakPickProcess(storage);
+            var chromPeakFeatures = peakPicker.Pick(file, provider, reportAction);
 
-            var spectrumList = provider.LoadMsSpectrums();
             var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures);
             file.ChromPeakFeaturesSummary = summary;
 
             Console.WriteLine("Deconvolution started");
+            var parameter = storage.Parameter;
+            var iupacDB = storage.IupacDatabase;
             var targetCE2MSDecResults = SpectrumDeconvolution(provider, chromPeakFeatures, summary, parameter, iupacDB, reportAction, token);
 
             // annotations
             Console.WriteLine("Annotation started");
+            var annotatorContainers = storage.DataBases.MetabolomicsDataBases.SelectMany(Item => Item.Pairs.Select(pair => pair.ConvertToAnnotatorContainer())).ToArray();
             PeakAnnotation(targetCE2MSDecResults, provider, chromPeakFeatures, annotatorContainers, mspAnnotator, textDBAnnotator, parameter, reportAction, token);
 
             // characterizatin
@@ -73,19 +70,6 @@ namespace CompMs.MsdialImmsCore.Process
             SaveToFile(file, chromPeakFeatures, targetCE2MSDecResults);
 
             reportAction?.Invoke(100);
-        }
-
-        private static List<ChromatogramPeakFeature> PeakSpotting(
-            IDataProvider provider,
-            MsdialImmsParameter parameter,
-            IupacDatabase iupacDB,
-            CoefficientsForCcsCalculation coeff,
-            Action<int> reportAction) {
-
-            var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, parameter, reportAction);
-            IsotopeEstimator.Process(chromPeakFeatures, parameter, iupacDB, true);
-            CcsEstimator.Process(chromPeakFeatures, parameter, parameter.IonMobilityType, coeff, parameter.IsAllCalibrantDataImported);
-            return chromPeakFeatures;
         }
 
         private static Dictionary<double, List<MSDecResult>> SpectrumDeconvolution(
