@@ -61,6 +61,23 @@ namespace CompMs.App.Msdial.Model.Imms
             ProviderFactory = parameter?.ProviderFactoryParameter.Create(5, true);
 
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
+
+            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, storage.AlignmentFiles, storage);
+            var metadataAccessor = new ImmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
+            AlignmentResultExportModel.AddExportTypes(
+                new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }, true),
+                new ExportType("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
+                new ExportType("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
+                new ExportType("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
+                new ExportType("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
+                new ExportType("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", storage.Parameter), "Mz"),
+                new ExportType("Mobility", metadataAccessor, new LegacyQuantValueAccessor("Mobility", storage.Parameter), "Mobility"),
+                new ExportType("CCS", metadataAccessor, new LegacyQuantValueAccessor("CCS", storage.Parameter), "CCS"),
+                new ExportType("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
+                new ExportType("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"));
+            this.ObserveProperty(m => m.AlignmentFile)
+                .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
+                .AddTo(Disposables);
         }
 
         public ImmsAnalysisModel AnalysisModel {
@@ -88,6 +105,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public PeakFilterModel PeakFilterModel { get; }
 
         public IDataProviderFactory<AnalysisFileBean> ProviderFactory { get; }
+        public AlignmentResultExportModel AlignmentResultExportModel { get; }
 
         public override Task RunAsync(ProcessOption option, CancellationToken token) {
             var processOption = option;
@@ -250,29 +268,22 @@ namespace CompMs.App.Msdial.Model.Imms
             .AddTo(Disposables);
         }
 
-        public void ExportAlignment(Window owner) {
+        public AlignmentResultExportModel ExportAlignment() {
             var container = _storage;
             var metadataAccessor = new ImmsMetadataAccessor(container.DataBaseMapper, container.Parameter);
             var model = new AlignmentResultExportModel(AlignmentFile, container.AlignmentFiles, container);
-            var vm = new AlignmentResultExport2VM(model, _broker);
-            vm.AddExportTypes(
-                    new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", container.Parameter), "Height", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }, true),
-                    new ExportType("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.Parameter), "Area", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.Parameter), "NormalizedHeight", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.Parameter), "NormalizedArea", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.Parameter), "PeakID"),
-                    new ExportType("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.Parameter), "Mz"),
-                    new ExportType("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.Parameter), "SN"),
-                    new ExportType("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.Parameter), "MsmsIncluded")
-                );
-            var dialog = new AlignmentResultExportWin
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-
-            dialog.ShowDialog();
+            model.AddExportTypes(
+                new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", container.Parameter), "Height", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }, true),
+                new ExportType("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.Parameter), "Area", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
+                new ExportType("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.Parameter), "NormalizedHeight", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
+                new ExportType("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.Parameter), "NormalizedArea", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
+                new ExportType("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.Parameter), "PeakID"),
+                new ExportType("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.Parameter), "Mz"),
+                new ExportType("Mobility", metadataAccessor, new LegacyQuantValueAccessor("Mobility", container.Parameter), "Mobility"),
+                new ExportType("CCS", metadataAccessor, new LegacyQuantValueAccessor("CCS", container.Parameter), "CCS"),
+                new ExportType("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.Parameter), "SN"),
+                new ExportType("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.Parameter), "MsmsIncluded"));
+            return model;
         }
 
         public void ExportAnalysis(Window owner) {

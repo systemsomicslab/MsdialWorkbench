@@ -159,9 +159,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
 
         public IMethodModel BuildMethod() {
-            var method = new DimsMethodModel(storage, _analysisFileBeanModelCollection, storage.AnalysisFiles, storage.AlignmentFiles, _projectBaseParameter, _messageBroker);
-            method.Load();
-            return method;
+            return new DimsMethodModel(storage, _analysisFileBeanModelCollection, storage.AlignmentFiles, _projectBaseParameter, _messageBroker);
         }
     }
 

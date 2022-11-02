@@ -1,6 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -19,6 +21,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 {
     internal sealed class LcmsMethodViewModel : MethodViewModel {
         private readonly LcmsMethodModel model;
+        private readonly IMessageBroker _broker;
 
         private LcmsMethodViewModel(
             LcmsMethodModel model,
@@ -32,6 +35,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   PrepareMassSpectrumViewModels(analysisAsObservable, alignmentAsObservable)) {
 
             this.model = model;
+            _broker = broker;
             Disposables.Add(focusControlManager);
 
             ShowExperimentSpectrumCommand = new ReactiveCommand().AddTo(Disposables);
@@ -77,8 +81,21 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public DelegateCommand<Window> ExportAnalysisResultCommand => exportAnalysisResultCommand ?? (exportAnalysisResultCommand = new DelegateCommand<Window>(model.ExportAnalysis));
         private DelegateCommand<Window> exportAnalysisResultCommand;
 
-        public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(model.ExportAlignment));
+        public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(ExportAlignment));
         private DelegateCommand<Window> exportAlignmentResultCommand;
+
+        private void ExportAlignment(Window owner) {
+            var model_ = model.AlignmentResultExportModel;
+            using (var vm = new AlignmentResultExport2VM(model_, _broker)) {
+                var dialog = new AlignmentResultExportWin
+                {
+                    DataContext = vm,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                dialog.ShowDialog();
+            }
+        }
 
         public DelegateCommand<Window> ShowTicCommand => showTicCommand ?? (showTicCommand = new DelegateCommand<Window>(model.ShowTIC));
         private DelegateCommand<Window> showTicCommand;

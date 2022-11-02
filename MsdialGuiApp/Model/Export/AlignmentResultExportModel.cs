@@ -18,11 +18,8 @@ namespace CompMs.App.Msdial.Model.Export
     {
         private readonly IMsdialDataStorage<ParameterBase> _container;
 
-        public AlignmentResultExportModel(
-            AlignmentFileBean alignmentFile,
-            IReadOnlyList<AlignmentFileBean> alignmentFiles,
-            IMsdialDataStorage<ParameterBase> container) {
-            _container = container;
+        public AlignmentResultExportModel(AlignmentFileBean alignmentFile, IReadOnlyList<AlignmentFileBean> alignmentFiles, IMsdialDataStorage<ParameterBase> container) {
+            _container = container ?? throw new ArgumentNullException(nameof(container));
             AlignmentFiles = alignmentFiles;
             AlignmentFile = alignmentFile;
             _exportTypes = new ObservableCollection<ExportType>();
@@ -75,7 +72,7 @@ namespace CompMs.App.Msdial.Model.Export
         public ReadOnlyObservableCollection<ExportType> ExportTypes { get; }
         private readonly ObservableCollection<ExportType> _exportTypes;
 
-        public void AddExportTypes(ExportType[] exportTypes) {
+        public void AddExportTypes(params ExportType[] exportTypes) {
             foreach (var type in exportTypes) {
                 _exportTypes.Add(type);
             }

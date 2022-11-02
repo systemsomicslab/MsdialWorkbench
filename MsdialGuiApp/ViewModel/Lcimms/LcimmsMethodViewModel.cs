@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -22,6 +23,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
     internal sealed class LcimmsMethodViewModel : MethodViewModel
     {
         private readonly LcimmsMethodModel _model;
+        private readonly IMessageBroker _broker;
         private readonly FocusControlManager _focusControlManager;
 
         private LcimmsMethodViewModel(
@@ -30,13 +32,14 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentViewModelAsObservable,
             ViewModelSwitcher chromatogramViewModels,
             ViewModelSwitcher massSpectrumViewModels,
-            FocusControlManager focusControlManager)
+            FocusControlManager focusControlManager,
+            IMessageBroker broker)
             : base(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, chromatogramViewModels, massSpectrumViewModels) {
-
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
             _model = model;
+            _broker = broker;
             _focusControlManager = focusControlManager.AddTo(Disposables);
         }
 
@@ -58,13 +61,15 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private DelegateCommand<Window> exportAlignmentResultCommand;
 
         private void ExportAlignment(Window owner) {
-            var dialog = new AlignmentResultExportWin
-            {
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
+            using (var vm = new AlignmentResultExport2VM(_model.AlignmentResultExportModel, _broker)) {
+                var dialog = new AlignmentResultExportWin
+                {
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
 
-            dialog.ShowDialog();
+                dialog.ShowDialog();
+            }
         }
 
         public DelegateCommand<Window> ShowTicCommand => showTicCommand ?? (showTicCommand = new DelegateCommand<Window>(_model.ShowTIC));
@@ -137,7 +142,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
                 alignmentViewModelAsObservable,
                 PrepareChromatogramViewModels(analysisViewModelAsObservable, alignmentViewModelAsObservable),
                 PrepareMassSpectrumViewModels(analysisViewModelAsObservable, alignmentViewModelAsObservable),
-                focusControlManager);
+                focusControlManager,
+                broker);
         }
 
         private static ViewModelSwitcher PrepareChromatogramViewModels(IObservable<LcimmsAnalysisViewModel> analysisAsObservable, IObservable<LcimmsAlignmentViewModel> alignmentAsObservable) {

@@ -1,7 +1,9 @@
 ﻿using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -10,7 +12,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
@@ -22,12 +23,14 @@ namespace CompMs.App.Msdial.ViewModel.Imms
     internal sealed class ImmsMethodViewModel : MethodViewModel
     {
         private readonly ImmsMethodModel model;
+        private readonly IMessageBroker _broker;
         private readonly FocusControlManager _focusControlManager;
 
-        private ImmsMethodViewModel(ImmsMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisViewModelAsObservable, IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentViewModelAsObservable, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels, FocusControlManager focusControlmanager)
+        private ImmsMethodViewModel(ImmsMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisViewModelAsObservable, IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentViewModelAsObservable, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels, FocusControlManager focusControlmanager, IMessageBroker broker)
             : base(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, chromatogramViewModels, massSpectrumViewModels) {
 
             this.model = model;
+            _broker = broker;
             _focusControlManager = focusControlmanager.AddTo(Disposables);
         }
 
@@ -96,8 +99,20 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private DelegateCommand<Window> exportAnalysisResultCommand;
         
 
-        public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(model.ExportAlignment));
+        public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(ExportAlignment));
         private DelegateCommand<Window> exportAlignmentResultCommand;
+
+        private void ExportAlignment(Window owner) {
+            using (var vm = new AlignmentResultExport2VM(model.AlignmentResultExportModel, _broker)) {
+                var dialog = new AlignmentResultExportWin
+                {
+                    DataContext = vm,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
+                dialog.ShowDialog();
+            }
+        }
 
         public DelegateCommand<Window> ShowTicCommand => showTicCommand ?? (showTicCommand = new DelegateCommand<Window>(model.ShowTIC));
         private DelegateCommand<Window> showTicCommand;
@@ -181,7 +196,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             var alignmentViewModelAsObservable = ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, messageBroker, focusControlManager);
             var chromatogramViewSwitcher = PrepareChromatogramViewModels(analysisViewModelAsObservable, alignmentViewModelAsObservable);
             var massSpectrumViewSwitcher =  PrepareMassSpectrumViewModels(analysisViewModelAsObservable, alignmentViewModelAsObservable);
-            return new ImmsMethodViewModel(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, chromatogramViewSwitcher, massSpectrumViewSwitcher, focusControlManager);
+            return new ImmsMethodViewModel(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, chromatogramViewSwitcher, massSpectrumViewSwitcher, focusControlManager, messageBroker);
         }
     }
 }
