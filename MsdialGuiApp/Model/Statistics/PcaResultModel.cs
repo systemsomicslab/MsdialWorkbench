@@ -57,8 +57,8 @@ namespace CompMs.App.Msdial.Model.Statistics
         public PcaResultModel(
             MultivariateAnalysisResult multivariateAnalysisResult,
             ParameterBase parameter,
-            ObservableCollection<AlignmentSpotPropertyModel> spotprops,
-            List<AnalysisFileBean> analysisfiles,
+            IReadOnlyList<AlignmentSpotPropertyModel> spotprops,
+            IReadOnlyList<AnalysisFileBean> analysisfiles,
             IObservable<KeyBrushMapper<string>> brushmaps
             ) {
 

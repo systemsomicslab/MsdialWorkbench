@@ -1374,13 +1374,29 @@ namespace CompMs.MsdialCore.Utility {
             return objects;
         }
 
-        public static List<AlignmentSpotProperty> GetAlignmentSpotPropertiesIntegratingRtAndDriftData(List<AlignmentSpotProperty> features) {
+        public static List<AlignmentSpotProperty> GetAlignmentSpotPropertiesIntegratingRtAndDriftData(IReadOnlyList<AlignmentSpotProperty> features) {
             var objects = new List<AlignmentSpotProperty>();
             foreach (var spot in features) {
                 objects.Add(spot);
                 foreach (var dSpot in spot.AlignmentDriftSpotFeatures.OrEmptyIfNull()) {
                     objects.Add(dSpot);
                 }
+            }
+            return objects;
+        }
+
+        public static List<AlignmentSpotProperty> GetGlobalAlignmentSpotProperties4Statistics(IReadOnlyList<AlignmentSpotProperty> features) {
+            var objects = new List<AlignmentSpotProperty>();
+            foreach (var spot in features) {
+                if (spot.IsMultiLayeredData()) {
+                    foreach (var dSpot in spot.AlignmentDriftSpotFeatures.OrEmptyIfNull()) {
+                        objects.Add(dSpot);
+                    }
+                }
+                else {
+                    objects.Add(spot);
+                }
+
             }
             return objects;
         }

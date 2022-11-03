@@ -65,7 +65,20 @@
                                       DataType="{x:Type do:AlignmentSpotPropertyModel}"
                                       Radius="5.5"
                                       SelectedItem="{Binding Target.Value, Mode=TwoWay}"
-                                      Focusable="True"/>
+                                      Focusable="True">
+                <chart:ScatterControlSlim.ToolTip>
+                    <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding FocusedItem.MasterAlignmentID, StringFormat=ID: {0}}"/>
+                            <TextBlock Text="{Binding FocusedItem.Name, StringFormat=Name: {0}}"/>
+                            <TextBlock Text="{Binding FocusedItem.AdductIonName, StringFormat=Ionform: {0}}"/>
+                            <TextBlock Text="{Binding FocusedItem.TimesCenter, StringFormat=Time: {0:0.000}}"/>
+                            <TextBlock Text="{Binding FocusedItem.MassCenter, StringFormat=m/z: {0:0.0000}}"/>
+                            <TextBlock Text="{Binding FocusedItem.HeightAverage, StringFormat=HeightAve: {0:0}}"/>
+                        </StackPanel>
+                    </ToolTip>
+                </chart:ScatterControlSlim.ToolTip>
+            </chart:ScatterControlSlim>
             <chart:Annotator ItemsSource="{Binding Spots, Mode=OneWay}"
                              HorizontalPropertyName="{Binding HorizontalProperty.Value, Mode=OneWay}"
                              VerticalPropertyName="{Binding VerticalProperty.Value, Mode=OneWay}"

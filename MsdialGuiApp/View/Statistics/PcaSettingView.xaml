@@ -5,18 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
-        xmlns:mathmatics="clr-namespace:CompMs.Common.Mathematics.Statistics;assembly=Common"
+        xmlns:enum="clr-namespace:CompMs.Common.Enum;assembly=Common"
         mc:Ignorable="d"
-        Title="PCA setting" Height="240" Width="360">
+        Title="PCA setting" Height="240" Width="350">
     <Window.Resources>
         <ObjectDataProvider x:Key="ScaleMethods" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="mathmatics:ScaleMethod"/>
+                <x:Type TypeName="enum:ScaleMethod"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
         <ObjectDataProvider x:Key="TransformMethods" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="mathmatics:TransformMethod"/>
+                <x:Type TypeName="enum:TransformMethod"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </Window.Resources>
@@ -41,10 +41,10 @@
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Vertical" Margin="5,5,0,0">
                 <TextBox Text="{Binding MaxPcNumber}"
-                         Height="20"
+                         Height="25"
                          VerticalAlignment="Center" HorizontalAlignment="Stretch"
                          VerticalContentAlignment="Center"
-                         Margin="0,5,5,0"
+                         Margin="0,2,5,0"
                          />
             </StackPanel>
         </Grid>
@@ -62,8 +62,8 @@
             <StackPanel Grid.Column="1" Orientation="Vertical" Margin="5,5,0,0">
                 <ComboBox ItemsSource="{Binding Source={StaticResource ScaleMethods}}"
                           SelectedItem="{Binding ScaleMethod}"
-                          Height="20"
-                          Margin="0,5,5,0"
+                          Height="25"
+                          Margin="0,2,5,0"
                           />
             </StackPanel>
         </Grid>
@@ -80,8 +80,8 @@
             <StackPanel Grid.Column="1" Orientation="Vertical" Margin="5,5,0,0">
                 <ComboBox ItemsSource="{Binding Source={StaticResource TransformMethods}}"
                           SelectedItem="{Binding TransformMethod}"
-                          Height="20"
-                          Margin="0,5,5,0"
+                          Height="25"
+                          Margin="0,2,5,0"
                           />
             </StackPanel>
         </Grid>
@@ -94,7 +94,7 @@
         </StackPanel>
 
         <Button Content="Execute" Grid.Row="4" Command="{Binding PcaCommand}"
-                Height="20" VerticalContentAlignment="Center"
+                Height="25" VerticalContentAlignment="Center"
                 Width="80" HorizontalAlignment="Right" Margin="8"/>
     </Grid>
 </Window>
