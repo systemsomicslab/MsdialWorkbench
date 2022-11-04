@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
@@ -11,27 +12,175 @@ using CompMs.Graphics.Core.Base;
 
 namespace CompMs.Graphics.Chart
 {
-    public class BarControl : ChartBaseControl
+    public sealed class BarControl : ChartBaseControl
     {
-        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(
-            nameof(ItemsSource), typeof(System.Collections.IEnumerable), typeof(BarControl),
-            new PropertyMetadata(default(System.Collections.IEnumerable), OnItemsSourceChanged)
-            );
+        public static readonly DependencyProperty ItemsSourceProperty =
+            DependencyProperty.Register(
+                nameof(ItemsSource), typeof(System.Collections.IEnumerable), typeof(BarControl),
+                new FrameworkPropertyMetadata(
+                    default(System.Collections.IEnumerable),
+                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    OnItemsSourceChanged));
 
-        public static readonly DependencyProperty HorizontalPropertyNameProperty = DependencyProperty.Register(
-            nameof(HorizontalPropertyName), typeof(string), typeof(BarControl),
-            new PropertyMetadata(default(string), OnHorizontalPropertyNameChanged)
-            );
+        public System.Collections.IEnumerable ItemsSource {
+            get => (System.Collections.IEnumerable)GetValue(ItemsSourceProperty);
+            set => SetValue(ItemsSourceProperty, value);
+        }
 
-        public static readonly DependencyProperty VerticalPropertyNameProperty = DependencyProperty.Register(
-            nameof(VerticalPropertyName), typeof(string), typeof(BarControl),
-            new PropertyMetadata(default(string), OnVerticalPropertyNameChanged)
-            );
+        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var chart = d as BarControl;
+            if (chart == null) return;
 
-        public static readonly DependencyProperty BarWidthProperty = DependencyProperty.Register(
-            nameof(BarWidth), typeof(double), typeof(BarControl),
-            new PropertyMetadata(0.95, ChartUpdate)
-            );
+            chart.dataType = null;
+            chart.cv = null;
+
+            if (chart.ItemsSource == null) return;
+            chart.cv = CollectionViewSource.GetDefaultView(chart.ItemsSource) as CollectionView;
+
+            chart.SetDrawingVisuals();
+            if (e.OldValue is INotifyCollectionChanged oldCollection) {
+                oldCollection.CollectionChanged -= chart.OnItemsSourceCollectionChanged;
+            }
+            if (e.NewValue is INotifyCollectionChanged newCollection) {
+                newCollection.CollectionChanged += chart.OnItemsSourceCollectionChanged;
+            }
+
+            var enumerator = chart.ItemsSource.GetEnumerator();
+            if (!enumerator.MoveNext()) return;
+            chart.dataType = enumerator.Current.GetType();
+
+            if (chart.HorizontalPropertyName != null) {
+                chart.hGetter = Helper.ExpressionHelper.GetConvertToAxisValueExpression(chart.dataType, chart.HorizontalPropertyName).Compile();
+            }
+            if (chart.VerticalPropertyName != null)
+                chart.vPropertyReflection = chart.dataType.GetProperty(chart.VerticalPropertyName);
+            if (chart.SelectedItem != null)
+                chart.cv.MoveCurrentTo(chart.SelectedItem);
+        }
+
+        private void OnItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            if (dataType == null) {
+                dataType = cv.OfType<object>().FirstOrDefault()?.GetType();
+                if (dataType != null) {
+                    if (HorizontalPropertyName != null) {
+                        hGetter = Helper.ExpressionHelper.GetConvertToAxisValueExpression(dataType, HorizontalPropertyName).Compile();
+                    }
+                    if (VerticalPropertyName != null)
+                        vPropertyReflection = dataType.GetProperty(VerticalPropertyName);
+                    if (SelectedItem != null)
+                        cv.MoveCurrentTo(SelectedItem);
+                }
+            }
+            switch (e.Action) {
+                case NotifyCollectionChangedAction.Add:
+                    foreach (var item in e.NewItems) {
+                        var visual = new AnnotatedDrawingVisual(item);
+                        if (_itemVisual.TryAdd(item, visual)) {
+                            visualChildren.Add(visual);
+                        }
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (var item in e.OldItems) {
+                        if (_itemVisual.TryRemove(item, out var visual)) {
+                            visualChildren.Remove(visual);
+                        }
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                    foreach (var item in e.NewItems) {
+                        var visual = new AnnotatedDrawingVisual(item);
+                        if (_itemVisual.TryAdd(item, visual)) {
+                            visualChildren.Add(visual);
+                        }
+                    }
+                    foreach (var item in e.NewItems) {
+                        if (_itemVisual.TryRemove(item, out var visual)) {
+                            visualChildren.Remove(visual);
+                        }
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    visualChildren.Clear();
+                    _itemVisual.Clear();
+                    break;
+                case NotifyCollectionChangedAction.Move:
+                    break;
+                default:
+                    SetDrawingVisuals();
+                    break;
+            }
+            if (SelectedItem != null && cv.Contains(SelectedItem))
+                cv.MoveCurrentTo(SelectedItem);
+            InvalidateVisual();
+        }
+
+        private readonly ConcurrentDictionary<object, AnnotatedDrawingVisual> _itemVisual = new ConcurrentDictionary<object, AnnotatedDrawingVisual>();
+        private void SetDrawingVisuals() {
+            if (cv == null) return;
+
+            visualChildren.Clear();
+            _itemVisual.Clear();
+            foreach (var o in cv) {
+                var visual = new AnnotatedDrawingVisual(o);
+                if (_itemVisual.TryAdd(o, visual)) {
+                    visualChildren.Add(visual);
+                }
+            }
+        }
+
+        public static readonly DependencyProperty HorizontalPropertyNameProperty =
+            DependencyProperty.Register(
+                nameof(HorizontalPropertyName), typeof(string), typeof(BarControl),
+                new FrameworkPropertyMetadata(
+                    default(string),
+                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    OnHorizontalPropertyNameChanged));
+
+        public string HorizontalPropertyName {
+            get => (string)GetValue(HorizontalPropertyNameProperty);
+            set => SetValue(HorizontalPropertyNameProperty, value);
+        }
+
+        static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var chart = d as BarControl;
+            if (chart == null) return;
+
+            if (chart.dataType != null) {
+                chart.hGetter = Helper.ExpressionHelper.GetConvertToAxisValueExpression(chart.dataType, (string)e.NewValue).Compile();
+            }
+        }
+
+        public static readonly DependencyProperty VerticalPropertyNameProperty =
+            DependencyProperty.Register(
+                nameof(VerticalPropertyName), typeof(string), typeof(BarControl),
+                new FrameworkPropertyMetadata(
+                    default(string),
+                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    OnVerticalPropertyNameChanged));
+
+        public string VerticalPropertyName {
+            get => (string)GetValue(VerticalPropertyNameProperty);
+            set => SetValue(VerticalPropertyNameProperty, value);
+        }
+
+        static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var chart = d as BarControl;
+            if (chart == null) return;
+
+            if (chart.dataType != null)
+                chart.vPropertyReflection = chart.dataType.GetProperty((string)e.NewValue);
+        }
+
+        public static readonly DependencyProperty BarWidthProperty =
+            DependencyProperty.Register(
+                nameof(BarWidth), typeof(double), typeof(BarControl),
+                new PropertyMetadata(0.95, ChartUpdate));
+
+        public double BarWidth {
+            get => (double)GetValue(BarWidthProperty);
+            set => SetValue(BarWidthProperty, value);
+        }
 
         public static readonly DependencyProperty BarBrushProperty =
             DependencyProperty.Register(
@@ -51,19 +200,43 @@ namespace CompMs.Graphics.Chart
             Selector.BarBrush = newValue;
         }
 
-        public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register(
-            nameof(SelectedItem), typeof(object), typeof(BarControl),
-            new PropertyMetadata(null, OnSelectedItemChanged));
+        public static readonly DependencyProperty SelectedItemProperty =
+            DependencyProperty.Register(
+                nameof(SelectedItem), typeof(object), typeof(BarControl),
+                new PropertyMetadata(null, OnSelectedItemChanged));
 
-        public static readonly DependencyProperty FocusedItemProperty = DependencyProperty.Register(
-            nameof(FocusedItem), typeof(object), typeof(BarControl),
-            new PropertyMetadata(null)
-            );
+        public object SelectedItem {
+            get { return GetValue(SelectedItemProperty); }
+            set { SetValue(SelectedItemProperty, value); }
+        }
 
-        public static readonly DependencyProperty FocusedPointProperty = DependencyProperty.Register(
-            nameof(FocusedPoint), typeof(Point), typeof(BarControl),
-            new PropertyMetadata(default)
-            );
+        static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var chart = d as BarControl;
+            if (chart == null) return;
+
+            if (chart.cv != null)
+                chart.cv.MoveCurrentTo(e.NewValue);
+        }
+
+        public static readonly DependencyProperty FocusedItemProperty =
+            DependencyProperty.Register(
+                nameof(FocusedItem), typeof(object), typeof(BarControl),
+                new PropertyMetadata(null));
+
+        public object FocusedItem {
+            get => GetValue(FocusedItemProperty);
+            set => SetValue(FocusedItemProperty, value);
+        }
+
+        public static readonly DependencyProperty FocusedPointProperty =
+            DependencyProperty.Register(
+                nameof(FocusedPoint), typeof(Point), typeof(BarControl),
+                new PropertyMetadata(default));
+
+        public Point FocusedPoint {
+            get => (Point)GetValue(FocusedPointProperty);
+            set => SetValue(FocusedPointProperty, value);
+        }
 
         public static readonly DependencyProperty BrushMapperProperty =
             DependencyProperty.Register(
@@ -84,41 +257,6 @@ namespace CompMs.Graphics.Chart
 
         void BrushMapperChanged(IBrushMapper newValue, IBrushMapper oldValue) {
             Selector.Mapper = newValue;
-        }
-
-        public System.Collections.IEnumerable ItemsSource {
-            get => (System.Collections.IEnumerable)GetValue(ItemsSourceProperty);
-            set => SetValue(ItemsSourceProperty, value);
-        }
-
-        public string HorizontalPropertyName {
-            get => (string)GetValue(HorizontalPropertyNameProperty);
-            set => SetValue(HorizontalPropertyNameProperty, value);
-        }
-
-        public string VerticalPropertyName {
-            get => (string)GetValue(VerticalPropertyNameProperty);
-            set => SetValue(VerticalPropertyNameProperty, value);
-        }
-
-        public double BarWidth {
-            get => (double)GetValue(BarWidthProperty);
-            set => SetValue(BarWidthProperty, value);
-        }
-
-        public object SelectedItem {
-            get { return GetValue(SelectedItemProperty); }
-            set { SetValue(SelectedItemProperty, value); }
-        }
-
-        public object FocusedItem {
-            get => GetValue(FocusedItemProperty);
-            set => SetValue(FocusedItemProperty, value);
-        }
-
-        public Point FocusedPoint {
-            get => (Point)GetValue(FocusedPointProperty);
-            set => SetValue(FocusedPointProperty, value);
         }
 
         public static readonly DependencyProperty BarPenProperty =
@@ -156,7 +294,7 @@ namespace CompMs.Graphics.Chart
         #region field
         private CollectionView cv;
         private Type dataType;
-        private PropertyInfo hPropertyReflection;
+        private Func<object, IAxisManager, AxisValue> hGetter;
         private PropertyInfo vPropertyReflection;
         #endregion
 
@@ -169,17 +307,21 @@ namespace CompMs.Graphics.Chart
         }
 
         protected override void Update() {
-            if (hPropertyReflection == null
-               || vPropertyReflection == null
-               || HorizontalAxis == null
-               || VerticalAxis == null
-               || cv == null
+            if (hGetter is null
+               || vPropertyReflection is null
+               || HorizontalAxis is null
+               || VerticalAxis is null
+               || cv is null
                )
                 return;
 
             var pen = BarPen;
+            var hAxis = HorizontalAxis;
+            var vAxis = VerticalAxis;
+            var flippedX = FlippedX;
+            var flippedY = FlippedY;
             double actualWidth = ActualWidth, actualHeight = ActualHeight;
-            var xs = visualChildren.OfType<AnnotatedDrawingVisual>().Select(v => HorizontalAxis.TranslateToAxisValue(hPropertyReflection.GetValue(v.Annotation)).Value).OrderBy(x => x).ToArray();
+            var xs = visualChildren.OfType<AnnotatedDrawingVisual>().Select(v => hGetter.Invoke(v.Annotation, hAxis).Value).OrderBy(x => x).ToArray();
             var barwidth = 0d;
             if (xs.Length == 0) {
                 barwidth = actualWidth;   
@@ -191,114 +333,32 @@ namespace CompMs.Graphics.Chart
                 barwidth = Enumerable.Range(1, xs.Length - 1).Min(i => xs[i] - xs[i - 1]) * BarWidth;
             }
 
-            var actualBarWidth = ActualBarWidth = HorizontalAxis.TranslateToRenderPoint(barwidth, FlippedX, actualWidth) - HorizontalAxis.TranslateToRenderPoint(0d, FlippedX, actualWidth);
+            var actualBarWidth = ActualBarWidth = hAxis.TranslateToRenderPoint(barwidth, flippedX, actualWidth) - hAxis.TranslateToRenderPoint(0d, flippedX, actualWidth);
 
-            double yorigin = VerticalAxis.TranslateToRenderPoint(0d, FlippedY, actualHeight);
+            double yorigin = vAxis.TranslateToRenderPoint(0d, flippedY, actualHeight);
             foreach (var visual in visualChildren) {
                 var dv = visual as AnnotatedDrawingVisual;
                 var o = dv.Annotation;
-                var x = hPropertyReflection.GetValue(o);
                 var y = vPropertyReflection.GetValue(o);
 
-                var xx = HorizontalAxis.TranslateToRenderPoint(x, FlippedX, actualWidth);
-                double yy = VerticalAxis.TranslateToRenderPoint(y, FlippedY, actualHeight);
-                dv.Center = new Point(xx, yy);
-
                 using (var dc = dv.RenderOpen()) {
+                    var xAx = hGetter.Invoke(o, hAxis);
+                    if (!hAxis.ContainsCurrent(xAx)) {
+                        continue;
+                    }
+                    var yAx = vAxis.TranslateToAxisValue(y);
+                    if (!vAxis.ContainsCurrent(yAx)) {
+                        continue;
+                    }
+                    var xx = hAxis.TranslateToRenderPoint(xAx, flippedX, actualWidth);
+                    var yy = vAxis.TranslateToRenderPoint(yAx, flippedY, actualHeight);
+                    dv.Center = new Point(xx, yy);
+
                     dc.DrawRectangle(Selector.GetBrush(o), pen, new Rect(new Point(xx - actualBarWidth / 2, yy), new Point(xx + actualBarWidth / 2, yorigin)));
                 }
             }
         }
 
-        private void SetDrawingVisuals() {
-            if (cv == null) return;
-
-            visualChildren.Clear();
-            foreach (var o in cv)
-                visualChildren.Add(new AnnotatedDrawingVisual(o));
-        }
-
-        #region Event handler
-        static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var chart = d as BarControl;
-            if (chart == null) return;
-
-            chart.dataType = null;
-            chart.cv = null;
-
-            if (chart.ItemsSource == null) return;
-            chart.cv = CollectionViewSource.GetDefaultView(chart.ItemsSource) as CollectionView;
-
-            chart.SetDrawingVisuals();
-            if (e.OldValue is INotifyCollectionChanged oldCollection) {
-                oldCollection.CollectionChanged -= chart.OnItemsSourceCollectionChanged;
-            }
-            if (e.NewValue is INotifyCollectionChanged newCollection) {
-                newCollection.CollectionChanged += chart.OnItemsSourceCollectionChanged;
-            }
-
-            var enumerator = chart.ItemsSource.GetEnumerator();
-            if (!enumerator.MoveNext()) return;
-            chart.dataType = enumerator.Current.GetType();
-
-            if (chart.HorizontalPropertyName != null)
-                chart.hPropertyReflection = chart.dataType.GetProperty(chart.HorizontalPropertyName);
-            if (chart.VerticalPropertyName != null)
-                chart.vPropertyReflection = chart.dataType.GetProperty(chart.VerticalPropertyName);
-            if (chart.SelectedItem != null)
-                chart.cv.MoveCurrentTo(chart.SelectedItem);
-
-            chart.InvalidateVisual();
-        }
-
-        private void OnItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-            if (dataType == null) {
-                dataType = cv.OfType<object>().FirstOrDefault()?.GetType();
-                if (dataType != null) {
-                    if (HorizontalPropertyName != null)
-                        hPropertyReflection = dataType.GetProperty(HorizontalPropertyName);
-                    if (VerticalPropertyName != null)
-                        vPropertyReflection = dataType.GetProperty(VerticalPropertyName);
-                    if (SelectedItem != null)
-                        cv.MoveCurrentTo(SelectedItem);
-                }
-            }
-            SetDrawingVisuals();
-            if (SelectedItem != null && cv.Contains(SelectedItem))
-                cv.MoveCurrentTo(SelectedItem);
-            InvalidateVisual();
-        }
-
-        static void OnHorizontalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var chart = d as BarControl;
-            if (chart == null) return;
-
-            if (chart.dataType != null)
-                chart.hPropertyReflection = chart.dataType.GetProperty((string)e.NewValue);
-
-            chart.InvalidateVisual();
-        }
-
-        static void OnVerticalPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var chart = d as BarControl;
-            if (chart == null) return;
-
-            if (chart.dataType != null)
-                chart.vPropertyReflection = chart.dataType.GetProperty((string)e.NewValue);
-
-            chart.InvalidateVisual();
-        }
-
-        static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            var chart = d as BarControl;
-            if (chart == null) return;
-
-            if (chart.cv != null)
-                chart.cv.MoveCurrentTo(e.NewValue);
-        }
-        #endregion
-
-        #region Mouse event
         void VisualFocusOnMouseOver(object sender, MouseEventArgs e) {
             var pt = e.GetPosition(this);
 
@@ -341,7 +401,6 @@ namespace CompMs.Graphics.Chart
             SelectedItem = ((AnnotatedDrawingVisual)result.VisualHit).Annotation;
             return HitTestResultBehavior.Stop;
         }
-        #endregion
 
         class BrushSelector
         {
