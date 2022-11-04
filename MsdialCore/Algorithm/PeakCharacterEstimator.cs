@@ -60,9 +60,7 @@ namespace CompMs.MsdialCore.Algorithm
                         }
                     }
 
-#if false
                     CharacterAssigner(searchedPeakSpots, provider, msdecResults, evaluator, parameter); // TODO: temporarily comment out. fix algorithm. Don't delete!
-#endif
                     ReportProgress.Show(InitialProgress, ProgressMax, i, chromPeakFeatures.Count, reportAction);
                 }
             }
@@ -238,7 +236,7 @@ namespace CompMs.MsdialCore.Algorithm
         // the RT deviations of peakspots should be less than 0.03 min
         // here, each peak is evaluated.
         // the purpose is to group the ions which are recognized as the same metabolite
-        private void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures,
+        public void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures,
             IDataProvider provider, IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return;
 
@@ -545,34 +543,30 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         private void assignLinksBasedOnInChIKeys(List<ChromatogramPeakFeature> chromPeakFeatures, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
-            foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {
-                
-                if (peak.IsUnknown || peak.IsAnnotationSuggested(evaluator)) continue;
-                if (!peak.IsValidInChIKey()) continue;
-                var inchikey = peak.InChIKey;
-                var shortInChIKey = inchikey.Substring(0, 14);
-
-                foreach (var cPeak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {
-
+            var peaks = chromPeakFeatures.Where(
+                p => p.PeakCharacter.IsotopeWeightNumber == 0 &&
+                    !p.IsUnknown && !p.IsAnnotationSuggested(evaluator) &&
+                    p.IsValidInChIKey()
+                ).ToArray();
+            var groups = peaks.ToLookup(p => p.InChIKey.Substring(0, 14));
+            foreach (var group in groups) {
+                foreach (var ps in SearchCollection.Combination(group, 2)) {
+                    var peak = ps[0];
+                    var cPeak = ps[1];
                     var peakCharacter = peak.PeakCharacter;
                     var cPeakCharacter = cPeak.PeakCharacter;
-                    
                     if (peak.PeakID == cPeak.PeakID) continue;
                     if (cPeakCharacter.IsLinked) continue;
-                    if (cPeak.IsUnknown || cPeak.IsAnnotationSuggested(evaluator)) continue;
-                    if (!cPeak.IsValidInChIKey()) continue;
 
                     var cInchikey = cPeak.InChIKey;
                     var cShortInChIKey = cInchikey.Substring(0, 14);
 
-                    if (shortInChIKey == cShortInChIKey) {
-                        peakCharacter.IsLinked = true;
-                        peakCharacter.AdductParent = peak.PeakID;
+                    peakCharacter.IsLinked = true;
+                    peakCharacter.AdductParent = peak.PeakID;
 
-                        cPeakCharacter.IsLinked = true;
-                        cPeakCharacter.AdductParent = peak.PeakID;
-                        registerLinks(peak, cPeak, PeakLinkFeatureEnum.Adduct);
-                    }
+                    cPeakCharacter.IsLinked = true;
+                    cPeakCharacter.AdductParent = peak.PeakID;
+                    registerLinks(peak, cPeak, PeakLinkFeatureEnum.Adduct);
                 }
             }
         }
