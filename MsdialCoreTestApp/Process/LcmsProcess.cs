@@ -66,7 +66,7 @@ namespace CompMs.App.MsdialConsole.Process
                 tasks[idx] = Task.Run(async () => {
                     await sem.WaitAsync();
                     try {
-                        process.Run(file, null);
+                        await process.RunAsync(file, null).ConfigureAwait(false);
                     }
                     finally {
                         sem.Release();
