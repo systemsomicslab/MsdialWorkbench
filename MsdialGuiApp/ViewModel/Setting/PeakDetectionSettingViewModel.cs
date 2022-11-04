@@ -33,7 +33,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 ignoreValidationErrorValue: true
             ).SetValidateAttribute(() => MassSliceWidth).AddTo(Disposables);
 
-            SmoothingMethod = new ReactivePropertySlim<SmoothingMethod>(Model.SmoothingMethod).AddTo(Disposables);
+            SmoothingMethod = Model.ToReactivePropertySlimAsSynchronized(m => m.SmoothingMethod).AddTo(Disposables);
 
             SmoothingLevel = Model.ToReactivePropertyAsSynchronized(
                 m => m.SmoothingLevel,

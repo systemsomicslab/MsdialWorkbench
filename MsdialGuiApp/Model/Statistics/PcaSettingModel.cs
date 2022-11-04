@@ -91,49 +91,19 @@ namespace CompMs.App.Msdial.Model.Statistics
             statsParam.IsUnknownImportedInStatistics = IsUnknownImportedInStatistics;
 
             var result = StatisticsObjectConverter.PrincipalComponentAnalysis(_analysisfiles, _spotprops, _parameter, _evaluator);
-
-
-            //int counterSample = 0;
-            //int counterMetabolite = 0;
-
-            //var metaboliteIDs = new ObservableCollection<int>();
             var metaboliteSpotProps = new ObservableCollection<AlignmentSpotPropertyModel>();
 
             foreach (var spot in _spotprops) {
-                if (isIdentifiedImportedInStatistics && _evaluator.IsReferenceMatched(spot.ScanMatchResult)) {
+                if (isIdentifiedImportedInStatistics && _evaluator.IsReferenceMatched(spot.MatchResults.Representative)) {
                     metaboliteSpotProps.Add(spot);
                 }
-                if (isAnnotatedImportedInStatistics && _evaluator.IsAnnotationSuggested(spot.ScanMatchResult)) {
+                if (isAnnotatedImportedInStatistics && _evaluator.IsAnnotationSuggested(spot.MatchResults.Representative)) {
                     metaboliteSpotProps.Add(spot);
                 }
-                if (isUnknownImportedInStatistics && !_evaluator.IsReferenceMatched(spot.ScanMatchResult) && !_evaluator.IsAnnotationSuggested(spot.ScanMatchResult)) {
+                if (isUnknownImportedInStatistics && !_evaluator.IsReferenceMatched(spot.MatchResults.Representative) && !_evaluator.IsAnnotationSuggested(spot.MatchResults.Representative)) {
                     metaboliteSpotProps.Add(spot);
                 }
             }
-
-            //var statObj = new StatisticsObject()
-            //{
-            //    XDataMatrix = new double[_parameter.FileID_AnalysisFileType.Keys.Count, metaboliteSpotProps.Count],
-            //    XLabels = new ObservableCollection<string>(metaboliteSpotProps.Select(prop => $@"ID: {prop.MasterAlignmentID}_{(string.IsNullOrEmpty(prop.Name) ? "Unknown" : prop.Name)}")),
-            //    YLabels = new ObservableCollection<string>(_analysisfiles.Select(file => file.AnalysisFileName)),
-            //    YVariables = new[] { 0d, 0d, },
-            //    Scale = ScaleMethod,
-            //    Transform = TransformMethod,
-            //};
-
-            //for (int i = 0; i < _parameter.FileID_AnalysisFileType.Keys.Count; i++) {
-            //    counterMetabolite = 0;
-            //    for (int j = 0; j < metaboliteSpotProps.Count; j++) {
-            //        if (!metaboliteIDs.Contains(metaboliteSpotProps[j].MasterAlignmentID)) continue;
-            //        var alignProp = metaboliteSpotProps[j].AlignedPeakProperties;
-            //        statObj.XDataMatrix[counterSample, counterMetabolite] = alignProp[i].NormalizedPeakHeight;
-            //        counterMetabolite++;
-            //    }
-            //    counterSample++;
-            //}
-            //statObj.StatInitialization();
-
-            //var pcaResult = StatisticsMathematics.PrincipalComponentAnalysis(statObj, MultivariateAnalysisOption.Pca, MaxPcNumber);
             PcaResultModel = new PcaResultModel(result, _parameter, metaboliteSpotProps, _analysisfiles, _brushmaps);
         }
     }

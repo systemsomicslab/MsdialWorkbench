@@ -14,14 +14,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Statistics {
-    internal class PlsSettingModel : BindableBase {
+    internal class MultivariateAnalysisSettingModel : BindableBase {
         private readonly ParameterBase _parameter;
         private readonly ObservableCollection<AlignmentSpotPropertyModel> _spotprops;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly List<AnalysisFileBean> _analysisfiles;
         private readonly IObservable<KeyBrushMapper<string>> _brushmaps;
 
-        public PlsSettingModel(ParameterBase parameter,
+        public MultivariateAnalysisSettingModel(ParameterBase parameter,
            ObservableCollection<AlignmentSpotPropertyModel> spotprops,
            IMatchResultEvaluator<MsScanMatchResult> evaluator,
            List<AnalysisFileBean> analysisfiles,
@@ -40,6 +40,13 @@ namespace CompMs.App.Msdial.Model.Statistics {
             set => SetProperty(ref maxPcNumber, value);
         }
         private int maxPcNumber;
+
+        public bool IsAutoFit {
+            get => isAutoFit;
+            set => SetProperty(ref isAutoFit, value);
+        }
+        private bool isAutoFit;
+
         public ScaleMethod ScaleMethod {
             get => scaleMethod;
             set => SetProperty(ref scaleMethod, value);
@@ -51,6 +58,12 @@ namespace CompMs.App.Msdial.Model.Statistics {
             set => SetProperty(ref transformMethod, value);
         }
         private TransformMethod transformMethod;
+
+        public MultivariateAnalysisOption MultivariateAnalysisOption {
+            get => multivariateAnalysisOption;
+            set => SetProperty(ref multivariateAnalysisOption, value);
+        }
+        private MultivariateAnalysisOption multivariateAnalysisOption;
 
         public bool IsIdentifiedImportedInStatistics {
             get => isIdentifiedImportedInStatistics;
@@ -69,5 +82,38 @@ namespace CompMs.App.Msdial.Model.Statistics {
             set => SetProperty(ref isUnknownImportedInStatistics, value);
         }
         private bool isUnknownImportedInStatistics;
+
+        public PCAPLSResultModel PCAPLSResultModel {
+            get => _pcaplsResultModel;
+            set => SetProperty(ref _pcaplsResultModel, value);
+        }
+        private PCAPLSResultModel _pcaplsResultModel;
+
+        public void RunPca() {
+
+            var statsParam = this._parameter.StatisticsBaseParam;
+            statsParam.MaxComponent = MaxPcNumber;
+            statsParam.Scale = ScaleMethod;
+            statsParam.Transform = TransformMethod;
+            statsParam.IsIdentifiedImportedInStatistics = IsIdentifiedImportedInStatistics;
+            statsParam.IsAnnotatedImportedInStatistics = IsAnnotatedImportedInStatistics;
+            statsParam.IsUnknownImportedInStatistics = IsUnknownImportedInStatistics;
+
+            var result = StatisticsObjectConverter.PrincipalComponentAnalysis(_analysisfiles, _spotprops, _parameter, _evaluator);
+            var metaboliteSpotProps = new ObservableCollection<AlignmentSpotPropertyModel>();
+
+            foreach (var spot in _spotprops) {
+                if (isIdentifiedImportedInStatistics && _evaluator.IsReferenceMatched(spot.MatchResults.Representative)) {
+                    metaboliteSpotProps.Add(spot);
+                }
+                if (isAnnotatedImportedInStatistics && _evaluator.IsAnnotationSuggested(spot.MatchResults.Representative)) {
+                    metaboliteSpotProps.Add(spot);
+                }
+                if (isUnknownImportedInStatistics && !_evaluator.IsReferenceMatched(spot.MatchResults.Representative) && !_evaluator.IsAnnotationSuggested(spot.MatchResults.Representative)) {
+                    metaboliteSpotProps.Add(spot);
+                }
+            }
+            PCAPLSResultModel = new PCAPLSResultModel(result, _parameter, metaboliteSpotProps, _analysisfiles, _brushmaps);
+        }
     }
 }

@@ -47,6 +47,124 @@ namespace CompMs.App.Msdial.Model.Statistics
         public AnalysisFileBean Bean { get; }
     }
 
+    internal sealed class PCAPLSResultModel : BindableBase {
+        private readonly MultivariateAnalysisResult _multivariateAnalysisResult;
+        private readonly ParameterBase _parameter;
+        private readonly ObservableCollection<AlignmentSpotPropertyModel> _spotprops;
+        private readonly List<AnalysisFileBean> _analysisfiles;
+        private readonly IObservable<KeyBrushMapper<string>> _classBrush;
+
+        public PCAPLSResultModel(
+            MultivariateAnalysisResult multivariateAnalysisResult,
+            ParameterBase parameter,
+            IReadOnlyList<AlignmentSpotPropertyModel> spotprops,
+            IReadOnlyList<AnalysisFileBean> analysisfiles,
+            IObservable<KeyBrushMapper<string>> brushmaps
+            ) {
+
+            _multivariateAnalysisResult = multivariateAnalysisResult ?? throw new ArgumentNullException(nameof(multivariateAnalysisResult));
+
+            var statisticsObject = multivariateAnalysisResult.StatisticsObject;
+            Loadings = new ObservableCollection<ComponentLoadingModel>(
+                statisticsObject.XLabels.Select((label, i) =>
+                    new ComponentLoadingModel(multivariateAnalysisResult.PPreds.Select(preds => preds[i]).ToArray(), label, spotprops[i])));
+            LoadingAxises = multivariateAnalysisResult.PPreds
+                .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new ContinuousAxisManager<double>(pc_loadings, new ConstantMargin(20))))
+                .ToList().AsReadOnly();
+
+            LoadingAbsoluteAxises = multivariateAnalysisResult.PPreds
+                .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new AbsoluteAxisManager(new Range(0d, pc_loadings.DefaultIfEmpty().Max(Math.Abs)), new ConstantMargin(0, 10))))
+                .ToList().AsReadOnly();
+
+            Scores = new ObservableCollection<ComponentScoreModel>(
+                statisticsObject.YLabels.Select((label, i) =>
+                    new ComponentScoreModel(multivariateAnalysisResult.TPreds.Select(preds => preds[i]).ToArray(), label, analysisfiles[i])));
+            ScoreAxises = multivariateAnalysisResult.TPreds
+                .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new ContinuousAxisManager<double>(pc_loadings, new ConstantMargin(20))))
+                .ToList().AsReadOnly();
+
+            var pcAxises = new ObservableCollection<IAxisManager<string>>();
+            for (int i = 0; i < NumberOfComponents; i++) {
+                pcAxises.Add(new CategoryAxisManager<string>(Loadings.OrderByDescending(loading => Math.Abs(loading.Loading[i])).Select(loading => loading.Label).ToArray()));
+            }
+            PCAxises = pcAxises;
+
+            //multivariateAnalysisResult.Contributions.OrderByDescending(d => d).Select(d => new ComponentContributionModel()));
+
+            PointBrush = brushmaps.Select(bm => bm.Contramap((ComponentScoreViewModel csvm) => csvm.Model.Bean.AnalysisFileClass)).ToReactiveProperty();
+
+            var ontology = new BrushMapData<ComponentLoadingViewModel>(
+                new KeyBrushMapper<ComponentLoadingViewModel, string>(
+                    ChemOntologyColor.Ontology2RgbaBrush,
+                    loading => loading?.Model.Spot.Ontology ?? string.Empty,
+                    Color.FromArgb(180, 181, 181, 181)),
+                "Ontology");
+            var amplitude = new BrushMapData<ComponentLoadingViewModel>(
+                new DelegateBrushMapper<ComponentLoadingViewModel>(
+                    loading => Color.FromArgb(
+                        180,
+                        (byte)(255 * loading.Model.Spot.innerModel.RelativeAmplitudeValue),
+                        (byte)(255 * (1 - Math.Abs(loading.Model.Spot.innerModel.RelativeAmplitudeValue - 0.5))),
+                        (byte)(255 - 255 * loading.Model.Spot.innerModel.RelativeAmplitudeValue)),
+                    enableCache: true),
+                "Amplitude");
+
+            Brushes = new List<BrushMapData<ComponentLoadingViewModel>>
+            {
+                amplitude, ontology,
+            };
+
+            if (parameter.TargetOmics == TargetOmics.Lipidomics) {
+                SelectedBrush = ontology;
+            }
+            else if (parameter.TargetOmics == TargetOmics.Proteomics || parameter.TargetOmics == TargetOmics.Metabolomics) {
+                SelectedBrush = amplitude;
+            }
+
+            PosnegBrush = new DelegateBrushMapper<ComponentLoadingViewModel>(
+                    loading => loading.ComponentX > 0 ? Colors.Red : Colors.Blue);
+
+        }
+
+        public ObservableCollection<ComponentLoadingModel> Loadings { get; }
+        public ObservableCollection<ComponentScoreModel> Scores { get; }
+        public ObservableCollection<IAxisManager<string>> PCAxises { get; }
+        public ReadOnlyCollection<Lazy<IAxisManager<double>>> LoadingAxises { get; }
+        public ReadOnlyCollection<Lazy<IAxisManager<double>>> LoadingAbsoluteAxises { get; }
+        public ReadOnlyCollection<Lazy<IAxisManager<double>>> ScoreAxises { get; }
+        public List<BrushMapData<ComponentLoadingViewModel>> Brushes { get; }
+
+        public BrushMapData<ComponentLoadingViewModel> SelectedBrush {
+            get => _selectedBrush;
+            set => SetProperty(ref _selectedBrush, value);
+        }
+        private BrushMapData<ComponentLoadingViewModel> _selectedBrush;
+
+        public IObservable<IBrushMapper<ComponentScoreViewModel>> PointBrush {
+            get => _pointBrush;
+            set => SetProperty(ref _pointBrush, value);
+        }
+        private IObservable<IBrushMapper<ComponentScoreViewModel>> _pointBrush;
+
+        public IBrushMapper<ComponentLoadingViewModel> PosnegBrush {
+            get => _posnegBrush;
+            set => SetProperty(ref _posnegBrush, value);
+        }
+        private IBrushMapper<ComponentLoadingViewModel> _posnegBrush;
+
+        public int NumberOfComponents => _multivariateAnalysisResult.PPreds.Count;
+        public string ScorePlotTitle {
+            get => scorePlotTitle;
+            set => SetProperty(ref scorePlotTitle, value);
+        }
+        private string scorePlotTitle;
+        public string LoadingPlotTitle {
+            get => loadingPlotTitle;
+            set => SetProperty(ref loadingPlotTitle, value);
+        }
+        private string loadingPlotTitle;
+    }
+
     internal sealed class PcaResultModel : BindableBase {
         private readonly MultivariateAnalysisResult _multivariateAnalysisResult;
         private readonly ParameterBase _parameter;
