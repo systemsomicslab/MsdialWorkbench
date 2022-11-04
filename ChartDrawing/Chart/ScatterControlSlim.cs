@@ -313,7 +313,7 @@ namespace CompMs.Graphics.Chart
             set => SetValue(SelectedPointProperty, value);
         }
 
-        private static readonly DependencyProperty SelectedPointProperty =
+        public static readonly DependencyProperty SelectedPointProperty =
             DependencyProperty.Register(
                 nameof(SelectedPoint),
                 typeof(Point?),
@@ -357,7 +357,7 @@ namespace CompMs.Graphics.Chart
         }
 
         private void OnFocusedItemChanged(object oldValue, object newValue) {
-
+            UpdateFocusedPoint();
         }
 
         public Point? FocusedPoint {
@@ -372,9 +372,24 @@ namespace CompMs.Graphics.Chart
                 typeof(ScatterControlSlim),
                 new PropertyMetadata(null));
 
+        private void UpdateFocusedPoint() {
+            if (HorizontalAxis is IAxisManager haxis
+                && VerticalAxis is IAxisManager vaxis
+                && xLambda?.Value is Func<object, IAxisManager, AxisValue> xlambda
+                && yLambda?.Value is Func<object, IAxisManager, AxisValue> ylambda
+                && FocusedItem is object item) {
+
+                var pt = new Point(
+                    haxis.TranslateToRenderPoint(xlambda(item, haxis), FlippedX, ActualWidth),
+                    vaxis.TranslateToRenderPoint(ylambda(item, vaxis), FlippedY, ActualHeight));
+                if (pt != FocusedPoint) {
+                    FocusedPoint = pt;
+                }
+            }
+        }
+
         protected override void OnRender(DrawingContext drawingContext) {
             base.OnRender(drawingContext);
-            UpdateSelectedPoint();
 
             if (HorizontalAxis is IAxisManager haxis && VerticalAxis is IAxisManager vaxis && PointBrush is IBrushMapper brush && tree != null) {
                 var hr = haxis.Range;
@@ -389,8 +404,9 @@ namespace CompMs.Graphics.Chart
                     // drawingContext.DrawRectangle(brush.Map(item.Item), null, new Rect(x - radius, y - radius, radius * 2, radius * 2));
                     drawingContext.DrawEllipse(brush.Map(hueLambda?.Value?.Invoke(item.Item) ?? item.Item), null, new Point(x, y), radius, radius);
                 }
-                UpdateSelectedPoint();
             }
+            UpdateSelectedPoint();
+            UpdateFocusedPoint();
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) {
@@ -440,7 +456,6 @@ namespace CompMs.Graphics.Chart
                     <= Math.Pow(Radius, 2)) {
                     if (FocusedItem != spot.Item) {
                         FocusedItem = spot.Item;
-                        FocusedPoint = pt;
                     }
                 }
             }
