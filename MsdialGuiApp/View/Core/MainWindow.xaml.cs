@@ -79,9 +79,9 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<NormalizationSetViewModel>()
                 .Subscribe(OpenNormalizationSetView);
             broker.ToObservable<MultivariateAnalysisSettingViewModel>()
-                .Subscribe(OpenPcaSettingView);
+                .Subscribe(OpenMultivariateAnalysisSettingView);
             broker.ToObservable<PCAPLSResultViewModel>()
-                .Subscribe(OpenPcaView);
+                .Subscribe(OpenPCAPLSResultView);
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
 #elif DEBUG
@@ -227,7 +227,7 @@ namespace CompMs.App.Msdial.View.Core
             view.ShowDialog();
         }
 
-        private void OpenPcaSettingView(MultivariateAnalysisSettingViewModel viewmodel) {
+        private void OpenMultivariateAnalysisSettingView(MultivariateAnalysisSettingViewModel viewmodel) {
             if (viewmodel is null) {
                 MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -241,7 +241,7 @@ namespace CompMs.App.Msdial.View.Core
             dialog.Show();
         }
 
-        private void OpenPcaView(PCAPLSResultViewModel viewmodel) {
+        private void OpenPCAPLSResultView(PCAPLSResultViewModel viewmodel) {
             var dialog = new Window
             {
                 DataContext = viewmodel,
