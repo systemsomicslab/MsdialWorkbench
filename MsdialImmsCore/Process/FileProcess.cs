@@ -1,18 +1,17 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
+using CompMs.Common.Extension;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parser;
-using CompMs.MsdialImmsCore.Algorithm;
-using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.Parameter;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CompMs.MsdialImmsCore.Process
 {
@@ -40,7 +39,17 @@ namespace CompMs.MsdialImmsCore.Process
             _peakAnnotationProcess = new PeakAnnotationProcess(storage, evaluator, mspAnnotator, textDBAnnotator);
         }
 
-        public void Run(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction = null, CancellationToken token = default) {
+        public Task RunAllAsync(IEnumerable<AnalysisFileBean> files, IEnumerable<IDataProvider> providers, IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token = default) {
+            var consumer = new Consumer(files, providers, reportActions, afterEachRun, token);
+            return Task.WhenAll(consumer.ConsumeAllAsync(RunAsync, numParallel));
+        }
+
+        public Task AnnotateAllAsync(IEnumerable<AnalysisFileBean> files, IEnumerable<IDataProvider> providers, IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token = default) {
+            var consumer = new Consumer(files, providers, reportActions, afterEachRun, token);
+            return Task.WhenAll(consumer.ConsumeAllAsync(AnnotateAsync, numParallel));
+        }
+
+        public async Task RunAsync(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction = null, CancellationToken token = default) {
             Console.WriteLine("Peak picking started");
             var chromPeakFeatures = _peakPickProcess.Pick(file, provider, reportAction);
 
@@ -48,100 +57,75 @@ namespace CompMs.MsdialImmsCore.Process
             file.ChromPeakFeaturesSummary = summary;
 
             Console.WriteLine("Deconvolution started");
-            var targetCE2MSDecResults = _deconvolutionProcess.Deconvolute(provider, chromPeakFeatures, summary, reportAction, token);
+            var mSDecResultCollections = _deconvolutionProcess.Deconvolute(provider, chromPeakFeatures, summary, reportAction, token);
 
             // annotations
             Console.WriteLine("Annotation started");
-            _peakAnnotationProcess.Annotate(provider, chromPeakFeatures, targetCE2MSDecResults, reportAction, token);
+            _peakAnnotationProcess.Annotate(provider, chromPeakFeatures, mSDecResultCollections, reportAction, token);
 
             // file save
-            SaveToFile(file, new ChromatogramPeakFeatureCollection(chromPeakFeatures), targetCE2MSDecResults);
+            await SaveToFileAsync(file, new ChromatogramPeakFeatureCollection(chromPeakFeatures), mSDecResultCollections).ConfigureAwait(false);
 
             reportAction?.Invoke(100);
         }
 
-        public void Annotate(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction = null, CancellationToken token = default) {
-            var (chromPeakFeatures, targetCE2MSDecResults) = LoadFromFile(file);
+        public async Task AnnotateAsync(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction = null, CancellationToken token = default) {
+            var peakTask = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath);
+            var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(file));
 
+            var chromPeakFeatures = await peakTask.ConfigureAwait(false);
+            var mSDecResultCollections = await resultsTask.ConfigureAwait(false);
             // annotations
             Console.WriteLine("Annotation started");
-            _peakAnnotationProcess.Annotate(provider, chromPeakFeatures.Items, targetCE2MSDecResults, reportAction, token);
+            _peakAnnotationProcess.Annotate(provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
 
             // file save
-            SaveToFile(file, chromPeakFeatures, targetCE2MSDecResults);
+            await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
 
             reportAction?.Invoke(100);
         }
 
-        public static void Run(
-            AnalysisFileBean file,
-            IMsdialDataStorage<MsdialImmsParameter> storage,
-            IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            bool isGuiProcess = false,
-            Action<int> reportAction = null, CancellationToken token = default) {
+        private static Task SaveToFileAsync(AnalysisFileBean file, ChromatogramPeakFeatureCollection chromPeakFeatures, IReadOnlyList<MSDecResultCollection> mSDecResultCollections) {
+            Task t1, t2;
 
-            var mspAnnotator = new ImmsMspAnnotator(new MoleculeDataBase(storage.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), storage.Parameter.MspSearchParam, storage.Parameter.TargetOmics, "MspDB", -1);
-            var textDBAnnotator = new ImmsTextDBAnnotator(new MoleculeDataBase(storage.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), storage.Parameter.TextDbSearchParam, "TextDB", -1);
-            var provider = new ImmsAverageDataProvider(file, 0.001, 0.002, retry: 5, isGuiProcess: isGuiProcess);
-            Run(file, storage, mspAnnotator, textDBAnnotator, provider, evaluator, reportAction, token);
-        }
+            t1 = chromPeakFeatures.SerializeAsync(file);
 
-        public static void Run(
-            AnalysisFileBean file,
-            IMsdialDataStorage<MsdialImmsParameter> storage,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
-            IDataProvider provider,
-            IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            Action<int> reportAction = null,
-            CancellationToken token = default) {
-
-            var processor = new FileProcess(storage, mspAnnotator, textDBAnnotator, evaluator);
-            processor.Run(file, provider, reportAction, token);
-        }
-
-        private static (ChromatogramPeakFeatureCollection, Dictionary<double, List<MSDecResult>>) LoadFromFile(AnalysisFileBean file) {
-            var peaks = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath).Result;
-            var decResults = new Dictionary<double, List<MSDecResult>>();
-            if (file.DeconvolutionFilePathList.Count == 1) {
-                var dclfile = file.DeconvolutionFilePath;
-                decResults[-1] = MsdecResultsReader.ReadMSDecResults(dclfile, out var _, out var _);
+            if (mSDecResultCollections.Count == 1) {
+                t2 = mSDecResultCollections[0].SerializeAsync(file);
             }
             else {
-                foreach (var dclfile in file.DeconvolutionFilePathList) {
-                    var fileName = Path.GetFileNameWithoutExtension(dclfile);
-                    var suffix = fileName.Split('_').Last();
-                    var ce = double.TryParse(suffix, out var ce_) ? ce_ / 100 : -1d; // 3450 -> CE 34.50
-                    decResults[ce] = MsdecResultsReader.ReadMSDecResults(dclfile, out var _, out var _);
-                }
+                file.DeconvolutionFilePathList.Clear();
+                t2 = Task.WhenAll(mSDecResultCollections.Select(mSDecResultCollection => mSDecResultCollection.SerializeWithCEAsync(file)));
             }
-            return (peaks, decResults);
+
+            return Task.WhenAll(t1, t2);
         }
 
-        private static void SaveToFile(
-            AnalysisFileBean file,
-            ChromatogramPeakFeatureCollection chromPeakFeatures,
-            Dictionary<double, List<MSDecResult>> targetCE2MSDecResults) {
+        class Consumer {
+            private readonly ConcurrentQueue<(AnalysisFileBean File, IDataProvider Provider, Action<int> Report)> _queue;
+            private readonly Action _afterEachRun;
+            private readonly CancellationToken _token;
 
-            chromPeakFeatures.SerializeAsync(file).Wait();
-
-            var dclfile = file.DeconvolutionFilePath;
-            var dclfiles = new List<string>();
-            if (targetCE2MSDecResults.Count == 1) {
-                dclfiles.Add(dclfile);
-                MsdecResultsWriter.Write(dclfile, targetCE2MSDecResults.Single().Value);
+            public Consumer(IEnumerable<AnalysisFileBean> files, IEnumerable<IDataProvider> providers, IEnumerable<Action<int>> reportActions, Action afterEachRun, CancellationToken token) {
+                _queue = new ConcurrentQueue<(AnalysisFileBean, IDataProvider, Action<int>)>(files.Zip(providers, reportActions, (file, provider, report) => (file, provider, report)));
+                _afterEachRun = afterEachRun;
+                _token = token;
             }
-            else {
-                var dclDirectory = Path.GetDirectoryName(dclfile);
-                var dclName = Path.GetFileNameWithoutExtension(dclfile);
-                foreach (var ce2msdecs in targetCE2MSDecResults) {
-                    var suffix = Math.Round(ce2msdecs.Key * 100, 0); // CE 34.50 -> 3450
-                    var dclfile_suffix = Path.Combine(dclDirectory,  dclName + "_" + suffix + ".dcl");
-                    dclfiles.Add(dclfile_suffix);
-                    MsdecResultsWriter.Write(dclfile_suffix, ce2msdecs.Value);
+
+            public async Task ConsumeAsync(Func<AnalysisFileBean, IDataProvider, Action<int>, CancellationToken, Task> process) {
+                while (_queue.TryDequeue(out var pair)) {
+                    await process(pair.File, pair.Provider, pair.Report, _token).ConfigureAwait(false);
+                    _afterEachRun?.Invoke();
                 }
             }
-            file.DeconvolutionFilePathList = dclfiles;
+
+            public Task[] ConsumeAllAsync(Func<AnalysisFileBean, IDataProvider, Action<int>, CancellationToken, Task> process, int parallel) {
+                var tasks = new Task[parallel];
+                for (int i = 0; i < parallel; i++) {
+                    tasks[i] = Task.Run(() => ConsumeAsync(process), _token);
+                }
+                return tasks;
+            }
         }
     }
 }

@@ -83,14 +83,15 @@ namespace CompMs.App.MsdialConsole.Process
             container.DataBases = DataBaseStorage.CreateEmpty();
             container.DataBases.AddMoleculeDataBase(
                 database,
-                new List<IAnnotatorParameterPair<IAnnotationQuery, Common.Components.MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> { 
+                new List<IAnnotatorParameterPair<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> { 
                     new MetabolomicsAnnotatorParameterPair(annotator, param.TextDbSearchParam)
                 }
             );
             storage.AddStorage(container);
 
             var evaluator = MsScanMatchResultEvaluator.CreateEvaluator(param.TextDbSearchParam);
-            MsdialImmsCore.Process.FileProcess.Run(file, container, null, null, provider, evaluator, null);
+            var processor = new MsdialImmsCore.Process.FileProcess(container, null, null, evaluator);
+            processor.RunAsync(file, provider).Wait();
             using (var fs = File.Open(storage.ProjectParameter.FilePath, FileMode.Create))
             using (var streamManager = ZipStreamManager.OpenCreate(fs)) {
                 var serializer = new MsdialIntegrateSerializer();

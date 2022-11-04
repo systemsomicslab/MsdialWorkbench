@@ -35,6 +35,21 @@ namespace CompMs.MsdialImmsCore.Process
         public void Annotate(
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
+            IReadOnlyList<MSDecResultCollection> mSDecResultCollections,
+            Action<int> reportAction,
+            CancellationToken token) {
+
+            var parameter = _storage.Parameter;
+            var annotatorContainers = _storage.DataBases.MetabolomicsDataBases.SelectMany(Item => Item.Pairs.Select(pair => pair.ConvertToAnnotatorContainer())).ToArray();
+            PeakAnnotation(mSDecResultCollections, provider, chromPeakFeatures, annotatorContainers, _mspAnnotator, _textDBAnnotator, parameter, reportAction, token);
+
+            // characterizatin
+            PeakCharacterization(mSDecResultCollections, provider, chromPeakFeatures, _evaluator, parameter, reportAction);
+        }
+
+        public void Annotate(
+            IDataProvider provider,
+            IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
             Action<int> reportAction,
             CancellationToken token) {
@@ -45,6 +60,31 @@ namespace CompMs.MsdialImmsCore.Process
 
             // characterizatin
             PeakCharacterization(targetCE2MSDecResults, provider, chromPeakFeatures, _evaluator, parameter, reportAction);
+        }
+
+        private static void PeakAnnotation(
+            IReadOnlyList<MSDecResultCollection> mSDecResultCollections,
+            IDataProvider provider,
+            IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
+            IReadOnlyCollection<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
+            MsdialImmsParameter parameter,
+            Action<int> reportAction, CancellationToken token) {
+
+            var initial_annotation = 60.0;
+            var max_annotation = 30.0;
+            foreach (var (ce2msdecs, index) in mSDecResultCollections.WithIndex()) {
+                var targetCE = ce2msdecs.CollisionEnergy;
+                var msdecResults = ce2msdecs.MSDecResults;
+                var max_annotation_local = max_annotation / mSDecResultCollections.Count;
+                var initial_annotation_local = initial_annotation + max_annotation_local * index;
+                new AnnotationProcess(initial_annotation_local, max_annotation_local).Run(
+                    provider, chromPeakFeatures, msdecResults,
+                    annotatorContainers, mspAnnotator, textDBAnnotator, parameter,
+                    reportAction, parameter.NumThreads, token
+                );
+            }
         }
 
         private static void PeakAnnotation(
@@ -70,6 +110,19 @@ namespace CompMs.MsdialImmsCore.Process
                     reportAction, parameter.NumThreads, token
                 );
             }
+        }
+
+        private static void PeakCharacterization(
+            IReadOnlyList<MSDecResultCollection> mSDecResultCollections,
+            IDataProvider provider,
+            IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            MsdialImmsParameter parameter,
+            Action<int> reportAction) {
+
+            new PeakCharacterEstimator(90, 10).Process(provider, chromPeakFeatures, mSDecResultCollections.Any() ? mSDecResultCollections.Argmin(kvp => kvp.CollisionEnergy).MSDecResults : null,
+                evaluator,
+                parameter, reportAction);
         }
 
         private static void PeakCharacterization(

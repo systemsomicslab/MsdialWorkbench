@@ -133,26 +133,15 @@ namespace CompMs.App.Msdial.Model.Imms
             var request = new ProgressBarMultiContainerRequest(
                 async vm =>
                 {
-                    var tasks = new List<Task>();
                     var usable = Math.Max(_storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
                     var processor = new FileProcess(storage, null, null, _matchResultEvaluator);
-                    using (var sem = new SemaphoreSlim(usable, usable)) {
-                        foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                            var task = Task.Run(async () =>
-                            {
-                                await sem.WaitAsync();
-                                try {
-                                    processor.Run(analysisfile, ProviderFactory.Create(analysisfile), reportAction: v => pbvm.CurrentValue = v);
-                                    vm.Increment();
-                                }
-                                finally {
-                                    sem.Release();
-                                }
-                            });
-                            tasks.Add(task);
-                        }
-                        await Task.WhenAll(tasks).ConfigureAwait(false);
-                    }
+                    await processor.RunAllAsync(
+                        storage.AnalysisFiles,
+                        storage.AnalysisFiles.Select(ProviderFactory.Create),
+                        vm.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
+                        usable,
+                        vm.Increment)
+                    .ConfigureAwait(false);
                 },
                 storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
             _broker.Publish(request);
@@ -164,26 +153,15 @@ namespace CompMs.App.Msdial.Model.Imms
             var request = new ProgressBarMultiContainerRequest(
                 async vm =>
                 {
-                    var tasks = new List<Task>();
                     var usable = Math.Max(_storage.Parameter.ProcessBaseParam.UsableNumThreads / 2, 1);
                     var processor = new FileProcess(storage, null, null, _matchResultEvaluator);
-                    using (var sem = new SemaphoreSlim(usable, usable)) {
-                        foreach ((var analysisfile, var pbvm) in storage.AnalysisFiles.Zip(vm.ProgressBarVMs)) {
-                            var task = Task.Run(async () =>
-                            {
-                                await sem.WaitAsync();
-                                try {
-                                    processor.Annotate(analysisfile, ProviderFactory.Create(analysisfile), reportAction: v => pbvm.CurrentValue = v);
-                                    vm.Increment();
-                                }
-                                finally {
-                                    sem.Release();
-                                }
-                            });
-                            tasks.Add(task);
-                        }
-                        await Task.WhenAll(tasks).ConfigureAwait(false);
-                    }
+                    await processor.AnnotateAllAsync(
+                        storage.AnalysisFiles,
+                        storage.AnalysisFiles.Select(ProviderFactory.Create),
+                        vm.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
+                        usable,
+                        vm.Increment)
+                    .ConfigureAwait(false);
                 },
                 storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
             _broker.Publish(request);

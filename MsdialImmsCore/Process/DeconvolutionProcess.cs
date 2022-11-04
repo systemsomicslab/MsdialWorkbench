@@ -6,6 +6,7 @@ using CompMs.MsdialImmsCore.Algorithm;
 using CompMs.MsdialImmsCore.Parameter;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace CompMs.MsdialImmsCore.Process
@@ -18,11 +19,11 @@ namespace CompMs.MsdialImmsCore.Process
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 
-        public Dictionary<double, List<MSDecResult>> Deconvolute(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures, ChromatogramPeaksDataSummaryDto summary, Action<int> reportAction, CancellationToken token) {
+        public MSDecResultCollection[] Deconvolute(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures, ChromatogramPeaksDataSummaryDto summary, Action<int> reportAction, CancellationToken token) {
             var parameter = _storage.Parameter;
             var iupacDB = _storage.IupacDatabase;
             var targetCE2MSDecResults = SpectrumDeconvolution(provider, chromPeakFeatures, summary, parameter, iupacDB, reportAction, token);
-            return targetCE2MSDecResults;
+            return targetCE2MSDecResults.Select(kvp => new MSDecResultCollection(kvp.Value, kvp.Key)).ToArray();
         }
 
         private static Dictionary<double, List<MSDecResult>> SpectrumDeconvolution(
