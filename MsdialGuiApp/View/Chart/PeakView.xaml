@@ -61,7 +61,21 @@
                                       VerticalProperty="{Binding VerticalProperty.Value, Mode=OneWay}"
                                       PointBrush="{Binding Brush.Value}"
                                       Radius="5.5"
-                                      SelectedItem="{Binding Target.Value, Mode=TwoWay}"/>
+                                      SelectedItem="{Binding Target.Value, Mode=TwoWay}">
+                <chart:ScatterControlSlim.ToolTip>
+                    <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding FocusedItem.MasterPeakID, StringFormat=ID: {0}}"/>
+                            <TextBlock Text="{Binding FocusedItem.Name, StringFormat=Name: {0}}"/>
+                            <TextBlock Text="{Binding FocusedItem.AdductIonName, StringFormat=Ionform: {0}}"/>
+                            <TextBlock Text="{Binding FocusedItem.ChromXValue, StringFormat=Time: {0:0.000}}"/>
+                            <TextBlock Text="{Binding FocusedItem.Mass, StringFormat=m/z: {0:0.0000}}"/>
+                            <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Height: {0:0}}"/>
+                            <TextBlock Text="{Binding FocusedItem.PeakArea, StringFormat=Area: {0:0}}"/>
+                        </StackPanel>
+                    </ToolTip>
+                </chart:ScatterControlSlim.ToolTip>
+            </chart:ScatterControlSlim>
             <chart:Annotator ItemsSource="{Binding Spots, Mode=OneWay}"
                              HorizontalPropertyName="{Binding HorizontalProperty.Value, Mode=OneWay}"
                              VerticalPropertyName="{Binding VerticalProperty.Value, Mode=OneWay}"

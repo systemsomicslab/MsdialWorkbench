@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using CompMs.Common.DataStructure;
+using CompMs.Common.Enum;
 using CompMs.Common.Mathematics.Basic;
 using CompMs.Common.Mathematics.Matrix;
 

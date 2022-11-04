@@ -80,10 +80,10 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(OpenInternalStandardSetView);
             broker.ToObservable<NormalizationSetViewModel>()
                 .Subscribe(OpenNormalizationSetView);
-            broker.ToObservable<PcaSettingViewModel>()
-                .Subscribe(OpenPcaSettingView);
-            broker.ToObservable<PcaResultViewModel>()
-                .Subscribe(OpenPcaView);
+            broker.ToObservable<MultivariateAnalysisSettingViewModel>()
+                .Subscribe(OpenMultivariateAnalysisSettingView);
+            broker.ToObservable<PCAPLSResultViewModel>()
+                .Subscribe(OpenPCAPLSResultView);
             broker.ToObservable<AlignmentResultExport2VM>()
                 .Subscribe(OpenAlignmentResultExportDialog);
 #if RELEASE
@@ -231,12 +231,12 @@ namespace CompMs.App.Msdial.View.Core
             view.ShowDialog();
         }
 
-        private void OpenPcaSettingView(PcaSettingViewModel viewmodel) {
+        private void OpenMultivariateAnalysisSettingView(MultivariateAnalysisSettingViewModel viewmodel) {
             if (viewmodel is null) {
                 MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            var dialog = new PcaSettingView()
+            var dialog = new MultivariateAnalysisSettingView()
             {
                 DataContext = viewmodel,
                 Owner = this,
@@ -245,13 +245,13 @@ namespace CompMs.App.Msdial.View.Core
             dialog.Show();
         }
 
-        private void OpenPcaView(PcaResultViewModel viewmodel) {
+        private void OpenPCAPLSResultView(PCAPLSResultViewModel viewmodel) {
             var dialog = new Window
             {
                 DataContext = viewmodel,
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Content = new PcaResultView(),
+                Content = new MultivariateAnalysisResultView(),
             };
             dialog.Show();
         }

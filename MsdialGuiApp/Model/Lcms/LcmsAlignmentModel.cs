@@ -263,7 +263,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
 
-            PcaSettingModel = new PcaSettingModel(parameter, Ms1Spots, evaluator, files, classBrush);
+            MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, Ms1Spots, evaluator, files, classBrush);
         }
 
         public ParameterBase Parameter { get; }
@@ -279,7 +279,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         public AlignmentEicModel AlignmentEicModel { get; }
         public LcmsAlignmentSpotTableModel AlignmentSpotTableModel { get; private set; }
         public NormalizationSetModel NormalizationSetModel { get; }
-        public PcaSettingModel PcaSettingModel { get; }
+        public MultivariateAnalysisSettingModel MultivariateAnalysisSettingModel { get; }
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
         public PeakInformationAlignmentModel PeakInformationModel { get; }

@@ -113,10 +113,10 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .WithSubscribe(() => broker.Publish(NormalizationSetViewModel))
                 .AddTo(Disposables);
 
-            PcaSettingViewModel = new PcaSettingViewModel(model.PcaSettingModel, broker).AddTo(Disposables);
+            MultivariateAnalysisSettingViewModel = new MultivariateAnalysisSettingViewModel(model.MultivariateAnalysisSettingModel, broker).AddTo(Disposables);
             ShowPcaSettingCommand = model.NormalizationSetModel.IsNormalized
                 .ToReactiveCommand()
-                .WithSubscribe(() => broker.Publish(PcaSettingViewModel))
+                .WithSubscribe(() => broker.Publish(MultivariateAnalysisSettingViewModel))
                 .AddTo(Disposables);
 
             var notification = TaskNotification.Start("Loading alignment results...");
@@ -146,7 +146,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public NormalizationSetViewModel NormalizationSetViewModel { get; }
         public ReactiveCommand ShowNormalizationSettingCommand { get; }
 
-        public PcaSettingViewModel PcaSettingViewModel { get; }
+        public MultivariateAnalysisSettingViewModel MultivariateAnalysisSettingViewModel { get; }
         public ReactiveCommand ShowPcaSettingCommand { get; }
 
         public ICommand SetUnknownCommand { get; }

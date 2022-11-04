@@ -1,5 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Statistics;
-using CompMs.Common.Mathematics.Statistics;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using Reactive.Bindings.Notifiers;
 using System;

@@ -13,14 +13,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Statistics
-{
+namespace CompMs.App.Msdial.View.Statistics {
     /// <summary>
-    /// Interaction logic for PcaResultView.xaml
+    /// Interaction logic for MultivariateAnalysisResultView.xaml
     /// </summary>
-    public partial class PcaResultView : UserControl
-    {
-        public PcaResultView() {
+    public partial class MultivariateAnalysisResultView : UserControl {
+        public MultivariateAnalysisResultView() {
             InitializeComponent();
         }
     }

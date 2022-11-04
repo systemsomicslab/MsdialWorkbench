@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompMs.Common.Enum;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -6,10 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CompMs.Common.Mathematics.Statistics {
-    public enum MultivariateAnalysisOption { Pca, Plsda, Plsr, Oplsda, Oplsr, Hca }
-    public enum ScaleMethod { None, MeanCenter, ParetoScale, AutoScale }
-    public enum TransformMethod { None, Log10, QuadRoot }
-
     public class BasicStats {
         public int ID { get; set; }
         public double Average { get; set; }
@@ -39,6 +36,7 @@ namespace CompMs.Common.Mathematics.Statistics {
         public ObservableCollection<int> XIndexes { get; set; } = new ObservableCollection<int>();
 
         public ObservableCollection<string> YLabels { get; set; } = new ObservableCollection<string>();
+        public ObservableCollection<string> YLabels2 { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> XLabels { get; set; } = new ObservableCollection<string>();
 
         public ObservableCollection<byte[]> YColors { get; set; } = new ObservableCollection<byte[]>(); // [0] R [1] G [2] B [3] A

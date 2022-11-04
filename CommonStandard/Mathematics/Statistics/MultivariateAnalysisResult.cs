@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using CompMs.Common.DataStructure;
+using CompMs.Common.Enum;
 
 namespace CompMs.Common.Mathematics.Statistics {
    

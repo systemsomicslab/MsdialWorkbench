@@ -78,6 +78,7 @@
     <Compile Include="Converter\CBoolNegativeConverter.cs" />
     <Compile Include="Converter\ColorToBrushConverter.cs" />
     <Compile Include="Converter\ColorToPenConverter.cs" />
+    <Compile Include="Converter\RadioButtonEnumConverter.cs" />
     <Compile Include="Converter\ToPercentageConverter.cs" />
     <Compile Include="Converter\MethodTypeDdMsmsEnumToBoolConverter.cs" />
     <Compile Include="Converter\MethodTypeDiMsmsEnumToBoolConverter.cs" />

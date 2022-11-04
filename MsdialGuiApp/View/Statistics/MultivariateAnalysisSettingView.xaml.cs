@@ -14,10 +14,10 @@ using System.Windows.Shapes;
 
 namespace CompMs.App.Msdial.View.Statistics {
     /// <summary>
-    /// PcaSettingView.xaml の相互作用ロジック
+    /// PlsSettingView.xaml の相互作用ロジック
     /// </summary>
-    public partial class PcaSettingView : Window {
-        public PcaSettingView()
+    public partial class MultivariateAnalysisSettingView : Window {
+        public MultivariateAnalysisSettingView()
         {
             InitializeComponent();
         }
