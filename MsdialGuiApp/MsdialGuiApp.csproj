@@ -196,8 +196,10 @@
     <Compile Include="Model\Statistics\NoneNormalizeModel.cs" />
     <Compile Include="Model\Statistics\InternalStandardSetModel.cs" />
     <Compile Include="Model\Statistics\NormalizationSetModel.cs" />
+    <Compile Include="Model\Statistics\MultivariateAnalysisSettingModel.cs" />
     <Compile Include="Model\Statistics\SplashProduct.cs" />
     <Compile Include="Model\DataObj\TargetMsMethod.cs" />
+    <Compile Include="Model\Statistics\StatisticsObjectConverter.cs" />
     <Compile Include="Model\Statistics\TicNormalizeModel.cs" />
     <Compile Include="Model\Search\CompoundSearcher.cs" />
     <Compile Include="Model\Search\CompoundSearcherCollection.cs" />
@@ -384,6 +386,7 @@
     <Compile Include="Model\Setting\FileClassSetModel.cs" />
     <Compile Include="ViewModel\Setting\FileClassSettingViewModel.cs" />
     <Compile Include="ViewModel\Statistics\InternalStandardSetViewModel.cs" />
+    <Compile Include="ViewModel\Statistics\MultivariateAnalysisSettingViewModel.cs" />
     <Compile Include="ViewModel\Statistics\SplashProductViewModel.cs" />
     <Compile Include="ViewModel\Search\PeakFilterViewModel.cs" />
     <Compile Include="ViewModel\Search\FocusNavigatorViewModel.cs" />
@@ -609,11 +612,14 @@
     <Compile Include="View\Statistics\InternalStandardSetView.xaml.cs">
       <DependentUpon>InternalStandardSetView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Statistics\MultivariateAnalysisResultView.xaml.cs">
+      <DependentUpon>MultivariateAnalysisResultView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Statistics\NormalizationSetView.xaml.cs">
       <DependentUpon>NormalizationSetView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Statistics\PlsSettingView.xaml.cs">
-      <DependentUpon>PlsSettingView.xaml</DependentUpon>
+    <Compile Include="View\Statistics\MultivariateAnalysisSettingView.xaml.cs">
+      <DependentUpon>MultivariateAnalysisSettingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Statistics\SplashSetView.xaml.cs">
       <DependentUpon>SplashSetView.xaml</DependentUpon>
@@ -1050,11 +1056,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Statistics\MultivariateAnalysisResultView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Statistics\NormalizationSetView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Statistics\PlsSettingView.xaml">
+    <Page Include="View\Statistics\MultivariateAnalysisSettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

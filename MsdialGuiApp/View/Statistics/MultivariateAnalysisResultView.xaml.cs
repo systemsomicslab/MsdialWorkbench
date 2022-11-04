@@ -10,15 +10,15 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace CompMs.App.Msdial.View.Statistics {
     /// <summary>
-    /// PlsSettingView.xaml の相互作用ロジック
+    /// Interaction logic for MultivariateAnalysisResultView.xaml
     /// </summary>
-    public partial class PlsSettingView : Window {
-        public PlsSettingView()
-        {
+    public partial class MultivariateAnalysisResultView : UserControl {
+        public MultivariateAnalysisResultView() {
             InitializeComponent();
         }
     }

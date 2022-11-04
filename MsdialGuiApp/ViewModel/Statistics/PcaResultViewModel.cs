@@ -49,9 +49,9 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public ComponentScoreModel Model => _model;
     }
 
-    internal sealed class Pc1LoadingViewModel : ViewModelBase {
+    internal sealed class Component1LoadingViewModel : ViewModelBase {
         private readonly ComponentLoadingModel _model;
-        public Pc1LoadingViewModel(ComponentLoadingModel model, int pc1Index)
+        public Component1LoadingViewModel(ComponentLoadingModel model, int pc1Index)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             ComponentX = _model.Label;
@@ -61,9 +61,9 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public double ComponentY { get; }
     }
 
-    internal sealed class Pc2LoadingViewModel : ViewModelBase {
+    internal sealed class Component2LoadingViewModel : ViewModelBase {
         private readonly ComponentLoadingModel _model;
-        public Pc2LoadingViewModel(ComponentLoadingModel model, int pc2Index)
+        public Component2LoadingViewModel(ComponentLoadingModel model, int pc2Index)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             ComponentX = _model.Label;
@@ -87,6 +87,124 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public override string ToString() {
             return DisplayName;
         }
+    }
+
+    internal sealed class PCAPLSResultViewModel : ViewModelBase {
+        private readonly PCAPLSResultModel _model;
+
+        public PCAPLSResultViewModel(PCAPLSResultModel model) {
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+
+            Components = Enumerable.Range(1, model.NumberOfComponents).ToList().AsReadOnly();
+            ComponentX = new ReactiveProperty<int>(1).AddTo(Disposables);
+            ComponentY = new ReactiveProperty<int>(2).AddTo(Disposables);
+
+            //Brushes = model.Brushes.AsReadOnly();
+            //Brush = model.Brush.AsReadOnly();
+            Brush = model.SelectedBrush;
+            ClassBrush = model.PointBrush;
+            PosnegBrush = model.PosnegBrush;
+
+            LabelTypesSample = new List<IReadOnlyReactiveProperty<LabelTypeViewModel>>
+            {
+                new ReactivePropertySlim<LabelTypeViewModel>(new LabelTypeViewModel("Sample", nameof(ComponentScoreViewModel.Label))),
+                ComponentX.Select(i => new LabelTypeViewModel($"Component {i}", null /*nameof(ComponentScoreViewModel.ComponentX)*/)).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
+                ComponentY.Select(i => new LabelTypeViewModel($"Component {i}", null /*nameof(ComponentScoreViewModel.ComponentY)*/)).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
+                new ReactivePropertySlim<LabelTypeViewModel>(new LabelTypeViewModel("None", null)),
+            }.AsReadOnly();
+            LabelTypeSample = new ReactiveProperty<LabelTypeViewModel>(LabelTypesSample.First().Value).AddTo(Disposables);
+
+            LabelTypesMetabolite = new List<IReadOnlyReactiveProperty<LabelTypeViewModel>>
+            {
+                new ReactivePropertySlim<LabelTypeViewModel>(new LabelTypeViewModel("Metabolite", nameof(ComponentLoadingViewModel.Label))),
+                ComponentX.Select(i => new LabelTypeViewModel($"Component {i}", nameof(ComponentLoadingViewModel.ComponentX))).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
+                ComponentY.Select(i => new LabelTypeViewModel($"Component {i}", nameof(ComponentLoadingViewModel.ComponentY))).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
+                new ReactivePropertySlim<LabelTypeViewModel>(new LabelTypeViewModel("None", null)),
+            }.AsReadOnly();
+            LabelTypeMetabolite = new ReactiveProperty<LabelTypeViewModel>(LabelTypesMetabolite.First().Value).AddTo(Disposables);
+
+            SpotSizeSample = new ReactiveProperty<double>(6).AddTo(Disposables);
+            SpotSizeMetabolite = new ReactiveProperty<double>(6).AddTo(Disposables);
+
+            Loadings = new ReactiveCollection<ComponentLoadingViewModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
+            Observable.CombineLatest(ComponentX, ComponentY)
+                .Subscribe(xy => {
+                    Loadings.ClearOnScheduler();
+                    Loadings.AddRangeOnScheduler(_model.Loadings.Select(loading => new ComponentLoadingViewModel(loading, xy[0] - 1, xy[1] - 1)));
+                }).AddTo(Disposables);
+
+            LoadingHorizontalAxis = ComponentX.Select(i => model.LoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            LoadingVerticalAxis = ComponentY.Select(i => model.LoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            PC1LoadingAbsoluteVerticalAxis = ComponentX.Select(i => model.LoadingAbsoluteAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            PC2LoadingAbsoluteVerticalAxis = ComponentY.Select(i => model.LoadingAbsoluteAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            Scores = new ReactiveCollection<ComponentScoreViewModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
+            Observable.CombineLatest(ComponentX, ComponentY)
+                .Subscribe(xy => {
+                    Scores.ClearOnScheduler();
+                    Scores.AddRangeOnScheduler(_model.Scores.Select(score => new ComponentScoreViewModel(score, xy[0] - 1, xy[1] - 1)));
+                }).AddTo(Disposables);
+
+            //Contributions = new ReactiveCollection<ComponentContributionViewModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
+            //Observable.CombineLatest(ComponentX, ComponentY)
+            //    .Throttle(TimeSpan.FromSeconds(.05d))
+            //    .Subscribe(xy =>
+            //    {
+            //        Contributions.ClearOnScheduler();
+            //        Contributions.AddRangeOnScheduler(_model.Contributions.Select(contribution => new ComponentContributionViewModel(contribution, xy[0] - 1, xy[1] - 1)));
+
+            //    }).AddTo(Disposables);
+
+            ScoreHorizontalAxis = ComponentX.Select(i => model.ScoreAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            ScoreVerticalAxis = ComponentY.Select(i => model.ScoreAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+            PCXLabelAxis = ComponentX.Select(x => model.PCAxises[x - 1]).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            PCYLabelAxis = ComponentY.Select(y => model.PCAxises[y - 1]).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+        }
+
+
+        public ReadOnlyCollection<int> Components { get; }
+        public ReactiveProperty<int> ComponentX { get; }
+        public ReactiveProperty<int> ComponentY { get; }
+
+        public ReadOnlyCollection<IReadOnlyReactiveProperty<LabelTypeViewModel>> LabelTypesSample { get; }
+        public ReactiveProperty<LabelTypeViewModel> LabelTypeSample { get; }
+
+        public ReadOnlyCollection<IReadOnlyReactiveProperty<LabelTypeViewModel>> LabelTypesMetabolite { get; }
+        public ReactiveProperty<LabelTypeViewModel> LabelTypeMetabolite { get; }
+
+        public ReadOnlyCollection<double> SpotSizes { get; } = new List<double>
+        {
+            1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 16, 20, 24,
+        }.AsReadOnly();
+        public ReactiveProperty<double> SpotSizeSample { get; }
+        public ReactiveProperty<double> SpotSizeMetabolite { get; }
+
+        public ReactiveCollection<ComponentLoadingViewModel> Loadings { get; }
+        public ReactiveCollection<ComponentScoreViewModel> Scores { get; }
+        //public ReactiveCollection<ComponentContributionViewModel> Contributions { get; }
+        public BrushMapData<ComponentLoadingViewModel> Brush { get; }
+        public IObservable<IBrushMapper<ComponentScoreViewModel>> ClassBrush { get; }
+        public IBrushMapper<ComponentLoadingViewModel> PosnegBrush { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingHorizontalAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<double>> LoadingVerticalAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<double>> PC1LoadingAbsoluteVerticalAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<double>> PC2LoadingAbsoluteVerticalAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<double>> ScoreHorizontalAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<double>> ScoreVerticalAxis { get; }
+        public IAxisManager<double> ComponentXLoadingHorizontalAxis { get; }
+        public IAxisManager<double> ComponentXLoadingVerticalAxis { get; }
+        public IAxisManager<double> ComponentYLoadingHorizontalAxis { get; }
+        public IAxisManager<double> ComponentYLoadingVerticalAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<string>> PCXLabelAxis { get; }
+        public ReadOnlyReactivePropertySlim<IAxisManager<string>> PCYLabelAxis { get; }
+
+        public IAxisManager<double> ContributionHorizontalAxis { get; }
+        public IAxisManager<double> ContributionVerticalAxis { get; }
+
+        public ReactiveCommand ShowContributionsCommand { get; }
+        public ReactiveCommand SaveResultCommand { get; }
     }
 
     internal sealed class PcaResultViewModel : ViewModelBase

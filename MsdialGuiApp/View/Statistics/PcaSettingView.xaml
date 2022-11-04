@@ -5,18 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
-        xmlns:mathmatics="clr-namespace:CompMs.Common.Mathematics.Statistics;assembly=Common"
+        xmlns:enum="clr-namespace:CompMs.Common.Enum;assembly=Common"
         mc:Ignorable="d"
-        Title="PcaSettingView" Height="240" Width="360">
+        Title="PCA setting" Height="240" Width="350">
     <Window.Resources>
         <ObjectDataProvider x:Key="ScaleMethods" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="mathmatics:ScaleMethod"/>
+                <x:Type TypeName="enum:ScaleMethod"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
         <ObjectDataProvider x:Key="TransformMethods" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="mathmatics:TransformMethod"/>
+                <x:Type TypeName="enum:TransformMethod"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </Window.Resources>
@@ -34,10 +34,18 @@
                 <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" Orientation="Vertical" Margin="5,5,0,0">
-                <Label Content="Maximum principal component:" Height="25" Margin="5,5,5,5"/>
+                <Label Content="Maximum principal component:" 
+                       VerticalAlignment="Center" HorizontalAlignment="Left"
+                       Height="25" 
+                       Margin="5,0,0,0"/>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Vertical" Margin="5,5,0,0">
-                <TextBox Text="{Binding MaxPcNumber}"/>
+                <TextBox Text="{Binding MaxPcNumber}"
+                         Height="25"
+                         VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                         VerticalContentAlignment="Center"
+                         Margin="0,2,5,0"
+                         />
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1">
@@ -46,11 +54,17 @@
                 <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>            
             <StackPanel Grid.Column="0" Orientation="Vertical" Margin="5,5,0,0">
-                <Label Content="Scale method:" Height="25"/>
+                <Label Content="Scale method:" Height="25"
+                       VerticalAlignment="Center" HorizontalAlignment="Left"
+                       Margin="5,0,0,0"
+                       />
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Vertical" Margin="5,5,0,0">
                 <ComboBox ItemsSource="{Binding Source={StaticResource ScaleMethods}}"
-                          SelectedItem="{Binding ScaleMethod}"/>
+                          SelectedItem="{Binding ScaleMethod}"
+                          Height="25"
+                          Margin="0,2,5,0"
+                          />
             </StackPanel>
         </Grid>
         <Grid Grid.Row="2">
@@ -59,21 +73,28 @@
                 <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" Orientation="Vertical" Margin="5,5,0,0">
-                <Label Content="Transform method:" Height="25" Margin="5,5,5,5"/>
+                <Label Content="Transform method:" Height="25" 
+                       VerticalAlignment="Center" HorizontalAlignment="Left"
+                       Margin="5,0,0,0"/>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Vertical" Margin="5,5,0,0">
                 <ComboBox ItemsSource="{Binding Source={StaticResource TransformMethods}}"
-                          SelectedItem="{Binding TransformMethod}"/>
+                          SelectedItem="{Binding TransformMethod}"
+                          Height="25"
+                          Margin="0,2,5,0"
+                          />
             </StackPanel>
         </Grid>
 
-        <Label Content="Metabolite selection" FontStyle="Italic" Grid.Row="3" Margin="10, 0, 0,0" />
+        <Label Content="Variable selection" FontStyle="Italic" Grid.Row="3" Margin="10, 0, 0,0" />
         <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="20, 30,0,0">
             <CheckBox Name="CheckBox_IsIdentified" Content="Ref. matched" Width="100" IsChecked="{Binding IsIdentifiedImportedInStatistics}"/>
             <CheckBox Name="CheckBox_IsAnnotated" Content="Suggested" Width="100" IsChecked="{Binding IsAnnotatedImportedInStatistics}"/>
             <CheckBox Content="Unknown" Width="90" IsChecked="{Binding IsUnknownImportedInStatistics}"/>
         </StackPanel>
 
-        <Button Content="Done" Grid.Row="4" Command="{Binding PcaCommand}" Width="80" HorizontalAlignment="Right" Margin="8"/>
+        <Button Content="Execute" Grid.Row="4" Command="{Binding PcaCommand}"
+                Height="25" VerticalContentAlignment="Center"
+                Width="80" HorizontalAlignment="Right" Margin="8"/>
     </Grid>
 </Window>

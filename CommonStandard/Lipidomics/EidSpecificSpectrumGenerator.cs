@@ -15,7 +15,7 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.HydrogenMass * 2,
             MassDiffDictionary.CarbonMass,
         }.Sum();
-        public static SpectrumPeak[] EidSpecificSpectrum(ILipid lipid, IChain chain, AdductIon adduct, double nlMass, int dbPosition, double intensity)
+        public static SpectrumPeak[] EidSpecificSpectrumGen(ILipid lipid, IChain chain, AdductIon adduct, double nlMass, int dbPosition, double intensity)
         {
             var peaks = new List<SpectrumPeak>();
             var acylChainLoss = lipid.Mass - chain.Mass - (nlMass - MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass * 2);
@@ -37,13 +37,20 @@ namespace CompMs.Common.Lipidomics
                 diffs[i] += diffs[i - 1];
             }
             var adductMass = adduct.AdductIonName == "[M+NH4]+" ? MassDiffDictionary.ProtonMass : adduct.AdductIonAccurateMass;
-            var biginMass = acylChainLoss + diffs[dbPosition - 2] - MassDiffDictionary.HydrogenMass+ adductMass;
-            peaks.Add(new SpectrumPeak(biginMass, intensity * 0.5, $"{chain} EID C{dbPosition - 1}") { SpectrumComment = SpectrumComment.acylchain });
-            peaks.Add(new SpectrumPeak(biginMass + CH2, intensity * 0.5, $"{chain} EID C{dbPosition - 1}") { SpectrumComment = SpectrumComment.acylchain });
-            peaks.Add(new SpectrumPeak(biginMass + CH2 * 2, intensity * 0.7, $"{chain} EID C{dbPosition}") { SpectrumComment = SpectrumComment.acylchain });
-            peaks.Add(new SpectrumPeak(biginMass + CH2 * 3, intensity, $"{chain} EID C{dbPosition + 1}") { SpectrumComment = SpectrumComment.acylchain });
-            peaks.Add(new SpectrumPeak(biginMass + CH2 * 4, intensity * 0.7, $"{chain} EID C{dbPosition + 2}") { SpectrumComment = SpectrumComment.acylchain });
-            peaks.Add(new SpectrumPeak(biginMass + CH2 * 5, intensity * 0.5, $"{chain} EID C{dbPosition + 3}") { SpectrumComment = SpectrumComment.acylchain });
+            var defaultMass = acylChainLoss - MassDiffDictionary.HydrogenMass + adductMass;
+            var biginMass = acylChainLoss + diffs[dbPosition - 2] - MassDiffDictionary.HydrogenMass + adductMass;
+            var diffMass = 0.0;
+
+            double[] intArray = { 0.5, 0.5, 0.7, 1, 0.7, 0.5 };
+            for (int i = dbPosition - 2; i < Math.Min(diffs.Length, dbPosition + 3); i++)
+            {
+                if (i <= 0 || i + 2 >= diffs.Length) continue;
+                var n = i - (dbPosition - 2);
+                //diffMass = defaultMass + diffs[dbPosition - 2] + (diffs[i + 2] - diffs[dbPosition]); //?
+                diffMass = i < dbPosition ? defaultMass + diffs[i] - MassDiffDictionary.HydrogenMass : i > dbPosition ? defaultMass + diffs[i] + MassDiffDictionary.HydrogenMass : defaultMass + diffs[i];
+                peaks.Add(new SpectrumPeak(diffMass, intensity * intArray[n], $"{chain} db{dbPosition} EID db{i - dbPosition}") { SpectrumComment = SpectrumComment.acylchain });
+                //peaks.Add(new SpectrumPeak(biginMass + CH2 * n, intensity * intArray[n], $"{chain} db{dbPosition} EID db{i - dbPosition}") { SpectrumComment = SpectrumComment.acylchain });
+            }
 
             return peaks.ToArray();
         }

@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
-using CompMs.Common.Mathematics.Statistics;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -11,32 +10,29 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace CompMs.App.Msdial.Model.Statistics
-{
-    internal sealed class PcaSettingModel : BindableBase
-    {
+namespace CompMs.App.Msdial.Model.Statistics {
+    internal class MultivariateAnalysisSettingModel : BindableBase {
         private readonly ParameterBase _parameter;
-        private readonly IReadOnlyList<AlignmentSpotPropertyModel> _spotprops;
+        private readonly ObservableCollection<AlignmentSpotPropertyModel> _spotprops;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
-        private readonly IReadOnlyList<AnalysisFileBean> _analysisfiles;
+        private readonly List<AnalysisFileBean> _analysisfiles;
         private readonly IObservable<KeyBrushMapper<string>> _brushmaps;
 
-        public PcaSettingModel(ParameterBase parameter,
-            IReadOnlyList<AlignmentSpotPropertyModel> spotprops,
-            IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            IReadOnlyList<AnalysisFileBean> analysisfiles,
-            IObservable<KeyBrushMapper<string>> brushmaps
-            ) {
+        public MultivariateAnalysisSettingModel(ParameterBase parameter,
+           ObservableCollection<AlignmentSpotPropertyModel> spotprops,
+           IMatchResultEvaluator<MsScanMatchResult> evaluator,
+           List<AnalysisFileBean> analysisfiles,
+           IObservable<KeyBrushMapper<string>> brushmaps
+           ) {
             _parameter = parameter ?? throw new System.ArgumentNullException(nameof(parameter));
             _spotprops = spotprops ?? throw new System.ArgumentNullException(nameof(spotprops));
             _analysisfiles = analysisfiles ?? throw new System.ArgumentNullException(nameof(analysisfiles));
             _evaluator = evaluator ?? throw new System.ArgumentNullException(nameof(evaluator));
             _brushmaps = brushmaps ?? throw new System.ArgumentNullException(nameof(brushmaps));
             maxPcNumber = 5;
-            if (_parameter.StatisticsBaseParam == null) {
-                _parameter.StatisticsBaseParam = new StatisticsBaseParameter();
-            }
         }
 
         public int MaxPcNumber {
@@ -44,6 +40,13 @@ namespace CompMs.App.Msdial.Model.Statistics
             set => SetProperty(ref maxPcNumber, value);
         }
         private int maxPcNumber;
+
+        public bool IsAutoFit {
+            get => isAutoFit;
+            set => SetProperty(ref isAutoFit, value);
+        }
+        private bool isAutoFit;
+
         public ScaleMethod ScaleMethod {
             get => scaleMethod;
             set => SetProperty(ref scaleMethod, value);
@@ -55,6 +58,12 @@ namespace CompMs.App.Msdial.Model.Statistics
             set => SetProperty(ref transformMethod, value);
         }
         private TransformMethod transformMethod;
+
+        public MultivariateAnalysisOption MultivariateAnalysisOption {
+            get => multivariateAnalysisOption;
+            set => SetProperty(ref multivariateAnalysisOption, value);
+        }
+        private MultivariateAnalysisOption multivariateAnalysisOption;
 
         public bool IsIdentifiedImportedInStatistics {
             get => isIdentifiedImportedInStatistics;
@@ -74,11 +83,11 @@ namespace CompMs.App.Msdial.Model.Statistics
         }
         private bool isUnknownImportedInStatistics;
 
-        public PcaResultModel PcaResultModel {
-            get => _pcaResultModel;
-            set => SetProperty(ref _pcaResultModel, value);
+        public PCAPLSResultModel PCAPLSResultModel {
+            get => _pcaplsResultModel;
+            set => SetProperty(ref _pcaplsResultModel, value);
         }
-        private PcaResultModel _pcaResultModel;
+        private PCAPLSResultModel _pcaplsResultModel;
 
         public void RunPca() {
 
@@ -104,7 +113,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                     metaboliteSpotProps.Add(spot);
                 }
             }
-            PcaResultModel = new PcaResultModel(result, _parameter, metaboliteSpotProps, _analysisfiles, _brushmaps);
+            PCAPLSResultModel = new PCAPLSResultModel(result, _parameter, metaboliteSpotProps, _analysisfiles, _brushmaps);
         }
     }
 }

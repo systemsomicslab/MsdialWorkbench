@@ -99,6 +99,7 @@ namespace CompMs.Graphics.Chart
             ShouldCoerceDatas = true;
             WriteCleanFlag(PropertyClean.Item, false);
             CoerceLazyDatas();
+            InvalidateVisual();
         }
 
         private void UpdateItemsSource(LazyDatas lazyDatas) {
