@@ -205,6 +205,10 @@ namespace CompMs.Common.DataObj {
             this.Spectrum = new RawPeakElement[] { };
         }
 
+        public bool IsInDriftTimeRange(DriftTime start, DriftTime end) {
+            return start.Value <= DriftTime && DriftTime <= end.Value;
+        }
+
         public RawSpectrum ShallowCopy() {
             return (RawSpectrum)MemberwiseClone();
         }

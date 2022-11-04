@@ -58,10 +58,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation
 
         private IEnumerable<MoleculeMsReference> SearchCore(IMSProperty property, MsRefSearchParameterBase parameter) {
             if (parameter.IsUseTimeForAnnotationFiltering) {
-                return SearcherWithRt.Search(MSSearchQuery.CreateMassRtQuery(property.PrecursorMz, MolecularFormulaUtility.CalculateMassToleranceBasedOn500Da(parameter.Ms1Tolerance, property.PrecursorMz), property.ChromXs.RT.Value, parameter.RtTolerance));
+                return SearcherWithRt.Search(MSSearchQuery.CreateMassRtQuery(property.PrecursorMz, MolecularFormulaUtility.FixMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz), property.ChromXs.RT.Value, parameter.RtTolerance));
             }
             else {
-                return Searcher.Search(new MassSearchQuery(property.PrecursorMz, MolecularFormulaUtility.CalculateMassToleranceBasedOn500Da(parameter.Ms1Tolerance, property.PrecursorMz)));
+                return Searcher.Search(new MassSearchQuery(property.PrecursorMz, MolecularFormulaUtility.FixMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz)));
             }
         }
 

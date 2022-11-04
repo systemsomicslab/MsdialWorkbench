@@ -1056,6 +1056,15 @@ namespace CompMs.MsdialCore.Parameter {
         public bool IsBrClConsideredForIsotopes { get; set; } = false;
         [Key(15)]
         public List<MzSearchQuery> ExcludedMassList { get; set; } = new List<MzSearchQuery>();
+
+        public bool ShouldExclude(double mass) {
+            foreach (var query in ExcludedMassList) {
+                if (Math.Abs(query.Mass - mass) < query.MassTolerance) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     [MessagePackObject]
@@ -1282,6 +1291,9 @@ namespace CompMs.MsdialCore.Parameter {
         public List<PeakFeatureSearchValue> FragmentSearchSettingValues { get; set; } = new List<PeakFeatureSearchValue>();
         [Key(8)]
         public AndOr AndOrAtFragmentSearch { get; set; } = AndOr.AND;
+
+        [IgnoreMember]
+        public bool IsTargetMode => !CompoundListInTargetMode.IsEmptyOrNull();
     }
 
     [MessagePackObject]

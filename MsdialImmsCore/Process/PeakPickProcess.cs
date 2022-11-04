@@ -18,7 +18,7 @@ namespace CompMs.MsdialImmsCore.Process
         public List<ChromatogramPeakFeature> Pick(AnalysisFileBean file, IDataProvider provider, Action<int> reportAction) {
             var parameter = _storage.Parameter;
             parameter.FileID2CcsCoefficients.TryGetValue(file.AnalysisFileId, out var coeff);
-            var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, parameter, reportAction);
+            var chromPeakFeatures = new PeakSpotting(parameter).Run(provider, 0, 30, reportAction);
             IsotopeEstimator.Process(chromPeakFeatures, parameter, _storage.IupacDatabase, true);
             CcsEstimator.Process(chromPeakFeatures, parameter, parameter.IonMobilityType, coeff, parameter.IsAllCalibrantDataImported);
             return chromPeakFeatures;

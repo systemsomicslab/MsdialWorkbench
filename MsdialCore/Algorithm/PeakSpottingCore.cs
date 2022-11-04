@@ -387,7 +387,7 @@ namespace CompMs.MsdialCore.Algorithm {
             driftFeature.ChromXsLeft.RT.Value = rtPeakFeature.ChromXsTop.RT.Value - accumulatedRtRange * 0.5;
             driftFeature.ChromXsTop.RT.Value = rtPeakFeature.ChromXsTop.RT.Value;
             driftFeature.ChromXsRight.RT.Value = rtPeakFeature.ChromXsTop.RT.Value + accumulatedRtRange * 0.5;
-            var ms2Tol = MolecularFormulaUtility.CalculateMassToleranceBasedOn500Da(_parameter.CentroidMs2Tolerance, rtPeakFeature.Mass);
+            var ms2Tol = MolecularFormulaUtility.FixMassTolerance(_parameter.CentroidMs2Tolerance, rtPeakFeature.Mass);
             var spectra = rawSpectra.GetPeakMs2Spectra(rtPeakFeature, ms2Tol, _parameter.AcquisitionType, driftFeature.ChromXs.Drift);
             driftFeature.SetMs2SpectrumId(spectra);
             return driftFeature;
