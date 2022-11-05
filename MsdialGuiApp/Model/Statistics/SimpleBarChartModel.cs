@@ -18,9 +18,23 @@ namespace CompMs.App.Msdial.Model.Statistics {
             YAxisTitle = yAxisTitle;
             GraphTitle = graphTitle;
         }
-        public string XAxisTitle { get; }
-        public string YAxisTitle { get; }
-        public string GraphTitle { get; }
+        public string XAxisTitle {
+            get => xAxisTitle;
+            set => SetProperty(ref xAxisTitle, value);
+        }
+        private string xAxisTitle;
+
+        public string YAxisTitle {
+            get => yAxisTitle;
+            set => SetProperty(ref yAxisTitle, value);
+        }
+        private string yAxisTitle;
+
+        public string GraphTitle {
+            get => graphTitle;
+            set => SetProperty(ref graphTitle, value);
+        }
+        private string graphTitle;
 
         public ObservableCollection<SimpleBarItem> BarItems { get; }
     }

@@ -9,7 +9,7 @@
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Statistics"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type={x:Type vm:SimpleBarChartViewModel}}"
-        Title="BarChartView" Height="300" Width="300">
+        Title="Result chart" Height="300" Width="300">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -61,21 +61,6 @@
                                                            HorizontalAxis="{x:Null}"
                                                            Margin="0,0,0,1"
                                                            Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
-
-                                <TextBlock Name="HorizontalTitle"
-                                           Text="{TemplateBinding HorizontalTitle}"
-                                           Style="{StaticResource AxisTitle}"
-                                           IsHitTestVisible="False"
-                                           Grid.Row="3" Grid.Column="2"/>
-                                <TextBlock Name="VerticalTitle"
-                                           Text="{TemplateBinding VerticalTitle}"
-                                           Style="{StaticResource AxisTitle}"
-                                           IsHitTestVisible="False"
-                                           Grid.Row="1" Grid.Column="0">
-                                    <TextBlock.LayoutTransform>
-                                        <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5"/>
-                                    </TextBlock.LayoutTransform>
-                                </TextBlock>
                             </Grid>
                         </ControlTemplate>
                     </Setter.Value>
@@ -90,23 +75,21 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <chart:SimpleChartControl HorizontalAxis="{Binding HorizontalAxis.Value}"
-                                  VerticalAxis="{Binding VerticalAxis.Value}"
-                                  GraphTitle="{Binding GraphTitle.Value}"
-                                  HorizontalTitle="{Binding HorizontalTitle.Value}"
-                                  VerticalTitle="Value"
+        <chart:SimpleChartControl GraphTitle="{Binding GraphTitle.Value}"
+                                  HorizontalTitle="{Binding XAxisTitle.Value}"
+                                  VerticalTitle="{Binding YAxisTitle.Value}"
                                   Grid.Row="0" Grid.Column="0">
             <Grid>
                 <chart:BarControl x:Name="bar1"
                                   ItemsSource="{Binding BarItems}"
-                                  BrushMapper="{Binding PosnegBrush}"
-                                  HorizontalPropertyName="Label"
+                                  HorizontalPropertyName="Legend"
                                   ClipToBounds="True"
-                                  VerticalPropertyName="ComponentX">
+                                  VerticalPropertyName="Value">
                     <chart:BarControl.ToolTip>
                         <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Text="{Binding FocusedItem.Label, StringFormat=Label: {0}}"/>
+                                <TextBlock Text="{Binding FocusedItem.Legend, StringFormat=Legend: {0}}"/>
+                                <TextBlock Text="{Binding FocusedItem.Value, StringFormat=Value: {0}}"/>
                             </StackPanel>
                         </ToolTip>
                     </chart:BarControl.ToolTip>

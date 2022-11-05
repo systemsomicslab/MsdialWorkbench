@@ -100,6 +100,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
             statsParam.IsUnknownImportedInStatistics = IsUnknownImportedInStatistics;
 
             var result = StatisticsObjectConverter.PrincipalComponentAnalysis(_analysisfiles, _spotprops, _parameter, _evaluator);
+            if (result == null) return;
             var metaboliteSpotProps = new ObservableCollection<AlignmentSpotPropertyModel>();
 
             foreach (var spot in _spotprops) {

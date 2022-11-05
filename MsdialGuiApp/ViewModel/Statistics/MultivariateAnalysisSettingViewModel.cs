@@ -10,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics {
     internal class MultivariateAnalysisSettingViewModel : ViewModelBase {
@@ -70,6 +71,10 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
         private void Execute() {
             if (MultivariateAnalysisOption.Value == CompMs.Common.Enum.MultivariateAnalysisOption.Pca) {
                 model.RunPca();
+                if (model.PCAPLSResultModel == null) {
+                    MessageBox.Show("No variables for statistical analyses", "Error", MessageBoxButton.OK);
+                    return;
+                }
                 var vm = new PCAPLSResultViewModel(model.PCAPLSResultModel);
                 _broker.Publish(vm);
             }

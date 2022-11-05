@@ -17,7 +17,6 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
             XAxisTitle = _model.ToReactivePropertySlimAsSynchronized(m => m.XAxisTitle).AddTo(Disposables);
             YAxisTitle = _model.ToReactivePropertySlimAsSynchronized(m => m.YAxisTitle).AddTo(Disposables);
             GraphTitle = _model.ToReactivePropertySlimAsSynchronized(m => m.GraphTitle).AddTo(Disposables);
-
             BarItems = _model.BarItems.ToReadOnlyReactiveCollection(m => new BarItemViewModel(m)).AddTo(Disposables);
         }
         public ReactivePropertySlim<string> XAxisTitle { get; }
@@ -29,6 +28,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
     internal class BarItemViewModel : ViewModelBase {
         private readonly SimpleBarItem _barItem;
         public BarItemViewModel(SimpleBarItem barItem) {
+            _barItem = barItem;
             Brush = _barItem.ToReactivePropertySlimAsSynchronized(m => m.Brush).AddTo(Disposables);
             ID = _barItem.ToReactivePropertySlimAsSynchronized(m => m.ID).AddTo(Disposables);
             Legend = _barItem.ToReactivePropertySlimAsSynchronized(m => m.Legend).AddTo(Disposables);
