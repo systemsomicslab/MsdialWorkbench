@@ -1,9 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.Statistics;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,12 +19,18 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
             XAxisTitle = _model.ToReactivePropertySlimAsSynchronized(m => m.XAxisTitle).AddTo(Disposables);
             YAxisTitle = _model.ToReactivePropertySlimAsSynchronized(m => m.YAxisTitle).AddTo(Disposables);
             GraphTitle = _model.ToReactivePropertySlimAsSynchronized(m => m.GraphTitle).AddTo(Disposables);
-            BarItems = _model.BarItems.ToReadOnlyReactiveCollection(m => new BarItemViewModel(m)).AddTo(Disposables);
+            BarItems = _model.ToReactivePropertySlimAsSynchronized(m => m.BarItems).AddTo(Disposables);
+
+            XAxis = _model.ToReactivePropertySlimAsSynchronized(m => m.XAxis).AddTo(Disposables);
+            YAxis = _model.ToReactivePropertySlimAsSynchronized(m => m.YAxis).AddTo(Disposables);
         }
         public ReactivePropertySlim<string> XAxisTitle { get; }
         public ReactivePropertySlim<string> YAxisTitle { get; }
         public ReactivePropertySlim<string> GraphTitle { get; }
-        public ReadOnlyReactiveCollection<BarItemViewModel> BarItems { get; }
+        public ReactivePropertySlim<ObservableCollection<SimpleBarItem>> BarItems { get; }
+
+        public ReactivePropertySlim<IAxisManager<string>> XAxis;
+        public ReactivePropertySlim<Lazy<IAxisManager<double>>> YAxis;
     }
 
     internal class BarItemViewModel : ViewModelBase {

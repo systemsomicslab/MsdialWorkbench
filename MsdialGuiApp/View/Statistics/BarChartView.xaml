@@ -76,6 +76,8 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <chart:SimpleChartControl GraphTitle="{Binding GraphTitle.Value}"
+                                  HorizontalAxis="{Binding XAxis.Value}"
+                                  VerticalAxis="{Binding YAxis.Value}"
                                   HorizontalTitle="{Binding XAxisTitle.Value}"
                                   VerticalTitle="{Binding YAxisTitle.Value}"
                                   Grid.Row="0" Grid.Column="0">
