@@ -9,6 +9,7 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Statistics"
              mc:Ignorable="d" 
              d:Background="White"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:PCAPLSResultViewModel}}"
              d:DesignHeight="700" d:DesignWidth="1050">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -166,7 +167,7 @@
                     <Run Text="Other plots" FontStyle="Italic"/>
                 </GroupBox.Header>
                 <StackPanel>
-                    <Button Content="Contributions" IsEnabled="False"
+                    <Button Content="Contributions" IsEnabled="True"
                             Command="{Binding ShowContributionsCommand, Mode=OneTime}"/>
                     <Button Content="Predicted vs Experiment" IsEnabled="False"
                             Command="{Binding ShowPredVsExp, Mode=OneTime}"/>
@@ -203,7 +204,7 @@
 
             <chart:SimpleChartControl HorizontalAxis="{Binding ScoreHorizontalAxis.Value}"
                                       VerticalAxis="{Binding ScoreVerticalAxis.Value}"
-                                       GraphTitle="{Binding ScorePlotTitle.Value}"
+                                      GraphTitle="{Binding ScorePlotTitle.Value}"
                                       HorizontalTitle="{Binding ComponentX.Value, StringFormat=Principal component{0}}"
                                       VerticalTitle="{Binding ComponentY.Value, StringFormat=Principal component{0}}"
                                       Grid.Row="0" Grid.Column="0">
