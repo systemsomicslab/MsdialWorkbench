@@ -405,7 +405,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private string _displayLabel = string.Empty;
 
         public Task SaveAsync(CancellationToken token) {
-            return _peakCollection.SerializeAsync(_analysisFileModel.PeakAreaBeanInformationFilePath, token);
+            return _peakCollection.SerializeAsync(_analysisFileModel.File, token);
         }
     }
 }

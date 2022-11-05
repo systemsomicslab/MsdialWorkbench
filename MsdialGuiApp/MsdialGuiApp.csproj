@@ -159,13 +159,14 @@
     <Compile Include="Model\DataObj\AnalysisFileBeanModel.cs" />
     <Compile Include="Model\DataObj\AnalysisFileBeanModelCollection.cs" />
     <Compile Include="Model\DataObj\BarItemCollection.cs" />
+    <Compile Include="Model\Export\AlignmentResultExportModel.cs" />
     <Compile Include="Model\Imaging\ImagingImageModel.cs" />
     <Compile Include="Model\Imaging\ImagingRoiModel.cs" />
     <Compile Include="Model\Imaging\ImaginRoiCompareModel.cs" />
     <Compile Include="Model\Imaging\RoiModel.cs" />
     <Compile Include="Model\Imaging\RoiIntensitiesModel.cs" />
     <Compile Include="Model\Imaging\WholeImageResultModel.cs" />
-    <Compile Include="Model\Imms\ImagingImmsMethodModel.cs" />
+    <Compile Include="Model\ImagingImms\ImagingImmsMethodModel.cs" />
     <Compile Include="Model\Information\CompoundDetailModel.cs" />
     <Compile Include="Model\Information\PeakInformationModel.cs" />
     <Compile Include="Model\DataObj\PeptideGroupModel.cs" />
@@ -1420,7 +1421,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\SplashLipids.xml" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>copy "$(SolutionDir)\Assemblies\timsdata.dll" "$(TargetDir)"

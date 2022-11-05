@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Setting;
@@ -16,6 +17,7 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Alignment;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
@@ -23,6 +25,7 @@ using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Algorithm;
 using CompMs.MsdialLcImMsApi.Algorithm.Alignment;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
+using CompMs.MsdialLcImMsApi.Export;
 using CompMs.MsdialLcImMsApi.Parameter;
 using CompMs.MsdialLcImMsApi.Process;
 using Reactive.Bindings.Extensions;
@@ -57,6 +60,25 @@ namespace CompMs.App.Msdial.Model.Lcimms
             matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
             AccumulatedPeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
+
+            var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
+            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, storage.AlignmentFiles, storage);
+            var metadataAccessor = new LcimmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
+            AlignmentResultExportModel.AddExportTypes(
+                new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
+                new ExportType("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
+                new ExportType("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats),
+                new ExportType("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats),
+                new ExportType("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
+                new ExportType("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", storage.Parameter), "Mz"),
+                new ExportType("Retention time", metadataAccessor, new LegacyQuantValueAccessor("RT", storage.Parameter), "Rt"),
+                new ExportType("Mobility", metadataAccessor, new LegacyQuantValueAccessor("Mobility", storage.Parameter), "Mobility"),
+                new ExportType("CCS", metadataAccessor, new LegacyQuantValueAccessor("CCS", storage.Parameter), "CCS"),
+                new ExportType("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
+                new ExportType("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"));
+            this.ObserveProperty(m => m.AlignmentFile)
+                .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
+                .AddTo(Disposables);
         }
 
         private FacadeMatchResultEvaluator matchResultEvaluator;
@@ -83,6 +105,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public PeakFilterModel AccumulatedPeakFilterModel { get; }
         public PeakFilterModel PeakFilterModel { get; }
+        public AlignmentResultExportModel AlignmentResultExportModel { get; }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             if (AnalysisModel != null) {

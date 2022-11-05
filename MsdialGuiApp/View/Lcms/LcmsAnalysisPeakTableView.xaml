@@ -17,6 +17,9 @@
             <Setter Property="Background" Value="White"/>
         </Style>
     </d:DesignerProperties.DesignStyle>
+    <UserControl.InputBindings>
+        <KeyBinding Command="{Binding SetUnknownCommand}" Gesture="Ctrl+D"/>
+    </UserControl.InputBindings>
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

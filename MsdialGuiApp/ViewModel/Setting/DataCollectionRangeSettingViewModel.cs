@@ -51,19 +51,19 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         [Required(ErrorMessage = "Range begin value is required.")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "Range should start positive value.")]
+        [Range(0, float.MaxValue, ErrorMessage = "Range should start positive value.")]
         public ReactiveProperty<string> Begin { get; }
 
         [Required(ErrorMessage = "Range end value is required.")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "Range should end positive value.")]
+        [Range(0, float.MaxValue, ErrorMessage = "Range should end positive value.")]
         public ReactiveProperty<string> End { get; }
 
         public ReadOnlyReactivePropertySlim<bool> NeedAccumulation { get; }
 
         [Required(ErrorMessage = "Accumulation range is required.")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0.0001, int.MaxValue, ErrorMessage = "Accumulation range should be positive value.")]
+        [Range(0.0001, float.MaxValue, ErrorMessage = "Accumulation range should be positive value.")]
         public ReactiveProperty<string> AccumulatedRange { get; }
 
         public ReadOnlyReactivePropertySlim<bool> ObserveHasErrors { get; }

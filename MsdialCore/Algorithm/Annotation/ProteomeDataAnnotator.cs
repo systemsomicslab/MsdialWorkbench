@@ -127,7 +127,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private List<ProteinGroup> ConvertToProteinGroups(List<ProteinMsResult> proteinMsResults) {
-            if (proteinMsResults.IsEmptyOrNull()) return null;
+            if (proteinMsResults.IsEmptyOrNull()) return new List<ProteinGroup>(0);
             var groups = new List<ProteinGroup>();
             var dict = new Dictionary<int, List<ProteinMsResult>>();
             proteinMsResults = proteinMsResults.OrderByDescending(n => n.MatchedPeptideResults.Count()).ToList();

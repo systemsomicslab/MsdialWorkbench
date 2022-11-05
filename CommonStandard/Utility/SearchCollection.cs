@@ -156,6 +156,38 @@ namespace CompMs.Common.Utility
             return recurse(0);
         }
 
+        public static IEnumerable<T[]> Combination<T>(IEnumerable<T> collection, int size = 2) {
+            if (size < 1) {
+                throw new ArgumentException($"{nameof(size)} should be more than 1.");
+            }
+            var xs = new List<T>();
+            foreach (var item in collection) {
+                foreach (var items in CombinationCore(xs, size - 1)) {
+                    yield return items.Append(item).ToArray();
+                }
+                xs.Add(item);
+            }
+        }
+
+        private static IEnumerable<IEnumerable<T>> CombinationCore<T>(List<T> collection, int size) {
+            if (size == 0) {
+                yield break;
+            }
+            if (size == 1) {
+                foreach (var item in collection) {
+                    yield return new[] { item };
+                }
+                yield break;
+            }
+            var xs = new List<T>();
+            foreach (var item in collection) {
+                foreach (var ys in CombinationCore(xs, size - 1)) {
+                    yield return ys.Append(item);
+                }
+                xs.Add(item);
+            }
+        }
+
         public static IEnumerable<T[]> CartesianProduct<T>(IReadOnlyList<IReadOnlyList<T>> collections) {
             var set = new T[collections.Count];
 

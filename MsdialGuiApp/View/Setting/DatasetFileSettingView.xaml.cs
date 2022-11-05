@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.ViewModel.Setting;
 using Microsoft.Win32;
 using Reactive.Bindings.Notifiers;
+using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -12,8 +13,25 @@ namespace CompMs.App.Msdial.View.Setting
     /// <summary>
     /// Interaction logic for DatasetFileSettingView.xaml
     /// </summary>
-    public partial class DatasetFileSettingView : UserControl
-    {
+    public partial class DatasetFileSettingView : UserControl {
+        private static readonly IFileSelectionItem[] FILE_SELECTION_ITEMS = new[] {
+            new FileSelectionItem("ABF file", ".abf"),
+            new FileSelectionItem("mzML file", ".mzml"),
+            new FileSelectionItem("netCDF file", ".cdf"),
+            new FileSelectionItem("IBF file", ".ibf"),
+            new FileSelectionItem("WIFF file", ".wiff"),
+            new FileSelectionItem("WIFF2 file", ".wiff2"),
+            new FileSelectionItem("Raw file", ".raw"),
+            new FileSelectionItem("LCD file", ".lcd"),
+            new FileSelectionItem("QGD file", ".qgd"),
+        };
+        private static readonly IFileSelectionItem[] ACCEPTABLE_ITEMS = FILE_SELECTION_ITEMS
+            .Concat(new[]
+            {
+                new FileSelectionItem("D file", ".d"),
+                new FileSelectionItem("IABF file", ".iabf"),
+            }).ToArray();
+
         public DatasetFileSettingView() {
             InitializeComponent();
 
@@ -23,26 +41,14 @@ namespace CompMs.App.Msdial.View.Setting
         public static RoutedCommand OpenDialogCommand = new RoutedCommand();
 
         private void ExecuteOpenDialog(object sender, ExecutedRoutedEventArgs e) {
+            var filterItems = FILE_SELECTION_ITEMS.Append(WildCardSelectionItem.Instance).ToList();
             var ofd = new OpenFileDialog()
             {
                 Title = "Import analysis files",
                 RestoreDirectory = true,
                 Multiselect = true,
+                Filter = string.Join("|", filterItems),
             };
-            ofd.Filter = string.Join("|",
-                new[]
-                {
-                    "ABF file(*.abf)|*.abf",
-                    "mzML file(*.mzml)|*.mzml",
-                    "netCDF file(*.cdf)|*.cdf",
-                    "IBF file(*.ibf)|*.ibf",
-                    "WIFF file(*.wiff)|*.wiff",
-                    "WIFF2 file(*.wiff2)|*.wiff2",
-                    "Raw file(*.raw)|*.raw",
-                    "LCD file(*.lcd)|*.lcd",
-                    "QGD file(*.qgd)|*.qgd",
-                    "All file(*.*)|*.*"
-                });
 
             if (ofd.ShowDialog() == true) {
                 SendQuery(ofd.FileNames);
@@ -77,21 +83,44 @@ namespace CompMs.App.Msdial.View.Setting
 
         private bool IsAccepted(string file) {
             var extension = Path.GetExtension(file).ToLower();
-            switch (extension) {
-                case ".abf":
-                case ".mzml":
-                case ".cdf":
-                case ".raw":
-                case ".d":
-                case ".iabf":
-                case ".ibf":
-                case ".wiff":
-                case ".wiff2":
-                case ".qgd":
-                case ".lcd":
-                    return true;
-                default:
-                    return false;
+            return ACCEPTABLE_ITEMS.Any(item => item.IsMatched(extension));
+        }
+
+        private interface IFileSelectionItem {
+            bool IsMatched(string extension);
+        }
+
+        private class FileSelectionItem : IFileSelectionItem {
+            public FileSelectionItem(string label, string extension) {
+                Label = label;
+                Extension = extension;
+            }
+
+            public string Label { get; }
+            public string Extension { get; }
+
+            public override string ToString() {
+                return $"{Label}(*{Extension})|*{Extension}";
+            }
+
+            public bool IsMatched(string extension) {
+                return Extension == extension;
+            }
+        }
+
+        private class WildCardSelectionItem : IFileSelectionItem {
+            public static readonly WildCardSelectionItem Instance = new WildCardSelectionItem();
+
+            private WildCardSelectionItem() {
+
+            }
+
+            public override string ToString() {
+                return "All file(*.*)|*.*";
+            }
+
+            public bool IsMatched(string extension) {
+                return true;
             }
         }
     }

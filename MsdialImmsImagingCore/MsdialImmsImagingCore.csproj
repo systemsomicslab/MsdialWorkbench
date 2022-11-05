@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>CompMs.MsdialImmsImagingCore</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MsdialCore\MsdialCore.csproj" />
+    <ProjectReference Include="..\MsdialImmsCore\MsdialImmsCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="RawDataHandler">
+      <HintPath>..\Assemblies\RawDataHandler.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

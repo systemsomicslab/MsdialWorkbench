@@ -25,7 +25,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
             this.ProgressMax = ProgressMax;
         }
        
-        public List<MSDecResult> GetMS2DecResults(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures,
+        public List<MSDecResult> GetMS2DecResults(IDataProvider provider, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialLcmsParameter param, ChromatogramPeaksDataSummary summary, IupacDatabase iupac,
             Action<int> reportAction, System.Threading.CancellationToken token, double targetCE = -1) {
 
@@ -36,7 +36,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                     var result = GetMS2DecResult(provider, spot, param, summary, iupac, targetCE);
                     result.ScanID = spot.PeakID;
                     msdecResults.Add(result);
-                    ReportProgress.Show(InitialProgress, ProgressMax, result.ScanID, chromPeakFeatures.Count(), reportAction);
+                    ReportProgress.Show(InitialProgress, ProgressMax, result.ScanID, chromPeakFeatures.Count, reportAction);
                 }
                 return msdecResults;
             }
@@ -53,7 +53,7 @@ namespace CompMs.MsdialLcMsApi.Algorithm {
                             result.ScanID = spot.PeakID;
                             msdecResultArray[index] = result;
                             Interlocked.Increment(ref counter);
-                            ReportProgress.Show(InitialProgress, ProgressMax, counter, chromPeakFeatures.Count(), reportAction);
+                            ReportProgress.Show(InitialProgress, ProgressMax, counter, chromPeakFeatures.Count, reportAction);
                         }
                     });
                 }

@@ -6,6 +6,7 @@ using CompMs.Graphics.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
+using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
@@ -20,7 +21,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReactiveProperty<string> metaboliteFilterKeyword,
             IReactiveProperty<string> commentFilterKeyword,
             IReactiveProperty<string> ontologyFilterKeyword,
-            IReactiveProperty<string> adductFilterKeyword
+            IReactiveProperty<string> adductFilterKeyword,
+            ICommand setUnknownCommand 
             )
             : base(model, metaboliteFilterKeyword, commentFilterKeyword, ontologyFilterKeyword, adductFilterKeyword) {
             if (massLower is null) {
@@ -48,6 +50,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             RtMax = model.RtMax;
             RtLower = rtLower;
             RtUpper = rtUpper;
+
+            SetUnknownCommand = setUnknownCommand;
         }
 
         public double MassMin { get; }
@@ -59,6 +63,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public double RtMax { get; }
         public IReactiveProperty<double> RtLower { get; }
         public IReactiveProperty<double> RtUpper { get; }
+
+        public ICommand SetUnknownCommand { get; }
     }
 
     internal sealed class LcmsProteomicsPeakTableViewModel : LcmsPeakSpotTableViewModel {
@@ -74,6 +80,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReactiveProperty<string> commentFilterKeyword,
             IReactiveProperty<string> ontologyFilterKeyword,
             IReactiveProperty<string> adductFilterKeyword,
+            ICommand setUnknownCommand, 
             IReactiveProperty<bool> isEditting)
             : base(
                   model,
@@ -84,7 +91,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   peptideFilterKeyword,
                   commentFilterKeyword,
                   ontologyFilterKeyword,
-                  adductFilterKeyword) {
+                  adductFilterKeyword,
+                  setUnknownCommand) {
             if (eicLoader is null) {
                 throw new ArgumentNullException(nameof(eicLoader));
             }
@@ -112,6 +120,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReactiveProperty<string> commentFilterKeyword,
             IReactiveProperty<string> ontologyFilterKeyword,
             IReactiveProperty<string> adductFilterKeyword,
+            ICommand setUnknownCommand,
             IReactiveProperty<bool> isEditting)
             : base(
                   model,
@@ -122,7 +131,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   metaboliteFilterKeyword,
                   commentFilterKeyword,
                   ontologyFilterKeyword,
-                  adductFilterKeyword) {
+                  adductFilterKeyword,
+                  setUnknownCommand) {
             if (eicLoader is null) {
                 throw new ArgumentNullException(nameof(eicLoader));
             }
@@ -145,6 +155,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReactiveProperty<string> commentFilterKeyword,
             IReactiveProperty<string> ontologyFilterKeyword,
             IReactiveProperty<string> adductFilterKeyword,
+            ICommand setUnknownCommand,
             IReactiveProperty<bool> isEditting)
             : base(
                   model,
@@ -155,7 +166,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   metaboliteFilterKeyword,
                   commentFilterKeyword,
                   ontologyFilterKeyword,
-                  adductFilterKeyword) {
+                  adductFilterKeyword,
+                  setUnknownCommand) {
             BarItemsLoader = model.BarItemsLoader;
             ClassBrush = model.ClassBrush.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
@@ -178,6 +190,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             IReactiveProperty<string> commentFilterKeyword,
             IReactiveProperty<string> ontologyFilterKeyword,
             IReactiveProperty<string> adductFilterKeyword,
+            ICommand setUnknownCommand,
             IReactiveProperty<bool> isEditting)
             : base(
                   model,
@@ -188,7 +201,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   peptideFilterKeyword,
                   commentFilterKeyword, 
                   ontologyFilterKeyword,
-                  adductFilterKeyword) {
+                  adductFilterKeyword,
+                  setUnknownCommand) {
             ProteinFilterKeyword = proteinFilterKeyword;
             IsEditting = isEditting ?? throw new ArgumentNullException(nameof(isEditting));
         }

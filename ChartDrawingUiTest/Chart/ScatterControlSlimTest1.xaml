@@ -110,15 +110,37 @@
                                   VerticalAxis="{Binding VerticalAxis}"
                                   HorizontalTitle="X"
                                   VerticalTitle="Y">
-            <chart:ScatterControlSlim ItemsSource="{Binding Series}"
-                                      HorizontalProperty="X"
-                                      VerticalProperty="Y"
-                                      DataType="{x:Type core:DataPoint}"
-                                      PointBrush="{Binding Brushes/Brush}"
-                                      SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
-                                      SelectedPoint="{Binding SelectedPoint, Mode=OneWayToSource}"
-                                      FocusedItem="{Binding FocusedItem, Mode=OneWayToSource}"
-                                      FocusedPoint="{Binding FocusedPoint, Mode=OneWayToSource}"/>
+            <Grid>
+                <Grid.Resources>
+                    <Style TargetType="Path">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Resources>
+                <chart:ScatterControlSlim x:Name="scatter"
+                                  ItemsSource="{Binding Series}"
+                                  HorizontalProperty="X"
+                                  VerticalProperty="Y"
+                                  DataType="{x:Type core:DataPoint}"
+                                  PointBrush="{Binding Brushes/Brush}"
+                                  SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                                  SelectedPoint="{Binding SelectedPoint, Mode=OneWayToSource}"
+                                  FocusedItem="{Binding FocusedItem, Mode=OneWayToSource}"
+                                  FocusedPoint="{Binding FocusedPoint, Mode=OneWayToSource}"/>
+                <Path Stroke="Crimson" StrokeThickness="2" DataContext="{Binding SelectedPoint, ElementName=scatter}">
+                    <Path.Data>
+                        <EllipseGeometry Center="{Binding}" RadiusX="5" RadiusY="5"/>
+                    </Path.Data>
+                </Path>
+                <Path Stroke="Cyan" StrokeThickness="2" DataContext="{Binding FocusedPoint, ElementName=scatter}">
+                    <Path.Data>
+                        <EllipseGeometry Center="{Binding}" RadiusX="5" RadiusY="5"/>
+                    </Path.Data>
+                </Path>
+            </Grid>
             <chart:SimpleChartControl.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Save image">

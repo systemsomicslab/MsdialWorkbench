@@ -302,6 +302,39 @@ namespace CompMs.Common.Utility.Tests
             CollectionAssert.AreEquivalent(expects, actuals);
         }
 
+        [TestMethod()]
+        public void CombinationTest() {
+            IEnumerable<int> sample() {
+                yield return 1;
+                yield return 2;
+                yield return 3;
+                yield return 4;
+            }
+            IEnumerable<int> collection = sample();
+            var actuals = SearchCollection.Combination(collection, 3).Select(arr => (arr[0], arr[1], arr[2])).ToArray();
+            var expects = new[]
+            {
+                (1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4),
+            };
+            CollectionAssert.AreEquivalent(expects, actuals);
+
+            collection = new[] { 1, 2, 3, 4, };
+            actuals = SearchCollection.Combination(collection, 3).Select(arr => (arr[0], arr[1], arr[2])).ToArray();
+            expects = new[]
+            {
+                (1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4),
+            };
+            CollectionAssert.AreEquivalent(expects, actuals);
+
+            collection = new[] { 1, 1, 2, 3, };
+            actuals = SearchCollection.Combination(collection, 3).Select(arr => (arr[0], arr[1], arr[2])).ToArray();
+            expects = new[]
+            {
+                (1, 1, 2), (1, 1, 3), (1, 2, 3), (1, 2, 3),
+            };
+            CollectionAssert.AreEquivalent(expects, actuals);
+        }
+
         [TestMethod]
         public void CartesianProductTest() {
             var collection = new[] {

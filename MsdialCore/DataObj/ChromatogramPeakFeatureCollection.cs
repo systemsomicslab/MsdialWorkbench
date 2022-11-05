@@ -18,6 +18,10 @@ namespace CompMs.MsdialCore.DataObj
 
         public ReadOnlyCollection<ChromatogramPeakFeature> Items { get; }
 
+        public Task SerializeAsync(AnalysisFileBean file, CancellationToken token = default) {
+            return SerializeAsync(file.PeakAreaBeanInformationFilePath, token);
+        }
+
         public Task SerializeAsync(string outputFile, CancellationToken token = default) {
             return Task.Run(() => MsdialPeakSerializer.SaveChromatogramPeakFeatures(outputFile, _items), token);
         }

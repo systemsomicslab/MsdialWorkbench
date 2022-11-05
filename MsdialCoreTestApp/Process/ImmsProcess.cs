@@ -1,9 +1,11 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
+using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialImmsCore.Algorithm;
 using CompMs.MsdialImmsCore.Algorithm.Alignment;
+using CompMs.MsdialImmsCore.Algorithm.Annotation;
 using CompMs.MsdialImmsCore.DataObj;
 using CompMs.MsdialImmsCore.Parameter;
 using CompMs.MsdialImmsCore.Process;
@@ -35,14 +37,16 @@ namespace CompMs.App.MsdialConsole.Process
         private int Execute(IMsdialDataStorage<MsdialImmsParameter> storage, string outputFolder, bool isProjectSaved) {
             var files = storage.AnalysisFiles;
             var evaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(storage.DataBaseMapper);
-            foreach (var file in files) {
-                FileProcess.Run(file, storage, evaluator, false);
-            }
+            var mspAnnotator = new ImmsMspAnnotator(new MoleculeDataBase(storage.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), storage.Parameter.MspSearchParam, storage.Parameter.TargetOmics, "MspDB", -1);
+            var textDBAnnotator = new ImmsTextDBAnnotator(new MoleculeDataBase(storage.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), storage.Parameter.TextDbSearchParam, "TextDB", -1);
+            var providerFactory = new ImmsAverageDataProviderFactory(0.001, 0.002, 5, false);
+            var processor = new FileProcess(storage, mspAnnotator, textDBAnnotator, evaluator);
+            processor.RunAllAsync(files, files.Select(providerFactory.Create), files.Select(_ => (Action<int>)null), storage.Parameter.NumThreads, () => { }).Wait();
 
             var alignmentFile = storage.AlignmentFiles.First();
             var factory = new ImmsAlignmentProcessFactory(storage, evaluator);
             var aligner = factory.CreatePeakAligner();
-            aligner.ProviderFactory = new ImmsAverageDataProviderFactory(0.001, 0.002, 5, false); // TODO: I'll remove this later.
+            aligner.ProviderFactory = providerFactory; // TODO: I'll remove this later.
             var result = aligner.Alignment(files, alignmentFile, null);
 
             foreach (var group in result.AlignmentSpotProperties.GroupBy(prop => prop.Ontology)) {

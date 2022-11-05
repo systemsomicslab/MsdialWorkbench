@@ -1,7 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Imms;
-using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -10,7 +10,6 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
@@ -22,60 +21,15 @@ namespace CompMs.App.Msdial.ViewModel.Imms
     internal sealed class ImmsMethodViewModel : MethodViewModel
     {
         private readonly ImmsMethodModel model;
+        private readonly IMessageBroker _broker;
         private readonly FocusControlManager _focusControlManager;
 
-        private ImmsMethodViewModel(ImmsMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisViewModelAsObservable, IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentViewModelAsObservable, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels, FocusControlManager focusControlmanager)
+        private ImmsMethodViewModel(ImmsMethodModel model, IReadOnlyReactiveProperty<IAnalysisResultViewModel> analysisViewModelAsObservable, IReadOnlyReactiveProperty<IAlignmentResultViewModel> alignmentViewModelAsObservable, ViewModelSwitcher chromatogramViewModels, ViewModelSwitcher massSpectrumViewModels, FocusControlManager focusControlmanager, IMessageBroker broker)
             : base(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, chromatogramViewModels, massSpectrumViewModels) {
 
             this.model = model;
+            _broker = broker;
             _focusControlManager = focusControlmanager.AddTo(Disposables);
-        }
-
-        public bool RefMatchedChecked {
-            get => ReadDisplayFilter(DisplayFilter.RefMatched);
-            set => WriteDisplayFilter(DisplayFilter.RefMatched, value);
-        }
-        public bool SuggestedChecked {
-            get => ReadDisplayFilter(DisplayFilter.Suggested);
-            set => WriteDisplayFilter(DisplayFilter.Suggested, value);
-        }
-        public bool UnknownChecked {
-            get => ReadDisplayFilter(DisplayFilter.Unknown);
-            set => WriteDisplayFilter(DisplayFilter.Unknown, value);
-        }
-        public bool CcsChecked {
-            get => ReadDisplayFilter(DisplayFilter.CcsMatched);
-            set => WriteDisplayFilter(DisplayFilter.CcsMatched, value);
-        }
-        public bool Ms2AcquiredChecked {
-            get => ReadDisplayFilter(DisplayFilter.Ms2Acquired);
-            set => WriteDisplayFilter(DisplayFilter.Ms2Acquired, value);
-        }
-        public bool MolecularIonChecked {
-            get => ReadDisplayFilter(DisplayFilter.MolecularIon);
-            set => WriteDisplayFilter(DisplayFilter.MolecularIon, value);
-        }
-        public bool BlankFilterChecked {
-            get => ReadDisplayFilter(DisplayFilter.Blank);
-            set => WriteDisplayFilter(DisplayFilter.Blank, value);
-        }
-        public bool UniqueIonsChecked {
-            get => ReadDisplayFilter(DisplayFilter.UniqueIons);
-            set => WriteDisplayFilter(DisplayFilter.UniqueIons, value);
-        }
-        public bool ManuallyModifiedChecked {
-            get => ReadDisplayFilter(DisplayFilter.ManuallyModified);
-            set => WriteDisplayFilter(DisplayFilter.ManuallyModified, value);
-        }
-        private DisplayFilter displayFilters = DisplayFilter.Unset;
-
-        private bool ReadDisplayFilter(DisplayFilter flag) {
-            return displayFilters.Read(flag);
-        }
-
-        private void WriteDisplayFilter(DisplayFilter flag, bool set) {
-            displayFilters.Write(flag, set);
-            OnPropertyChanged(nameof(displayFilters));
         }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
@@ -96,8 +50,14 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private DelegateCommand<Window> exportAnalysisResultCommand;
         
 
-        public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(model.ExportAlignment));
+        public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(ExportAlignment));
         private DelegateCommand<Window> exportAlignmentResultCommand;
+
+        private void ExportAlignment(Window owner) {
+            using (var vm = new AlignmentResultExport2VM(model.AlignmentResultExportModel, _broker)) {
+                _broker.Publish(vm);
+            }
+        }
 
         public DelegateCommand<Window> ShowTicCommand => showTicCommand ?? (showTicCommand = new DelegateCommand<Window>(model.ShowTIC));
         private DelegateCommand<Window> showTicCommand;
@@ -181,7 +141,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
             var alignmentViewModelAsObservable = ConvertToAlignmentViewModel(model, compoundSearchService, peakSpotTableService, messageBroker, focusControlManager);
             var chromatogramViewSwitcher = PrepareChromatogramViewModels(analysisViewModelAsObservable, alignmentViewModelAsObservable);
             var massSpectrumViewSwitcher =  PrepareMassSpectrumViewModels(analysisViewModelAsObservable, alignmentViewModelAsObservable);
-            return new ImmsMethodViewModel(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, chromatogramViewSwitcher, massSpectrumViewSwitcher, focusControlManager);
+            return new ImmsMethodViewModel(model, analysisViewModelAsObservable, alignmentViewModelAsObservable, chromatogramViewSwitcher, massSpectrumViewSwitcher, focusControlManager, messageBroker);
         }
     }
 }
