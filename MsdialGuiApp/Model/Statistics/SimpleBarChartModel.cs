@@ -23,7 +23,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
             if (items.IsEmptyOrNull()) return;
 
             XAxis = new CategoryAxisManager<string>(items.Select(loading => loading.Legend).ToArray());
-            YAxis = new Lazy<IAxisManager<double>>(() => new AbsoluteAxisManager(new Range(0d, items.Select(n => n.Value).DefaultIfEmpty().Max(Math.Abs)), new ConstantMargin(0, 10)));
+            YAxis = new AbsoluteAxisManager(new Range(0d, items.Select(n => n.YValue).DefaultIfEmpty().Max(Math.Abs)), new ConstantMargin(0, 10));
         }
         public string XAxisTitle {
             get => xAxisTitle;
@@ -56,11 +56,11 @@ namespace CompMs.App.Msdial.Model.Statistics {
         }
         private IAxisManager<string> xAxis;
 
-        public Lazy<IAxisManager<double>> YAxis {
+        public IAxisManager<double> YAxis {
             get => yAxis;
             set => SetProperty(ref yAxis, value);
         }
-        private Lazy<IAxisManager<double>> yAxis;
+        private IAxisManager<double> yAxis;
     }
 
     internal class SimpleBarItem : BindableBase {
@@ -68,7 +68,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
         public SimpleBarItem(int id, string legend, double value, double error) {
             ID = id;
             Legend = legend;
-            Value = value;
+            YValue = value;
             Error = error;
         }
         public SimpleBarItem(int id, string legend, double value, double error, SolidColorBrush brush) : this(id, legend, value, error) {
@@ -76,9 +76,26 @@ namespace CompMs.App.Msdial.Model.Statistics {
         }
 
         public SolidColorBrush Brush { get; set; } = Brushes.Blue;
-        public int ID { get; set; }
-        public string Legend { get; set; }
-        public double Value { get; set; }
-        public double Error { get; set; }
+        public int ID {
+            get => id;
+            set => SetProperty(ref id, value);
+        }
+        private int id;
+        public string Legend {
+            get => legend;
+            set => SetProperty(ref legend, value);
+        }
+
+        private string legend;
+        public double YValue {
+            get => yValue;
+            set => SetProperty(ref yValue, value);
+        }
+        private double yValue;
+        public double Error {
+            get => error;
+            set => SetProperty(ref error, value);
+        }
+        private double error;
     }
 }

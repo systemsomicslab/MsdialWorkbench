@@ -86,12 +86,12 @@
                                   ItemsSource="{Binding BarItems}"
                                   HorizontalPropertyName="Legend"
                                   ClipToBounds="True"
-                                  VerticalPropertyName="Value">
+                                  VerticalPropertyName="YValue">
                     <chart:BarControl.ToolTip>
                         <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Text="{Binding FocusedItem.Legend, StringFormat=Legend: {0}}"/>
-                                <TextBlock Text="{Binding FocusedItem.Value, StringFormat=Value: {0}}"/>
+                                <TextBlock Text="{Binding FocusedItem.YValue, StringFormat=Value: {0}}"/>
                             </StackPanel>
                         </ToolTip>
                     </chart:BarControl.ToolTip>
