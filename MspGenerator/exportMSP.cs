@@ -78,7 +78,7 @@ namespace CompMs.MspGenerator
             foreach (var peak in peaks)
             {
                 sw.WriteLine(peak.Mz + "\t" + peak.Intensity
-                    // + "\t\"" + peak.Comment +"\""
+                     + "\t\"" + peak.Comment +"\""
                     );
             };
             sw.WriteLine();
