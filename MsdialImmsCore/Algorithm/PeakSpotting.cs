@@ -5,7 +5,6 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.Common.Interfaces;
-using CompMs.Common.Query;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Utility;
@@ -24,7 +23,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
         }
 
-        public List<ChromatogramPeakFeature> Run(
+        public ChromatogramPeakFeatureCollection Run(
             IDataProvider provider,
             double initialProgress,
             double progressMax,
@@ -36,7 +35,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             return Execute3DFeatureDetectionNormalMode(provider, _parameter.DriftTimeBegin, _parameter.DriftTimeEnd, initialProgress, progressMax, reportAction);
         }
 
-        private List<ChromatogramPeakFeature> Execute3DFeatureDetectionNormalMode(
+        private ChromatogramPeakFeatureCollection Execute3DFeatureDetectionNormalMode(
             IDataProvider provider,
             float chromBegin,
             float chromEnd, double initialProgress,
@@ -68,16 +67,16 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
             var combinedFeatures = GetRecalculatedChromPeakFeaturesByMs1MsTolerance(chromPeakFeaturesList.SelectMany(features => features).ToList(), provider, ChromXType.Drift, ChromXUnit.Msec);
 
-            var collection = new ChromatogramPeakFeatureCollection(combinedFeatures);
+            var collection = new ChromatogramPeakFeatureCollection(combinedFeatures.OrderBy(item => item.ChromXs.Value).ThenBy(item => item.PeakFeature.Mass).ToList());
             collection.ResetAmplitudeScore();
             collection.ResetPeakID();
 
-            return combinedFeatures.OrderBy(feature => feature.MasterPeakID).ToList();
+            return collection;
         }
 
-        private List<ChromatogramPeakFeature> Execute3DFeatureDetectionTargetMode(IDataProvider provider, float chromBegin, float chromEnd) {
+        private ChromatogramPeakFeatureCollection Execute3DFeatureDetectionTargetMode(IDataProvider provider, float chromBegin, float chromEnd) {
             if (!_parameter.AdvancedProcessOptionBaseParam.IsTargetMode) {
-                return new List<ChromatogramPeakFeature>();
+                return new ChromatogramPeakFeatureCollection(new List<ChromatogramPeakFeature>());
             }
 
             var chromatogramRange = new ChromatogramRange(chromBegin, chromEnd, ChromXType.Drift, ChromXUnit.Msec);
@@ -94,11 +93,11 @@ namespace CompMs.MsdialImmsCore.Algorithm
             var combinedFeatures = chromPeakFeaturesList.SelectMany(features => features).ToList();
             var recalculatedPeaks = GetRecalculatedChromPeakFeaturesByMs1MsTolerance(combinedFeatures, provider, ChromXType.Drift, ChromXUnit.Msec);
 
-            var collection = new ChromatogramPeakFeatureCollection(recalculatedPeaks);
+            var collection = new ChromatogramPeakFeatureCollection(recalculatedPeaks.OrderBy(item => item.ChromXs.Value).ThenBy(item => item.PeakFeature.Mass).ToList());
             collection.ResetAmplitudeScore();
             collection.ResetPeakID();
 
-            return recalculatedPeaks.OrderBy(feature => feature.MasterPeakID).ToList();
+            return collection;
         }
 
         private List<ChromatogramPeakFeature> GetChromatogramPeakFeatures(RawSpectra rawSpectra, IDataProvider provider, float focusedMass, ChromatogramRange chromatogramRange) {

@@ -32,17 +32,17 @@ namespace CompMs.MsdialCore.Algorithm {
         /// <param name="peakAreaBeanCollection"></param>
         /// <param name="analysisParametersBean"></param>
         public static void Process(
-            List<ChromatogramPeakFeature> peakFeatures,
+            IReadOnlyList<ChromatogramPeakFeature> peakFeatures,
             ParameterBase param, 
             IupacDatabase iupac, bool isDriftAxis = false)
         {
-            peakFeatures = peakFeatures.OrderBy(n => n.PrecursorMz).ToList();
+            var peaks = peakFeatures.OrderBy(n => n.PrecursorMz).ToList();
 
             //var spectrumMargin = 2;
             var xMargin = isDriftAxis ? 0.01F : 0.25F;
             var isotopeMax = 8.1;
 
-            foreach (var peak in peakFeatures) {
+            foreach (var peak in peaks) {
                 var peakCharacter = peak.PeakCharacter;
                 if (peakCharacter.IsotopeWeightNumber >= 0) continue;
 
@@ -50,21 +50,21 @@ namespace CompMs.MsdialCore.Algorithm {
                 var focusedMass = peak.PrecursorMz;
                 var focusedXValue = isDriftAxis ? peak.ChromXsTop.Drift.Value : peak.ChromXsTop.RT.Value;
 
-                var startScanIndex = SearchCollection.LowerBound(peakFeatures, focusedMass - param.CentroidMs1Tolerance, (a, b) => a.Mass.CompareTo(b));
+                var startScanIndex = SearchCollection.LowerBound(peaks, focusedMass - param.CentroidMs1Tolerance, (a, b) => a.Mass.CompareTo(b));
                 //DataAccess.GetScanStartIndexByMz((float)focusedMass - param.CentroidMs1Tolerance, peakFeatures);
                 var isotopeCandidates = new List<ChromatogramPeakFeature>() { peak };
 
-                for (int j = startScanIndex; j < peakFeatures.Count; j++) {
+                for (int j = startScanIndex; j < peaks.Count; j++) {
 
-                    var xValue = isDriftAxis ? peakFeatures[j].ChromXsTop.Drift.Value : peakFeatures[j].ChromXsTop.RT.Value;
-                    if (peakFeatures[j].PrecursorMz <= focusedMass) continue;
-                    if (peakFeatures[j].PrecursorMz > focusedMass + isotopeMax) break;
-                    if (peakFeatures[j].PeakID == peak.PeakID) continue;
+                    var xValue = isDriftAxis ? peaks[j].ChromXsTop.Drift.Value : peaks[j].ChromXsTop.RT.Value;
+                    if (peaks[j].PrecursorMz <= focusedMass) continue;
+                    if (peaks[j].PrecursorMz > focusedMass + isotopeMax) break;
+                    if (peaks[j].PeakID == peak.PeakID) continue;
                     if (xValue < focusedXValue - xMargin) continue;
                     if (xValue > focusedXValue + xMargin) continue;
-                    if (peakFeatures[j].PeakCharacter.IsotopeWeightNumber >= 0) continue;
+                    if (peaks[j].PeakCharacter.IsotopeWeightNumber >= 0) continue;
                    
-                    isotopeCandidates.Add(peakFeatures[j]);
+                    isotopeCandidates.Add(peaks[j]);
                 }
                 EstimateIsotopes(isotopeCandidates, param, iupac, isDriftAxis);
             }

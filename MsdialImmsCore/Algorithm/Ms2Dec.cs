@@ -48,7 +48,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         public List<MSDecResult> GetMS2DecResults(
             IDataProvider provider,
-            List<ChromatogramPeakFeature> chromPeakFeatures,
+            IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             MsdialImmsParameter parameter,
             ChromatogramPeaksDataSummaryDto summary,
             IupacDatabase iupac,

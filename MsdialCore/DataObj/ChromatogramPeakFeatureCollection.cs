@@ -42,7 +42,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
         public void ResetPeakID() {
-            var ordered = _items.OrderBy(item => item.ChromXs.Value).ThenBy(item => item.PeakFeature.Mass);
+            var ordered = _items;
             var masterPeakId = 0;
             var peakId = 0;
             foreach (var peakSpot in ordered) {
