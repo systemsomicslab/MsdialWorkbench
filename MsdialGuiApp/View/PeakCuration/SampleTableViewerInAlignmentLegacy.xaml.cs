@@ -81,6 +81,7 @@ namespace CompMs.App.Msdial.View.PeakCuration {
                 selectedData.UpdateBackgroundColor();
                 this.SampleTableViewerInAlignmentVM.UpdateCentralRetentionInformation();
                 this.SampleTableViewerInAlignmentVM.IsPropertyChanged();
+                DataGrid_RawData.ScrollIntoView(selectedData);
             }
         }
 
