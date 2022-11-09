@@ -1,12 +1,11 @@
-﻿using CompMs.MsdialCore.Parameter;
-using CompMs.Common.Enum;
+﻿using CompMs.Common.Enum;
+using CompMs.MsdialCore.Parameter;
 using MessagePack;
-using System;
 
 namespace CompMs.MsdialDimsCore.Parameter {
     [MessagePackObject]
     public class MsdialDimsParameter : ParameterBase {
-        public MsdialDimsParameter() {
+        public MsdialDimsParameter(bool isLabUseOnly) : base(isLabUseOnly) {
             this.MachineCategory = MachineCategory.IFMS;
 
             MspSearchParam.WeightedDotProductCutOff = 0.1f;
@@ -14,6 +13,11 @@ namespace CompMs.MsdialDimsCore.Parameter {
             MspSearchParam.ReverseDotProductCutOff = 0.3f;
             MspSearchParam.MatchedPeaksPercentageCutOff = 0.2f;
             MspSearchParam.MinimumSpectrumMatch = 1;
+        }
+
+        [SerializationConstructor]
+        public MsdialDimsParameter() : this(isLabUseOnly: false) {
+
         }
 
         [Key(20)]

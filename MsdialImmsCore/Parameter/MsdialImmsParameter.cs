@@ -1,7 +1,7 @@
-﻿using CompMs.MsdialCore.Parameter;
-using CompMs.Common.Enum;
-using MessagePack;
+﻿using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
+using CompMs.MsdialCore.Parameter;
+using MessagePack;
 using System;
 using System.Collections.Generic;
 
@@ -9,7 +9,7 @@ namespace CompMs.MsdialImmsCore.Parameter
 {
     [MessagePackObject]
     public class MsdialImmsParameter : ParameterBase {
-        public MsdialImmsParameter() {
+        public MsdialImmsParameter(bool isLabUseOnly): base(isLabUseOnly) {
             MachineCategory = MachineCategory.IMMS;
 
             MspSearchParam.WeightedDotProductCutOff = 0.1f;
@@ -20,6 +20,11 @@ namespace CompMs.MsdialImmsCore.Parameter
             MSDataType = MSDataType.Centroid;
             MS2DataType = MSDataType.Centroid;
             MinimumAmplitude = 100;
+        }
+
+        [SerializationConstructor]
+        public MsdialImmsParameter(): this(isLabUseOnly: false) {
+
         }
 
         [Key(150)]

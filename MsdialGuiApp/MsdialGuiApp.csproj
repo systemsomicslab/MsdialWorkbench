@@ -305,6 +305,7 @@
     <Compile Include="Model\Setting\ModificationSettingModel.cs" />
     <Compile Include="Model\Setting\MspAnnotationSettingModel.cs" />
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
+    <Compile Include="Utility\GlobalResources.cs" />
     <Compile Include="Utility\ObservableExtensions.cs" />
     <Compile Include="ViewModel\Chart\BitmapImageViewModel.cs" />
     <Compile Include="ViewModel\Chart\SampleImageViewModel.cs" />

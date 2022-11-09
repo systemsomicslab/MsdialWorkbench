@@ -8,6 +8,11 @@ using System.Collections.Generic;
 namespace CompMs.MsdialLcImMsApi.Parameter {
     [MessagePackObject]
     public class MsdialLcImMsParameter : MsdialLcmsParameter {
+        public MsdialLcImMsParameter(bool isLabUseOnly) : base(isLabUseOnly) { this.MachineCategory = MachineCategory.LCIMMS; }
+
+        [SerializationConstructor]
+        public MsdialLcImMsParameter() : this(isLabUseOnly: false) { }
+
         [Key(150)]
         public float DriftTimeBegin { get; set; } = 0;
         [Key(151)]
@@ -29,7 +34,6 @@ namespace CompMs.MsdialLcImMsApi.Parameter {
 
         [Key(158)]
         public Dictionary<int, CoefficientsForCcsCalculation> FileID2CcsCoefficients { get; set; } = new Dictionary<int, CoefficientsForCcsCalculation>();
-        public MsdialLcImMsParameter() { this.MachineCategory = MachineCategory.LCIMMS; }
 
         public override List<string> ParametersAsText() {
             var pStrings = base.ParametersAsText();
