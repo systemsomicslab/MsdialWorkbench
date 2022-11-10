@@ -32,6 +32,12 @@ namespace CompMs.Common.Extension {
             return xs.Zip(ys, zs, Tuple.Create);
         }
 
+        public static IEnumerable<T5> Zip<T1, T2, T3, T4, T5>(this IEnumerable<T1> xs, IEnumerable<T2> ys, IEnumerable<T3> zs, IEnumerable<T4> ws, Func<T1, T2, T3, T4, T5> func) {
+            var xys = xs.Zip(ys, Tuple.Create);
+            var zws = zs.Zip(ws, Tuple.Create);
+            return xys.Zip(zws, (xy, zw) => func(xy.Item1, xy.Item2, zw.Item1, zw.Item2));
+        }
+
         public static int Argmax<T>(this IEnumerable<T> xs) where T: IComparable {
             return Argmax(xs, Comparer<T>.Default.Compare);
         }

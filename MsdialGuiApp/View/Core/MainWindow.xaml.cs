@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Notification;
 using CompMs.App.Msdial.Model.Service;
+using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.PeakCuration;
@@ -293,8 +294,9 @@ namespace CompMs.App.Msdial.View.Core
         private void CreateAlignedChromatogramModificationDialog(AlignedChromatogramModificationViewModelLegacy vm) {
             Dispatcher.Invoke(() =>
             {
-                var window = new AlignedPeakCorrectionWinLegacy(vm)
+                var window = new AlignedPeakCorrectionWinLegacy()
                 {
+                    DataContext = vm,
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 };
@@ -305,7 +307,8 @@ namespace CompMs.App.Msdial.View.Core
 
         private void CreateSampleTableViewerDialog(SampleTableViewerInAlignmentViewModelLegacy vm) {
             Dispatcher.Invoke(() => {
-                var window = new SampleTableViewerInAlignmentLegacy(vm) {
+                var window = new SampleTableViewerInAlignmentLegacy() {
+                    DataContext = vm,
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 };
@@ -327,10 +330,7 @@ namespace CompMs.App.Msdial.View.Core
         protected override void OnContentRendered(EventArgs e) {
             base.OnContentRendered(e);
 
-            if (Properties.Resources.VERSION.Contains("-tada")
-                || Properties.Resources.VERSION.Contains("-alpha")
-                || Properties.Resources.VERSION.Contains("-beta")
-                || Properties.Resources.VERSION.Contains("-dev")) {
+            if (GlobalResources.Instance.IsLabPrivate) {
                 return;
             }
             Mouse.OverrideCursor = Cursors.Wait;

@@ -70,16 +70,14 @@ namespace CompMs.App.Msdial.ViewModel.Chart
             ShowPeakCurationWinByOverlayEICsCommand = model.CanShow.ToReactiveCommand()
                 .WithSubscribe(() =>
                 {
-                    var m = model.GetAlignedChromatogramModificationModel();
-                    var vm = new AlignedChromatogramModificationViewModelLegacy(m);
+                    var vm = new AlignedChromatogramModificationViewModelLegacy(model.AlignedChromatogramModificationModelLegacy);
                     MessageBroker.Default.Publish(vm);
                 })
                 .AddTo(Disposables);
 
             ShowPeakCurationWinBySampleTableCommand = model.CanShow.ToReactiveCommand()
                 .WithSubscribe(() => {
-                    var m = model.GetSampleTableViewerInAlignmentModel();
-                    var vm = new SampleTableViewerInAlignmentViewModelLegacy(m);
+                    var vm = new SampleTableViewerInAlignmentViewModelLegacy(model.SampleTableViewerInAlignmentModelLegacy);
                     MessageBroker.Default.Publish(vm);
                 })
                 .AddTo(Disposables);

@@ -53,18 +53,18 @@ namespace CompMs.MsdialImmsCore.Process
             Console.WriteLine("Peak picking started");
             var chromPeakFeatures = _peakPickProcess.Pick(file, provider, reportAction);
 
-            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures);
+            var summary = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures.Items);
             file.ChromPeakFeaturesSummary = summary;
 
             Console.WriteLine("Deconvolution started");
-            var mSDecResultCollections = _deconvolutionProcess.Deconvolute(provider, chromPeakFeatures, summary, reportAction, token);
+            var mSDecResultCollections = _deconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, summary, reportAction, token);
 
             // annotations
             Console.WriteLine("Annotation started");
-            _peakAnnotationProcess.Annotate(provider, chromPeakFeatures, mSDecResultCollections, reportAction, token);
+            _peakAnnotationProcess.Annotate(provider, chromPeakFeatures.Items, mSDecResultCollections, reportAction, token);
 
             // file save
-            await SaveToFileAsync(file, new ChromatogramPeakFeatureCollection(chromPeakFeatures), mSDecResultCollections).ConfigureAwait(false);
+            await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
 
             reportAction?.Invoke(100);
         }

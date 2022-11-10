@@ -51,7 +51,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             ) {
 
             if (peaklist == null || peaklist.Count == 0) {
-                SetDefaultValueToAlignmentChromPeakFeature(alignmentChromPeakFeature);
+                SetDefaultValueToAlignmentChromPeakFeature(alignmentChromPeakFeature, center.Mz.Value);
                 return;
             }
             var result = alignmentChromPeakFeature;
@@ -63,7 +63,7 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             var isForceInsert = this.isForceInsert;
             (var id, var leftId, var rightId) = GetPeakRange(candidates, peaklist, minId, centralAx, isForceInsert);
             if (id == -1 || leftId == -1 || rightId == -1) {
-                SetDefaultValueToAlignmentChromPeakFeature(result);
+                SetDefaultValueToAlignmentChromPeakFeature(result, center.Mz.Value);
                 return;
             }
 
@@ -176,8 +176,8 @@ namespace CompMs.MsdialCore.Algorithm.Alignment
             result.PeakAreaAboveZero = peakAreaAboveZero * 60;
         }
 
-        private static void SetDefaultValueToAlignmentChromPeakFeature(AlignmentChromPeakFeature result) {
-            result.Mass = -1;
+        private static void SetDefaultValueToAlignmentChromPeakFeature(AlignmentChromPeakFeature result, double mz) {
+            result.Mass = mz;
             result.ChromScanIdTop = -1;
             result.ChromScanIdLeft = -1;
             result.ChromScanIdRight = -1;

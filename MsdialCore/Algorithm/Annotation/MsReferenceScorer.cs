@@ -56,7 +56,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 matchedPeaksScores = MsScanMatching.GetMatchedPeaksScores(scan, reference, parameter.Ms2Tolerance, parameter.MassRangeBegin, parameter.MassRangeEnd);
             }
 
-            var ms1Tol = MolecularFormulaUtility.CalculateMassToleranceBasedOn500Da(parameter.Ms1Tolerance, property.PrecursorMz);
+            var ms1Tol = MolecularFormulaUtility.FixMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             var ms1Similarity = MsScanMatching.GetGaussianSimilarity(property.PrecursorMz, reference.PrecursorMz, ms1Tol);
 
             var isotopeSimilarity = MsScanMatching.GetIsotopeRatioSimilarity(scanIsotopes, referenceIsotopes, property.PrecursorMz, ms1Tol);
@@ -154,7 +154,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 && result.MatchedPeaksPercentage >= parameter.MatchedPeaksPercentageCutOff
                 && result.MatchedPeaksCount >= parameter.MinimumSpectrumMatch;
 
-            var ms1Tol = MolecularFormulaUtility.CalculateMassToleranceBasedOn500Da(parameter.Ms1Tolerance, property.PrecursorMz);
+            var ms1Tol = MolecularFormulaUtility.FixMassTolerance(parameter.Ms1Tolerance, property.PrecursorMz);
             result.IsPrecursorMzMatch = Math.Abs(property.PrecursorMz - reference.PrecursorMz) <= ms1Tol;
 
             if (parameter.IsUseTimeForAnnotationScoring) {

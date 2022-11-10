@@ -19,16 +19,14 @@ namespace CompMs.MsdialImmsCore.Process
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 
-        public MSDecResultCollection[] Deconvolute(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures, ChromatogramPeaksDataSummaryDto summary, Action<int> reportAction, CancellationToken token) {
-            var parameter = _storage.Parameter;
-            var iupacDB = _storage.IupacDatabase;
-            var targetCE2MSDecResults = SpectrumDeconvolution(provider, chromPeakFeatures, summary, parameter, iupacDB, reportAction, token);
+        public MSDecResultCollection[] Deconvolute(IDataProvider provider, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, ChromatogramPeaksDataSummaryDto summary, Action<int> reportAction, CancellationToken token) {
+            var targetCE2MSDecResults = SpectrumDeconvolution(provider, chromPeakFeatures, summary, _storage.Parameter, _storage.IupacDatabase, reportAction, token);
             return targetCE2MSDecResults.Select(kvp => new MSDecResultCollection(kvp.Value, kvp.Key)).ToArray();
         }
 
         private static Dictionary<double, List<MSDecResult>> SpectrumDeconvolution(
             IDataProvider provider,
-            List<ChromatogramPeakFeature> chromPeakFeatures,
+            IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             ChromatogramPeaksDataSummaryDto summary,
             MsdialImmsParameter parameter,
             IupacDatabase iupac,

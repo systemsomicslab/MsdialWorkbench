@@ -200,6 +200,7 @@
     <Compile Include="Model\Statistics\MultivariateAnalysisSettingModel.cs" />
     <Compile Include="Model\Statistics\SimpleBarChartModel.cs" />
     <Compile Include="Model\Statistics\SimpleScatterPlotModel.cs" />
+    <Compile Include="Model\Statistics\PCAPLSResultModel.cs" />
     <Compile Include="Model\Statistics\SplashProduct.cs" />
     <Compile Include="Model\DataObj\TargetMsMethod.cs" />
     <Compile Include="Model\Statistics\StatisticsObjectConverter.cs" />
@@ -307,6 +308,7 @@
     <Compile Include="Model\Setting\MspAnnotationSettingModel.cs" />
     <Compile Include="Model\Statistics\PCAPLSResultModel.cs" />
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
+    <Compile Include="Utility\GlobalResources.cs" />
     <Compile Include="Utility\ObservableExtensions.cs" />
     <Compile Include="ViewModel\Chart\BitmapImageViewModel.cs" />
     <Compile Include="ViewModel\Chart\SampleImageViewModel.cs" />
@@ -391,6 +393,7 @@
     <Compile Include="ViewModel\Statistics\MultivariateAnalysisSettingViewModel.cs" />
     <Compile Include="ViewModel\Statistics\SimpleBarChartViewModel.cs" />
     <Compile Include="ViewModel\Statistics\SimpleScatterPlotViewModel.cs" />
+    <Compile Include="ViewModel\Statistics\PCAPLSResultViewModel.cs" />
     <Compile Include="ViewModel\Statistics\SplashProductViewModel.cs" />
     <Compile Include="ViewModel\Search\PeakFilterViewModel.cs" />
     <Compile Include="ViewModel\Search\FocusNavigatorViewModel.cs" />

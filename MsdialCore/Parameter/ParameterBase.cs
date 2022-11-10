@@ -1,26 +1,35 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.Enum;
-using CompMs.Common.Parameter;
-using CompMs.Common.Query;
-using CompMs.MsdialCore.DataObj;
-using System;
-using System.Collections.Generic;
-using MessagePack;
-using CompMs.MsdialCore.Properties;
-using Accord;
-using System.Linq;
-using CompMs.Common.Parser;
-using System.IO;
-using System.Text;
 using CompMs.Common.Extension;
+using CompMs.Common.Parameter;
+using CompMs.Common.Parser;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.Common.Proteomics.Parser;
+using CompMs.Common.Query;
+using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Properties;
+using MessagePack;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
-namespace CompMs.MsdialCore.Parameter {
+namespace CompMs.MsdialCore.Parameter
+{
 
     [MessagePackObject]
     public class ParameterBase {
+
+        [SerializationConstructor]
+        public ParameterBase() {
+            RefSpecMatchBaseParam = new RefSpecMatchBaseParameter(isLabUseOnly: false);
+        }
+
+        public ParameterBase(bool isLabUseOnly) {
+            RefSpecMatchBaseParam = new RefSpecMatchBaseParameter(isLabUseOnly);
+        }
 
         [Key(0)]
         public ProjectBaseParameter ProjectParam { get; set; } = new ProjectBaseParameter();
@@ -1056,6 +1065,15 @@ namespace CompMs.MsdialCore.Parameter {
         public bool IsBrClConsideredForIsotopes { get; set; } = false;
         [Key(15)]
         public List<MzSearchQuery> ExcludedMassList { get; set; } = new List<MzSearchQuery>();
+
+        public bool ShouldExclude(double mass) {
+            foreach (var query in ExcludedMassList) {
+                if (Math.Abs(query.Mass - mass) < query.MassTolerance) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     [MessagePackObject]
@@ -1081,12 +1099,25 @@ namespace CompMs.MsdialCore.Parameter {
     }
 
     [MessagePackObject]
-    public class RefSpecMatchBaseParameter {
+    public sealed class RefSpecMatchBaseParameter {
+        [SerializationConstructor]
+        public RefSpecMatchBaseParameter() {
+            LipidQueryContainer = new LipidQueryBean() {
+                SolventType = SolventType.CH3COONH4,
+                LbmQueries = LbmQueryParcer.GetLbmQueries(isLabUseOnly: false)
+            };
+        }
+
+        public RefSpecMatchBaseParameter(bool isLabUseOnly) {
+            LipidQueryContainer = new LipidQueryBean() {
+                SolventType = SolventType.CH3COONH4,
+                LbmQueries = LbmQueryParcer.GetLbmQueries(isLabUseOnly: isLabUseOnly)
+            };
+        }
+
         [Key(0)]
-        public LipidQueryBean LipidQueryContainer { get; set; } = new LipidQueryBean() {
-            SolventType = SolventType.CH3COONH4,
-            LbmQueries = LbmQueryParcer.GetLbmQueries(false)
-        };
+        public LipidQueryBean LipidQueryContainer { get; set; }
+
         [Key(1)]
         public MsRefSearchParameterBase MspSearchParam { get; set; } = new MsRefSearchParameterBase();
 
@@ -1282,6 +1313,9 @@ namespace CompMs.MsdialCore.Parameter {
         public List<PeakFeatureSearchValue> FragmentSearchSettingValues { get; set; } = new List<PeakFeatureSearchValue>();
         [Key(8)]
         public AndOr AndOrAtFragmentSearch { get; set; } = AndOr.AND;
+
+        [IgnoreMember]
+        public bool IsTargetMode => !CompoundListInTargetMode.IsEmptyOrNull();
     }
 
     [MessagePackObject]

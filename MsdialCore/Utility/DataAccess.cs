@@ -78,7 +78,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         // converter
-        public static ChromatogramPeakFeature GetChromatogramPeakFeature(PeakDetectionResult result, ChromXType type, ChromXUnit unit, double mass) {
+        public static ChromatogramPeakFeature GetChromatogramPeakFeature(PeakDetectionResult result, ChromXType type, ChromXUnit unit, double mass, IonMode ionMode) {
             if (result == null) return null;
 
             var basePeak = new BaseChromatogramPeakFeature
@@ -106,6 +106,7 @@ namespace CompMs.MsdialCore.Utility {
             {
                 MasterPeakID = result.PeakID,
                 PeakID = result.PeakID,
+                IonMode = ionMode,
 
                 PeakShape = new ChromatogramPeakShape()
                 {

@@ -6,13 +6,10 @@ using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CompMs.MsdialCore.Algorithm {
-    public sealed class CcsEstimator {
-        private CcsEstimator() { }
-
-        public static void Process(List<ChromatogramPeakFeature> chromPeakFeatures,
+    public static class CcsEstimator {
+        public static void Process(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             ParameterBase param, IonMobilityType type, CoefficientsForCcsCalculation calinfo, bool isAllCalibrantDataImported = false) {
 
             foreach (var chromPeak in chromPeakFeatures) { // to deal with both IM-MS and LC-IM-MS

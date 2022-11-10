@@ -1,11 +1,10 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.Common.Components;
+using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Chromatogram.ManualPeakModification;
 using CompMs.Graphics.Core.Base;
-using CompMs.MsdialCore.Parameter;
-using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,96 +13,95 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.PeakCuration
 {
-    public class AlignedChromatogramModificationViewModelLegacy : ViewModelBase {
-        public PeakModUCLegacy OriginalChromUC { get; set; }
-        public PeakModUCLegacy AlignedChromUC { get; set; }
-        public PeakModUCLegacy PickingUC { get; set; }
-        public AlignmentSpotPropertyModel AlignmentPropertyBeanModel { get; set; }
-        public List<PeakPropertyLegacy> PeakPropertyList { get; set; }
-        public ParameterBase Param { get; set; }
-        public bool IsRI { get; set; } = false;
-        public bool IsDrift { get; set; } = false;
-        public bool UpdateTrigger { get; set; }
+    public sealed class AlignedChromatogramModificationViewModelLegacy : ViewModelBase {
+        private readonly AlignedChromatogramModificationModelLegacy _model;
 
-        public AlignedChromatogramModificationViewModelLegacy(IObservable<AlignedChromatogramModificationModelLegacy> model) {
-            model.ObserveOnDispatcher().Subscribe(UpdateModel).AddTo(Disposables);
+        public PeakModUCLegacy OriginalChromUC {
+            get => _originalChromUC;
+            set => SetProperty(ref _originalChromUC, value);
         }
-
-        public AlignedChromatogramModificationViewModelLegacy(
-            AlignedChromatogramModificationModelLegacy model) {
-            
-            AlignmentPropertyBeanModel = model.Model;
-            Param = model.Parameter;
-            PeakPropertyList = model.PeakProperties;
-
-            if (model.Model.ChromXType == ChromXType.RI) {
-                IsRI = true;
-            }
-            IsDrift = AlignmentPropertyBeanModel.ChromXType == ChromXType.Drift ? true : false;
-            var dv = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Original);
-            var dv2 = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Aligned);
-            var dv3 = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Picking);
-            OriginalChromUC = new PeakModUCLegacy(this, dv, new MouseActionSetting() { FixMinY = true }, PeakModType.Original, PeakPropertyList);
-            AlignedChromUC = new PeakModUCLegacy(this, dv2, new MouseActionSetting() { FixMinY = true }, PeakModType.Aligned, PeakPropertyList);
-            PickingUC = new PeakModUCLegacy(this, dv3, new MouseActionSetting() { CanMouseAction = false }, PeakModType.Picking);
+        private PeakModUCLegacy _originalChromUC;
+        public PeakModUCLegacy AlignedChromUC {
+            get => _alignedChromUC;
+            set => SetProperty(ref _alignedChromUC, value);
         }
-
-        private void UpdateModel(AlignedChromatogramModificationModelLegacy model) {
-            AlignmentPropertyBeanModel = model.Model;
-            Param = model.Parameter;
-            PeakPropertyList = model.PeakProperties;
-
-            if (model.Model.ChromXType == ChromXType.RI) {
-                IsRI = true;
-            }
-            IsDrift = AlignmentPropertyBeanModel.ChromXType == ChromXType.Drift ? true : false;
-            var dv = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Original);
-            var dv2 = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Aligned);
-            var dv3 = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Picking);
-            OriginalChromUC = new PeakModUCLegacy(this, dv, new MouseActionSetting() { FixMinY = true }, PeakModType.Original, PeakPropertyList);
-            AlignedChromUC = new PeakModUCLegacy(this, dv2, new MouseActionSetting() { FixMinY = true }, PeakModType.Aligned, PeakPropertyList);
-            PickingUC = new PeakModUCLegacy(this, dv3, new MouseActionSetting() { CanMouseAction = false }, PeakModType.Picking);
-            RefleshUI();
+        private PeakModUCLegacy _alignedChromUC;
+        public PeakModUCLegacy PickingUC {
+            get => _pickingUC;
+            set => SetProperty(ref _pickingUC, value);
         }
+        private PeakModUCLegacy _pickingUC;
 
-        private void RefleshUI() {
-            OriginalChromUC.RefreshUI();
-            PickingUC.RefreshUI();
-            AlignedChromUC.RefreshUI();
-            OnPropertyChanged("OriginalChromUC");
-            OnPropertyChanged("PickingUC");
-            OnPropertyChanged("AlignedChromUC");
+        public PeakPropertyLegacy[] PeakPropertyList => _model.ObservablePeakProperties.Value.Properties;
+        public bool IsRI => _model.IsRI.Value;
+
+        public AlignedChromatogramModificationViewModelLegacy(AlignedChromatogramModificationModelLegacy model) {
+            _model = model;
+            model.ObservablePeakProperties.ObserveOnDispatcher().Subscribe(peakProperties =>
+            {
+                var dv_ = UtilityLegacy.GetDrawingVisualUC(peakProperties.Properties, PeakModType.Original);
+                var dv2_ = UtilityLegacy.GetDrawingVisualUC(peakProperties.Properties, PeakModType.Aligned);
+                var dv3_ = UtilityLegacy.GetDrawingVisualUC(peakProperties.Properties, PeakModType.Picking);
+                var originalChromUC = new PeakModUCLegacy(this, dv_, new MouseActionSetting() { FixMinY = true }, PeakModType.Original, peakProperties.Properties.ToList());
+                originalChromUC.RefreshUI();
+                OriginalChromUC = originalChromUC;
+                var alignedChromUC = new PeakModUCLegacy(this, dv2_, new MouseActionSetting() { FixMinY = true }, PeakModType.Aligned, peakProperties.Properties.ToList());
+                alignedChromUC.RefreshUI();
+                AlignedChromUC = alignedChromUC;
+                var pickingUC = new PeakModUCLegacy(this, dv3_, new MouseActionSetting() { CanMouseAction = false }, PeakModType.Picking);
+                pickingUC.RefreshUI();
+                PickingUC = pickingUC;
+            });
         }
 
         public void UpdateAlignedChromUC() {
             var dv2 = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Aligned, IsRI);
-            AlignedChromUC = new PeakModUCLegacy(this, dv2, new MouseActionSetting() { FixMinY = true }, PeakModType.Aligned, PeakPropertyList);
-            AlignedChromUC.RefreshUI();
-            OnPropertyChanged("AlignedChromUC");
+            var alignedChromUC = new PeakModUCLegacy(this, dv2, new MouseActionSetting() { FixMinY = true }, PeakModType.Aligned, PeakPropertyList.ToList());
+            alignedChromUC.RefreshUI();
+            AlignedChromUC = alignedChromUC;
         }
         public void UpdatePickingChromUC() {
             var dv = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Picking, IsRI);
-            PickingUC = new PeakModUCLegacy(this, dv, new MouseActionSetting() { FixMinY = true }, PeakModType.Picking, PeakPropertyList);
-            PickingUC.RefreshUI();
-            OnPropertyChanged("PickingUC");
+            var pickingUC = new PeakModUCLegacy(this, dv, new MouseActionSetting() { FixMinY = true }, PeakModType.Picking, PeakPropertyList.ToList());
+            pickingUC.RefreshUI();
+            PickingUC = pickingUC;
         }
 
         public void UpdatePeakInfo() {
+            _model.UpdatePeakInfo();
+        }
+
+        public void ClearRtAlignment() {
+            _model.ClearRtAlignment();
+            var dv2 = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Aligned, IsRI);
+            AlignedChromUC = new PeakModUCLegacy(this, dv2, new MouseActionSetting() { FixMinY = true }, PeakModType.Aligned, PeakPropertyList.ToList());
+        }
+    }
+
+    public sealed class PeakPropertiesLegacy {
+        private readonly AlignmentSpotPropertyModel _spot;
+
+        public PeakPropertiesLegacy(AlignmentSpotPropertyModel spot, PeakPropertyLegacy[] properties) {
+            _spot = spot ?? throw new ArgumentNullException(nameof(spot));
+            Properties = properties ?? throw new ArgumentNullException(nameof(properties));
+        }
+
+        public PeakPropertyLegacy[] Properties { get; }
+
+        public void UpdatePeakInfo() {
+            if (Properties.IsEmptyOrNull()) {
+                return;
+            }
 
             var rtList = new List<double>();
-            foreach (var p in PeakPropertyList) {
-                if (p.Accessory == null) return;
-                var chromtype = ChromXType.RT;
-                if (IsDrift) chromtype = ChromXType.Drift;
-                if (IsRI) chromtype = ChromXType.RI;
+            foreach (var p in Properties) {
+                if (p.Accessory is null) {
+                    return;
+                }
 
-                var chromunit = ChromXUnit.Min;
-                if (IsDrift) chromunit = ChromXUnit.Msec;
-                if (IsRI) chromunit = ChromXUnit.None;
-
-                p.Model.ChromXsLeft = new ChromXs(p.Accessory.Chromatogram.RtLeft, chromtype, chromunit);
-                p.Model.ChromXsTop = new ChromXs(p.Accessory.Chromatogram.RtTop, chromtype, chromunit);
-                p.Model.ChromXsRight = new ChromXs(p.Accessory.Chromatogram.RtRight, chromtype, chromunit);
+                p.Model.ChromXsLeft = new ChromXs(p.Accessory.Chromatogram.RtLeft, _spot.ChromXType, _spot.ChromXUnit);
+                p.Model.ChromXsTop = new ChromXs(p.Accessory.Chromatogram.RtTop, _spot.ChromXType, _spot.ChromXUnit);
+                p.Model.ChromXsRight = new ChromXs(p.Accessory.Chromatogram.RtRight, _spot.ChromXType, _spot.ChromXUnit);
 
                 rtList.Add(p.Accessory.Chromatogram.RtTop);
 
@@ -115,19 +113,16 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
             }
 
             if (rtList.Max() > 0) {
-                PeakPropertyList[0].AverageRt = (float)rtList.Average();
+                Properties[0].AverageRt = (float)rtList.Average();
             }
-            AlignmentPropertyBeanModel.TimesCenter = PeakPropertyList[0].AverageRt;
-            AlignmentPropertyBeanModel.IsManuallyModifiedForQuant = true;
-           
-            OnPropertyChanged("UpdateTrigger");
+            _spot.TimesCenter = Properties[0].AverageRt;
+            _spot.IsManuallyModifiedForQuant = true;
         }
 
         public void ClearRtAlignment() {
-            foreach (var p in PeakPropertyList) p.ClearAlignedPeakList();
-            var dv2 = UtilityLegacy.GetDrawingVisualUC(PeakPropertyList, PeakModType.Aligned, IsRI);
-            AlignedChromUC = new PeakModUCLegacy(this, dv2, new MouseActionSetting() { FixMinY = true }, PeakModType.Aligned, PeakPropertyList);
-            OnPropertyChanged("AlignedChromUC");
+            foreach (var p in Properties) {
+                p.ClearAlignedPeakList();
+            }
         }
     }
 
@@ -233,7 +228,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
             }
         }
 
-        public static DrawVisualManualPeakModification GetDrawingVisualUC(List<PeakPropertyLegacy> peakProperties, PeakModType type, bool isRI = false, bool isDrift = false) {
+        public static DrawVisualManualPeakModification GetDrawingVisualUC(IReadOnlyList<PeakPropertyLegacy> peakProperties, PeakModType type, bool isRI = false, bool isDrift = false) {
             if (peakProperties == null || peakProperties.Count == 0) return null;
             var xtitle = "Retention time (min)";
             if (isRI)
@@ -258,7 +253,7 @@ namespace CompMs.App.Msdial.ViewModel.PeakCuration
             return new DrawVisualManualPeakModification(area, title, slist);
         }
 
-        private static SeriesList GetChromatogramFromAlignedData(List<PeakPropertyLegacy> peakProperties, PeakModType type, bool isRI = false) {
+        private static SeriesList GetChromatogramFromAlignedData(IReadOnlyList<PeakPropertyLegacy> peakProperties, PeakModType type, bool isRI = false) {
             var slist = new SeriesList();
             for (var i = 0; i < peakProperties.Count; i++) {
                 var prop = peakProperties[i];
