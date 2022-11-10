@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -331,7 +332,11 @@ namespace CompMs.App.Msdial.View.PeakCuration
         public ChromatogramXicViewModelLegacy ChromVM { get; set; }
         public string AnalysisClass { set; get; }
         public int CheckForRep { get; set; }
-        public BitmapSource Image { set; get; }
+        public BitmapSource Image {
+            get => _image;
+            set => SetProperty(ref _image, value);
+        }
+        private BitmapSource _image;
         public SolidColorBrush BackgroundColInt { set; get; }
         public SolidColorBrush BackgroundColArea { set; get; }
         #endregion
@@ -367,8 +372,12 @@ namespace CompMs.App.Msdial.View.PeakCuration
             BackgroundColInt?.Freeze();
             BackgroundColArea?.Freeze();
 
-            Image = new PlainChromatogramXicForTableViewerLegacy(40, 200, 100, 100).DrawChromatogramXic2BitmapSource(chromatogramXicVM);
-            Image?.Freeze();
+            Task.Run(() =>
+            {
+                var image = new PlainChromatogramXicForTableViewerLegacy(40, 200, 100, 100).DrawChromatogramXic2BitmapSource(chromatogramXicVM);
+                image?.Freeze();
+                Image = image;
+            });
         }
         
         public void UpdateBackgroundColor() {

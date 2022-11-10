@@ -78,7 +78,7 @@ namespace CompMs.App.Msdial.Model.Chart
             ).Switch().ToReactiveProperty().AddTo(Disposables);
 
             SampleTableViewerInAlignmentModelLegacy = new SampleTableViewerInAlignmentModelLegacy(model, eicChromatograms, analysisFiles, parameter);
-            AlignedChromatogramModificationModelLegacy = modelAndChromatogram.Select(mc => new AlignedChromatogramModificationModelLegacy(mc.First, mc.Second, analysisFiles, parameter));
+            AlignedChromatogramModificationModelLegacy = new AlignedChromatogramModificationModelLegacy(model, eicChromatograms, analysisFiles, parameter);
         }
 
         public IObservable<bool> CanShow { get; }
@@ -92,7 +92,7 @@ namespace CompMs.App.Msdial.Model.Chart
         public GraphElements Elements { get; } = new GraphElements();
 
         public SampleTableViewerInAlignmentModelLegacy SampleTableViewerInAlignmentModelLegacy { get; }
-        public IObservable<AlignedChromatogramModificationModelLegacy> AlignedChromatogramModificationModelLegacy { get; }
+        public AlignedChromatogramModificationModelLegacy AlignedChromatogramModificationModelLegacy { get; }
 
         public static AlignmentEicModel Create(
             IObservable<AlignmentSpotPropertyModel> source,

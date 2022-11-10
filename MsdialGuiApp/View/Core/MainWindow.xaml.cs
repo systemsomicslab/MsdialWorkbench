@@ -294,8 +294,9 @@ namespace CompMs.App.Msdial.View.Core
         private void CreateAlignedChromatogramModificationDialog(AlignedChromatogramModificationViewModelLegacy vm) {
             Dispatcher.Invoke(() =>
             {
-                var window = new AlignedPeakCorrectionWinLegacy(vm)
+                var window = new AlignedPeakCorrectionWinLegacy()
                 {
+                    DataContext = vm,
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 };

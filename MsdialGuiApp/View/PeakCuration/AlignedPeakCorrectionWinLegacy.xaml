@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View.PeakCuration"
+        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.PeakCuration"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:AlignedChromatogramModificationViewModelLegacy}}"
         Title="Aligned chromatogram modification" Height="770" Width="850">
     <Window.Resources>
         <ContextMenu x:Key="menuDefaultUC">
@@ -14,8 +16,6 @@
             <MenuItem Header="Copy spectra table as.." Click="contextMenu_CopySpectraTableAs_Click" />
      -->
         </ContextMenu>
-
-
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
