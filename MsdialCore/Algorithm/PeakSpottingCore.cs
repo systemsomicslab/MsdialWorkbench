@@ -453,8 +453,7 @@ namespace CompMs.MsdialCore.Algorithm {
                     }
                 }
                 if (excludeChecker) continue;
-                var chromPeakFeature = ChromatogramPeakFeature.FromPeakDetectionResult(result, chromatogram, mass);
-                chromPeakFeature.IonMode = _parameter.IonMode;
+                var chromPeakFeature = ChromatogramPeakFeature.FromPeakDetectionResult(result, chromatogram, mass, _parameter.IonMode);
                 chromPeakFeatures.Add(chromPeakFeature);
             }
             return chromPeakFeatures;
