@@ -60,17 +60,10 @@ namespace CompMs.Common.Lipidomics
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct)
         {
-            if (lipid.LipidClass == LbmClass.Cer_NS || lipid.LipidClass == LbmClass.Cer_NDS)
-            {
-                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+Na]+" || adduct.AdductIonName == "[M+H-H2O]+")
-                {
-                    return true;
-                }
-            }
-            else if (lipid.LipidClass == LbmClass.Cer_AS || lipid.LipidClass == LbmClass.Cer_ADS
+            if (lipid.LipidClass == LbmClass.Cer_NS || lipid.LipidClass == LbmClass.Cer_NDS
+                || lipid.LipidClass == LbmClass.Cer_AS || lipid.LipidClass == LbmClass.Cer_ADS
                 || lipid.LipidClass == LbmClass.Cer_BS || lipid.LipidClass == LbmClass.Cer_BDS
-                //|| lipid.LipidClass == LbmClass.Cer_HS || lipid.LipidClass == LbmClass.Cer_HDS
-                )
+               )
             {
                 if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+H-H2O]+")
                 {

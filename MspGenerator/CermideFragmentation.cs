@@ -786,8 +786,8 @@ namespace CompMs.MspGenerator
                 var fra07mass = fra06mass - 2 * MassDictionary.HydrogenMass - MassDictionary.OxygenMass;
                 var fra07int = adduct == "[M+Na]+" ? 50 : 999;
                 var fra07comment = "[Sph-2H2O+H]+";
-
                 fragmentList.Add(fra07mass + "\t" + fra07int + "\t" + fra07comment);
+
                 if (adduct == "[M+H]+" || adduct == "[M+H-H2O]+")
                 {
                     fragmentList.Add(fra06mass + "\t" + fra06int + "\t" + fra06comment);

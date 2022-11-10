@@ -26,6 +26,10 @@ namespace CompMs.Common.Lipidomics
             if (match.Success) {
                 var group = match.Groups;
                 var chains = chainsParser.Parse(group["sn"].Value);
+                if (chains.OxidizedCount > 0)
+                {
+                    return new Lipid(LbmClass.OxPG, Skelton + chains.Mass, chains);
+                }
                 return new Lipid(LbmClass.PG, Skelton + chains.Mass, chains);
             }
             return null;
