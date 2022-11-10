@@ -7,30 +7,26 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.Statistics {
-    internal class SimpleBarChartViewModel : ViewModelBase {
-        private readonly SimpleBarChartModel _model;
-        public SimpleBarChartViewModel(SimpleBarChartModel model) {
+    internal class SimpleScatterPlotViewModel : ViewModelBase {
+        private readonly SimpleScatterPlotModel _model;
+        public SimpleScatterPlotViewModel(SimpleScatterPlotModel model) {
             _model = model;
             XAxisTitle = _model.ToReactivePropertySlimAsSynchronized(m => m.XAxisTitle).AddTo(Disposables);
             YAxisTitle = _model.ToReactivePropertySlimAsSynchronized(m => m.YAxisTitle).AddTo(Disposables);
-            GraphTitle = _model.ObserveProperty(m => m.GraphTitle).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            //BarItems = _model.BarItems;
-            BarItems = _model.ToReactivePropertyAsSynchronized(m => m.BarItems).AddTo(Disposables);
+            GraphTitle = _model.ToReactivePropertySlimAsSynchronized(m => m.GraphTitle).AddTo(Disposables);
+            PlotItems = _model.ToReactivePropertyAsSynchronized(m => m.PlotItems).AddTo(Disposables);
             XAxis = _model.ToReactivePropertySlimAsSynchronized(m => m.XAxis).AddTo(Disposables);
             YAxis = _model.ToReactivePropertySlimAsSynchronized(m => m.YAxis).AddTo(Disposables);
         }
         public ReactivePropertySlim<string> XAxisTitle { get; }
         public ReactivePropertySlim<string> YAxisTitle { get; }
-        public ReadOnlyReactivePropertySlim<string> GraphTitle { get; }
-        //public ObservableCollection<SimpleBarItem> BarItems { get; }
-        public ReactiveProperty<ObservableCollection<SimpleBarItem>> BarItems { get; }
-        public ReactivePropertySlim<IAxisManager<string>> XAxis { get; }
+        public ReactivePropertySlim<string> GraphTitle { get; }
+        public ReactiveProperty<ObservableCollection<SimplePlotItem>> PlotItems { get; }
+        public ReactivePropertySlim<IAxisManager<double>> XAxis { get; }
         public ReactivePropertySlim<IAxisManager<double>> YAxis { get; }
     }
 }

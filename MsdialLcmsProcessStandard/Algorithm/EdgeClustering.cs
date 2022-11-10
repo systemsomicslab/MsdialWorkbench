@@ -62,13 +62,12 @@ namespace Msdial.Lcms.Dataprocess.Algorithm.Clustering
             var msmsEdges = MsmsClustering.GetEdgeInformations(mspQueries, 1, mzTol);
 
             using (var sw = new StreamWriter(output, false, Encoding.ASCII)) {
-
                 //sw.WriteLine("source\ttarget\tscore\tsource name\ttarget name\tComment");
                 sw.WriteLine("source\ttarget\tscore");
                 foreach (var edge in msmsEdges) {
                     //sw.WriteLine(edge.Source + "\t" + edge.Target + "\t" + edge.Score
                     //                + "\t" + edge.SourceName + "\t" + edge.TargetName + "\t" + edge.Comment);
-                    sw.WriteLine(edge.SourceComment + "\t" + edge.TargetComment + "\t" + edge.Score);
+                    sw.WriteLine(edge.SourceName + "\t" + edge.TargetName + "\t" + edge.Score);
                 }
             }
         }

@@ -172,7 +172,25 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             (showContributionsCommand = new DelegateCommand<Window>(_model.ShowContributionPlot));
         private DelegateCommand<Window> showContributionsCommand;
 
+        public DelegateCommand<Window> ShowPredVsExp => showPredVsExpCommand ??
+            (showPredVsExpCommand = new DelegateCommand<Window>(_model.ShowPredVsExp));
+        private DelegateCommand<Window> showPredVsExpCommand;
 
-        public ReactiveCommand SaveResultCommand { get; }
+        public DelegateCommand<Window> ShowVIPs => showVIPsCommand ??
+            (showVIPsCommand = new DelegateCommand<Window>(_model.ShowVIPs));
+        private DelegateCommand<Window> showVIPsCommand;
+
+        public DelegateCommand<Window> ShowCoefficientsCommand => showCoefficientsCommand ??
+            (showCoefficientsCommand = new DelegateCommand<Window>(_model.ShowCoefficients));
+        private DelegateCommand<Window> showCoefficientsCommand;
+
+        public DelegateCommand<Window> ShowSPlotCommand => showSPlotCommand ??
+            (showSPlotCommand = new DelegateCommand<Window>(_model.ShowSPlot));
+        private DelegateCommand<Window> showSPlotCommand;
+
+
+        public DelegateCommand SaveResultCommand => saveResultCommand ??
+            (saveResultCommand = new DelegateCommand(_model.SaveData));
+        private DelegateCommand saveResultCommand;
     }
 }

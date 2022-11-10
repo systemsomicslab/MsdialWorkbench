@@ -28,7 +28,10 @@ namespace MsdialPrivateConsoleApp {
         public string InChIKey { get; set; }
         public AdductIon AdductPos { get; set; }
         public AdductIon AdductNeg { get; set; }    
-
+        public string Superclass { get; set; }
+        public string CClass { get; set; }
+        public string Subclass { get; set; }
+        public string ParentLevel1 { get; set; }
     }
     public sealed class CreateMspFileFromEadProject {
         private CreateMspFileFromEadProject() { }
@@ -152,9 +155,9 @@ namespace MsdialPrivateConsoleApp {
 
                 foreach (var exp in experiments) {
 
-                    var mainAveSpec = DataAccess.GetAverageSpectrum(spectrum, beginRt, endRt, 1e-3, exp);
-                    var subtractAveSpec = DataAccess.GetAverageSpectrum(spectrum, beginRtForSub, endRtForSub, 1e-3, exp);
-                    var subtractSpec = DataAccess.GetSubtractSpectrum(mainAveSpec, subtractAveSpec, 1e-3);
+                    var mainAveSpec = DataAccess.GetAverageSpectrum(spectrum, beginRt, endRt, 0.05, exp);
+                    var subtractAveSpec = DataAccess.GetAverageSpectrum(spectrum, beginRtForSub, endRtForSub, 0.05, exp);
+                    var subtractSpec = DataAccess.GetSubtractSpectrum(mainAveSpec, subtractAveSpec, 0.05);
 
                     writeMspFormat(swAcc, mainAveSpec, compound, rt, theoreticalMz, adduct, polarity, expConditions[exp]);
                     writeMspFormat(swSub, subtractAveSpec, compound, rt, theoreticalMz, adduct, polarity, expConditions[exp]);
@@ -207,7 +210,11 @@ namespace MsdialPrivateConsoleApp {
                         SMILES = lineArray[4],
                         InChIKey = lineArray[5],
                         AdductPos = AdductIonParser.GetAdductIonBean(lineArray[6]),
-                        AdductNeg = AdductIonParser.GetAdductIonBean(lineArray[7])
+                        AdductNeg = AdductIonParser.GetAdductIonBean(lineArray[7]),
+                        Superclass = lineArray.Length > 7 ? lineArray[8] : string.Empty,
+                        CClass = lineArray.Length > 8 ? lineArray[9] : string.Empty,
+                        Subclass = lineArray.Length > 9 ? lineArray[10] : string.Empty,
+                        ParentLevel1 = lineArray.Length > 10 ? lineArray[11] : string.Empty,
                     };
                     compounds.Add(compound);
                 }

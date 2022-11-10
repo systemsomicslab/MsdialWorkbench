@@ -601,6 +601,11 @@ namespace CompMs.MsdialCore.Algorithm {
             for (int i = ms1Begin; i < ms1End; i++) {
                 var spec = ms2SpectrumList[i];
                 if (spec.MsLevel <= 1) continue;
+                // for tsugawa own research
+#if DEBUG
+                //if (spec.ExperimentID != 5) continue;
+#endif
+
                 if (spec.MsLevel == 2 && spec.Precursor != null && scanPolarity == spec.ScanPolarity) {
                     if (IsInMassWindow(mass, spec, ms2Tol, _parameter.AcquisitionType)) {
                         var ce = spec.CollisionEnergy;

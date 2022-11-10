@@ -194,10 +194,132 @@ namespace CompMs.App.Msdial.Model.Statistics
             }
         }
 
+        public void ShowVIPs(Window owner) {
+            if (_result.MultivariateAnalysisOption == MultivariateAnalysisOption.Pca || _result.MultivariateAnalysisOption == MultivariateAnalysisOption.Hca) {
+                return;
+            }
+            else {
+                var xAxisTitle = "Metabolite name";
+                var yAxisTitle = "Value";
+                var graphTitle = "Variable importance for prediction (VIP)";
+
+                var xAxisValues = _result.StatisticsObject.XLabels;
+                var yAxisValues = _result.Vips;
+
+                var brushes = convertRgbaToBrush(_result.StatisticsObject.YColors);
+                var idValues = _result.StatisticsObject.XIndexes;
+                var labels = _result.StatisticsObject.XLabels;
+
+                var items = new ObservableCollection<SimpleBarItem>();
+                for (int i = 0; i < labels.Count; i++) {
+                    items.Add(new SimpleBarItem(idValues[i], labels[i], yAxisValues[i], 0));
+                }
+                ShowBarChartUI(owner, items, xAxisTitle, yAxisTitle, graphTitle);
+            }
+        }
+
+        public void ShowPredVsExp(Window owner) {
+            if (_result.MultivariateAnalysisOption == MultivariateAnalysisOption.Pca || _result.MultivariateAnalysisOption == MultivariateAnalysisOption.Hca) {
+                return;
+            }
+            else {
+                var xAxisTitle = "Experiment values";
+                var yAxisTitle = "Predicted values";
+                var graphTitle = "Predicted vs Experiment plot";
+
+                var xAxisValues = _result.StatisticsObject.YVariables;
+                var yAxisValues = _result.PredictedYs;
+
+                var brushes = convertRgbaToBrush(_result.StatisticsObject.YColors);
+                var idValues = _result.StatisticsObject.YIndexes;
+                var labels = _result.StatisticsObject.YLabels;
+
+                var items = new ObservableCollection<SimplePlotItem>();
+                for (int i = 0; i < idValues.Count; i++) {
+                    items.Add(new SimplePlotItem(idValues[i], labels[i], xAxisValues[i], yAxisValues[i], brushes[i]));
+                }
+                ShowScatterPlotChartUI(owner, items, xAxisTitle, yAxisTitle, graphTitle);
+            }
+        }
+
+        public void ShowCoefficients(Window owner) {
+            if (_result.MultivariateAnalysisOption == MultivariateAnalysisOption.Pca || _result.MultivariateAnalysisOption == MultivariateAnalysisOption.Hca) {
+                return;
+            }
+            else {
+                var xAxisTitle = "Metabolite name";
+                var yAxisTitle = "Value";
+                var graphTitle = "Coefficients";
+
+                var yAxisValues = _result.Coefficients;
+
+                var brushes = convertRgbaToBrush(_result.StatisticsObject.YColors);
+                var idValues = _result.StatisticsObject.XIndexes;
+                var labels = _result.StatisticsObject.XLabels;
+
+                var items = new ObservableCollection<SimpleBarItem>();
+                for (int i = 0; i < labels.Count; i++) {
+                    items.Add(new SimpleBarItem(idValues[i], labels[i], yAxisValues[i], 0));
+                }
+                ShowBarChartUI(owner, items, xAxisTitle, yAxisTitle, graphTitle);
+            }
+        }
+
+        public void SaveData() {
+
+        }
+
+        public void ShowSPlot(Window owner) {
+            if (_result.MultivariateAnalysisOption == MultivariateAnalysisOption.Pca || _result.MultivariateAnalysisOption == MultivariateAnalysisOption.Hca) {
+                return;
+            }
+            else {
+                var xAxisTitle = "P loading";
+                var yAxisTitle = "P correlation";
+                var graphTitle = "S-plot";
+
+                var xAxisValues = _result.PPreds[0];
+                var yAxisValues = _result.PPredCoeffs[0];
+
+                var brushes = convertRgbaToBrush(_result.StatisticsObject.YColors);
+                var idValues = _result.StatisticsObject.XIndexes;
+                var labels = _result.StatisticsObject.XLabels;
+
+                var items = new ObservableCollection<SimplePlotItem>();
+                for (int i = 0; i < idValues.Count; i++) {
+                    items.Add(new SimplePlotItem(idValues[i], labels[i], xAxisValues[i], yAxisValues[i], brushes[i]));
+                }
+                ShowScatterPlotChartUI(owner, items, xAxisTitle, yAxisTitle, graphTitle);
+            }
+        }
+
+        private ObservableCollection<SolidColorBrush> convertRgbaToBrush(ObservableCollection<byte[]> bytes) {
+            if (bytes == null) return null;
+            var brushes = new ObservableCollection<SolidColorBrush>();
+            foreach (var colorBytes in bytes) {
+                var colorprop = new Color() { R = colorBytes[0], G = colorBytes[1], B = colorBytes[2], A = colorBytes[3] };
+                var brush = new SolidColorBrush(colorprop);
+                brushes.Add(brush);
+            }
+            return brushes;
+        }
+
+
         public void ShowBarChartUI(Window owner, ObservableCollection<SimpleBarItem> items, string xAxisTitle, string yAxisTitle, string graphTitle) {
             var model = new SimpleBarChartModel(items, xAxisTitle, yAxisTitle, graphTitle);
             var vm = new SimpleBarChartViewModel(model);
             var view = new BarChartView {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            view.Show();
+        }
+
+        public void ShowScatterPlotChartUI(Window owner, ObservableCollection<SimplePlotItem> items, string xAxisTitle, string yAxisTitle, string graphTitle) {
+            var model = new SimpleScatterPlotModel(items, xAxisTitle, yAxisTitle, graphTitle);
+            var vm = new SimpleScatterPlotViewModel(model);
+            var view = new ScatterPlotView {
                 DataContext = vm,
                 Owner = owner,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner

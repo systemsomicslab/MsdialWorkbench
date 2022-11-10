@@ -169,14 +169,14 @@
                 <StackPanel>
                     <Button Content="Contributions" IsEnabled="True"
                             Command="{Binding ShowContributionsCommand, Mode=OneTime}"/>
-                    <Button Content="Predicted vs Experiment" IsEnabled="False"
-                            Command="{Binding ShowPredVsExp, Mode=OneTime}"/>
-                    <Button Content="VIP" IsEnabled="False"
-                            Command="{Binding ShowVIPs, Mode=OneTime}"/>
-                    <Button Content="Coefficient" IsEnabled="False"
-                            Command="{Binding ShowCoefficients, Mode=OneTime}"/>
-                    <Button Content="S-plot" IsEnabled="False"
-                            Command="{Binding ShowSPlot, Mode=OneTime}"/>
+                    <Button Content="Predicted vs Experiment" IsEnabled="True"
+                            Command="{Binding ShowPredVsExpCommand, Mode=OneTime}"/>
+                    <Button Content="VIP" IsEnabled="True"
+                            Command="{Binding ShowVIPsCommand, Mode=OneTime}"/>
+                    <Button Content="Coefficient" IsEnabled="True"
+                            Command="{Binding ShowCoefficientsCommand, Mode=OneTime}"/>
+                    <Button Content="S-plot" IsEnabled="True"
+                            Command="{Binding ShowSPlotCommand, Mode=OneTime}"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox>
@@ -184,7 +184,7 @@
                     <Run Text="Save" FontStyle="Italic"/>
                 </GroupBox.Header>
                 <StackPanel>
-                    <Button Content="Save result as table" IsEnabled="False"
+                    <Button Content="Save result as table" IsEnabled="True"
                             Command="{Binding SaveResultCommand, Mode=OneTime}"/>
                 </StackPanel>
             </GroupBox>
