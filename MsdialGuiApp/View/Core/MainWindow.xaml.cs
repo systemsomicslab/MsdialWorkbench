@@ -306,7 +306,8 @@ namespace CompMs.App.Msdial.View.Core
 
         private void CreateSampleTableViewerDialog(SampleTableViewerInAlignmentViewModelLegacy vm) {
             Dispatcher.Invoke(() => {
-                var window = new SampleTableViewerInAlignmentLegacy(vm) {
+                var window = new SampleTableViewerInAlignmentLegacy() {
+                    DataContext = vm,
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 };

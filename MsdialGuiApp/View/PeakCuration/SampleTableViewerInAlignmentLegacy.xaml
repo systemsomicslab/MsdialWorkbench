@@ -3,12 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CompMs.App.Msdial.View.PeakCuration"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type={x:Type local:SampleTableViewerInAlignmentViewModelLegacy}}"
         Closing="Window_Closing"
         Title="Chromatograms in an aligned spot: double click to modify the peak areas." Height="400" Width="1000">
     <Grid>
         <Grid Name="Data">
-            <DataGrid Name="DataGrid_RawData" ItemsSource="{Binding Source}" 
+            <DataGrid Name="DataGrid_RawData" ItemsSource="{Binding Source.Value.Rows}" 
                       SelectedItem="{Binding Path=SelectedData}" 
                       SelectionChanged="DataGrid_RawData_SelectionChanged" 
                       MouseDoubleClick="DataGrid_RawData_MouseDoubleClick"
@@ -81,5 +83,19 @@
             </DataGrid>
 
         </Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="Loading" HorizontalAlignment="Center" FontSize="16">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Source.Value.Rows.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <ProgressBar IsIndeterminate="True" Height="16" Width="80"/>
+        </StackPanel>
     </Grid>
 </Window>

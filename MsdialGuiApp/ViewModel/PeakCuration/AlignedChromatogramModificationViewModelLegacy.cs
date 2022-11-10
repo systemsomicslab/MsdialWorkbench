@@ -14,7 +14,7 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.ViewModel.PeakCuration
 {
-    public class AlignedChromatogramModificationViewModelLegacy : ViewModelBase {
+    public sealed class AlignedChromatogramModificationViewModelLegacy : ViewModelBase {
         public PeakModUCLegacy OriginalChromUC { get; set; }
         public PeakModUCLegacy AlignedChromUC { get; set; }
         public PeakModUCLegacy PickingUC { get; set; }

@@ -1,60 +1,50 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Legacy;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Utility;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.PeakCuration {
+namespace CompMs.App.Msdial.View.PeakCuration
+{
     /// <summary>
     /// Interaction logic for SampleTableViewerInAlignmentLegacy.xaml
     /// </summary>
     public partial class SampleTableViewerInAlignmentLegacy : Window {
-        public SampleTableViewerInAlignmentViewModelLegacy SampleTableViewerInAlignmentVM;
+        private SampleTableViewerInAlignmentViewModelLegacy _sampleTableViewerInAlignmentVM;
+        private IDisposable _gcViewUnsubscriber, _driftViewUnsubscriber;
+
         public SampleTableViewerInAlignmentLegacy() {
             InitializeComponent();
+            DataContextChanged += OnDataContextChanged;
         }
 
-        public SampleTableViewerInAlignmentLegacy(SampleTableViewerInAlignmentViewModelLegacy vm) {
-            InitializeComponent();
-
-            if (vm.Source == null || vm.Source.Count == 0) return;
-
-            if (vm.Source[0].AlignedPeakProperty.ChromXsTop.Type == CompMs.Common.Components.ChromXType.RI) {
-                changeColumnForGC();
+        private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
+            if (e.NewValue is SampleTableViewerInAlignmentViewModelLegacy viewmodel) {
+                _sampleTableViewerInAlignmentVM = viewmodel;
+                _gcViewUnsubscriber?.Dispose();
+                _driftViewUnsubscriber?.Dispose();
+                _gcViewUnsubscriber = viewmodel.ViewType.Where(type => type == SampleChromatogramType.RI).Subscribe(_ => ChangeColumnForGC());
+                _driftViewUnsubscriber = viewmodel.ViewType.Where(type => type == SampleChromatogramType.Drift).Subscribe(_ => ChangeColumnForIonMobility());
             }
-            else if (vm.Source[0].AlignmentProperty.IsMultiLayeredData) {
-                changeColumnForIonMobility();
-            }
-
-            this.SampleTableViewerInAlignmentVM = vm;
-            this.DataContext = this.SampleTableViewerInAlignmentVM;
-        }
-
-        public void ChangeSource(SampleTableViewerInAlignmentViewModelLegacy vm) {
-            this.SampleTableViewerInAlignmentVM = vm;
-            this.DataContext = this.SampleTableViewerInAlignmentVM;
         }
 
         private void DataGrid_RawData_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (this.DataGrid_RawData == null || SampleTableViewerInAlignmentVM.SelectedData == null) return;
+            if (DataGrid_RawData is null || _sampleTableViewerInAlignmentVM.SelectedData is null) return;
             // this.SampleTableViewerInAlignmentVM.PwPID = SampleTableViewerInAlignmentVM.SelectedData.PeakAreaBean.PeakID;
         }
 
@@ -62,31 +52,34 @@ namespace CompMs.App.Msdial.View.PeakCuration {
             //foreach (var s in this.SampleTableViewerInAlignmentVM.Source) {
             //    s.Image = null;
             //}
-            this.DataContext = null;
+            DataContext = null;
+            _gcViewUnsubscriber = null;
+            _driftViewUnsubscriber = null;
         }
 
         private void DataGrid_RawData_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            var selectedData = this.SampleTableViewerInAlignmentVM.SelectedData;
-            var param = this.SampleTableViewerInAlignmentVM.Parameter;
+            var selectedData = _sampleTableViewerInAlignmentVM.SelectedData;
+            var parameter = _sampleTableViewerInAlignmentVM.Parameter;
 
-            var window = new ChromatogramManualPeakPickViewerLegacy(selectedData, param);
-            window.Owner = this;
-            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            var window = new ChromatogramManualPeakPickViewerLegacy(selectedData, parameter)
+            {
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
 
             if (window.ShowDialog() == true) {
-
-                this.DataGrid_RawData.CommitEdit();
-                this.DataGrid_RawData.CommitEdit();
-                this.DataGrid_RawData.Items.Refresh();
+                DataGrid_RawData.CommitEdit();
+                DataGrid_RawData.CommitEdit();
+                DataGrid_RawData.Items.Refresh();
                 selectedData.UpdateBackgroundColor();
-                this.SampleTableViewerInAlignmentVM.UpdateCentralRetentionInformation();
-                this.SampleTableViewerInAlignmentVM.IsPropertyChanged();
+                _sampleTableViewerInAlignmentVM.UpdateCentralRetentionInformation();
+                _sampleTableViewerInAlignmentVM.RaisePropertyChanged();
                 DataGrid_RawData.ScrollIntoView(selectedData);
             }
         }
 
         #region changeColumnForGC
-        private void changeColumnForGC() {
+        private void ChangeColumnForGC() {
 
             var dg = DataGrid_RawData;
 
@@ -112,10 +105,10 @@ namespace CompMs.App.Msdial.View.PeakCuration {
         #endregion
 
         #region changeColumnForIonMobility
-        private void changeColumnForIonMobility() {
+        private void ChangeColumnForIonMobility() {
 
             var dg = DataGrid_RawData;
-            this.Width = 1100;
+            Width = 1100;
 
             // add Mobility
             var mobilityColumn = new DataGridTextColumn() {
@@ -159,147 +152,148 @@ namespace CompMs.App.Msdial.View.PeakCuration {
         #endregion
     }
 
-    public class SampleTableViewerInAlignmentModelLegacy : BindableBase {
-        public SampleTableRow SelectedData { get; set; }
-        public ObservableCollection<SampleTableRow> Source { get; set; }
-        public ParameterBase Parameter { get; set; }
-        public int PwPID { get; set; } = 0;
+    enum SampleChromatogramType {
+        None,
+        RI,
+        Drift,
+    }
 
+    internal sealed class SampleTableViewerInAlignmentModelLegacy : BindableBase {
         public SampleTableViewerInAlignmentModelLegacy(
-            AlignmentSpotPropertyModel alignmentProp,
-            List<Chromatogram> chromatoramSource,
+            IObservable<AlignmentSpotPropertyModel> alignmentProp,
+            IObservable<List<Chromatogram>> chromatoramSource,
             List<AnalysisFileBean> files,
-            ParameterBase param) {
-            this.Source = GetSourceOfAlignedSampleTableViewer(alignmentProp, chromatoramSource, files, param);
-            this.Parameter = param;
-        }
+            ParameterBase parameter) {
 
-        public static ObservableCollection<SampleTableRow> GetSourceOfAlignedSampleTableViewer(
-            AlignmentSpotPropertyModel alignmentProp,
-            List<Chromatogram> chromatoramSource,
-            List<AnalysisFileBean> files,
-            ParameterBase param) {
-            var source = new ObservableCollection<SampleTableRow>();
-            var vms = GetAlignedEicChromatogramList(alignmentProp, chromatoramSource, files, param);
-            for (var i = 0; i < files.Count; i++) {
-                var check = alignmentProp.RepresentativeFileID == i ? i : 0;
-                source.Add(new SampleTableRow(
-                    alignmentProp, 
-                    alignmentProp.AlignedPeakPropertiesModel[i],
-                    vms[i], 
-                    files[i].AnalysisFileClass, 
-                    check));
+            Source = GetSourceOfAlignedSampleTableViewer(alignmentProp, chromatoramSource, files, parameter).ToReactiveProperty();
+            Parameter = parameter;
+            switch (parameter) {
+                case MsdialGcMsApi.Parameter.MsdialGcmsParameter _:
+                    ViewType = SampleChromatogramType.RI;
+                    break;
+                case MsdialLcImMsApi.Parameter.MsdialLcImMsParameter _:
+                    ViewType = SampleChromatogramType.Drift;
+                    break;
+                default:
+                    ViewType = SampleChromatogramType.None;
+                    break;
             }
-            return source;
         }
 
-        public static List<ChromatogramXicViewModelLegacy> GetAlignedEicChromatogramList(
-            AlignmentSpotPropertyModel alignmentProp,
-            List<Chromatogram> chromatograms, 
+        public ReactiveProperty<SampleTableRows> Source { get; }
+        public ParameterBase Parameter { get; }
+        public SampleChromatogramType ViewType { get; } 
+
+        public void UpdateCentralRetentionInformation() {
+            var isRi = ViewType == SampleChromatogramType.RI;
+            var isMobility = ViewType == SampleChromatogramType.Drift;
+            if (Source.Value is SampleTableRows rows) {
+                rows.UpdateCentralRetentionInformation(isRi, isMobility);
+            }
+        }
+
+        private static IObservable<SampleTableRows> GetSourceOfAlignedSampleTableViewer(
+            IObservable<AlignmentSpotPropertyModel> alignmentProp,
+            IObservable<List<Chromatogram>> chromatogramSource,
             List<AnalysisFileBean> files,
-            ParameterBase param) {
-
-            var chromatogramBeanCollection = new ObservableCollection<ChromatogramBeanLegacy>();
-            var targetMz = alignmentProp.MassCenter;
-            var numAnalysisfiles = files.Count;
-            var vms = new ChromatogramXicViewModelLegacy[numAnalysisfiles];
-            var classnameToBytes = param.ClassnameToColorBytes;
+            ParameterBase parameter) {
+            var classnameToBytes = parameter.ClassnameToColorBytes;
             var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
+            return alignmentProp.Select(prop => {
+                var observablePeaks = prop?.AlignedPeakPropertiesModelAsObservable ?? Observable.Never<ReadOnlyCollection<AlignmentChromPeakFeatureModel>>();
+                return observablePeaks.CombineLatest(chromatogramSource, (peaks, chromatograms) => {
+                    var chromatograms_ = chromatograms ?? Enumerable.Empty<Chromatogram>();
+                    var peaks_ = peaks ?? Enumerable.Empty<AlignmentChromPeakFeatureModel>();
+                    var brushes = Enumerable.Range(0, files.Count).Select(ChartBrushes.GetChartBrush);
+                    var rows = files.Zip(chromatograms_, peaks_, brushes, (file, chromatogram, peak, brush) =>
+                        GetSampleTableRow(prop, peak, chromatogram, file, classnameToBrushes.TryGetValue(file.AnalysisFileClass, out var b) ? b : brush, parameter.CentroidMs1Tolerance));
+                    return new SampleTableRows(new ObservableCollection<SampleTableRow>(rows));
+                });
+            }).Switch();
+        }
 
-            System.Threading.Tasks.Parallel.For(0, numAnalysisfiles, (i) => {
-                //for (int i = 0; i < numAnalysisfiles; i++) { // draw the included samples
-                //var speaks = chromatograms[i].Convert().Smoothing(param.SmoothingMethod, param.SmoothingLevel);
-                var speaks = chromatograms[i].Convert().Peaks;
-                var chromatogramBean = new ChromatogramBeanLegacy(
-                    true, 
-                    classnameToBrushes.TryGetValue(files[i].AnalysisFileClass, out var b) ? b : ChartBrushes.GetChartBrush(i), 
-                    1.0, 
-                    files[i].AnalysisFileName,
-                    (float)targetMz, 
-                    param.CentroidMs1Tolerance,
-                    speaks);
-                var vm = new ChromatogramXicViewModelLegacy(
-                    chromatogramBean, 
-                    ChromatogramEditMode.Display,
-                    ChromatogramDisplayLabel.None,
-                    ChromatogramQuantitativeMode.Height, 
-                    ChromatogramIntensityMode.Absolute,
-                    0, 
-                    "", 
-                    (float)targetMz,
-                    param.CentroidMs1Tolerance,
-                    (float)alignmentProp.AlignedPeakPropertiesModel[i].ChromXsTop.Value,
-                    (float)alignmentProp.AlignedPeakPropertiesModel[i].ChromXsLeft.Value,
-                    (float)alignmentProp.AlignedPeakPropertiesModel[i].ChromXsRight.Value);
-                vms[i] = vm;
-            });
-            return vms.ToList();
+        private static SampleTableRow GetSampleTableRow(
+            AlignmentSpotPropertyModel alignmentProp,
+            AlignmentChromPeakFeatureModel peak,
+            Chromatogram chromatogram,
+            AnalysisFileBean file,
+            SolidColorBrush brush,
+            float ms1Tolerance) {
+
+            var chromatogramBean = new ChromatogramBeanLegacy(
+                true,
+                brush,
+                1.0,
+                file.AnalysisFileName,
+                (float)alignmentProp.MassCenter,
+                ms1Tolerance,
+                chromatogram.Convert().Peaks);
+            var vm = new ChromatogramXicViewModelLegacy(
+                chromatogramBean,
+                ChromatogramEditMode.Display,
+                ChromatogramDisplayLabel.None,
+                ChromatogramQuantitativeMode.Height,
+                ChromatogramIntensityMode.Absolute,
+                0,
+                "",
+                (float)alignmentProp.MassCenter,
+                ms1Tolerance,
+                (float)peak.ChromXsTop.Value,
+                (float)peak.ChromXsLeft.Value,
+                (float)peak.ChromXsRight.Value);
+            return new SampleTableRow(
+                alignmentProp,
+                peak,
+                vm,
+                file.AnalysisFileClass,
+                alignmentProp.RepresentativeFileID == peak.FileID ? peak.FileID : 0);
         }
     }
 
-    public class SampleTableViewerInAlignmentViewModelLegacy : ViewModelBase {
-        private SampleTableViewerInAlignmentModelLegacy model;
-        public SampleTableViewerInAlignmentModelLegacy Model { 
-            get => model;
-            set {
-                model = value;
-                OnPropertyChanged("Model");
-                OnPropertyChanged("Source");
-            }
+    internal sealed class SampleTableViewerInAlignmentViewModelLegacy : ViewModelBase {
+        private readonly SampleTableViewerInAlignmentModelLegacy _model;
+
+        public SampleTableViewerInAlignmentViewModelLegacy(SampleTableViewerInAlignmentModelLegacy model) {
+            _model = model;
+            Source = model.Source.ToReadOnlyReactivePropertySlim().AddTo(Disposables);
         }
+
         #region member variables and properties
-        public ParameterBase Parameter => Model.Parameter;
-        public int PwPID {
-            get => Model.PwPID;
-            set { 
-                if (Model.PwPID != value) {
-                    Model.PwPID = value; 
-                    OnPropertyChanged("SelectedPlotId");
-                }
-            }
-        }
+        public ParameterBase Parameter => _model.Parameter;
+
         public SampleTableRow SelectedData {
-            get => Model.SelectedData;
-            set {
-                Model.SelectedData = value;
-                OnPropertyChanged("SelectedData");
-            }
+            get => _selectedData;
+            set => SetProperty(ref _selectedData, value);
         }
-        public ObservableCollection<SampleTableRow> Source {
-            get => Model.Source;
-            set {
-                Model.Source = value;
-                OnPropertyChanged("Source");
-            }
-        }
+        private SampleTableRow _selectedData;
+
+        public ReadOnlyReactivePropertySlim<SampleTableRows> Source { get; }
+
+        public IObservable<SampleChromatogramType> ViewType => Observable.Return(_model.ViewType);
         #endregion
 
-        public SampleTableViewerInAlignmentViewModelLegacy(
-            SampleTableViewerInAlignmentModelLegacy model) {
-            this.Model = model;
-        }
-
-        private void UpdateModel(SampleTableViewerInAlignmentModelLegacy model) {
-            this.Model = model;
-        }
-
-        public SampleTableViewerInAlignmentViewModelLegacy(IObservable<SampleTableViewerInAlignmentModelLegacy> model) {
-            model.Subscribe(UpdateModel).AddTo(Disposables);
-        }
-
-        public void IsPropertyChanged() {
-            OnPropertyChanged("IsPropertyChanged");
+        public void RaisePropertyChanged() {
+            OnPropertyChanged(string.Empty);
         }
 
         public void UpdateCentralRetentionInformation() {
-            var isMobility = Source[0].AlignedPeakProperty.ChromXsTop.Type == CompMs.Common.Components.ChromXType.Drift ? true : false;
-            var isRi = Source[0].AlignedPeakProperty.ChromXsTop.Type == CompMs.Common.Components.ChromXType.RI ? true : false;
+            _model.UpdateCentralRetentionInformation();
+        }
+    }
 
-            var aveRt = 0.0;
-            var aveRi = 0.0;
-            var aveDt = 0.0;
-            foreach (var prop in Source) {
-                var peakProp = prop.AlignedPeakProperty;
+    public sealed class SampleTableRows : ViewModelBase {
+        public SampleTableRows(ObservableCollection<SampleTableRow> rows) {
+            Rows = rows;
+        }
+
+        public ObservableCollection<SampleTableRow> Rows { get; }
+
+        public void UpdateCentralRetentionInformation(bool isRi, bool isMobility) {
+            var aveRt = 0d;
+            var aveRi = 0d;
+            var aveDt = 0d;
+            foreach (var row in Rows) {
+                var peakProp = row.AlignedPeakProperty;
                 if (isMobility) {
                     aveDt += peakProp.ChromXsTop.Drift.Value;
                 }
@@ -311,23 +305,26 @@ namespace CompMs.App.Msdial.View.PeakCuration {
                 }
             }
 
-            aveRt /= (double)Source.Count;
-            aveRi /= (double)Source.Count;
-            aveDt /= (double)Source.Count;
+            if (Rows.Count == 0) {
+                return;
+            }
+
+            aveRt /= Rows.Count;
+            aveRi /= Rows.Count;
+            aveDt /= Rows.Count;
 
             if (isMobility) {
-                Source[0].AlignmentProperty.TimesCenter = (float)aveDt;
+                Rows[0].AlignmentProperty.TimesCenter = (float)aveDt;
             }
             else {
-                Source[0].AlignmentProperty.TimesCenter = (float)aveRt;
+                Rows[0].AlignmentProperty.TimesCenter = (float)aveRt;
                 if (isRi)
-                    Source[0].AlignmentProperty.TimesCenter = (float)aveRi;
+                    Rows[0].AlignmentProperty.TimesCenter = (float)aveRi;
             }
         }
     }
 
-
-    public class SampleTableRow : ViewModelBase {
+    public sealed class SampleTableRow : ViewModelBase {
         #region member variables and properties
         public AlignmentSpotPropertyModel AlignmentProperty { get; set; }
         public AlignmentChromPeakFeatureModel AlignedPeakProperty { set; get; }
@@ -355,17 +352,17 @@ namespace CompMs.App.Msdial.View.PeakCuration {
             if (AlignedPeakProperty.IsManuallyModifiedForQuant) {
                 //if (log2Int >= 10 && log2Int < 27) BackgroundColInt = setColorYellow(log2Int);
                 //if (log2Area >= 10 && log2Area < 27) BackgroundColArea = setColorYellow(log2Area);
-                BackgroundColInt = setColorYellow(15);
-                BackgroundColArea = setColorYellow(15);
+                BackgroundColInt = SetColorYellow(15);
+                BackgroundColArea = SetColorYellow(15);
             }
             else if (AlignedPeakProperty.PeakID >= 0) {
-                if (log2Int >= 10 && log2Int < 27) BackgroundColInt = setColorRed(log2Int);
-                if (log2Area >= 10 && log2Area < 27) BackgroundColArea = setColorRed(log2Area);
+                if (log2Int >= 10 && log2Int < 27) BackgroundColInt = SetColorRed(log2Int);
+                if (log2Area >= 10 && log2Area < 27) BackgroundColArea = SetColorRed(log2Area);
 
             }
             else {
-                if (log2Int >= 10 && log2Int < 27) BackgroundColInt = setColorBlue(log2Int);
-                if (log2Area >= 10 && log2Area < 27) BackgroundColArea = setColorBlue(log2Area);
+                if (log2Int >= 10 && log2Int < 27) BackgroundColInt = SetColorBlue(log2Int);
+                if (log2Area >= 10 && log2Area < 27) BackgroundColArea = SetColorBlue(log2Area);
             }
             BackgroundColInt?.Freeze();
             BackgroundColArea?.Freeze();
@@ -380,17 +377,17 @@ namespace CompMs.App.Msdial.View.PeakCuration {
             if (AlignedPeakProperty.IsManuallyModifiedForQuant) {
                 //if (log2Int >= 10 && log2Int < 27) BackgroundColInt = setColorYellow(log2Int);
                 //if (log2Area >= 10 && log2Area < 27) BackgroundColArea = setColorYellow(log2Area);
-                BackgroundColInt = setColorYellow(15);
-                BackgroundColArea = setColorYellow(15);
+                BackgroundColInt = SetColorYellow(15);
+                BackgroundColArea = SetColorYellow(15);
             }
             else if (AlignedPeakProperty.PeakID >= 0) {
-                if (log2Int >= 10 && log2Int < 27) BackgroundColInt = setColorRed(log2Int);
-                if (log2Area >= 10 && log2Area < 27) BackgroundColArea = setColorRed(log2Area);
+                if (log2Int >= 10 && log2Int < 27) BackgroundColInt = SetColorRed(log2Int);
+                if (log2Area >= 10 && log2Area < 27) BackgroundColArea = SetColorRed(log2Area);
 
             }
             else {
-                if (log2Int >= 10 && log2Int < 27) BackgroundColInt = setColorBlue(log2Int);
-                if (log2Area >= 10 && log2Area < 27) BackgroundColArea = setColorBlue(log2Area);
+                if (log2Int >= 10 && log2Int < 27) BackgroundColInt = SetColorBlue(log2Int);
+                if (log2Area >= 10 && log2Area < 27) BackgroundColArea = SetColorBlue(log2Area);
             }
             BackgroundColInt?.Freeze();
             BackgroundColArea?.Freeze();
@@ -398,17 +395,18 @@ namespace CompMs.App.Msdial.View.PeakCuration {
 
         //private SolidColorBrush setColorRed() {
         //    return new SolidColorBrush(System.Windows.Media.Color.FromArgb(180, 255, 0, 0));
+
         //}
-        private SolidColorBrush setColorRed(int i) {
-            return new SolidColorBrush(System.Windows.Media.Color.FromArgb(180, 255, (byte)(255 - ((i - 10) * 15)), (byte)(255 - ((i - 10) * 15))));
+        private SolidColorBrush SetColorRed(int i) {
+            return new SolidColorBrush(Color.FromArgb(180, 255, (byte)(255 - ((i - 10) * 15)), (byte)(255 - ((i - 10) * 15))));
         }
 
-        private SolidColorBrush setColorYellow(int i) {
-            return new SolidColorBrush(System.Windows.Media.Color.FromArgb(180, (byte)(255 - ((i - 10) * 15)), 255, (byte)(255 - ((i - 10) * 15))));
+        private SolidColorBrush SetColorYellow(int i) {
+            return new SolidColorBrush(Color.FromArgb(180, (byte)(255 - ((i - 10) * 15)), 255, (byte)(255 - ((i - 10) * 15))));
         }
 
-        private SolidColorBrush setColorBlue(int i) {
-            return new SolidColorBrush(System.Windows.Media.Color.FromArgb(180, (byte)(255 - ((i - 10) * 15)), (byte)(255 - ((i - 10) * 15)), 255));
+        private SolidColorBrush SetColorBlue(int i) {
+            return new SolidColorBrush(Color.FromArgb(180, (byte)(255 - ((i - 10) * 15)), (byte)(255 - ((i - 10) * 15)), 255));
         }
     }
 }

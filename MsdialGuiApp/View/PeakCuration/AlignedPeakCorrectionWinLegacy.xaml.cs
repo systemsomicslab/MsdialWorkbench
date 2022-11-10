@@ -4,7 +4,6 @@ using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +37,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
         }
     }
 
-    public class AlignedChromatogramModificationModelLegacy : BindableBase {
+    public sealed class AlignedChromatogramModificationModelLegacy : BindableBase {
         public AlignmentSpotPropertyModel Model { get; }
         public List<Chromatogram> Chromatograms { get; }
         public List<AnalysisFileBean> Files { get; }
