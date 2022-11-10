@@ -65,7 +65,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
                 chromPeakFeaturesList.Add(removedPeakFeatures);
             }
 
-            var combinedFeatures = GetRecalculatedChromPeakFeaturesByMs1MsTolerance(chromPeakFeaturesList.SelectMany(features => features).ToList(), provider, ChromXType.Drift, ChromXUnit.Msec);
+            var combinedFeatures = GetRecalculatedChromPeakFeaturesByMs1MsTolerance(chromPeakFeaturesList.SelectMany(features => features).ToList(), provider);
 
             var collection = new ChromatogramPeakFeatureCollection(combinedFeatures.OrderBy(item => item.ChromXs.Value).ThenBy(item => item.PeakFeature.Mass).ToList());
             collection.ResetAmplitudeScore();
@@ -91,7 +91,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
             }
 
             var combinedFeatures = chromPeakFeaturesList.SelectMany(features => features).ToList();
-            var recalculatedPeaks = GetRecalculatedChromPeakFeaturesByMs1MsTolerance(combinedFeatures, provider, ChromXType.Drift, ChromXUnit.Msec);
+            var recalculatedPeaks = GetRecalculatedChromPeakFeaturesByMs1MsTolerance(combinedFeatures, provider);
 
             var collection = new ChromatogramPeakFeatureCollection(recalculatedPeaks.OrderBy(item => item.ChromXs.Value).ThenBy(item => item.PeakFeature.Mass).ToList());
             collection.ResetAmplitudeScore();
@@ -196,45 +196,25 @@ namespace CompMs.MsdialImmsCore.Algorithm
             }
         }
 
-        private List<ChromatogramPeakFeature> GetRecalculatedChromPeakFeaturesByMs1MsTolerance(List<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider, ChromXType type, ChromXUnit unit) {
-
-            var spectrumList = provider.LoadMs1Spectrums();
+        private List<ChromatogramPeakFeature> GetRecalculatedChromPeakFeaturesByMs1MsTolerance(List<ChromatogramPeakFeature> chromPeakFeatures, IDataProvider provider) {
             var recalculatedPeakspots = new List<ChromatogramPeakFeature>();
-
             var minDatapoint = 3;
-            var rawSpectra = new RawSpectra(spectrumList, _parameter.ProjectParam.IonMode, _parameter.ProjectParam.AcquisitionType);
+            var rawSpectra = new RawSpectra(provider, _parameter.ProjectParam.IonMode, _parameter.ProjectParam.AcquisitionType);
             foreach (var spot in chromPeakFeatures) {
                 //get EIC chromatogram
-
-                var peakWidth = spot.PeakWidth();
-                var peakWidthMargin = peakWidth * 0.5;
                 var peakFeature = spot.PeakFeature;
-                var chromatogramRange = new ChromatogramRange(peakFeature.ChromXsLeft.Value - peakWidthMargin, peakFeature.ChromXsRight.Value + peakWidthMargin, type, unit);
-                var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(peakFeature.Mass, _parameter.PeakPickBaseParam.CentroidMs1Tolerance, chromatogramRange);
-                var sPeaklist = chromatogram.Smoothing(_parameter.PeakPickBaseParam.SmoothingMethod, _parameter.PeakPickBaseParam.SmoothingLevel);
-
-                var minRtId = SearchNearestPoint(spot.ChromXs, sPeaklist);
-
-                var maxID = SearchPeakTop(sPeaklist, minRtId);
-                var minLeftId = SearchLeftEdge(sPeaklist, spot, maxID, minDatapoint, peakWidth);
-                var minRightId = SearchRightEdge(sPeaklist, spot, maxID, minDatapoint, peakWidth);
-
-                if (Math.Max(sPeaklist[minLeftId].Intensity, sPeaklist[minRightId].Intensity) >= sPeaklist[maxID].Intensity) {
+                var peakRange = new ChromatogramRange(peakFeature, ChromXType.Drift, ChromXUnit.Msec);
+                var chromatogram = rawSpectra.GetMs1ExtractedChromatogram(peakFeature.Mass, _parameter.PeakPickBaseParam.CentroidMs1Tolerance, peakRange.Extend(0.5d));
+                var smoothedChromatogram = chromatogram.SmoothedChromatogram(_parameter.PeakPickBaseParam.SmoothingMethod, _parameter.PeakPickBaseParam.SmoothingLevel);
+                var peakOfChromatogram = smoothedChromatogram.FindPeak(minDatapoint, peakRange.Width, spot.PeakFeature);
+                if (!peakOfChromatogram.IsValid(_parameter.PeakPickBaseParam.MinimumAmplitude)) {
                     continue;
                 }
 
-                if (sPeaklist[maxID].Intensity - Math.Min(sPeaklist[minLeftId].Intensity, sPeaklist[minRightId].Intensity) < _parameter.PeakPickBaseParam.MinimumAmplitude) {
-                    continue;
-                }
-
-                maxID = SearchHighestIntensity(sPeaklist, maxID, minLeftId, minRightId);
-
-                SetPeakProperty(spot, chromatogram, sPeaklist, maxID, minLeftId, minRightId);
-
+                spot.SetPeakProperties(peakOfChromatogram);
                 if (!spot.IsMultiLayeredData()) {
                     SetMs2RawSpectrumIDs2ChromatogramPeakFeature(spot, provider);
                 }
-
                 recalculatedPeakspots.Add(spot);
             }
             return recalculatedPeakspots;
@@ -242,7 +222,6 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         private static List<ChromatogramPeakFeature> GetBackgroundSubtractedPeaks(List<ChromatogramPeakFeature> chromPeakFeatures, Chromatogram_temp2 chromatogram) {
             const int counterThreshold = 4;
-
 
             var sPeakAreaList = new List<ChromatogramPeakFeature>();
             foreach (var feature in chromPeakFeatures) {
@@ -295,10 +274,6 @@ namespace CompMs.MsdialImmsCore.Algorithm
             }
 
             return counter;
-        }
-
-        private static bool IsPeak(double left, double center, double right) {
-            return left <= center && center >= right;
         }
 
         private static List<ChromatogramPeakFeature> RemovePeakAreaBeanRedundancy(List<ChromatogramPeakFeature> chromPeakFeatures, List<ChromatogramPeakFeature> parentPeakFeatures, float massStep) {
@@ -362,127 +337,33 @@ namespace CompMs.MsdialImmsCore.Algorithm
             return false;
         }
 
-        private static int SearchNearestPoint(ChromXs chrom, IEnumerable<ChromatogramPeak> peaklist) {
-            return peaklist
-                .Select(peak => Math.Abs(peak.ChromXs.Value - chrom.Value))
-                .Argmin();
-        }
-
-        private static int SearchPeakTop(List<ChromatogramPeak> peaklist, int center) {
-            var maxID = center;
-            var maxInt = double.MinValue;
-            //finding local maximum within -2 ~ +2
-            for (int i = center - 2; i <= center + 2; i++) {
-                if (i - 1 < 0) {
-                    continue;
-                }
-
-                if (i > peaklist.Count - 2) {
-                    break;
-                }
-
-                if (peaklist[i].Intensity > maxInt && IsPeak(peaklist[i - 1].Intensity, peaklist[i].Intensity, peaklist[i + 1].Intensity)) {
-
-                    maxInt = peaklist[i].Intensity;
-                    maxID = i;
-                }
-            }
-            return maxID;
-        }
-
-        private static int SearchLeftEdge(List<ChromatogramPeak> sPeaklist, ChromatogramPeakFeature spot, int center, int minDatapoint, double peakWidth) {
-            //finding left edge;
-            //seeking left edge
-            int? minLeftId = null;
-            var minLeftInt = sPeaklist[center].Intensity;
-            for (int i = center - minDatapoint; i >= 0; i--) {
-
-                if (minLeftInt < sPeaklist[i].Intensity) {
-                    break;
-                }
-                if (sPeaklist[center].ChromXs.Value - peakWidth > sPeaklist[i].ChromXs.Value) {
-                    break;
-                }
-
-                minLeftInt = sPeaklist[i].Intensity;
-                minLeftId = i;
-            }
-
-            if (minLeftId.HasValue) {
-                return minLeftId.Value;
-            }
-
-            return SearchNearestPoint(spot.PeakFeature.ChromXsLeft, sPeaklist.Take(center + 1));
-        }
-
-        private static int SearchRightEdge(List<ChromatogramPeak> sPeaklist, ChromatogramPeakFeature spot, int center, int minDatapoint, double peakWidth) {
-            //finding right edge;
-            int? minRightId = null;
-            var minRightInt = sPeaklist[center].Intensity;
-            for (int i = center + minDatapoint; i < sPeaklist.Count - 1; i++) {
-
-                if (i > center && minRightInt < sPeaklist[i].Intensity) {
-                    break;
-                }
-                if (sPeaklist[center].ChromXs.Value + peakWidth < sPeaklist[i].ChromXs.Value) break;
-                if (minRightInt >= sPeaklist[i].Intensity) {
-                    minRightInt = sPeaklist[i].Intensity;
-                    minRightId = i;
-                }
-            }
-            if (minRightId.HasValue) {
-                return minRightId.Value;
-            }
-
-            return center + SearchNearestPoint(spot.PeakFeature.ChromXsRight, sPeaklist.Skip(center));
-        }
-
-        private static int SearchHighestIntensity(List<ChromatogramPeak> sPeaklist, int maxID, int minLeftId, int minRightId) {
-            var realMaxInt = double.MinValue;
-            var realMaxID = maxID;
-            for (int i = minLeftId; i < minRightId; i++) {
-                if (realMaxInt < sPeaklist[i].Intensity) {
-                    realMaxInt = sPeaklist[i].Intensity;
-                    realMaxID = i;
-                }
-            }
-            return realMaxID;
-        }
-
-        private static void SetPeakProperty(ChromatogramPeakFeature chromPeakFeature, Chromatogram chromatogram, List<ChromatogramPeak> sPeaklist, int maxID, int minLeftId, int minRightId) {
+        private static void SetPeakProperty(ChromatogramPeakFeature chromPeakFeature, PeakOfChromatogram peakOfChromatogram) {
             var peak = chromPeakFeature.PeakFeature;
+            var peakTop = peakOfChromatogram.Top;
+            var peakLeft = peakOfChromatogram.Left;
+            var peakRight = peakOfChromatogram.Right;
 
             // calculating peak area 
-            var peakAreaAboveZero = 0.0;
-            for (int i = minLeftId; i <= minRightId - 1; i++) {
-                peakAreaAboveZero += (sPeaklist[i].Intensity + sPeaklist[i + 1].Intensity) * (sPeaklist[i + 1].ChromXs.Value - sPeaklist[i].ChromXs.Value) * 0.5;
-            }
+            peak.PeakAreaAboveZero = peakOfChromatogram.CalculateArea();
+            peak.PeakAreaAboveBaseline = peak.PeakAreaAboveZero - peakOfChromatogram.CalculateBaseLineArea();
 
-            var peakAreaAboveBaseline = peakAreaAboveZero - (sPeaklist[minLeftId].Intensity + sPeaklist[minRightId].Intensity) *
-                (sPeaklist[minRightId].ChromXs.Value - sPeaklist[minLeftId].ChromXs.Value) / 2;
+            peak.ChromXsLeft = peakLeft.ChromXs;
+            peak.ChromXsTop = peakTop.ChromXs;
+            peak.ChromXsRight = peakRight.ChromXs;
 
-            peak.PeakAreaAboveBaseline = peakAreaAboveBaseline * 60.0;
-            peak.PeakAreaAboveZero = peakAreaAboveZero * 60.0;
+            peak.PeakHeightLeft = peakLeft.Intensity;
+            peak.PeakHeightTop = peakTop.Intensity;
+            peak.PeakHeightRight = peakRight.Intensity;
 
-            peak.ChromXsLeft = sPeaklist[minLeftId].ChromXs;
-            peak.ChromXsTop = sPeaklist[maxID].ChromXs;
-            peak.ChromXsRight = sPeaklist[minRightId].ChromXs;
+            peak.ChromScanIdLeft = peakLeft.ID;
+            peak.ChromScanIdTop = peakTop.ID;
+            peak.ChromScanIdRight = peakRight.ID;
 
-            peak.PeakHeightLeft = sPeaklist[minLeftId].Intensity;
-            peak.PeakHeightTop = sPeaklist[maxID].Intensity;
-            peak.PeakHeightRight = sPeaklist[minRightId].Intensity;
+            chromPeakFeature.PeakShape.SignalToNoise = (float)(peakOfChromatogram.CalculatePeakAmplitude() / chromPeakFeature.PeakShape.EstimatedNoise);
 
-            peak.ChromScanIdLeft = sPeaklist[minLeftId].ID;
-            peak.ChromScanIdTop = sPeaklist[maxID].ID;
-            peak.ChromScanIdRight = sPeaklist[minRightId].ID;
-
-            var peakHeightFromBaseline = Math.Max(peak.PeakHeightTop - peak.PeakHeightLeft, peak.PeakHeightTop - peak.PeakHeightRight);
-            chromPeakFeature.PeakShape.SignalToNoise = (float)(peakHeightFromBaseline / chromPeakFeature.PeakShape.EstimatedNoise);
-
-            var peaklist = chromatogram.Peaks;
-            chromPeakFeature.MS1RawSpectrumIdTop = peaklist[maxID].ID;
-            chromPeakFeature.MS1RawSpectrumIdLeft = peaklist[minLeftId].ID;
-            chromPeakFeature.MS1RawSpectrumIdRight = peaklist[minRightId].ID;
+            chromPeakFeature.MS1RawSpectrumIdTop = peak.ChromScanIdTop;
+            chromPeakFeature.MS1RawSpectrumIdLeft = peak.ChromScanIdLeft;
+            chromPeakFeature.MS1RawSpectrumIdRight = peak.ChromScanIdRight;
         }
     }
 }

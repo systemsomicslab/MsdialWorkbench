@@ -361,7 +361,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             if (features.Count != featureObjs.Count) { // meaning lc-im-ms data (4D data)
                 foreach (var feature in features) {
-                    if (feature.AllDriftFeaturesAreNotAnnotated(evaluator)) {
+                    if (feature.AllDriftFeaturesAreAnnotated(evaluator)) {
                         //feature.MatchResults.Representative.IsSpectrumMatch = false;
                     }
                 }
