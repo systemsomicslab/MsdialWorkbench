@@ -116,12 +116,12 @@ namespace CompMs.MspGenerator
             //System.IO.File.Move(mspFolder + exportFileName, workingDirectry + exportFileName);
 
             //////////// 複数作成可　配列リストでRT CCS予測ファイルとファイル名オプションを渡す。
-            var exportFileName = @"\Msp20221018204720.jointedmsp";
-            MergeRTandCCSintoMsp.mergeRTandCCSintoMspVs3(
-                workingDirectry + "\\" + exportFileName,
-                new List<string[]>{ new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20221018_conventional.txt","conventional" },
-                                    new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_NCDK_20221018_TUAT.txt" , "TUAT"} },
-                workingDirectry);
+            //var exportFileName = @"\Msp20221018204720.jointedmsp";
+            //MergeRTandCCSintoMsp.mergeRTandCCSintoMspVs3(
+            //    workingDirectry + "\\" + exportFileName,
+            //    new List<string[]>{ new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_20221018_conventional.txt","conventional" },
+            //                        new string[]{mspFolder + @"\RT_CCS_predictedFile\predictedRTCCSAll_NCDK_20221018_TUAT.txt" , "TUAT"} },
+            //    workingDirectry);
 
             ////上書き用　ファイル名オプション
             //MergeRTandCCSintoMsp.mergeRTandCCSintoMsp(workingDirectry + "\\" + @"Msp20220912142947.jointedmsp",
@@ -154,7 +154,7 @@ namespace CompMs.MspGenerator
             var faChain2 = new List<string>();
             var faChain3 = new List<string>();
 
-            var outputFolder = @"D:\mikikot\Desktop\Tsugawa-san_work\20221018_new_lipid_PT\msp\";
+            var outputFolder = @"D:\mikikot\Desktop\Tsugawa-san_work\~~MSP\";
 
             //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";
@@ -340,7 +340,7 @@ namespace CompMs.MspGenerator
 
             ////// GL exchangable 2 chain 
             //faChain1 = Common.GenerateAcylChains(8, 0, 22, 6);
-            //var faChain1add01 = Common.GenerateAcylChains(8, 0, 22, 6);
+            //faChain1add01 = Common.GenerateAcylChains(8, 0, 22, 6);
             //faChain1add01.AddRange(addingChain1);
             //Common.switchingLipid(faChain1add01, "MGDG", outputFolder);
             //Common.switchingLipid(faChain1add01, "DGDG", outputFolder);
@@ -364,7 +364,7 @@ namespace CompMs.MspGenerator
             //Common.switchingLipid(faChain1, faChain2, "EtherMGDG", outputFolder);   // faChain1 = Ether alkyl, faChain2 = FA
             //Common.switchingLipid(faChain1, faChain2, "EtherSMGDG", outputFolder);  // faChain1 = Ether alkyl, faChain2 = FA
 
-            //GL exchangable 3 chain
+            ////GL exchangable 3 chain
             //faChain1 = Common.GenerateAcylChains(8, 0, 38, 12);
             //Common.switchingLipid(faChain1, "TG", outputFolder);
 
@@ -373,7 +373,7 @@ namespace CompMs.MspGenerator
             //faChain2 = Common.GenerateAcylChains(8, 0, 22, 6);
             //Common.switchingLipid(faChain1, faChain2, "TG_EST", outputFolder); // faChain1 = TG FA, faChain2 = Extra FA
 
-            // GL exchangable 4 chain 
+            ////GL exchangable 4 chain
             //faChain1 = Common.GenerateAcylChains(8, 0, 22, 6);
             //Common.switchingLipid(minimumChains, "CL", outputFolder);
 
@@ -392,7 +392,7 @@ namespace CompMs.MspGenerator
 
             ///////
             //// single Acyl Chain With Steroidal Lipid
-            //
+
             //{
             //    faChain1 = Common.GenerateAcylChains(2, 0, 28, 12);
 
@@ -443,61 +443,60 @@ namespace CompMs.MspGenerator
             //    Common.switchingLipid(faChain1, "CAR", outputFolder);
             //    Common.switchingLipid(faChain1, "VAE", outputFolder);
             //    Common.switchingLipid(faChain1, "NAE", outputFolder);
-            //    //}
+            //}
 
-            //    {
-            //        faChain1 = Common.GenerateAcylChains(2, 0, 44, 12);
-            //        Common.switchingLipid(faChain1, "FA", outputFolder);
-            //    }
-            //    {
-            //        faChain1 = Common.GenerateAcylChains(14, 0, 28, 12);
-            //        Common.switchingLipid(faChain1, "OxFA", outputFolder);
-            //        Common.switchingLipid(faChain1, "alphaOxFA", outputFolder);
+            //{
+            //    faChain1 = Common.GenerateAcylChains(2, 0, 44, 12);
+            //    Common.switchingLipid(faChain1, "FA", outputFolder);
+            //}
+            //{
+            //    faChain1 = Common.GenerateAcylChains(14, 0, 28, 12);
+            //    Common.switchingLipid(faChain1, "OxFA", outputFolder);
+            //    Common.switchingLipid(faChain1, "alphaOxFA", outputFolder);
 
-            //    }
+            //}
 
-            //    ////others 2 chains
-            //    {
-            //faChain1 = Common.GenerateAcylChains(8, 0, 28, 6);
-            //faChain2 = Common.GenerateAcylChains(2, 0, 28, 6);
-            //Common.switchingLipid(faChain1, faChain2, "FAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
-            //Common.switchingLipid(faChain1, faChain2, "AAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
-            //    }
+            //////others 2 chains
+            //{
+            //    faChain1 = Common.GenerateAcylChains(8, 0, 28, 6);
+            //    faChain2 = Common.GenerateAcylChains(2, 0, 28, 6);
+            //    Common.switchingLipid(faChain1, faChain2, "FAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
+            //    Common.switchingLipid(faChain1, faChain2, "AAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
+            //}
 
 
             ////N - Acyl amine
-            ///
-            {
-                //faChain1 = Common.GenerateAcylChains(8, 0, 28, 6);
-                //faChain2 = Common.GenerateAcylChains(8, 0, 28, 6);
-                //Common.switchingLipid(faChain1, faChain2, "NAGlySer_FAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
-                //Common.switchingLipid(faChain1, faChain2, "NAGly_FAHFA", outputFolder);     // faChain1 = HFA, faChain2 = Extra FA
-                //Common.switchingLipid(faChain1, faChain2, "NAOrn_FAHFA", outputFolder);     // faChain1 = HFA, faChain2 = Extra FA
+            //{
+            //    faChain1 = Common.GenerateAcylChains(8, 0, 28, 6);
+            //    faChain2 = Common.GenerateAcylChains(8, 0, 28, 6);
+            //    Common.switchingLipid(faChain1, faChain2, "NAGlySer_FAHFA", outputFolder);  // faChain1 = HFA, faChain2 = Extra FA
+            //    Common.switchingLipid(faChain1, faChain2, "NAGly_FAHFA", outputFolder);     // faChain1 = HFA, faChain2 = Extra FA
+            //    Common.switchingLipid(faChain1, faChain2, "NAOrn_FAHFA", outputFolder);     // faChain1 = HFA, faChain2 = Extra FA
 
-                //Common.switchingLipid(faChain1, "NAGlySer_OxFA", outputFolder);  // faChain1 = HFA
-                //Common.switchingLipid(faChain1, "NAGly_OxFA", outputFolder);     // faChain1 = HFA
-                //Common.switchingLipid(faChain1, "NAOrn_OxFA", outputFolder);     // faChain1 = HFA
+            //    Common.switchingLipid(faChain1, "NAGlySer_OxFA", outputFolder);  // faChain1 = HFA
+            //    Common.switchingLipid(faChain1, "NAGly_OxFA", outputFolder);     // faChain1 = HFA
+            //    Common.switchingLipid(faChain1, "NAOrn_OxFA", outputFolder);     // faChain1 = HFA
 
-                ////20220318 add
-                //Common.switchingLipid(faChain1, "NATau_FA", outputFolder);  // faChain1 = FA
-                //Common.switchingLipid(faChain1, "NATau_OxFA", outputFolder);  // faChain1 = HFA
-                //Common.switchingLipid(faChain1, "NAPhe_FA", outputFolder);  // faChain1 = FA
-                //Common.switchingLipid(faChain1, "NAPhe_OxFA", outputFolder);  // faChain1 = HFA
-                //Common.switchingLipid(faChain1, "NAGly_FA", outputFolder);     // faChain1 = FA
-                //Common.switchingLipid(faChain1, "NAOrn_FA", outputFolder);     // faChain1 = FA
+            //    //20220318 add
+            //    Common.switchingLipid(faChain1, "NATau_FA", outputFolder);  // faChain1 = FA
+            //    Common.switchingLipid(faChain1, "NATau_OxFA", outputFolder);  // faChain1 = HFA
+            //    Common.switchingLipid(faChain1, "NAPhe_FA", outputFolder);  // faChain1 = FA
+            //    Common.switchingLipid(faChain1, "NAPhe_OxFA", outputFolder);  // faChain1 = HFA
+            //    Common.switchingLipid(faChain1, "NAGly_FA", outputFolder);     // faChain1 = FA
+            //    Common.switchingLipid(faChain1, "NAOrn_FA", outputFolder);     // faChain1 = FA
 
-            }
+            //}
 
-            //    // no chain steroidal lipid
-            //    {
-            //        Common.switchingLipid("BAHex", outputFolder);
-            //        Common.switchingLipid("BASulfate", outputFolder);
-            //        Common.switchingLipid("SHex", outputFolder);
-            //        Common.switchingLipid("SPE", outputFolder);
-            //        Common.switchingLipid("SPEHex", outputFolder);
-            //        Common.switchingLipid("SPGHex", outputFolder);
-            //        Common.switchingLipid("SSulfate", outputFolder);
-            //    }
+            //// no chain steroidal lipid
+            //{
+            //    Common.switchingLipid("BAHex", outputFolder);
+            //    Common.switchingLipid("BASulfate", outputFolder);
+            //    Common.switchingLipid("SHex", outputFolder);
+            //    Common.switchingLipid("SPE", outputFolder);
+            //    Common.switchingLipid("SPEHex", outputFolder);
+            //    Common.switchingLipid("SPGHex", outputFolder);
+            //    Common.switchingLipid("SSulfate", outputFolder);
+            //}
 
 
             ////    // no chain sterol lipid // Cholesterol BRS SIS STS EGS DEGS DSMS
@@ -507,38 +506,38 @@ namespace CompMs.MspGenerator
 
 
 
-            //    // no chain lipid
-            //    {
-            //        Common.switchingLipid("CoQ", outputFolder);
-            //        Common.switchingLipid("Vitamin_D", outputFolder);
-            //        Common.switchingLipid("VitaminE", outputFolder);
-            //    }
+            //// no chain lipid
+            //{
+            //    Common.switchingLipid("CoQ", outputFolder);
+            //    Common.switchingLipid("Vitamin_D", outputFolder);
+            //    Common.switchingLipid("VitaminE", outputFolder);
+            //}
 
 
 
-            //    //bacterial lipid  //"18:0:methyl"は他では使用不可
-            //    var AcPIMChains = new List<string>
+            ////bacterial lipid  //"18:0:methyl"は他では使用不可
+            //var AcPIMChains = new List<string>
             //{
             //"14:0","15:0","16:0","17:0","18:0","19:0","20:0","16:1","17:1","18:1","18:2","18:0:methyl"
             //};
-            //    Common.switchingLipid(AcPIMChains, "Ac2PIM1", outputFolder);
-            //    Common.switchingLipid(AcPIMChains, "Ac2PIM2", outputFolder);
-            //    Common.switchingLipid(AcPIMChains, "Ac3PIM2", outputFolder);
-            //    Common.switchingLipid(AcPIMChains, "Ac4PIM2", outputFolder);
+            //Common.switchingLipid(AcPIMChains, "Ac2PIM1", outputFolder);
+            //Common.switchingLipid(AcPIMChains, "Ac2PIM2", outputFolder);
+            //Common.switchingLipid(AcPIMChains, "Ac3PIM2", outputFolder);
+            //Common.switchingLipid(AcPIMChains, "Ac4PIM2", outputFolder);
 
-            //    var LipidAChains = new List<string> //たくさん代入するとエラーになるかも
+            //var LipidAChains = new List<string> //たくさん代入するとエラーになるかも
             //{
             ////"10:0",
             //    "12:0","14:0","16:0","18:0"
             //};
-            //    Common.switchingLipid(LipidAChains, "LipidA", outputFolder);
+            //Common.switchingLipid(LipidAChains, "LipidA", outputFolder);
 
 
             ////Yeast lipids add 20200713
             //sphingoChains = Common.GenerateSphingoChains(12, 0, 28, 2);
             //acylChains = Common.GenerateAcylChains(12, 0, 32, 8);
             //Common.switchingLipid(sphingoChains, acylChains, "MIPC", outputFolder);   //MIPC
-            ////add 20200720
+            //                                                                          //add 20200720
             //faChain1 = Common.GenerateAcylChains(12, 0, 38, 12);
             //Common.switchingLipid(faChain1, "EGSE", outputFolder);
             //Common.switchingLipid(faChain1, "DEGSE", outputFolder);

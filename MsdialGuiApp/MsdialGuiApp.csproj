@@ -159,13 +159,14 @@
     <Compile Include="Model\DataObj\AnalysisFileBeanModel.cs" />
     <Compile Include="Model\DataObj\AnalysisFileBeanModelCollection.cs" />
     <Compile Include="Model\DataObj\BarItemCollection.cs" />
+    <Compile Include="Model\Export\AlignmentResultExportModel.cs" />
     <Compile Include="Model\Imaging\ImagingImageModel.cs" />
     <Compile Include="Model\Imaging\ImagingRoiModel.cs" />
     <Compile Include="Model\Imaging\ImaginRoiCompareModel.cs" />
     <Compile Include="Model\Imaging\RoiModel.cs" />
     <Compile Include="Model\Imaging\RoiIntensitiesModel.cs" />
     <Compile Include="Model\Imaging\WholeImageResultModel.cs" />
-    <Compile Include="Model\Imms\ImagingImmsMethodModel.cs" />
+    <Compile Include="Model\ImagingImms\ImagingImmsMethodModel.cs" />
     <Compile Include="Model\Information\CompoundDetailModel.cs" />
     <Compile Include="Model\Information\PeakInformationModel.cs" />
     <Compile Include="Model\DataObj\PeptideGroupModel.cs" />
@@ -197,6 +198,9 @@
     <Compile Include="Model\Statistics\InternalStandardSetModel.cs" />
     <Compile Include="Model\Statistics\NormalizationSetModel.cs" />
     <Compile Include="Model\Statistics\MultivariateAnalysisSettingModel.cs" />
+    <Compile Include="Model\Statistics\SimpleBarChartModel.cs" />
+    <Compile Include="Model\Statistics\SimpleScatterPlotModel.cs" />
+    <Compile Include="Model\Statistics\PCAPLSResultModel.cs" />
     <Compile Include="Model\Statistics\SplashProduct.cs" />
     <Compile Include="Model\DataObj\TargetMsMethod.cs" />
     <Compile Include="Model\Statistics\StatisticsObjectConverter.cs" />
@@ -255,7 +259,6 @@
     <Compile Include="Model\Setting\MethodSettingModelFactory.cs" />
     <Compile Include="Model\Setting\MobilitySettingModel.cs" />
     <Compile Include="Model\Setting\MscleanrSettingModel.cs" />
-    <Compile Include="Model\Statistics\PcaSettingModel.cs" />
     <Compile Include="Model\Setting\PeakDetectionSettingModel.cs" />
     <Compile Include="Model\Setting\ProjectParameterSettingModel.cs" />
     <Compile Include="Model\DataObj\DisplayChromatogram.cs" />
@@ -303,8 +306,9 @@
     <Compile Include="Model\Setting\DataBaseAnnotationSettingModelBase.cs" />
     <Compile Include="Model\Setting\ModificationSettingModel.cs" />
     <Compile Include="Model\Setting\MspAnnotationSettingModel.cs" />
-    <Compile Include="Model\Statistics\PcaResultModel.cs" />
+    <Compile Include="Model\Statistics\PCAPLSResultModel.cs" />
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
+    <Compile Include="Utility\GlobalResources.cs" />
     <Compile Include="Utility\ObservableExtensions.cs" />
     <Compile Include="ViewModel\Chart\BitmapImageViewModel.cs" />
     <Compile Include="ViewModel\Chart\SampleImageViewModel.cs" />
@@ -387,6 +391,9 @@
     <Compile Include="ViewModel\Setting\FileClassSettingViewModel.cs" />
     <Compile Include="ViewModel\Statistics\InternalStandardSetViewModel.cs" />
     <Compile Include="ViewModel\Statistics\MultivariateAnalysisSettingViewModel.cs" />
+    <Compile Include="ViewModel\Statistics\SimpleBarChartViewModel.cs" />
+    <Compile Include="ViewModel\Statistics\SimpleScatterPlotViewModel.cs" />
+    <Compile Include="ViewModel\Statistics\PCAPLSResultViewModel.cs" />
     <Compile Include="ViewModel\Statistics\SplashProductViewModel.cs" />
     <Compile Include="ViewModel\Search\PeakFilterViewModel.cs" />
     <Compile Include="ViewModel\Search\FocusNavigatorViewModel.cs" />
@@ -436,7 +443,6 @@
     <Compile Include="ViewModel\Setting\ModificationSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\MscleanrSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\MzSearchQueryViewModel.cs" />
-    <Compile Include="ViewModel\Statistics\PcaSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\PeakDetectionSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\PeakEqualityParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\PeakFeatureSearchValueViewModel.cs" />
@@ -444,7 +450,7 @@
     <Compile Include="ViewModel\Setting\ProjectParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\ProjectSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\RetentionTimeCorrectionViewModelLegacy.cs" />
-    <Compile Include="ViewModel\Statistics\PcaResultViewModel.cs" />
+    <Compile Include="ViewModel\Statistics\PCAPLSResultViewModel.cs" />
     <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
     <Compile Include="ViewModel\Table\ProteinGroupTableViewModel.cs" />
     <Compile Include="View\AdductView.xaml.cs">
@@ -609,6 +615,18 @@
     <Compile Include="View\Setting\FileClassSetView.xaml.cs">
       <DependentUpon>FileClassSetView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Statistics\BarChart.xaml.cs">
+      <DependentUpon>BarChart.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Statistics\BarChartView.xaml.cs">
+      <DependentUpon>BarChartView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Statistics\HcaHeatmap.xaml.cs">
+      <DependentUpon>HcaHeatmap.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Statistics\HcaResultWin.xaml.cs">
+      <DependentUpon>HcaResultWin.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Statistics\InternalStandardSetView.xaml.cs">
       <DependentUpon>InternalStandardSetView.xaml</DependentUpon>
     </Compile>
@@ -620,6 +638,12 @@
     </Compile>
     <Compile Include="View\Statistics\MultivariateAnalysisSettingView.xaml.cs">
       <DependentUpon>MultivariateAnalysisSettingView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Statistics\ScatterPlot.xaml.cs">
+      <DependentUpon>ScatterPlot.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Statistics\ScatterPlotView.xaml.cs">
+      <DependentUpon>ScatterPlotView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Statistics\SplashSetView.xaml.cs">
       <DependentUpon>SplashSetView.xaml</DependentUpon>
@@ -755,9 +779,6 @@
     <Compile Include="View\Setting\MscleanrSettingView.xaml.cs">
       <DependentUpon>MscleanrSettingView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Statistics\PcaSettingView.xaml.cs">
-      <DependentUpon>PcaSettingView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Setting\PeakDetectionSettingView.xaml.cs">
       <DependentUpon>PeakDetectionSettingView.xaml</DependentUpon>
     </Compile>
@@ -769,9 +790,6 @@
     </Compile>
     <Compile Include="View\Setting\RetentionTimeCorrectionWinLegacy.xaml.cs">
       <DependentUpon>RetentionTimeCorrectionWinLegacy.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Statistics\PcaResultView.xaml.cs">
-      <DependentUpon>PcaResultView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Table\AlignmentSpotTable.xaml.cs">
       <DependentUpon>AlignmentSpotTable.xaml</DependentUpon>
@@ -1052,6 +1070,22 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Statistics\BarChart.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Statistics\BarChartView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Statistics\HcaHeatmap.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Statistics\HcaResultWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Statistics\InternalStandardSetView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1065,6 +1099,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Statistics\MultivariateAnalysisSettingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Statistics\ScatterPlot.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Statistics\ScatterPlotView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1220,10 +1262,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Statistics\PcaSettingView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="View\Setting\PeakDetectionSettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1237,10 +1275,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Setting\RetentionTimeCorrectionWinLegacy.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Statistics\PcaResultView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1413,7 +1447,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\SplashLipids.xml" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>copy "$(SolutionDir)\Assemblies\timsdata.dll" "$(TargetDir)"

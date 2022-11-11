@@ -1,19 +1,21 @@
-﻿using CompMs.Common.Components;
-using CompMs.MsdialCore.Parameter;
+﻿using CompMs.MsdialCore.Parameter;
 using MessagePack;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CompMs.MsdialLcmsApi.Parameter {
     [MessagePackObject]
     public class MsdialLcmsParameter : ParameterBase {
-        public MsdialLcmsParameter() {
+        public MsdialLcmsParameter(bool isLabUseOnly) : base(isLabUseOnly) {
             this.MachineCategory = Common.Enum.MachineCategory.LCMS;
 
             // MspSearchParam.WeightedDotProductCutOff = 0.15f;
             // MspSearchParam.SimpleDotProductCutOff = 0.15f;
             // MspSearchParam.ReverseDotProductCutOff = 0.5f;
+        }
+
+        [SerializationConstructor]
+        public MsdialLcmsParameter() : this(isLabUseOnly: false) {
+
         }
 
         public override List<string> ParametersAsText() {

@@ -67,7 +67,7 @@ namespace CompMs.App.Msdial.Model.Core {
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 
         public Task SaveAsync(CancellationToken token) {
-            return _peakCollection.SerializeAsync(AnalysisFileModel.PeakAreaBeanInformationFilePath, token);
+            return _peakCollection.SerializeAsync(AnalysisFileModel.File, token);
         }
 
         // IDisposable fields and methods

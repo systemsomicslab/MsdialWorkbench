@@ -14,11 +14,10 @@ using System.Windows.Shapes;
 
 namespace CompMs.App.Msdial.View.Statistics {
     /// <summary>
-    /// PcaSettingView.xaml の相互作用ロジック
+    /// Interaction logic for ScatterPlotView.xaml
     /// </summary>
-    public partial class PcaSettingView : Window {
-        public PcaSettingView()
-        {
+    public partial class ScatterPlotView : Window {
+        public ScatterPlotView() {
             InitializeComponent();
         }
     }

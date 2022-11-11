@@ -4,14 +4,10 @@ using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcmsApi.Parameter;
-using CompMs.MsdialLcMsApi.Algorithm;
-using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,129 +16,125 @@ namespace CompMs.MsdialLcMsApi.Process
 {
     public sealed class FileProcess {
         private readonly IDataProviderFactory<AnalysisFileBean> _factory;
-        private readonly IMsdialDataStorage<MsdialLcmsParameter> _storage;
-        private readonly IAnnotationProcess _annotationProcess;
-        private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
+        private readonly PeakPickProcess _peakPickProcess;
+        private readonly SpectrumDeconvolutionProcess _spectrumDeconvolutionProcess;
+        private readonly PeakAnnotationProcess _peakAnnotationProcess;
 
         public FileProcess(IDataProviderFactory<AnalysisFileBean> factory, IMsdialDataStorage<MsdialLcmsParameter> storage, IAnnotationProcess annotationProcess, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+            if (storage is null) {
+                throw new ArgumentNullException(nameof(storage));
+            }
+
+            if (annotationProcess is null) {
+                throw new ArgumentNullException(nameof(annotationProcess));
+            }
+
+            if (evaluator is null) {
+                throw new ArgumentNullException(nameof(evaluator));
+            }
+
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
-            _storage = storage ?? throw new ArgumentNullException(nameof(storage));
-            _annotationProcess = annotationProcess ?? throw new ArgumentNullException(nameof(annotationProcess));
-            _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
+            _peakPickProcess = new PeakPickProcess(storage);
+            _spectrumDeconvolutionProcess = new SpectrumDeconvolutionProcess(storage);
+            _peakAnnotationProcess = new PeakAnnotationProcess(annotationProcess, storage, evaluator);
         }       
 
         public Task RunAllAsync(IEnumerable<AnalysisFileBean> files, IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token = default) {
-            var queue = new ConcurrentQueue<(AnalysisFileBean, Action<int>)>(files.Zip(reportActions, (file, report) => (file, report)));
-            var tasks = new Task[numParallel];
-            for (int i = 0; i < numParallel; i++) {
-                tasks[i] = Task.Run(() => Consume(queue, afterEachRun, token));
-            }
-            return Task.WhenAll(tasks);
+            var consumer = new Consumer(files, reportActions, afterEachRun, token);
+            return Task.WhenAll(consumer.ConsumeAllAsync(RunAsync, numParallel));
         }
 
-        private void Consume(ConcurrentQueue<(AnalysisFileBean File, Action<int> Report)> queue, Action afterEachRun, CancellationToken token) {
-            while (queue.TryDequeue(out var pair)) {
-                Run(pair.File, pair.Report, token);
-                afterEachRun?.Invoke();
-            }
+        public Task AnnotateAllAsync(IEnumerable<AnalysisFileBean> files, IEnumerable<Action<int>> reportActions, int numParallel, Action afterEachRun, CancellationToken token = default) {
+            var consumer = new Consumer(files, reportActions, afterEachRun, token);
+            return Task.WhenAll(consumer.ConsumeAllAsync(AnnotateAsync, numParallel));
         }
 
-        public void Run(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
-            Run(file, _factory.Create(file), _storage, _annotationProcess, _evaluator, true, reportAction, token);
-        }
-
-        public static void Run(
-            AnalysisFileBean file,
-            IDataProvider provider,
-            IMsdialDataStorage<MsdialLcmsParameter> storage,
-            IAnnotationProcess annotationProcess,
-            IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            bool isGuiProcess = false,
-            Action<int> reportAction = null,
-            CancellationToken token = default) {
-            var param = storage.Parameter;
-            var mspDB = storage.MspDB;
-            var textDB = storage.TextDB;
-            var isotopeTextDB = storage.IsotopeTextDB;
-            var iupacDB = storage.IupacDatabase;
-            var filepath = file.AnalysisFilePath;
-            var fileID = file.AnalysisFileId;
+        public async Task RunAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
+            var provider = _factory.Create(file);
 
             // feature detections
+            token.ThrowIfCancellationRequested();
             Console.WriteLine("Peak picking started");
-            var chromPeakFeatures = new PeakSpotting(0, 30).Run(provider, param, token, reportAction);
-            IsotopeEstimator.Process(chromPeakFeatures, param, iupacDB);
-            var summaryDto = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures);
-            var summary = ChromatogramPeaksDataSummary.ConvertFromDto(summaryDto);
+            var chromPeakFeatures = _peakPickProcess.Pick(provider, token, reportAction);
+
+            var summaryDto = ChromFeatureSummarizer.GetChromFeaturesSummary(provider, chromPeakFeatures.Items);
             file.ChromPeakFeaturesSummary = summaryDto;
 
             // chrom deconvolutions
+            token.ThrowIfCancellationRequested();
             Console.WriteLine("Deconvolution started");
-            var targetCE2MSDecResults = new Dictionary<double, List<MSDecResult>>();
-            var initial_msdec = 30.0;
-            var max_msdec = 30.0;
-            var ceList = provider.LoadCollisionEnergyTargets();
-            if (storage.Parameter.AcquisitionType == Common.Enum.AcquisitionType.AIF) {
-                for (int i = 0; i < ceList.Count; i++) {
-                    var targetCE = Math.Round(ceList[i], 2); // must be rounded by 2 decimal points
-                    if (targetCE <= 0) {
-                        Console.WriteLine("No correct CE information in AIF-MSDEC");
-                        continue;
-                    }
-                    var max_msdec_aif = max_msdec / ceList.Count;
-                    var initial_msdec_aif = initial_msdec + max_msdec_aif * i;
-                    targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec_aif, max_msdec_aif).GetMS2DecResults(
-                        provider, chromPeakFeatures, storage.Parameter, summary, storage.IupacDatabase, reportAction, token, targetCE);
-                }
-            }
-            else {
-                var targetCE = ceList.IsEmptyOrNull() ? -1 : ceList[0];
-                targetCE2MSDecResults[targetCE] = new Ms2Dec(initial_msdec, max_msdec).GetMS2DecResults(
-                    provider, chromPeakFeatures, storage.Parameter, summary, storage.IupacDatabase, reportAction, token);
-            }
+            var mSDecResultCollections = _spectrumDeconvolutionProcess.Deconvolute(provider, chromPeakFeatures.Items, summaryDto, reportAction, token);
 
-                // annotations
-                Console.WriteLine("Annotation started");
-                var initial_annotation = 60.0;
-                var max_annotation = 30.0;
-                foreach (var (ce2msdecs, index) in targetCE2MSDecResults.WithIndex()) {
-                    var targetCE = ce2msdecs.Key;
-                    var msdecResults = ce2msdecs.Value;
-                    var max_annotation_local = max_annotation / targetCE2MSDecResults.Count;
-                    var initial_annotation_local = initial_annotation + max_annotation_local * index;
-                    annotationProcess.RunAnnotation(
-                        chromPeakFeatures,
-                        msdecResults,
-                        provider,
-                        param.NumThreads == 1 ? 1 : 2,
-                        token,
-                        v => reportAction?.Invoke((int)(initial_annotation_local + v * max_annotation_local)));
-                }
-
-                // characterizatin
-                new PeakCharacterEstimator(90, 10).Process(provider, chromPeakFeatures, targetCE2MSDecResults.Any() ? targetCE2MSDecResults.Argmin(kvp => kvp.Key).Value : null,
-                    evaluator,
-                    param, reportAction);
+            // annotations
+            token.ThrowIfCancellationRequested();
+            Console.WriteLine("Annotation started");
+            _peakAnnotationProcess.Annotate(mSDecResultCollections, chromPeakFeatures.Items, provider, token, reportAction);
 
             // file save
-            var paifile = file.PeakAreaBeanInformationFilePath;
-            MsdialPeakSerializer.SaveChromatogramPeakFeatures(paifile, chromPeakFeatures);
+            token.ThrowIfCancellationRequested();
+            await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
+            reportAction?.Invoke(100);
+        }
 
-            var dclfile = file.DeconvolutionFilePath;
-            var dclfiles = new List<string>();
-            foreach (var ce2msdecs in targetCE2MSDecResults) {
-                if (targetCE2MSDecResults.Count == 1) {
-                    dclfiles.Add(dclfile);
-                    MsdecResultsWriter.Write(dclfile, ce2msdecs.Value);
-                }
-                else {
-                    var suffix = Math.Round(ce2msdecs.Key * 100, 0); // CE 34.50 -> 3450
-                    var dclfile_suffix = Path.Combine(Path.GetDirectoryName(dclfile), Path.GetFileNameWithoutExtension(dclfile) + "_" + suffix + ".dcl");
-                    dclfiles.Add(dclfile_suffix);
-                    MsdecResultsWriter.Write(dclfile_suffix, ce2msdecs.Value);
+        public async Task AnnotateAsync(AnalysisFileBean file, Action<int> reportAction, CancellationToken token = default) {
+            var peakTask = ChromatogramPeakFeatureCollection.LoadAsync(file.PeakAreaBeanInformationFilePath);
+            var resultsTask = Task.WhenAll(MSDecResultCollection.DeserializeAsync(file));
+            var provider = _factory.Create(file);
+
+            // annotations
+            token.ThrowIfCancellationRequested();
+            Console.WriteLine("Annotation started");
+            var chromPeakFeatures = await peakTask.ConfigureAwait(false);
+            var mSDecResultCollections = await resultsTask.ConfigureAwait(false);
+            _peakAnnotationProcess.Annotate(mSDecResultCollections, chromPeakFeatures.Items, provider, token, reportAction);
+
+            // file save
+            token.ThrowIfCancellationRequested();
+            await SaveToFileAsync(file, chromPeakFeatures, mSDecResultCollections).ConfigureAwait(false);
+            reportAction?.Invoke(100);
+        }
+
+        private static Task SaveToFileAsync(AnalysisFileBean file, ChromatogramPeakFeatureCollection chromPeakFeatures, IReadOnlyList<MSDecResultCollection> mSDecResultCollections) {
+            Task t1, t2;
+
+            t1 = chromPeakFeatures.SerializeAsync(file);
+
+            if (mSDecResultCollections.Count == 1) {
+                t2 = mSDecResultCollections[0].SerializeAsync(file);
+            }
+            else {
+                file.DeconvolutionFilePathList.Clear();
+                t2 = Task.WhenAll(mSDecResultCollections.Select(mSDecResultCollection => mSDecResultCollection.SerializeWithCEAsync(file)));
+            }
+
+            return Task.WhenAll(t1, t2);
+        }
+
+        class Consumer {
+            private readonly ConcurrentQueue<(AnalysisFileBean File, Action<int> Report)> _queue;
+            private readonly Action _afterEachRun;
+            private readonly CancellationToken _token;
+
+            public Consumer(IEnumerable<AnalysisFileBean> files, IEnumerable<Action<int>> reportActions, Action afterEachRun, CancellationToken token) {
+                _queue = new ConcurrentQueue<(AnalysisFileBean, Action<int>)>(files.Zip(reportActions, (file, report) => (file, report)));
+                _afterEachRun = afterEachRun;
+                _token = token;
+            }
+
+            public async Task ConsumeAsync(Func<AnalysisFileBean, Action<int>, CancellationToken, Task> process) {
+                while (_queue.TryDequeue(out var pair)) {
+                    await process(pair.File, pair.Report, _token).ConfigureAwait(false);
+                    _afterEachRun?.Invoke();
                 }
             }
-            reportAction?.Invoke(100);
+
+            public Task[] ConsumeAllAsync(Func<AnalysisFileBean, Action<int>, CancellationToken, Task> process, int parallel) {
+                var tasks = new Task[parallel];
+                for (int i = 0; i < parallel; i++) {
+                    tasks[i] = Task.Run(() => ConsumeAsync(process), _token);
+                }
+                return tasks;
+            }
         }
     }
 }

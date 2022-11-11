@@ -2,13 +2,11 @@
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.MsdialCore.MSDec {
-    public class MSDecResult : IMSScanProperty {
+    public sealed class MSDecResult : IMSScanProperty {
         public long SeekPoint { get; set; }
         public int ScanID { get; set; }
         public double PrecursorMz { get; set; }

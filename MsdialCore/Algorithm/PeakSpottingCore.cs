@@ -387,7 +387,7 @@ namespace CompMs.MsdialCore.Algorithm {
             driftFeature.ChromXsLeft.RT.Value = rtPeakFeature.ChromXsTop.RT.Value - accumulatedRtRange * 0.5;
             driftFeature.ChromXsTop.RT.Value = rtPeakFeature.ChromXsTop.RT.Value;
             driftFeature.ChromXsRight.RT.Value = rtPeakFeature.ChromXsTop.RT.Value + accumulatedRtRange * 0.5;
-            var ms2Tol = MolecularFormulaUtility.CalculateMassToleranceBasedOn500Da(_parameter.CentroidMs2Tolerance, rtPeakFeature.Mass);
+            var ms2Tol = MolecularFormulaUtility.FixMassTolerance(_parameter.CentroidMs2Tolerance, rtPeakFeature.Mass);
             var spectra = rawSpectra.GetPeakMs2Spectra(rtPeakFeature, ms2Tol, _parameter.AcquisitionType, driftFeature.ChromXs.Drift);
             driftFeature.SetMs2SpectrumId(spectra);
             return driftFeature;
@@ -453,8 +453,7 @@ namespace CompMs.MsdialCore.Algorithm {
                     }
                 }
                 if (excludeChecker) continue;
-                var chromPeakFeature = ChromatogramPeakFeature.FromPeakDetectionResult(result, chromatogram, mass);
-                chromPeakFeature.IonMode = _parameter.IonMode;
+                var chromPeakFeature = ChromatogramPeakFeature.FromPeakDetectionResult(result, chromatogram, mass, _parameter.IonMode);
                 chromPeakFeatures.Add(chromPeakFeature);
             }
             return chromPeakFeatures;
@@ -601,6 +600,11 @@ namespace CompMs.MsdialCore.Algorithm {
             for (int i = ms1Begin; i < ms1End; i++) {
                 var spec = ms2SpectrumList[i];
                 if (spec.MsLevel <= 1) continue;
+                // for tsugawa own research
+#if DEBUG
+                //if (spec.ExperimentID != 5) continue;
+#endif
+
                 if (spec.MsLevel == 2 && spec.Precursor != null && scanPolarity == spec.ScanPolarity) {
                     if (IsInMassWindow(mass, spec, ms2Tol, _parameter.AcquisitionType)) {
                         var ce = spec.CollisionEnergy;

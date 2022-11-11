@@ -9,6 +9,7 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Statistics"
              mc:Ignorable="d" 
              d:Background="White"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:PCAPLSResultViewModel}}"
              d:DesignHeight="700" d:DesignWidth="1050">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -166,16 +167,16 @@
                     <Run Text="Other plots" FontStyle="Italic"/>
                 </GroupBox.Header>
                 <StackPanel>
-                    <Button Content="Contributions" IsEnabled="False"
+                    <Button Content="Contributions" IsEnabled="True"
                             Command="{Binding ShowContributionsCommand, Mode=OneTime}"/>
-                    <Button Content="Predicted vs Experiment" IsEnabled="False"
-                            Command="{Binding ShowPredVsExp, Mode=OneTime}"/>
-                    <Button Content="VIP" IsEnabled="False"
-                            Command="{Binding ShowVIPs, Mode=OneTime}"/>
-                    <Button Content="Coefficient" IsEnabled="False"
-                            Command="{Binding ShowCoefficients, Mode=OneTime}"/>
-                    <Button Content="S-plot" IsEnabled="False"
-                            Command="{Binding ShowSPlot, Mode=OneTime}"/>
+                    <Button Content="Predicted vs Experiment" IsEnabled="True"
+                            Command="{Binding ShowPredVsExpCommand, Mode=OneTime}"/>
+                    <Button Content="VIP" IsEnabled="True"
+                            Command="{Binding ShowVIPsCommand, Mode=OneTime}"/>
+                    <Button Content="Coefficient" IsEnabled="True"
+                            Command="{Binding ShowCoefficientsCommand, Mode=OneTime}"/>
+                    <Button Content="S-plot" IsEnabled="True"
+                            Command="{Binding ShowSPlotCommand, Mode=OneTime}"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox>
@@ -183,7 +184,7 @@
                     <Run Text="Save" FontStyle="Italic"/>
                 </GroupBox.Header>
                 <StackPanel>
-                    <Button Content="Save result as table" IsEnabled="False"
+                    <Button Content="Save result as table" IsEnabled="True"
                             Command="{Binding SaveResultCommand, Mode=OneTime}"/>
                 </StackPanel>
             </GroupBox>
@@ -203,7 +204,7 @@
 
             <chart:SimpleChartControl HorizontalAxis="{Binding ScoreHorizontalAxis.Value}"
                                       VerticalAxis="{Binding ScoreVerticalAxis.Value}"
-                                       GraphTitle="{Binding ScorePlotTitle.Value}"
+                                      GraphTitle="{Binding ScorePlotTitle.Value}"
                                       HorizontalTitle="{Binding ComponentX.Value, StringFormat=Principal component{0}}"
                                       VerticalTitle="{Binding ComponentY.Value, StringFormat=Principal component{0}}"
                                       Grid.Row="0" Grid.Column="0">

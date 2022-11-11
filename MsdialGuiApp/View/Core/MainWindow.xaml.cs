@@ -1,6 +1,8 @@
 ﻿using CompMs.App.Msdial.Model.Notification;
 using CompMs.App.Msdial.Model.Service;
+using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Chart;
+using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.PeakCuration;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.View.Statistics;
@@ -8,6 +10,7 @@ using CompMs.App.Msdial.View.Table;
 using CompMs.App.Msdial.ViewModel;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
+using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
@@ -79,9 +82,11 @@ namespace CompMs.App.Msdial.View.Core
             broker.ToObservable<NormalizationSetViewModel>()
                 .Subscribe(OpenNormalizationSetView);
             broker.ToObservable<MultivariateAnalysisSettingViewModel>()
-                .Subscribe(OpenPcaSettingView);
+                .Subscribe(OpenMultivariateAnalysisSettingView);
             broker.ToObservable<PCAPLSResultViewModel>()
-                .Subscribe(OpenPcaView);
+                .Subscribe(OpenPCAPLSResultView);
+            broker.ToObservable<AlignmentResultExport2VM>()
+                .Subscribe(OpenAlignmentResultExportDialog);
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
 #elif DEBUG
@@ -227,7 +232,7 @@ namespace CompMs.App.Msdial.View.Core
             view.ShowDialog();
         }
 
-        private void OpenPcaSettingView(MultivariateAnalysisSettingViewModel viewmodel) {
+        private void OpenMultivariateAnalysisSettingView(MultivariateAnalysisSettingViewModel viewmodel) {
             if (viewmodel is null) {
                 MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -241,7 +246,7 @@ namespace CompMs.App.Msdial.View.Core
             dialog.Show();
         }
 
-        private void OpenPcaView(PCAPLSResultViewModel viewmodel) {
+        private void OpenPCAPLSResultView(PCAPLSResultViewModel viewmodel) {
             var dialog = new Window
             {
                 DataContext = viewmodel,
@@ -289,8 +294,9 @@ namespace CompMs.App.Msdial.View.Core
         private void CreateAlignedChromatogramModificationDialog(AlignedChromatogramModificationViewModelLegacy vm) {
             Dispatcher.Invoke(() =>
             {
-                var window = new AlignedPeakCorrectionWinLegacy(vm)
+                var window = new AlignedPeakCorrectionWinLegacy()
                 {
+                    DataContext = vm,
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 };
@@ -301,7 +307,8 @@ namespace CompMs.App.Msdial.View.Core
 
         private void CreateSampleTableViewerDialog(SampleTableViewerInAlignmentViewModelLegacy vm) {
             Dispatcher.Invoke(() => {
-                var window = new SampleTableViewerInAlignmentLegacy(vm) {
+                var window = new SampleTableViewerInAlignmentLegacy() {
+                    DataContext = vm,
                     Owner = this,
                     WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 };
@@ -310,13 +317,20 @@ namespace CompMs.App.Msdial.View.Core
             });
         }
 
+        private void OpenAlignmentResultExportDialog(AlignmentResultExport2VM vm) {
+            var dialog = new AlignmentResultExportWin
+            {
+                DataContext = vm,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            dialog.ShowDialog();
+        }
+
         protected override void OnContentRendered(EventArgs e) {
             base.OnContentRendered(e);
 
-            if (Properties.Resources.VERSION.Contains("-tada")
-                || Properties.Resources.VERSION.Contains("-alpha")
-                || Properties.Resources.VERSION.Contains("-beta")
-                || Properties.Resources.VERSION.Contains("-dev")) {
+            if (GlobalResources.Instance.IsLabPrivate) {
                 return;
             }
             Mouse.OverrideCursor = Cursors.Wait;

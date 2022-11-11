@@ -9,19 +9,19 @@ using System;
 
 namespace CompMs.App.Msdial.Utility
 {
-    class ParameterFactory
+    internal static class ParameterFactory
     {
         public static ParameterBase CreateParameter(Ionization ionization, SeparationType separationType) {
             if (ionization == Ionization.EI && separationType == SeparationType.Chromatography)
-                return new MsdialGcmsParameter();
+                return new MsdialGcmsParameter(GlobalResources.Instance.IsLabPrivate);
             if (ionization == Ionization.ESI && separationType == SeparationType.Chromatography)
-                return new MsdialLcmsParameter();
+                return new MsdialLcmsParameter(GlobalResources.Instance.IsLabPrivate);
             if (ionization == Ionization.ESI && separationType == (SeparationType.Chromatography | SeparationType.IonMobility))
-                return new MsdialLcImMsParameter();
+                return new MsdialLcImMsParameter(GlobalResources.Instance.IsLabPrivate);
             if (ionization == Ionization.ESI && separationType == SeparationType.Infusion)
-                return new MsdialDimsParameter();
+                return new MsdialDimsParameter(GlobalResources.Instance.IsLabPrivate);
             if (ionization == Ionization.ESI && separationType == (SeparationType.Infusion | SeparationType.IonMobility))
-                return new MsdialImmsParameter();
+                return new MsdialImmsParameter(GlobalResources.Instance.IsLabPrivate);
             throw new Exception("Not supported separation type is selected.");
         }
     }

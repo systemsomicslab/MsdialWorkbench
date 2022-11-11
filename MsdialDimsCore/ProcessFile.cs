@@ -75,16 +75,16 @@ namespace CompMs.MsdialDimsCore
             var ms2SpecObjects = provider.LoadMsNSpectrums(level: 2)
                 .Where(spectra => spectra.MsLevel == 2 && spectra.Precursor != null)
                 .OrderBy(spectra => spectra.Precursor.SelectedIonMz).ToList();
+            IonMode ionMode = ms1Spectrum.ScanPolarity == ScanPolarity.Positive ? IonMode.Positive : IonMode.Negative;
 
             foreach (var result in peakPickResults) {
-                var peakFeature = DataAccess.GetChromatogramPeakFeature(result, ChromXType.Mz, ChromXUnit.Mz, ms1Spectrum.Spectrum[result.ScanNumAtPeakTop].Mz);
+                var peakFeature = DataAccess.GetChromatogramPeakFeature(result, ChromXType.Mz, ChromXUnit.Mz, ms1Spectrum.Spectrum[result.ScanNumAtPeakTop].Mz, ionMode);
                 var chromScanID = peakFeature.ChromScanIdTop;
 
                 IChromatogramPeakFeature peak = peakFeature;
                 peak.Mass = ms1Spectrum.Spectrum[chromScanID].Mz;
                 peak.ChromXsTop = new ChromXs(peakFeature.Mass, ChromXType.Mz, ChromXUnit.Mz);
 
-                peakFeature.IonMode = ms1Spectrum.ScanPolarity == ScanPolarity.Positive ? IonMode.Positive : IonMode.Negative;
                 peakFeature.MS1RawSpectrumIdTop = ms1Spectrum.Index;
                 peakFeature.ScanID = ms1Spectrum.ScanNumber;
                 switch (type) {

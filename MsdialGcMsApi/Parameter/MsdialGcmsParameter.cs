@@ -3,11 +3,15 @@ using CompMs.MsdialCore.Parameter;
 using MessagePack;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CompMs.MsdialGcMsApi.Parameter {
     [MessagePackObject]
     public class MsdialGcmsParameter : ParameterBase {
+
+        public MsdialGcmsParameter(bool isLabUseOnly) : base(isLabUseOnly) { this.MachineCategory = MachineCategory.GCMS; }
+
+        [SerializationConstructor]
+        public MsdialGcmsParameter() : this(isLabUseOnly: false) { }
         
         [Key(150)]
         public string RiDictionaryFilePath { get; set; } = string.Empty;
@@ -23,8 +27,6 @@ namespace CompMs.MsdialGcMsApi.Parameter {
         public bool IsReplaceQuantmassByUserDefinedValue { get; set; } = false;
         [Key(156)]
         public bool IsRepresentativeQuantMassBasedOnBasePeakMz { get; set; } = false;
-
-        public MsdialGcmsParameter() { this.MachineCategory = MachineCategory.GCMS; }
 
         public override List<string> ParametersAsText() {
             var pStrings = base.ParametersAsText();

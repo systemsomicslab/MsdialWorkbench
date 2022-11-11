@@ -17,6 +17,7 @@ namespace CompMs.Common.Components {
         }
 
         public IReadOnlyList<ValuePeak> Peaks => _peaks;
+        public bool IsEmpty => _peaks.Count == 0;
 
         public ChromXs PeakChromXs(double chromValue, double mz) {
             var result = new ChromXs(chromValue, _type, _unit);
@@ -26,7 +27,20 @@ namespace CompMs.Common.Components {
             return result;
         }
 
-        public bool IsEmpty => _peaks.Count == 0;
+        public bool IsValidPeakTop(int topId) {
+            return topId - 1 >= 0 && topId + 1 <= _peaks.Count - 1
+                && _peaks[topId - 1].Intensity > 0 && _peaks[topId + 1].Intensity > 0;
+        }
+
+        public bool IsPeakTop(int topId) {
+            return _peaks[topId - 1].Intensity <= _peaks[topId].Intensity
+                && _peaks[topId].Intensity >= _peaks[topId + 1].Intensity;
+        }
+
+        public bool IsBottom(int bottomId) {
+            return _peaks[bottomId - 1].Intensity >= _peaks[bottomId].Intensity
+                && _peaks[bottomId].Intensity <= _peaks[bottomId + 1].Intensity;
+        }
 
         public ValuePeak[] Smoothing(SmoothingMethod method, int level) {
             switch (method) {

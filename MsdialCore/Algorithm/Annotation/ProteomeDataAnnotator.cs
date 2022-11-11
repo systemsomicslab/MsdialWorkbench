@@ -127,7 +127,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private List<ProteinGroup> ConvertToProteinGroups(List<ProteinMsResult> proteinMsResults) {
-            if (proteinMsResults.IsEmptyOrNull()) return null;
+            if (proteinMsResults.IsEmptyOrNull()) return new List<ProteinGroup>(0);
             var groups = new List<ProteinGroup>();
             var dict = new Dictionary<int, List<ProteinMsResult>>();
             proteinMsResults = proteinMsResults.OrderByDescending(n => n.MatchedPeptideResults.Count()).ToList();
@@ -361,7 +361,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
             if (features.Count != featureObjs.Count) { // meaning lc-im-ms data (4D data)
                 foreach (var feature in features) {
-                    if (feature.AllDriftFeaturesAreNotAnnotated(evaluator)) {
+                    if (feature.AllDriftFeaturesAreAnnotated(evaluator)) {
                         //feature.MatchResults.Representative.IsSpectrumMatch = false;
                     }
                 }

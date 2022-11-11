@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.View.Chart;
@@ -70,6 +71,28 @@ namespace CompMs.App.Msdial.Model.Lcms
             _broker = broker;
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
             CanShowProteinGroupTable = Observable.Return(storage.Parameter.TargetOmics == TargetOmics.Proteomics);
+
+            var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
+            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, storage.AlignmentFiles, storage);
+            var  metadataAccessor = storage.Parameter.TargetOmics == TargetOmics.Proteomics
+                ? (IMetadataAccessor)new LcmsProteomicsMetadataAccessor(storage.DataBaseMapper, storage.Parameter)
+                : (IMetadataAccessor)new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
+            AlignmentResultExportModel.AddExportTypes(
+                new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
+                new ExportType("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
+                new ExportType("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats),
+                new ExportType("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats),
+                new ExportType("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
+                new ExportType("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", storage.Parameter), "Mz"),
+                new ExportType("Retention time", metadataAccessor, new LegacyQuantValueAccessor("RT", storage.Parameter), "Rt"),
+                new ExportType("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
+                new ExportType("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"));
+            if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
+                AlignmentResultExportModel.AddExportTypes(new ExportType("Protein assembled", metadataAccessor, new LegacyQuantValueAccessor("Protein", storage.Parameter), "Protein"));
+            }
+            this.ObserveProperty(m => m.AlignmentFile)
+                .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
+                .AddTo(Disposables);
         }
 
         public PeakFilterModel PeakFilterModel { get; }
@@ -86,8 +109,10 @@ namespace CompMs.App.Msdial.Model.Lcms
             get => _alignmentModel;
             set => SetProperty(ref _alignmentModel, value);
         }
+
         private LcmsAlignmentModel _alignmentModel;
 
+        public AlignmentResultExportModel AlignmentResultExportModel { get; }
 
         protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
             if (AnalysisModel != null) {
@@ -141,7 +166,11 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var processOption = option;
             // Run Identification
-            if (processOption.HasFlag(ProcessOption.Identification) || processOption.HasFlag(ProcessOption.PeakSpotting)) {
+            if (processOption.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
+                if (!ProcessPickAndAnnotaion(_storage))
+                    return;
+            }
+            else if (processOption.HasFlag(ProcessOption.Identification)) {
                 if (!ProcessAnnotaion(_storage))
                     return;
             }
@@ -205,12 +234,28 @@ namespace CompMs.App.Msdial.Model.Lcms
             return new EadLipidomicsAnnotationProcess<IAnnotationQuery>(containerPairs, eadAnnotationQueryFactoryTriple, mapper);
         }
 
-        public bool ProcessAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage) {
+        public bool ProcessPickAndAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage) {
             var request = new ProgressBarMultiContainerRequest(
                 vm_ =>
                 {
                     var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, storage, _annotationProcess, _matchResultEvaluator);
                     return processor.RunAllAsync(
+                        storage.AnalysisFiles,
+                        vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
+                        Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
+                        vm_.Increment);
+                },
+                storage.AnalysisFiles.Select(file => file.AnalysisFileName).ToArray());
+            _broker.Publish(request);
+            return request.Result ?? false;
+        }
+
+        public bool ProcessAnnotaion(IMsdialDataStorage<MsdialLcmsParameter> storage) {
+            var request = new ProgressBarMultiContainerRequest(
+                vm_ =>
+                {
+                    var processor = new MsdialLcMsApi.Process.FileProcess(_providerFactory, storage, _annotationProcess, _matchResultEvaluator);
+                    return processor.AnnotateAllAsync(
                         storage.AnalysisFiles,
                         vm_.ProgressBarVMs.Select(pbvm => (Action<int>)((int v) => pbvm.CurrentValue = v)),
                         Math.Max(1, storage.Parameter.ProcessBaseParam.UsableNumThreads / 2),
@@ -297,56 +342,6 @@ namespace CompMs.App.Msdial.Model.Lcms
             finally {
                 streams.ForEach(stream => stream.Close());
             }
-        }
-
-        public void ExportAlignment(Window owner) {
-            var container = _storage;
-            var vm = new AlignmentResultExport2VM(AlignmentFile, container.AlignmentFiles, container, _broker);
-
-            if (container.Parameter.TargetOmics == TargetOmics.Proteomics) {
-                var metadataAccessor = new LcmsProteomicsMetadataAccessor(container.DataBaseMapper, container.Parameter);
-                vm.ExportTypes.AddRange(
-               new List<ExportType2>
-               {
-                    new ExportType2("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", container.Parameter), "Height", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }, true),
-                    new ExportType2("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.Parameter), "Area", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.Parameter), "NormalizedHeight", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.Parameter), "NormalizedArea", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.Parameter), "PeakID"),
-                    new ExportType2("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.Parameter), "Mz"),
-                    new ExportType2("Retention time", metadataAccessor, new LegacyQuantValueAccessor("RT", container.Parameter), "Rt"),
-                    new ExportType2("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.Parameter), "SN"),
-                    new ExportType2("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.Parameter), "MsmsIncluded"),
-                    new ExportType2("Protein assembled", metadataAccessor, new LegacyQuantValueAccessor("Protein", container.Parameter), "Protein"),
-
-               });
-            }
-            else {
-                var metadataAccessor = new LcmsMetadataAccessor(container.DataBaseMapper, container.Parameter);
-                vm.ExportTypes.AddRange(
-                new List<ExportType2>
-                {
-                    new ExportType2("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", container.Parameter), "Height", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }, true),
-                    new ExportType2("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.Parameter), "Area", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.Parameter), "NormalizedHeight", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.Parameter), "NormalizedArea", new List<StatsValue>{ StatsValue.Average, StatsValue.Stdev }),
-                    new ExportType2("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.Parameter), "PeakID"),
-                    new ExportType2("Retention time", metadataAccessor, new LegacyQuantValueAccessor("RT", container.Parameter), "Rt"),
-                    new ExportType2("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.Parameter), "Mz"),
-                    new ExportType2("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.Parameter), "SN"),
-                    new ExportType2("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.Parameter), "MsmsIncluded"),
-
-                });
-            }
-            
-            var dialog = new AlignmentResultExportWin
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-
-            dialog.ShowDialog();
         }
 
         public void ExportAnalysis(Window owner) {

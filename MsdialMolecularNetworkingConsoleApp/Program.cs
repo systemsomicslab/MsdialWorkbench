@@ -12,11 +12,11 @@ namespace Riken.Metabolomics.MolecularNetworking {
             args = new string[] {
                 "msms"
                 , "-i"
-                , @"E:\6_Projects\PROJECT_Aging\paper\analysis_v2\Fig2\MN\feces_negspec.msp"
+                , @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated_10KE\MergedMSP_10KE.msp"
                 , "-t"
                 , @"0.05"
                 , "-o"
-                , @"E:\6_Projects\PROJECT_Aging\paper\analysis_v2\Fig2\MN\edge.txt"
+                , @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated_10KE\edge_10KE.txt"
             };
             #endregion
             if (args.Length == 0) return argsError();

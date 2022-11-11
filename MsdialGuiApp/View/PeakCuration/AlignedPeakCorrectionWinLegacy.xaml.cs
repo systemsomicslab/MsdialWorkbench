@@ -1,15 +1,17 @@
 ﻿using CompMs.App.Msdial.Common;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
+using CompMs.Common.Components;
+using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Parameter;
-using CompMs.MsdialCore.Utility;
+using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace CompMs.App.Msdial.View.PeakCuration
@@ -18,39 +20,33 @@ namespace CompMs.App.Msdial.View.PeakCuration
     /// Interaction logic for AlignedPeakCorrectionWinLegacy.xaml
     /// </summary>
     public partial class AlignedPeakCorrectionWinLegacy : Window {
-        public AlignedChromatogramModificationViewModelLegacy VM { get; }
         public AlignedPeakCorrectionWinLegacy() {
             InitializeComponent();
         }
 
-        public AlignedPeakCorrectionWinLegacy(AlignedChromatogramModificationViewModelLegacy vm) {
-            InitializeComponent();
-            VM = vm;
-            this.DataContext = VM;
-        }
-      
         private void Button_UpdatePeakInfo_Click(object sender, RoutedEventArgs e) {
-            VM.UpdatePeakInfo();
+            (DataContext as AlignedChromatogramModificationViewModelLegacy)?.UpdatePeakInfo();
         }
 
         private void Button_ClearRtAlignment_Click(object sender, RoutedEventArgs e) {
-            VM.ClearRtAlignment();
+            (DataContext as AlignedChromatogramModificationViewModelLegacy)?.ClearRtAlignment();
         }
     }
 
-    public class AlignedChromatogramModificationModelLegacy : BindableBase {
-        public AlignmentSpotPropertyModel Model { get; }
-        public List<Chromatogram> Chromatograms { get; }
+    public sealed class AlignedChromatogramModificationModelLegacy : BindableBase {
+        public ReadOnlyReactivePropertySlim<AlignmentSpotPropertyModel> ObservableModel { get; }
+        public ReactiveProperty<bool> IsRI { get; }
+        public ReactiveProperty<bool> IsDrift { get; }
+        public List<Model.DataObj.Chromatogram> Chromatograms { get; }
+        public IObservable<List<Model.DataObj.Chromatogram>> ObservableChromatograms { get; }
         public List<AnalysisFileBean> Files { get; }
-        public ParameterBase Parameter { get; }
-        public List<PeakPropertyLegacy> PeakProperties { get; }
+        public ReadOnlyReactivePropertySlim<PeakPropertiesLegacy> ObservablePeakProperties { get; }
 
         public AlignedChromatogramModificationModelLegacy(
-            AlignmentSpotPropertyModel model,
-            List<Chromatogram> chromatoramSource,
+            IObservable<AlignmentSpotPropertyModel> model,
+            IObservable<List<Model.DataObj.Chromatogram>> chromatoramSource,
             List<AnalysisFileBean> files, 
-            ParameterBase param
-            ) {
+            ParameterBase parameter) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -63,39 +59,50 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 throw new ArgumentNullException(nameof(files));
             }
 
-            if (param is null) {
-                throw new ArgumentNullException(nameof(param));
-            }
-
-            Model = model;
-            Chromatograms = chromatoramSource;
+            ObservableModel = model.ToReadOnlyReactivePropertySlim();
+            IsRI = model.Select(m => m?.ChromXType == ChromXType.RI).ToReactiveProperty();
+            IsDrift = model.Select(m => m?.ChromXType == ChromXType.Drift).ToReactiveProperty();
+            ObservableChromatograms = chromatoramSource;
             Files = files;
-            Parameter = param;
-            PeakProperties = LoadPeakProperty(model, chromatoramSource, files, param);
+            ObservablePeakProperties = LoadPeakProperty(model, chromatoramSource, files, parameter).ToReadOnlyReactivePropertySlim();
+        }
+
+        public void UpdatePeakInfo() {
+            ObservablePeakProperties.Value?.UpdatePeakInfo();
+        }
+
+        public void ClearRtAlignment() {
+            ObservablePeakProperties.Value?.ClearRtAlignment();
         }
        
-        public static List<PeakPropertyLegacy> LoadPeakProperty(
-            AlignmentSpotPropertyModel model,
-            List<Chromatogram> chromatoramSource,
+        public static IObservable<PeakPropertiesLegacy> LoadPeakProperty(
+            IObservable<AlignmentSpotPropertyModel> model,
+            IObservable<List<Model.DataObj.Chromatogram>> chromatogramSource,
             List<AnalysisFileBean> files,
-            ParameterBase param) {
-
-            var peakPropArr = new PeakPropertyLegacy[chromatoramSource.Count];
-            var classnameToBytes = param.ClassnameToColorBytes;
+            ParameterBase parameter) {
+            var classnameToBytes = parameter.ClassnameToColorBytes;
             var classnameToBrushes = ChartBrushes.ConvertToSolidBrushDictionary(classnameToBytes);
-
-            Parallel.For(0, chromatoramSource.Count, (i) => {
-                var brush = classnameToBrushes.TryGetValue(files[i].AnalysisFileClass, out var b) ? b : ChartBrushes.GetChartBrush(i);
-                var chromatogram = chromatoramSource[i].Convert();
-                var speaks = chromatogram.Smoothing(param.SmoothingMethod, param.SmoothingLevel);
-                var peakProp = new PeakPropertyLegacy(model.AlignedPeakPropertiesModel[i], brush, speaks);
-                var offset = model.AlignedPeakPropertiesModel[i].ChromXsTop.Value - model.TimesCenter;
-                peakProp.SetAlignOffSet((float)offset);
-                peakPropArr[i] = peakProp;
-            });
-            var peakPropList = peakPropArr.ToList();
-            peakPropList[0].AverageRt = (float)model.TimesCenter;
-            return peakPropList;
+            return model.Select(spot =>
+            {
+                var observablePeaks = spot?.AlignedPeakPropertiesModelAsObservable ?? Observable.Never<ReadOnlyCollection<AlignmentChromPeakFeatureModel>>();
+                return observablePeaks.CombineLatest(chromatogramSource, (peaks, chromatograms) =>
+                {
+                    var indices = Enumerable.Range(0, files.Count);
+                    var chromatograms_ = chromatograms ?? Enumerable.Empty<Model.DataObj.Chromatogram>();
+                    var peaks_ = peaks ?? Enumerable.Empty<AlignmentChromPeakFeatureModel>();
+                    var peakPropArr = indices.Zip(chromatograms_, peaks_, (i, chromatogram, peak) =>
+                    {
+                        var brush = classnameToBrushes.TryGetValue(files[i].AnalysisFileClass, out var b) ? b : ChartBrushes.GetChartBrush(i);
+                        var speaks = chromatogram.Convert().Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel);
+                        var peakProp = new PeakPropertyLegacy(peak, brush, speaks);
+                        var offset = peak.ChromXsTop.Value - spot.TimesCenter;
+                        peakProp.SetAlignOffSet((float)offset);
+                        peakProp.AverageRt = (float)spot.TimesCenter;
+                        return peakProp;
+                    }).ToArray();
+                    return new PeakPropertiesLegacy(spot, peakPropArr);
+                });
+            }).Switch();
         }
     }
 }

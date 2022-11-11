@@ -12,9 +12,9 @@ namespace CompMs.App.SpectrumViewer.Model
 {
     public class MainModel : BindableBase {
         public MainModel() {
-            LipidQueries = new LipidQueryBean{
+            LipidQueries = new LipidQueryBean {
                 SolventType = SolventType.CH3COONH4,
-                LbmQueries = LbmQueryParcer.GetLbmQueries(false),
+                LbmQueries = LbmQueryParcer.GetLbmQueries(isLabUseOnly: true),
             };
 
             scanCollections = new ObservableCollection<IScanCollection>();

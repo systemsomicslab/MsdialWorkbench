@@ -327,12 +327,12 @@ namespace CompMs.MsdialCore.DataObj
         public FeatureFilterStatus FeatureFilterStatus { get; set; } = new FeatureFilterStatus();
         [Key(42)]
         public List<ChromatogramPeakFeature> DriftChromFeatures { get; set; } = null;
+
         public bool IsMultiLayeredData() {
-            if (DriftChromFeatures.IsEmptyOrNull()) return false;
-            return true;
+            return !DriftChromFeatures.IsEmptyOrNull();
         }
 
-        public bool AllDriftFeaturesAreNotAnnotated(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+        public bool AllDriftFeaturesAreAnnotated(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             return IsMultiLayeredData() && DriftChromFeatures.All(n => n.IsReferenceMatched(evaluator));
         }
 
@@ -386,7 +386,7 @@ namespace CompMs.MsdialCore.DataObj
             };
         }
 
-        public static ChromatogramPeakFeature FromPeakDetectionResult(PeakDetectionResult peakDetectionResult, Chromatogram_temp2 chromatogram, double mz) {
+        public static ChromatogramPeakFeature FromPeakDetectionResult(PeakDetectionResult peakDetectionResult, Chromatogram_temp2 chromatogram, double mz, IonMode ionMode) {
             if (peakDetectionResult == null) {
                 return null;
             }
@@ -431,6 +431,28 @@ namespace CompMs.MsdialCore.DataObj
                     AmplitudeScoreValue = peakDetectionResult.AmplitudeScoreValue
                 }
             };
+        }
+
+        public void SetPeakProperties(PeakOfChromatogram peakOfChromatogram) {
+            var peakTop = peakOfChromatogram.Top;
+            var peakLeft = peakOfChromatogram.Left;
+            var peakRight = peakOfChromatogram.Right;
+            PeakFeature.ChromXsLeft = peakLeft.ChromXs;
+            PeakFeature.ChromXsTop = peakTop.ChromXs;
+            PeakFeature.ChromXsRight = peakRight.ChromXs;
+            PeakFeature.PeakHeightLeft = peakLeft.Intensity;
+            PeakFeature.PeakHeightTop = peakTop.Intensity;
+            PeakFeature.PeakHeightRight = peakRight.Intensity;
+            PeakFeature.ChromScanIdLeft = peakLeft.ID;
+            PeakFeature.ChromScanIdTop = peakTop.ID;
+            PeakFeature.ChromScanIdRight = peakRight.ID;
+            MS1RawSpectrumIdTop = PeakFeature.ChromScanIdTop;
+            MS1RawSpectrumIdLeft = PeakFeature.ChromScanIdLeft;
+            MS1RawSpectrumIdRight = PeakFeature.ChromScanIdRight;
+
+            PeakFeature.PeakAreaAboveZero = peakOfChromatogram.CalculateArea();
+            PeakFeature.PeakAreaAboveBaseline = PeakFeature.PeakAreaAboveZero - peakOfChromatogram.CalculateBaseLineArea();
+            PeakShape.SignalToNoise = (float)(peakOfChromatogram.CalculatePeakAmplitude() / PeakShape.EstimatedNoise);
         }
 
         public void SetMatchResultProperty(MoleculeMsReference reference, MsScanMatchResult result, IMatchResultEvaluator<MsScanMatchResult> evaluator) {

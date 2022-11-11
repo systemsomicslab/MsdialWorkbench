@@ -728,7 +728,7 @@ namespace CompMs.MsdialCore.MSDec {
                 foreach (var result in results) {
 
                     var mass = (float)peaks[result.ScanNumAtPeakTop].Mass;
-                    var chromPeakFeature = DataAccess.GetChromatogramPeakFeature(result, type, unit, mass);
+                    var chromPeakFeature = DataAccess.GetChromatogramPeakFeature(result, type, unit, mass, param.ProjectParam.IonMode);
                     chromPeakFeature.PeakID = index; // this information is needed in the later process.
                     peakSpots.Add(chromPeakFeature);
                 }
@@ -748,7 +748,7 @@ namespace CompMs.MsdialCore.MSDec {
                 foreach (var result in results) {
 
                     var mass = (float)peaks[result.ScanNumAtPeakTop].Mz;
-                    var chromPeakFeature = DataAccess.GetChromatogramPeakFeature(result, type, unit, mass);
+                    var chromPeakFeature = DataAccess.GetChromatogramPeakFeature(result, type, unit, mass, param.ProjectParam.IonMode);
                     chromPeakFeature.PeakID = index; // this information is needed in the later process.
                     peakSpots.Add(chromPeakFeature);
                 }

@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Components;
+﻿using Accord.Math.Random;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
@@ -77,6 +78,13 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.SM:
                     return SMEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.Cer_NS:
+                case LbmClass.Cer_NDS:
+                case LbmClass.Cer_AS:
+                case LbmClass.Cer_ADS:
+                case LbmClass.Cer_BS:
+                case LbmClass.Cer_BDS:
+                case LbmClass.Cer_NP:
+                case LbmClass.Cer_AP:
                     return CeramideEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.HexCer_NS:
                     return HexCerEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
@@ -154,6 +162,13 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.SM:
                     return OadDefaultCharacterization.Characterize4Ceramides(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.Cer_NS:
+                case LbmClass.Cer_NDS:
+                case LbmClass.Cer_AS:
+                case LbmClass.Cer_ADS:
+                case LbmClass.Cer_BS:
+                case LbmClass.Cer_BDS:
+                case LbmClass.Cer_NP:
+                case LbmClass.Cer_AP:
                     return OadDefaultCharacterization.Characterize4Ceramides(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
                 case LbmClass.HexCer_NS:
                     return OadDefaultCharacterization.Characterize4Ceramides(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);

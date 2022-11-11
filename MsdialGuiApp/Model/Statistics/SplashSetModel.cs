@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -43,11 +44,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             targetMetabolites.Add("Any others");
             TargetMetabolites = targetMetabolites.AsReadOnly();
 
-            var isPrivate = Properties.Resources.VERSION.EndsWith("-tada")
-                || Properties.Resources.VERSION.EndsWith("-alpha")
-                || Properties.Resources.VERSION.EndsWith("-beta")
-                || Properties.Resources.VERSION.EndsWith("-dev");
-            SplashProducts = new ObservableCollection<SplashProduct>(isPrivate ? GetPrivateSplashResource() : GetPublicSplashResource());
+            SplashProducts = new ObservableCollection<SplashProduct>(GlobalResources.Instance.IsLabPrivate ? GetPrivateSplashResource() : GetPublicSplashResource());
             if (!parameter.AdvancedProcessOptionBaseParam.StandardCompounds.IsEmptyOrNull()) {
                 var product = new SplashProduct("Previous compounds", parameter.AdvancedProcessOptionBaseParam.StandardCompounds.Select(lipid => new StandardCompoundModel(lipid)));
                 SplashProducts.Add(product);

@@ -201,6 +201,22 @@ namespace CompMs.Common.Components
             }
         }
 
+        public IChromX GetChromByType(ChromXType type) {
+            switch (type)
+            {
+                case ChromXType.RT:
+                    return RT;
+                case ChromXType.RI:
+                    return RI;
+                case ChromXType.Drift:
+                    return Drift;
+                case ChromXType.Mz:
+                    return Mz;
+                default:
+                    throw new ArgumentException(nameof(type));
+            }
+        }
+
         public bool HasTimeInfo() {
             if (RT == null && RI == null && Drift == null) return false;
             if (RT.Value < 0 && RI.Value < 0 && Drift.Value < 0) return false;

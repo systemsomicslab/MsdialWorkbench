@@ -22,9 +22,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
             IReadOnlyList<AnalysisFileBean> files,
             IReadOnlyList<AlignmentSpotPropertyModel> alignedSpots,
             ParameterBase parameter,
-            IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            ScaleMethod scale, TransformMethod transform,
-            bool isPlsda = false) {
+            IMatchResultEvaluator<MsScanMatchResult> evaluator, ref ObservableCollection<AlignmentSpotPropertyModel> observableSpots) {
 
             var responses = new ObservableCollection<double>();
             var fileIDs = new ObservableCollection<int>();
@@ -34,7 +32,10 @@ namespace CompMs.App.Msdial.Model.Statistics {
             var metaboliteIDs = new ObservableCollection<int>();
             var metaboliteNames = new ObservableCollection<string>();
             var metaboliteBrushs = new ObservableCollection<byte[]>();
+            var statsparam = parameter.StatisticsBaseParam;
+            var methodoption = statsparam.MultivariateAnalysisOption;
 
+            var isPlsda = methodoption == MultivariateAnalysisOption.Plsda || methodoption == MultivariateAnalysisOption.Oplsda ? true : false;
             for (int i = 0; i < files.Count; i++) {
                 var fileProp = files[i];
                 if (fileProp.AnalysisFileIncluded) {
@@ -60,6 +61,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
             var isIdentified = parameter.StatisticsBaseParam.IsIdentifiedImportedInStatistics;
             var isAnnotated = parameter.StatisticsBaseParam.IsAnnotatedImportedInStatistics;
             var isUnknown = parameter.StatisticsBaseParam.IsUnknownImportedInStatistics;
+            //observableSpots = new ObservableCollection<AlignmentSpotPropertyModel>();
             for (int i = 0; i < globalSpots.Count; i++) {
                 var alignProp = globalSpots[i];
                 var internalStandardID = alignProp.innerModel.InternalStandardAlignmentID;
@@ -81,16 +83,19 @@ namespace CompMs.App.Msdial.Model.Statistics {
                         metaboliteNames.Add("ID: " + spotID + "_" + metName);
                         metaboliteIDs.Add(spotID);
                         metaboliteBrushs.Add(rgba);
+                        observableSpots.Add(alignProp);
                     }
                     if (isAnnotated && evaluator.IsAnnotationSuggested(alignProp.MatchResults.Representative)) {
                         metaboliteNames.Add("ID: " + spotID + "_" + metName);
                         metaboliteIDs.Add(spotID);
                         metaboliteBrushs.Add(rgba);
+                        observableSpots.Add(alignProp);
                     }
                     if (isUnknown && !evaluator.IsReferenceMatched(alignProp.MatchResults.Representative) && !evaluator.IsAnnotationSuggested(alignProp.MatchResults.Representative)) {
                         metaboliteNames.Add("ID: " + spotID + "_" + metName);
                         metaboliteIDs.Add(spotID);
                         metaboliteBrushs.Add(rgba);
+                        observableSpots.Add(alignProp);
                     }
                 }
             }
@@ -134,8 +139,8 @@ namespace CompMs.App.Msdial.Model.Statistics {
                 XLabels = metaboliteNames,
                 YColors = fileBrushs,
                 XColors = metaboliteBrushs,
-                Scale = scale,
-                Transform = transform
+                Scale = statsparam.Scale,
+                Transform = statsparam.Transform
             };
             statObject.StatInitialization();
             return statObject;
@@ -145,12 +150,12 @@ namespace CompMs.App.Msdial.Model.Statistics {
             IReadOnlyList<AnalysisFileBean> files,
             IReadOnlyList<AlignmentSpotPropertyModel> alignedSpots,
             ParameterBase parameter,
-            IMatchResultEvaluator<MsScanMatchResult> evaluator
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            ref ObservableCollection<AlignmentSpotPropertyModel> observableSpots
             ) {
             var statsparam = parameter.StatisticsBaseParam;
             var plsOption = statsparam.MultivariateAnalysisOption;
-            var isPlsda = plsOption == MultivariateAnalysisOption.Oplsda || plsOption == MultivariateAnalysisOption.Plsda ? true : false;
-            var statObject = GetStatisticsObject(files, alignedSpots, parameter, evaluator, statsparam.ScalePls, statsparam.TransformPls, isPlsda);
+            var statObject = GetStatisticsObject(files, alignedSpots, parameter, evaluator, ref observableSpots);
             if (statObject == null) return null;
             var component = statsparam.IsAutoFitPls == true ? -1 : statsparam.ComponentPls;
             return StatisticsMathematics.PartialLeastSquares(statObject, plsOption, component);
@@ -160,9 +165,11 @@ namespace CompMs.App.Msdial.Model.Statistics {
             IReadOnlyList<AnalysisFileBean> files,
             IReadOnlyList<AlignmentSpotPropertyModel> alignedSpots,
             ParameterBase parameter,
-            IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            ref ObservableCollection<AlignmentSpotPropertyModel> observableSpots
+            ) {
             var statsparam = parameter.StatisticsBaseParam;
-            var statObject = GetStatisticsObject(files, alignedSpots, parameter, evaluator, statsparam.Scale, statsparam.Transform);
+            var statObject = GetStatisticsObject(files, alignedSpots, parameter, evaluator, ref observableSpots);
             if (statObject == null) return null;
             return StatisticsMathematics.PrincipalComponentAnalysis(
                 statObject, MultivariateAnalysisOption.Pca, statsparam.MaxComponent);
@@ -172,9 +179,11 @@ namespace CompMs.App.Msdial.Model.Statistics {
             IReadOnlyList<AnalysisFileBean> files,
             IReadOnlyList<AlignmentSpotPropertyModel> alignedSpots,
             ParameterBase parameter,
-            IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+            IMatchResultEvaluator<MsScanMatchResult> evaluator,
+            ref ObservableCollection<AlignmentSpotPropertyModel> observableSpots
+            ) {
             var statsparam = parameter.StatisticsBaseParam;
-            var statObject = GetStatisticsObject(files, alignedSpots, parameter, evaluator, statsparam.Scale, statsparam.Transform);
+            var statObject = GetStatisticsObject(files, alignedSpots, parameter, evaluator, ref observableSpots);
             if (statObject == null) return null;
             return StatisticsMathematics.HierarchicalClusterAnalysis(statObject);
         }

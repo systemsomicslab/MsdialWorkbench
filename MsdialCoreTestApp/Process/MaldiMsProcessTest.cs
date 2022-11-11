@@ -26,12 +26,12 @@ namespace CompMs.App.MsdialConsole.Process
     public sealed class MaldiMsProcessTest {
         private MaldiMsProcessTest() { }
         public static void TimsOnTest() {
-            var filepath = @"E:\6_Projects\PROJECT_ImagingMS\20211005_Bruker_timsTOFfleX-selected\Eye_Neg\20211005_Eye_Acsl_HZ_KO_Neg\20211005_Eye_Acsl_HZ_KO_Neg.d";
-            var reffile = @"E:\6_Projects\PROJECT_ImagingMS\Lipid reference library\20220725_timsTOFpro_TextLibrary_Eye_Neg.txt";
-            var outputfile = @"E:\6_Projects\PROJECT_ImagingMS\20211005_Bruker_timsTOFfleX-selected\Eye_Neg\20211005_Eye_Acsl_HZ_KO_Neg\20211005_Eye_Acsl_HZ_KO_Neg.mddata";
+            var filepath = @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\ROI_20220208_Eye_Acsl6Hz_20um_DCTB_Pos\20220208_Eye_Acsl6Hz_20um_DCTB_Pos.d";
+            var reffile = @"E:\6_Projects\PROJECT_ImagingMS\Lipid reference library\20220725_timsTOFpro_TextLibrary_Eye_Pos.txt";
+            var outputfile = @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\ROI_20220208_Eye_Acsl6Hz_20um_DCTB_Pos\20220208_Eye_Acsl6Hz_20um_DCTB_Pos.mddata";
             var filename = Path.GetFileNameWithoutExtension(filepath);
             var fileDir = Path.GetDirectoryName(filepath);
-            var projectParameter = new ProjectParameter(DateTime.Now, @"E:\6_Projects\PROJECT_ImagingMS\20211005_Bruker_timsTOFfleX-selected\Eye_Neg\20211005_Eye_Acsl_HZ_KO_Neg\", "20211004_Acsl6_leftHZ_rightKO_Eye.mdproject");
+            var projectParameter = new ProjectParameter(DateTime.Now, @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\ROI_20220208_Eye_Acsl6Hz_20um_DCTB_Pos\", "20211004_Acsl6_leftHZ_rightKO_Eye.mdproject");
             var storage = new ProjectDataStorage(projectParameter);
             var file = new AnalysisFileBean() {
                 AnalysisFileId = 0,
@@ -41,8 +41,8 @@ namespace CompMs.App.MsdialConsole.Process
                 AnalysisFileAnalyticalOrder = 1,
                 AnalysisFileClass = "0",
                 AnalysisFileType = AnalysisFileType.Sample,
-                DeconvolutionFilePath = Path.Combine(fileDir, filename + "_test221023" + ".dcl"),
-                PeakAreaBeanInformationFilePath = Path.Combine(fileDir, filename + "_test221023" + ".pai"),
+                DeconvolutionFilePath = Path.Combine(fileDir, filename + "_221109" + ".dcl"),
+                PeakAreaBeanInformationFilePath = Path.Combine(fileDir, filename + "_221109" + ".pai"),
             };
 
             var param = new MsdialImmsParameter() {
@@ -50,7 +50,7 @@ namespace CompMs.App.MsdialConsole.Process
                 ProjectFileName = Path.GetFileName(outputfile),
                 MachineCategory = MachineCategory.IMMS,
                 TextDBFilePath = reffile,
-                IonMode = IonMode.Negative,
+                IonMode = IonMode.Positive,
                 MinimumAmplitude = 1000,
                 FileID2CcsCoefficients = new Dictionary<int, CoefficientsForCcsCalculation>() {
                     { 0, new CoefficientsForCcsCalculation() { IsBrukerIM = true } }
@@ -83,14 +83,15 @@ namespace CompMs.App.MsdialConsole.Process
             container.DataBases = DataBaseStorage.CreateEmpty();
             container.DataBases.AddMoleculeDataBase(
                 database,
-                new List<IAnnotatorParameterPair<IAnnotationQuery, Common.Components.MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> { 
+                new List<IAnnotatorParameterPair<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> { 
                     new MetabolomicsAnnotatorParameterPair(annotator, param.TextDbSearchParam)
                 }
             );
             storage.AddStorage(container);
 
             var evaluator = MsScanMatchResultEvaluator.CreateEvaluator(param.TextDbSearchParam);
-            MsdialImmsCore.Process.FileProcess.Run(file, container, null, null, provider, evaluator, false, null);
+            var processor = new MsdialImmsCore.Process.FileProcess(container, null, null, evaluator);
+            processor.RunAsync(file, provider).Wait();
             using (var fs = File.Open(storage.ProjectParameter.FilePath, FileMode.Create))
             using (var streamManager = ZipStreamManager.OpenCreate(fs)) {
                 var serializer = new MsdialIntegrateSerializer();

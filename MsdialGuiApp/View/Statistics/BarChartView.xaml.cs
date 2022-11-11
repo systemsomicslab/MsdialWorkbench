@@ -10,17 +10,14 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View.Statistics
-{
+namespace CompMs.App.Msdial.View.Statistics {
     /// <summary>
-    /// Interaction logic for PcaResultView.xaml
+    /// Interaction logic for BarChartView.xaml
     /// </summary>
-    public partial class PcaResultView : UserControl
-    {
-        public PcaResultView() {
+    public partial class BarChartView : Window {
+        public BarChartView() {
             InitializeComponent();
         }
     }

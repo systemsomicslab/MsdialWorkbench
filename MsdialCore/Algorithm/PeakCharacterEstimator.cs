@@ -1,5 +1,4 @@
 ﻿using CompMs.Common.Components;
-using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -34,9 +33,8 @@ namespace CompMs.MsdialCore.Algorithm
         }
         public List<AdductIon> SearchedAdducts { get; set; } = new List<AdductIon>();
 
-        public void Process(IDataProvider provider, List<ChromatogramPeakFeature> chromPeakFeatures,
-            List<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase parameter, Action<int> reportAction) {
-            
+        public void Process(IDataProvider provider, IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
+            IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase parameter, Action<int> reportAction) {
             // some adduct features are automatically insearted even if users did not select any type of adduct
             SearchedAdductInitialize(parameter);
 
@@ -62,9 +60,7 @@ namespace CompMs.MsdialCore.Algorithm
                         }
                     }
 
-#if false
                     CharacterAssigner(searchedPeakSpots, provider, msdecResults, evaluator, parameter); // TODO: temporarily comment out. fix algorithm. Don't delete!
-#endif
                     ReportProgress.Show(InitialProgress, ProgressMax, i, chromPeakFeatures.Count, reportAction);
                 }
             }
@@ -78,7 +74,7 @@ namespace CompMs.MsdialCore.Algorithm
         // currently, the links for same metabolite, isotope, and adduct are grouped.
         // the others such as found in upper msms and chromatogram correlation are not grouped.
         // in future, I have to create the merge GUI for user side
-        private void AssignPutativePeakgroupIDs(List<ChromatogramPeakFeature> chromPeakFeatures) {
+        private void AssignPutativePeakgroupIDs(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures) {
             var groupID = 0;
             foreach (var peak in chromPeakFeatures) {
                 var peakCharacter = peak.PeakCharacter;
@@ -95,7 +91,7 @@ namespace CompMs.MsdialCore.Algorithm
             }
         }
 
-        private void recPeakGroupAssignment(ChromatogramPeakFeature peak, List<ChromatogramPeakFeature> peakSpots, int groupID, List<int> crawledPeaks) {
+        private void recPeakGroupAssignment(ChromatogramPeakFeature peak, IReadOnlyList<ChromatogramPeakFeature> peakSpots, int groupID, List<int> crawledPeaks) {
             var peakCharacter = peak.PeakCharacter;
             if (peakCharacter.PeakLinks == null || peakCharacter.PeakLinks.Count == 0) return;
             foreach (var linkedPeak in peak.PeakCharacter.PeakLinks) {
@@ -124,7 +120,7 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
 
-        private void Initialization(List<ChromatogramPeakFeature> chromPeakFeatures) {
+        private void Initialization(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures) {
             foreach (var peak in chromPeakFeatures) {
                 var character = peak.PeakCharacter;
                 if (character.IsotopeWeightNumber > 0) {
@@ -174,7 +170,7 @@ namespace CompMs.MsdialCore.Algorithm
             }
         }
 
-        private void FinalizationForAdduct(List<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
+        private void FinalizationForAdduct(IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures, ParameterBase param) {
             var defaultAdduct = SearchedAdducts[0];
 
             foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {
@@ -240,8 +236,8 @@ namespace CompMs.MsdialCore.Algorithm
         // the RT deviations of peakspots should be less than 0.03 min
         // here, each peak is evaluated.
         // the purpose is to group the ions which are recognized as the same metabolite
-        private void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures,
-            IDataProvider provider, List<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
+        public void CharacterAssigner(List<ChromatogramPeakFeature> chromPeakFeatures,
+            IDataProvider provider, IReadOnlyList<MSDecResult> msdecResults, IMatchResultEvaluator<MsScanMatchResult> evaluator, ParameterBase param) {
             if (chromPeakFeatures == null || chromPeakFeatures.Count == 0) return;
 
             // if the first inchikey is same, it's recognized as the same metabolite.
@@ -267,7 +263,7 @@ namespace CompMs.MsdialCore.Algorithm
             assignLinksBasedOnPartialMatchingOfMS1MS2(chromPeakFeatures, msdecResults, param);
         }
 
-        private void assignAdductByMsMs(List<ChromatogramPeakFeature> chromPeakFeatures, List<MSDecResult> msdecResults, ParameterBase param) {
+        private void assignAdductByMsMs(List<ChromatogramPeakFeature> chromPeakFeatures, IReadOnlyList<MSDecResult> msdecResults, ParameterBase param) {
 
             var isAcetateAdduct = false;
             var isFormateAdduct = false;
@@ -333,7 +329,7 @@ namespace CompMs.MsdialCore.Algorithm
         // the peak of MS1 is assigned as "Found in upper MSMS"
         private void assignLinksBasedOnPartialMatchingOfMS1MS2(
             List<ChromatogramPeakFeature> chromPeakFeatures,
-            List<MSDecResult> msdecResults,
+            IReadOnlyList<MSDecResult> msdecResults,
             ParameterBase param) {
 
             chromPeakFeatures = chromPeakFeatures.OrderBy(chromPeakFeature => chromPeakFeature.Mass).ToList();
@@ -547,34 +543,30 @@ namespace CompMs.MsdialCore.Algorithm
         }
 
         private void assignLinksBasedOnInChIKeys(List<ChromatogramPeakFeature> chromPeakFeatures, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
-            foreach (var peak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {
-                
-                if (peak.IsUnknown || peak.IsAnnotationSuggested(evaluator)) continue;
-                if (!peak.IsValidInChIKey()) continue;
-                var inchikey = peak.InChIKey;
-                var shortInChIKey = inchikey.Substring(0, 14);
-
-                foreach (var cPeak in chromPeakFeatures.Where(n => n.PeakCharacter.IsotopeWeightNumber == 0)) {
-
+            var peaks = chromPeakFeatures.Where(
+                p => p.PeakCharacter.IsotopeWeightNumber == 0 &&
+                    !p.IsUnknown && !p.IsAnnotationSuggested(evaluator) &&
+                    p.IsValidInChIKey()
+                ).ToArray();
+            var groups = peaks.ToLookup(p => p.InChIKey.Substring(0, 14));
+            foreach (var group in groups) {
+                foreach (var ps in SearchCollection.Combination(group, 2)) {
+                    var peak = ps[0];
+                    var cPeak = ps[1];
                     var peakCharacter = peak.PeakCharacter;
                     var cPeakCharacter = cPeak.PeakCharacter;
-                    
                     if (peak.PeakID == cPeak.PeakID) continue;
                     if (cPeakCharacter.IsLinked) continue;
-                    if (cPeak.IsUnknown || cPeak.IsAnnotationSuggested(evaluator)) continue;
-                    if (!cPeak.IsValidInChIKey()) continue;
 
                     var cInchikey = cPeak.InChIKey;
                     var cShortInChIKey = cInchikey.Substring(0, 14);
 
-                    if (shortInChIKey == cShortInChIKey) {
-                        peakCharacter.IsLinked = true;
-                        peakCharacter.AdductParent = peak.PeakID;
+                    peakCharacter.IsLinked = true;
+                    peakCharacter.AdductParent = peak.PeakID;
 
-                        cPeakCharacter.IsLinked = true;
-                        cPeakCharacter.AdductParent = peak.PeakID;
-                        registerLinks(peak, cPeak, PeakLinkFeatureEnum.Adduct);
-                    }
+                    cPeakCharacter.IsLinked = true;
+                    cPeakCharacter.AdductParent = peak.PeakID;
+                    registerLinks(peak, cPeak, PeakLinkFeatureEnum.Adduct);
                 }
             }
         }
