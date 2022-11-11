@@ -32,6 +32,30 @@ namespace CompMs.Common.Components {
                 && _peaks[topId - 1].Intensity > 0 && _peaks[topId + 1].Intensity > 0;
         }
 
+        public int CountSpikes(int leftId, int rightId, double threshold) {
+            var leftBound = Math.Max(leftId, 1);
+            var rightBound = Math.Min(rightId, Peaks.Count - 2);
+
+            var counter = 0;
+            double? spikeMax = null, spikeMin = null;
+            for (int i = leftBound; i <= rightBound; i++) {
+                if (IsPeakTop(i)) {
+                    spikeMax = Peaks[i].Intensity;
+                }
+                else if (IsBottom(i)) {
+                    spikeMin = Peaks[i].Intensity;
+                }
+                if (spikeMax.HasValue && spikeMin.HasValue) {
+                    var noise = Math.Abs(spikeMax.Value - spikeMin.Value) / 2;
+                    if (noise > threshold) {
+                        counter++;
+                    }
+                    spikeMax = null; spikeMin = null;
+                }
+            }
+            return counter;
+        }
+
         public bool IsPeakTop(int topId) {
             return _peaks[topId - 1].Intensity <= _peaks[topId].Intensity
                 && _peaks[topId].Intensity >= _peaks[topId + 1].Intensity;

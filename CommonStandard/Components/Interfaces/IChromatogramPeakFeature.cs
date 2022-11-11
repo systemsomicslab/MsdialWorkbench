@@ -19,4 +19,20 @@ namespace CompMs.Common.Interfaces {
         double PeakWidth();
         double PeakWidth(ChromXType type);
     }
+
+    public static class ChromaogramPeakFEatureExtension {
+        public static bool IsOverlapedWithChromXType(this IChromatogramPeakFeature self, IChromatogramPeakFeature other, ChromXType type) {
+            IChromX selfTop = self.ChromXsTop.GetChromByType(type);
+            IChromX otherTop = other.ChromXsTop.GetChromByType(type);
+            return selfTop.Value > otherTop.Value
+                ? self.ChromXsLeft.GetChromByType(type).Value < otherTop.Value
+                : other.ChromXsLeft.GetChromByType(type).Value < selfTop.Value;
+        }
+
+        public static bool IsOverlaped(this IChromatogramPeakFeature self, IChromatogramPeakFeature other) {
+            return self.ChromXsTop.Value > other.ChromXsTop.Value
+                ? self.ChromXsLeft.Value < other.ChromXsTop.Value
+                : other.ChromXsLeft.Value < self.ChromXsTop.Value;
+        }
+    }
 }
