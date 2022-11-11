@@ -3,8 +3,11 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imaging;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parameter;
+using CompMs.MsdialImmsCore.Parameter;
+using CompMs.MsdialImmsCore.Process;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -14,8 +17,15 @@ namespace CompMs.App.Msdial.Model.ImagingImms
 {
     internal sealed class ImagingImmsMethodModel : DisposableModelBase, IMethodModel
     {
-        public ImagingImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<ParameterBase> storage) {
+        private readonly IMsdialDataStorage<MsdialImmsParameter> _storage;
+        private readonly FacadeMatchResultEvaluator _evaluator;
+        private readonly IDataProviderFactory<AnalysisFileBeanModel> _providerFactory;
+
+        public ImagingImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage) {
             AnalysisFileModelCollection = analysisFileBeanModelCollection;
+            _storage = storage;
+            _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
+            _providerFactory = storage.Parameter.ProviderFactoryParameter.Create().ContraMap((AnalysisFileBeanModel file) => file.File.LoadRawMeasurement(true, true, 5, 5000));
             ImageModels = new ObservableCollection<ImagingImageModel>(AnalysisFileModelCollection.AnalysisFiles.Select(file => new ImagingImageModel(file)));
             Image = ImageModels.FirstOrDefault();
         }
@@ -45,6 +55,16 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         }
 
         public Task RunAsync(ProcessOption option, CancellationToken token) {
+            if (option.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
+                var files = AnalysisFileModelCollection.IncludedAnalysisFiles;
+                var processor = new FileProcess(_storage, null, null, _evaluator);
+                return processor.RunAllAsync(files.Select(file => file.File), files.Select(_providerFactory.Create), null, 2, null);
+            }
+            else if (option.HasFlag(ProcessOption.Identification)) {
+                var files = AnalysisFileModelCollection.IncludedAnalysisFiles;
+                var processor = new FileProcess(_storage, null, null, _evaluator);
+                return processor.RunAllAsync(files.Select(file => file.File), files.Select(_providerFactory.Create), null, 2, null);
+            }
             return Task.CompletedTask;
         }
 

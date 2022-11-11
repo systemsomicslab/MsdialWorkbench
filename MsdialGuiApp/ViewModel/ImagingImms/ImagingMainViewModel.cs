@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.ImagingImms;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.App.Msdial.ViewModel.Imaging;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -10,7 +11,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CompMs.App.Msdial.ViewModel.Imaging
+namespace CompMs.App.Msdial.ViewModel.ImagingImms
 {
     internal sealed class ImagingMainViewModel : MethodViewModel
     {

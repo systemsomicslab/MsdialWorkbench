@@ -5,7 +5,7 @@ using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Dims;
-using CompMs.App.Msdial.ViewModel.Imaging;
+using CompMs.App.Msdial.ViewModel.ImagingImms;
 using CompMs.App.Msdial.ViewModel.Imms;
 using CompMs.App.Msdial.ViewModel.Lcimms;
 using CompMs.App.Msdial.ViewModel.Lcms;

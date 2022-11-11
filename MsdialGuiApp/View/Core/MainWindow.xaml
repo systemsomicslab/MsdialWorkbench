@@ -129,8 +129,8 @@
                     <lcimvw:LcimmsMainView />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type iimvm:ImagingMainViewModel}"
-                              xmlns:iimvm="clr-namespace:CompMs.App.Msdial.ViewModel.Imaging"
-                              xmlns:iimvw="clr-namespace:CompMs.App.Msdial.View.Imaging">
+                              xmlns:iimvm="clr-namespace:CompMs.App.Msdial.ViewModel.ImagingImms"
+                              xmlns:iimvw="clr-namespace:CompMs.App.Msdial.View.ImagingImms">
                     <iimvw:ImagingMainView/>
                 </DataTemplate>
             </ContentControl.Resources>

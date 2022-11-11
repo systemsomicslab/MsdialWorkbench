@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace CompMs.App.Msdial.View.Imaging
+namespace CompMs.App.Msdial.View.ImagingImms
 {
     /// <summary>
     /// Interaction logic for ImagingMainView.xaml

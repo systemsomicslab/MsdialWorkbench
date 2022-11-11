@@ -316,8 +316,8 @@
     <Compile Include="ViewModel\Core\IAnalysisResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IResultViewModel.cs" />
     <Compile Include="ViewModel\DataObj\PeptideViewModel.cs" />
+    <Compile Include="ViewModel\ImagingImms\ImagingMainViewModel.cs" />
     <Compile Include="ViewModel\Imaging\ImagingImageViewModel.cs" />
-    <Compile Include="ViewModel\Imaging\ImagingMainViewModel.cs" />
     <Compile Include="ViewModel\Imaging\ImagingRoiCompareViewModel.cs" />
     <Compile Include="ViewModel\Imaging\ImagingRoiViewModel.cs" />
     <Compile Include="ViewModel\Imaging\RoiIntensitiesViewModel.cs" />
@@ -537,10 +537,10 @@
     <Compile Include="View\Export\SaveImageAsWinLegacy.xaml.cs">
       <DependentUpon>SaveImageAsWinLegacy.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imaging\ImagingMainView.xaml.cs">
+    <Compile Include="View\ImagingImms\ImagingMainView.xaml.cs">
       <DependentUpon>ImagingMainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imaging\ImmsImagingRibbon.xaml.cs">
+    <Compile Include="View\ImagingImms\ImmsImagingRibbon.xaml.cs">
       <DependentUpon>ImmsImagingRibbon.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Imms\CompoundDetailView.xaml.cs">
@@ -938,11 +938,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Imaging\ImagingMainView.xaml">
+    <Page Include="View\ImagingImms\ImagingMainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Imaging\ImmsImagingRibbon.xaml">
+    <Page Include="View\ImagingImms\ImmsImagingRibbon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1398,6 +1398,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\SplashLipids.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="View\Imaging\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

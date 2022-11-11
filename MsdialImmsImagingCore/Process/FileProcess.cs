@@ -10,12 +10,13 @@ using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
-namespace CompMs.ImmsImagingCore.Process
+namespace CompMs.MsdialImmsImagingCore.Process
 {
-    public sealed class PeakPickProcess
+    public sealed class FileProcess
     {
-        public void Run() {
+        public Task RunAsync() {
             var filepath = @"E:\6_Projects\PROJECT_ImagingMS\20211005_Bruker_timsTOFfleX-selected\Eye_Neg\20211005_Eye_Acsl_HZ_KO_Neg\20211005_Eye_Acsl_HZ_KO_Neg.d";
             var reffile = @"E:\6_Projects\PROJECT_ImagingMS\Lipid reference library\20220725_timsTOFpro_TextLibrary_Eye_Neg.txt";
             var outputfile = @"E:\6_Projects\PROJECT_ImagingMS\20211005_Bruker_timsTOFfleX-selected\Eye_Neg\20211005_Eye_Acsl_HZ_KO_Neg\20211005_Eye_Acsl_HZ_KO_Neg.mddata";
@@ -50,7 +51,7 @@ namespace CompMs.ImmsImagingCore.Process
             param.TextDbSearchParam.IsUseCcsForAnnotationFiltering = true;
 
             RawMeasurement rawobj = null;
-            using (var access = new RawDataAccess(filepath, 0, false, true, false)) {
+            using (var access = new RawDataAccess(filepath, 0, getProfileData: false, isImagingMsData: true, isGuiProcess: false)) {
                 rawobj = access.GetMeasurement();
             }
             var provider = new StandardDataProviderFactory().Create(rawobj);
@@ -60,7 +61,7 @@ namespace CompMs.ImmsImagingCore.Process
                 MsdialImmsParameter = param
             };
             var processor = new MsdialImmsCore.Process.FileProcess(container, null, null, null);
-            processor.RunAsync(file, provider).Wait();
+            return processor.RunAsync(file, provider);
         }
     }
 }
