@@ -19,10 +19,15 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
     {
         private readonly ComponentLoadingModel _model;
 
-        public ComponentLoadingViewModel(ComponentLoadingModel model, int xIndex, int yIndex) {
+        public ComponentLoadingViewModel(ComponentLoadingModel model, int xIndex, int yIndex, bool isOPLS) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             ComponentX = _model.Loading[xIndex];
-            ComponentY = _model.Loading[yIndex];
+            if (isOPLS) {
+                ComponentY = _model.OLoading[yIndex];
+            }
+            else {
+                ComponentY = _model.Loading[yIndex];
+            }
         }
 
         public string Label => _model.Label;
@@ -36,11 +41,16 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
     {
         private readonly ComponentScoreModel _model;
 
-        public ComponentScoreViewModel(ComponentScoreModel model, int xIndex, int yIndex)
+        public ComponentScoreViewModel(ComponentScoreModel model, int xIndex, int yIndex, bool isOPLS)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             ComponentX = _model.Score[xIndex];
-            ComponentY = _model.Score[yIndex];
+            if (isOPLS) {
+                ComponentY = _model.OScore[yIndex];
+            }
+            else {
+                ComponentY = _model.Score[yIndex];
+            }
         }
 
         public string Label => _model.Label;
@@ -69,13 +79,20 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
         public PCAPLSResultViewModel(PCAPLSResultModel model) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
+            var option = model.MultivariateAnalysisOption;
+            var isOpls = option == CompMs.Common.Enum.MultivariateAnalysisOption.Oplsr || option == CompMs.Common.Enum.MultivariateAnalysisOption.Oplsda ? true : false;
+            
+            if (isOpls) {
+                Components = Enumerable.Range(1, model.NumberOfOComponents).ToList().AsReadOnly();
+                ComponentX = new ReactiveProperty<int>(1).AddTo(Disposables);
+                ComponentY = new ReactiveProperty<int>(1).AddTo(Disposables);
+            }
+            else {
+                Components = Enumerable.Range(1, model.NumberOfComponents).ToList().AsReadOnly();
+                ComponentX = new ReactiveProperty<int>(1).AddTo(Disposables);
+                ComponentY = new ReactiveProperty<int>(2).AddTo(Disposables);
+            }
 
-            Components = Enumerable.Range(1, model.NumberOfComponents).ToList().AsReadOnly();
-            ComponentX = new ReactiveProperty<int>(1).AddTo(Disposables);
-            ComponentY = new ReactiveProperty<int>(2).AddTo(Disposables);
-
-            //Brushes = model.Brushes.AsReadOnly();
-            //Brush = model.Brush.AsReadOnly();
             Brush = model.SelectedBrush;
             ClassBrush = model.PointBrush;
             PosnegBrush = model.PosnegBrush;
@@ -83,8 +100,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             LabelTypesSample = new List<IReadOnlyReactiveProperty<LabelTypeViewModel>>
             {
                 new ReactivePropertySlim<LabelTypeViewModel>(new LabelTypeViewModel("Sample", nameof(ComponentScoreViewModel.Label))),
-                ComponentX.Select(i => new LabelTypeViewModel($"Component {i}", null /*nameof(ComponentScoreViewModel.ComponentX)*/)).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
-                ComponentY.Select(i => new LabelTypeViewModel($"Component {i}", null /*nameof(ComponentScoreViewModel.ComponentY)*/)).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
+                ComponentX.Select(i => new LabelTypeViewModel("X value", nameof(ComponentScoreViewModel.ComponentX))).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
+                ComponentY.Select(i => new LabelTypeViewModel("Y value", nameof(ComponentScoreViewModel.ComponentY))).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
                 new ReactivePropertySlim<LabelTypeViewModel>(new LabelTypeViewModel("None", null)),
             }.AsReadOnly();
             LabelTypeSample = new ReactiveProperty<LabelTypeViewModel>(LabelTypesSample.First().Value).AddTo(Disposables);
@@ -92,8 +109,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             LabelTypesMetabolite = new List<IReadOnlyReactiveProperty<LabelTypeViewModel>>
             {
                 new ReactivePropertySlim<LabelTypeViewModel>(new LabelTypeViewModel("Metabolite", nameof(ComponentLoadingViewModel.Label))),
-                ComponentX.Select(i => new LabelTypeViewModel($"Component {i}", nameof(ComponentLoadingViewModel.ComponentX))).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
-                ComponentY.Select(i => new LabelTypeViewModel($"Component {i}", nameof(ComponentLoadingViewModel.ComponentY))).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
+                ComponentX.Select(i => new LabelTypeViewModel("X value", nameof(ComponentLoadingViewModel.ComponentX))).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
+                ComponentY.Select(i => new LabelTypeViewModel("Y value", nameof(ComponentLoadingViewModel.ComponentY))).ToReadOnlyReactivePropertySlim().AddTo(Disposables),
                 new ReactivePropertySlim<LabelTypeViewModel>(new LabelTypeViewModel("None", null)),
             }.AsReadOnly();
             LabelTypeMetabolite = new ReactiveProperty<LabelTypeViewModel>(LabelTypesMetabolite.First().Value).AddTo(Disposables);
@@ -102,30 +119,58 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             SpotSizeMetabolite = new ReactiveProperty<double>(6).AddTo(Disposables);
 
             Loadings = new ReactiveCollection<ComponentLoadingViewModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
-            Observable.CombineLatest(ComponentX, ComponentY)
+            if (isOpls) {
+                Observable.CombineLatest(ComponentX, ComponentY)
                 .Subscribe(xy => {
                     Loadings.ClearOnScheduler();
-                    Loadings.AddRangeOnScheduler(_model.Loadings.Select(loading => new ComponentLoadingViewModel(loading, xy[0] - 1, xy[1] - 1)));
+                    Loadings.AddRangeOnScheduler(_model.Loadings.Select(loading => new ComponentLoadingViewModel(loading, xy[0] - 1, xy[1] - 1, true)));
                 }).AddTo(Disposables);
+                LoadingHorizontalAxis = ComponentX.Select(i => model.LoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+                LoadingVerticalAxis = ComponentY.Select(i => model.OLoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            LoadingHorizontalAxis = ComponentX.Select(i => model.LoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            LoadingVerticalAxis = ComponentY.Select(i => model.LoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+                PC1LoadingAbsoluteVerticalAxis = ComponentX.Select(i => model.LoadingAbsoluteAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+                PC2LoadingAbsoluteVerticalAxis = ComponentY.Select(i => model.OLoadingAbsoluteAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            }
+            else {
+                Observable.CombineLatest(ComponentX, ComponentY)
+                .Subscribe(xy => {
+                    Loadings.ClearOnScheduler();
+                    Loadings.AddRangeOnScheduler(_model.Loadings.Select(loading => new ComponentLoadingViewModel(loading, xy[0] - 1, xy[1] - 1, false)));
+                }).AddTo(Disposables);
+                LoadingHorizontalAxis = ComponentX.Select(i => model.LoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+                LoadingVerticalAxis = ComponentY.Select(i => model.LoadingAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            PC1LoadingAbsoluteVerticalAxis = ComponentX.Select(i => model.LoadingAbsoluteAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            PC2LoadingAbsoluteVerticalAxis = ComponentY.Select(i => model.LoadingAbsoluteAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-
+                PC1LoadingAbsoluteVerticalAxis = ComponentX.Select(i => model.LoadingAbsoluteAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+                PC2LoadingAbsoluteVerticalAxis = ComponentY.Select(i => model.LoadingAbsoluteAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            }
+            
             Scores = new ReactiveCollection<ComponentScoreViewModel>(UIDispatcherScheduler.Default).AddTo(Disposables);
-            Observable.CombineLatest(ComponentX, ComponentY)
+            if (isOpls) {
+                Observable.CombineLatest(ComponentX, ComponentY)
                 .Subscribe(xy => {
                     Scores.ClearOnScheduler();
-                    Scores.AddRangeOnScheduler(_model.Scores.Select(score => new ComponentScoreViewModel(score, xy[0] - 1, xy[1] - 1)));
+                    Scores.AddRangeOnScheduler(_model.Scores.Select(score => new ComponentScoreViewModel(score, xy[0] - 1, xy[1] - 1, true)));
                 }).AddTo(Disposables);
 
-            ScoreHorizontalAxis = ComponentX.Select(i => model.ScoreAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            ScoreVerticalAxis = ComponentY.Select(i => model.ScoreAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+                ScoreHorizontalAxis = ComponentX.Select(i => model.ScoreAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+                ScoreVerticalAxis = ComponentY.Select(i => model.OScoreAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
 
-            PCXLabelAxis = ComponentX.Select(x => model.PCAxises[x - 1]).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            PCYLabelAxis = ComponentY.Select(y => model.PCAxises[y - 1]).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+                PCXLabelAxis = ComponentX.Select(x => model.PCAxises[x - 1]).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+                PCYLabelAxis = ComponentY.Select(y => model.PCOAxises[y - 1]).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            }
+            else {
+                Observable.CombineLatest(ComponentX, ComponentY)
+                .Subscribe(xy => {
+                    Scores.ClearOnScheduler();
+                    Scores.AddRangeOnScheduler(_model.Scores.Select(score => new ComponentScoreViewModel(score, xy[0] - 1, xy[1] - 1, false)));
+                }).AddTo(Disposables);
+
+                ScoreHorizontalAxis = ComponentX.Select(i => model.ScoreAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+                ScoreVerticalAxis = ComponentY.Select(i => model.ScoreAxises[i - 1].Value).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+
+                PCXLabelAxis = ComponentX.Select(x => model.PCAxises[x - 1]).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+                PCYLabelAxis = ComponentY.Select(y => model.PCAxises[y - 1]).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            }
         }
 
 
@@ -172,11 +217,11 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             (showContributionsCommand = new DelegateCommand<Window>(_model.ShowContributionPlot));
         private DelegateCommand<Window> showContributionsCommand;
 
-        public DelegateCommand<Window> ShowPredVsExp => showPredVsExpCommand ??
+        public DelegateCommand<Window> ShowPredVsExpCommand => showPredVsExpCommand ??
             (showPredVsExpCommand = new DelegateCommand<Window>(_model.ShowPredVsExp));
         private DelegateCommand<Window> showPredVsExpCommand;
 
-        public DelegateCommand<Window> ShowVIPs => showVIPsCommand ??
+        public DelegateCommand<Window> ShowVIPsCommand => showVIPsCommand ??
             (showVIPsCommand = new DelegateCommand<Window>(_model.ShowVIPs));
         private DelegateCommand<Window> showVIPsCommand;
 

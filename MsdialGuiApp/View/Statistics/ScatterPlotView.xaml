@@ -7,6 +7,7 @@
         xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
         xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Statistics"
+        xmlns:model="clr-namespace:CompMs.App.Msdial.Model.Statistics"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type={x:Type vm:SimpleScatterPlotViewModel}}"
         Title="ScatterPlotView" Height="400" Width="400">
@@ -97,8 +98,11 @@
                                   Grid.Row="0" Grid.Column="0">
             <Grid>
                 <chart:ScatterControlSlim ItemsSource="{Binding PlotItems.Value}"
-                                          PointBrush="{Binding ClassBrush.Value}"
-                                          Radius="{Binding SpotSizeSample.Value}">
+                                          DataType="{x:Type model:SimplePlotItem}"
+                                          HorizontalProperty="XValue"
+                                          VerticalProperty="YValue"
+                                          PointBrush="{Binding PointBrush}"
+                                          Radius="4">
                     <chart:ScatterControlSlim.ToolTip>
                         <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                             <StackPanel Orientation="Vertical">

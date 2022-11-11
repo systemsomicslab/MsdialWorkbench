@@ -24,25 +24,29 @@ using System.Windows.Media;
 namespace CompMs.App.Msdial.Model.Statistics
 {
     internal sealed class ComponentLoadingModel : BindableBase {
-        public ComponentLoadingModel(double[] loading, string label, AlignmentSpotPropertyModel spot) {
+        public ComponentLoadingModel(double[] loading, double[] oLoading, string label, AlignmentSpotPropertyModel spot) {
             Loading = loading ?? throw new ArgumentNullException(nameof(loading));
+            OLoading = oLoading;
             Label = label;
             Spot = spot;
         }
 
         public double[] Loading { get; }
+        public double[] OLoading { get; }
         public string Label { get; }
         public AlignmentSpotPropertyModel Spot { get; }
     }
     internal sealed class ComponentScoreModel : BindableBase {
-        public ComponentScoreModel(double[] score, string label, AnalysisFileBean bean)
+        public ComponentScoreModel(double[] score, double[] oScore, string label, AnalysisFileBean bean)
         {
             Score = score ?? throw new ArgumentNullException(nameof(score));
+            OScore = oScore;
             Label = label;
             Bean = bean;
         }
 
         public double[] Score { get; }
+        public double[] OScore { get; }
         public string Label { get; }
         public AnalysisFileBean Bean { get; }
     }
@@ -65,9 +69,27 @@ namespace CompMs.App.Msdial.Model.Statistics
             _result = result ?? throw new ArgumentNullException(nameof(result));
 
             var statisticsObject = result.StatisticsObject;
-            Loadings = new ObservableCollection<ComponentLoadingModel>(
+            var option = result.MultivariateAnalysisOption;
+
+            if (option == MultivariateAnalysisOption.Oplsr || option == MultivariateAnalysisOption.Oplsda) {
+                Scores = new ObservableCollection<ComponentScoreModel>(
+                statisticsObject.YLabels.Select((label, i) =>
+                    new ComponentScoreModel(result.TPreds.Select(preds => preds[i]).ToArray(), result.ToPreds.Select(preds => preds[i]).ToArray(), label, analysisfiles[i])));
+
+                Loadings = new ObservableCollection<ComponentLoadingModel>(
                 statisticsObject.XLabels.Select((label, i) =>
-                    new ComponentLoadingModel(result.PPreds.Select(preds => preds[i]).ToArray(), label, spotprops[i])));
+                    new ComponentLoadingModel(result.PPreds.Select(preds => preds[i]).ToArray(), result.PoPreds.Select(preds => preds[i]).ToArray(), label, spotprops[i])));
+            }
+            else {
+                Scores = new ObservableCollection<ComponentScoreModel>(
+                statisticsObject.YLabels.Select((label, i) =>
+                    new ComponentScoreModel(result.TPreds.Select(preds => preds[i]).ToArray(), null, label, analysisfiles[i])));
+
+                Loadings = new ObservableCollection<ComponentLoadingModel>(
+                statisticsObject.XLabels.Select((label, i) =>
+                    new ComponentLoadingModel(result.PPreds.Select(preds => preds[i]).ToArray(), null, label, spotprops[i])));
+            }
+            
             LoadingAxises = result.PPreds
                 .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new ContinuousAxisManager<double>(pc_loadings, new ConstantMargin(20))))
                 .ToList().AsReadOnly();
@@ -76,9 +98,6 @@ namespace CompMs.App.Msdial.Model.Statistics
                 .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new AbsoluteAxisManager(new Range(0d, pc_loadings.DefaultIfEmpty().Max(Math.Abs)), new ConstantMargin(0, 10))))
                 .ToList().AsReadOnly();
 
-            Scores = new ObservableCollection<ComponentScoreModel>(
-                statisticsObject.YLabels.Select((label, i) =>
-                    new ComponentScoreModel(result.TPreds.Select(preds => preds[i]).ToArray(), label, analysisfiles[i])));
             ScoreAxises = result.TPreds
                 .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new ContinuousAxisManager<double>(pc_loadings, new ConstantMargin(20))))
                 .ToList().AsReadOnly();
@@ -89,7 +108,25 @@ namespace CompMs.App.Msdial.Model.Statistics
             }
             PCAxises = pcAxises;
 
-            //multivariateAnalysisResult.Contributions.OrderByDescending(d => d).Select(d => new ComponentContributionModel()));
+            if (option == MultivariateAnalysisOption.Oplsr || option == MultivariateAnalysisOption.Oplsda) {
+                OLoadingAxises = result.PoPreds
+                .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new ContinuousAxisManager<double>(pc_loadings, new ConstantMargin(20))))
+                .ToList().AsReadOnly();
+
+                OLoadingAbsoluteAxises = result.PoPreds
+                    .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new AbsoluteAxisManager(new Range(0d, pc_loadings.DefaultIfEmpty().Max(Math.Abs)), new ConstantMargin(0, 10))))
+                    .ToList().AsReadOnly();
+
+                OScoreAxises = result.ToPreds
+                    .Select(pc_loadings => new Lazy<IAxisManager<double>>(() => new ContinuousAxisManager<double>(pc_loadings, new ConstantMargin(20))))
+                    .ToList().AsReadOnly();
+
+                var opcAxises = new ObservableCollection<IAxisManager<string>>();
+                for (int i = 0; i < NumberOfOComponents; i++) {
+                    opcAxises.Add(new CategoryAxisManager<string>(Loadings.OrderByDescending(loading => Math.Abs(loading.OLoading[i])).Select(loading => loading.Label).ToArray()));
+                }
+                PCOAxises = opcAxises;
+            }
 
             PointBrush = brushmaps.Select(bm => bm.Contramap((ComponentScoreViewModel csvm) => csvm.Model.Bean.AnalysisFileClass)).ToReactiveProperty();
 
@@ -129,9 +166,13 @@ namespace CompMs.App.Msdial.Model.Statistics
         public ObservableCollection<ComponentLoadingModel> Loadings { get; }
         public ObservableCollection<ComponentScoreModel> Scores { get; }
         public ObservableCollection<IAxisManager<string>> PCAxises { get; }
+        public ObservableCollection<IAxisManager<string>> PCOAxises { get; }
         public ReadOnlyCollection<Lazy<IAxisManager<double>>> LoadingAxises { get; }
+        public ReadOnlyCollection<Lazy<IAxisManager<double>>> OLoadingAxises { get; }
         public ReadOnlyCollection<Lazy<IAxisManager<double>>> LoadingAbsoluteAxises { get; }
+        public ReadOnlyCollection<Lazy<IAxisManager<double>>> OLoadingAbsoluteAxises { get; }
         public ReadOnlyCollection<Lazy<IAxisManager<double>>> ScoreAxises { get; }
+        public ReadOnlyCollection<Lazy<IAxisManager<double>>> OScoreAxises { get; }
         public List<BrushMapData<ComponentLoadingViewModel>> Brushes { get; }
 
         public BrushMapData<ComponentLoadingViewModel> SelectedBrush {
@@ -153,6 +194,10 @@ namespace CompMs.App.Msdial.Model.Statistics
         private IBrushMapper<ComponentLoadingViewModel> _posnegBrush;
 
         public int NumberOfComponents => _result.PPreds.Count;
+        public int NumberOfOComponents => _result.PoPreds.Count;
+
+        public MultivariateAnalysisOption MultivariateAnalysisOption => _result.MultivariateAnalysisOption;
+
         public string ScorePlotTitle {
             get => scorePlotTitle;
             set => SetProperty(ref scorePlotTitle, value);
@@ -279,7 +324,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                 var xAxisValues = _result.PPreds[0];
                 var yAxisValues = _result.PPredCoeffs[0];
 
-                var brushes = convertRgbaToBrush(_result.StatisticsObject.YColors);
+                var brushes = convertRgbaToBrush(_result.StatisticsObject.XColors);
                 var idValues = _result.StatisticsObject.XIndexes;
                 var labels = _result.StatisticsObject.XLabels;
 

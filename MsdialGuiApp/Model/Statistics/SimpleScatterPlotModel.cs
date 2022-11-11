@@ -1,7 +1,9 @@
 ﻿using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager.Generic;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
+using CompMs.Graphics.Design;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -22,8 +24,10 @@ namespace CompMs.App.Msdial.Model.Statistics {
             GraphTitle = graphTitle;
             if (items.IsEmptyOrNull()) return;
 
-            XAxis = new AbsoluteAxisManager(new Range(0d, items.Select(n => n.XValue).DefaultIfEmpty().Max(Math.Abs)), new ConstantMargin(0, 10));
-            YAxis = new AbsoluteAxisManager(new Range(0d, items.Select(n => n.YValue).DefaultIfEmpty().Max(Math.Abs)), new ConstantMargin(0, 10));
+            XAxis = new ContinuousAxisManager<double>(items.Select(n => n.XValue).ToList(), new ConstantMargin(10, 10));
+            YAxis = new ContinuousAxisManager<double>(items.Select(n => n.YValue).ToList(), new ConstantMargin(10, 10));
+      
+            PointBrush = new IdentityBrushMapper().Contramap((SimplePlotItem item) => item.Brush);
         }
         public string XAxisTitle {
             get => xAxisTitle;
@@ -61,6 +65,12 @@ namespace CompMs.App.Msdial.Model.Statistics {
             set => SetProperty(ref yAxis, value);
         }
         private IAxisManager<double> yAxis;
+
+        public IBrushMapper<SimplePlotItem> PointBrush {
+            get => _pointBrush;
+            set => SetProperty(ref _pointBrush, value);
+        }
+        private IBrushMapper<SimplePlotItem> _pointBrush;
     }
 
     internal class SimplePlotItem : BindableBase {

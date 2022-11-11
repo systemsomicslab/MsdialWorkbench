@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Statistics;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -28,5 +29,6 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
         public ReactiveProperty<ObservableCollection<SimplePlotItem>> PlotItems { get; }
         public ReactivePropertySlim<IAxisManager<double>> XAxis { get; }
         public ReactivePropertySlim<IAxisManager<double>> YAxis { get; }
+        public IBrushMapper<SimplePlotItem> PointBrush => _model.PointBrush;
     }
 }
