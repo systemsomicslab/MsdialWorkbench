@@ -133,73 +133,60 @@ namespace CompMs.MsdialImmsCore.Algorithm
         }
     }
 
-    public class ImmsRepresentativeDataProviderFactory
-        : IDataProviderFactory<AnalysisFileBean>, IDataProviderFactory<RawMeasurement>
+    public sealed class ImmsRepresentativeDataProviderFactory : IDataProviderFactory<AnalysisFileBean>, IDataProviderFactory<RawMeasurement>
     {
-        public ImmsRepresentativeDataProviderFactory(
-            double timeBegin, double timeEnd,
-            int retry = 5, bool isGuiProcess = false) {
+        private readonly bool _isGuiProcess;
+        private readonly int _retry;
+        private readonly double _timeBegin;
+        private readonly double _timeEnd;
 
-            this.timeBegin = timeBegin;
-            this.timeEnd = timeEnd;
-            this.retry = retry;
-            this.isGuiProcess = isGuiProcess;
+        public ImmsRepresentativeDataProviderFactory(double timeBegin, double timeEnd, int retry = 5, bool isGuiProcess = false) {
+
+            _timeBegin = timeBegin;
+            _timeEnd = timeEnd;
+            _retry = retry;
+            _isGuiProcess = isGuiProcess;
         }
 
-        private readonly bool isGuiProcess;
-        private readonly int retry;
-        private readonly double timeBegin;
-        private readonly double timeEnd;
-
         public IDataProvider Create(AnalysisFileBean file) {
-            return new ImmsRepresentativeDataProvider(file, timeBegin, timeEnd, isGuiProcess, retry);
+            var measurement = file.LoadRawMeasurement(isImagingMsData: false, isGuiProcess: _isGuiProcess, retry: _retry, sleepMilliSeconds: 1000);
+            return new ImmsRepresentativeDataProvider(measurement, _timeBegin, _timeEnd);
         }
 
         public IDataProvider Create(RawMeasurement rawMeasurement) {
-            return new ImmsRepresentativeDataProvider(rawMeasurement, timeBegin, timeEnd);
+            return new ImmsRepresentativeDataProvider(rawMeasurement, _timeBegin, _timeEnd);
         }
     }
 
-    public class ImmsAverageDataProviderFactory
-        : IDataProviderFactory<AnalysisFileBean>, IDataProviderFactory<RawMeasurement>
+    public sealed class ImmsAverageDataProviderFactory : IDataProviderFactory<AnalysisFileBean>, IDataProviderFactory<RawMeasurement>
     {
-        public ImmsAverageDataProviderFactory(
-            double massTolerance, double driftTolerance,
-            int retry = 5, bool isGuiProcess = false) {
+        private readonly bool _isGuiProcess;
+        private readonly int _retry;
+        private readonly double _massTolerance, _driftTolerance;
+        private readonly double _timeBegin;
+        private readonly double _timeEnd;
 
-            this.retry = retry;
-            this.isGuiProcess = isGuiProcess;
-            this.massTolerance = massTolerance;
-            this.driftTolerance = driftTolerance;
-            this.timeBegin = double.MinValue;
-            this.timeEnd = double.MaxValue;
+        public ImmsAverageDataProviderFactory(double massTolerance, double driftTolerance, double timeBegin, double timeEnd, int retry = 5, bool isGuiProcess = false) {
+            _retry = retry;
+            _isGuiProcess = isGuiProcess;
+            _massTolerance = massTolerance;
+            _driftTolerance = driftTolerance;
+            _timeBegin = timeBegin;
+            _timeEnd = timeEnd;
         }
 
-        public ImmsAverageDataProviderFactory(
-            double massTolerance, double driftTolerance,
-            double timeBegin, double timeEnd,
-            int retry = 5, bool isGuiProcess = false) {
+        public ImmsAverageDataProviderFactory(double massTolerance, double driftTolerance, int retry = 5, bool isGuiProcess = false)
+            :this(massTolerance, driftTolerance, double.MinValue, double.MaxValue, retry, isGuiProcess) {
 
-            this.retry = retry;
-            this.isGuiProcess = isGuiProcess;
-            this.massTolerance = massTolerance;
-            this.driftTolerance = driftTolerance;
-            this.timeBegin = timeBegin;
-            this.timeEnd = timeEnd;
         }
-
-        private readonly bool isGuiProcess;
-        private readonly int retry;
-        private readonly double massTolerance, driftTolerance;
-        private readonly double timeBegin;
-        private readonly double timeEnd;
 
         public IDataProvider Create(AnalysisFileBean file) {
-            return new ImmsAverageDataProvider(file, massTolerance, driftTolerance, timeBegin, timeEnd, isGuiProcess, retry);
+            var measurement = file.LoadRawMeasurement(isImagingMsData: false, isGuiProcess: _isGuiProcess, retry: _retry, sleepMilliSeconds: 1000);
+            return new ImmsAverageDataProvider(measurement, _massTolerance, _driftTolerance, _timeBegin, _timeEnd);
         }
 
         public IDataProvider Create(RawMeasurement rawMeasurement) {
-            return new ImmsAverageDataProvider(rawMeasurement, massTolerance, driftTolerance, timeBegin, timeEnd);
+            return new ImmsAverageDataProvider(rawMeasurement, _massTolerance, _driftTolerance, _timeBegin, _timeEnd);
         }
     }
 }
