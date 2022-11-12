@@ -29,6 +29,7 @@ namespace CompMs.Common.Enum
         Infusion = 0x0,
         Chromatography = 0x1,
         IonMobility = 0x2,
+        Imaging = 0x4,
     }
     public enum MSDataType { Centroid, Profile }
     public enum AcquisitionType { DDA, SWATH, AIF }

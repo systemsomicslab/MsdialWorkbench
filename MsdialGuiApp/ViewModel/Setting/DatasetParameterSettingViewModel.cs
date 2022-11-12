@@ -34,10 +34,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .AddTo(Disposables);
             SeparationIonMobility = new ReactivePropertySlim<bool>(SeparationType.Value.HasFlag(CompMs.Common.Enum.SeparationType.IonMobility))
                 .AddTo(Disposables);
+            Imaging = new ReactivePropertySlim<bool>(SeparationType.Value.HasFlag(CompMs.Common.Enum.SeparationType.Imaging))
+                .AddTo(Disposables);
             new[]
             {
                 SeparationChromatography.Select(x => x ? CompMs.Common.Enum.SeparationType.Chromatography : CompMs.Common.Enum.SeparationType.Infusion),
                 SeparationIonMobility.Select(x => x ? CompMs.Common.Enum.SeparationType.IonMobility : CompMs.Common.Enum.SeparationType.None),
+                Imaging.Select(x => x ? CompMs.Common.Enum.SeparationType.Imaging : CompMs.Common.Enum.SeparationType.None),
             }.CombineLatest(xs => xs.Aggregate((acc, v) => acc | v))
             .Subscribe(v => SeparationType.Value = v)
             .AddTo(Disposables);
@@ -126,6 +129,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
         public ReactivePropertySlim<bool> SeparationChromatography { get; }
         public ReactivePropertySlim<bool> DirectInfution { get; }
         public ReactivePropertySlim<bool> SeparationIonMobility { get; }
+        public ReactivePropertySlim<bool> Imaging { get; }
 
         public ReactivePropertySlim<CollisionType> CollisionType { get; }
 

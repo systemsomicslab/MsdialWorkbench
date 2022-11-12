@@ -12,6 +12,8 @@
     <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
     <converter:BooleanToEnumConverter x:Key="EnumToBoolean"/>
     <converter:CBoolNegativeConverter x:Key="NegativeConverter"/>
+    <converter:BooleanAllConverter x:Key="BooleanAll"/>
+    <converter:BooleanAnyConverter x:Key="BooleanAny"/>
 
     <ControlTemplate x:Key="InputErrorTemplate">
         <DockPanel>

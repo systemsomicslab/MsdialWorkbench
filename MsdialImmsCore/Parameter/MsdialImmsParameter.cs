@@ -9,8 +9,8 @@ namespace CompMs.MsdialImmsCore.Parameter
 {
     [MessagePackObject]
     public class MsdialImmsParameter : ParameterBase {
-        public MsdialImmsParameter(bool isLabUseOnly): base(isLabUseOnly) {
-            MachineCategory = MachineCategory.IMMS;
+        public MsdialImmsParameter(bool isImaging, bool isLabUseOnly) : base(isLabUseOnly) {
+            MachineCategory = isImaging ? MachineCategory.IIMMS : MachineCategory.IMMS;
 
             MspSearchParam.WeightedDotProductCutOff = 0.1f;
             MspSearchParam.SimpleDotProductCutOff = 0.1f;
@@ -23,7 +23,7 @@ namespace CompMs.MsdialImmsCore.Parameter
         }
 
         [SerializationConstructor]
-        public MsdialImmsParameter(): this(isLabUseOnly: false) {
+        public MsdialImmsParameter(): this(isImaging: false, isLabUseOnly: false) {
 
         }
 

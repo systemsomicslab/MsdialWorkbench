@@ -108,20 +108,19 @@ namespace CompMs.App.Msdial.Model.Imms
         public AlignmentResultExportModel AlignmentResultExportModel { get; }
 
         public override Task RunAsync(ProcessOption option, CancellationToken token) {
-            var processOption = option;
             // Run PeakPick and Identification
-            if (processOption.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
+            if (option.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
                 if (!ProcessPeakPickAndAnnotation(_storage)) {
                     return Task.CompletedTask;
                 }
             }
-            else if (processOption.HasFlag(ProcessOption.Identification)) {
+            else if (option.HasFlag(ProcessOption.Identification)) {
                 if (!ProcessAnnotation(_storage))
                     return Task.CompletedTask;
             }
 
             // Run Alignment
-            if (processOption.HasFlag(ProcessOption.Alignment)) {
+            if (option.HasFlag(ProcessOption.Alignment)) {
                 if (!ProcessAlignment(_storage))
                     return Task.CompletedTask;
             }

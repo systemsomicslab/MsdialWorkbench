@@ -12,6 +12,8 @@ namespace CompMs.App.Msdial.Utility
     internal static class ParameterFactory
     {
         public static ParameterBase CreateParameter(Ionization ionization, SeparationType separationType) {
+            if (separationType == (SeparationType.Imaging | SeparationType.IonMobility))
+                return new MsdialImmsParameter(isImaging: true, GlobalResources.Instance.IsLabPrivate);
             if (ionization == Ionization.EI && separationType == SeparationType.Chromatography)
                 return new MsdialGcmsParameter(GlobalResources.Instance.IsLabPrivate);
             if (ionization == Ionization.ESI && separationType == SeparationType.Chromatography)
@@ -21,7 +23,7 @@ namespace CompMs.App.Msdial.Utility
             if (ionization == Ionization.ESI && separationType == SeparationType.Infusion)
                 return new MsdialDimsParameter(GlobalResources.Instance.IsLabPrivate);
             if (ionization == Ionization.ESI && separationType == (SeparationType.Infusion | SeparationType.IonMobility))
-                return new MsdialImmsParameter(GlobalResources.Instance.IsLabPrivate);
+                return new MsdialImmsParameter(isImaging: false, GlobalResources.Instance.IsLabPrivate);
             throw new Exception("Not supported separation type is selected.");
         }
     }

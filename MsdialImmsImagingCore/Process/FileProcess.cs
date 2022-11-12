@@ -36,7 +36,7 @@ namespace CompMs.MsdialImmsImagingCore.Process
                 PeakAreaBeanInformationFilePath = Path.Combine(fileDir, filename + "_test221023" + ".pai"),
             };
 
-            var param = new MsdialImmsParameter() {
+            var param = new MsdialImmsParameter(isImaging: true, isLabUseOnly: true) {
                 ProjectFolderPath = Path.GetDirectoryName(outputfile),
                 ProjectFileName = Path.GetFileName(outputfile),
                 MachineCategory = MachineCategory.IMMS,
