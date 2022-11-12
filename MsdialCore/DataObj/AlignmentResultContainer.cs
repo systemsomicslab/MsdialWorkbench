@@ -70,6 +70,7 @@ namespace CompMs.MsdialCore.DataObj {
             }
 
             MessagePackHandler.SaveToFile(this, containerFile);
+            LoadAlginedPeakPropertiesTask.Wait();
             MessagePackDefaultHandler.SaveLargeListToFile(peakProperty, chromatogramPeakFile);
             MessagePackDefaultHandler.SaveLargeListToFile(driftProperty, driftSpotFile);
 
@@ -135,7 +136,12 @@ namespace CompMs.MsdialCore.DataObj {
                     foreach (var c in collection) {
                         c.AlignedPeakPropertiesTask = task = task.ContinueWith(_ => enumerator.MoveNext() ? enumerator.Current : new List<AlignmentChromPeakFeature>(0));
                     }
-                    result.LoadAlginedPeakPropertiesTask = Task.Run(async () => await task.ConfigureAwait(false));
+                    var allTaskCompleted = Task.Run(async () =>
+                    {
+                        await task.ConfigureAwait(false);
+                        enumerator.Dispose();
+                    });
+                    result.LoadAlginedPeakPropertiesTask = allTaskCompleted;
                 }
             }
             return result;
