@@ -150,9 +150,9 @@ namespace CompMs.App.MsdialConsole {
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated_20KE\MergedMSP_20KE.msp",
             //    "EAD 20eV CID 10V");
 
-            var test = LipidNameConverterTest.Convert2SummedLipidNameTest("TG 18:1_18:1_18:3", "TG");
-            Console.WriteLine(test);
-            Console.ReadLine();
+            //var test = LipidNameConverterTest.Convert2SummedLipidNameTest("TG 18:1_18:1_18:3", "TG");
+            //Console.WriteLine(test);
+            //Console.ReadLine();
 
 
             //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
@@ -248,6 +248,14 @@ namespace CompMs.App.MsdialConsole {
             //RnaSeqProcess.Convert2Csv4ViolinPlot(
             //    @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\transcriptome.csv",
             //    @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\transcriptome_violin.csv");
+
+            //RnaSeqProcess.Convert2Csv4ViolinPlot(
+            //    @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\POS_result\lipidome_pos.csv",
+            //    @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\POS_result\lipidome_pos_violin.csv");
+
+            RnaSeqProcess.Convert2Csv4ViolinPlot(
+                @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\pic_transcriptome\UMI_count_hetero_vs_KO_all.csv",
+                @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\pic_transcriptome\UMI_count_hetero_vs_KO_all_violin.csv");
 
             //CreateStatisticsInEieioProject.WriteSummary(
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\20220818_EIEIO_checked_MT\results",

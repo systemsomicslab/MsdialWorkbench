@@ -260,15 +260,6 @@
 				<DilutionRate>0.015625</DilutionRate>
 				<MolecularWeight>528.718</MolecularWeight>
 				<PeakID>-1</PeakID>
-				<TargetClass>Cholesterol</TargetClass>
-				<IsLabPrivateVersion>true</IsLabPrivateVersion>
-			</Lipid>
-			<Lipid>
-				<StandardName>LPC 18:1(d7)</StandardName>
-				<Concentration>47.284175</Concentration>
-				<DilutionRate>0.015625</DilutionRate>
-				<MolecularWeight>528.718</MolecularWeight>
-				<PeakID>-1</PeakID>
 				<TargetClass>CoQ</TargetClass>
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
@@ -1973,15 +1964,6 @@
 				<MolecularWeight>528.718</MolecularWeight>
 				<PeakID>-1</PeakID>
 				<TargetClass>CerP</TargetClass>
-				<IsLabPrivateVersion>true</IsLabPrivateVersion>
-			</Lipid>
-			<Lipid>
-				<StandardName>LPC 18:1(d7)</StandardName>
-				<Concentration>189.1367</Concentration>
-				<DilutionRate>0.015625</DilutionRate>
-				<MolecularWeight>528.718</MolecularWeight>
-				<PeakID>-1</PeakID>
-				<TargetClass>Cholesterol</TargetClass>
 				<IsLabPrivateVersion>true</IsLabPrivateVersion>
 			</Lipid>
 			<Lipid>
