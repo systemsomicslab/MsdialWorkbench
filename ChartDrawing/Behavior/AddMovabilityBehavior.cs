@@ -98,13 +98,15 @@ namespace CompMs.Graphics.Behavior
             var position = e.GetPosition(fe);
             if (e.Delta > 0) {
                 var matrix = GetTransformMatrix(fe);
-                matrix.ScaleAt(1.1d, 1.1d, position.X, position.Y);
-                fe.RenderTransform = new MatrixTransform(matrix);
+                var displayPosition = matrix.Transform(position);
+                matrix.ScaleAt(1.1d, 1.1d, displayPosition.X, displayPosition.Y);
+                ((MatrixTransform)fe.RenderTransform).Matrix = matrix;
             }
             else if (e.Delta < 0) {
                 var matrix = GetTransformMatrix(fe);
-                matrix.ScaleAt(1/1.1, 1/1.1, position.X, position.Y);
-                fe.RenderTransform = new MatrixTransform(matrix);
+                var displayPosition = matrix.Transform(position);
+                matrix.ScaleAt(1 / 1.1d, 1 / 1.1d, displayPosition.X, displayPosition.Y);
+                ((MatrixTransform)fe.RenderTransform).Matrix = matrix;
             }
         }
 
@@ -179,11 +181,12 @@ namespace CompMs.Graphics.Behavior
                 rubber.Detach();
                 var transition = e.GetPosition(fe) - initial;
                 var matrix = GetTransformMatrix(fe);
-                var inv = matrix;
-                inv.Invert();
-                var center = inv.Transform(initial + transition / 2);
-                // transition = inv.Transform(transition);
-                matrix = new Matrix(matrix.M11 * fe.ActualWidth / Math.Abs(transition.X), 0, 0, matrix.M22 * fe.ActualHeight / Math.Abs(transition.Y), -center.X * matrix.M11 * fe.ActualWidth / Math.Abs(transition.X), -center.Y * matrix.M22 * fe.ActualHeight / Math.Abs(transition.Y));
+                var center = initial + transition / 2;
+                var displayCenter = matrix.Transform(center);
+                var displayTransition = matrix.Transform(transition);
+                var scalex = fe.ActualWidth / displayTransition.X;
+                var scaley = fe.ActualHeight / displayTransition.Y;
+                matrix.ScaleAt(scalex, scaley, displayCenter.X, displayCenter.Y);
                 fe.RenderTransform = new MatrixTransform(matrix);
             }
         }
@@ -204,6 +207,10 @@ namespace CompMs.Graphics.Behavior
 
         private static Matrix GetTransformMatrix(FrameworkElement fe) {
             return ((MatrixTransform)fe.RenderTransform).Matrix;
+        }
+
+        private static Matrix Inverse(Matrix matrix) {
+            return new Matrix(1 / matrix.M11, 0, 0, 1 / matrix.M22, -matrix.OffsetX / matrix.M11, -matrix.OffsetY / matrix.M22);
         }
     }
 }
