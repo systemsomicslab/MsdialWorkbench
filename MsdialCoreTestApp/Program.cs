@@ -99,7 +99,7 @@ namespace CompMs.App.MsdialConsole {
             //new TestProteomicsProcess().PDFTest();
             //new TestProteomicsProcess().ProcessTest();
             //MaldiMsProcessTest.TimsOffTest();
-            MaldiMsProcessTest.TimsOnTest();
+            //MaldiMsProcessTest.TimsOnTest();
 
             //FormulaStringParcer.Convert2FormulaObjV2("C6H12O6");
             //FormulaStringParcer.Convert2FormulaObjV2("CH3COONa");
@@ -130,6 +130,29 @@ namespace CompMs.App.MsdialConsole {
             //         .Cast<Common.Components.MoleculeMsReference>());
 
 
+            //MspCurator.ExtractMSPsByCEField(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated_40CID_15CES\MergedMSP_40CID_15CES.msp",
+            //    "CID 40V CES 15V");
+
+            //MspCurator.ExtractMSPsByCEField(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated_10KE\MergedMSP_10KE.msp",
+            //    "EAD 10eV CID 10V");
+
+            //MspCurator.ExtractMSPsByCEField(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated_15KE\MergedMSP_15KE.msp",
+            //    "EAD 15eV CID 10V");
+
+            //MspCurator.ExtractMSPsByCEField(
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP\Curated_20KE\MergedMSP_20KE.msp",
+            //    "EAD 20eV CID 10V");
+
+            //var test = LipidNameConverterTest.Convert2SummedLipidNameTest("TG 18:1_18:1_18:3", "TG");
+            //Console.WriteLine(test);
+            //Console.ReadLine();
 
 
             //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
@@ -143,7 +166,7 @@ namespace CompMs.App.MsdialConsole {
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\AGC\POS_MSP");
 
             //MsdialPrivateConsoleApp.CreateMspFileFromEadProject.Run(
-            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS\2022_08_03_14_54_00.mdproject",
+            //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS\2022_11_09_01_52_59.mdproject",
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\riken_compounds.txt",
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\MSDIAL_1000samples_submit\RIKEN\POS_MSP");
 
@@ -225,6 +248,14 @@ namespace CompMs.App.MsdialConsole {
             //RnaSeqProcess.Convert2Csv4ViolinPlot(
             //    @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\transcriptome.csv",
             //    @"E:\6_Projects\PROJECT_500cells\20220808_10cells_rnaseq\ViolinPlot\transcriptome_violin.csv");
+
+            //RnaSeqProcess.Convert2Csv4ViolinPlot(
+            //    @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\POS_result\lipidome_pos.csv",
+            //    @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\POS_result\lipidome_pos_violin.csv");
+
+            RnaSeqProcess.Convert2Csv4ViolinPlot(
+                @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\pic_transcriptome\UMI_count_hetero_vs_KO_all.csv",
+                @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\pic_transcriptome\UMI_count_hetero_vs_KO_all_violin.csv");
 
             //CreateStatisticsInEieioProject.WriteSummary(
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\20220818_EIEIO_checked_MT\results",

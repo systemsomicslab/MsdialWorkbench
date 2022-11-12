@@ -61,6 +61,7 @@ namespace CompMs.Common.Lipidomics
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct)
         {
+            if (lipid.Chains.OxidizedCount == 3) { return false; }
             if (lipid.LipidClass == LbmClass.SM)
             {
                 if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+Na]+")

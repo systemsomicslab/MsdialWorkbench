@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using CompMs.Common.Components;
 
 namespace CompMs.App.MsdialConsole.MspCuration {
 
@@ -24,6 +25,25 @@ namespace CompMs.App.MsdialConsole.MspCuration {
                     var mspRecords = MspFileParser.MspFileReader(filepath);
                     foreach (var mspRecord in mspRecords) {
                         MspFileParser.WriteSpectrumAsMsp(mspRecord, sw);
+                    }
+                }
+            }
+        }
+
+        public static void ExtractMSPsByCEField(string inputDir, string output, string fieldname) {
+            var files = Directory.GetFiles(inputDir);
+            var records = new List<MoleculeMsReference>();
+            foreach (var file in files) {
+                var mspRecords = MspFileParser.MspFileReader(file);
+                foreach (var mspRecord in mspRecords) {
+                    records.Add(mspRecord);
+                }
+            }
+
+            using (var sw = new StreamWriter(output)) {
+                foreach (var record in records) {
+                    if (record.FragmentationCondition == fieldname) {
+                        MspFileParser.WriteSpectrumAsMsp(record, sw);
                     }
                 }
             }

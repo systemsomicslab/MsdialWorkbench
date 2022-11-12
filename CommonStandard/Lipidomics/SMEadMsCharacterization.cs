@@ -11,7 +11,7 @@ namespace CompMs.Common.Lipidomics
         {
 
             var defaultResult = EieioMsCharacterizationUtility.GetDefaultScoreForGlycerophospholipid(
-                    scan, reference, tolerance, mzBegin, mzEnd, 2, 2, 1, 0.5);
+                    scan, reference, tolerance, mzBegin, mzEnd, 1, 2, 1, 0.5);
             return StandardMsCharacterizationUtility.GetDefaultCharacterizationResultForCeramides(molecule, defaultResult);
         }
     }

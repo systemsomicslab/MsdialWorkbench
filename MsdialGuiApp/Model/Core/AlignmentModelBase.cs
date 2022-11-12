@@ -37,7 +37,8 @@ namespace CompMs.App.Msdial.Model.Core
         private AlignmentResultContainer container;
 
         public virtual Task SaveAsync() {
-            return Task.Run(() => MessagePackHandler.SaveToFile(Container, AlignmentResultFile));
+            // return Task.Run(() => MessagePackHandler.SaveToFile(Container, AlignmentResultFile));
+            return Task.Run(() => Container.Save(AlignmentResultFile));
         }
 
         public string DisplayLabel {

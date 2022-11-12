@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Mathematics.Statistics;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -12,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Statistics {
     internal class MultivariateAnalysisSettingModel : BindableBase {
@@ -89,31 +91,96 @@ namespace CompMs.App.Msdial.Model.Statistics {
         }
         private PCAPLSResultModel _pcaplsResultModel;
 
-        public void RunPca() {
+        public MultivariateAnalysisResult HCAResult { get; set; }
 
+        public void ExecutePCA() {
+            if (!variableChecker()) return;
+            if (MaxPcNumber <= 0) {
+                MessageBox.Show("Component number should be a positive integer value.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            setParameters();
+            var observableSpots = new ObservableCollection<AlignmentSpotPropertyModel>();
+            var result = StatisticsObjectConverter.PrincipalComponentAnalysis(_analysisfiles, _spotprops, _parameter, _evaluator, ref observableSpots);
+            if (result == null) return;
+            PCAPLSResultModel = new PCAPLSResultModel(result, _parameter, observableSpots, _analysisfiles, _brushmaps);
+        }
+
+        private bool variableChecker() {
+            if (isIdentifiedImportedInStatistics == false &&
+                isAnnotatedImportedInStatistics == false &&
+                isUnknownImportedInStatistics == false) {
+                MessageBox.Show("Please select at least one metabolite selection option.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+        public void ExecuteHCA() {
+            if (!variableChecker()) return;
+
+            setParameters();
+            var observableSpots = new ObservableCollection<AlignmentSpotPropertyModel>();
+            var result = StatisticsObjectConverter.HierarchicalClusteringAnalysis(_analysisfiles, _spotprops, _parameter, _evaluator, ref observableSpots);
+            if (result == null) return;
+
+            HCAResult = result;
+        }
+
+        public void ExecutePLS() {
+            if (!variableChecker()) return;
+            if (IsAutoFit == false && MaxPcNumber <= 0) {
+                MessageBox.Show("For user-defined component calculations, a positive integer value should be added.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var yValues = _analysisfiles.
+                Where(n => n.AnalysisFileIncluded == true).
+                Select(n => n.ResponseVariable).ToList();
+
+            // all same value check
+            var isAllSame = true;
+            for (int i = 1; i < yValues.Count; i++) {
+                if (yValues[0] != yValues[i]) {
+                    isAllSame = false; break;
+                }
+            }
+            if (isAllSame) {
+                MessageBox.Show("All of Y values is same. Please set Y values at file property option.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var zeroValueCount = 0;
+            if (MultivariateAnalysisOption == MultivariateAnalysisOption.Plsda || MultivariateAnalysisOption == MultivariateAnalysisOption.Oplsda) {
+                for (int i = 0; i < yValues.Count; i++) {
+                    if (yValues[i] == 0.0) {
+                        zeroValueCount++;
+                    }
+                }
+                if (zeroValueCount == 0 || zeroValueCount == yValues.Count) {
+                    MessageBox.Show("Set zero values correctly for (O)PLS-DA.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
+
+            setParameters();
+            var observableSpots = new ObservableCollection<AlignmentSpotPropertyModel>();
+            var result = StatisticsObjectConverter.PartialLeastSquares(_analysisfiles, _spotprops, _parameter, _evaluator, ref observableSpots);
+            if (result == null) return;
+            PCAPLSResultModel = new PCAPLSResultModel(result, _parameter, observableSpots, _analysisfiles, _brushmaps);
+        }
+
+        private void setParameters() {
             var statsParam = this._parameter.StatisticsBaseParam;
+            statsParam.MultivariateAnalysisOption = MultivariateAnalysisOption;
             statsParam.MaxComponent = MaxPcNumber;
             statsParam.Scale = ScaleMethod;
             statsParam.Transform = TransformMethod;
             statsParam.IsIdentifiedImportedInStatistics = IsIdentifiedImportedInStatistics;
             statsParam.IsAnnotatedImportedInStatistics = IsAnnotatedImportedInStatistics;
             statsParam.IsUnknownImportedInStatistics = IsUnknownImportedInStatistics;
-
-            var result = StatisticsObjectConverter.PrincipalComponentAnalysis(_analysisfiles, _spotprops, _parameter, _evaluator);
-            var metaboliteSpotProps = new ObservableCollection<AlignmentSpotPropertyModel>();
-
-            foreach (var spot in _spotprops) {
-                if (isIdentifiedImportedInStatistics && _evaluator.IsReferenceMatched(spot.MatchResults.Representative)) {
-                    metaboliteSpotProps.Add(spot);
-                }
-                if (isAnnotatedImportedInStatistics && _evaluator.IsAnnotationSuggested(spot.MatchResults.Representative)) {
-                    metaboliteSpotProps.Add(spot);
-                }
-                if (isUnknownImportedInStatistics && !_evaluator.IsReferenceMatched(spot.MatchResults.Representative) && !_evaluator.IsAnnotationSuggested(spot.MatchResults.Representative)) {
-                    metaboliteSpotProps.Add(spot);
-                }
-            }
-            PCAPLSResultModel = new PCAPLSResultModel(result, _parameter, metaboliteSpotProps, _analysisfiles, _brushmaps);
         }
     }
 }
