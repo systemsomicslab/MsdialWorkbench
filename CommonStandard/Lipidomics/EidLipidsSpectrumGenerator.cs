@@ -18,113 +18,6 @@ namespace CompMs.Common.Lipidomics
 
             switch (lipid.LipidClass)
             {
-                case LbmClass.PC:
-                    var PCSpectrumGenerator = new PCSpectrumGenerator();
-                    spectrum.AddRange(PCSpectrumGenerator.Generate(lipid, adduct).Spectrum);
-                    spectrum.AddRange
-                    (
-                        new[] {
-                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass) / 2, 200d, "[Precursor]2+") { SpectrumComment = SpectrumComment.metaboliteclass },
-                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C5H14NO4P - MassDiffDictionary.HydrogenMass*2), 25d, "Precursor-Header") { SpectrumComment = SpectrumComment.metaboliteclass },
-                        }
-                    );
-                    SpectrumPeak[] pcEidSpec = EidSpecificSpectrum(lipid, adduct, 0d, 50d);
-                    foreach (var item in pcEidSpec)
-                    {
-                        item.Mass = item.Mass / 2;
-                    }
-                    spectrum.AddRange(pcEidSpec);
-
-                    break;
-                case LbmClass.EtherPC:
-                    var EtherPCSpectrumGenerator = new EtherPCSpectrumGenerator();
-                    spectrum.AddRange(EtherPCSpectrumGenerator.Generate(lipid, adduct).Spectrum);
-                    spectrum.AddRange
-                    (
-                        new[] {
-                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass) / 2, 200d, "[Precursor]2+") { SpectrumComment = SpectrumComment.metaboliteclass },
-                        }
-                    );
-                    spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 700d));
-                    break;
-                case LbmClass.LPC:
-                    var LPCSpectrumGenerator = new LPCSpectrumGenerator();
-                    spectrum.AddRange(LPCSpectrumGenerator.Generate(lipid, adduct).Spectrum);
-                    if (lipid.Chains.DoubleBondCount == 1)
-                    {
-                        spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 250d));
-                    };
-                    break;
-                case LbmClass.PE:
-                    var PESpectrumGenerator = new PEEidSpectrumGenerator(); // Eid 
-                    spectrum.AddRange(PESpectrumGenerator.Generate(lipid, adduct).Spectrum);
-                    break;
-                case LbmClass.EtherPE:
-                    var EtherPESpectrumGenerator = new EtherPESpectrumGenerator();
-                    spectrum.AddRange(EtherPESpectrumGenerator.Generate(lipid, adduct).Spectrum);
-                    spectrum.AddRange
-                    (
-                        new[] {
-                                    new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C2H8NO4P), 100d, "Precursor -C2H8NO4P") { SpectrumComment = SpectrumComment.metaboliteclass },
-                                    new SpectrumPeak(adduct.ConvertToMz(lipid.Mass) / 2, 100d, "[Precursor]2+") { SpectrumComment = SpectrumComment.metaboliteclass },
-                                }
-                    );
-                    break;
-                case LbmClass.LPE:
-                    var LPESpectrumGenerator = new LPESpectrumGenerator();
-                    spectrum.AddRange(LPESpectrumGenerator.Generate(lipid, adduct).Spectrum);
-                    if (lipid.Chains.DoubleBondCount == 1)
-                    {
-                        spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 150d));
-                    };
-                    break;
-                case LbmClass.PG:
-                    var PGSpectrumGenerator = new PGSpectrumGenerator();
-                    spectrum.AddRange(PGSpectrumGenerator.Generate(lipid, adduct).Spectrum);
-                    spectrum.AddRange
-                    (
-                        new[] {
-                            new SpectrumPeak((lipid.Mass - C3H9O6P +MassDiffDictionary.ProtonMass)/2, 150d, "[Precursor -C3H9O6P]2+") { SpectrumComment = SpectrumComment.metaboliteclass } }
-                    );
-                    break;
-                case LbmClass.LPG:
-                    var LPGSpectrumGenerator = new LPGSpectrumGenerator();
-                    spectrum.AddRange(LPGSpectrumGenerator.Generate(lipid, adduct).Spectrum);
-                    break;
-                case LbmClass.PS:
-                    var PSSpectrumGenerator = new PSSpectrumGenerator();
-                    spectrum.AddRange(PSSpectrumGenerator.Generate(lipid, adduct).Spectrum);
-                    break;
-                case LbmClass.LPS:
-                    var LPSSpectrumGenerator = new LPSSpectrumGenerator();
-                    spectrum.AddRange(LPSSpectrumGenerator.Generate(lipid, adduct).Spectrum);
-                    if (lipid.Chains.DoubleBondCount == 1)
-                    {
-                        spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, 0d, 120d));
-                    };
-                    break;
-                case LbmClass.PI:
-                    var PISpectrumGenerator = new PISpectrumGenerator();
-                    spectrum.AddRange(PISpectrumGenerator.Generate(lipid, adduct).Spectrum);
-                    break;
-                case LbmClass.LPI:
-                    var LPISpectrumGenerator = new LPISpectrumGenerator();
-                    spectrum.AddRange(LPISpectrumGenerator.Generate(lipid, adduct).Spectrum);
-                    if (lipid.Chains.DoubleBondCount == 1)
-                    {
-                        var nlMass = adduct.AdductIonAccurateMass - MassDiffDictionary.ProtonMass + H2O;
-                        spectrum.AddRange(EidSpecificSpectrum(lipid, adduct, nlMass, 120d));
-                    };
-                    break;
-                case LbmClass.PA:
-                    var PASpectrumGenerator = new PASpectrumGenerator();
-                    spectrum.AddRange(PASpectrumGenerator.Generate(lipid, adduct).Spectrum);
-                    spectrum.AddRange
-                    (
-                        new[] {
-                            new SpectrumPeak((lipid.Mass - C3H9O6P +MassDiffDictionary.ProtonMass)/2, 150d, "[Precursor-Header]2+") { SpectrumComment = SpectrumComment.metaboliteclass } }
-                    );
-                    break;
 
                 case LbmClass.TG:
                     var TGSpectrumGenerator = new TGSpectrumGenerator();
@@ -198,7 +91,7 @@ namespace CompMs.Common.Lipidomics
                     intensity = intensity / dbPosition.Count;
                     foreach (var db in dbPosition)
                     {
-                        spectrum.AddRange(EidSpecificSpectrumGenerator.EidSpecificSpectrumGen(lipid, chain, adduct, nlMass, db, intensity));
+                        spectrum.AddRange(EidSpecificSpectrumGenerator.EidSpecificSpectrumGen(lipid, chain, adduct, nlMass, intensity));
                     }
                 }
             }

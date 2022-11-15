@@ -104,7 +104,21 @@ namespace CompMs.Common.Lipidomics
             {
                 if (@eidlipidgenerator is null)
                 {
-                    var generator = new EidDefaultSpectrumGenerator();
+                    var generator = new FacadeLipidSpectrumGenerator();
+                    generator.Add(LbmClass.PC, new PCEidSpectrumGenerator());
+                    generator.Add(LbmClass.LPC, new LPCEidSpectrumGenerator());
+                    generator.Add(LbmClass.EtherPC, new EtherPCEidSpectrumGenerator());
+                    generator.Add(LbmClass.PE, new PEEidSpectrumGenerator());
+                    generator.Add(LbmClass.LPE, new LPEEidSpectrumGenerator());
+                    generator.Add(LbmClass.EtherPE, new EtherPEEidSpectrumGenerator());
+                    generator.Add(LbmClass.PG, new PGEidSpectrumGenerator());
+                    generator.Add(LbmClass.PI, new PIEidSpectrumGenerator());
+                    generator.Add(LbmClass.PS, new PSEidSpectrumGenerator());
+                    generator.Add(LbmClass.PA, new PAEidSpectrumGenerator());
+                    generator.Add(LbmClass.LPG, new LPGEidSpectrumGenerator());
+                    generator.Add(LbmClass.LPI, new LPIEidSpectrumGenerator());
+                    generator.Add(LbmClass.LPS, new LPSEidSpectrumGenerator());
+                    //generator.Add(LbmClass.CL, new CLEidSpectrumGenerator());
                     @eidlipidgenerator = generator;
                 }
                 return @eidlipidgenerator;
