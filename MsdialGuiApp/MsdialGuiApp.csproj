@@ -692,7 +692,6 @@
     <Compile Include="ViewModel\Imms\ImmsAlignmentViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsMethodViewModel.cs" />
-    <Compile Include="ViewModel\MsdialProjectParameterFactory.cs" />
     <Compile Include="ViewModel\MzSearchQueryVM.cs" />
     <Compile Include="ViewModel\MsRefSearchParameterBaseVM.cs" />
     <Compile Include="ViewModel\Lcms\LcmsAlignmentViewModel.cs" />
