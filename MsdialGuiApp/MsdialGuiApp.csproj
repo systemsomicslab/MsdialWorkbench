@@ -734,7 +734,6 @@
     <Compile Include="View\Imms\AlignmentParameterView.xaml.cs">
       <DependentUpon>AlignmentParameterView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\UserDefinedAdductSetVM.cs" />
     <Compile Include="View\Setting\AnnotationProcessSettingView.xaml.cs">
       <DependentUpon>AnnotationProcessSettingView.xaml</DependentUpon>
     </Compile>
