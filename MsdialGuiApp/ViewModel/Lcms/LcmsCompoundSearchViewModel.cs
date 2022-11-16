@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.ViewModel.Search;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;

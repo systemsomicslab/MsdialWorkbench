@@ -685,7 +685,7 @@
     <Compile Include="Utility\ParameterFactory.cs" />
     <Compile Include="ViewModel\Dims\DimsAlignmentViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsAnalysisViewModel.cs" />
-    <Compile Include="ViewModel\CompoundSearchVM.cs" />
+    <Compile Include="ViewModel\Search\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Dims\DimsMethodViewModel.cs" />
     <Compile Include="Model\Search\DisplayFilter.cs" />
     <Compile Include="ViewModel\AdductIonVM.cs" />

@@ -1,7 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
-using CompMs.Common.Interfaces;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
@@ -16,7 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace CompMs.App.Msdial.ViewModel
+namespace CompMs.App.Msdial.ViewModel.Search
 {
     internal class CompoundSearchVM : ViewModelBase
     {
@@ -42,7 +41,8 @@ namespace CompMs.App.Msdial.ViewModel
 
             SelectedCompound = new ReactivePropertySlim<ICompoundResult>()
                 .AddTo(Disposables);
-            SelectedCompound.Subscribe(c => {
+            SelectedCompound.Subscribe(c =>
+            {
                 model.SelectedReference = c?.MsReference;
                 model.SelectedMatchResult = c?.MatchResult;
             });
@@ -91,7 +91,7 @@ namespace CompMs.App.Msdial.ViewModel
             .Switch()
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
-            
+
             SearchCommand.Execute();
         }
 

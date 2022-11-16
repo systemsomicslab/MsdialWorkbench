@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
