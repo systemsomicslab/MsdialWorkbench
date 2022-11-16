@@ -823,9 +823,6 @@
     <Compile Include="View\Lcms\AlignmentView.xaml.cs">
       <DependentUpon>AlignmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\PeakSpotNavigator.xaml.cs">
-      <DependentUpon>PeakSpotNavigator.xaml</DependentUpon>
-    </Compile>
     <Page Include="Icons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1319,10 +1316,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Lcms\AlignmentView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\PeakSpotNavigator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
