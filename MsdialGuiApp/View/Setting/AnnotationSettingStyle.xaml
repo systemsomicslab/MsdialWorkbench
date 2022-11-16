@@ -3,6 +3,7 @@
                     xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
                     xmlns:localVM="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
                     xmlns:VM="clr-namespace:CompMs.App.Msdial.ViewModel"
+                    xmlns:SearchVM="clr-namespace:CompMs.App.Msdial.ViewModel.Search"
                     xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing">
     <converter:BooleanToEnumConverter x:Key="BooleanToEnum"/>
@@ -270,7 +271,7 @@
         </ScrollViewer>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type VM:CompoundSearchVM}"
+    <DataTemplate DataType="{x:Type SearchVM:CompoundSearchVM}"
                   x:Key="MassAnnotatorSetting">
         <ScrollViewer>
             <StackPanel>

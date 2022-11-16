@@ -4,6 +4,7 @@ using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.PeakCuration;
+using CompMs.App.Msdial.View.Search;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.View.Statistics;
 using CompMs.App.Msdial.View.Table;
