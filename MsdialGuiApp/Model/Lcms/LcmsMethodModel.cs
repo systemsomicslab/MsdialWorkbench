@@ -1,16 +1,9 @@
-﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.View.Chart;
-using CompMs.App.Msdial.View.Export;
-using CompMs.App.Msdial.View.Setting;
-using CompMs.App.Msdial.ViewModel.Chart;
-using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -36,7 +29,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
@@ -344,115 +336,62 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
         }
 
-        public void ExportAnalysis(Window owner) {
+        public AnalysisResultExportModel ExportAnalysis() {
             var container = _storage;
-            var spectraTypes = new List<Export.SpectraType>
+            var spectraTypes = new List<SpectraType>
             {
-                new Export.SpectraType(
+                new SpectraType(
                     ExportspectraType.deconvoluted,
                     new LcmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.deconvoluted)),
-                new Export.SpectraType(
+                new SpectraType(
                     ExportspectraType.centroid,
                     new LcmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.centroid)),
-                new Export.SpectraType(
+                new SpectraType(
                     ExportspectraType.profile,
                     new LcmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.profile)),
             };
-            var spectraFormats = new List<Export.SpectraFormat>
+            var spectraFormats = new List<SpectraFormat>
             {
-                new Export.SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
+                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
             };
 
-            using (var vm = new AnalysisResultExportViewModel(
-                container.AnalysisFiles, 
-                spectraTypes, 
-                spectraFormats, 
-                _providerFactory)) {
-                var dialog = new AnalysisResultExportWin
-                {
-                    DataContext = vm,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-
-                dialog.ShowDialog();
-            }
+            return new AnalysisResultExportModel(container.AnalysisFiles, spectraTypes, spectraFormats, _providerFactory);
         }
 
-        public void ShowTIC(Window owner) {
+        public ChromatogramsModel ShowTIC() {
             var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
+            if (analysisModel is null) {
+                return null;
+            }
 
             var tic = analysisModel.EicLoader.LoadTic();
-            var vm = new ChromatogramsViewModel(
-                new ChromatogramsModel("Total ion chromatogram", 
-                new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"),
-                "Total ion chromatogram", "Retention time", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
+            var chromatogram = new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC");
+            return new ChromatogramsModel("Total ion chromatogram", chromatogram, "Total ion chromatogram", "Retention time", "Absolute ion abundance");
         }
 
-        public void ShowBPC(Window owner) {
+        public ChromatogramsModel ShowBPC() {
             var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
-
-            var bpc = analysisModel.EicLoader.LoadBpc();
-            var vm = new ChromatogramsViewModel(
-                new ChromatogramsModel("Base peak chromatogram",
-                new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"),
-                "Base peak chromatogram", "Retention time", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
-        }
-
-        public void ShowEIC(Window owner) {
-            var container = _storage;
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
-
-            var param = container.Parameter;
-            var model = new DisplayEicSettingModel(param);
-            var dialog = new EICDisplaySettingView() {
-                DataContext = new DisplayEicSettingViewModel(model),
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            if (dialog.ShowDialog() == true) {
-                param.DiplayEicSettingValues = model.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
-                var displayEICs = param.DiplayEicSettingValues;
-                if (!displayEICs.IsEmptyOrNull()) {
-                    var displayChroms = new List<DisplayChromatogram>();
-                    var counter = 0;
-                    foreach (var set in displayEICs.Where(n => n.Mass > 0 && n.MassTolerance > 0)) {
-                        var eic = analysisModel.EicLoader.LoadEicTrace(set.Mass, set.MassTolerance);
-                        var subtitle = "[" + Math.Round(set.Mass - set.MassTolerance, 4).ToString() + "-" + Math.Round(set.Mass + set.MassTolerance, 4).ToString() + "]";
-                        var chrom = new DisplayChromatogram(eic, new Pen(ChartBrushes.GetChartBrush(counter), 1.0), set.Title + "; " + subtitle);
-                        counter++;
-                        displayChroms.Add(chrom);
-                    }
-                    var vm = new ChromatogramsViewModel(new ChromatogramsModel("EIC", displayChroms, "EIC", "Retention time [min]", "Absolute ion abundance"));
-                    var view = new DisplayChromatogramsView() {
-                        DataContext = vm,
-                        Owner = owner,
-                        WindowStartupLocation = WindowStartupLocation.CenterOwner
-                    };
-                    view.Show();
-                }
+            if (analysisModel is null) {
+                return null;
             }
+            var bpc = analysisModel.EicLoader.LoadBpc();
+            var chromatogram = new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC");
+            return new ChromatogramsModel("Base peak chromatogram", chromatogram, "Base peak chromatogram", "Retention time", "Absolute ion abundance");
         }
 
-        public void ShowTicBpcRepEIC(Window owner) {
+        public DisplayEicSettingModel ShowEIC() {
+            if (AnalysisModel is null) {
+                return null;
+            }
+            return new DisplayEicSettingModel(AnalysisModel.EicLoader, _storage.Parameter);
+        }
+
+        public ChromatogramsModel ShowTicBpcRepEIC() {
             var container = _storage;
             var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
+            if (analysisModel is null) {
+                return null;
+            }
 
             var tic = analysisModel.EicLoader.LoadTic();
             var bpc = analysisModel.EicLoader.LoadBpc();
@@ -460,96 +399,40 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var maxPeakMz = analysisModel.Ms1Peaks.Argmax(n => n.Intensity).Mass;
 
-
             var displayChroms = new List<DisplayChromatogram>() {
                 new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"),
                 new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"),
                 new DisplayChromatogram(eic, new Pen(Brushes.Blue, 1.0), "EIC of m/z " + Math.Round(maxPeakMz, 5).ToString())
             };
 
-            var vm = new ChromatogramsViewModel(new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Retention time [min]", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
+            return new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Retention time [min]", "Absolute ion abundance");
         }
 
-        public void ShowShowFragmentSearchSettingView(Window owner, bool isAlignmentViewSelected) {
-            var container = _storage;
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
-            var alignmentModel = AlignmentModel;
-            var param = container.Parameter;
-            
-            var model = new FragmentQuerySettingModel(container.Parameter, isAlignmentViewSelected);
-            var vm = new FragmentQuerySettingViewModel(model);
-            var dialog = new FragmentQuerySettingView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-
-            if (dialog.ShowDialog() == true) {
-                param.FragmentSearchSettingValues = model.FragmentQuerySettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();
-                param.AndOrAtFragmentSearch = model.SearchOption.Value;
-                if (model.IsAlignSpotViewSelected.Value && alignmentModel is null) {
-                    MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-                if (model.IsAlignSpotViewSelected.Value) {
-                    alignmentModel.FragmentSearcher();
-                } else {
-                    analysisModel.FragmentSearcher();
-                }
-            }
+        public FragmentQuerySettingModel ShowShowFragmentSearchSettingView() {
+            return new FragmentQuerySettingModel(_storage.Parameter, AnalysisModel, AlignmentModel);
         }
 
-        public void ShowShowMassqlSearchSettingView(Window owner, bool isAlignmentViewSelected) {
-            var container = _storage;
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
-            var alignmentModel = AlignmentModel;
-            var param = container.Parameter;
-
-            MassqlSettingModel model;
+        public MassqlSettingModel ShowShowMassqlSearchSettingView(bool isAlignmentViewSelected) {
             if (isAlignmentViewSelected) {
-                model = new MassqlSettingModel(container.Parameter, alignmentModel.FragmentSearcher);
+                if (AlignmentModel is null) {
+                    return null;
+                }
+                return new MassqlSettingModel(_storage.Parameter, () => AlignmentModel.SearchFragment(_storage.Parameter));
             }
             else {
-                model = new MassqlSettingModel(container.Parameter, analysisModel.FragmentSearcher);
+                if (AnalysisModel is null) {
+                    return null;
+                }
+                return new MassqlSettingModel(_storage.Parameter, () => AnalysisModel.SearchFragment(_storage.Parameter));
             }
-            var vm = new MassqlSettingViewModel(model);
-            var dialog = new MassqlSettingView()
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            dialog.Show();
         }
 
-        public void ShowShowMscleanrFilterSettingView(Window owner) {
-            var container = _storage;
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
-            var alignmentModel = AlignmentModel;
-            var spotprops = alignmentModel.Ms1Spots;
+        public MscleanrSettingModel ShowShowMscleanrFilterSettingView() {
+            if (AlignmentModel is null) {
+                return null;
+            }
 
-            MscleanrSettingModel model;
-            model = new MscleanrSettingModel(container.Parameter, spotprops);
-            var vm = new MscleanrSettingViewModel(model);
-            var dialog = new MscleanrSettingView()
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            dialog.Show();
-
-            //param.FragmentSearchSettingValues = model.FragmentQuerySettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();
-            //param.AndOrAtFragmentSearch = model.SearchOption.Value;
+            return new MscleanrSettingModel(_storage.Parameter, AlignmentModel.Ms1Spots);
         }
 
         public void GoToMsfinderMethod(bool isAlignmentView) {

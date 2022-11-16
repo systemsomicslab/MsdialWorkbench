@@ -18,6 +18,7 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
@@ -45,6 +46,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly AnalysisFileBeanModel _analysisFileModel;
         private readonly IDataProvider _spectrumProvider;
         private readonly MsdialLcImMsParameter _parameter;
+        private readonly MSDecLoader _decLoader;
 
         public LcimmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -228,6 +230,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 true);
             var spectraExporter = new NistSpectraExporter(target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             var decLoader = new MSDecLoader(analysisFileModel.DeconvolutionFilePath).AddTo(Disposables);
+            _decLoader = decLoader;
             var msdecResult = target.Where(t => !(t is null))
                 .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
                 .ToReadOnlyReactivePropertySlim()
@@ -393,14 +396,25 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 
         public IReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
+        public LcimmsAnalysisPeakTableModel PeakTableModel { get; }
 
         public string DisplayLabel {
             get => _displayLabel;
             set => SetProperty(ref _displayLabel, value);
         }
-        public LcimmsAnalysisPeakTableModel PeakTableModel { get; }
-
         private string _displayLabel = string.Empty;
+
+        public void SearchFragment(ParameterBase parameter) {
+            var features = Ms1Peaks;
+            FragmentSearcher.Search(features.Select(n => n.InnerModel).ToList(), _decLoader, parameter);
+
+            foreach (var feature in features) {
+                var featureStatus = feature.InnerModel.FeatureFilterStatus;
+                if (featureStatus.IsFragmentExistFiltered) {
+                    Console.WriteLine("A fragment is found by MassQL not in alignment !!!");
+                }
+            }
+        }
 
         public Task SaveAsync(CancellationToken token) {
             return _peakCollection.SerializeAsync(_analysisFileModel.File, token);

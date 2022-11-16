@@ -16,6 +16,7 @@ using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcImMsApi.Parameter;
@@ -40,6 +41,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         private readonly AlignmentFileBean _alignmentFileBean;
         private readonly List<AnalysisFileBean> _files;
+        private readonly MSDecLoader _decLoader;
 
         public LcimmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
@@ -206,6 +208,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             DtAlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
             var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
+            _decLoader = loader;
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
             var refLoader = new MsRefSpectrumLoader(mapper);
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
@@ -340,6 +343,17 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private IBarItemsLoader barItemsLoader;
 
         public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel> CompoundSearchModel { get; }
+
+        public override void SearchFragment(ParameterBase parameter) {
+            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, parameter);
+
+            foreach (var feature in Ms1Spots) {
+                var featureStatus = feature.innerModel.FeatureFilterStatus;
+                if (featureStatus.IsFragmentExistFiltered) {
+                    Console.WriteLine("A fragment is found in alignment !!!");
+                }
+            }
+        }
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(Container, _alignmentFileBean.FilePath);

@@ -5,7 +5,6 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
-using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -304,17 +303,15 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public bool CanSaveSpectra() => Target.Value.innerModel != null && _msdecResult.Value != null;
 
-        public void FragmentSearcher() {
-            var features = Ms1Spots;
-            MsdialCore.Algorithm.FragmentSearcher.Search(features.Select(n => n.innerModel).ToList(), this._decLoader, Parameter);
+        public override void SearchFragment(ParameterBase parameter) {
+            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, parameter);
 
-            foreach (var feature in features) {
+            foreach (var feature in Ms1Spots) {
                 var featureStatus = feature.innerModel.FeatureFilterStatus;
                 if (featureStatus.IsFragmentExistFiltered) {
                     Console.WriteLine("A fragment is found in alignment !!!");
                 }
             }
-
         }
 
         public void GoToMsfinderMethod() {

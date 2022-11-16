@@ -300,7 +300,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             if (analysisModel is null) return;
 
             var param = container.Parameter;
-            var model = new Setting.DisplayEicSettingModel(param);
+            var model = new Setting.DisplayEicSettingModel(analysisModel.EicLoader, param);
             var dialog = new EICDisplaySettingView() {
                 DataContext = new DisplayEicSettingViewModel(model),
                 Owner = owner,

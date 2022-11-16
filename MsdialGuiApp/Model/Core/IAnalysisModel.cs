@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Core
 {
-    public interface IAnalysisModel : INotifyPropertyChanged
+    internal interface IAnalysisModel : IResultModel, INotifyPropertyChanged
     {
         ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 

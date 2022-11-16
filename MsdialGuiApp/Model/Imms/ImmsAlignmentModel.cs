@@ -38,6 +38,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly ParameterBase _parameter;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
+        private readonly MSDecLoader _decLoader;
 
         public ImmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
@@ -106,6 +107,7 @@ namespace CompMs.App.Msdial.Model.Imms
             }.AddTo(Disposables);
 
             var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
+            _decLoader = loader;
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
             var refLoader = new MsRefSpectrumLoader(mapper);
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
@@ -266,6 +268,17 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public bool CanSaveSpectra() => Target.Value.innerModel != null && MsdecResult.Value != null;
+
+        public override void SearchFragment(ParameterBase parameter) {
+            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, parameter);
+
+            foreach (var feature in Ms1Spots) {
+                var featureStatus = feature.innerModel.FeatureFilterStatus;
+                if (featureStatus.IsFragmentExistFiltered) {
+                    Console.WriteLine("A fragment is found in alignment !!!");
+                }
+            }
+        }
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(Container, _alignmentFile.FilePath);

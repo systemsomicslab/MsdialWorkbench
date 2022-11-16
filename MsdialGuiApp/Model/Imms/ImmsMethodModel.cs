@@ -330,7 +330,7 @@ namespace CompMs.App.Msdial.Model.Imms
             if (analysisModel is null) return;
 
             var param = _storage.Parameter;
-            var model = new Setting.DisplayEicSettingModel(param);
+            var model = new Setting.DisplayEicSettingModel(analysisModel.EicLoader, param);
             var dialog = new EICDisplaySettingView() {
                 DataContext = new DisplayEicSettingViewModel(model),
                 Owner = owner,

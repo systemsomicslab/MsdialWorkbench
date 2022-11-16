@@ -49,6 +49,7 @@ namespace CompMs.App.Msdial.Model.Dims
         private readonly AnalysisFileBeanModelCollection _fileCollection;
         private readonly CompoundSearcherCollection _compoundSearchers;
         private readonly IMessageBroker _broker;
+        private readonly MSDecLoader _decLoader;
 
         public DimsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
@@ -123,6 +124,7 @@ namespace CompMs.App.Msdial.Model.Dims
             }.AddTo(Disposables);
 
             var decLoader = new MSDecLoader(alignmentFileBean.SpectraFilePath).AddTo(Disposables);
+            _decLoader = decLoader;
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Spots);
             var refLoader = new MsRefSpectrumLoader(mapper);
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
@@ -278,6 +280,17 @@ namespace CompMs.App.Msdial.Model.Dims
             var memory = new MemoryStream();
             SaveSpectra(memory, ExportSpectraFileFormat.msp);
             Clipboard.SetText(System.Text.Encoding.UTF8.GetString(memory.ToArray()));
+        }
+
+        public override void SearchFragment(ParameterBase parameter) {
+            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, parameter);
+
+            foreach (var feature in Ms1Spots) {
+                var featureStatus = feature.innerModel.FeatureFilterStatus;
+                if (featureStatus.IsFragmentExistFiltered) {
+                    Console.WriteLine("A fragment is found in alignment !!!");
+                }
+            }
         }
     }
 }

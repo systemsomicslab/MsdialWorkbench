@@ -3,11 +3,10 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Core
 {
-    public interface IAlignmentModel : INotifyPropertyChanged
+    internal interface IAlignmentModel : IResultModel, INotifyPropertyChanged
     {
         string DisplayLabel { get; set; }
 
         Task SaveAsync();
-
     }
 }

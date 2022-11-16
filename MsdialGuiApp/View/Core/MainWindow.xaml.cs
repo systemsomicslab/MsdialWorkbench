@@ -74,6 +74,10 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(OpenFileDialog);
             broker.ToObservable<ErrorMessageBoxRequest>()
                 .Subscribe(ShowErrorComfirmationMessage);
+            broker.ToObservable<ChromatogramsViewModel>()
+                .Subscribe(ShowDisplayChromatogramsView);
+            broker.ToObservable<DisplayEicSettingViewModel>()
+                .Subscribe(ShowDialogOfEicSettingView);
             broker.ToObservable<AlignedChromatogramModificationViewModelLegacy>()
                 .Subscribe(CreateAlignedChromatogramModificationDialog);
             broker.ToObservable<SampleTableViewerInAlignmentViewModelLegacy>()
@@ -290,6 +294,25 @@ namespace CompMs.App.Msdial.View.Core
                 var result = MessageBox.Show(request.Content, request.Caption, request.ButtonType, MessageBoxImage.Error);
                 request.Result = result;
             });
+        }
+
+        private void ShowDisplayChromatogramsView(ChromatogramsViewModel viewmodel) {
+            var view = new DisplayChromatogramsView {
+                DataContext = viewmodel,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            view.Show();
+        }
+
+        private void ShowDialogOfEicSettingView(DisplayEicSettingViewModel viewmodel) {
+            var view = new EICDisplaySettingView
+            {
+                DataContext = viewmodel,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            view.ShowDialog();
         }
 
         private void CreateAlignedChromatogramModificationDialog(AlignedChromatogramModificationViewModelLegacy vm) {
