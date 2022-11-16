@@ -1,4 +1,4 @@
-﻿using CompMs.App.Msdial.ViewModel;
+﻿using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.DataObj;
 using CompMs.Common.Enum;

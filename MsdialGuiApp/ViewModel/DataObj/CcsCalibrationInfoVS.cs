@@ -1,12 +1,12 @@
-﻿using CompMs.Common.Enum;
-using CompMs.Common.Parameter;
+﻿using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 
-namespace CompMs.App.Msdial.ViewModel
+namespace CompMs.App.Msdial.ViewModel.DataObj
 {
-    public class CcsCalibrationInfoVS : ViewModelBase {
-        
+    public sealed class CcsCalibrationInfoVS : ViewModelBase
+    {
+
         public CcsCalibrationInfoVS(AnalysisFileBean file, CoefficientsForCcsCalculation ccsCoef) {
             FilePath = file.AnalysisFilePath;
             FileId = file.AnalysisFileId;

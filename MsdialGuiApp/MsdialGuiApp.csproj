@@ -360,7 +360,7 @@
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
     <Compile Include="Model\Statistics\SplashSetModel.cs" />
-    <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
+    <Compile Include="ViewModel\DataObj\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\Chart\SingleSpectrumViewModel.cs" />
     <Compile Include="ViewModel\Chart\SmallClassBarChartViewModel.cs" />
     <Compile Include="ViewModel\Chart\SpectrumViewModel.cs" />
