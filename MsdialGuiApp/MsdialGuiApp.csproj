@@ -454,9 +454,6 @@
     <Compile Include="ViewModel\Statistics\PCAPLSResultViewModel.cs" />
     <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
     <Compile Include="ViewModel\Table\ProteinGroupTableViewModel.cs" />
-    <Compile Include="View\AdductView.xaml.cs">
-      <DependentUpon>AdductView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\ChartSetting\BarChartOfAlignedSpotSettingRibbonTab.xaml.cs">
       <DependentUpon>BarChartOfAlignedSpotSettingRibbonTab.xaml</DependentUpon>
     </Compile>
@@ -830,10 +827,6 @@
       <DependentUpon>PeakSpotNavigator.xaml</DependentUpon>
     </Compile>
     <Page Include="Icons.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\AdductView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
