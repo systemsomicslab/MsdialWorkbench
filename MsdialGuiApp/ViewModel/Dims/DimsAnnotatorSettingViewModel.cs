@@ -1,5 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;

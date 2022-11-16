@@ -1,6 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.ViewModel.Chart;
+using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
