@@ -704,7 +704,7 @@
     <Compile Include="Model\DataObj\ChromatogramPeakFeatureModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsMethodViewModel.cs" />
     <Compile Include="ViewModel\Core\MethodViewModel.cs" />
-    <Compile Include="ViewModel\ParameterBaseVM.cs" />
+    <Compile Include="ViewModel\DataObj\ParameterBaseVM.cs" />
     <Compile Include="Model\DataObj\PeakItem.cs" />
     <Compile Include="Model\DataObj\SpectrumPeakWrapper.cs" />
     <Compile Include="View\Dims\AlignmentClassBar.xaml.cs">
