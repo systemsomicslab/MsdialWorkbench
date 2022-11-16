@@ -80,8 +80,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             Action<double> reportAction) {
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
-                chromPeakFeature.MSDecResultIdUsed = i;
-
                 var msdecResult = msdecResults[i];
                 if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                     RunAnnotationCore(chromPeakFeature, msdecResult, provider);
@@ -106,8 +104,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 .WithDegreeOfParallelism(numThreads)
                 .ForAll(i => {
                     var chromPeakFeature = chromPeakFeatures[i];
-                    chromPeakFeature.MSDecResultIdUsed = i;
-
                     var msdecResult = msdecResults[i];
                     if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                         RunAnnotationCore(chromPeakFeature, msdecResult, provider);
@@ -128,8 +124,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             var spectrums = provider.LoadMs1Spectrums();
             for (int i = 0; i < chromPeakFeatures.Count; i++) {
                 var chromPeakFeature = chromPeakFeatures[i];
-                chromPeakFeature.MSDecResultIdUsed = i;
-
                 var msdecResult = msdecResults[i];
                 if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                     await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token);
@@ -153,8 +147,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
                         try {
                             var chromPeakFeature = pair.Item1;
-                            chromPeakFeature.MSDecResultIdUsed = i;
-
                             var msdecResult = pair.Item2;
                             if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
                                 await RunAnnotationCoreAsync(chromPeakFeature, msdecResult, spectrums, token);
@@ -174,6 +166,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             MSDecResult msdecResult,
             IDataProvider provider) {
 
+            if (!msdecResult.Spectrum.IsEmptyOrNull()) {
+                chromPeakFeature.MSDecResultIdUsed = chromPeakFeature.MasterPeakID;
+            }
             foreach (var containerPair in containerPairs) {
                 var query = containerPair.Factory.Create(
                     chromPeakFeature,
@@ -192,6 +187,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             IReadOnlyList<RawSpectrum> msSpectrums,
             CancellationToken token = default) {
 
+            if (!msdecResult.Spectrum.IsEmptyOrNull()) {
+                chromPeakFeature.MSDecResultIdUsed = chromPeakFeature.MasterPeakID;
+            }
             foreach (var containerPair in containerPairs) {
                 var query = containerPair.Factory.Create(
                     chromPeakFeature,
@@ -228,17 +226,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
         }
 
         private void SetRepresentativeProperty(ChromatogramPeakFeature chromPeakFeature) {
-            //var refmatches = chromPeakFeature.MatchResults.MatchResults.Select(r => (containerPairs.FirstOrDefault(p => p.Container.AnnotatorID == r.AnnotatorID).Container?.Annotator.IsReferenceMatched(r) ?? false, r))
-            //    .Where(p => p.Item1).Select(p => p.Item2).ToArray();
-            //MsScanMatchResult representative = null;
-            //if (refmatches.Length >= 1){
-            //    representative = refmatches.Argmax(r => Tuple.Create(r?.Priority ?? -1, r?.TotalScore ?? 0));
-            //}
-            //else {
-            //    representative = chromPeakFeature.MatchResults.Representative;
-            //}
-            //var representative = refmatches.Argmax(r => Tuple.Create(r?.Priority ?? -1, r?.TotalScore ?? 0));
-
             var representative = chromPeakFeature.MatchResults.Representative;
             var container = containerPairs.FirstOrDefault(containerPair => representative.AnnotatorID == containerPair.Container.AnnotatorID).Container;
             var annotator = container?.Annotator;

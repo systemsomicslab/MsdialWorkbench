@@ -329,7 +329,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 streams = files.Select(file => System.IO.File.OpenRead(file.DeconvolutionFilePath)).ToList();
                 foreach (var spot in spots.OrEmptyIfNull()) {
                     var repID = spot.RepresentativeFileID;
-                    var peakID = spot.AlignedPeakProperties[repID].MSDecResultIdUsed;
+                    var peakID = spot.AlignedPeakProperties[repID].GetMSDecResultID();
 
                     Console.WriteLine("RepID {0}, Peak ID {1}", repID, peakID);
 

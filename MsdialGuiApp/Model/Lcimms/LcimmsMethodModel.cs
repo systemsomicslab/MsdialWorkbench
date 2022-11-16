@@ -237,14 +237,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 streams = files.Select(file => File.OpenRead(file.DeconvolutionFilePath)).ToList();
                 foreach (var spot in spots) {
                     var repID = spot.RepresentativeFileID;
-                    var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
+                    var peakID = spot.AlignedPeakProperties[repID].GetMSDecResultID();
                     var decResult = MsdecResultsReader.ReadMSDecResult(
                         streams[repID], pointerss[repID].pointers[peakID],
                         pointerss[repID].version, pointerss[repID].isAnnotationInfo);
                     yield return decResult;
                     foreach (var dSpot in spot.AlignmentDriftSpotFeatures) {
                         var dRepID = dSpot.RepresentativeFileID;
-                        var dPeakID = dSpot.AlignedPeakProperties[dRepID].MasterPeakID;
+                        var dPeakID = dSpot.AlignedPeakProperties[dRepID].GetMSDecResultID();
                         var dDecResult = MsdecResultsReader.ReadMSDecResult(
                             streams[dRepID], pointerss[dRepID].pointers[dPeakID],
                             pointerss[dRepID].version, pointerss[dRepID].isAnnotationInfo);

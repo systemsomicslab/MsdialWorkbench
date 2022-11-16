@@ -198,7 +198,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 streams = files.Select(file => System.IO.File.OpenRead(file.DeconvolutionFilePath)).ToList();
                 foreach (var spot in spots) {
                     var repID = spot.RepresentativeFileID;
-                    var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
+                    var peakID = spot.AlignedPeakProperties[repID].GetMSDecResultID();
                     var decResult = MsdecResultsReader.ReadMSDecResult(
                         streams[repID], pointerss[repID].pointers[peakID],
                         pointerss[repID].version, pointerss[repID].isAnnotationInfo);
