@@ -63,11 +63,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .AddTo(Disposables);
             ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
-            RunCommand = SelectedParentSettingViewModel
+            CanRun = SelectedParentSettingViewModel
                 .Switch(vm => vm is MethodSettingViewModel
                     ? vm.ObserveHasErrors
                     : Observable.Return(true))
                 .Inverse()
+                .ToReactiveProperty()
+                .AddTo(Disposables);
+            RunCommand = CanRun
                 .ToAsyncReactiveCommand()
                 .WithSubscribe(RunProcessAsync)
                 .AddTo(Disposables);
@@ -128,11 +131,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .AddTo(Disposables);
             ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
-            RunCommand = SelectedParentSettingViewModel
+            CanRun = SelectedParentSettingViewModel
                 .Switch(vm => vm is MethodSettingViewModel
                     ? vm.ObserveHasErrors
                     : Observable.Return(true))
                 .Inverse()
+                .ToReactiveProperty()
+                .AddTo(Disposables);
+            RunCommand = CanRun
                 .ToAsyncReactiveCommand()
                 .WithSubscribe(RunProcessAsync)
                 .AddTo(Disposables);
@@ -193,11 +199,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             ContinueCommand.Subscribe(Next)
                 .AddTo(Disposables);
 
-            RunCommand = SelectedParentSettingViewModel
+            CanRun = SelectedParentSettingViewModel
                 .Switch(vm => vm is MethodSettingViewModel
                     ? vm.ObserveHasErrors
                     : Observable.Return(true))
                 .Inverse()
+                .ToReactiveProperty()
+                .AddTo(Disposables);
+            RunCommand = CanRun
                 .ToAsyncReactiveCommand()
                 .WithSubscribe(RunProcessAsync)
                 .AddTo(Disposables);
@@ -255,11 +264,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .AddTo(Disposables);
             ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
-            RunCommand = SelectedParentSettingViewModel
+            CanRun = SelectedParentSettingViewModel
                 .Switch(vm => vm is MethodSettingViewModel
                     ? vm.ObserveHasErrors
                     : Observable.Return(true))
                 .Inverse()
+                .ToReactiveProperty()
+                .AddTo(Disposables);
+            RunCommand = CanRun
                 .ToAsyncReactiveCommand()
                 .WithSubscribe(RunProcessAsync)
                 .AddTo(Disposables);
@@ -314,11 +326,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .AddTo(Disposables);
             ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
-            RunCommand = SelectedParentSettingViewModel
+            CanRun = SelectedParentSettingViewModel
                 .Switch(vm => vm is MethodSettingViewModel
                     ? vm.ObserveHasErrors
                     : Observable.Return(true))
                 .Inverse()
+                .ToReactiveProperty()
+                .AddTo(Disposables);
+            RunCommand = CanRun
                 .ToAsyncReactiveCommand()
                 .WithSubscribe(RunProcessAsync)
                 .AddTo(Disposables);
@@ -340,6 +355,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactiveCommand ContinueCommand { get; } 
 
+        public ReactiveProperty<bool> CanRun { get; }
         public AsyncReactiveCommand RunCommand { get; } 
 
         public ReactivePropertySlim<bool> DialogResult { get; } 

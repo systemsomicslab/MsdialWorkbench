@@ -5,6 +5,7 @@ using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
@@ -81,6 +82,15 @@ namespace CompMs.App.Msdial.Model.Core
         protected abstract IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile);
 
         public abstract Task RunAsync(ProcessOption option, CancellationToken token);
+
+        public Task LoadAsync(CancellationToken token) {
+            var analysisFile = AnalysisFileModelCollection.IncludedAnalysisFiles.FirstOrDefault();
+            if (AnalysisFileModel != analysisFile && !(analysisFile is null)) {
+                AnalysisFileModel = analysisFile;
+                AnalysisModelBase = LoadAnalysisFileCore(AnalysisFileModel);
+            }
+            return Task.CompletedTask;
+        }
 
         public virtual Task SaveAsync() {
             return Task.WhenAll(new List<Task>
