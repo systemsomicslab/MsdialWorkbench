@@ -10,17 +10,16 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CompMs.App.Msdial.View
+namespace CompMs.App.Msdial.View.Search
 {
     /// <summary>
-    /// Interaction logic for AdductView.xaml
+    /// Interaction logic for CompoundSearchWindow.xaml
     /// </summary>
-    public partial class AdductView : UserControl
+    public partial class CompoundSearchWindow : Window
     {
-        public AdductView() {
+        public CompoundSearchWindow() {
             InitializeComponent();
         }
     }

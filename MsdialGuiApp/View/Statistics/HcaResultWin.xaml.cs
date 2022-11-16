@@ -36,106 +36,102 @@ namespace CompMs.App.Msdial.View.Statistics {
        
     }
     public class HcaResultVM : ViewModelBase {
-        #region Property
         public IEnumerable HeatmapView {
-            get => heatmapView;
-            set => SetProperty(ref heatmapView, value);
+            get => _heatmapView;
+            set => SetProperty(ref _heatmapView, value);
         }
 
         public IEnumerable FileView {
-            get => fileView;
-            private set => SetProperty(ref fileView, value);
+            get => _fileView;
+            private set => SetProperty(ref _fileView, value);
         }
 
         public IEnumerable MetaboliteView {
-            get => metaboliteView;
-            private set => SetProperty(ref metaboliteView, value);
+            get => _metaboliteView;
+            private set => SetProperty(ref _metaboliteView, value);
         }
 
         public DirectedTree FileTree {
-            get => fileTree;
-            set => SetProperty(ref fileTree, value);
+            get => _fileTree;
+            set => SetProperty(ref _fileTree, value);
         }
 
         public DirectedTree MetaboliteTree {
-            get => metaboliteTree;
-            set => SetProperty(ref metaboliteTree, value);
+            get => _metaboliteTree;
+            set => SetProperty(ref _metaboliteTree, value);
         }
 
         public double FileDendrogramMinimum {
-            get => fileDendrogramMinimum;
-            set => SetProperty(ref fileDendrogramMinimum, value);
+            get => _fileDendrogramMinimum;
+            set => SetProperty(ref _fileDendrogramMinimum, value);
         }
 
         public double FileDendrogramMaximum {
-            get => fileDendrogramMaximum;
-            set => SetProperty(ref fileDendrogramMaximum, value);
+            get => _fileDendrogramMaximum;
+            set => SetProperty(ref _fileDendrogramMaximum, value);
         }
 
         public double MetaboliteDendrogramMinimum {
-            get => metaboliteDendrogramMinimum;
-            set => SetProperty(ref metaboliteDendrogramMinimum, value);
+            get => _metaboliteDendrogramMinimum;
+            set => SetProperty(ref _metaboliteDendrogramMinimum, value);
         }
 
         public double MetaboliteDendrogramMaximum {
-            get => metaboliteDendrogramMaximum;
-            set => SetProperty(ref metaboliteDendrogramMaximum, value);
+            get => _metaboliteDendrogramMaximum;
+            set => SetProperty(ref _metaboliteDendrogramMaximum, value);
         }
 
         public double HeatmapValueMinimum {
-            get => heatmapValueMinimum;
-            set => SetProperty(ref heatmapValueMinimum, value);
+            get => _heatmapValueMinimum;
+            set => SetProperty(ref _heatmapValueMinimum, value);
         }
 
         public double HeatmapValueMaximum {
-            get => heatmapValueMaximum;
-            set => SetProperty(ref heatmapValueMaximum, value);
+            get => _heatmapValueMaximum;
+            set => SetProperty(ref _heatmapValueMaximum, value);
         }
 
         public int NumberOfDisplayMetabolite {
-            get => numberOfDisplayMetabolite;
-            set => SetProperty(ref numberOfDisplayMetabolite, value);
+            get => _numberOfDisplayMetabolite;
+            set => SetProperty(ref _numberOfDisplayMetabolite, value);
         }
 
         public string XLabel {
-            get => xLabel;
-            set => SetProperty(ref xLabel, value);
+            get => _xLabel;
+            set => SetProperty(ref _xLabel, value);
         }
 
         public string YLabel {
-            get => yLabel;
-            set => SetProperty(ref yLabel, value);
+            get => _yLabel;
+            set => SetProperty(ref _yLabel, value);
         }
 
         public double FileLabelSize {
-            get => fileLabelSize;
-            set => SetProperty(ref fileLabelSize, value);
+            get => _fileLabelSize;
+            set => SetProperty(ref _fileLabelSize, value);
         }
 
         public double MetaboliteLabelSize {
-            get => metaboliteLabelSize;
-            set => SetProperty(ref metaboliteLabelSize, value);
+            get => _metaboliteLabelSize;
+            set => SetProperty(ref _metaboliteLabelSize, value);
         }
 
         public string DisplayFileProperty {
-            get => displayFileProperty;
-            set => SetProperty(ref displayFileProperty, value);
+            get => _displayFileProperty;
+            set => SetProperty(ref _displayFileProperty, value);
         }
-        #endregion
 
-        #region Field
-        private ObservableCollection<MatrixData> heatmapSource;
-        private ObservableCollection<FileLeaf> fileSource;
-        private ObservableCollection<MetaboliteLeaf> metaboliteSource;
-        private IEnumerable fileView, metaboliteView, heatmapView;
-        private double fileDendrogramMinimum, fileDendrogramMaximum,
-            metaboliteDendrogramMinimum, metaboliteDendrogramMaximum,
-            heatmapValueMinimum, heatmapValueMaximum;
-        private DirectedTree fileTree, metaboliteTree;
-        private int numberOfDisplayMetabolite;
-        private string xLabel, yLabel, displayFileProperty;
-        private double fileLabelSize, metaboliteLabelSize;
-        #endregion
+        private readonly ObservableCollection<MatrixData> _heatmapSource;
+        private readonly ObservableCollection<FileLeaf> _fileSource;
+        private readonly ObservableCollection<MetaboliteLeaf> _metaboliteSource;
+        private IEnumerable _fileView, _metaboliteView, _heatmapView;
+        private double _fileDendrogramMinimum, _fileDendrogramMaximum,
+            _metaboliteDendrogramMinimum, _metaboliteDendrogramMaximum,
+            _heatmapValueMinimum, _heatmapValueMaximum;
+        private DirectedTree _fileTree, _metaboliteTree;
+        private int _numberOfDisplayMetabolite;
+        private string _xLabel, _yLabel, _displayFileProperty;
+        private double _fileLabelSize, _metaboliteLabelSize;
 
         public HcaResultVM(MultivariateAnalysisResult result) {
             var files = result.StatisticsObject.YLabels;
@@ -211,61 +207,51 @@ namespace CompMs.App.Msdial.View.Statistics {
                 }
             }
 
-            fileSource = new ObservableCollection<FileLeaf>(filesource.OrderBy(leaf => leaf.Order));
+            _fileSource = new ObservableCollection<FileLeaf>(filesource.OrderBy(leaf => leaf.Order));
             FileDendrogramMinimum = xdendro.Min();
             FileDendrogramMaximum = xdendro.Max();
             FileTree = filetree;
-            FileView = fileSource;
+            FileView = _fileSource;
             XLabel = "Samples";
             FileLabelSize = 12d;
             DisplayFileProperty = "FileName";
 
-            metaboliteSource = new ObservableCollection<MetaboliteLeaf>(metabolitesource.OrderBy(leaf => leaf.Order));
+            _metaboliteSource = new ObservableCollection<MetaboliteLeaf>(metabolitesource.OrderBy(leaf => leaf.Order));
             NumberOfDisplayMetabolite = Math.Min(metabolitesource.Count, 100);
             MetaboliteTree = metabolitetree;
             MetaboliteDendrogramMinimum = ydendro.Min();
             MetaboliteDendrogramMaximum = ydendro.Max();
-            MetaboliteView = metaboliteSource;
+            MetaboliteView = _metaboliteSource;
             YLabel = "Metabolites";
             MetaboliteLabelSize = 12d;
 
-            heatmapSource = new ObservableCollection<MatrixData>(heatmapsource);
-            HeatmapView = heatmapSource;
-            HeatmapValueMinimum = heatmapSource.Min(data => data.Intensity);
-            HeatmapValueMaximum = heatmapSource.Max(data => data.Intensity);
+            _heatmapSource = new ObservableCollection<MatrixData>(heatmapsource);
+            HeatmapView = _heatmapSource;
+            HeatmapValueMinimum = _heatmapSource.Min(data => data.Intensity);
+            HeatmapValueMaximum = _heatmapSource.Max(data => data.Intensity);
 
             NumberOfDisplayMetabolite = 50;
             TopNMetaboliteFilter(NumberOfDisplayMetabolite);
         }
 
         void TopNMetaboliteFilter(int n) {
-            if (metaboliteSource != null) {
-                var metabolite = metaboliteSource.Where(leaf => leaf.Rank <= n);
+            if (_metaboliteSource != null) {
+                var metabolite = _metaboliteSource.Where(leaf => leaf.Rank <= n);
                 MetaboliteView = metabolite;
-                if (heatmapSource != null) {
+                if (_heatmapSource != null) {
                     var metaboliteIds = metabolite.Select(leaf => leaf.ID).ToHashSet();
-                    HeatmapView = heatmapSource.Where(data => metaboliteIds.Contains(data.MetaboliteId));
+                    HeatmapView = _heatmapSource.Where(data => metaboliteIds.Contains(data.MetaboliteId));
                 }
             }
         }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e) {
             base.OnPropertyChanged(e);
-
             switch (e.PropertyName) {
                 case nameof(NumberOfDisplayMetabolite):
                     TopNMetaboliteFilter(NumberOfDisplayMetabolite);
                     break;
             }
-        }
-
-        protected bool SetProperty<T>(ref T prop, T value, [CallerMemberName] string propertyname = "") {
-            if (prop == null && value != null || !prop.Equals(value)) {
-                prop = value;
-                OnPropertyChanged(propertyname);
-                return true;
-            }
-            return false;
         }
     }
 

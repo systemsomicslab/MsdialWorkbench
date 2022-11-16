@@ -20,6 +20,7 @@ namespace CompMs.App.Msdial.Model.Core
 
         Task LoadAnalysisFileAsync(AnalysisFileBeanModel analysisFile, CancellationToken token);
 
+        Task LoadAsync(CancellationToken token);
         Task SaveAsync();
         Task RunAsync(ProcessOption option, CancellationToken token);
     }

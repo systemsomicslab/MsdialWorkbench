@@ -1,7 +1,7 @@
-﻿using CompMs.App.Msdial.Model.Search;
+﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using System.Collections.Generic;
@@ -9,14 +9,14 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.Lcms
 {
-    internal sealed class LcmsCompoundSearchModel<T> : CompoundSearchModel<T> where T : IMSIonProperty, IMoleculeProperty
+    internal sealed class LcmsCompoundSearchModel : CompoundSearchModel, ICompoundSearchModel
     {
         public LcmsCompoundSearchModel(
             IFileBean fileBean,
-            T property,
+            IPeakSpotModel peakSpot,
             MSDecResult msdecResult,
             IReadOnlyList<CompoundSearcher> compoundSearcher)
-            : base(fileBean, property, msdecResult, compoundSearcher) {
+            : base(fileBean, peakSpot, msdecResult, compoundSearcher) {
              
         }
 

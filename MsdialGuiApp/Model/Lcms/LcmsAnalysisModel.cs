@@ -289,16 +289,12 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
-        public CompoundSearchModel<ChromatogramPeakFeature> CreateCompoundSearchModel() {
+        public ICompoundSearchModel CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
                 return null;
             }
 
-            return new LcmsCompoundSearchModel<ChromatogramPeakFeature>(
-                AnalysisFileModel,
-                Target.Value.InnerModel,
-                MsdecResult.Value,
-                CompoundSearchers);
+            return new LcmsCompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, CompoundSearchers);
         }
 
         public void FragmentSearcher() {
@@ -350,6 +346,9 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ProteinResultContainerModel ProteinResultContainerModel { get; }
 
         public void GoToMsfinderMethod() {
+            if (Target.Value is null || MsdecResult.Value is null) {
+                return;
+            }
             MsDialToExternalApps.SendToMsFinderProgram(
                 AnalysisFileModel,
                 Target.Value.InnerModel,

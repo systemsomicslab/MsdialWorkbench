@@ -1,19 +1,13 @@
 ﻿using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
-using CompMs.CommonMVVM.Common;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Reactive.Linq;
 
-namespace CompMs.App.Msdial.ViewModel
+namespace CompMs.App.Msdial.ViewModel.DataObj
 {
-    class MsRefSearchParameterBaseVM : DynamicViewModelBase<MsRefSearchParameterBase>
-    {
-        public MsRefSearchParameterBaseVM(MsRefSearchParameterBase innerModel) : base(innerModel) { }
-    }
-
     public class MsRefSearchParameterBaseViewModel : ViewModelBase
     {
         // library search parameters
@@ -105,84 +99,84 @@ namespace CompMs.App.Msdial.ViewModel
 
         public ReactiveProperty<bool> IsUseCcsForAnnotationScoring { get; }
 
-        private readonly MsRefSearchParameterBase model;
+        private readonly MsRefSearchParameterBase _model;
 
         public MsRefSearchParameterBaseViewModel(MsRefSearchParameterBase model) {
-            this.model = model;
+            _model = model;
 
             MassRangeBegin = new ReactiveProperty<string>(model.MassRangeBegin.ToString())
                 .SetValidateAttribute(() => MassRangeBegin)
                 .AddTo(Disposables);
             MassRangeBegin.Where(_ => !MassRangeBegin.HasErrors)
                 .Select(_ => float.Parse(MassRangeBegin.Value))
-                .Subscribe(x => this.model.MassRangeBegin = x)
+                .Subscribe(x => _model.MassRangeBegin = x)
                 .AddTo(Disposables);
             MassRangeEnd = new ReactiveProperty<string>(model.MassRangeEnd.ToString())
                 .SetValidateAttribute(() => MassRangeEnd)
                 .AddTo(Disposables);
             MassRangeEnd.Where(_ => !MassRangeEnd.HasErrors)
                 .Select(_ => float.Parse(MassRangeEnd.Value))
-                .Subscribe(x => this.model.MassRangeEnd = x)
+                .Subscribe(x => _model.MassRangeEnd = x)
                 .AddTo(Disposables);
             RtTolerance = new ReactiveProperty<string>(model.RtTolerance.ToString())
                 .SetValidateAttribute(() => RtTolerance)
                 .AddTo(Disposables);
             RtTolerance.Where(_ => !RtTolerance.HasErrors)
                 .Select(_ => float.Parse(RtTolerance.Value))
-                .Subscribe(x => this.model.RtTolerance = x)
+                .Subscribe(x => _model.RtTolerance = x)
                 .AddTo(Disposables);
             RiTolerance = new ReactiveProperty<string>(model.RiTolerance.ToString())
                 .SetValidateAttribute(() => RiTolerance)
                 .AddTo(Disposables);
             RiTolerance.Where(_ => !RiTolerance.HasErrors)
                 .Select(_ => float.Parse(RiTolerance.Value))
-                .Subscribe(x => this.model.RiTolerance = x)
+                .Subscribe(x => _model.RiTolerance = x)
                 .AddTo(Disposables);
             CcsTolerance = new ReactiveProperty<string>(model.CcsTolerance.ToString())
                 .SetValidateAttribute(() => CcsTolerance)
                 .AddTo(Disposables);
             CcsTolerance.Where(_ => !CcsTolerance.HasErrors)
                 .Select(_ => float.Parse(CcsTolerance.Value))
-                .Subscribe(x => this.model.CcsTolerance = x)
+                .Subscribe(x => _model.CcsTolerance = x)
                 .AddTo(Disposables);
             Ms1Tolerance = new ReactiveProperty<string>(model.Ms1Tolerance.ToString())
                 .SetValidateAttribute(() => Ms1Tolerance)
                 .AddTo(Disposables);
             Ms1Tolerance.Where(_ => !Ms1Tolerance.HasErrors)
                 .Select(_ => float.Parse(Ms1Tolerance.Value))
-                .Subscribe(x => this.model.Ms1Tolerance = x)
+                .Subscribe(x => _model.Ms1Tolerance = x)
                 .AddTo(Disposables);
             Ms2Tolerance = new ReactiveProperty<string>(model.Ms2Tolerance.ToString())
                 .SetValidateAttribute(() => Ms2Tolerance)
                 .AddTo(Disposables);
             Ms2Tolerance.Where(_ => !Ms2Tolerance.HasErrors)
                 .Select(_ => float.Parse(Ms2Tolerance.Value))
-                .Subscribe(x => this.model.Ms2Tolerance = x)
+                .Subscribe(x => _model.Ms2Tolerance = x)
                 .AddTo(Disposables);
             RelativeAmpCutoff = new ReactiveProperty<string>((model.RelativeAmpCutoff * 100).ToString())
                 .SetValidateAttribute(() => RelativeAmpCutoff)
                 .AddTo(Disposables);
             RelativeAmpCutoff.Where(_ => !RelativeAmpCutoff.HasErrors)
                 .Select(_ => float.Parse(RelativeAmpCutoff.Value) / 100)
-                .Subscribe(x => this.model.RelativeAmpCutoff = x)
+                .Subscribe(x => _model.RelativeAmpCutoff = x)
                 .AddTo(Disposables);
             AbsoluteAmpCutoff = new ReactiveProperty<string>(model.AbsoluteAmpCutoff.ToString())
                 .SetValidateAttribute(() => AbsoluteAmpCutoff)
                 .AddTo(Disposables);
             AbsoluteAmpCutoff.Where(_ => !AbsoluteAmpCutoff.HasErrors)
                 .Select(_ => float.Parse(AbsoluteAmpCutoff.Value))
-                .Subscribe(x => this.model.AbsoluteAmpCutoff = x)
+                .Subscribe(x => _model.AbsoluteAmpCutoff = x)
                 .AddTo(Disposables);
 
             IsUseTimeForAnnotationFiltering = new ReactiveProperty<bool>(model.IsUseTimeForAnnotationFiltering).AddTo(Disposables);
             IsUseTimeForAnnotationFiltering.Where(_ => !IsUseTimeForAnnotationFiltering.HasErrors)
                 .Select(_ => IsUseTimeForAnnotationFiltering.Value)
-                .Subscribe(x => this.model.IsUseTimeForAnnotationFiltering = x)
+                .Subscribe(x => _model.IsUseTimeForAnnotationFiltering = x)
                 .AddTo(Disposables);
             IsUseCcsForAnnotationFiltering = new ReactiveProperty<bool>(model.IsUseCcsForAnnotationFiltering).AddTo(Disposables);
             IsUseCcsForAnnotationFiltering.Where(_ => !IsUseCcsForAnnotationFiltering.HasErrors)
                 .Select(_ => IsUseCcsForAnnotationFiltering.Value)
-                .Subscribe(x => this.model.IsUseCcsForAnnotationFiltering = x)
+                .Subscribe(x => _model.IsUseCcsForAnnotationFiltering = x)
                 .AddTo(Disposables);
 
             WeightedDotProductCutOff = new ReactiveProperty<string>((model.WeightedDotProductCutOff * 1000).ToString())
@@ -190,53 +184,53 @@ namespace CompMs.App.Msdial.ViewModel
                 .AddTo(Disposables);
             WeightedDotProductCutOff.Where(_ => !WeightedDotProductCutOff.HasErrors)
                 .Select(_ => float.Parse(WeightedDotProductCutOff.Value) / 1000)
-                .Subscribe(x => this.model.WeightedDotProductCutOff = x)
+                .Subscribe(x => _model.WeightedDotProductCutOff = x)
                 .AddTo(Disposables);
             SimpleDotProductCutOff = new ReactiveProperty<string>((model.SimpleDotProductCutOff * 1000).ToString())
                 .SetValidateAttribute(() => SimpleDotProductCutOff)
                 .AddTo(Disposables);
             SimpleDotProductCutOff.Where(_ => !SimpleDotProductCutOff.HasErrors)
                 .Select(_ => float.Parse(SimpleDotProductCutOff.Value) / 1000)
-                .Subscribe(x => this.model.SimpleDotProductCutOff = x)
+                .Subscribe(x => _model.SimpleDotProductCutOff = x)
                 .AddTo(Disposables);
             ReverseDotProductCutOff = new ReactiveProperty<string>((model.ReverseDotProductCutOff * 1000).ToString())
                 .SetValidateAttribute(() => ReverseDotProductCutOff)
                 .AddTo(Disposables);
             ReverseDotProductCutOff.Where(_ => !ReverseDotProductCutOff.HasErrors)
                 .Select(_ => float.Parse(ReverseDotProductCutOff.Value) / 1000)
-                .Subscribe(x => this.model.ReverseDotProductCutOff = x)
+                .Subscribe(x => _model.ReverseDotProductCutOff = x)
                 .AddTo(Disposables);
             MatchedPeaksPercentageCutOff = new ReactiveProperty<string>((model.MatchedPeaksPercentageCutOff * 100).ToString())
                 .SetValidateAttribute(() => MatchedPeaksPercentageCutOff)
                 .AddTo(Disposables);
             MatchedPeaksPercentageCutOff.Where(_ => !MatchedPeaksPercentageCutOff.HasErrors)
                 .Select(_ => float.Parse(MatchedPeaksPercentageCutOff.Value) / 100)
-                .Subscribe(x => this.model.MatchedPeaksPercentageCutOff = x)
+                .Subscribe(x => _model.MatchedPeaksPercentageCutOff = x)
                 .AddTo(Disposables);
             TotalScoreCutoff = new ReactiveProperty<string>((model.TotalScoreCutoff * 1000).ToString())
                 .SetValidateAttribute(() => TotalScoreCutoff)
                 .AddTo(Disposables);
             TotalScoreCutoff.Where(_ => !TotalScoreCutoff.HasErrors)
                 .Select(_ => float.Parse(TotalScoreCutoff.Value) / 1000)
-                .Subscribe(x => this.model.TotalScoreCutoff = x)
+                .Subscribe(x => _model.TotalScoreCutoff = x)
                 .AddTo(Disposables);
             MinimumSpectrumMatch = new ReactiveProperty<string>(model.MinimumSpectrumMatch.ToString())
                 .SetValidateAttribute(() => MinimumSpectrumMatch)
                 .AddTo(Disposables);
             MinimumSpectrumMatch.Where(_ => !MinimumSpectrumMatch.HasErrors)
                 .Select(_ => float.Parse(MinimumSpectrumMatch.Value))
-                .Subscribe(x => this.model.MinimumSpectrumMatch = x)
+                .Subscribe(x => _model.MinimumSpectrumMatch = x)
                 .AddTo(Disposables);
 
             IsUseTimeForAnnotationScoring = new ReactiveProperty<bool>(model.IsUseTimeForAnnotationScoring).AddTo(Disposables);
             IsUseTimeForAnnotationScoring.Where(_ => !IsUseTimeForAnnotationScoring.HasErrors)
                 .Select(_ => IsUseTimeForAnnotationScoring.Value)
-                .Subscribe(x => this.model.IsUseTimeForAnnotationScoring = x)
+                .Subscribe(x => _model.IsUseTimeForAnnotationScoring = x)
                 .AddTo(Disposables);
             IsUseCcsForAnnotationScoring = new ReactiveProperty<bool>(model.IsUseCcsForAnnotationScoring).AddTo(Disposables);
             IsUseCcsForAnnotationScoring.Where(_ => !IsUseCcsForAnnotationScoring.HasErrors)
                 .Select(_ => IsUseCcsForAnnotationScoring.Value)
-                .Subscribe(x => this.model.IsUseCcsForAnnotationScoring = x)
+                .Subscribe(x => _model.IsUseCcsForAnnotationScoring = x)
                 .AddTo(Disposables);
         }
     }

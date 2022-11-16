@@ -3,6 +3,7 @@ using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -65,6 +66,18 @@ namespace CompMs.App.Msdial.Model.Core {
         private string displayLabel = string.Empty;
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
+
+        public void SearchFragment(ParameterBase parameter) {
+            var features = Ms1Peaks;
+            MsdialCore.Algorithm.FragmentSearcher.Search(features.Select(n => n.InnerModel).ToList(), decLoader, parameter);
+
+            foreach (var feature in features) {
+                var featureStatus = feature.InnerModel.FeatureFilterStatus;
+                if (featureStatus.IsFragmentExistFiltered) {
+                    Console.WriteLine("A fragment is found by MassQL not in alignment !!!");
+                }
+            }
+        }
 
         public Task SaveAsync(CancellationToken token) {
             return _peakCollection.SerializeAsync(AnalysisFileModel.File, token);

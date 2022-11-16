@@ -10,7 +10,6 @@ using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.AxisManager.Generic;
-using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm;
@@ -196,8 +195,8 @@ namespace CompMs.App.Msdial.Model.Dims
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
 
-        public CompoundSearchModel<ChromatogramPeakFeature> BuildCompoundSearchModel() {
-            return new CompoundSearchModel<ChromatogramPeakFeature>(AnalysisFileModel, Target.Value.InnerModel, MsdecResult.Value, _compoundSearchers.Items);
+        public ICompoundSearchModel BuildCompoundSearchModel() {
+            return new CompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, _compoundSearchers.Items);
         }
 
         public bool CanSaveSpectra() => Target.Value.InnerModel != null && MsdecResult.Value != null;

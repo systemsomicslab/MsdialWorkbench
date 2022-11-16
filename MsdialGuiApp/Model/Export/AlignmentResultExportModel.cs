@@ -26,8 +26,8 @@ namespace CompMs.App.Msdial.Model.Export
             ExportTypes = new ReadOnlyObservableCollection<ExportType>(_exportTypes);
             _formats = new ObservableCollection<ExportFormat>
             {
-                new ExportFormat("txt", new AlignmentCSVExporter()),
-                new ExportFormat("csv", new AlignmentCSVExporter(separator: ",")),
+                new ExportFormat("txt", "txt", new AlignmentCSVExporter()),
+                new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ",")),
                 // mztabm
             };
             Formats = new ReadOnlyObservableCollection<ExportFormat>(_formats);
@@ -88,7 +88,7 @@ namespace CompMs.App.Msdial.Model.Export
             var exportTypes = ExportTypes.Where(type => type.IsSelected).ToArray();
             
             foreach (var (exportType, index) in exportTypes.WithIndex()) {
-                var outName = $"{exportType.FilePrefix}_{alignmentFile.FileID}_{dt:yyyy_MM_dd_HH_mm_ss}.txt";
+                var outName = $"{exportType.FilePrefix}_{alignmentFile.FileID}_{dt:yyyy_MM_dd_HH_mm_ss}.{Format.FileExtension}";
                 var outfile = Path.Combine(ExportDirectory, outName);
                 notification?.Invoke(((double)index) / exportTypes.Length, $"Exporting {outName}");
 
@@ -171,12 +171,14 @@ namespace CompMs.App.Msdial.Model.Export
 
     public sealed class ExportFormat : BindableBase
     {
-        public ExportFormat(string label, IAlignmentExporter exporter) {
+        public ExportFormat(string label, string extension, IAlignmentExporter exporter) {
             Label = label;
+            FileExtension = extension;
             Exporter = exporter;
         }
 
         public string Label { get; }
+        public string FileExtension { get; }
         public IAlignmentExporter Exporter { get; }
     }
 }

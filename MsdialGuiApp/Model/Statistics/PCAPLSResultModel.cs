@@ -53,10 +53,6 @@ namespace CompMs.App.Msdial.Model.Statistics
 
     internal sealed class PCAPLSResultModel : BindableBase {
         private readonly MultivariateAnalysisResult _result;
-        private readonly ParameterBase _parameter;
-        private readonly ObservableCollection<AlignmentSpotPropertyModel> _spotprops;
-        private readonly List<AnalysisFileBean> _analysisfiles;
-        private readonly IObservable<KeyBrushMapper<string>> _classBrush;
 
         public PCAPLSResultModel(
             MultivariateAnalysisResult result,
@@ -199,15 +195,15 @@ namespace CompMs.App.Msdial.Model.Statistics
         public MultivariateAnalysisOption MultivariateAnalysisOption => _result.MultivariateAnalysisOption;
 
         public string ScorePlotTitle {
-            get => scorePlotTitle;
-            set => SetProperty(ref scorePlotTitle, value);
+            get => _scorePlotTitle;
+            set => SetProperty(ref _scorePlotTitle, value);
         }
-        private string scorePlotTitle;
+        private string _scorePlotTitle;
         public string LoadingPlotTitle {
-            get => loadingPlotTitle;
-            set => SetProperty(ref loadingPlotTitle, value);
+            get => _loadingPlotTitle;
+            set => SetProperty(ref _loadingPlotTitle, value);
         }
-        private string loadingPlotTitle;
+        private string _loadingPlotTitle;
 
         public void ShowContributionPlot(Window owner) {
             if (_result.MultivariateAnalysisOption == MultivariateAnalysisOption.Pca) {
@@ -246,10 +242,8 @@ namespace CompMs.App.Msdial.Model.Statistics
                 var yAxisTitle = "Value";
                 var graphTitle = "Variable importance for prediction (VIP)";
 
-                var xAxisValues = _result.StatisticsObject.XLabels;
                 var yAxisValues = _result.Vips;
 
-                var brushes = convertRgbaToBrush(_result.StatisticsObject.YColors);
                 var idValues = _result.StatisticsObject.XIndexes;
                 var labels = _result.StatisticsObject.XLabels;
 
@@ -273,7 +267,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                 var xAxisValues = _result.StatisticsObject.YVariables;
                 var yAxisValues = _result.PredictedYs;
 
-                var brushes = convertRgbaToBrush(_result.StatisticsObject.YColors);
+                var brushes = ConvertRgbaToBrush(_result.StatisticsObject.YColors);
                 var idValues = _result.StatisticsObject.YIndexes;
                 var labels = _result.StatisticsObject.YLabels;
 
@@ -296,7 +290,6 @@ namespace CompMs.App.Msdial.Model.Statistics
 
                 var yAxisValues = _result.Coefficients;
 
-                var brushes = convertRgbaToBrush(_result.StatisticsObject.YColors);
                 var idValues = _result.StatisticsObject.XIndexes;
                 var labels = _result.StatisticsObject.XLabels;
 
@@ -308,8 +301,8 @@ namespace CompMs.App.Msdial.Model.Statistics
             }
         }
 
-        public void SaveData() {
-
+        public void SaveResult(string output) {
+            _result.WriteResult(output);
         }
 
         public void ShowSPlot(Window owner) {
@@ -324,7 +317,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                 var xAxisValues = _result.PPreds[0];
                 var yAxisValues = _result.PPredCoeffs[0];
 
-                var brushes = convertRgbaToBrush(_result.StatisticsObject.XColors);
+                var brushes = ConvertRgbaToBrush(_result.StatisticsObject.XColors);
                 var idValues = _result.StatisticsObject.XIndexes;
                 var labels = _result.StatisticsObject.XLabels;
 
@@ -336,7 +329,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             }
         }
 
-        private ObservableCollection<SolidColorBrush> convertRgbaToBrush(ObservableCollection<byte[]> bytes) {
+        private ObservableCollection<SolidColorBrush> ConvertRgbaToBrush(ObservableCollection<byte[]> bytes) {
             if (bytes == null) return null;
             var brushes = new ObservableCollection<SolidColorBrush>();
             foreach (var colorBytes in bytes) {

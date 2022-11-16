@@ -5,15 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="30" 
-             MouseRightButtonDown="userControl_MouseRightButtonDown" 
-             MouseMove="userControl_MouseMove" 
-             MouseRightButtonUp="userControl_MouseRightButtonUp" 
-             MouseLeave="userControl_MouseLeave" 
-             MouseLeftButtonDown="userControl_MouseLeftButtonDown" 
-             MouseLeftButtonUp="userControl_MouseLeftButtonUp" 
-             MouseDoubleClick="useerControl_MouseLeftDoubleClick"
-             MouseWheel="userControl_MouseWheel"
-             SizeChanged="userControl_SizeChanged">
+             MouseRightButtonDown="UserControl_MouseRightButtonDown" 
+             MouseMove="UserControl_MouseMove" 
+             MouseRightButtonUp="UserControl_MouseRightButtonUp" 
+             MouseLeave="UserControl_MouseLeave" 
+             MouseLeftButtonDown="UserControl_MouseLeftButtonDown" 
+             MouseLeftButtonUp="UserControl_MouseLeftButtonUp" 
+             MouseDoubleClick="UserControl_MouseLeftDoubleClick"
+             MouseWheel="UserControl_MouseWheel"
+             SizeChanged="UserControl_SizeChanged">
     <Grid>
             
     </Grid>

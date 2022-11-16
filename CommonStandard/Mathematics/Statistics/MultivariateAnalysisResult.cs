@@ -56,6 +56,22 @@ namespace CompMs.Common.Mathematics.Statistics {
         public DirectedTree XDendrogram { get; set; }
         public DirectedTree YDendrogram { get; set; }
 
+        public void WriteResult(string output) {
+            switch (MultivariateAnalysisOption) {
+                case MultivariateAnalysisOption.Pca:
+                    WritePcaResult(output);
+                    break;
+                case MultivariateAnalysisOption.Plsda:
+                case MultivariateAnalysisOption.Plsr:
+                    WritePlsResult(output);
+                    break;
+                case MultivariateAnalysisOption.Oplsda:
+                case MultivariateAnalysisOption.Oplsr:
+                    WriteOplsResult(output);
+                    break;
+            }
+        }
+
         public void WritePlsResult(string output) {
             using (StreamWriter sw = new StreamWriter(output, false, Encoding.ASCII)) {
                 sw.WriteLine("Method\t" + MultivariateAnalysisOption.ToString());

@@ -27,7 +27,6 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             _storage = storage;
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _providerFactory = storage.Parameter.ProviderFactoryParameter.Create().ContraMap((AnalysisFileBeanModel file) => file.File.LoadRawMeasurement(true, true, 5, 5000));
-            // _providerFactory = new StandardDataProviderFactory().ContraMap((AnalysisFileBeanModel file) => file.File.LoadRawMeasurement(true, true, 5, 5000));
             ImageModels = new ObservableCollection<ImagingImageModel>();
             Image = ImageModels.FirstOrDefault();
         }
@@ -73,6 +72,17 @@ namespace CompMs.App.Msdial.Model.ImagingImms
                     ImageModels.Add(new ImagingImageModel(file));
                 }
             }
+        }
+
+        public Task LoadAsync(CancellationToken token) {
+            foreach (var file in AnalysisFileModelCollection.AnalysisFiles) {
+                ImageModels.Add(new ImagingImageModel(file));
+            }
+            var analysisFile = AnalysisFileModelCollection.IncludedAnalysisFiles.FirstOrDefault();
+            if (!(analysisFile is null)) {
+                Image = ImageModels.FirstOrDefault(image => image.File == analysisFile);
+            }
+            return Task.CompletedTask;
         }
 
         public Task SaveAsync() {

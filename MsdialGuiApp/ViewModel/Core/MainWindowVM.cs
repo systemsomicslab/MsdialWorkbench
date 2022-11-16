@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Utility;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
@@ -144,49 +145,49 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         public AsyncReactiveCommand CreateNewProjectCommand { get; }
 
-        private Task RunProcess(ProcessSettingViewModel viewmodel) {
+        private async Task RunProcess(ProcessSettingViewModel viewmodel) {
             processSettingService.ShowDialog(viewmodel);
+            await viewmodel.CanRun.SkipWhile(x => !x).Take(1);
             if (viewmodel.DialogResult.Value) {
-                return Model.SaveAsync();
+                await Model.SaveAsync().ConfigureAwait(false);
             }
-            return Task.CompletedTask;
         }
 
-        private Task CreateNewProject() {
+        private async Task CreateNewProject() {
             using (var vm = new ProcessSettingViewModel(Model.ProjectSetting)) {
-                return RunProcess(vm);
+                await RunProcess(vm);
             }
         }
 
         public AsyncReactiveCommand AddNewDatasetCommand { get; }
 
-        private Task AddNewDataset() {
+        private async Task AddNewDataset() {
             using (var vm = new ProcessSettingViewModel(Model.CurrentProject, _broker)) {
-                return RunProcess(vm);
+                await RunProcess(vm);
             }
         }
 
         public AsyncReactiveCommand ExecuteAllMethodProcessCommand { get; }
 
-        private Task ExecuteAllMethodProcess() {
+        private async Task ExecuteAllMethodProcess() {
             using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.AllProcessMethodSettingModel, _broker)) {
-                return RunProcess(vm);
+                await RunProcess(vm);
             }
         }
 
         public AsyncReactiveCommand ExecuteIdentificationMethodProcessCommand { get; }
 
-        private Task ExecuteIdentificationMethodProcess() {
+        private async Task ExecuteIdentificationMethodProcess() {
             using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.IdentificationProcessMethodSettingModel, _broker)) {
-                return RunProcess(vm);
+                await RunProcess(vm);
             }
         }
 
         public AsyncReactiveCommand ExecuteAlignmentMethodProcessCommand { get; }
 
-        private Task ExecuteAlignmentMethodProcess() {
+        private async Task ExecuteAlignmentMethodProcess() {
             using (var vm = new ProcessSettingViewModel(Model.CurrentProject, Model.CurrentProject.CurrentDataset, Model.CurrentProject.CurrentDataset.AlignmentProcessMethodSettingModel, _broker)) {
-                return RunProcess(vm);
+                await RunProcess(vm);
             }
         }
 

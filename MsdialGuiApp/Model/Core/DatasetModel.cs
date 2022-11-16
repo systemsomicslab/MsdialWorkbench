@@ -123,10 +123,10 @@ namespace CompMs.App.Msdial.Model.Core
 
         public async Task LoadAsync() {
             var factory = new MethodSettingModelFactory(_analysisFileBeanModelCollection, Storage, _projectBaseParameter, ProcessOption.All, _broker);
-            Method = await Task.Run(() =>
+            Method = await Task.Run(async () =>
             {
                 var method = factory.BuildMethod();
-                method.LoadAnalysisFileAsync(method.AnalysisFileModelCollection.AnalysisFiles.FirstOrDefault(), default);
+                await method.LoadAsync(default).ConfigureAwait(false);
                 return method;
             });
         }

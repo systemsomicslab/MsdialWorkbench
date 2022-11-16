@@ -13,7 +13,7 @@ using System.Net;
 using System.Runtime.Serialization;
 
 namespace CompMs.App.Msdial.Model.Setting {
-    public class MassqlSettingModel : BindableBase {
+    public sealed class MassqlSettingModel : BindableBase {
         //private readonly ParameterBase _parameter;
         //private readonly bool _isAlignmentResultTargeted;
         //private readonly List<ChromatogramPeakFeature> _chromatogramPeakFeatures;

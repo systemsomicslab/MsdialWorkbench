@@ -4,16 +4,13 @@ using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.ViewModel.Setting {
-    class FragmentQuerySettingViewModel : ViewModelBase {
+    internal sealed class FragmentQuerySettingViewModel : ViewModelBase {
         public FragmentQuerySettingViewModel(FragmentQuerySettingModel model) {
             if (model is null) {
                 throw new ArgumentNullException(nameof(model));
@@ -76,10 +73,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         public IObservable<Unit> CommitAsObservable => CommitTrigger.Where(_ => !ObserveHasErrors.Value).ToUnit();
 
-        public ReactiveCommand ApplyCommand {
-            get;
-        }
-        public void Commit() {
+        public ReactiveCommand ApplyCommand { get; }
+
+        private void Commit() {
             foreach (var value in FragmentQuerySettingValues) {
                 value.Commit();
             }
@@ -88,10 +84,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting {
 
         public DelegateCommand ClearList {
             get {
-                return clearList ??
-                  (clearList = new DelegateCommand(Model.ClearListMethod));
+                return _clearList ?? (_clearList = new DelegateCommand(Model.ClearListMethod));
             }
         }
-        private DelegateCommand clearList;
+        private DelegateCommand _clearList;
     }
 }

@@ -78,6 +78,10 @@ namespace CompMs.Common.Proteomics.DataObj {
 
         [Key(7)]
         public AdductIon AdductType { get; set; }
+
+        public void SetAdductType(AdductIon adduct) {
+            AdductType = adduct;
+        }
         [Key(8)]
         public double CollisionCrossSection { get; set; }
         [Key(9)]

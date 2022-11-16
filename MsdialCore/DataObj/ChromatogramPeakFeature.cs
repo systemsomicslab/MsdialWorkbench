@@ -156,9 +156,9 @@ namespace CompMs.MsdialCore.DataObj
         // ion physiochemical information
         [Key(30)]
         public AdductIon AdductType { get; set; } // representative
-        public void AddAdductType(AdductIon adductIon) {
+        public void SetAdductType(AdductIon adductIon) {
             AdductType = adductIon;
-            if (PeakCharacter == null) PeakCharacter = new IonFeatureCharacter();
+            if (PeakCharacter is null) PeakCharacter = new IonFeatureCharacter();
             PeakCharacter.AdductType = adductIon;
             PeakCharacter.Charge = adductIon.ChargeNumber;
         }

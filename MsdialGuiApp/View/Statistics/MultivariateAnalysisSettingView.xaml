@@ -3,11 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Statistics"
         xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
         xmlns:enum="clr-namespace:CompMs.Common.Enum;assembly=Common"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
-        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
+        xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Statistics"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:MultivariateAnalysisSettingViewModel}}"
         mc:Ignorable="d"
         Title="Multivariate analysis parameter setting" Height="478" Width="370">
     <Window.Resources>
@@ -44,7 +44,6 @@
                   VerticalAlignment="Stretch">
 
             <Grid>
-
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*" />
                     <ColumnDefinition Width="3*" />
@@ -87,9 +86,7 @@
                             <ComboBoxItem Content="Quad root" DataContext="{x:Static enum:TransformMethod.QuadRoot}"/>
                         </ComboBox.Items>
                     </ComboBox>
-
                 </StackPanel>
-
             </Grid>
         </GroupBox>
         <GroupBox
@@ -108,10 +105,7 @@
             </StackPanel>
         </GroupBox>
         
-        <GroupBox Header="Statistics method"
-                  Grid.Row="1"
-                  Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibility}}"
-                  IsEnabled="{Binding IsReadOnly, Converter={StaticResource NegativeConverter}}">
+        <GroupBox Header="Statistics method" Grid.Row="1">
             <UniformGrid Columns="4">
                 <UniformGrid.Resources>
                     <Style TargetType="RadioButton">
@@ -132,16 +126,6 @@
                              IsChecked="{Binding MultivariateAnalysisOption.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Oplsr}"/>
             </UniformGrid>
         </GroupBox>
-
-
-        <!--<StackPanel Orientation="Horizontal" Grid.Row="1" Margin="20, 30,0,0">
-            <RadioButton GroupName="Method" Content="PCA" Width="50" IsChecked="{Binding MethodOption, ConverterParameter=Plsda, Converter={StaticResource EnumConverter}}"/>
-            <RadioButton GroupName="Method" Content="HCA" Width="50" IsChecked="{Binding MethodOption, ConverterParameter=Plsda, Converter={StaticResource EnumConverter}}"/>
-            <RadioButton GroupName="Method" Content="PLSDA" Width="60" IsChecked="{Binding MethodOption, ConverterParameter=Plsda, Converter={StaticResource EnumConverter}}"/>
-            <RadioButton GroupName="Method" Content="PLSR" Width="60" IsChecked="{Binding MethodOption, ConverterParameter=Plsr, Converter={StaticResource EnumConverter}}"/>
-            <RadioButton GroupName="Method" Content="OPLSDA" Width="70" IsChecked="{Binding MethodOption, ConverterParameter=Oplsda, Converter={StaticResource EnumConverter}}"/>
-            <RadioButton GroupName="Method" Content="OPLSR" Width="70" IsChecked="{Binding MethodOption, ConverterParameter=Oplsr, Converter={StaticResource EnumConverter}}"/>
-        </StackPanel>-->
 
         <Label Grid.Row="3" 
                xml:space="preserve" 
