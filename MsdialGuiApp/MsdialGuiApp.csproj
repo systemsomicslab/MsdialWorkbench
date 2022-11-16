@@ -688,7 +688,7 @@
     <Compile Include="ViewModel\Search\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Dims\DimsMethodViewModel.cs" />
     <Compile Include="Model\Search\DisplayFilter.cs" />
-    <Compile Include="ViewModel\AdductIonVM.cs" />
+    <Compile Include="ViewModel\DataObj\AdductIonVM.cs" />
     <Compile Include="ViewModel\Imms\ImmsAlignmentViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsMethodViewModel.cs" />
