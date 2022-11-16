@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Lcms"
-             xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
+             xmlns:commonview="clr-namespace:CompMs.App.Msdial.View.Core"
              xmlns:search="clr-namespace:CompMs.App.Msdial.View.Search"
              mc:Ignorable="d" 
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"

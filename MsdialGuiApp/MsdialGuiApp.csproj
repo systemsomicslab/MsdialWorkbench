@@ -817,7 +817,7 @@
     <Compile Include="View\Lcms\RawPurifiedView.xaml.cs">
       <DependentUpon>RawPurifiedView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Navigator.xaml.cs">
+    <Compile Include="View\Core\Navigator.xaml.cs">
       <DependentUpon>Navigator.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\AlignmentView.xaml.cs">
@@ -1314,7 +1314,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Navigator.xaml">
+    <Page Include="View\Core\Navigator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
