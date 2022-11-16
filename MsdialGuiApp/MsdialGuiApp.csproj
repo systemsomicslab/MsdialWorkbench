@@ -692,7 +692,6 @@
     <Compile Include="ViewModel\Lcms\LcmsAnalysisViewModel.cs" />
     <Compile Include="Model\DataObj\BarItem.cs" />
     <Compile Include="Model\DataObj\Chromatogram.cs" />
-    <Compile Include="Model\DataObj\ChromatogramPeakWrapper.cs" />
     <Compile Include="Model\DataObj\AlignmentSpotPropertyModel.cs" />
     <Compile Include="Model\DataObj\ChromatogramPeakFeatureModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsMethodViewModel.cs" />

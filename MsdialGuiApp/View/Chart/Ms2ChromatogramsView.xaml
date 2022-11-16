@@ -110,18 +110,18 @@
                                                 VerticalPropertyName="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}">
                             <chart:LineChartControl.ToolTip>
                                 <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
-                                         Content="{Binding DataContext.Name, Mode=OneWay}"
+                                         Content="{Binding Path=(chart:LineChartControl.DataContext).(do:DisplayChromatogram.Name), Mode=OneWay}"
                                          ContentStringFormat="m/z: {0:N5}"/>
                             </chart:LineChartControl.ToolTip>
                         </chart:LineChartControl>
                         <chart:ScatterControlSlim ItemsSource="{Binding ChromatogramPeaks}"
-                                                  DataType="{x:Type do:ChromatogramPeakWrapper}"
+                                                  DataType="{x:Type do:PeakItem}"
                                                   HorizontalProperty="{Binding DataContext.HorizontalProperty, RelativeSource={RelativeSource AncestorType=chart:MultiChart}}"
                                                   VerticalProperty="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType=chart:MultiChart}}"
                                                   Radius="1.5">
                             <chart:ScatterControlSlim.ToolTip>
                                 <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}"
-                                         Content="{Binding DataContext.Name, Mode=OneWay}"
+                                         Content="{Binding Path=(chart:ScatterControlSlim.DataContext).(do:DisplayChromatogram.Name), Mode=OneWay}"
                                          ContentStringFormat="m/z: {0:N5}"/>
                             </chart:ScatterControlSlim.ToolTip>
                         </chart:ScatterControlSlim>

@@ -91,7 +91,7 @@ namespace CompMs.App.Msdial.Model.Imms
             {
                 HorizontalTitle = "Mobility [1/K0]",
                 VerticalTitle = "m/z",
-                HorizontalProperty = nameof(ChromatogramPeakWrapper.ChromXValue),
+                HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             }.AddTo(Disposables);
             Target.Select(
