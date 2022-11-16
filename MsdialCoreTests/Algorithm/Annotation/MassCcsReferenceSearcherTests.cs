@@ -47,6 +47,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             public double PrecursorMz { get; set; }
             public AdductIon AdductType { get; set; }
             public double CollisionCrossSection { get; set; }
+
+            public void SetAdductType(AdductIon adduct) {
+                AdductType = adduct;
+            }
         }
     }
 }

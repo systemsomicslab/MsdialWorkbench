@@ -101,7 +101,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
                     var parentID = character.IsotopeParentPeakID;
                     var parentCharacter = chromPeakFeatures[parentID].PeakCharacter;
                     if (parentCharacter.AdductType != null && parentCharacter.AdductType.FormatCheck) {
-                        peak.AddAdductType(parentCharacter.AdductType);
+                        peak.SetAdductType(parentCharacter.AdductType);
                     }
                     if (character.PeakLinks.Count(n => n.LinkedPeakID == parentID &&
                         n.Character == PeakLinkFeatureEnum.Isotope) == 0) {
@@ -152,10 +152,10 @@ namespace CompMs.MsdialDimsCore.Algorithm
                         adductString = "[M-" + peak.PeakCharacter.Charge + "H]" + peak.PeakCharacter.Charge + "-";
                     }
                     var estimatedAdduct = AdductIonParser.GetAdductIonBean(adductString);
-                    peak.AddAdductType(estimatedAdduct);
+                    peak.SetAdductType(estimatedAdduct);
                 }
                 else {
-                    peak.AddAdductType(defaultAdduct);
+                    peak.SetAdductType(defaultAdduct);
                 }
             }
 
@@ -165,7 +165,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
                     var parentPeak = chromPeakFeatures[peak.PeakCharacter.IsotopeParentPeakID];
 
                     peak.PeakCharacter.AdductParent = parentPeak.PeakCharacter.AdductParent;
-                    peak.AddAdductType(parentPeak.AdductType);
+                    peak.SetAdductType(parentPeak.AdductType);
                 }
             }
 
@@ -261,13 +261,13 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
                     if (isFormateAdduct && Math.Abs(neutralloss - 46.005477) < param.CentroidMs2Tolerance && relativeIntensity > 80.0 && precursorIntensity < 40.0) {
                         peak.PeakCharacter.AdductParent = peak.PeakID;
-                        peak.AddAdductType(formateAdduct);
+                        peak.SetAdductType(formateAdduct);
                         break;
                     }
 
                     if (isAcetateAdduct && Math.Abs(neutralloss - 60.021127) < param.CentroidMs2Tolerance && relativeIntensity > 80.0 && precursorIntensity < 40.0) {
                         peak.PeakCharacter.AdductParent = peak.PeakID;
-                        peak.AddAdductType(acetateAdduct);
+                        peak.SetAdductType(acetateAdduct);
                         break;
                     }
                 }
@@ -376,7 +376,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
                                 var searchedAdduct = searchedPrecursor.AdductIon;
 
-                                searchedPeak.AddAdductType(searchedAdduct);
+                                searchedPeak.SetAdductType(searchedAdduct);
                                 searchedPeak.PeakCharacter.AdductParent = peak.PeakID;
                                 searchedPeak.PeakCharacter.IsLinked = true;
 
@@ -389,7 +389,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
                     if (flg) {
 
-                        peak.AddAdductType(rCentralAdduct);
+                        peak.SetAdductType(rCentralAdduct);
                         peak.PeakCharacter.AdductParent = peak.PeakID;
                         peak.PeakCharacter.IsLinked = true;
                        
@@ -421,7 +421,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
 
                         if (Math.Abs(searchedPeak.Mass - searchedPrecursor.PrecursorMz) < adductTol) {
                             var searchedAdduct = searchedPrecursor.AdductIon;
-                            searchedPeak.AddAdductType(searchedAdduct);
+                            searchedPeak.SetAdductType(searchedAdduct);
                             searchedPeak.PeakCharacter.AdductParent = peak.PeakID;
                             searchedPeak.PeakCharacter.IsLinked = true;
 
@@ -467,7 +467,7 @@ namespace CompMs.MsdialDimsCore.Algorithm
                             }
 
                             var searchedAdduct = searchedPrecursor.AdductIon;
-                            searchedPeak.AddAdductType(searchedAdduct);
+                            searchedPeak.SetAdductType(searchedAdduct);
                             searchedPeak.PeakCharacter.AdductParent = peak.PeakID;
                             searchedPeak.PeakCharacter.IsLinked = true;
 
