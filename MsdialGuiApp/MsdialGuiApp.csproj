@@ -544,9 +544,6 @@
     <Compile Include="View\ImagingImms\ImmsImagingRibbon.xaml.cs">
       <DependentUpon>ImmsImagingRibbon.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imms\CompoundDetailView.xaml.cs">
-      <DependentUpon>CompoundDetailView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Imms\ImmsAnalysisPeakTableView.xaml.cs">
       <DependentUpon>ImmsAnalysisPeakTableView.xaml</DependentUpon>
     </Compile>
@@ -702,9 +699,6 @@
     <Compile Include="View\Dims\ChromatogramView.xaml.cs">
       <DependentUpon>ChromatogramView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\CompoundDetailView.xaml.cs">
-      <DependentUpon>CompoundDetailView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Search\CompoundSearchWindow.xaml.cs">
       <DependentUpon>CompoundSearchWindow.xaml</DependentUpon>
     </Compile>
@@ -785,9 +779,6 @@
     </Compile>
     <Compile Include="View\Table\ProteomicsSpotTable.xaml.cs">
       <DependentUpon>ProteomicsSpotTable.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Lcms\CompoundDetailView.xaml.cs">
-      <DependentUpon>CompoundDetailView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\Footer.xaml.cs">
       <DependentUpon>Footer.xaml</DependentUpon>
@@ -949,10 +940,6 @@
     <Page Include="View\Imms\AnnotationSettingStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Imms\CompoundDetailView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Imms\ImmsAnalysisPeakTableView.xaml">
       <SubType>Designer</SubType>
@@ -1146,10 +1133,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Dims\CompoundDetailView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="View\Search\CompoundSearchWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1255,10 +1238,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Table\ProteomicsSpotTable.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Lcms\CompoundDetailView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
