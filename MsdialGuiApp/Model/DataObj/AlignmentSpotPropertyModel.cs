@@ -24,6 +24,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         public ChromXType ChromXType => innerModel.TimesCenter.MainType;
         public ChromXUnit ChromXUnit => innerModel.TimesCenter.Unit;
         public double MassCenter => innerModel.MassCenter;
+        public double Mass => MassCenter; // Alias of MassCenter used in PeakSpotNavigatorView
         public double HeightAverage => innerModel.HeightAverage;
         [Obsolete("Use AlignedPeakPropertiesModelAsObservable property.")]
         public ReadOnlyCollection<AlignmentChromPeakFeature> AlignedPeakProperties => innerModel.AlignedPeakProperties.AsReadOnly();
@@ -44,6 +45,7 @@ namespace CompMs.App.Msdial.Model.DataObj
                 }
             }
         }
+        public double ChromXValue => TimesCenter; // Alias of TimesCenter used in PeakSpotNavigatorView
 
         public string Name {
             get => ((IMoleculeProperty)innerModel).Name;
@@ -130,6 +132,8 @@ namespace CompMs.App.Msdial.Model.DataObj
         public double AnovaPvalue => innerModel.AnovaPvalue;
         public double FoldChange => innerModel.FoldChange;
         public MsScanMatchResultContainer MatchResults => innerModel.MatchResults;
+
+        public string Isotope => $"M + {innerModel.PeakCharacter.IsotopeWeightNumber}";
 
         public MsScanMatchResult MspBasedMatchResult => innerModel.MspBasedMatchResult;
         public MsScanMatchResult TextDbBasedMatchResult => innerModel.TextDbBasedMatchResult;
