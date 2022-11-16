@@ -1,6 +1,6 @@
 ﻿using CompMs.CommonMVVM;
 
-namespace CompMs.App.Msdial.ViewModel
+namespace CompMs.App.Msdial.ViewModel.DataObj
 {
     public class MzSearchQueryVM : ViewModelBase
     {
