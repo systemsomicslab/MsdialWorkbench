@@ -562,9 +562,6 @@
     <Compile Include="View\Imms\ImmsMainView.xaml.cs">
       <DependentUpon>ImmsMainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imms\PeakPropertyView.xaml.cs">
-      <DependentUpon>PeakPropertyView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Information\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
     </Compile>
@@ -717,9 +714,6 @@
     <Compile Include="View\Dims\DimsMainView.xaml.cs">
       <DependentUpon>DimsMainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\PeakPropertyView.xaml.cs">
-      <DependentUpon>PeakPropertyView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Export\AlignmentResultExportWin.xaml.cs">
       <DependentUpon>AlignmentResultExportWin.xaml</DependentUpon>
     </Compile>
@@ -794,9 +788,6 @@
     </Compile>
     <Compile Include="View\Lcms\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Lcms\PeakPropertyView.xaml.cs">
-      <DependentUpon>PeakPropertyView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\Footer.xaml.cs">
       <DependentUpon>Footer.xaml</DependentUpon>
@@ -980,10 +971,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Imms\ImmsMainView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Imms\PeakPropertyView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1175,10 +1162,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Dims\PeakPropertyView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="View\Export\AlignmentResultExportWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1276,10 +1259,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Lcms\CompoundDetailView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Lcms\PeakPropertyView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
