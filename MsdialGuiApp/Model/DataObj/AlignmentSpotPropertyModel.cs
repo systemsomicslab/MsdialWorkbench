@@ -1,5 +1,4 @@
-﻿using CompMs.App.Msdial.Model.Loader;
-using CompMs.App.Msdial.Model.Search;
+﻿using CompMs.App.Msdial.Model.Search;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
@@ -17,7 +16,7 @@ using System.Reactive.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class AlignmentSpotPropertyModel : BindableBase, IFilterable, IAnnotatedObject
+    public sealed class AlignmentSpotPropertyModel : BindableBase, IPeakSpotModel, IFilterable, IAnnotatedObject
     {
         public int AlignmentID => innerModel.AlignmentID;
         public int MasterAlignmentID => innerModel.MasterAlignmentID;
@@ -237,13 +236,32 @@ namespace CompMs.App.Msdial.Model.DataObj
                 .ToReactiveProperty(); // TODO: Dispose
         }
 
+        public void RaisePropertyChanged() {
+            OnPropertyChanged(string.Empty);
+        }
+
+        // IPeakSpotModel
+        IMSIonProperty IPeakSpotModel.MSIon => innerModel;
+        IMoleculeProperty IPeakSpotModel.Molecule => innerModel;
+
+        public void SetConfidence(MoleculeMsReference reference, MsScanMatchResult result) {
+            DataAccess.SetMoleculeMsPropertyAsConfidence(innerModel, reference, result);
+            MatchResults.RemoveManuallyResults();
+            MatchResults.AddResult(result);
+            OnPropertyChanged(string.Empty);
+        }
+
+        public void SetUnsettled(MoleculeMsReference reference, MsScanMatchResult result) {
+            DataAccess.SetMoleculeMsPropertyAsUnsettled(innerModel, reference, result);
+            MatchResults.RemoveManuallyResults();
+            MatchResults.AddResult(result);
+            OnPropertyChanged(string.Empty);
+        }
+
         public void SetUnknown() {
             DataAccess.ClearMoleculePropertyInfomation(this);
             MatchResults.RemoveManuallyResults();
             MatchResults.AddResult(new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown });
-        }
-
-        public void RaisePropertyChanged() {
             OnPropertyChanged(string.Empty);
         }
 

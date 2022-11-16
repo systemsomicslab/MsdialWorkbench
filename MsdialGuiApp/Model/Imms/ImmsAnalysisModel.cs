@@ -231,14 +231,14 @@ namespace CompMs.App.Msdial.Model.Imms
             }, token);
         }
 
-        public ImmsCompoundSearchModel<ChromatogramPeakFeature> CreateCompoundSearchModel() {
+        public ImmsCompoundSearchModel CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
                 return null;
             }
 
-            return new ImmsCompoundSearchModel<ChromatogramPeakFeature>(
+            return new ImmsCompoundSearchModel(
                 AnalysisFileModel,
-                Target.Value.InnerModel,
+                Target.Value,
                 MsdecResult.Value,
                 _compoundSearchers);
         }

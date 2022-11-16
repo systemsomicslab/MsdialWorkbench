@@ -159,6 +159,7 @@
     <Compile Include="Model\DataObj\AnalysisFileBeanModel.cs" />
     <Compile Include="Model\DataObj\AnalysisFileBeanModelCollection.cs" />
     <Compile Include="Model\DataObj\BarItemCollection.cs" />
+    <Compile Include="Model\DataObj\IPeakSpotModel.cs" />
     <Compile Include="Model\Export\AlignmentResultExportModel.cs" />
     <Compile Include="Model\Imaging\ImagingImageModel.cs" />
     <Compile Include="Model\Imaging\ImagingRoiModel.cs" />

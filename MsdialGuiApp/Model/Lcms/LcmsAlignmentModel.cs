@@ -286,12 +286,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         public CompoundDetailModel CompoundDetailModel { get; }
         public ProteinResultContainerModel ProteinResultContainerModel { get; }
 
-        public CompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {
-            return new LcmsCompoundSearchModel<AlignmentSpotProperty>(
-                _files[Target.Value.RepresentativeFileID],
-                Target.Value.innerModel,
-                _msdecResult.Value,
-                _compoundSearchers);
+        public ICompoundSearchModel CreateCompoundSearchModel() {
+            return new LcmsCompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers);
         }
 
         public void SaveSpectra(string filename) {

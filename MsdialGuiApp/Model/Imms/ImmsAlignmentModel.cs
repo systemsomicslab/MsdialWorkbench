@@ -231,14 +231,14 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 
-        public ImmsCompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {
+        public ImmsCompoundSearchModel CreateCompoundSearchModel() {
             if (Target.Value?.innerModel is null || MsdecResult.Value is null) {
                 return null;
             }
 
-            return new ImmsCompoundSearchModel<AlignmentSpotProperty>(
+            return new ImmsCompoundSearchModel(
                 _files[Target.Value.RepresentativeFileID],
-                Target.Value.innerModel,
+                Target.Value,
                 MsdecResult.Value,
                 _compoundSearchers);
         }

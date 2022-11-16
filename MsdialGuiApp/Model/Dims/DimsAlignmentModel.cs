@@ -245,8 +245,8 @@ namespace CompMs.App.Msdial.Model.Dims
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
 
-        public CompoundSearchModel BuildCompoundSearchModel() {
-            return new CompoundSearchModel<AlignmentSpotProperty>(_files[Target.Value.RepresentativeFileID], Target.Value.innerModel, _msdecResult.Value, _compoundSearchers.Items);
+        public ICompoundSearchModel BuildCompoundSearchModel() {
+            return new CompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers.Items);
         }
 
         public InternalStandardSetModel InternalStandardSetModel { get; }

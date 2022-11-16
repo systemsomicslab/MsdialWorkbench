@@ -340,7 +340,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam);
             CompoundSearchModel = target
-                .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel<ChromatogramPeakFeature>(analysisFileModel, t.InnerModel, r, searcherCollection.Items))
+                .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel(analysisFileModel, t, r, searcherCollection.Items))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -369,7 +369,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
 
-        public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel<ChromatogramPeakFeature>> CompoundSearchModel { get; }
+        public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel> CompoundSearchModel { get; }
         public IObservable<bool> CanSearchCompound { get; }
 
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }

@@ -5,7 +5,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 {
     internal sealed class DimsCompoundSearchViewModel : CompoundSearchVM
     {
-        public DimsCompoundSearchViewModel(CompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
+        public DimsCompoundSearchViewModel(ICompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
         }
     }
 }

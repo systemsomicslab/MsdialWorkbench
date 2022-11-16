@@ -10,7 +10,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 {
     internal sealed class ImmsCompoundSearchVM : CompoundSearchVM
     {
-        public ImmsCompoundSearchVM(CompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
+        public ImmsCompoundSearchVM(ICompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
             ParameterHasErrors = ParameterVM.Select(parameter =>
                 parameter is null
                     ? Observable.Return(true)

@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class ChromatogramPeakFeatureModel : BindableBase, IFilterable, IChromatogramPeak, IAnnotatedObject
+    public sealed class ChromatogramPeakFeatureModel : BindableBase, IPeakSpotModel, IFilterable, IChromatogramPeak, IAnnotatedObject
     {
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;
@@ -194,14 +194,31 @@ namespace CompMs.App.Msdial.Model.DataObj
             innerModel = feature;
         }
 
-        public void RaisePropertyChanged() {
+
+        // IPeakSpotModel
+        IMSIonProperty IPeakSpotModel.MSIon => innerModel;
+        IMoleculeProperty IPeakSpotModel.Molecule => innerModel;
+
+        void IPeakSpotModel.SetConfidence(MoleculeMsReference reference, MsScanMatchResult result) {
+            DataAccess.SetMoleculeMsPropertyAsConfidence(innerModel, reference, result);
+            MatchResults.RemoveManuallyResults();
+            MatchResults.AddResult(result);
             OnPropertyChanged(string.Empty);
         }
+
+        void IPeakSpotModel.SetUnsettled(MoleculeMsReference reference, MsScanMatchResult result) {
+            DataAccess.SetMoleculeMsPropertyAsUnsettled(innerModel, reference, result);
+            MatchResults.RemoveManuallyResults();
+            MatchResults.AddResult(result);
+            OnPropertyChanged(string.Empty);
+        }
+
 
         public void SetUnknown() {
             DataAccess.ClearMoleculePropertyInfomation(this);
             MatchResults.RemoveManuallyResults();
             MatchResults.AddResult(new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown });
+            OnPropertyChanged(string.Empty);
         }
     }
 }

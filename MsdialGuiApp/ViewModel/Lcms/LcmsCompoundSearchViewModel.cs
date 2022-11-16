@@ -9,9 +9,9 @@ using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    public class LcmsCompoundSearchViewModel : CompoundSearchVM
+    internal sealed class LcmsCompoundSearchViewModel : CompoundSearchVM
     {
-        public LcmsCompoundSearchViewModel(CompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
+        public LcmsCompoundSearchViewModel(ICompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
             ParameterHasErrors = ParameterVM.Select(parameter =>
                 parameter is null
                     ? Observable.Return(true)
