@@ -8,6 +8,7 @@ using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Statistics;
 using CompMs.App.Msdial.ViewModel.Table;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
 using Reactive.Bindings;
@@ -114,9 +115,13 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .AddTo(Disposables);
 
             MultivariateAnalysisSettingViewModel = new MultivariateAnalysisSettingViewModel(model.MultivariateAnalysisSettingModel, broker).AddTo(Disposables);
-            ShowPcaSettingCommand = model.NormalizationSetModel.IsNormalized
-                .ToReactiveCommand()
-                .WithSubscribe(() => broker.Publish(MultivariateAnalysisSettingViewModel))
+            ShowMultivariateAnalysisSettingCommand = model.NormalizationSetModel.IsNormalized
+                .ToReactiveCommand<MultivariateAnalysisOption>()
+                .WithSubscribe(option =>
+                {
+                    MultivariateAnalysisSettingViewModel.MultivariateAnalysisOption.Value = option;
+                    broker.Publish(MultivariateAnalysisSettingViewModel);
+                })
                 .AddTo(Disposables);
 
             var notification = TaskNotification.Start("Loading alignment results...");
@@ -147,7 +152,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ReactiveCommand ShowNormalizationSettingCommand { get; }
 
         public MultivariateAnalysisSettingViewModel MultivariateAnalysisSettingViewModel { get; }
-        public ReactiveCommand ShowPcaSettingCommand { get; }
+        public ReactiveCommand<MultivariateAnalysisOption> ShowMultivariateAnalysisSettingCommand { get; }
 
         public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }
@@ -166,7 +171,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {
-            if (_model.Parameter.TargetOmics == CompMs.Common.Enum.TargetOmics.Proteomics) {
+            if (_model.Parameter.TargetOmics == TargetOmics.Proteomics) {
                 _proteomicsTableService.Show(ProteomicsAlignmentTableViewModel);
             }
             else {
