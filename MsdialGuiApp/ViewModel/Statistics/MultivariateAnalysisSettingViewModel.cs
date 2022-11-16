@@ -74,7 +74,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
                     MessageBox.Show("No variables for statistical analyses", "Error", MessageBoxButton.OK);
                     return;
                 }
-                var vm = new PCAPLSResultViewModel(model.PCAPLSResultModel);
+                var vm = new PCAPLSResultViewModel(model.PCAPLSResultModel, _broker);
                 _broker.Publish(vm);
             }
             else if (MultivariateAnalysisOption.Value == CompMs.Common.Enum.MultivariateAnalysisOption.Hca) {
@@ -92,7 +92,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
                     MessageBox.Show("No variables for statistical analyses", "Error", MessageBoxButton.OK);
                     return;
                 }
-                var vm = new PCAPLSResultViewModel(model.PCAPLSResultModel);
+                var vm = new PCAPLSResultViewModel(model.PCAPLSResultModel, _broker);
                 _broker.Publish(vm);
             }
         }

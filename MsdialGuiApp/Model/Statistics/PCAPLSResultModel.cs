@@ -308,8 +308,8 @@ namespace CompMs.App.Msdial.Model.Statistics
             }
         }
 
-        public void SaveData() {
-
+        public void SaveResult(string output) {
+            _result.WriteResult(output);
         }
 
         public void ShowSPlot(Window owner) {
