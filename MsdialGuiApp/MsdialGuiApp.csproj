@@ -703,7 +703,7 @@
     <Compile Include="Model\DataObj\AlignmentSpotPropertyModel.cs" />
     <Compile Include="Model\DataObj\ChromatogramPeakFeatureModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsMethodViewModel.cs" />
-    <Compile Include="ViewModel\MethodVM.cs" />
+    <Compile Include="ViewModel\Core\MethodViewModel.cs" />
     <Compile Include="ViewModel\ParameterBaseVM.cs" />
     <Compile Include="Model\DataObj\PeakItem.cs" />
     <Compile Include="Model\DataObj\SpectrumPeakWrapper.cs" />

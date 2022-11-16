@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.Core;
-using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
@@ -16,7 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace CompMs.App.Msdial.ViewModel
+namespace CompMs.App.Msdial.ViewModel.Core
 {
     internal abstract class MethodViewModel : ViewModelBase
     {
@@ -33,23 +32,27 @@ namespace CompMs.App.Msdial.ViewModel
             SelectedAnalysisFile = new ReactivePropertySlim<AnalysisFileBeanViewModel>(analysisFilesView.FirstOrDefault()).AddTo(Disposables);
             SelectedAlignmentFile = new ReactivePropertySlim<AlignmentFileBeanViewModel>().AddTo(Disposables);
             model.ObserveProperty(m => m.AnalysisFileModel)
-                .Do(_ => {
+                .Do(_ =>
+                {
                     foreach (var file in analysisFilesView) {
                         file.IsSelected = false;
                     }
                 })
-                .Subscribe(file => {
+                .Subscribe(file =>
+                {
                     if (analysisFilesView.FirstOrDefault(v => v.File == file) is AnalysisFileBeanViewModel vm) {
                         vm.IsSelected = true;
                     }
                 }).AddTo(Disposables);
             model.ObserveProperty(m => m.AlignmentFile)
-                .Do(_ => {
+                .Do(_ =>
+                {
                     foreach (var file in alignmentFilesView) {
                         file.IsSelected = false;
                     }
                 })
-                .Subscribe(file => {
+                .Subscribe(file =>
+                {
                     if (alignmentFilesView.FirstOrDefault(v => v.File == file) is AlignmentFileBeanViewModel vm) {
                         vm.IsSelected = true;
                     }
