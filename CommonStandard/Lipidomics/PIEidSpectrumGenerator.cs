@@ -135,7 +135,7 @@ namespace CompMs.Common.Lipidomics
             {
                 spectrum.AddRange(
                     new[] {
-                    new SpectrumPeak(lipid.Mass - C6H13O9P + MassDiffDictionary.ProtonMass, 500d, "Precursor -Header") { SpectrumComment = SpectrumComment.metaboliteclass },
+                    new SpectrumPeak(lipid.Mass - C6H13O9P + MassDiffDictionary.ProtonMass, 700d, "Precursor -Header") { SpectrumComment = SpectrumComment.metaboliteclass },
                     }
                 );
             }
@@ -180,7 +180,7 @@ namespace CompMs.Common.Lipidomics
                      {
                          new SpectrumPeak(lipidMass - chainMass , 100d, $"-{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
                          //new SpectrumPeak(lipidMass - chainMass-H2O , 100d, $"-{acylChain}-H2O"),
-                         new SpectrumPeak(lipidMass - chainMass - C6H13O9P , 100d, $"-C6H13O9P -{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
+                         new SpectrumPeak(lipidMass - chainMass - C6H13O9P , 300d, $"-C6H13O9P -{acylChain}") { SpectrumComment = SpectrumComment.acylchain },
                          //new SpectrumPeak(lipidMass - chainMass - C6H13O9P-H2O , 100d, $"-C6H13O9P -{acylChain}-H2O"),
                      }
                 );

@@ -77,7 +77,7 @@ namespace CompMs.Common.Lipidomics
         {
             if (lipid.LipidClass == LbmClass.LPE)
             {
-                if (adduct.AdductIonName == "[M+H]+" || adduct.AdductIonName == "[M+Na]+")
+                if (adduct.AdductIonName == "[M+H]+")
                 {
                     return true;
                 }
@@ -147,16 +147,6 @@ namespace CompMs.Common.Lipidomics
                         new SpectrumPeak(adduct.ConvertToMz(C3H9O6P), 100d, "C3H9O6P") { SpectrumComment = SpectrumComment.metaboliteclass },
                         new SpectrumPeak(adduct.ConvertToMz(C3H9O6P - H2O), 100d, "C3H9O6P - H2O") { SpectrumComment = SpectrumComment.metaboliteclass },
                         new SpectrumPeak(adduct.ConvertToMz(Gly_O - H2O), 100d, "Gly-O - H2O") { SpectrumComment = SpectrumComment.metaboliteclass },
-                     }
-                );
-            }
-            if (adduct.AdductIonName == "[M+Na]+")
-            {
-                spectrum.AddRange
-                (
-                     new[]
-                     {
-                        new SpectrumPeak(adduct.ConvertToMz(lipid.Mass - C2H5N), 250d, "Precursor -C2H5N") { SpectrumComment = SpectrumComment.metaboliteclass },
                      }
                 );
             }
