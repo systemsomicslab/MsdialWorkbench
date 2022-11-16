@@ -17,8 +17,8 @@ namespace CompMs.App.Msdial.Model.DataObj
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;
         public double? ChromXValue => innerModel.ChromXs.Value;
-        public double? ChromXLeftValue => innerModel.ChromXsLeft.Value;
-        public double? ChromXRightValue => innerModel.ChromXsRight.Value;
+        public double? ChromXLeftValue => innerModel.PeakFeature.ChromXsLeft.Value;
+        public double? ChromXRightValue => innerModel.PeakFeature.ChromXsRight.Value;
         public double CollisionCrossSection => innerModel.CollisionCrossSection;
         public double Mass {
             get => innerModel.PeakFeature.Mass;
@@ -40,7 +40,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
-        public double PeakArea => innerModel.PeakAreaAboveZero;
+        public double PeakArea => innerModel.PeakFeature.PeakAreaAboveZero;
         public int MS1RawSpectrumIdTop => innerModel.MS1RawSpectrumIdTop;
         public int MS1RawSpectrumIdLeft => innerModel.MS1RawSpectrumIdLeft;
         public int MS1RawSpectrumIdRight => innerModel.MS1RawSpectrumIdRight;

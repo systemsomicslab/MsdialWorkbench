@@ -298,7 +298,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     var alignmentFile = storage.AlignmentFiles.Last();
                     var result = await Task.Run(() => aligner.Alignment(storage.AnalysisFiles, alignmentFile, CHROMATOGRAM_SPOT_SERIALIZER)).ConfigureAwait(false);
 
-                    if (!storage.DataBaseMapper.PeptideAnnotators.IsEmptyOrNull()) {
+                    if (storage.DataBases.ProteomicsDataBases.Any()) {
                         new ProteomeDataAnnotator().MappingToProteinDatabase(
                             alignmentFile.ProteinAssembledResultFilePath,
                             result,

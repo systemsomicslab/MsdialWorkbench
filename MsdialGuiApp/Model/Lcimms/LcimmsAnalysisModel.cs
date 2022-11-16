@@ -44,7 +44,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly ChromatogramPeakFeatureCollection _peakCollection;
         private readonly AnalysisFileBeanModel _analysisFileModel;
         private readonly IDataProvider _spectrumProvider;
-        private readonly IDataProvider _accSpectrumProvider;
         private readonly MsdialLcImMsParameter _parameter;
 
         public LcimmsAnalysisModel(
@@ -67,7 +66,6 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             _analysisFileModel = analysisFileModel;
             _spectrumProvider = spectrumProvider;
-            _accSpectrumProvider = accSpectrumProvider;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _parameter = parameter;
 
@@ -87,11 +85,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 var j = 0;
                 var k = 0;
                 foreach (var orderedPeak in orderedPeaks) {
-                    while (j < orderedPeaks.Length && orderedPeaks[j].InnerModel.ChromXsTop.RT.Value < orderedPeak.InnerModel.ChromXsTop.RT.Value - parameter.AccumulatedRtRange / 2) {
+                    while (j < orderedPeaks.Length && orderedPeaks[j].InnerModel.PeakFeature.ChromXsTop.RT.Value < orderedPeak.InnerModel.PeakFeature.ChromXsTop.RT.Value - parameter.AccumulatedRtRange / 2) {
                         j++;
                     }
 
-                    while (k < orderedPeaks.Length && orderedPeaks[k].InnerModel.ChromXsTop.RT.Value <= orderedPeak.InnerModel.ChromXsTop.RT.Value + parameter.AccumulatedRtRange / 2) {
+                    while (k < orderedPeaks.Length && orderedPeaks[k].InnerModel.PeakFeature.ChromXsTop.RT.Value <= orderedPeak.InnerModel.PeakFeature.ChromXsTop.RT.Value + parameter.AccumulatedRtRange / 2) {
                         k++;
                     }
                     peakRanges[orderedPeak] = (j, k);
@@ -170,7 +168,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 t => $"File: {analysisFileModel.AnalysisFileName}" +
                     (t is null
                         ? string.Empty
-                        : $"Spot ID: {t.MasterPeakID} Mass m/z: {t.Mass:F5} RT: {t.InnerModel.ChromXsTop.RT.Value:F2} min"))
+                        : $"Spot ID: {t.MasterPeakID} Mass m/z: {t.Mass:F5} RT: {t.InnerModel.PeakFeature.ChromXsTop.RT.Value:F2} min"))
                 .Subscribe(title => RtMzPlotModel.GraphTitle = title)
                 .AddTo(Disposables);
             var rtEicLoader = EicLoader.BuildForAllRange(accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
@@ -191,7 +189,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             target.Select(
                 t => t is null
                         ? string.Empty
-                        : $"Spot ID: {t.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:F5} Mobility [1/K0]: {t.InnerModel.ChromXsTop.Drift.Value:F4}")
+                        : $"Spot ID: {t.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:F5} Mobility [1/K0]: {t.InnerModel.PeakFeature.ChromXsTop.Drift.Value:F4}")
                 .Subscribe(title => DtMzPlotModel.GraphTitle = title)
                 .AddTo(Disposables);
 
@@ -308,8 +306,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
 
             var mzSpotFocus = new ChromSpotFocus(DtMzPlotModel.VerticalAxis, MZ_TOLELANCE, target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
-            var rtSpotFocus = new ChromSpotFocus(RtMzPlotModel.HorizontalAxis, RT_TOLELANCE, accumulatedTarget.Select(t => t?.InnerModel.ChromXsTop.RT.Value ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
-            var dtSpotFocus = new ChromSpotFocus(DtMzPlotModel.HorizontalAxis, DT_TOLELANCE, target.Select(t => t?.InnerModel.ChromXsTop.Drift.Value ?? 0d), "F4", "Mobility[1/K0]", isItalic: false).AddTo(Disposables);
+            var rtSpotFocus = new ChromSpotFocus(RtMzPlotModel.HorizontalAxis, RT_TOLELANCE, accumulatedTarget.Select(t => t?.InnerModel.PeakFeature.ChromXsTop.RT.Value ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
+            var dtSpotFocus = new ChromSpotFocus(DtMzPlotModel.HorizontalAxis, DT_TOLELANCE, target.Select(t => t?.InnerModel.PeakFeature.ChromXsTop.Drift.Value ?? 0d), "F4", "Mobility[1/K0]", isItalic: false).AddTo(Disposables);
             var idSpotFocus = new IdSpotFocus<ChromatogramPeakFeatureModel>(
                 target,
                 id => Ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id)),

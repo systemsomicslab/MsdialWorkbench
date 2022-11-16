@@ -55,7 +55,7 @@ namespace CompMs.App.Msdial.Model.Imaging
         public ReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
 
         public List<(Raw2DElement, ChromatogramPeakFeatureModel)> GetTargetElements() {
-            return Peaks.Select(item => (new Raw2DElement(item.Mass, item.InnerModel.ChromXsTop.Drift.Value), item)).ToList();
+            return Peaks.Select(item => (new Raw2DElement(item.Mass, item.InnerModel.PeakFeature.ChromXsTop.Drift.Value), item)).ToList();
         }
     }
 }

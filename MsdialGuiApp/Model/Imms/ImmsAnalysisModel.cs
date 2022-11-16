@@ -9,7 +9,6 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM.ChemView;
-using CompMs.Graphics.Base;
 using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
@@ -38,8 +37,6 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly MsdialImmsParameter _parameter;
         private readonly IDataProvider _provider;
         private readonly DataBaseMapper _dataBaseMapper;
-        private readonly IMatchResultEvaluator<MsScanMatchResult> _matchResultEvaluator;
-        private readonly IBrushMapper<ChromatogramPeakFeatureModel> _brush;
         private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
 
         public ImmsAnalysisModel(
@@ -51,10 +48,12 @@ namespace CompMs.App.Msdial.Model.Imms
             ParameterBase parameter,
             PeakFilterModel peakFilterModel)
             : base(analysisFileModel) {
+            if (evaluator is null) {
+                throw new ArgumentNullException(nameof(evaluator));
+            }
 
             _provider = provider;
             _dataBaseMapper = mapper;
-            _matchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam).Items;
             _parameter = parameter as MsdialImmsParameter;
 
@@ -87,7 +86,6 @@ namespace CompMs.App.Msdial.Model.Imms
                     selectedBrush = intensityBrush;
                     break;
             }
-            _brush = selectedBrush.Mapper;
             var labelsource = PeakSpotNavigatorModel.ObserveProperty(m => m.SelectedAnnotationLabel).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             PlotModel = new AnalysisPeakPlotModel(Ms1Peaks, peak => peak.ChromXValue ?? 0, peak => peak.Mass, Target, labelsource, selectedBrush, brushes)
             {
@@ -100,7 +98,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 t => $"File: {analysisFileModel.AnalysisFileName}" +
                     (t is null
                         ? string.Empty
-                        : $"Spot ID: {t.InnerModel.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.InnerModel.Mass:N5}"))
+                        : $"Spot ID: {t.InnerModel.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.InnerModel.PeakFeature.Mass:N5}"))
                 .Subscribe(title => PlotModel.GraphTitle = title);
 
             var eicLoader = EicLoader.BuildForAllRange(provider, parameter, ChromXType.Drift, ChromXUnit.Msec, this._parameter.DriftTimeBegin, this._parameter.DriftTimeEnd);

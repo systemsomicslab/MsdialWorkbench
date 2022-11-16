@@ -283,7 +283,6 @@
     <Compile Include="Model\Imms\ImmsMethodModel.cs" />
     <Compile Include="Model\Imms\ImmsPeakSpotTableModel.cs" />
     <Compile Include="Model\Core\MethodModelBase.cs" />
-    <Compile Include="Model\Core\AnalysisParameterSetModelBase.cs" />
     <Compile Include="Model\Setting\IAnnotatorSettingModel.cs" />
     <Compile Include="Model\Setting\AnalysisFilePropertyResetModel.cs" />
     <Compile Include="Model\Setting\DataBaseSettingModel.cs" />
@@ -307,7 +306,6 @@
     <Compile Include="Model\Setting\DataBaseAnnotationSettingModelBase.cs" />
     <Compile Include="Model\Setting\ModificationSettingModel.cs" />
     <Compile Include="Model\Setting\MspAnnotationSettingModel.cs" />
-    <Compile Include="Model\Statistics\PCAPLSResultModel.cs" />
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
     <Compile Include="Utility\GlobalResources.cs" />
     <Compile Include="Utility\ObservableExtensions.cs" />
@@ -451,7 +449,6 @@
     <Compile Include="ViewModel\Setting\ProjectParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\ProjectSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\RetentionTimeCorrectionViewModelLegacy.cs" />
-    <Compile Include="ViewModel\Statistics\PCAPLSResultViewModel.cs" />
     <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
     <Compile Include="ViewModel\Table\ProteinGroupTableViewModel.cs" />
     <Compile Include="View\ChartSetting\BarChartOfAlignedSpotSettingRibbonTab.xaml.cs">

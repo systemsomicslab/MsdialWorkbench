@@ -14,7 +14,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
     /// Interaction logic for PeakModUCLegacy.xaml
     /// </summary>
     public partial class PeakModUCLegacy : UserControl {
-        private PeakModFELegacy fe;
+        private readonly PeakModFELegacy _fe;
         public DrawVisualManualPeakModification drawing;
         public AlignedChromatogramModificationViewModelLegacy VM { get; set; }
 
@@ -22,40 +22,40 @@ namespace CompMs.App.Msdial.View.PeakCuration
         public List<PeakPropertyLegacy> PeakPropertyList { get; set; }
 
         // Point for Mouse Event
-        public Point currentMousePoint { get; set; } = new Point(-1, -1); // Current Location of Mouse Pointer
-        public Point leftButtonStartClickPoint { get; set; } = new Point(-1, -1); // for Mouse Left Button        
-        public Point leftButtonEndClickPoint { get; set; } = new Point(-1, -1); // for Mouse Left Button (this coordinates are changed by MouseMove)
-        public Point rightButtonStartClickPoint { get; set; } = new Point(-1, -1); // Start Click Point of Mouse Right Button
-        public Point rightButtonEndClickPoint { get; set; } = new Point(-1, -1); // End Click Point of Mouse Left Button (this coordinates are changed by MouseMove)
+        private Point _currentMousePoint = new Point(-1, -1); // Current Location of Mouse Pointer
+        private Point _leftButtonStartClickPoint = new Point(-1, -1); // for Mouse Left Button        
+        private Point _leftButtonEndClickPoint = new Point(-1, -1); // for Mouse Left Button (this coordinates are changed by MouseMove)
+        private Point _rightButtonStartClickPoint = new Point(-1, -1); // Start Click Point of Mouse Right Button
+        private Point _rightButtonEndClickPoint = new Point(-1, -1); // End Click Point of Mouse Left Button (this coordinates are changed by MouseMove)
 
-        public bool leftMouseButtonLeftEdgeCapture { get; set; } = false;
-        public bool leftMouseButtonRightEdgeCapture { get; set; } = false;
-        public bool rightMouseButtonChromatogramUpDownZoom { get; set; } = false;
-        public bool rightMouseButtonChromatogramLeftRightZoom { get; set; } = false;
-        public bool rightMouseButtonChromatogramRectangleZoom { get; set; } = false;
-        public bool keyDownCheck { get; set; } = false;
+        private bool _leftMouseButtonLeftEdgeCapture = false;
+        private bool _leftMouseButtonRightEdgeCapture = false;
+        private bool _rightMouseButtonChromatogramUpDownZoom = false;
+        private bool _rightMouseButtonChromatogramLeftRightZoom = false;
+        private bool _rightMouseButtonChromatogramRectangleZoom = false;
+        private bool _keyDownCheck = false;
 
         // Graph Move Intial Values
-        private float graphScrollInitialRtMin = -1; // Initial minXval for Graph Slide Event
-        private float graphScrollInitialRtMax = -1; // Initial maxXval for Graph Slide Event
-        private float graphScrollInitialIntensityMin = -1; // Initial minYval for Graph Slide Event
-        private float graphScrollInitialIntensityMax = -1; // Initial maxYval for Graph Slide Event
-        private MouseActionSetting mouseActionSetting = new MouseActionSetting();
+        private float _graphScrollInitialRtMin = -1; // Initial minXval for Graph Slide Event
+        private float _graphScrollInitialRtMax = -1; // Initial maxXval for Graph Slide Event
+        private float _graphScrollInitialIntensityMin = -1; // Initial minYval for Graph Slide Event
+        private float _graphScrollInitialIntensityMax = -1; // Initial maxYval for Graph Slide Event
+        private readonly MouseActionSetting _mouseActionSetting = new MouseActionSetting();
 
         public PeakModUCLegacy() {
             InitializeComponent();
 
             //Property settting
             this.drawing = null;
-            this.fe = new PeakModFELegacy(new DrawVisualManualPeakModification(), this);
-            this.Content = this.fe;
+            this._fe = new PeakModFELegacy(new DrawVisualManualPeakModification(), this);
+            this.Content = this._fe;
 
-            this.MouseMove -= new MouseEventHandler(this.userControl_MouseMove);
-            this.MouseLeave -= new MouseEventHandler(this.userControl_MouseLeave);
-            this.MouseRightButtonUp -= new MouseButtonEventHandler(this.userControl_MouseRightButtonUp);
-            this.MouseRightButtonDown -= new MouseButtonEventHandler(this.userControl_MouseRightButtonDown);
-            this.MouseDoubleClick -= new MouseButtonEventHandler(this.useerControl_MouseLeftDoubleClick);
-            this.MouseWheel -= new MouseWheelEventHandler(this.userControl_MouseWheel);
+            this.MouseMove -= new MouseEventHandler(this.UserControl_MouseMove);
+            this.MouseLeave -= new MouseEventHandler(this.UserControl_MouseLeave);
+            this.MouseRightButtonUp -= new MouseButtonEventHandler(this.UserControl_MouseRightButtonUp);
+            this.MouseRightButtonDown -= new MouseButtonEventHandler(this.UserControl_MouseRightButtonDown);
+            this.MouseDoubleClick -= new MouseButtonEventHandler(this.UserControl_MouseLeftDoubleClick);
+            this.MouseWheel -= new MouseWheelEventHandler(this.UserControl_MouseWheel);
         }
 
         public PeakModUCLegacy(DrawVisualManualPeakModification drawing) {
@@ -63,11 +63,11 @@ namespace CompMs.App.Msdial.View.PeakCuration
 
             //Property settting
             this.drawing = drawing;
-            this.fe = new PeakModFELegacy(this.drawing, this);
-            this.Content = this.fe;
+            this._fe = new PeakModFELegacy(this.drawing, this);
+            this.Content = this._fe;
 
-            this.MouseLeftButtonUp -= new MouseButtonEventHandler(this.userControl_MouseLeftButtonUp);
-            this.MouseLeftButtonDown -= new MouseButtonEventHandler(this.userControl_MouseLeftButtonDown);
+            this.MouseLeftButtonUp -= new MouseButtonEventHandler(this.UserControl_MouseLeftButtonUp);
+            this.MouseLeftButtonDown -= new MouseButtonEventHandler(this.UserControl_MouseLeftButtonDown);
         }
 
         // for manual peak pick (using chromatogram builder) for single chromatogram data points
@@ -75,10 +75,11 @@ namespace CompMs.App.Msdial.View.PeakCuration
         public PeakModUCLegacy(DrawVisualManualPeakModification drawing, bool isTargetPick) {
             InitializeComponent();
 
+            _ = isTargetPick;
             //Property settting
             this.drawing = drawing;
-            this.fe = new PeakModFELegacy(this.drawing, this);
-            this.Content = this.fe;
+            this._fe = new PeakModFELegacy(this.drawing, this);
+            this.Content = this._fe;
             this.Type = PeakModType.TargetPick;
             this.drawing.IsTargetManualPickMode = true;
             RefreshUI();
@@ -93,30 +94,30 @@ namespace CompMs.App.Msdial.View.PeakCuration
             //Property settting
             this.VM = vm;
             this.drawing = drawing;
-            this.mouseActionSetting = setting;
-            this.fe = new PeakModFELegacy(this.drawing, this);
-            this.Content = this.fe;
+            this._mouseActionSetting = setting;
+            this._fe = new PeakModFELegacy(this.drawing, this);
+            this.Content = this._fe;
             this.Type = type;
             this.PeakPropertyList = peakPropertyList;
 
             if (!setting.CanMouseAction) {
-                this.MouseMove -= new MouseEventHandler(this.userControl_MouseMove);
-                this.MouseLeave -= new MouseEventHandler(this.userControl_MouseLeave);
-                this.MouseRightButtonUp -= new MouseButtonEventHandler(this.userControl_MouseRightButtonUp);
-                this.MouseRightButtonDown -= new MouseButtonEventHandler(this.userControl_MouseRightButtonDown);
-                this.MouseLeftButtonUp -= new MouseButtonEventHandler(this.userControl_MouseLeftButtonUp);
-                this.MouseLeftButtonDown -= new MouseButtonEventHandler(this.userControl_MouseLeftButtonDown);
-                this.MouseDoubleClick -= new MouseButtonEventHandler(this.useerControl_MouseLeftDoubleClick);
-                this.MouseWheel -= new MouseWheelEventHandler(this.userControl_MouseWheel);
+                this.MouseMove -= new MouseEventHandler(this.UserControl_MouseMove);
+                this.MouseLeave -= new MouseEventHandler(this.UserControl_MouseLeave);
+                this.MouseRightButtonUp -= new MouseButtonEventHandler(this.UserControl_MouseRightButtonUp);
+                this.MouseRightButtonDown -= new MouseButtonEventHandler(this.UserControl_MouseRightButtonDown);
+                this.MouseLeftButtonUp -= new MouseButtonEventHandler(this.UserControl_MouseLeftButtonUp);
+                this.MouseLeftButtonDown -= new MouseButtonEventHandler(this.UserControl_MouseLeftButtonDown);
+                this.MouseDoubleClick -= new MouseButtonEventHandler(this.UserControl_MouseLeftDoubleClick);
+                this.MouseWheel -= new MouseWheelEventHandler(this.UserControl_MouseWheel);
             }
             else if (!setting.CanZoomRubber) {
-                this.MouseRightButtonUp -= new MouseButtonEventHandler(this.userControl_MouseRightButtonUp);
-                this.MouseRightButtonDown -= new MouseButtonEventHandler(this.userControl_MouseRightButtonDown);
-                this.MouseMove -= new MouseEventHandler(this.userControl_MouseMove);
-                this.MouseLeave -= new MouseEventHandler(this.userControl_MouseLeave);
+                this.MouseRightButtonUp -= new MouseButtonEventHandler(this.UserControl_MouseRightButtonUp);
+                this.MouseRightButtonDown -= new MouseButtonEventHandler(this.UserControl_MouseRightButtonDown);
+                this.MouseMove -= new MouseEventHandler(this.UserControl_MouseMove);
+                this.MouseLeave -= new MouseEventHandler(this.UserControl_MouseLeave);
             }
             if (setting.FixMaxX && setting.FixMinX && setting.FixMaxY && setting.FixMinY) {
-                this.MouseWheel -= new MouseWheelEventHandler(this.userControl_MouseWheel);
+                this.MouseWheel -= new MouseWheelEventHandler(this.UserControl_MouseWheel);
             }
             RefreshUI();
         }
@@ -124,34 +125,34 @@ namespace CompMs.App.Msdial.View.PeakCuration
 
 
         public void RefreshUI() {
-            this.fe.ReflectMouseProp();
-            this.fe.Draw();
+            this._fe.ReflectMouseProp();
+            this._fe.Draw();
         }
 
-        private void userControl_SizeChanged(object sender, SizeChangedEventArgs e) {
+        private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e) {
             RefreshUI();
         }
 
-        private void useerControl_MouseLeftDoubleClick(object sender, MouseButtonEventArgs e) {
+        private void UserControl_MouseLeftDoubleClick(object sender, MouseButtonEventArgs e) {
             if (this.drawing == null) return;
             if (e.StylusDevice != null) return;// Avoid Touch Event
 
             // Set Mouse Position
             if (e.LeftButton == MouseButtonState.Pressed) {
-                this.currentMousePoint = Mouse.GetPosition(this);
+                this._currentMousePoint = Mouse.GetPosition(this);
 
-                if (this.currentMousePoint.X > this.drawing.Area.Margin.Left && this.currentMousePoint.Y > this.ActualHeight - this.drawing.Area.Margin.Bottom) {
+                if (this._currentMousePoint.X > this.drawing.Area.Margin.Left && this._currentMousePoint.Y > this.ActualHeight - this.drawing.Area.Margin.Bottom) {
                     this.drawing.MaxX = this.drawing.SeriesList.MaxX;
                     this.drawing.MinX = this.drawing.SeriesList.MinX;
                     RefreshUI();
                 }
-                else if (this.currentMousePoint.X < this.drawing.Area.Margin.Left && this.currentMousePoint.Y < this.ActualHeight - this.drawing.Area.Margin.Bottom) {
+                else if (this._currentMousePoint.X < this.drawing.Area.Margin.Left && this._currentMousePoint.Y < this.ActualHeight - this.drawing.Area.Margin.Bottom) {
                     this.drawing.MaxY = this.drawing.SeriesList.MaxY;
                     this.drawing.MinY = this.drawing.SeriesList.MinY;
                     RefreshUI();
                 }
-                else if (this.currentMousePoint.X > this.drawing.Area.Margin.Left && this.currentMousePoint.Y > this.drawing.Area.Margin.Top) {
-                    this.fe.ResetGraphDisplayRange();
+                else if (this._currentMousePoint.X > this.drawing.Area.Margin.Left && this._currentMousePoint.Y > this.drawing.Area.Margin.Top) {
+                    this._fe.ResetGraphDisplayRange();
                 }
             }
             else if (e.RightButton == MouseButtonState.Pressed) {
@@ -177,22 +178,22 @@ namespace CompMs.App.Msdial.View.PeakCuration
             }
         }
 
-        private void userControl_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
+        private void UserControl_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
             if (this.drawing == null) return;
 
             // Set Mouse Position
-            this.rightButtonStartClickPoint = Mouse.GetPosition(this);
+            this._rightButtonStartClickPoint = Mouse.GetPosition(this);
 
-            if (this.rightButtonStartClickPoint.X <= this.drawing.Area.Margin.Left &&
-                this.rightButtonStartClickPoint.Y > this.drawing.Area.Margin.Top &&
-                this.rightButtonStartClickPoint.Y < this.ActualHeight - this.drawing.Area.Margin.Bottom)
-                this.rightMouseButtonChromatogramUpDownZoom = true;
-            else if (this.rightButtonStartClickPoint.X > this.drawing.Area.Margin.Left &&
-                this.rightButtonStartClickPoint.Y >= this.ActualHeight - this.drawing.Area.Margin.Bottom)
-                this.rightMouseButtonChromatogramLeftRightZoom = true;
+            if (this._rightButtonStartClickPoint.X <= this.drawing.Area.Margin.Left &&
+                this._rightButtonStartClickPoint.Y > this.drawing.Area.Margin.Top &&
+                this._rightButtonStartClickPoint.Y < this.ActualHeight - this.drawing.Area.Margin.Bottom)
+                this._rightMouseButtonChromatogramUpDownZoom = true;
+            else if (this._rightButtonStartClickPoint.X > this.drawing.Area.Margin.Left &&
+                this._rightButtonStartClickPoint.Y >= this.ActualHeight - this.drawing.Area.Margin.Bottom)
+                this._rightMouseButtonChromatogramLeftRightZoom = true;
             else {
                 if (this.drawing.IsTargetManualPickMode && Keyboard.Modifiers == ModifierKeys.Shift) {
-                    this.rightMouseButtonChromatogramRectangleZoom = true;
+                    this._rightMouseButtonChromatogramRectangleZoom = true;
                 }
                 else if (this.drawing.IsTargetManualPickMode) {
                     //if (this.drawing.IsTargetManualPickMode && Keyboard.Modifiers == ModifierKeys.Shift) {
@@ -200,40 +201,40 @@ namespace CompMs.App.Msdial.View.PeakCuration
                     RefreshUI();
                 }
                 else {
-                    this.rightMouseButtonChromatogramRectangleZoom = true;
+                    this._rightMouseButtonChromatogramRectangleZoom = true;
                 }
             }
         }
 
-        private void userControl_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+        private void UserControl_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             if (this.drawing == null) return;
             if (e.StylusDevice != null) return; // Avoid Touch Event
 
 
             // Set Mouse Position
-            this.leftButtonStartClickPoint = Mouse.GetPosition(this);
-            this.graphScrollInitialRtMin = (float)this.drawing.MinX;
-            this.graphScrollInitialRtMax = drawing.MaxX;
-            this.graphScrollInitialIntensityMin = drawing.MinY;
-            this.graphScrollInitialIntensityMax = drawing.MaxY;
+            this._leftButtonStartClickPoint = Mouse.GetPosition(this);
+            this._graphScrollInitialRtMin = (float)this.drawing.MinX;
+            this._graphScrollInitialRtMax = drawing.MaxX;
+            this._graphScrollInitialIntensityMin = drawing.MinY;
+            this._graphScrollInitialIntensityMax = drawing.MaxY;
 
             if (this.drawing.IsTargetManualPickMode) {
                 RefreshUI();
             }
         }
 
-        private void userControl_MouseMove(object sender, MouseEventArgs e) {
+        private void UserControl_MouseMove(object sender, MouseEventArgs e) {
             if (this.drawing == null) return;
 
             // Store Current Mouse Point
-            this.currentMousePoint = Mouse.GetPosition(this);
+            this._currentMousePoint = Mouse.GetPosition(this);
 
             if (e.LeftButton == MouseButtonState.Pressed) {
-                this.leftButtonEndClickPoint = Mouse.GetPosition(this);
+                this._leftButtonEndClickPoint = Mouse.GetPosition(this);
 
                 //                if (this.rtDiffViewModel.EditMode == ChromatogramEditMode.Display) {
                 if (!this.drawing.LeftMouseButtonLeftEdgeCapture && !this.drawing.LeftMouseButtonRightEdgeCapture) {
-                    this.fe.GraphScroll();
+                    this._fe.GraphScroll();
                     return;
                 }
                 //              }
@@ -245,32 +246,29 @@ namespace CompMs.App.Msdial.View.PeakCuration
             }
 
             if (e.RightButton == MouseButtonState.Pressed) {
-                if (this.rightButtonStartClickPoint.X != -1 && this.rightButtonStartClickPoint.Y != -1) {
+                if (this._rightButtonStartClickPoint.X != -1 && this._rightButtonStartClickPoint.Y != -1) {
 
-                    if (this.rightMouseButtonChromatogramRectangleZoom) {
-                        this.rightButtonEndClickPoint = Mouse.GetPosition(this);
+                    if (this._rightMouseButtonChromatogramRectangleZoom) {
+                        this._rightButtonEndClickPoint = Mouse.GetPosition(this);
                         //                if (this.rtDiffViewModel.EditMode == ChromatogramEditMode.Display) {
                         if (this.Type == PeakModType.Aligned || this.Type == PeakModType.Original) {
                             //Debug.WriteLine("Right mac");
-                            fe.RectangleRubberDraw();
+                            _fe.RectangleRubberDraw();
                         }
                         else
-                            this.fe.ZoomRubberDraw();
+                            this._fe.ZoomRubberDraw();
                         return;
                         //              }
                     }
-                    else if (this.rightMouseButtonChromatogramLeftRightZoom) {
-                        float[] peakInformation = this.fe.getDataPositionOnMousePoint(this.rightButtonStartClickPoint);
+                    else if (this._rightMouseButtonChromatogramLeftRightZoom) {
+                        float[] peakInformation = this._fe.getDataPositionOnMousePoint(this._rightButtonStartClickPoint);
                         if (peakInformation == null) return;
+                        float mousePointRt = peakInformation[1];
 
-                        float mousePointRt = 0;
-                        float newMinRt = float.MaxValue;
-                        float newMaxRt = float.MinValue;
-
-                        mousePointRt = peakInformation[1];
-
-                        if (Mouse.GetPosition(this).X - this.rightButtonEndClickPoint.X > 0) {
-                            this.rightButtonEndClickPoint = Mouse.GetPosition(this);
+                        float newMinRt;
+                        float newMaxRt;
+                        if (Mouse.GetPosition(this).X - this._rightButtonEndClickPoint.X > 0) {
+                            this._rightButtonEndClickPoint = Mouse.GetPosition(this);
 
                             newMinRt = mousePointRt - (float)((mousePointRt - (float)this.drawing.MinX) * 0.98);
                             newMaxRt = mousePointRt + (float)(((float)this.drawing.MaxX - mousePointRt) * 0.98);
@@ -280,9 +278,9 @@ namespace CompMs.App.Msdial.View.PeakCuration
                                 this.drawing.MaxX = newMaxRt;
                             }
                         }
-                        else if (Mouse.GetPosition(this).X - this.rightButtonEndClickPoint.X < 0) {
+                        else if (Mouse.GetPosition(this).X - this._rightButtonEndClickPoint.X < 0) {
 
-                            this.rightButtonEndClickPoint = Mouse.GetPosition(this);
+                            this._rightButtonEndClickPoint = Mouse.GetPosition(this);
 
                             newMinRt = mousePointRt - (float)((mousePointRt - (float)this.drawing.MinX) * 1.02);
                             newMaxRt = mousePointRt + (float)(((float)this.drawing.MaxX - mousePointRt) * 1.02);
@@ -297,42 +295,36 @@ namespace CompMs.App.Msdial.View.PeakCuration
                             else
                                 this.drawing.MaxX = newMaxRt;
                         }
-                        this.fe.Draw();
+                        this._fe.Draw();
                     }
-                    else if (this.rightMouseButtonChromatogramUpDownZoom) {
+                    else if (this._rightMouseButtonChromatogramUpDownZoom) {
 
-                        float[] peakInformation = this.fe.getDataPositionOnMousePoint(this.rightButtonStartClickPoint);
+                        float[] peakInformation = this._fe.getDataPositionOnMousePoint(this._rightButtonStartClickPoint);
                         if (peakInformation == null) return;
 
-                        float mousePointIntensity = 0;
-                        float newMinIntensity = float.MaxValue;
-                        float newMaxIntensity = float.MinValue;
-
-                        mousePointIntensity = peakInformation[3];
-
                         // Mouse On Y-Axis                
-                        if (Mouse.GetPosition(this).Y - this.rightButtonEndClickPoint.Y < 0) {
-                            this.rightButtonEndClickPoint = Mouse.GetPosition(this);
+                        if (Mouse.GetPosition(this).Y - this._rightButtonEndClickPoint.Y < 0) {
+                            this._rightButtonEndClickPoint = Mouse.GetPosition(this);
 
                             if ((float)this.drawing.MaxY < 0.0001)
                                 return;
 
-                            newMaxIntensity = (float)this.drawing.MaxY * (float)0.98;
+                            float newMaxIntensity = (float)this.drawing.MaxY * (float)0.98;
                             if (newMaxIntensity > 0 && newMaxIntensity > this.drawing.MinY)
                                 this.drawing.MaxY = newMaxIntensity;
                         }
-                        else if (Mouse.GetPosition(this).Y - this.rightButtonEndClickPoint.Y > 0) {
-                            this.rightButtonEndClickPoint = Mouse.GetPosition(this);
-                            this.drawing.MaxY = this.drawing.MaxY * 1.02F;
+                        else if (Mouse.GetPosition(this).Y - this._rightButtonEndClickPoint.Y > 0) {
+                            this._rightButtonEndClickPoint = Mouse.GetPosition(this);
+                            this.drawing.MaxY *= 1.02F;
 
                             if (this.drawing.MaxY > this.drawing.SeriesList.MaxY)
                                 this.drawing.MaxY = this.drawing.SeriesList.MaxY;
                         }
-                        this.fe.Draw();
+                        this._fe.Draw();
                     }
                 }
                 else {
-                    this.rightButtonEndClickPoint = new Point(-1, -1);
+                    this._rightButtonEndClickPoint = new Point(-1, -1);
                 }
             }
 
@@ -341,7 +333,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
             }
         }
 
-        private void userControl_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+        private void UserControl_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
             if (this.drawing == null) return;
 
             if (this.drawing.IsTargetManualPickMode && this.drawing.IsShiftRightFolding) {
@@ -357,8 +349,8 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 return;
             }
 
-            if (this.rightMouseButtonChromatogramRectangleZoom) {
-                this.rightButtonEndClickPoint = Mouse.GetPosition(this);
+            if (this._rightMouseButtonChromatogramRectangleZoom) {
+                this._rightButtonEndClickPoint = Mouse.GetPosition(this);
                 var maxX = -1.0;
                 var minX = -1.0;
                 // Zoom X-Coordinate        
@@ -388,7 +380,7 @@ namespace CompMs.App.Msdial.View.PeakCuration
                 if (this.Type == PeakModType.Original) {
                     Mouse.OverrideCursor = Cursors.Wait;
                     UtilityLegacy.ChangeAlignedRtProperty(this.PeakPropertyList, minX, maxX);
-                    fe.Draw();
+                    _fe.Draw();
                     this.VM.UpdateAlignedChromUC();
                     Mouse.OverrideCursor = null;
                 }
@@ -400,28 +392,28 @@ namespace CompMs.App.Msdial.View.PeakCuration
                     Mouse.OverrideCursor = null;
                 }
                 else {
-                    this.rightButtonEndClickPoint = Mouse.GetPosition(this);
-                    this.fe.GraphZoom();
-                    this.fe.Draw();
+                    this._rightButtonEndClickPoint = Mouse.GetPosition(this);
+                    this._fe.GraphZoom();
+                    this._fe.Draw();
                 }
             }
 
             // Reset Mouse Position
-            this.rightButtonStartClickPoint = new Point(-1, -1);
-            this.rightButtonEndClickPoint = new Point(-1, -1);
-            this.rightMouseButtonChromatogramLeftRightZoom = false;
-            this.rightMouseButtonChromatogramRectangleZoom = false;
-            this.rightMouseButtonChromatogramUpDownZoom = false;
+            this._rightButtonStartClickPoint = new Point(-1, -1);
+            this._rightButtonEndClickPoint = new Point(-1, -1);
+            this._rightMouseButtonChromatogramLeftRightZoom = false;
+            this._rightMouseButtonChromatogramRectangleZoom = false;
+            this._rightMouseButtonChromatogramUpDownZoom = false;
 
         }
 
-        private void userControl_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+        private void UserControl_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
             if (this.drawing == null) return;
-            this.fe.Draw();
+            this._fe.Draw();
 
             // Reset Mouse Position
-            this.leftButtonStartClickPoint = new Point(-1, -1);
-            this.leftButtonEndClickPoint = new Point(-1, -1);
+            this._leftButtonStartClickPoint = new Point(-1, -1);
+            this._leftButtonEndClickPoint = new Point(-1, -1);
 
             // Reset capture
             this.LeftMouseButtonLeftEdgeCapture = false;
@@ -437,49 +429,48 @@ namespace CompMs.App.Msdial.View.PeakCuration
 
         }
 
-        private void userControl_MouseLeave(object sender, MouseEventArgs e) {
+        private void UserControl_MouseLeave(object sender, MouseEventArgs e) {
             if (this.drawing == null) return;
             //this.rightButtonEndClickPoint.X = -1;
             this.drawing.IsShiftRightFolding = false;
-            this.fe.Draw();
+            this._fe.Draw();
         }
 
-        private void userControl_MouseWheel(object sender, MouseWheelEventArgs e) {
+        private void UserControl_MouseWheel(object sender, MouseWheelEventArgs e) {
             if (this.drawing == null) return;
 
-            this.currentMousePoint = Mouse.GetPosition(this);
+            this._currentMousePoint = Mouse.GetPosition(this);
 
-            var peakInformation = this.fe.getDataPositionOnMousePoint(this.currentMousePoint);
+            var peakInformation = this._fe.getDataPositionOnMousePoint(this._currentMousePoint);
             if (peakInformation == null) return;
-
-            float newMinX = float.MaxValue;
-            float newMaxX = float.MinValue;
-            float newMinY = float.MaxValue;
-            float newMaxY = float.MinValue;
 
             float x = peakInformation[1];
             float y = peakInformation[3];
 
+            float newMinX;
+            float newMaxX;
+            float newMaxY;
+            //float newMinY;
             if (e.Delta > 0) {
                 newMinX = (float)x - (float)((x - (float)this.drawing.MinX) * 0.9);
                 newMaxX = (float)x + (float)(((float)this.drawing.MaxX - x) * 0.9);
-                newMinY = (float)y - (float)((y - (float)this.drawing.MinY) * 0.9);
+                //newMinY = (float)y - (float)((y - (float)this.drawing.MinY) * 0.9);
                 newMaxY = (float)y + (float)(((float)this.drawing.MaxY - y) * 0.9);
             }
             else {
                 newMinX = (float)x - (float)((x - (float)this.drawing.MinX) * 1.1);
                 newMaxX = (float)x + (float)(((float)this.drawing.MaxX - x) * 1.1);
-                newMinY = (float)y - (float)((y - (float)this.drawing.MinY) * 1.1);
+                //newMinY = (float)y - (float)((y - (float)this.drawing.MinY) * 1.1);
                 newMaxY = (float)y + (float)(((float)this.drawing.MaxY - y) * 1.1);
             }
 
 
-            if (this.currentMousePoint.X > this.drawing.Area.Margin.Left && this.currentMousePoint.Y > this.ActualHeight - this.drawing.Area.Margin.Bottom) {
+            if (this._currentMousePoint.X > this.drawing.Area.Margin.Left && this._currentMousePoint.Y > this.ActualHeight - this.drawing.Area.Margin.Bottom) {
                 if (newMinX < this.drawing.SeriesList.MinX) {
                     this.drawing.MinX = this.drawing.SeriesList.MinX;
                 }
                 else {
-                    if (!this.mouseActionSetting.FixMinX)
+                    if (!this._mouseActionSetting.FixMinX)
                         this.drawing.MinX = newMinX;
                 }
 
@@ -487,17 +478,17 @@ namespace CompMs.App.Msdial.View.PeakCuration
                     this.drawing.MaxX = this.drawing.SeriesList.MaxX;
                 }
                 else {
-                    if (!this.mouseActionSetting.FixMaxX)
+                    if (!this._mouseActionSetting.FixMaxX)
                         this.drawing.MaxX = newMaxX;
                 }
 
             }
-            else if (this.currentMousePoint.X <= this.drawing.Area.Margin.Left && this.currentMousePoint.Y > this.drawing.Area.Margin.Top && this.currentMousePoint.Y < this.ActualHeight - this.drawing.Area.Margin.Bottom) {
+            else if (this._currentMousePoint.X <= this.drawing.Area.Margin.Left && this._currentMousePoint.Y > this.drawing.Area.Margin.Top && this._currentMousePoint.Y < this.ActualHeight - this.drawing.Area.Margin.Bottom) {
                 if (newMaxY > this.drawing.SeriesList.MaxY) {
                     this.drawing.MaxY = this.drawing.SeriesList.MaxY;
                 }
                 else {
-                    if (!this.mouseActionSetting.FixMaxY)
+                    if (!this._mouseActionSetting.FixMaxY)
                         this.drawing.MaxY = newMaxY;
                 }
 
@@ -518,78 +509,78 @@ namespace CompMs.App.Msdial.View.PeakCuration
         #region // properties
 
         public Point CurrentMousePoint {
-            get { return currentMousePoint; }
-            set { currentMousePoint = value; }
+            get { return _currentMousePoint; }
+            set { _currentMousePoint = value; }
         }
 
         public Point LeftButtonStartClickPoint {
-            get { return leftButtonStartClickPoint; }
-            set { leftButtonStartClickPoint = value; }
+            get { return _leftButtonStartClickPoint; }
+            set { _leftButtonStartClickPoint = value; }
         }
 
         public Point LeftButtonEndClickPoint {
-            get { return leftButtonEndClickPoint; }
-            set { leftButtonEndClickPoint = value; }
+            get { return _leftButtonEndClickPoint; }
+            set { _leftButtonEndClickPoint = value; }
         }
 
         public Point RightButtonStartClickPoint {
-            get { return rightButtonStartClickPoint; }
-            set { rightButtonStartClickPoint = value; }
+            get { return _rightButtonStartClickPoint; }
+            set { _rightButtonStartClickPoint = value; }
         }
 
         public Point RightButtonEndClickPoint {
-            get { return rightButtonEndClickPoint; }
-            set { rightButtonEndClickPoint = value; }
+            get { return _rightButtonEndClickPoint; }
+            set { _rightButtonEndClickPoint = value; }
         }
 
         public bool LeftMouseButtonLeftEdgeCapture {
-            get { return leftMouseButtonLeftEdgeCapture; }
-            set { leftMouseButtonLeftEdgeCapture = value; }
+            get { return _leftMouseButtonLeftEdgeCapture; }
+            set { _leftMouseButtonLeftEdgeCapture = value; }
         }
 
         public bool LeftMouseButtonRightEdgeCapture {
-            get { return leftMouseButtonRightEdgeCapture; }
-            set { leftMouseButtonRightEdgeCapture = value; }
+            get { return _leftMouseButtonRightEdgeCapture; }
+            set { _leftMouseButtonRightEdgeCapture = value; }
         }
 
         public bool RightMouseButtonChromatogramUpDownZoom {
-            get { return rightMouseButtonChromatogramUpDownZoom; }
-            set { rightMouseButtonChromatogramUpDownZoom = value; }
+            get { return _rightMouseButtonChromatogramUpDownZoom; }
+            set { _rightMouseButtonChromatogramUpDownZoom = value; }
         }
 
         public bool RightMouseButtonChromatogramLeftRightZoom {
-            get { return rightMouseButtonChromatogramLeftRightZoom; }
-            set { rightMouseButtonChromatogramLeftRightZoom = value; }
+            get { return _rightMouseButtonChromatogramLeftRightZoom; }
+            set { _rightMouseButtonChromatogramLeftRightZoom = value; }
         }
 
         public bool RightMouseButtonChromatogramRectangleZoom {
-            get { return rightMouseButtonChromatogramRectangleZoom; }
-            set { rightMouseButtonChromatogramRectangleZoom = value; }
+            get { return _rightMouseButtonChromatogramRectangleZoom; }
+            set { _rightMouseButtonChromatogramRectangleZoom = value; }
         }
 
         public bool KeyDownCheck {
-            get { return keyDownCheck; }
-            set { keyDownCheck = value; }
+            get { return _keyDownCheck; }
+            set { _keyDownCheck = value; }
         }
 
         public float GraphScrollInitialRtMin {
-            get { return graphScrollInitialRtMin; }
-            set { graphScrollInitialRtMin = value; }
+            get { return _graphScrollInitialRtMin; }
+            set { _graphScrollInitialRtMin = value; }
         }
 
         public float GraphScrollInitialRtMax {
-            get { return graphScrollInitialRtMax; }
-            set { graphScrollInitialRtMax = value; }
+            get { return _graphScrollInitialRtMax; }
+            set { _graphScrollInitialRtMax = value; }
         }
 
         public float GraphScrollInitialIntensityMin {
-            get { return graphScrollInitialIntensityMin; }
-            set { graphScrollInitialIntensityMin = value; }
+            get { return _graphScrollInitialIntensityMin; }
+            set { _graphScrollInitialIntensityMin = value; }
         }
 
         public float GraphScrollInitialIntensityMax {
-            get { return graphScrollInitialIntensityMax; }
-            set { graphScrollInitialIntensityMax = value; }
+            get { return _graphScrollInitialIntensityMax; }
+            set { _graphScrollInitialIntensityMax = value; }
         }
         #endregion
 

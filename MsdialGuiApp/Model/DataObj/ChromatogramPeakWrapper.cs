@@ -1,8 +1,9 @@
-﻿using CompMs.Common.Components;
-using CompMs.Common.Interfaces;
+﻿using CompMs.Common.Interfaces;
+using System;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
+    [Obsolete("Use PeakItem instead of ChromatogramPeakWrapper")]
     public sealed class ChromatogramPeakWrapper
     {
         public double Intensity => _innerModel.Intensity;
