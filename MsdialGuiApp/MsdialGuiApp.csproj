@@ -431,7 +431,7 @@
     <Compile Include="ViewModel\Lcms\LcmsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Statistics\NormalizationSetViewModel.cs" />
     <Compile Include="ViewModel\Statistics\SplashSetViewModel.cs" />
-    <Compile Include="ViewModel\ProteomicsParameterVM.cs" />
+    <Compile Include="ViewModel\DataObj\ProteomicsParameterVM.cs" />
     <Compile Include="ViewModel\Setting\AnnotationProcessSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\DataBaseSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\EnzymeSettingViewModel.cs" />

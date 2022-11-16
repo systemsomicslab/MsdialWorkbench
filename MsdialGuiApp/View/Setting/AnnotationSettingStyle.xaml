@@ -1,7 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:localVM="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
-                    xmlns:VM="clr-namespace:CompMs.App.Msdial.ViewModel"
                     xmlns:DataObjVM="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
                     xmlns:SearchVM="clr-namespace:CompMs.App.Msdial.ViewModel.Search"
                     xmlns:converter="clr-namespace:CompMs.CommonMVVM.Converter;assembly=CommonMVVM"
@@ -97,7 +96,7 @@
         </StackPanel>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type VM:ProteomicsParameterVM}"
+    <DataTemplate DataType="{x:Type DataObjVM:ProteomicsParameterVM}"
                   x:Key="ProteomicsParameterSetting">
         <StackPanel>
             <ui:LabeledContent PrependLabel="Andromeda delta:"
