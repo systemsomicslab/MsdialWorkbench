@@ -346,6 +346,9 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ProteinResultContainerModel ProteinResultContainerModel { get; }
 
         public void GoToMsfinderMethod() {
+            if (Target.Value is null || MsdecResult.Value is null) {
+                return;
+            }
             MsDialToExternalApps.SendToMsFinderProgram(
                 AnalysisFileModel,
                 Target.Value.InnerModel,

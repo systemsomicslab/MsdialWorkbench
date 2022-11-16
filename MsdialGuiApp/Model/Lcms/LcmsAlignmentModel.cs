@@ -318,6 +318,9 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public void GoToMsfinderMethod() {
+            if (Target.Value is null || _msdecResult.Value is null) {
+                return;
+            }
             MsDialToExternalApps.SendToMsFinderProgram(
                 _alignmentFile,
                 Target.Value.innerModel,
