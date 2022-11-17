@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
@@ -175,5 +176,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public void SaveProject() {
             _model.SaveProject();
         }
+
+        // IResultViewModel
+        IResultModel IResultViewModel.Model => _model;
     }
 }

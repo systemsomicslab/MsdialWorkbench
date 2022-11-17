@@ -404,16 +404,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         }
         private string _displayLabel = string.Empty;
 
-        public void SearchFragment(ParameterBase parameter) {
-            var features = Ms1Peaks;
-            FragmentSearcher.Search(features.Select(n => n.InnerModel).ToList(), _decLoader, parameter);
-
-            foreach (var feature in features) {
-                var featureStatus = feature.InnerModel.FeatureFilterStatus;
-                if (featureStatus.IsFragmentExistFiltered) {
-                    Console.WriteLine("A fragment is found by MassQL not in alignment !!!");
-                }
-            }
+        public void SearchFragment() {
+            FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), _decLoader, _parameter);
         }
 
         public Task SaveAsync(CancellationToken token) {

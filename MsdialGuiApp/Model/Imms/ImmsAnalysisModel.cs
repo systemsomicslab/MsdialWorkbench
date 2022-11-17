@@ -241,6 +241,10 @@ namespace CompMs.App.Msdial.Model.Imms
                 _compoundSearchers);
         }
 
+        public override void SearchFragment() {
+            FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), decLoader, _parameter);
+        }
+
         public void SaveSpectra(string filename) {
             using (var file = File.Open(filename, FileMode.Create)) {
                 SpectraExport.SaveSpectraTable(

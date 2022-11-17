@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Lcimms;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.Lcimms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
@@ -120,5 +121,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
         private void ShowIonTable() {
             _peakSpotTableService.Show(PeakTableViewModel);
         }
+
+        // IResultViewModel
+        IResultModel IResultViewModel.Model => _model;
     }
 }

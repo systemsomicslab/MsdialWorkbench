@@ -282,15 +282,8 @@ namespace CompMs.App.Msdial.Model.Dims
             Clipboard.SetText(System.Text.Encoding.UTF8.GetString(memory.ToArray()));
         }
 
-        public override void SearchFragment(ParameterBase parameter) {
-            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, parameter);
-
-            foreach (var feature in Ms1Spots) {
-                var featureStatus = feature.innerModel.FeatureFilterStatus;
-                if (featureStatus.IsFragmentExistFiltered) {
-                    Console.WriteLine("A fragment is found in alignment !!!");
-                }
-            }
+        public override void SearchFragment() {
+            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, _parameter);
         }
     }
 }

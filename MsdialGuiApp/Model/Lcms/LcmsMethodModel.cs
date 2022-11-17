@@ -409,29 +409,20 @@ namespace CompMs.App.Msdial.Model.Lcms
         }
 
         public FragmentQuerySettingModel ShowShowFragmentSearchSettingView() {
-            return new FragmentQuerySettingModel(_storage.Parameter, AnalysisModel, AlignmentModel);
+            return new FragmentQuerySettingModel(_storage.Parameter.AdvancedProcessOptionBaseParam, AnalysisModel, AlignmentModel);
         }
 
-        public MassqlSettingModel ShowShowMassqlSearchSettingView(bool isAlignmentViewSelected) {
-            if (isAlignmentViewSelected) {
-                if (AlignmentModel is null) {
-                    return null;
-                }
-                return new MassqlSettingModel(_storage.Parameter, () => AlignmentModel.SearchFragment(_storage.Parameter));
+        public MassqlSettingModel ShowShowMassqlSearchSettingView(IResultModel model) {
+            if (model is null) {
+                return null;
             }
-            else {
-                if (AnalysisModel is null) {
-                    return null;
-                }
-                return new MassqlSettingModel(_storage.Parameter, () => AnalysisModel.SearchFragment(_storage.Parameter));
-            }
+            return new MassqlSettingModel(model, _storage.Parameter.AdvancedProcessOptionBaseParam);
         }
 
         public MscleanrSettingModel ShowShowMscleanrFilterSettingView() {
             if (AlignmentModel is null) {
                 return null;
             }
-
             return new MscleanrSettingModel(_storage.Parameter, AlignmentModel.Ms1Spots);
         }
 

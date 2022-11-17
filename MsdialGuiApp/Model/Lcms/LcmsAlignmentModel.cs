@@ -303,15 +303,8 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public bool CanSaveSpectra() => Target.Value.innerModel != null && _msdecResult.Value != null;
 
-        public override void SearchFragment(ParameterBase parameter) {
-            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, parameter);
-
-            foreach (var feature in Ms1Spots) {
-                var featureStatus = feature.innerModel.FeatureFilterStatus;
-                if (featureStatus.IsFragmentExistFiltered) {
-                    Console.WriteLine("A fragment is found in alignment !!!");
-                }
-            }
+        public override void SearchFragment() {
+            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, Parameter);
         }
 
         public void GoToMsfinderMethod() {

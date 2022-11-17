@@ -40,6 +40,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> DRIFT_CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
 
         private readonly AlignmentFileBean _alignmentFileBean;
+        private readonly MsdialLcImMsParameter _parameter;
         private readonly List<AnalysisFileBean> _files;
         private readonly MSDecLoader _decLoader;
 
@@ -57,6 +58,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 throw new ArgumentNullException(nameof(evaluator));
             }
             _alignmentFileBean = alignmentFileBean;
+            _parameter = parameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
 
             BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
@@ -344,15 +346,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel> CompoundSearchModel { get; }
 
-        public override void SearchFragment(ParameterBase parameter) {
-            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, parameter);
-
-            foreach (var feature in Ms1Spots) {
-                var featureStatus = feature.innerModel.FeatureFilterStatus;
-                if (featureStatus.IsFragmentExistFiltered) {
-                    Console.WriteLine("A fragment is found in alignment !!!");
-                }
-            }
+        public override void SearchFragment() {
+            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, _parameter);
         }
 
         public void SaveProject() {

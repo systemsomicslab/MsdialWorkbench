@@ -4,6 +4,6 @@ namespace CompMs.App.Msdial.Model.Core
 {
     internal interface IResultModel
     {
-        void SearchFragment(ParameterBase parameter);
+        void SearchFragment();
     }
 }

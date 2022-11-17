@@ -211,6 +211,10 @@ namespace CompMs.App.Msdial.Model.Dims
                 _parameter);
         }
 
+        public override void SearchFragment() {
+            FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), decLoader, _parameter);
+        }
+
         public void SaveSpectra(string filename) {
             var format = (ExportSpectraFileFormat)Enum.Parse(typeof(ExportSpectraFileFormat), Path.GetExtension(filename).Trim('.'));
             using (var file = File.Open(filename, FileMode.Create)) {
