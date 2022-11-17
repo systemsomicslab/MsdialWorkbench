@@ -425,14 +425,5 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
             return new MscleanrSettingModel(_storage.Parameter, AlignmentModel.Ms1Spots);
         }
-
-        public void GoToMsfinderMethod(bool isAlignmentView) {
-            if (isAlignmentView) {
-                AlignmentModel.GoToMsfinderMethod();
-            }
-            else {
-                AnalysisModel.GoToMsfinderMethod();
-            }
-        }
     }
 }

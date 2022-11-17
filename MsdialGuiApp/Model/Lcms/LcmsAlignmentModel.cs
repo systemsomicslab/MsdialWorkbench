@@ -307,8 +307,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, Parameter);
         }
 
-        public void GoToMsfinderMethod() {
-            if (Target.Value is null || _msdecResult.Value is null) {
+        public override void InvokeMsfinder() {
+            if (Target.Value is null || (_msdecResult.Value?.Spectrum).IsEmptyOrNull()) {
                 return;
             }
             MsDialToExternalApps.SendToMsFinderProgram(

@@ -336,8 +336,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         public CompoundDetailModel CompoundDetailModel { get; }
         public ProteinResultContainerModel ProteinResultContainerModel { get; }
 
-        public void GoToMsfinderMethod() {
-            if (Target.Value is null || MsdecResult.Value is null) {
+        public override void InvokeMsfinder() {
+            if (Target.Value is null || (MsdecResult.Value?.Spectrum).IsEmptyOrNull()) {
                 return;
             }
             MsDialToExternalApps.SendToMsFinderProgram(

@@ -68,6 +68,7 @@ namespace CompMs.App.Msdial.Model.Core {
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 
         public abstract void SearchFragment();
+        public abstract void InvokeMsfinder();
 
         public Task SaveAsync(CancellationToken token) {
             return _peakCollection.SerializeAsync(AnalysisFileModel.File, token);

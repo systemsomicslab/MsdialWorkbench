@@ -231,13 +231,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             }
         }
 
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??  (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
-        private DelegateCommand _goToMsfinderCommand;
-
-        private void GoToMsfinderMethod() {
-            _model.GoToMsfinderMethod(SelectedViewModel.Value is IAlignmentResultViewModel);
-        }
-
         private static IReadOnlyReactiveProperty<LcmsAnalysisViewModel> ConvertToAnalysisViewModelAsObservable(
             LcmsMethodModel method,
             IWindowService<CompoundSearchVM> compoundSearchService,

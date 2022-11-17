@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.ExternalApp;
+using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
@@ -16,7 +17,6 @@ using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcImMsApi.Parameter;
@@ -40,6 +40,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> DRIFT_CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
 
         private readonly AlignmentFileBean _alignmentFileBean;
+        private readonly DataBaseMapper _dataBaseMapper;
         private readonly MsdialLcImMsParameter _parameter;
         private readonly List<AnalysisFileBean> _files;
         private readonly MSDecLoader _decLoader;
@@ -58,6 +59,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 throw new ArgumentNullException(nameof(evaluator));
             }
             _alignmentFileBean = alignmentFileBean;
+            _dataBaseMapper = mapper;
             _parameter = parameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
 
@@ -348,6 +350,18 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public override void SearchFragment() {
             MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, _parameter);
+        }
+
+        public override void InvokeMsfinder() {
+            if (Target.Value is null || (MsdecResult.Value?.Spectrum).IsEmptyOrNull()) {
+                return;
+            }
+            MsDialToExternalApps.SendToMsFinderProgram(
+                _alignmentFileBean,
+                Target.Value.innerModel,
+                MsdecResult.Value,
+                _dataBaseMapper,
+                _parameter);
         }
 
         public void SaveProject() {

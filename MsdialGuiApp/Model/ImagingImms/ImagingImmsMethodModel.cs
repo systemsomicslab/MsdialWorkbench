@@ -2,7 +2,6 @@
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Imaging;
 using CompMs.Common.Enum;
-using CompMs.CommonMVVM;
 using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -16,14 +15,14 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.ImagingImms
 {
-    internal sealed class ImagingImmsMethodModel : DisposableModelBase, IMethodModel
+    internal sealed class ImagingImmsMethodModel : MethodModelBase, IMethodModel
     {
         private readonly IMsdialDataStorage<MsdialImmsParameter> _storage;
         private readonly FacadeMatchResultEvaluator _evaluator;
         private readonly IDataProviderFactory<AnalysisFileBeanModel> _providerFactory;
 
-        public ImagingImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage) {
-            AnalysisFileModelCollection = analysisFileBeanModelCollection;
+        public ImagingImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage)
+            : base(analysisFileBeanModelCollection, Enumerable.Empty<AlignmentFileBean>(), new ProjectBaseParameterModel(storage.Parameter.ProjectParam)) {
             _storage = storage;
             _evaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _providerFactory = storage.Parameter.ProviderFactoryParameter.Create().ContraMap((AnalysisFileBeanModel file) => file.File.LoadRawMeasurement(true, true, 5, 5000));
@@ -39,23 +38,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
         }
         private ImagingImageModel _image;
 
-        public AnalysisFileBeanModelCollection AnalysisFileModelCollection { get; }
-
-        public AnalysisFileBeanModel AnalysisFileModel {
-            get => _analysisFileModel;
-            set => SetProperty(ref _analysisFileModel, value);
-        }
-        private AnalysisFileBeanModel _analysisFileModel;
-
-        public ObservableCollection<AlignmentFileBean> AlignmentFiles { get; } = new ObservableCollection<AlignmentFileBean>();
-        public AlignmentFileBean AlignmentFile => null;
-
-        public Task LoadAnalysisFileAsync(AnalysisFileBeanModel analysisFile, CancellationToken token) {
-            Image = ImageModels.FirstOrDefault(image => image.File == analysisFile);
-            return Task.CompletedTask;
-        }
-
-        public async Task RunAsync(ProcessOption option, CancellationToken token) {
+        public override async Task RunAsync(ProcessOption option, CancellationToken token) {
             if (option.HasFlag(ProcessOption.Identification | ProcessOption.PeakSpotting)) {
                 var files = AnalysisFileModelCollection.IncludedAnalysisFiles;
                 var processor = new FileProcess(_storage, null, null, _evaluator);
@@ -74,7 +57,7 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             }
         }
 
-        public Task LoadAsync(CancellationToken token) {
+        public override Task LoadAsync(CancellationToken token) {
             foreach (var file in AnalysisFileModelCollection.AnalysisFiles) {
                 ImageModels.Add(new ImagingImageModel(file));
             }
@@ -85,8 +68,13 @@ namespace CompMs.App.Msdial.Model.ImagingImms
             return Task.CompletedTask;
         }
 
-        public Task SaveAsync() {
-            return Task.CompletedTask;
+        protected override IAnalysisModel LoadAnalysisFileCore(AnalysisFileBeanModel analysisFile) {
+            Image = ImageModels.FirstOrDefault(image => image.File == analysisFile);
+            return null;
+        }
+
+        protected override IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile) {
+            return null;
         }
     }
 }

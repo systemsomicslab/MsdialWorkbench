@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.ExternalApp;
+using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
@@ -284,6 +285,18 @@ namespace CompMs.App.Msdial.Model.Dims
 
         public override void SearchFragment() {
             MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, _parameter);
+        }
+
+        public override void InvokeMsfinder() {
+            if (Target.Value is null || (_msdecResult.Value?.Spectrum).IsEmptyOrNull()) {
+                return;
+            }
+            MsDialToExternalApps.SendToMsFinderProgram(
+                _alignmentFile,
+                Target.Value.innerModel,
+                _msdecResult.Value,
+                _dataBaseMapper,
+                _parameter);
         }
     }
 }

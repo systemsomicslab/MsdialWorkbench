@@ -147,7 +147,7 @@
                           IsEnabled="False"
                           KeyTip="S"/>
             <RibbonButton Label="Msfinder search" LargeImageSource="{StaticResource Msfinder_is}"
-                          IsEnabled="False"
+                          Command="{Binding GoToMsfinderCommand, Mode=OneTime}"
                           KeyTip="M"/>
         </RibbonGroup>
     </RibbonTab>

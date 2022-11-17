@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.ExternalApp;
+using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
@@ -18,7 +19,6 @@ using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialCore.Utility;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
@@ -45,8 +45,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly ChromatogramPeakFeatureCollection _peakCollection;
         private readonly AnalysisFileBeanModel _analysisFileModel;
         private readonly IDataProvider _spectrumProvider;
+        private readonly DataBaseMapper _dataBaseMapper;
         private readonly MsdialLcImMsParameter _parameter;
         private readonly MSDecLoader _decLoader;
+        private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
 
         public LcimmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -69,6 +71,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             _analysisFileModel = analysisFileModel;
             _spectrumProvider = spectrumProvider;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
+            _dataBaseMapper = mapper;
             _parameter = parameter;
 
             var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFileModel.PeakAreaBeanInformationFilePath);
@@ -235,6 +238,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+            _msdecResult = msdecResult;
 
             var rawLoader = new MultiMsRawSpectrumLoader(spectrumProvider, parameter);
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
@@ -406,6 +410,19 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public void SearchFragment() {
             FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), _decLoader, _parameter);
+        }
+
+        public void InvokeMsfinder() {
+            if (Target.Value is null || (_msdecResult.Value?.Spectrum).IsEmptyOrNull()) {
+                return;
+            }
+            MsDialToExternalApps.SendToMsFinderProgram(
+                _analysisFileModel,
+                Target.Value.InnerModel,
+                _msdecResult.Value,
+                _spectrumProvider.LoadMs1Spectrums(),
+                _dataBaseMapper,
+                _parameter);
         }
 
         public Task SaveAsync(CancellationToken token) {

@@ -48,6 +48,7 @@ namespace CompMs.App.Msdial.Model.Core
         private string displayLabel = string.Empty;
 
         public abstract void SearchFragment();
+        public abstract void InvokeMsfinder();
 
         protected readonly CompositeDisposable Disposables = new CompositeDisposable();
 
