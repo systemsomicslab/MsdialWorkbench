@@ -229,7 +229,9 @@ namespace CompMs.Graphics.Chart
         public static readonly DependencyProperty ErrorCapProperty =
             DependencyProperty.Register(
                 nameof(ErrorCap), typeof(double), typeof(ErrorBar),
-                new PropertyMetadata(5d));
+                new FrameworkPropertyMetadata(
+                    5d,
+                    FrameworkPropertyMetadataOptions.AffectsRender));
 
         public double ErrorCap {
             get => (double)GetValue(ErrorCapProperty);
