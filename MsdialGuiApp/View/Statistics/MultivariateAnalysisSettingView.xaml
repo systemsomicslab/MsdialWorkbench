@@ -117,7 +117,7 @@
                              IsChecked="{Binding MultivariateAnalysisOption.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Pca}"/>
                 <RadioButton Content="HCA"
                              IsChecked="{Binding MultivariateAnalysisOption.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Hca}"/>
-                <RadioButton Content="PLADA"
+                <RadioButton Content="PLSDA"
                              IsChecked="{Binding MultivariateAnalysisOption.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Plsda}"/>
                 <RadioButton Content="OPLSDA"
                              IsChecked="{Binding MultivariateAnalysisOption.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Oplsda}"/>
