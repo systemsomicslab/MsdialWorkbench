@@ -33,11 +33,12 @@ namespace CompMs.App.Msdial.ViewModel.Chart
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
 
-            HorizontalAxis = model
-                .BarItemsSource
-                .Select(items => items.Select(item => item.Class).ToArray())
-                .ToReactiveCategoryAxisManager()
-                .AddTo(Disposables);
+            // HorizontalAxis = model
+            //     .BarItemsSource
+            //     .Select(items => items.Select(item => item.Class).ToArray())
+            //     .ToReactiveCategoryAxisManager()
+            //     .AddTo(Disposables);
+            HorizontalAxis = model.OrderedClasses.ToReactiveCategoryAxisManager().AddTo(Disposables);
 
             VerticalAxis = model
                 .VerticalRangeAsObservable
