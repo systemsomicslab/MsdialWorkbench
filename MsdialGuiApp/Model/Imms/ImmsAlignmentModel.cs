@@ -44,10 +44,12 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public ImmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
+            AnalysisFileBeanModelCollection fileCollection,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databases,
             DataBaseMapper mapper,
             PeakFilterModel peakFilterModel,
+            ProjectBaseParameterModel projectBaseParameter,
             ParameterBase parameter,
             List<AnalysisFileBean> files)
             : base(alignmentFileBean, alignmentFileBean.FilePath) {
@@ -168,7 +170,7 @@ namespace CompMs.App.Msdial.Model.Imms
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
-            var eicLoader = new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, eicFile, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor), Observable.Return(fileIdToFileName)).AddTo(Disposables);
+            var eicLoader = new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, eicFile, fileCollection, projectBaseParameter).AddTo(Disposables);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader, files, parameter,
                 peak => peak.Time,

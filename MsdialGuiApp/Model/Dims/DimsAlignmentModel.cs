@@ -57,12 +57,15 @@ namespace CompMs.App.Msdial.Model.Dims
             DataBaseStorage databaseStorage,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseMapper mapper,
+            ProjectBaseParameterModel projectBaseParameter,
             ParameterBase parameter,
             List<AnalysisFileBean> files,
             AnalysisFileBeanModelCollection fileCollection,
-            PeakFilterModel peakFilterModel,
-            IMessageBroker broker)
+            PeakFilterModel peakFilterModel, IMessageBroker broker)
             : base(alignmentFileBean, alignmentFileBean.FilePath) {
+            if (projectBaseParameter is null) {
+                throw new ArgumentNullException(nameof(projectBaseParameter));
+            }
 
             _alignmentFile = alignmentFileBean;
 
@@ -182,7 +185,7 @@ namespace CompMs.App.Msdial.Model.Dims
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
-            var eicLoader = new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor), Observable.Return(fileIdToFileName)).AddTo(Disposables);
+            var eicLoader = new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, fileCollection, projectBaseParameter).AddTo(Disposables);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader,
                 files, parameter,
