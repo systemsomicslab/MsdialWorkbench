@@ -74,9 +74,5 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }
             return null;
         }
-
-        public void Run() {
-            Model.Run();
-        }
     }
 }

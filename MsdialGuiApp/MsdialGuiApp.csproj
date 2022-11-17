@@ -191,6 +191,7 @@
     <Compile Include="Model\Loader\MsSelectionItem.cs" />
     <Compile Include="Model\Service\OpenFileRequest.cs" />
     <Compile Include="Model\Service\ShortMessageRequest.cs" />
+    <Compile Include="Model\Setting\ProcessSettingModel.cs" />
     <Compile Include="Model\Statistics\InternalStandardLowessNormalizeModel.cs" />
     <Compile Include="Model\Statistics\InternalStandardNormalizeModel.cs" />
     <Compile Include="Model\Statistics\IonAbundance.cs" />
