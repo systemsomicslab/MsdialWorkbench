@@ -24,6 +24,7 @@ namespace CompMs.Graphics.Chart
                 nameof(Items), typeof(List<ErrorData>), typeof(ErrorBar),
                 new FrameworkPropertyMetadata(
                     null,
+                    FrameworkPropertyMetadataOptions.AffectsRender,
                     OnItemsChanged,
                     CoerceItems));
 
@@ -112,6 +113,7 @@ namespace CompMs.Graphics.Chart
                 nameof(HorizontalErrors), typeof(ErrorSource), typeof(ErrorBar),
                 new FrameworkPropertyMetadata(
                     null,
+                    FrameworkPropertyMetadataOptions.AffectsRender,
                     OnHorizontalErrorsChanged));
 
         public ErrorSource HorizontalErrors {
@@ -130,6 +132,7 @@ namespace CompMs.Graphics.Chart
                 nameof(VerticalErrors), typeof(ErrorSource), typeof(ErrorBar),
                 new FrameworkPropertyMetadata(
                     null,
+                    FrameworkPropertyMetadataOptions.AffectsRender,
                     OnVerticalErrorsChanged));
 
         public ErrorSource VerticalErrors {
@@ -182,6 +185,7 @@ namespace CompMs.Graphics.Chart
                 nameof(HorizontalProperty), typeof(string), typeof(ErrorBar),
                 new FrameworkPropertyMetadata(
                     null,
+                    FrameworkPropertyMetadataOptions.AffectsRender,
                     OnHorizontalPropertyChanged));
 
         public string HorizontalProperty {
@@ -195,11 +199,24 @@ namespace CompMs.Graphics.Chart
             eb.CoerceValue(ItemsProperty);
         }
 
+        protected override void OnHorizontalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
+            base.OnHorizontalAxisChanged(oldValue, newValue);
+            ShouldCoerceItems = true;
+            CoerceValue(ItemsProperty);
+        }
+
+        protected override void OnHorizontalRangeChanged(object sender, EventArgs e) {
+            base.OnHorizontalRangeChanged(sender, e);
+            ShouldCoerceItems = true;
+            CoerceValue(ItemsProperty);
+        }
+
         public static readonly DependencyProperty VerticalPropertyProperty =
             DependencyProperty.Register(
                 nameof(VerticalProperty), typeof(string), typeof(ErrorBar),
                 new FrameworkPropertyMetadata(
                     null,
+                    FrameworkPropertyMetadataOptions.AffectsRender,
                     OnVerticalPropertyChanged));
 
         public string VerticalProperty {
@@ -211,6 +228,18 @@ namespace CompMs.Graphics.Chart
             var eb = (ErrorBar)d;
             eb.ShouldCoerceItems = true;
             eb.CoerceValue(ItemsProperty);
+        }
+
+        protected override void OnVerticalAxisChanged(IAxisManager oldValue, IAxisManager newValue) {
+            base.OnVerticalAxisChanged(oldValue, newValue);
+            ShouldCoerceItems = true;
+            CoerceValue(ItemsProperty);
+        }
+
+        protected override void OnVerticalRangeChanged(object sender, EventArgs e) {
+            base.OnVerticalRangeChanged(sender, e);
+            ShouldCoerceItems = true;
+            CoerceValue(ItemsProperty);
         }
 
         public static readonly DependencyProperty LinePenProperty =
