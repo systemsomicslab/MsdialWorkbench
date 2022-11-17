@@ -65,7 +65,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             _parameter = parameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
 
-            BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
+            BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName, fileCollection);
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
 
             var props = Container.AlignmentSpotProperties;
