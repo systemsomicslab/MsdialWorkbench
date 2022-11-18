@@ -23,7 +23,9 @@ namespace CompMs.App.Msdial.Model.Loader
         public AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, string eicFile, AnalysisFileBeanModelCollection files, ProjectBaseParameterModel projectParameter) {
             _chromatogramSpotSerializer = chromatogramSpotSerializer ?? throw new ArgumentNullException(nameof(chromatogramSpotSerializer));
             _eicFile = eicFile ?? throw new ArgumentNullException(nameof(eicFile));
-            var classToColor = projectParameter.ObserveProperty(p => p.ClassProperties).Select(props => props.ToDictionary(prop => prop.Name, prop => prop.ObserveProperty(p => p.Color))).ToReactiveProperty().AddTo(Disposables);
+            // var classToColor = projectParameter.ObserveProperty(p => p.ClassProperties).Select(props => props.ToDictionary(prop => prop.Name, prop => prop.ObserveProperty(p => p.Color))).ToReactiveProperty().AddTo(Disposables);
+            var classToColor = projectParameter.ClassProperties.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default)
+                .Select(_ => projectParameter.ClassProperties.ToDictionary(prop => prop.Name, prop => prop.ObserveProperty(p => p.Color))).ToReactiveProperty().AddTo(Disposables);
             _fileChromatograms = files.AnalysisFiles.Select(file => new FileChromatogram(file, classToColor)).ToList();           
         }
 
