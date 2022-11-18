@@ -149,6 +149,7 @@
     <Compile Include="Common\ChartBrushes.cs" />
     <Compile Include="Common\Colormaps.cs" />
     <Compile Include="Common\CommonEnums.cs" />
+    <Compile Include="Dto\ProjectCrumb.cs" />
     <Compile Include="External Applications\MsDialIniField.cs" />
     <Compile Include="External Applications\MsDialIniParcer.cs" />
     <Compile Include="External Applications\MsDialToExternalApps.cs" />
@@ -309,6 +310,7 @@
     <Compile Include="Model\Setting\ModificationSettingModel.cs" />
     <Compile Include="Model\Setting\MspAnnotationSettingModel.cs" />
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
+    <Compile Include="Properties\Settings.Manual.cs" />
     <Compile Include="Utility\GlobalResources.cs" />
     <Compile Include="Utility\ObservableExtensions.cs" />
     <Compile Include="ViewModel\Chart\BitmapImageViewModel.cs" />

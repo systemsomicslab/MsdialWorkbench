@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Core;
+﻿using CompMs.App.Msdial.Dto;
+using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
@@ -106,6 +107,9 @@ namespace CompMs.App.Msdial.ViewModel.Core
             OpenProjectCommand = new AsyncReactiveCommand()
                 .WithSubscribe(Model.LoadAsync)
                 .AddTo(Disposables);
+            OpenPreviousProjectCommand = new AsyncReactiveCommand<ProjectCrumb>()
+                .WithSubscribe(Model.LoadProjectAsync)
+                .AddTo(Disposables);
 
             _taskProgressCollection = new TaskProgressCollection();
             _taskProgressCollection.ShowWhileSwitchOn(Model.NowSaving, "Saving...").AddTo(Disposables);
@@ -190,9 +194,10 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public ReactiveCommand RunProcessAllCommand { get; }
 
         public AsyncReactiveCommand OpenProjectCommand { get; }
+        public AsyncReactiveCommand<ProjectCrumb> OpenPreviousProjectCommand { get; }
+        public ReadOnlyCollection<ProjectCrumb> PreviousProjects => Model.PreviousProjects;
 
         public AsyncReactiveCommand SaveProjectCommand { get; }
-
         public AsyncReactiveCommand SaveAsProjectCommand { get; }
 
         public DelegateCommand<Window> SaveParameterCommand => _saveParameterCommand ?? (_saveParameterCommand = new DelegateCommand<Window>(owner => SaveParameter(owner, Storage)));
