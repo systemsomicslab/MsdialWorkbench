@@ -32,7 +32,7 @@ namespace CompMs.MsdialCore.Normalize.Tests
                 },
             };
             var targets = new NormalizationTargetSpotCollection(spots);
-            targets.Initialize();
+            targets.Initialize(initializeIntenralStandardId: true);
 
             Assert.AreEqual(2, spots.Length);
             Assert.AreEqual(-1, spots[0].InternalStandardAlignmentID);

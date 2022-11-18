@@ -11,7 +11,7 @@ namespace CompMs.MsdialCore.Normalize
 {
     public static class Normalization
     {
-        public static void None(IReadOnlyList<AlignmentSpotProperty> globalSpots) {
+        public static void None(IReadOnlyList<INormalizationTarget> globalSpots) {
             new NoneNormalize().Normalize(globalSpots);
         }
 
@@ -19,23 +19,23 @@ namespace CompMs.MsdialCore.Normalize
             new InternalStandardNormalize().Normalize(globalSpots, unit);
         }
 
-        public static void LowessNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<AlignmentSpotProperty> globalSpots, IonAbundanceUnit unit) {
+        public static void LowessNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
             new LowessNormalize().Normalize(files, globalSpots, unit);
         }
 
-        public static void ISNormThenByLowessNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<AlignmentSpotProperty> globalSpots, IonAbundanceUnit unit) {
+        public static void ISNormThenByLowessNormalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
             new InternalStandardLowessNormalize().Normalize(files, globalSpots, unit);
         }
 
-        public static void NormalizeByMaxPeak(IReadOnlyList<AlignmentSpotProperty> globalSpots) {
+        public static void NormalizeByMaxPeak(IReadOnlyList<INormalizationTarget> globalSpots) {
             new TicNormalize().Normalize(globalSpots);
         }
 
-        public static void NormalizeByMaxPeakOnNamedPeaks(IReadOnlyList<AlignmentSpotProperty> globalSpots, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+        public static void NormalizeByMaxPeakOnNamedPeaks(IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             new MTicNormalize().Normalize(globalSpots, evaluator);
         }
 
-        public static void SplashNormalize(IReadOnlyList<AlignmentSpotProperty> globalSpots, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IReadOnlyList<StandardCompound> splashLipids, IonAbundanceUnit unit, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+        public static void SplashNormalize(IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IReadOnlyList<StandardCompound> splashLipids, IonAbundanceUnit unit, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             new SplashNormalize().Normalize(globalSpots, refer, splashLipids, unit, evaluator);
         }
     }
@@ -44,7 +44,7 @@ namespace CompMs.MsdialCore.Normalize
         public void Normalize(IReadOnlyList<INormalizationTarget> spots) {
             var targets = new NormalizationTargetSpotCollection(spots);
             // initialize
-            targets.Initialize();
+            targets.Initialize(initializeIntenralStandardId: true);
             foreach (var target in targets.TargetSpots) {
                 // finalization
                 target.FillNormalizeProperties();
@@ -56,7 +56,7 @@ namespace CompMs.MsdialCore.Normalize
         public void Normalize(IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
             var targets = new NormalizationTargetSpotCollection(globalSpots);
             // initialize
-            targets.Initialize();
+            targets.Initialize(initializeIntenralStandardId: false);
             foreach (var target in targets.TargetSpots) {
                 var isSpot = targets.FindSpot(target.Target.InternalStandardId);
                 if (isSpot is null) {
@@ -97,7 +97,7 @@ namespace CompMs.MsdialCore.Normalize
         public void Normalize(IReadOnlyList<AnalysisFileBean> files, IReadOnlyList<INormalizationTarget> globalSpots, IonAbundanceUnit unit) {
             var targets = new NormalizationTargetSpotCollection(globalSpots);
             // initialize
-            targets.Initialize();
+            targets.Initialize(initializeIntenralStandardId: true);
             foreach (var target in targets.TargetSpots) {
                 target.FillNormalizeProperties();
             }
@@ -165,6 +165,7 @@ namespace CompMs.MsdialCore.Normalize
                 foreach (var target in targets.TargetSpots) {
                     var lipidclass = target.GetAnnotatedLipidClass(evaluator, refer, lipidClasses);
                     var stdCompound = compounds.StdCompoundsTable[lipidclass].FirstOrDefault();
+                    target.Target.InternalStandardId = -1;
                     if (!(stdCompound is null)) {
                         if (targets.FindSpot(stdCompound.PeakID) is INormalizationTarget std) {
                             target.Target.InternalStandardId = std.Id;
@@ -182,7 +183,7 @@ namespace CompMs.MsdialCore.Normalize
             }
 
             // initialize
-            targets.Initialize();
+            targets.Initialize(initializeIntenralStandardId: true);
             
             //normalization to 1 for IS spot
 

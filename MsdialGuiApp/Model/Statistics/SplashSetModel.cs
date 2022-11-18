@@ -27,14 +27,16 @@ namespace CompMs.App.Msdial.Model.Statistics
     internal sealed class SplashSetModel : DisposableModelBase
     {
         private readonly AlignmentResultContainer _container;
+        private readonly InternalStandardSetModel _internalStandardSetModel;
         private readonly IReadOnlyList<AlignmentSpotProperty> _spots;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
         private readonly ParameterBase _parameter;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly IMessageBroker _broker;
 
-        public SplashSetModel(AlignmentResultContainer container, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker broker) {
+        public SplashSetModel(AlignmentResultContainer container, InternalStandardSetModel internalStandardSetModel, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker broker) {
             _container = container;
+            _internalStandardSetModel = internalStandardSetModel ?? throw new System.ArgumentNullException(nameof(internalStandardSetModel));
             _spots = container.AlignmentSpotProperties;
             _refer = refer;
             _parameter = parameter;
@@ -113,7 +115,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                     compound.Commit();
                 }
                 var compounds = compoundModels.Select(lipid => lipid.Compound).ToList();
-                Normalization.SplashNormalize(_spots, _refer, compounds, OutputUnit.Unit, _evaluator);
+                Normalization.SplashNormalize(_internalStandardSetModel.Spots, _refer, compounds, OutputUnit.Unit, _evaluator);
                 _parameter.StandardCompounds = compounds;
                 foreach (var compound in compoundModels) {
                     compound.Refresh();
