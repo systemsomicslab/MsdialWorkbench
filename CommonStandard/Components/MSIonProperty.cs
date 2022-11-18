@@ -24,7 +24,11 @@ namespace CompMs.Common.Components
         public ChromXs ChromXs { get; set; }
         public IonMode IonMode { get; set; }
         public double PrecursorMz { get; set; }
-        public AdductIon AdductType { get; set; }
+        public AdductIon AdductType { get; private set; }
+        public void SetAdductType(AdductIon adduct) {
+            AdductType = adduct;
+        }
+
         public double CollisionCrossSection { get; set; }
     }
 }

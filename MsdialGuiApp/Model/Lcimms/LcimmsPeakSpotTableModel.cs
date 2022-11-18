@@ -71,8 +71,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public LcimmsAnalysisPeakTableModel(ObservableCollection<ChromatogramPeakFeatureModel> peakSpots, IReactiveProperty<ChromatogramPeakFeatureModel> target)
             : base(peakSpots, target,
                 peakSpots.DefaultIfEmpty().Min(peak => peak?.Mass) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.Mass) ?? 0d,
-                peakSpots.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXs.RT.Value) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.InnerModel.ChromXsTop.RT.Value) ?? 0d,
-                peakSpots.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXs.Drift.Value) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.InnerModel.ChromXsTop.Drift.Value) ?? 0d) {
+                peakSpots.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXs.RT.Value) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.InnerModel.PeakFeature.ChromXsTop.RT.Value) ?? 0d,
+                peakSpots.DefaultIfEmpty().Min(peak => peak?.InnerModel.ChromXs.Drift.Value) ?? 0d, peakSpots.DefaultIfEmpty().Max(peak => peak?.InnerModel.PeakFeature.ChromXsTop.Drift.Value) ?? 0d) {
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Dims;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
@@ -140,5 +141,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public DelegateCommand CopyMs2SpectrumCommand => _copyMs2SpectrumCommand ?? (_copyMs2SpectrumCommand = new DelegateCommand(_model.CopySpectrum, _model.CanSaveSpectra));
         private DelegateCommand _copyMs2SpectrumCommand;
 
+        // IResultViewModel
+        IResultModel IResultViewModel.Model => _model;
     }
 }

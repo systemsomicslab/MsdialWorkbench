@@ -240,11 +240,11 @@ namespace CompMs.MsdialCore.DataObj
         // IIonProperty members
         AdductIon IIonProperty.AdductType {
             get => PeakCharacter.AdductType;
-            set => PeakCharacter.AdductType = value;
         }
-        double IIonProperty.CollisionCrossSection {
-            get => CollisionCrossSection;
-            set => CollisionCrossSection = value;
+
+        void IIonProperty.SetAdductType(AdductIon adduct) {
+            PeakCharacter.AdductType = adduct;
+            PeakCharacter.Charge = adduct.ChargeNumber;
         }
 
         [Key(49)]

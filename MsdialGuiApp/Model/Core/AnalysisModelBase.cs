@@ -3,6 +3,7 @@ using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
+using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -65,6 +66,9 @@ namespace CompMs.App.Msdial.Model.Core {
         private string displayLabel = string.Empty;
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
+
+        public abstract void SearchFragment();
+        public abstract void InvokeMsfinder();
 
         public Task SaveAsync(CancellationToken token) {
             return _peakCollection.SerializeAsync(AnalysisFileModel.File, token);

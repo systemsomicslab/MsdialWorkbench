@@ -5,7 +5,8 @@ namespace CompMs.Common.Interfaces
     public interface IIonProperty
     {
         // Molecule ion metadata
-        AdductIon AdductType { get; set; }
-        double CollisionCrossSection { get; set; }
+        AdductIon AdductType { get; }
+        void SetAdductType(AdductIon adduct);
+        double CollisionCrossSection { get; }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Statistics;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -76,9 +78,11 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
 
     internal sealed class PCAPLSResultViewModel : ViewModelBase {
         private readonly PCAPLSResultModel _model;
+        private readonly IMessageBroker _broker;
 
-        public PCAPLSResultViewModel(PCAPLSResultModel model) {
+        public PCAPLSResultViewModel(PCAPLSResultModel model, IMessageBroker broker) {
             _model = model ?? throw new ArgumentNullException(nameof(model));
+            _broker = broker ?? throw new ArgumentNullException(nameof(broker));
             var option = model.MultivariateAnalysisOption;
             var isOpls = option == CompMs.Common.Enum.MultivariateAnalysisOption.Oplsr || option == CompMs.Common.Enum.MultivariateAnalysisOption.Oplsda ? true : false;
             
@@ -171,6 +175,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
                 PCXLabelAxis = ComponentX.Select(x => model.PCAxises[x - 1]).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
                 PCYLabelAxis = ComponentY.Select(y => model.PCAxises[y - 1]).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
             }
+
+            SaveResultCommand = new ReactiveCommand().WithSubscribe(SaveResult).AddTo(Disposables);
         }
 
 
@@ -233,9 +239,14 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             (showSPlotCommand = new DelegateCommand<Window>(_model.ShowSPlot));
         private DelegateCommand<Window> showSPlotCommand;
 
+        public ReactiveCommand SaveResultCommand { get; }
 
-        public DelegateCommand SaveResultCommand => saveResultCommand ??
-            (saveResultCommand = new DelegateCommand(_model.SaveData));
-        private DelegateCommand saveResultCommand;
+        private void SaveResult() {
+            var request = new SaveFileNameRequest(_model.SaveResult)
+            {
+                Title = "Export multivariate analysis result",
+            };
+            _broker.Publish(request);
+        }
     }
 }

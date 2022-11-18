@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.ExternalApp;
+using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
@@ -44,8 +45,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private readonly ChromatogramPeakFeatureCollection _peakCollection;
         private readonly AnalysisFileBeanModel _analysisFileModel;
         private readonly IDataProvider _spectrumProvider;
-        private readonly IDataProvider _accSpectrumProvider;
+        private readonly DataBaseMapper _dataBaseMapper;
         private readonly MsdialLcImMsParameter _parameter;
+        private readonly MSDecLoader _decLoader;
+        private readonly ReadOnlyReactivePropertySlim<MSDecResult> _msdecResult;
 
         public LcimmsAnalysisModel(
             AnalysisFileBeanModel analysisFileModel,
@@ -67,8 +70,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             _analysisFileModel = analysisFileModel;
             _spectrumProvider = spectrumProvider;
-            _accSpectrumProvider = accSpectrumProvider;
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
+            _dataBaseMapper = mapper;
             _parameter = parameter;
 
             var peaks = MsdialPeakSerializer.LoadChromatogramPeakFeatures(analysisFileModel.PeakAreaBeanInformationFilePath);
@@ -87,11 +90,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 var j = 0;
                 var k = 0;
                 foreach (var orderedPeak in orderedPeaks) {
-                    while (j < orderedPeaks.Length && orderedPeaks[j].InnerModel.ChromXsTop.RT.Value < orderedPeak.InnerModel.ChromXsTop.RT.Value - parameter.AccumulatedRtRange / 2) {
+                    while (j < orderedPeaks.Length && orderedPeaks[j].InnerModel.PeakFeature.ChromXsTop.RT.Value < orderedPeak.InnerModel.PeakFeature.ChromXsTop.RT.Value - parameter.AccumulatedRtRange / 2) {
                         j++;
                     }
 
-                    while (k < orderedPeaks.Length && orderedPeaks[k].InnerModel.ChromXsTop.RT.Value <= orderedPeak.InnerModel.ChromXsTop.RT.Value + parameter.AccumulatedRtRange / 2) {
+                    while (k < orderedPeaks.Length && orderedPeaks[k].InnerModel.PeakFeature.ChromXsTop.RT.Value <= orderedPeak.InnerModel.PeakFeature.ChromXsTop.RT.Value + parameter.AccumulatedRtRange / 2) {
                         k++;
                     }
                     peakRanges[orderedPeak] = (j, k);
@@ -170,7 +173,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 t => $"File: {analysisFileModel.AnalysisFileName}" +
                     (t is null
                         ? string.Empty
-                        : $"Spot ID: {t.MasterPeakID} Mass m/z: {t.Mass:F5} RT: {t.InnerModel.ChromXsTop.RT.Value:F2} min"))
+                        : $"Spot ID: {t.MasterPeakID} Mass m/z: {t.Mass:F5} RT: {t.InnerModel.PeakFeature.ChromXsTop.RT.Value:F2} min"))
                 .Subscribe(title => RtMzPlotModel.GraphTitle = title)
                 .AddTo(Disposables);
             var rtEicLoader = EicLoader.BuildForAllRange(accSpectrumProvider, parameter, ChromXType.RT, ChromXUnit.Min, parameter.RetentionTimeBegin, parameter.RetentionTimeEnd);
@@ -191,7 +194,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             target.Select(
                 t => t is null
                         ? string.Empty
-                        : $"Spot ID: {t.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:F5} Mobility [1/K0]: {t.InnerModel.ChromXsTop.Drift.Value:F4}")
+                        : $"Spot ID: {t.MasterPeakID} Scan: {t.InnerModel.MS1RawSpectrumIdTop} Mass m/z: {t.Mass:F5} Mobility [1/K0]: {t.InnerModel.PeakFeature.ChromXsTop.Drift.Value:F4}")
                 .Subscribe(title => DtMzPlotModel.GraphTitle = title)
                 .AddTo(Disposables);
 
@@ -230,10 +233,12 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 true);
             var spectraExporter = new NistSpectraExporter(target.Select(t => t?.InnerModel), mapper, parameter).AddTo(Disposables);
             var decLoader = new MSDecLoader(analysisFileModel.DeconvolutionFilePath).AddTo(Disposables);
+            _decLoader = decLoader;
             var msdecResult = target.Where(t => !(t is null))
                 .Select(t => decLoader.LoadMSDecResult(t.MSDecResultIDUsedForAnnotation))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
+            _msdecResult = msdecResult;
 
             var rawLoader = new MultiMsRawSpectrumLoader(spectrumProvider, parameter);
             var decSpecLoader = new MsDecSpectrumLoader(decLoader, Ms1Peaks);
@@ -308,8 +313,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
 
             var mzSpotFocus = new ChromSpotFocus(DtMzPlotModel.VerticalAxis, MZ_TOLELANCE, target.Select(t => t?.Mass ?? 0d), "F3", "m/z", isItalic: true).AddTo(Disposables);
-            var rtSpotFocus = new ChromSpotFocus(RtMzPlotModel.HorizontalAxis, RT_TOLELANCE, accumulatedTarget.Select(t => t?.InnerModel.ChromXsTop.RT.Value ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
-            var dtSpotFocus = new ChromSpotFocus(DtMzPlotModel.HorizontalAxis, DT_TOLELANCE, target.Select(t => t?.InnerModel.ChromXsTop.Drift.Value ?? 0d), "F4", "Mobility[1/K0]", isItalic: false).AddTo(Disposables);
+            var rtSpotFocus = new ChromSpotFocus(RtMzPlotModel.HorizontalAxis, RT_TOLELANCE, accumulatedTarget.Select(t => t?.InnerModel.PeakFeature.ChromXsTop.RT.Value ?? 0d), "F2", "RT(min)", isItalic: false).AddTo(Disposables);
+            var dtSpotFocus = new ChromSpotFocus(DtMzPlotModel.HorizontalAxis, DT_TOLELANCE, target.Select(t => t?.InnerModel.PeakFeature.ChromXsTop.Drift.Value ?? 0d), "F4", "Mobility[1/K0]", isItalic: false).AddTo(Disposables);
             var idSpotFocus = new IdSpotFocus<ChromatogramPeakFeatureModel>(
                 target,
                 id => Ms1Peaks.Argmin(p => Math.Abs(p.MasterPeakID - id)),
@@ -340,7 +345,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
             var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam);
             CompoundSearchModel = target
-                .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel<ChromatogramPeakFeature>(analysisFileModel, t.InnerModel, r, searcherCollection.Items))
+                .CombineLatest(msdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel(analysisFileModel, t, r, searcherCollection.Items))
                 .DisposePreviousValue()
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
@@ -369,7 +374,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
 
-        public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel<ChromatogramPeakFeature>> CompoundSearchModel { get; }
+        public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel> CompoundSearchModel { get; }
         public IObservable<bool> CanSearchCompound { get; }
 
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
@@ -395,14 +400,30 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public ObservableCollection<ChromatogramPeakFeatureModel> Ms1Peaks { get; }
 
         public IReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
+        public LcimmsAnalysisPeakTableModel PeakTableModel { get; }
 
         public string DisplayLabel {
             get => _displayLabel;
             set => SetProperty(ref _displayLabel, value);
         }
-        public LcimmsAnalysisPeakTableModel PeakTableModel { get; }
-
         private string _displayLabel = string.Empty;
+
+        public void SearchFragment() {
+            FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), _decLoader, _parameter);
+        }
+
+        public void InvokeMsfinder() {
+            if (Target.Value is null || (_msdecResult.Value?.Spectrum).IsEmptyOrNull()) {
+                return;
+            }
+            MsDialToExternalApps.SendToMsFinderProgram(
+                _analysisFileModel,
+                Target.Value.InnerModel,
+                _msdecResult.Value,
+                _spectrumProvider.LoadMs1Spectrums(),
+                _dataBaseMapper,
+                _parameter);
+        }
 
         public Task SaveAsync(CancellationToken token) {
             return _peakCollection.SerializeAsync(_analysisFileModel.File, token);

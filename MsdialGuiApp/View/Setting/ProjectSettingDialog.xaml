@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CompMs.App.Msdial.View.Setting"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Setting"
-        xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type={x:Type vm:ProcessSettingViewModel}}"
         Title="Setting project parameters" Height="450" Width="800">
@@ -49,7 +48,7 @@
                     <Label Content="Raw measrurement files" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:DatasetParameterSettingViewModel}">
-                    <Label Content="Measrurement parameters" IsEnabled="{Binding IsEnabled.Value}"/>
+                    <Label Content="Measurement parameters" IsEnabled="{Binding IsEnabled.Value}"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:DataCollectionSettingViewModel}">
                     <Label Content="Data collection" IsEnabled="{Binding IsEnabled.Value}"/>

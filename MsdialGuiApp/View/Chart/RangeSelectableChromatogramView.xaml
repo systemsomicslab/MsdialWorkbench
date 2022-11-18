@@ -3,13 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              mc:Ignorable="d" 
              d:Background="White"
-             d:DataContext="{d:DesignData Type={x:Type vm:RangeSelectableChromatogramViewModel}}"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:RangeSelectableChromatogramViewModel}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -51,18 +50,9 @@
                                                  DisplayRanges="{Binding DataContext.SelectedRanges, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
                                                  behavior:MoveByDragBehavior.IsEnabled="False"/>
                             <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
-                                                   LinePen="{Binding LinePen}"
-                                                   HorizontalPropertyName="{Binding DataContext.ChromatogramsViewModel.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
-                                                   VerticalPropertyName="{Binding DataContext.ChromatogramsViewModel.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}">
-                                <chart:LineChartControl.ToolTip>
-                                    <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding FocusedItem.ChromXValue, StringFormat=RT: {0}}"/>
-                                            <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0}}"/>
-                                        </StackPanel>
-                                    </ToolTip>
-                                </chart:LineChartControl.ToolTip>
-                            </chart:LineChartControl>
+                                                    LinePen="{Binding LinePen}"
+                                                    HorizontalPropertyName="{Binding DataContext.ChromatogramsViewModel.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
+                                                    VerticalPropertyName="{Binding DataContext.ChromatogramsViewModel.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"/>
                         </Grid>
                     </DataTemplate>
                 </chart:MultiChart.ItemTemplate>

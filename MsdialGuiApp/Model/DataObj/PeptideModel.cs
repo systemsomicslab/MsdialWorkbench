@@ -25,10 +25,6 @@ namespace CompMs.App.Msdial.Model.DataObj
         public int SamePeptideNumberInSearchedProteins { get; }
         public int CountModifiedAminoAcids { get; }
 
-
-        //public object PeptideSeq { get; }
-        private readonly PeptideMsResult _peptideMsResult;
-
         public PeptideModel(PeptideMsResult peptideMsResult, IReadOnlyList<ChromatogramPeakFeatureModel> orderedPeaks)
         {
             var idx = orderedPeaks.BinarySearch(peptideMsResult.ChromatogramPeakFeature, COMPARER);

@@ -36,25 +36,25 @@ namespace CompMs.App.Msdial.Model.Loader {
         protected readonly double rangeBegin, rangeEnd;
 
 
-        internal List<ChromatogramPeakWrapper>
+        internal List<PeakItem>
             LoadTic() {
 
             var tic = LoadTicCore();
             if (tic.Count == 0) {
-                return new List<ChromatogramPeakWrapper>();
+                return new List<PeakItem>();
             }
 
             return tic;
         }
 
-        protected virtual List<ChromatogramPeakWrapper> LoadTicCore() {
+        protected virtual List<PeakItem> LoadTicCore() {
             var rawSpectra = new RawSpectra(provider.LoadMs1Spectrums(), parameter.IonMode, parameter.AcquisitionType);
             var chromatogramRange = new ChromatogramRange(rangeBegin, rangeEnd, chromXType, chromXUnit);
             var chromatogram = rawSpectra.GetMs1TotalIonChromatogram(chromatogramRange);
             return chromatogram
                 .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
                 .Where(peak => peak != null)
-                .Select(peak => new ChromatogramPeakWrapper(peak))
+                .Select(peak => new PeakItem(peak))
                 .ToList();
         }
     }

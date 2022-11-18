@@ -30,23 +30,23 @@ namespace CompMs.App.Msdial.Model.Loader
         private readonly ChromXUnit _chromXUnit;
         private readonly ChromatogramRange _chromatogramRange;
 
-        internal List<ChromatogramPeakWrapper>
+        internal List<PeakItem>
             LoadBpc() {
 
             var bpc = LoadBpcCore();
             if (bpc.Count == 0) {
-                return new List<ChromatogramPeakWrapper>();
+                return new List<PeakItem>();
             }
 
             return bpc;
         }
 
-        private List<ChromatogramPeakWrapper> LoadBpcCore() {
+        private List<PeakItem> LoadBpcCore() {
             return new RawSpectra(_provider.LoadMs1Spectrums(), _parameter.IonMode, _parameter.AcquisitionType)
                 .GetMs1BasePeakChromatogram(_chromatogramRange)
                 .Smoothing(_parameter.SmoothingMethod, _parameter.SmoothingLevel)
                 .Where(peak => peak != null)
-                .Select(peak => new ChromatogramPeakWrapper(peak))
+                .Select(peak => new PeakItem(peak))
                 .ToList();
         }
     }

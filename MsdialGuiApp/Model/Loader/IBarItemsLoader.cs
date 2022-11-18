@@ -18,24 +18,26 @@ namespace CompMs.App.Msdial.Model.Loader
     {
         private readonly Func<AlignmentSpotPropertyModel, BarItemCollection> _loadBarItemCollection;
 
-        public BarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2clsObservable, Expression<Func<AlignmentChromPeakFeatureModel, double>> expression) {
-            _loadBarItemCollection = LoadBarItemCollectionBySpot(id2clsObservable, expression);
+        public BarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2clsObservable, AnalysisFileBeanModelCollection files, Expression<Func<AlignmentChromPeakFeatureModel, double>> expression) {
+            _loadBarItemCollection = LoadBarItemCollectionBySpot(id2clsObservable, files, expression);
         }
 
         public BarItemCollection LoadBarItemsAsObservable(AlignmentSpotPropertyModel target) {
             return _loadBarItemCollection(target);
         }
 
-        protected static Func<AlignmentSpotPropertyModel, BarItemCollection> LoadBarItemCollectionBySpot(
+        private static Func<AlignmentSpotPropertyModel, BarItemCollection> LoadBarItemCollectionBySpot(
             IObservable<IReadOnlyDictionary<int, string>> id2clsObservable,
+            AnalysisFileBeanModelCollection files,
             Expression<Func<AlignmentChromPeakFeatureModel, double>> expression) {
             var selector = expression.Compile();
+            var includes = files.AnalysisFiles.Select(file => file.ObserveProperty(f => f.AnalysisFileIncluded)).CombineLatest();
             BarItemCollection LoadBarItemsAsObservable(AlignmentSpotPropertyModel target) {
                 var loading = target.AlignedPeakPropertiesModelAsObservable.Select(props => props is null);
                 var propertiesAsObserable = new[]
                 {
                     target.AlignedPeakPropertiesModelAsObservable.Where(props => props is null).Select(_ => Enumerable.Empty<AlignmentChromPeakFeatureModel>()),
-                    target.AlignedPeakPropertiesModelAsObservable.Where(props => !(props is null)),
+                    target.AlignedPeakPropertiesModelAsObservable.Where(props => !(props is null)).CombineLatest(includes, (props, includes_) => props.Zip(includes_, (prop, include) => (prop, include)).Where(p => p.include).Select(p => p.prop)),
                 }.Merge();
 
                 var barItems = Observable.CombineLatest(
@@ -64,66 +66,46 @@ namespace CompMs.App.Msdial.Model.Loader
 
     internal sealed class HeightBarItemsLoader : BarItemsLoader
     {
-        public HeightBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(Observable.Return(id2cls), p => p.PeakHeightTop) {
+        public HeightBarItemsLoader(IReadOnlyDictionary<int, string> id2cls, AnalysisFileBeanModelCollection files) : base(Observable.Return(id2cls), files, p => p.PeakHeightTop) {
 
         }
 
-        public HeightBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls) : base(id2cls, p => p.PeakHeightTop) {
+        public HeightBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls, AnalysisFileBeanModelCollection files) : base(id2cls, files, p => p.PeakHeightTop) {
 
         }
     }
 
     internal sealed class AreaAboveBaseLineBarItemsLoader : BarItemsLoader
     {
-        public AreaAboveBaseLineBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(Observable.Return(id2cls), p => p.PeakAreaAboveBaseline) {
-
-        }
-
-        public AreaAboveBaseLineBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls) : base(id2cls, p => p.PeakAreaAboveBaseline) {
+        public AreaAboveBaseLineBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls, AnalysisFileBeanModelCollection files) : base(id2cls, files, p => p.PeakAreaAboveBaseline) {
 
         }
     }
 
     internal sealed class AreaAboveZeroBarItemsLoader : BarItemsLoader
     {
-        public AreaAboveZeroBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(Observable.Return(id2cls), p => p.PeakAreaAboveZero) {
-
-        }
-
-        public AreaAboveZeroBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls) : base(id2cls, p => p.PeakAreaAboveZero) {
+        public AreaAboveZeroBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls, AnalysisFileBeanModelCollection files) : base(id2cls, files, p => p.PeakAreaAboveZero) {
 
         }
     }
 
     internal sealed class NormalizedHeightBarItemsLoader : BarItemsLoader
     {
-        public NormalizedHeightBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(Observable.Return(id2cls), peak => peak.NormalizedPeakHeight) {
-
-        }
-
-        public NormalizedHeightBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls) : base(id2cls, peak => peak.NormalizedPeakHeight) {
+        public NormalizedHeightBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls, AnalysisFileBeanModelCollection files) : base(id2cls, files, peak => peak.NormalizedPeakHeight) {
 
         }
     }
 
     internal sealed class NormalizedAreaAboveBaseLineBarItemsLoader : BarItemsLoader
     {
-        public NormalizedAreaAboveBaseLineBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(Observable.Return(id2cls), peak => peak.NormalizedPeakAreaAboveBaseline) {
-
-        }
-
-        public NormalizedAreaAboveBaseLineBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls) : base(id2cls, peak => peak.NormalizedPeakAreaAboveBaseline) {
+        public NormalizedAreaAboveBaseLineBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls, AnalysisFileBeanModelCollection files) : base(id2cls, files, peak => peak.NormalizedPeakAreaAboveBaseline) {
 
         }
     }
 
     internal sealed class NormalizedAreaAboveZeroBarItemsLoader : BarItemsLoader
     {
-        public NormalizedAreaAboveZeroBarItemsLoader(IReadOnlyDictionary<int, string> id2cls) : base(Observable.Return(id2cls), peak => peak.NormalizedPeakAreaAboveBaseline) {
-
-        }
-
-        public NormalizedAreaAboveZeroBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls) : base(id2cls, peak => peak.NormalizedPeakAreaAboveBaseline) {
+        public NormalizedAreaAboveZeroBarItemsLoader(IObservable<IReadOnlyDictionary<int, string>> id2cls, AnalysisFileBeanModelCollection files) : base(id2cls, files, peak => peak.NormalizedPeakAreaAboveBaseline) {
 
         }
     }

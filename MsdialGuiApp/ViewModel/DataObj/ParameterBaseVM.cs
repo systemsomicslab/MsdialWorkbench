@@ -10,9 +10,10 @@ using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
 
-namespace CompMs.App.Msdial.ViewModel
+namespace CompMs.App.Msdial.ViewModel.DataObj
 {
-    public class ParameterBaseVM : ViewModelBase {
+    public class ParameterBaseVM : ViewModelBase
+    {
 
         protected readonly ParameterBase innerModel;
         public ParameterBaseVM(ParameterBase innerModel) {
@@ -62,7 +63,7 @@ namespace CompMs.App.Msdial.ViewModel
                 OnPropertyChanged(nameof(ProjectFilePath));
             }
         }
-        
+
         public Dictionary<int, string> FileID_ClassName {
             get => innerModel.FileID_ClassName;
             set {

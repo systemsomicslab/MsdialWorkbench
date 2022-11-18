@@ -740,14 +740,12 @@ namespace CompMs.MsdialCore.MSDec {
         private static List<ChromatogramPeakFeature> getPeakSpots(List<ValuePeak[]> peaklistList, ParameterBase param, ChromXType type, ChromXUnit unit) {
             var peakSpots = new List<ChromatogramPeakFeature>();
 
+            var detector = new PeakDetection(param.MinimumDatapoints, param.MinimumAmplitude);
             foreach (var (peaks, index) in peaklistList.WithIndex()) {
-                var minDatapoints = param.MinimumDatapoints;
-                var minAmps = param.MinimumAmplitude;
-                var results = PeakDetection.PeakDetectionVS1(peaks, minDatapoints, minAmps);
+                var results = detector.PeakDetectionVS1(peaks);
                 if (results == null || results.Count == 0) continue;
                 //save as peakarea bean
                 foreach (var result in results) {
-
                     var mass = (float)peaks[result.ScanNumAtPeakTop].Mz;
                     var chromPeakFeature = DataAccess.GetChromatogramPeakFeature(result, type, unit, mass, param.ProjectParam.IonMode);
                     chromPeakFeature.PeakID = index; // this information is needed in the later process.

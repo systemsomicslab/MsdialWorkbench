@@ -1,106 +1,58 @@
 ﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj;
-using CompMs.Common.DataObj.Property;
 using CompMs.Common.DataObj.Result;
-using CompMs.Common.Interfaces;
-using CompMs.Common.Parameter;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Utility;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Search
 {
-    public abstract class CompoundSearchModel : DisposableModelBase, IDisposable
-    {
-        public CompoundSearchModel(
-            IFileBean file,
-            IMSIonProperty msIonProperty,
-            IMoleculeProperty moleculeProperty,
-            IReadOnlyList<CompoundSearcher> compoundSearchers) {
-            if (file is null) {
-                throw new ArgumentNullException(nameof(file));
-            }
+    interface ICompoundSearchModel : INotifyPropertyChanged, IDisposable {
+        IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
 
-            if (msIonProperty is null) {
-                throw new ArgumentNullException(nameof(msIonProperty));
-            }
-
-            if (moleculeProperty is null) {
-                throw new ArgumentNullException(nameof(moleculeProperty));
-            }
-
-            File = file;
-            MSIonProperty = msIonProperty;
-            MoleculeProperty = moleculeProperty;
-
-            CompoundSearchers = compoundSearchers;
-            CompoundSearcher = CompoundSearchers.FirstOrDefault();
-        }
-
-        public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
-
-        public CompoundSearcher CompoundSearcher {
-            get => compoundSearcher;
-            set => SetProperty(ref compoundSearcher, value);
-        }
-        private CompoundSearcher compoundSearcher;
+        CompoundSearcher SelectedCompoundSearcher { get; set; }
         
-        public IFileBean File { get; }
+        IFileBean File { get; }
 
-        public IMSIonProperty MSIonProperty { get; }
+        IPeakSpotModel PeakSpot { get; }
 
-        public IMoleculeProperty MoleculeProperty { get; }
+        MsSpectrumModel MsSpectrumModel { get; }
 
-        public MsRefSearchParameterBase Parameter { get; }
+        MoleculeMsReference SelectedReference { get; set; }
 
-        public MsSpectrumModel MsSpectrumModel { get; protected set; }
+        MsScanMatchResult SelectedMatchResult { get; set; }
 
-        public MoleculeMsReference SelectedReference { 
-            get => selectedReference;
-            set => SetProperty(ref selectedReference, value);
-        }
-        private MoleculeMsReference selectedReference;
+        CompoundResultCollection Search();
 
-        public MsScanMatchResult SelectedMatchResult {
-            get => selectedMatchResult;
-            set => SetProperty(ref selectedMatchResult, value);
-        }
-        private MsScanMatchResult selectedMatchResult;
+        void SetConfidence();
 
-        public abstract CompoundResultCollection Search();
+        void SetUnsettled();
 
-        public abstract void SetConfidence();
-
-        public abstract void SetUnsettled();
-
-        public abstract void SetUnknown();
+        void SetUnknown();
     }
 
-    public class CompoundSearchModel<T> : CompoundSearchModel where T: IMSIonProperty, IMoleculeProperty
+    internal class CompoundSearchModel : DisposableModelBase, ICompoundSearchModel
     {
-        public CompoundSearchModel(
-            IFileBean fileBean,
-            T property,
-            MSDecResult msdecResult,
-            IReadOnlyList<CompoundSearcher> compoundSearchers)
-            : base(fileBean, property, property, compoundSearchers) {
-            if (property == null) {
-                throw new ArgumentException(nameof(property));
-            }
+        private readonly MSDecResult _msdecResult;
+        private readonly IPeakSpotModel _peakSpot;
 
-            Property = property;
-            this.msdecResult = msdecResult ?? throw new ArgumentNullException(nameof(msdecResult));
+        public CompoundSearchModel(IFileBean fileBean, IPeakSpotModel peakSpot, MSDecResult msdecResult, IReadOnlyList<CompoundSearcher> compoundSearchers) {
+            File = fileBean ?? throw new ArgumentNullException(nameof(fileBean));
+            _peakSpot = peakSpot ?? throw new ArgumentNullException(nameof(peakSpot));
+            CompoundSearchers = compoundSearchers;
+            SelectedCompoundSearcher = CompoundSearchers.FirstOrDefault();
+            _msdecResult = msdecResult ?? throw new ArgumentNullException(nameof(msdecResult));
 
             var referenceSpectrum = this.ObserveProperty(m => m.SelectedReference)
                 .Where(c => c != null)
@@ -108,7 +60,7 @@ namespace CompMs.App.Msdial.Model.Search
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
             MsSpectrumModel = new MsSpectrumModel(
-                Observable.Return(this.msdecResult.Spectrum),
+                Observable.Return(_msdecResult.Spectrum),
                 referenceSpectrum,
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Mass),
                 new PropertySelector<SpectrumPeak, double>(peak => peak.Intensity),
@@ -121,21 +73,33 @@ namespace CompMs.App.Msdial.Model.Search
                 null).AddTo(Disposables);
         }
 
-        [Obsolete]
-        public CompoundSearchModel(
-            IFileBean fileBean,
-            T property, MSDecResult msdecResult,
-            IReadOnlyList<IsotopicPeak> isotopes,
-            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators)
-            : this(fileBean, property, msdecResult, ConvertToSearcherAndConcat(isotopes, annotators, new List<CompoundSearcher>())) {
+        public IReadOnlyList<CompoundSearcher> CompoundSearchers { get; }
 
+        public CompoundSearcher SelectedCompoundSearcher {
+            get => _compoundSearcher;
+            set => SetProperty(ref _compoundSearcher, value);
         }
+        private CompoundSearcher _compoundSearcher;
+        
+        public IFileBean File { get; }
 
-        private readonly MSDecResult msdecResult;
+        public IPeakSpotModel PeakSpot => _peakSpot;
 
-        public T Property { get; }
+        public MsSpectrumModel MsSpectrumModel { get; }
 
-        public override CompoundResultCollection Search() {
+        public MoleculeMsReference SelectedReference { 
+            get => _selectedReference;
+            set => SetProperty(ref _selectedReference, value);
+        }
+        private MoleculeMsReference _selectedReference;
+
+        public MsScanMatchResult SelectedMatchResult {
+            get => _selectedMatchResult;
+            set => SetProperty(ref _selectedMatchResult, value);
+        }
+        private MsScanMatchResult _selectedMatchResult;
+
+        public virtual CompoundResultCollection Search() {
             return new CompoundResultCollection
             {
                 Results = SearchCore().ToList(),
@@ -143,51 +107,24 @@ namespace CompMs.App.Msdial.Model.Search
         }
 
         protected IEnumerable<ICompoundResult> SearchCore() {
-            return CompoundSearcher.Search(
-                Property,
-                msdecResult,
+            return SelectedCompoundSearcher.Search(
+                _peakSpot.MSIon,
+                _msdecResult,
                 new List<RawPeakElement>(),
                 new IonFeatureCharacter { IsotopeWeightNumber = 0, } // Assume this is not isotope.
             );
         }
 
-        public override void SetConfidence() {
-            var reference = SelectedReference;
-            var result = SelectedMatchResult;
-            DataAccess.SetMoleculeMsPropertyAsConfidence(Property, reference, result);
-            if (Property is IAnnotatedObject obj) {
-                obj.MatchResults.RemoveManuallyResults();
-                obj.MatchResults.AddResult(result);
-            }
+        public void SetConfidence() {
+            _peakSpot.SetConfidence(SelectedReference, SelectedMatchResult);
         }
 
-        public override void SetUnsettled() {
-            var reference = SelectedReference;
-            var result = SelectedMatchResult;
-            DataAccess.SetMoleculeMsPropertyAsUnsettled(Property, reference, result);
-            if (Property is IAnnotatedObject obj) {
-                obj.MatchResults.RemoveManuallyResults();
-                obj.MatchResults.AddResult(result);
-            }
+        public void SetUnsettled() {
+            _peakSpot.SetUnsettled(SelectedReference, SelectedMatchResult);
         }
 
-        public override void SetUnknown() {
-            DataAccess.ClearMoleculePropertyInfomation(Property);
-            if (Property is IAnnotatedObject obj) {
-                obj.MatchResults.RemoveManuallyResults();
-                obj.MatchResults.AddResult(new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown });
-            }
-        }
-
-        private static List<CompoundSearcher> ConvertToSearcherAndConcat(
-            IReadOnlyList<IsotopicPeak> isotopes,
-            IReadOnlyList<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotators,
-            IEnumerable<CompoundSearcher> compoundSearchers) {
-            return annotators.Select(container => new CompoundSearcher(
-                new AnnotationQueryFactory(container.Annotator, (_1, _2) => isotopes),
-                container.Parameter,
-                container.Annotator))
-                .Concat(compoundSearchers).ToList();
+        public void SetUnknown() {
+            _peakSpot.SetUnknown();
         }
     }
 }

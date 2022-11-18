@@ -1,5 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
-using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.Graphics.AxisManager;
 using CompMs.Graphics.AxisManager.Generic;
@@ -25,19 +24,14 @@ namespace CompMs.App.Msdial.Model.Chart
             HorizontalTitle = horizontalTitle;
             VerticalTitle = verticalTitle;
 
-            HorizontalProperty = nameof(ChromatogramPeakWrapper.ChromXValue);
-            VerticalProperty = nameof(ChromatogramPeakWrapper.Intensity);
+            HorizontalProperty = nameof(PeakItem.Time);
+            VerticalProperty = nameof(PeakItem.Intensity);
 
             AbundanceAxis = new ContinuousAxisManager<double>(0d, chromatograms.DefaultIfEmpty().Max(chromatogram => chromatogram?.MaxIntensity) ?? 1d, new ConstantMargin(0, 10d), new Range(0d, 0d))
             {
                 LabelType = LabelType.Order,
             }.AddTo(Disposables);
             ChromAxis = new ContinuousAxisManager<double>(chromatograms.Aggregate<DisplayChromatogram, Range>(null, (acc, chromatogram) => chromatogram.ChromXRange.Union(acc)) ?? new Range(0d, 1d)).AddTo(Disposables);
-        }
-
-        public ChromatogramsModel(string name, List<DisplayChromatogram> chromatograms)
-           : this(name, chromatograms, string.Empty, string.Empty, string.Empty) {
-
         }
 
         public ChromatogramsModel(string name, DisplayChromatogram chromatogram, string graphTitle, string horizontalTitle, string verticalTitle)

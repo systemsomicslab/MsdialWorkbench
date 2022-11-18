@@ -5,7 +5,9 @@ using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -82,6 +84,15 @@ namespace CompMs.App.Msdial.Model.Core
 
         public abstract Task RunAsync(ProcessOption option, CancellationToken token);
 
+        public virtual Task LoadAsync(CancellationToken token) {
+            var analysisFile = AnalysisFileModelCollection.IncludedAnalysisFiles.FirstOrDefault();
+            if (AnalysisFileModel != analysisFile && !(analysisFile is null)) {
+                AnalysisFileModel = analysisFile;
+                AnalysisModelBase = LoadAnalysisFileCore(AnalysisFileModel);
+            }
+            return Task.CompletedTask;
+        }
+
         public virtual Task SaveAsync() {
             return Task.WhenAll(new List<Task>
             {
@@ -90,16 +101,21 @@ namespace CompMs.App.Msdial.Model.Core
             });
         }
 
-        private bool disposedValue;
+        public void InvokeMsfinder(IResultModel model) {
+            model.InvokeMsfinder();
+        }
+
+        // IDisposable interface
+        private bool _disposedValue;
         protected CompositeDisposable Disposables = new CompositeDisposable();
 
         protected virtual void Dispose(bool disposing) {
-            if (!disposedValue) {
+            if (!_disposedValue) {
                 if (disposing) {
                     Disposables.Dispose();
                 }
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

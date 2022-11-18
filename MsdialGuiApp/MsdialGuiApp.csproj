@@ -156,9 +156,11 @@
     <Compile Include="Model\Chart\Ms2ChromatogramsModel.cs" />
     <Compile Include="Model\Chart\MsSpectrum.cs" />
     <Compile Include="Model\Chart\SampleImageModel.cs" />
+    <Compile Include="Model\Core\IResultModel.cs" />
     <Compile Include="Model\DataObj\AnalysisFileBeanModel.cs" />
     <Compile Include="Model\DataObj\AnalysisFileBeanModelCollection.cs" />
     <Compile Include="Model\DataObj\BarItemCollection.cs" />
+    <Compile Include="Model\DataObj\IPeakSpotModel.cs" />
     <Compile Include="Model\Export\AlignmentResultExportModel.cs" />
     <Compile Include="Model\Imaging\ImagingImageModel.cs" />
     <Compile Include="Model\Imaging\ImagingRoiModel.cs" />
@@ -189,6 +191,7 @@
     <Compile Include="Model\Loader\MsSelectionItem.cs" />
     <Compile Include="Model\Service\OpenFileRequest.cs" />
     <Compile Include="Model\Service\ShortMessageRequest.cs" />
+    <Compile Include="Model\Setting\ProcessSettingModel.cs" />
     <Compile Include="Model\Statistics\InternalStandardLowessNormalizeModel.cs" />
     <Compile Include="Model\Statistics\InternalStandardNormalizeModel.cs" />
     <Compile Include="Model\Statistics\IonAbundance.cs" />
@@ -282,7 +285,6 @@
     <Compile Include="Model\Imms\ImmsMethodModel.cs" />
     <Compile Include="Model\Imms\ImmsPeakSpotTableModel.cs" />
     <Compile Include="Model\Core\MethodModelBase.cs" />
-    <Compile Include="Model\Core\AnalysisParameterSetModelBase.cs" />
     <Compile Include="Model\Setting\IAnnotatorSettingModel.cs" />
     <Compile Include="Model\Setting\AnalysisFilePropertyResetModel.cs" />
     <Compile Include="Model\Setting\DataBaseSettingModel.cs" />
@@ -306,7 +308,6 @@
     <Compile Include="Model\Setting\DataBaseAnnotationSettingModelBase.cs" />
     <Compile Include="Model\Setting\ModificationSettingModel.cs" />
     <Compile Include="Model\Setting\MspAnnotationSettingModel.cs" />
-    <Compile Include="Model\Statistics\PCAPLSResultModel.cs" />
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
     <Compile Include="Utility\GlobalResources.cs" />
     <Compile Include="Utility\ObservableExtensions.cs" />
@@ -359,7 +360,7 @@
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
     <Compile Include="Model\Statistics\SplashSetModel.cs" />
-    <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
+    <Compile Include="ViewModel\DataObj\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\Chart\SingleSpectrumViewModel.cs" />
     <Compile Include="ViewModel\Chart\SmallClassBarChartViewModel.cs" />
     <Compile Include="ViewModel\Chart\SpectrumViewModel.cs" />
@@ -430,7 +431,7 @@
     <Compile Include="ViewModel\Lcms\LcmsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Statistics\NormalizationSetViewModel.cs" />
     <Compile Include="ViewModel\Statistics\SplashSetViewModel.cs" />
-    <Compile Include="ViewModel\ProteomicsParameterVM.cs" />
+    <Compile Include="ViewModel\DataObj\ProteomicsParameterVM.cs" />
     <Compile Include="ViewModel\Setting\AnnotationProcessSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\DataBaseSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\EnzymeSettingViewModel.cs" />
@@ -450,12 +451,8 @@
     <Compile Include="ViewModel\Setting\ProjectParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\ProjectSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\RetentionTimeCorrectionViewModelLegacy.cs" />
-    <Compile Include="ViewModel\Statistics\PCAPLSResultViewModel.cs" />
     <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
     <Compile Include="ViewModel\Table\ProteinGroupTableViewModel.cs" />
-    <Compile Include="View\AdductView.xaml.cs">
-      <DependentUpon>AdductView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\ChartSetting\BarChartOfAlignedSpotSettingRibbonTab.xaml.cs">
       <DependentUpon>BarChartOfAlignedSpotSettingRibbonTab.xaml</DependentUpon>
     </Compile>
@@ -549,9 +546,6 @@
     <Compile Include="View\ImagingImms\ImmsImagingRibbon.xaml.cs">
       <DependentUpon>ImmsImagingRibbon.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imms\CompoundDetailView.xaml.cs">
-      <DependentUpon>CompoundDetailView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Imms\ImmsAnalysisPeakTableView.xaml.cs">
       <DependentUpon>ImmsAnalysisPeakTableView.xaml</DependentUpon>
     </Compile>
@@ -566,9 +560,6 @@
     </Compile>
     <Compile Include="View\Imms\ImmsMainView.xaml.cs">
       <DependentUpon>ImmsMainView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Imms\PeakPropertyView.xaml.cs">
-      <DependentUpon>PeakPropertyView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Information\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
@@ -684,26 +675,24 @@
     <Compile Include="Utility\ParameterFactory.cs" />
     <Compile Include="ViewModel\Dims\DimsAlignmentViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsAnalysisViewModel.cs" />
-    <Compile Include="ViewModel\CompoundSearchVM.cs" />
+    <Compile Include="ViewModel\Search\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Dims\DimsMethodViewModel.cs" />
     <Compile Include="Model\Search\DisplayFilter.cs" />
-    <Compile Include="ViewModel\AdductIonVM.cs" />
+    <Compile Include="ViewModel\DataObj\AdductIonVM.cs" />
     <Compile Include="ViewModel\Imms\ImmsAlignmentViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsMethodViewModel.cs" />
-    <Compile Include="ViewModel\MsdialProjectParameterFactory.cs" />
-    <Compile Include="ViewModel\MzSearchQueryVM.cs" />
-    <Compile Include="ViewModel\MsRefSearchParameterBaseVM.cs" />
+    <Compile Include="ViewModel\DataObj\MzSearchQueryVM.cs" />
+    <Compile Include="ViewModel\DataObj\MsRefSearchParameterBaseViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsAlignmentViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsAnalysisViewModel.cs" />
     <Compile Include="Model\DataObj\BarItem.cs" />
     <Compile Include="Model\DataObj\Chromatogram.cs" />
-    <Compile Include="Model\DataObj\ChromatogramPeakWrapper.cs" />
     <Compile Include="Model\DataObj\AlignmentSpotPropertyModel.cs" />
     <Compile Include="Model\DataObj\ChromatogramPeakFeatureModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsMethodViewModel.cs" />
-    <Compile Include="ViewModel\MethodVM.cs" />
-    <Compile Include="ViewModel\ParameterBaseVM.cs" />
+    <Compile Include="ViewModel\Core\MethodViewModel.cs" />
+    <Compile Include="ViewModel\DataObj\ParameterBaseVM.cs" />
     <Compile Include="Model\DataObj\PeakItem.cs" />
     <Compile Include="Model\DataObj\SpectrumPeakWrapper.cs" />
     <Compile Include="View\Dims\AlignmentClassBar.xaml.cs">
@@ -712,10 +701,7 @@
     <Compile Include="View\Dims\ChromatogramView.xaml.cs">
       <DependentUpon>ChromatogramView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\CompoundDetailView.xaml.cs">
-      <DependentUpon>CompoundDetailView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\CompoundSearchWindow.xaml.cs">
+    <Compile Include="View\Search\CompoundSearchWindow.xaml.cs">
       <DependentUpon>CompoundSearchWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\Footer.xaml.cs">
@@ -724,16 +710,12 @@
     <Compile Include="View\Dims\DimsMainView.xaml.cs">
       <DependentUpon>DimsMainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\PeakPropertyView.xaml.cs">
-      <DependentUpon>PeakPropertyView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Export\AlignmentResultExportWin.xaml.cs">
       <DependentUpon>AlignmentResultExportWin.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Imms\AlignmentParameterView.xaml.cs">
       <DependentUpon>AlignmentParameterView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\UserDefinedAdductSetVM.cs" />
     <Compile Include="View\Setting\AnnotationProcessSettingView.xaml.cs">
       <DependentUpon>AnnotationProcessSettingView.xaml</DependentUpon>
     </Compile>
@@ -800,12 +782,6 @@
     <Compile Include="View\Table\ProteomicsSpotTable.xaml.cs">
       <DependentUpon>ProteomicsSpotTable.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Lcms\CompoundDetailView.xaml.cs">
-      <DependentUpon>CompoundDetailView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Lcms\PeakPropertyView.xaml.cs">
-      <DependentUpon>PeakPropertyView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Lcms\Footer.xaml.cs">
       <DependentUpon>Footer.xaml</DependentUpon>
     </Compile>
@@ -821,20 +797,13 @@
     <Compile Include="View\Lcms\RawPurifiedView.xaml.cs">
       <DependentUpon>RawPurifiedView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Navigator.xaml.cs">
+    <Compile Include="View\Core\Navigator.xaml.cs">
       <DependentUpon>Navigator.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\AlignmentView.xaml.cs">
       <DependentUpon>AlignmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\PeakSpotNavigator.xaml.cs">
-      <DependentUpon>PeakSpotNavigator.xaml</DependentUpon>
-    </Compile>
     <Page Include="Icons.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\AdductView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -974,10 +943,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Imms\CompoundDetailView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="View\Imms\ImmsAnalysisPeakTableView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -995,10 +960,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Imms\ImmsMainView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Imms\PeakPropertyView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1174,11 +1135,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Dims\CompoundDetailView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\CompoundSearchWindow.xaml">
+    <Page Include="View\Search\CompoundSearchWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1187,10 +1144,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Dims\DimsMainView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Dims\PeakPropertyView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1290,14 +1243,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Lcms\CompoundDetailView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Lcms\PeakPropertyView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\Lcms\Footer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1322,15 +1267,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Navigator.xaml">
+    <Page Include="View\Core\Navigator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Lcms\AlignmentView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\PeakSpotNavigator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

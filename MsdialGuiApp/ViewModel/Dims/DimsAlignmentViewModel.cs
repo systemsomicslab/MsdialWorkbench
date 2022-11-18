@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Dims;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.View.Statistics;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
@@ -160,5 +161,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
                 view.ShowDialog();
             }
         }
+
+        // IResultViewModel
+        IResultModel IResultViewModel.Model => _model;
     }
 }

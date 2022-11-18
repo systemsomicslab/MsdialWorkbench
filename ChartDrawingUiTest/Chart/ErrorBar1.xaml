@@ -24,6 +24,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition />
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0">
@@ -47,10 +48,12 @@
                             HorizontalProperty="X" VerticalProperty="Y"
                             HorizontalErrors="{Binding XError, Source={StaticResource vm}}"
                             VerticalErrors="{Binding YError, Source={StaticResource vm}}"
+                            ErrorCap="{Binding CapWidth, Source={StaticResource vm}}"
                             behavior:ZoomByDragBehavior.IsEnabled="False"
                             behavior:ZoomByWheelBehavior.IsEnabled="False"
                             behavior:MoveByDragBehavior.IsEnabled="False"
                             behavior:ResetRangeByDoubleClickBehavior.IsEnabled="False"/>
         </chart:MultiChart>
+        <Slider Value="{Binding CapWidth, Mode=TwoWay, Source={StaticResource vm}}" Minimum="1" Maximum="10" Grid.Row="2"/>
     </Grid>
 </Page>

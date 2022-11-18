@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.Validator;

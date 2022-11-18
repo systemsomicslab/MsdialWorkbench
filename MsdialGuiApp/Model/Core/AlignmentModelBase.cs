@@ -1,6 +1,6 @@
-﻿using CompMs.Common.MessagePack;
-using CompMs.CommonMVVM;
+﻿using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Core
 {
-    public class AlignmentModelBase : BindableBase, IAlignmentModel, IDisposable
+    public abstract class AlignmentModelBase : BindableBase, IAlignmentModel, IDisposable
     {
         public AlignmentModelBase(AlignmentFileBean file, string resultFile) {
             alignmentResultFile = resultFile;
@@ -46,6 +46,9 @@ namespace CompMs.App.Msdial.Model.Core
             set => SetProperty(ref displayLabel, value);
         }
         private string displayLabel = string.Empty;
+
+        public abstract void SearchFragment();
+        public abstract void InvokeMsfinder();
 
         protected readonly CompositeDisposable Disposables = new CompositeDisposable();
 

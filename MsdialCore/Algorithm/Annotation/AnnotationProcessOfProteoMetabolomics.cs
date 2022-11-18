@@ -91,8 +91,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 
         private MSDecResult GetRepresentativeMSDecResult(ChromatogramPeakFeature chromPeakFeature, int index, IReadOnlyList<MSDecResult> msdecResults, Dictionary<int, List<int>> parentID2IsotopePeakIDs) {
             var msdecResult = msdecResults[index];
-            chromPeakFeature.MSDecResultIdUsed = index;
-
             if (msdecResult.Spectrum.IsEmptyOrNull()) {
                 var ids = parentID2IsotopePeakIDs[chromPeakFeature.PeakCharacter.IsotopeParentPeakID];
                 foreach (var id in ids) {
@@ -102,6 +100,9 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                         break;
                     }
                 }
+            }
+            else {
+                chromPeakFeature.MSDecResultIdUsed = index;
             }
             return msdecResult;
         }

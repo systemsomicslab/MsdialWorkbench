@@ -9,6 +9,7 @@ using CompMs.App.Msdial.ViewModel.ImagingImms;
 using CompMs.App.Msdial.ViewModel.Imms;
 using CompMs.App.Msdial.ViewModel.Lcimms;
 using CompMs.App.Msdial.ViewModel.Lcms;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;

@@ -11,8 +11,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reactive.Linq;
 
-namespace CompMs.App.Msdial.ViewModel {
-    public class ProteomicsParameterVM : ViewModelBase {
+namespace CompMs.App.Msdial.ViewModel.DataObj
+{
+    public sealed class ProteomicsParameterVM : ViewModelBase
+    {
 
         [Required(ErrorMessage = "Andromeda delta required.")]
         [RegularExpression("[0-9]*\\.?[0-9]+", ErrorMessage = "Invalid format.")]
@@ -28,7 +30,7 @@ namespace CompMs.App.Msdial.ViewModel {
         [RegularExpression("[0-9]*\\.?[0-9]+", ErrorMessage = "Invalid format.")]
         [Range(0d, double.MaxValue, ErrorMessage = "Positive value required.")]
         public ReactiveProperty<string> FalseDiscoveryRateForPeptide { get; }
-      
+
         [Required(ErrorMessage = "False discovery rate for protein required.")]
         [RegularExpression("[0-9]*\\.?[0-9]+", ErrorMessage = "Invalid format.")]
         [Range(0d, double.MaxValue, ErrorMessage = "Positive value required.")]
@@ -66,7 +68,7 @@ namespace CompMs.App.Msdial.ViewModel {
 
         public ProteomicsParameterVM(ProteomicsParameter model) {
             this.model = model;
-          
+
             AndromedaDelta = new ReactiveProperty<string>(model.AndromedaDelta.ToString())
               .SetValidateAttribute(() => AndromedaDelta)
               .AddTo(Disposables);
@@ -154,7 +156,8 @@ namespace CompMs.App.Msdial.ViewModel {
 
         private void EnzymeSet() {
             using (var vm = new EnzymeSettingViewModel(model)) {
-                var window = new EnzymeSettingWin {
+                var window = new EnzymeSettingWin
+                {
                     DataContext = vm,
                 };
                 window.ShowDialog();
@@ -167,7 +170,8 @@ namespace CompMs.App.Msdial.ViewModel {
 
         private void ModificationSet() {
             using (var vm = new ModificationSettingViewModel(model)) {
-                var window = new ModificationSettingWin {
+                var window = new ModificationSettingWin
+                {
                     DataContext = vm,
                 };
                 window.ShowDialog();

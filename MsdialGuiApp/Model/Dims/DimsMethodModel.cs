@@ -38,7 +38,7 @@ namespace CompMs.App.Msdial.Model.Dims
         }
 
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> CHROMATOGRAM_SPOT_SERIALIZER;
-
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly IMessageBroker _broker;
         private IAnnotationProcess _annotationProcess;
         private FacadeMatchResultEvaluator _matchResultEvaluator;
@@ -51,6 +51,7 @@ namespace CompMs.App.Msdial.Model.Dims
             IMessageBroker broker)
             : base(analysisFileBeanModelCollection, alignmentFiles, projectBaseParameter) {
             Storage = storage;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
@@ -214,7 +215,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 streams = files.Select(file => File.Open(file.DeconvolutionFilePath, FileMode.Open, FileAccess.Read, FileShare.Read)).ToList();
                 foreach (var spot in spots) {
                     var repID = spot.RepresentativeFileID;
-                    var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
+                    var peakID = spot.AlignedPeakProperties[repID].GetMSDecResultID();
                     var decResult = MsdecResultsReader.ReadMSDecResult(
                         streams[repID], pointerss[repID].pointers[peakID],
                         pointerss[repID].version, pointerss[repID].isAnnotationInfo);
@@ -251,6 +252,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 Storage.DataBases,
                 _matchResultEvaluator,
                 Storage.DataBaseMapper,
+                _projectBaseParameter,
                 Storage.Parameter,
                 Storage.AnalysisFiles,
                 AnalysisFileModelCollection,

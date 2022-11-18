@@ -45,11 +45,13 @@ namespace CompMs.App.Msdial.Model.Imms
 
         private readonly IMessageBroker _broker;
         private readonly IMsdialDataStorage<MsdialImmsParameter> _storage;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly FacadeMatchResultEvaluator _matchResultEvaluator;
 
         public ImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
             : base(analysisFileBeanModelCollection, storage.AlignmentFiles, projectBaseParameter) {
             _storage = storage;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _storage.DataBaseMapper = _storage.DataBases.CreateDataBaseMapper();
@@ -198,7 +200,7 @@ namespace CompMs.App.Msdial.Model.Imms
                 streams = files.Select(file => System.IO.File.OpenRead(file.DeconvolutionFilePath)).ToList();
                 foreach (var spot in spots) {
                     var repID = spot.RepresentativeFileID;
-                    var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
+                    var peakID = spot.AlignedPeakProperties[repID].GetMSDecResultID();
                     var decResult = MsdecResultsReader.ReadMSDecResult(
                         streams[repID], pointerss[repID].pointers[peakID],
                         pointerss[repID].version, pointerss[repID].isAnnotationInfo);
@@ -236,10 +238,12 @@ namespace CompMs.App.Msdial.Model.Imms
 
             return AlignmentModel = new ImmsAlignmentModel(
                 alignmentFile,
+                AnalysisFileModelCollection,
                 _matchResultEvaluator,
                 _storage.DataBases,
                 _storage.DataBaseMapper,
                 PeakFilterModel,
+               _projectBaseParameter,
                 _storage.Parameter,
                 _storage.AnalysisFiles)
             .AddTo(Disposables);
@@ -330,7 +334,7 @@ namespace CompMs.App.Msdial.Model.Imms
             if (analysisModel is null) return;
 
             var param = _storage.Parameter;
-            var model = new Setting.DisplayEicSettingModel(param);
+            var model = new Setting.DisplayEicSettingModel(analysisModel.EicLoader, param);
             var dialog = new EICDisplaySettingView() {
                 DataContext = new DisplayEicSettingViewModel(model),
                 Owner = owner,

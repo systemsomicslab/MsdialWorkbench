@@ -4,18 +4,15 @@ namespace CompMs.App.Msdial.Model.DataObj
 {
     public sealed class PeakItem
     {
+        private readonly IChromatogramPeak _chrom;
+
         public PeakItem(IChromatogramPeak chrom) {
-            this.chrom = chrom;
+            _chrom = chrom;
         }
-        private readonly IChromatogramPeak chrom;
-        public IChromatogramPeak Chrom { get => this.chrom; }
 
-        public double Intensity => chrom.Intensity;
-        public double Time => chrom.ChromXs.Value;
+        public IChromatogramPeak Chrom => _chrom;
 
-        [System.Obsolete("Don't use ChromatogramPeakWrapper")]
-        public ChromatogramPeakWrapper ConvertToChromatogramPeakWrapper() {
-            return new ChromatogramPeakWrapper(chrom);
-        }
+        public double Intensity => _chrom.Intensity;
+        public double Time => _chrom.ChromXs.Value;
     }
 }

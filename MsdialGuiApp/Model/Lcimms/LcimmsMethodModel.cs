@@ -54,6 +54,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
 
             Storage = storage;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
             providerFactory = new StandardDataProviderFactory();
             accProviderFactory = new LcimmsAccumulateDataProviderFactory();
@@ -101,6 +102,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly IDataProviderFactory<RawMeasurement> providerFactory;
         private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly IMessageBroker _broker;
 
         public PeakFilterModel AccumulatedPeakFilterModel { get; }
@@ -133,9 +135,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
             return AlignmentModel = new LcimmsAlignmentModel(
                 alignmentFile,
+                AnalysisFileModelCollection,
                 matchResultEvaluator,
                 Storage.DataBases,
                 Storage.DataBaseMapper,
+                _projectBaseParameter,
                 Storage.Parameter,
                 Storage.AnalysisFiles,
                 PeakFilterModel,
@@ -237,14 +241,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 streams = files.Select(file => File.OpenRead(file.DeconvolutionFilePath)).ToList();
                 foreach (var spot in spots) {
                     var repID = spot.RepresentativeFileID;
-                    var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
+                    var peakID = spot.AlignedPeakProperties[repID].GetMSDecResultID();
                     var decResult = MsdecResultsReader.ReadMSDecResult(
                         streams[repID], pointerss[repID].pointers[peakID],
                         pointerss[repID].version, pointerss[repID].isAnnotationInfo);
                     yield return decResult;
                     foreach (var dSpot in spot.AlignmentDriftSpotFeatures) {
                         var dRepID = dSpot.RepresentativeFileID;
-                        var dPeakID = dSpot.AlignedPeakProperties[dRepID].MasterPeakID;
+                        var dPeakID = dSpot.AlignedPeakProperties[dRepID].GetMSDecResultID();
                         var dDecResult = MsdecResultsReader.ReadMSDecResult(
                             streams[dRepID], pointerss[dRepID].pointers[dPeakID],
                             pointerss[dRepID].version, pointerss[dRepID].isAnnotationInfo);
@@ -300,7 +304,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             if (analysisModel is null) return;
 
             var param = container.Parameter;
-            var model = new Setting.DisplayEicSettingModel(param);
+            var model = new Setting.DisplayEicSettingModel(analysisModel.EicLoader, param);
             var dialog = new EICDisplaySettingView() {
                 DataContext = new DisplayEicSettingViewModel(model),
                 Owner = owner,

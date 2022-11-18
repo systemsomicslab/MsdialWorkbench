@@ -19,8 +19,8 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
             ApplyCommand = isEditting.ToReactiveCommand().AddTo(Disposables);
             CancelCommand = new ReactiveCommand().AddTo(Disposables);
 
-            var commit = ApplyCommand.ToUnit().ToReactiveProperty().AddTo(Disposables);
-            var discard = CancelCommand.ToUnit().ToReactiveProperty().AddTo(Disposables);
+            var commit = ApplyCommand.ToUnit().ToReactiveProperty(mode: ReactivePropertyMode.RaiseLatestValueOnSubscribe).AddTo(Disposables);
+            var discard = CancelCommand.ToUnit().ToReactiveProperty(mode: ReactivePropertyMode.RaiseLatestValueOnSubscribe).AddTo(Disposables);
             Spots = model.Spots.ToReadOnlyReactiveCollection(m => new NormalizationSpotPropertyViewModel(m, commit, discard)).AddTo(Disposables);
             TargetMsMethod = model.TargetMsMethod;
 
