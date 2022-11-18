@@ -157,9 +157,29 @@ namespace CompMs.MsdialCore.Normalize
 
     internal sealed class SplashNormalize {
         public void Normalize(IReadOnlyList<INormalizationTarget> globalSpots, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, IReadOnlyList<StandardCompound> splashLipids, IonAbundanceUnit unit, IMatchResultEvaluator<MsScanMatchResult> evaluator) {
-
             var targets = new NormalizationTargetSpotCollection(globalSpots);
             var compounds = new StandardCompoundSet(splashLipids);
+            var lipidClasses = new HashSet<string>(LipidomicsConverter.GetLipidClasses());
+
+            if (unit == IonAbundanceUnit.NormalizedByInternalStandardPeakHeight) {
+                foreach (var target in targets.TargetSpots) {
+                    var lipidclass = target.GetAnnotatedLipidClass(evaluator, refer, lipidClasses);
+                    var stdCompound = compounds.StdCompoundsTable[lipidclass].FirstOrDefault();
+                    if (!(stdCompound is null)) {
+                        if (targets.FindSpot(stdCompound.PeakID) is INormalizationTarget std) {
+                            target.Target.InternalStandardId = std.Id;
+                        }
+                    }
+                    else if (!(compounds.OtherCompound is null)) {
+                        if (targets.FindSpot(compounds.OtherCompound.PeakID) is INormalizationTarget std) {
+                            target.Target.InternalStandardId = std.Id;
+                        }
+                    }
+
+                }
+                new InternalStandardNormalize().Normalize(globalSpots, unit);
+                return;
+            }
 
             // initialize
             targets.Initialize();
@@ -171,7 +191,6 @@ namespace CompMs.MsdialCore.Normalize
                 targets.NormalizeInternalStandardSpot(compound, unit);
             }
 
-            var lipidClasses = new HashSet<string>(LipidomicsConverter.GetLipidClasses());
             foreach (var target in targets.TargetSpots) {
                 // first try to normalize except for "any others" property
                 if (target.IsNormalized()) {

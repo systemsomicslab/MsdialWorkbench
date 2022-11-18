@@ -63,7 +63,9 @@ namespace CompMs.App.Msdial.Model.Statistics
                 new IonAbundance(IonAbundanceUnit.fmol_per_mg_tissue),
                 new IonAbundance(IonAbundanceUnit.nmol_per_10E6_cells),
                 new IonAbundance(IonAbundanceUnit.pmol_per_10E6_cells),
-                new IonAbundance(IonAbundanceUnit.fmol_per_10E6_cells) };
+                new IonAbundance(IonAbundanceUnit.fmol_per_10E6_cells),
+                new IonAbundance(IonAbundanceUnit.NormalizedByInternalStandardPeakHeight),
+            };
             OutputUnit = OutputUnits.FirstOrDefault();
 
             CanNormalizeProperty = this.ObserveProperty(m => m.SplashProduct).Select(product => product?.CanNormalize(_spots) ?? Observable.Return(false)).Switch().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
