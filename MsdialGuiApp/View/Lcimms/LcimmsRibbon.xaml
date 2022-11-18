@@ -265,14 +265,14 @@
                KeyTip="H">
         <RibbonGroup>
             <RibbonButton Label="About" LargeImageSource="{StaticResource Version_is}"
-                          IsEnabled="False"
+                          Command="{Binding DataContext.ShowAboutCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="A"/>
             <RibbonButton Label="Licence" LargeImageSource="{StaticResource Licence_is}"
-                          IsEnabled="False"
+                          Command="{Binding DataContext.GoToLicenceCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                           KeyTip="L"/>
             <RibbonButton Label="Tutorial" LargeImageSource="{StaticResource Tutorial_is}"
-                          IsEnabled="False"
-                          KeyTip="T"/>
+                          Command="{Binding DataContext.GoToTutorialCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                          KeyTip="T"/>                
         </RibbonGroup>
     </RibbonTab>
     <chartSetting:ExpRefViewSettingRibbonTab ContextualTabGroupHeader="Graph tools"

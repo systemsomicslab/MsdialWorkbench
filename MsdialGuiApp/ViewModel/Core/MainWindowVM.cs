@@ -231,5 +231,20 @@ namespace CompMs.App.Msdial.ViewModel.Core
         private void GoToTutorial() {
             System.Diagnostics.Process.Start("https://mtbinfo-team.github.io/mtbinfo.github.io/MS-DIAL/tutorial.html");
         }
+
+        public DelegateCommand GoToLicenceCommand => _goToLicenceCommand ?? (_goToLicenceCommand = new DelegateCommand(GoToLicence));
+        private DelegateCommand _goToLicenceCommand;
+
+        private void GoToLicence() {
+            System.Diagnostics.Process.Start("http://prime.psc.riken.jp/compms/licence/main.html");
+        }
+
+        public DelegateCommand ShowAboutCommand => _showAboutCommand ?? (_showAboutCommand = new DelegateCommand(ShowAbout));
+        private DelegateCommand _showAboutCommand;
+
+        private void ShowAbout() {
+            var view = new View.Help.HelpAboutDialog();
+            view.ShowDialog();
+        }
     }
 }
