@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.App.Msdial.Model.Setting;
 using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
@@ -23,8 +24,10 @@ namespace CompMs.App.Msdial.Model.Loader
         public AlignmentEicLoader(ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer, string eicFile, AnalysisFileBeanModelCollection files, ProjectBaseParameterModel projectParameter) {
             _chromatogramSpotSerializer = chromatogramSpotSerializer ?? throw new ArgumentNullException(nameof(chromatogramSpotSerializer));
             _eicFile = eicFile ?? throw new ArgumentNullException(nameof(eicFile));
-            var classToColor = projectParameter.ObserveProperty(p => p.ClassProperties).Select(props => props.ToDictionary(prop => prop.Name, prop => prop.ObserveProperty(p => p.Color))).ToReactiveProperty().AddTo(Disposables);
-            _fileChromatograms = files.AnalysisFiles.Select(file => new FileChromatogram(file, classToColor)).ToList();           
+            // var classToColor = projectParameter.ObserveProperty(p => p.ClassProperties).Select(props => props.ToDictionary(prop => prop.Name, prop => prop.ObserveProperty(p => p.Color))).ToReactiveProperty().AddTo(Disposables);
+            var classToProp = projectParameter.ClassProperties.CollectionChangedAsObservable().ToUnit().StartWith(Unit.Default)
+                .Select(_ => projectParameter.ClassProperties.ToDictionary(prop => prop.Name, prop => prop)).ToReactiveProperty().AddTo(Disposables);
+            _fileChromatograms = files.AnalysisFiles.Select(file => new FileChromatogram(file, classToProp)).ToList();           
         }
 
         public IObservable<List<Chromatogram>> LoadEicAsObservable(AlignmentSpotPropertyModel target) {
@@ -48,11 +51,11 @@ namespace CompMs.App.Msdial.Model.Loader
             private readonly IObservable<string> _name;
             private readonly IObservable<Color> _color;
 
-            public FileChromatogram(AnalysisFileBeanModel file, IObservable<Dictionary<string, IObservable<Color>>> class2Color) {
+            public FileChromatogram(AnalysisFileBeanModel file, IObservable<Dictionary<string, FileClassPropertyModel>> class2Prop) {
                 _includes = file.ObserveProperty(f => f.AnalysisFileIncluded).ToReactiveProperty();
                 _clss = file.ObserveProperty(f => f.AnalysisFileClass).ToReactiveProperty();
                 _name = file.ObserveProperty(f => f.AnalysisFileName).ToReactiveProperty();
-                _color = class2Color.CombineLatest(_clss, (c2c, cls) => c2c.TryGetValue(cls, out var colorOx) ? colorOx : Observable.Return(Colors.Blue)).Switch().StartWith(Colors.Blue); 
+                _color = class2Prop.CombineLatest(_clss, (c2p, cls) => c2p.TryGetValue(cls, out var prop) ? prop.ObserveProperty(p => p.Color) : Observable.Return(Colors.Blue)).Switch(); 
             }
 
             public IObservable<Chromatogram> GetChromatogram(AlignmentSpotPropertyModel _spot, IObservable<AlignmentChromPeakFeatureModel> _peak, ChromatogramPeakInfo _peakInfo) {

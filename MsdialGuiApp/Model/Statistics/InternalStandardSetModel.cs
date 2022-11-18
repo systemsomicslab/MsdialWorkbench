@@ -1,6 +1,11 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.Common.Components;
+using CompMs.Common.DataObj.Result;
+using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
+using CompMs.MsdialCore.Normalize;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -51,7 +56,7 @@ namespace CompMs.App.Msdial.Model.Statistics
         public IObservable<bool> SomeSpotSetInternalStandard { get; }
     }
 
-    internal sealed class NormalizationSpotPropertyModel : BindableBase
+    internal sealed class NormalizationSpotPropertyModel : BindableBase, INormalizationTarget
     {
         private readonly AlignmentSpotProperty _spot;
 
@@ -72,10 +77,28 @@ namespace CompMs.App.Msdial.Model.Statistics
         public double Mz { get; }
         public double Rt { get; }
         public double Mobility { get; }
+
         public int InternalStandardId {
-            get => _internalStandardId;
-            set => SetProperty(ref _internalStandardId, value);
+            get => _spot.InternalStandardAlignmentID;
+            set {
+                _spot.InternalStandardAlignmentID = value;
+                OnPropertyChanged(nameof(InternalStandardId));
+            }
         }
-        private int _internalStandardId;
+
+        IonAbundanceUnit INormalizationTarget.IonAbundanceUnit { get => _spot.IonAbundanceUnit; set => _spot.IonAbundanceUnit = value; }
+
+        IReadOnlyList<INormalizationTarget> INormalizationTarget.Children => ((INormalizationTarget)_spot).Children;
+
+        IReadOnlyList<INormalizableValue> INormalizationTarget.Values => ((INormalizationTarget)_spot).Values;
+
+
+        bool INormalizationTarget.IsReferenceMatched(IMatchResultEvaluator<MsScanMatchResult> evaluator) {
+            return ((INormalizationTarget)_spot).IsReferenceMatched(evaluator);
+        }
+
+        MoleculeMsReference INormalizationTarget.RetriveReference(IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+            return ((INormalizationTarget)_spot).RetriveReference(refer);
+        }
     }
 }

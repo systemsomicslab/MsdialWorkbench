@@ -66,7 +66,7 @@ namespace CompMs.MsdialCore.Normalize
         }
 
         public void FillNormalizeProperties() {
-            _target.IonAbundanceUnit = IonAbundanceUnit.Height;
+            _target.IonAbundanceUnit = IonAbundanceUnit.Intensity;
             foreach (var peak in _target.Values) {
                 peak.NormalizedPeakHeight = peak.PeakHeight;
                 peak.NormalizedPeakAreaAboveBaseline = peak.PeakAreaAboveBaseline;

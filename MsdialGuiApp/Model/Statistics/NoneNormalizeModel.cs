@@ -12,10 +12,12 @@ namespace CompMs.App.Msdial.Model.Statistics
     internal sealed class NoneNormalizeModel : BindableBase
     {
         private readonly AlignmentResultContainer _container;
+        private readonly InternalStandardSetModel _internalStandardSetModel;
         private readonly IMessageBroker _messageBroker;
 
-        public NoneNormalizeModel(AlignmentResultContainer container, IMessageBroker messageBroker) {
+        public NoneNormalizeModel(AlignmentResultContainer container, InternalStandardSetModel internalStandardSetModel, IMessageBroker messageBroker) {
             _container = container ?? throw new ArgumentNullException(nameof(container));
+            _internalStandardSetModel = internalStandardSetModel ?? throw new ArgumentNullException(nameof(internalStandardSetModel));
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
         }
 
@@ -24,7 +26,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             var task = TaskNotification.Start("Normalize..");
             var publisher = new TaskProgressPublisher(_broker, task);
             using (publisher.Start()) {
-                Normalization.None(_container.AlignmentSpotProperties);
+                Normalization.None(_internalStandardSetModel.Spots);
                 _container.IsNormalized = true;
             }
         }

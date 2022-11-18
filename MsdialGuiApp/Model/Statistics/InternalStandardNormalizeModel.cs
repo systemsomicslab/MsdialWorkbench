@@ -11,6 +11,7 @@ namespace CompMs.App.Msdial.Model.Statistics
     internal sealed class InternalStandardNormalizeModel : BindableBase
     {
         private readonly AlignmentResultContainer _container;
+        private readonly InternalStandardSetModel _internalStandardSetModel;
         private readonly IMessageBroker _messageBroker;
 
         public InternalStandardNormalizeModel(AlignmentResultContainer container, InternalStandardSetModel internalStandardSetModel, IMessageBroker messageBroker) {
@@ -19,6 +20,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             }
 
             _container = container ?? throw new ArgumentNullException(nameof(container));
+            _internalStandardSetModel = internalStandardSetModel;
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
             CanNormalize = internalStandardSetModel.SomeSpotSetInternalStandard;
         }
@@ -28,7 +30,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             var task = TaskNotification.Start("Normalize..");
             var publisher = new TaskProgressPublisher(_broker, task);
             using (publisher.Start()) {
-                Normalization.InternalStandardNormalize(_container.AlignmentSpotProperties, IonAbundanceUnit.NormalizedByInternalStandardPeakHeight);
+                Normalization.InternalStandardNormalize(_internalStandardSetModel.Spots, IonAbundanceUnit.NormalizedByInternalStandardPeakHeight);
                 _container.IsNormalized = true;
             }
         }

@@ -45,6 +45,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics
         public NormalizationSpotPropertyViewModel(NormalizationSpotPropertyModel model, IObservable<Unit> commit, IObservable<Unit> discard) {
             _model = model;
             InternalStandardId = model.InternalStandardId;
+            model.ObserveProperty(m => m.InternalStandardId).Subscribe(id => InternalStandardId = id).AddTo(Disposables);
             commit.Subscribe(_ => model.InternalStandardId = InternalStandardId).AddTo(Disposables);
             discard.Subscribe(_ => InternalStandardId =  model.InternalStandardId).AddTo(Disposables);
         }

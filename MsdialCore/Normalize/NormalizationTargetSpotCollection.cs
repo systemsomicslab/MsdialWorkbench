@@ -28,13 +28,17 @@ namespace CompMs.MsdialCore.Normalize
 
         public ReadOnlyCollection<NormalizationTargetSpot> TargetSpots { get; }
 
-        public void Initialize() {
+        public void Initialize(bool initializeIntenralStandardId) {
             foreach (var spot in _targets) {
-                spot.InternalStandardId = -1;
                 foreach (var prop in spot.Values) {
                     prop.NormalizedPeakHeight = -1d;
                     prop.NormalizedPeakAreaAboveBaseline = -1d;
                     prop.NormalizedPeakAreaAboveZero = -1d;
+                }
+            }
+            if (initializeIntenralStandardId) {
+                foreach (var spot in _targets) {
+                    spot.InternalStandardId = -1;
                 }
             }
         }
@@ -55,7 +59,13 @@ namespace CompMs.MsdialCore.Normalize
         }
 
         public INormalizationTarget FindSpot(int spotId) {
-            var index = _orderedTargets.LowerBound(spotId, (spot, id) => spot.Id.CompareTo(id));
+            if (spotId < 0) {
+                return null;
+            }
+            if (spotId >= 0 && spotId < _targets.Count && _targets[spotId].Id == spotId) {
+                return _targets[spotId];
+            }
+            var index = _orderedTargets.BinarySearch(spotId, (spot, id) => spot.Id.CompareTo(id));
             if (index >= 0 && index < _orderedTargets.Count) {
                 return _orderedTargets[index];
             }
