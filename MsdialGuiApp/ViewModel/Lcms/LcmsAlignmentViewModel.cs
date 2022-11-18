@@ -119,6 +119,21 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .WithSubscribe(() => broker.Publish(MultivariateAnalysisSettingViewModel))
                 .AddTo(Disposables);
 
+            ShowPlsSettingCommand = model.NormalizationSetModel.IsNormalized
+                .ToReactiveCommand()
+                .WithSubscribe(() => broker.Publish(MultivariateAnalysisSettingViewModel))
+                .AddTo(Disposables);
+
+            ShowPlsdaSettingCommand = model.NormalizationSetModel.IsNormalized
+                .ToReactiveCommand()
+                .WithSubscribe(() => broker.Publish(MultivariateAnalysisSettingViewModel))
+                .AddTo(Disposables);
+
+            ShowHcaSettingCommand = model.NormalizationSetModel.IsNormalized
+                .ToReactiveCommand()
+                .WithSubscribe(() => broker.Publish(MultivariateAnalysisSettingViewModel))
+                .AddTo(Disposables);
+
             var notification = TaskNotification.Start("Loading alignment results...");
             broker.Publish(notification);
             model.Container.LoadAlginedPeakPropertiesTask.ContinueWith(_ => broker.Publish(TaskNotification.End(notification)));
@@ -148,6 +163,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
         public MultivariateAnalysisSettingViewModel MultivariateAnalysisSettingViewModel { get; }
         public ReactiveCommand ShowPcaSettingCommand { get; }
+        public ReactiveCommand ShowPlsSettingCommand { get; }
+        public ReactiveCommand ShowPlsdaSettingCommand { get; }
+        public ReactiveCommand ShowHcaSettingCommand { get; }
 
         public ICommand SetUnknownCommand { get; }
         public ReactiveCommand SearchCompoundCommand { get; }

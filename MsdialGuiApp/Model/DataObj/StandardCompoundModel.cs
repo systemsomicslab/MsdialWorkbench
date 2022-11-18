@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.DataObj
         }
 
         public bool TrySetIdIfMatch(AlignmentSpotProperty spotProperty) {
-            if (!string.IsNullOrEmpty(spotProperty?.Name) && (spotProperty.Name.Contains(StandardName) || StandardName.Contains(spotProperty.Name))) {
+            if (!string.IsNullOrEmpty(spotProperty?.Name) && spotProperty.Name.Contains(StandardName)) {
                 PeakID = spotProperty.MasterAlignmentID;
                 return true;
             }

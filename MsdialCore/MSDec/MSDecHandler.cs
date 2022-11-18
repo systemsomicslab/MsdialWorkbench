@@ -703,6 +703,7 @@ namespace CompMs.MsdialCore.MSDec {
                 var chromatograms = getMs2Chromatograms(modelChromVector, peaklistList, param);
                 if (chromatograms.Count == 0) return null;
                 var result = MSDecProcess.GetMsDecResult(modelChromVector, chromatograms);
+                if (result == null) return null;
                 result.Spectrum = getRefinedMsDecSpectrum(result.Spectrum, param);
                 result.Splash = calculateSplash(result.Spectrum);
                 return result;

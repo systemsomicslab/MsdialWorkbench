@@ -145,13 +145,13 @@
                           Command="{Binding AlignmentViewModel.Value.ShowPcaSettingCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
                           KeyTip="P"/>
             <RibbonButton Label="Partial least squares" LargeImageSource="{StaticResource PLS_is}"
-                          IsEnabled="True"
+                          Command="{Binding AlignmentViewModel.Value.ShowPlsSettingCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
                           KeyTip="R"/>
             <RibbonButton Label="Partial least squares" LargeImageSource="{StaticResource PLS-DA_is}"
-                          IsEnabled="True"
+                          Command="{Binding AlignmentViewModel.Value.ShowPlsdaSettingCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
                           KeyTip="D"/>
             <RibbonButton Label="Hierarchical clustering analysis" LargeImageSource="{StaticResource HCA_is}"
-                          IsEnabled="True"
+                          Command="{Binding AlignmentViewModel.Value.ShowHcaSettingCommand, FallbackValue={x:Static common:NeverCommand.Instance}}"
                           KeyTip="H"/>
             <RibbonButton Label="Molecular spectrum networking" LargeImageSource="{StaticResource Molecular_networking_is}"
                           IsEnabled="False"
