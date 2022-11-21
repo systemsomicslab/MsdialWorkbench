@@ -54,6 +54,7 @@
                 <StackPanel Grid.Column="0" Orientation="Vertical" Margin="5,18,0,0">
                     <CheckBox Content="Auto fit" 
                               IsChecked="{Binding IsAutoFit.Value, Mode=TwoWay}"
+                              IsEnabled="False"
                               VerticalAlignment="Center" VerticalContentAlignment="Center"  Height="25" Margin="5,5,5,5"/>
                     <Label Content="Scale method:" Height="25" Margin="0,5,5,5"/>
                     <Label Content="Transform method:" Height="25" Margin="0,5,5,5"/>
@@ -116,7 +117,7 @@
                              IsChecked="{Binding MultivariateAnalysisOption.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Pca}"/>
                 <RadioButton Content="HCA"
                              IsChecked="{Binding MultivariateAnalysisOption.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Hca}"/>
-                <RadioButton Content="PLADA"
+                <RadioButton Content="PLSDA"
                              IsChecked="{Binding MultivariateAnalysisOption.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Plsda}"/>
                 <RadioButton Content="OPLSDA"
                              IsChecked="{Binding MultivariateAnalysisOption.Value, Converter={StaticResource EnumToBoolean}, ConverterParameter=Oplsda}"/>

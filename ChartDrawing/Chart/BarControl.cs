@@ -347,9 +347,6 @@ namespace CompMs.Graphics.Chart
                         continue;
                     }
                     var yAx = vAxis.TranslateToAxisValue(y);
-                    if (!vAxis.ContainsCurrent(yAx)) {
-                        continue;
-                    }
                     var xx = hAxis.TranslateToRenderPoint(xAx, flippedX, actualWidth);
                     var yy = vAxis.TranslateToRenderPoint(yAx, flippedY, actualHeight);
                     dv.Center = new Point(xx, yy);

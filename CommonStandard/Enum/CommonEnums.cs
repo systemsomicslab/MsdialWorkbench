@@ -54,7 +54,7 @@ namespace CompMs.Common.Enum
             var unitEnum = unit;
             switch (unitEnum) {
                 case IonAbundanceUnit.Intensity:
-                    return "Intensity";
+                    return "Original intensity";
                 case IonAbundanceUnit.Height:
                     return "Height";
                 case IonAbundanceUnit.Area:
@@ -78,13 +78,13 @@ namespace CompMs.Common.Enum
                 case IonAbundanceUnit.fmol_per_10E6_cells:
                     return "fmol/10^6 cells";
                 case IonAbundanceUnit.NormalizedByInternalStandardPeakHeight:
-                    return "Peak height/IS peak";
+                    return "Peak intensity/IS peak";
                 case IonAbundanceUnit.NormalizedByQcPeakHeight:
-                    return "Peak height/QC peak";
+                    return "Peak intensity/QC peak";
                 case IonAbundanceUnit.NormalizedByMaxPeakOnTIC:
-                    return "Peak height/TIC";
+                    return "Peak intensity/TIC";
                 case IonAbundanceUnit.NormalizedByMaxPeakOnNamedPeaks:
-                    return "Peak height/MTIC";
+                    return "Peak intensity/MTIC";
 
                 case IonAbundanceUnit.pmol:
                     return "pmol";

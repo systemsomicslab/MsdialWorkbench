@@ -297,17 +297,8 @@ namespace CompMs.App.Msdial.Model.Lcms
             return new LcmsCompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, CompoundSearchers);
         }
 
-        public void FragmentSearcher() {
-            var features = this.Ms1Peaks;
-            MsdialCore.Algorithm.FragmentSearcher.Search(features.Select(n => n.InnerModel).ToList(), this.decLoader, Parameter);
-
-            foreach (var feature in features) {
-                var featureStatus = feature.InnerModel.FeatureFilterStatus;
-                if (featureStatus.IsFragmentExistFiltered) {
-                    Console.WriteLine("A fragment is found by MassQL not in alignment !!!");
-                }
-            }
-
+        public override void SearchFragment() {
+            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), decLoader, Parameter);
         }
 
         public void SaveSpectra(string filename) {
@@ -345,8 +336,8 @@ namespace CompMs.App.Msdial.Model.Lcms
         public CompoundDetailModel CompoundDetailModel { get; }
         public ProteinResultContainerModel ProteinResultContainerModel { get; }
 
-        public void GoToMsfinderMethod() {
-            if (Target.Value is null || MsdecResult.Value is null) {
+        public override void InvokeMsfinder() {
+            if (Target.Value is null || (MsdecResult.Value?.Spectrum).IsEmptyOrNull()) {
                 return;
             }
             MsDialToExternalApps.SendToMsFinderProgram(

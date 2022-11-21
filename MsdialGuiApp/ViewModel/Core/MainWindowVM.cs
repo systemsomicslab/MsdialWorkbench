@@ -1,6 +1,4 @@
 ﻿using CompMs.App.Msdial.Model.Core;
-using CompMs.App.Msdial.Model.DataObj;
-using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
@@ -27,7 +25,7 @@ using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Core
 {
-    class MainWindowVM : ViewModelBase
+    internal sealed class MainWindowVM : ViewModelBase
     {
         public MainWindowVM(
             IWindowService<CompoundSearchVM> compoundSearchService,
@@ -54,8 +52,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
             _broker = MessageBroker.Default;
 
-            this.analysisFilePropertyResetService = analysisFilePropertyResetService;
-            this.processSettingService = processSettingSerivce ?? throw new ArgumentNullException(nameof(processSettingSerivce));
+            _processSettingService = processSettingSerivce ?? throw new ArgumentNullException(nameof(processSettingSerivce));
             Model = new MainWindowModel(_broker);
 
             var projectViewModel = Model.ObserveProperty(m => m.CurrentProject)
@@ -119,8 +116,7 @@ namespace CompMs.App.Msdial.ViewModel.Core
         }
 
         private readonly IMessageBroker _broker;
-        private readonly IWindowService<AnalysisFilePropertyResetViewModel> analysisFilePropertyResetService;
-        private readonly IWindowService<ProcessSettingViewModel> processSettingService;
+        private readonly IWindowService<ProcessSettingViewModel> _processSettingService;
 
         public MainWindowModel Model { get; }
 
@@ -132,30 +128,30 @@ namespace CompMs.App.Msdial.ViewModel.Core
         public ReadOnlyObservableCollection<ProgressBarVM> TaskProgressCollection => _taskProgressCollection.ProgressBars;
 
         public IMsdialDataStorage<ParameterBase> Storage {
-            get => storage;
+            get => _storage;
             set {
-                if (SetProperty(ref storage, value)) {
+                if (SetProperty(ref _storage, value)) {
                     OnPropertyChanged(nameof(ProjectFile));
                 }
             }
         }
-        private IMsdialDataStorage<ParameterBase> storage;
+        private IMsdialDataStorage<ParameterBase> _storage;
 
         public string ProjectFile => Storage?.Parameter is null ? string.Empty : Storage.Parameter.ProjectParam.ProjectFilePath;
 
         public AsyncReactiveCommand CreateNewProjectCommand { get; }
 
-        private async Task RunProcess(ProcessSettingViewModel viewmodel) {
-            processSettingService.ShowDialog(viewmodel);
-            await viewmodel.CanRun.SkipWhile(x => !x).Take(1);
-            if (viewmodel.DialogResult.Value) {
-                await Model.SaveAsync().ConfigureAwait(false);
-            }
-        }
-
         private async Task CreateNewProject() {
             using (var vm = new ProcessSettingViewModel(Model.ProjectSetting)) {
                 await RunProcess(vm);
+            }
+        }
+
+        private async Task RunProcess(ProcessSettingViewModel viewmodel) {
+            _processSettingService.ShowDialog(viewmodel);
+            if (viewmodel.DialogResult.Value) {
+                await viewmodel.Model.RunProcessAsync().ConfigureAwait(false);
+                await Model.SaveAsync().ConfigureAwait(false);
             }
         }
 
@@ -199,8 +195,8 @@ namespace CompMs.App.Msdial.ViewModel.Core
 
         public AsyncReactiveCommand SaveAsProjectCommand { get; }
 
-        public DelegateCommand<Window> SaveParameterCommand => saveParameterCommand ?? (saveParameterCommand = new DelegateCommand<Window>(owner => SaveParameter(owner, Storage)));
-        private DelegateCommand<Window> saveParameterCommand;
+        public DelegateCommand<Window> SaveParameterCommand => _saveParameterCommand ?? (_saveParameterCommand = new DelegateCommand<Window>(owner => SaveParameter(owner, Storage)));
+        private DelegateCommand<Window> _saveParameterCommand;
 
         private static void SaveParameter(Window owner, IMsdialDataStorage<ParameterBase> storage) {
             // TODO: implement process when parameter save failed.
@@ -229,11 +225,26 @@ namespace CompMs.App.Msdial.ViewModel.Core
             }
         }
 
-        public DelegateCommand GoToTutorialCommand => goToTutorialCommand ?? (goToTutorialCommand = new DelegateCommand(GoToTutorial));
-        private DelegateCommand goToTutorialCommand;
+        public DelegateCommand GoToTutorialCommand => _goToTutorialCommand ?? (_goToTutorialCommand = new DelegateCommand(GoToTutorial));
+        private DelegateCommand _goToTutorialCommand;
 
         private void GoToTutorial() {
             System.Diagnostics.Process.Start("https://mtbinfo-team.github.io/mtbinfo.github.io/MS-DIAL/tutorial.html");
+        }
+
+        public DelegateCommand GoToLicenceCommand => _goToLicenceCommand ?? (_goToLicenceCommand = new DelegateCommand(GoToLicence));
+        private DelegateCommand _goToLicenceCommand;
+
+        private void GoToLicence() {
+            System.Diagnostics.Process.Start("http://prime.psc.riken.jp/compms/licence/main.html");
+        }
+
+        public DelegateCommand ShowAboutCommand => _showAboutCommand ?? (_showAboutCommand = new DelegateCommand(ShowAbout));
+        private DelegateCommand _showAboutCommand;
+
+        private void ShowAbout() {
+            var view = new View.Help.HelpAboutDialog();
+            view.ShowDialog();
         }
     }
 }

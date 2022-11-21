@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.ExternalApp;
+using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
@@ -204,6 +205,23 @@ namespace CompMs.App.Msdial.Model.Dims
             SpectraExport.SaveSpectraTable(
                 format,
                 stream,
+                Target.Value.InnerModel,
+                MsdecResult.Value,
+                _provider.LoadMs1Spectrums(),
+                _dataBaseMapper,
+                _parameter);
+        }
+
+        public override void SearchFragment() {
+            FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), decLoader, _parameter);
+        }
+
+        public override void InvokeMsfinder() {
+            if (Target.Value is null || (MsdecResult.Value?.Spectrum).IsEmptyOrNull()) {
+                return;
+            }
+            MsDialToExternalApps.SendToMsFinderProgram(
+                AnalysisFileModel,
                 Target.Value.InnerModel,
                 MsdecResult.Value,
                 _provider.LoadMs1Spectrums(),

@@ -120,10 +120,13 @@
   <data name="EXPORT_DIR" xml:space="preserve">
     <value />
   </data>
+  <data name="LASTEST_UPDATE" xml:space="preserve">
+    <value>Nov. 18th, 2022</value>
+  </data>
   <data name="VDD_URI" xml:space="preserve">
     <value>http://prime.psc.riken.jp/compms/msdial/vmsdial.json</value>
   </data>
   <data name="VERSION" xml:space="preserve">
-    <value>5.1.0.1-dev</value>
+    <value>5.1.221118</value>
   </data>
 </root>

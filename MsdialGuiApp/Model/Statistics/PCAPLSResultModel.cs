@@ -306,7 +306,7 @@ namespace CompMs.App.Msdial.Model.Statistics
         }
 
         public void ShowSPlot(Window owner) {
-            if (_result.MultivariateAnalysisOption == MultivariateAnalysisOption.Pca || _result.MultivariateAnalysisOption == MultivariateAnalysisOption.Hca) {
+            if (_result.MultivariateAnalysisOption != MultivariateAnalysisOption.Oplsr && _result.MultivariateAnalysisOption != MultivariateAnalysisOption.Oplsda) {
                 return;
             }
             else {

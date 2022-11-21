@@ -191,6 +191,7 @@
     <Compile Include="Model\Loader\MsSelectionItem.cs" />
     <Compile Include="Model\Service\OpenFileRequest.cs" />
     <Compile Include="Model\Service\ShortMessageRequest.cs" />
+    <Compile Include="Model\Setting\ProcessSettingModel.cs" />
     <Compile Include="Model\Statistics\InternalStandardLowessNormalizeModel.cs" />
     <Compile Include="Model\Statistics\InternalStandardNormalizeModel.cs" />
     <Compile Include="Model\Statistics\IonAbundance.cs" />
@@ -538,6 +539,9 @@
     </Compile>
     <Compile Include="View\Export\SaveImageAsWinLegacy.xaml.cs">
       <DependentUpon>SaveImageAsWinLegacy.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Help\HelpAboutDialog.xaml.cs">
+      <DependentUpon>HelpAboutDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ImagingImms\ImagingMainView.xaml.cs">
       <DependentUpon>ImagingMainView.xaml</DependentUpon>
@@ -927,6 +931,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Export\SaveImageAsWinLegacy.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Help\HelpAboutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

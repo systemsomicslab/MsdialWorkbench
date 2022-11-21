@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
@@ -27,6 +28,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 {
     internal sealed class LcmsAnalysisViewModel : ViewModelBase, IAnalysisResultViewModel
     {
+        private readonly LcmsAnalysisModel _model;
+        private readonly IWindowService<CompoundSearchVM> _compoundSearchService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> _peakSpotTableService;
+        private readonly IWindowService<PeakSpotTableViewModelBase> _proteomicsTableService;
+
         public LcmsAnalysisViewModel(
             LcmsAnalysisModel model,
             IWindowService<CompoundSearchVM> compoundSearchService,
@@ -53,21 +59,21 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 throw new ArgumentNullException(nameof(focusControlManager));
             }
 
-            this.model = model;
-            this.compoundSearchService = compoundSearchService;
-            this.peakSpotTableService = peakSpotTableService;
-            this.proteomicsTableService = proteomicsTableService;
+            this._model = model;
+            this._compoundSearchService = compoundSearchService;
+            this._peakSpotTableService = peakSpotTableService;
+            this._proteomicsTableService = proteomicsTableService;
 
             PeakSpotNavigatorViewModel = new PeakSpotNavigatorViewModel(model.PeakSpotNavigatorModel).AddTo(Disposables);
 
             var (peakPlotAction, peakPlotFocused) = focusControlManager.Request();
-            PlotViewModel = new AnalysisPeakPlotViewModel(this.model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
+            PlotViewModel = new AnalysisPeakPlotViewModel(this._model.PlotModel, peakPlotAction, peakPlotFocused).AddTo(Disposables);
             EicViewModel = new EicViewModel(
-                this.model.EicModel,
+                this._model.EicModel,
                 horizontalAxis: PlotViewModel.HorizontalAxis).AddTo(Disposables);
 
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
-                this.model.Parameter.ProjectParam.SpectrumCommentToColorBytes
+                this._model.Parameter.ProjectParam.SpectrumCommentToColorBytes
                 .ToDictionary(
                     kvp => kvp.Key,
                     kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2])
@@ -75,7 +81,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 item => item.ToString(),
                 Colors.Blue);
 
-            var projectParameter = this.model.Parameter.ProjectParam;
+            var projectParameter = this._model.Parameter.ProjectParam;
             var lowerSpecBrush = new DelegateBrushMapper<SpectrumComment>(
                 comment =>
                 {
@@ -94,9 +100,9 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 true);
 
             var (rawDecSpectraViewFocusAction, rawDecSpectraViewFocused) = focusControlManager.Request();
-            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this.model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
+            RawDecSpectrumsViewModel = new RawDecSpectrumsViewModel(this._model.Ms2SpectrumModel, rawDecSpectraViewFocusAction, rawDecSpectraViewFocused).AddTo(Disposables);
 
-            RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(this.model.RawPurifiedSpectrumsModel,
+            RawPurifiedSpectrumsViewModel = new RawPurifiedSpectrumsViewModel(this._model.RawPurifiedSpectrumsModel,
                 upperSpectrumBrushSource: Observable.Return(upperSpecBrush),
                 lowerSpectrumBrushSource: Observable.Return(lowerSpecBrush)).AddTo(Disposables);
 
@@ -104,7 +110,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             Ms2ChromatogramsViewModel = new Ms2ChromatogramsViewModel(model.Ms2ChromatogramsModel, ms2ChromatogramViewFocusAction, ms2ChromatogramViewFocused).AddTo(Disposables);
 
             SurveyScanViewModel = new SurveyScanViewModel(
-                this.model.SurveyScanModel,
+                this._model.SurveyScanModel,
                 horizontalAxis: PlotViewModel.VerticalAxis).AddTo(Disposables);
 
             SetUnknownCommand = model.Target.Select(t => !(t is null))
@@ -113,8 +119,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 .AddTo(Disposables);
 
             PeakTableViewModel = new LcmsAnalysisPeakTableViewModel(
-                this.model.PeakTableModel,
-                Observable.Return(this.model.EicLoader),
+                this._model.PeakTableModel,
+                Observable.Return(this._model.EicLoader),
                 PeakSpotNavigatorViewModel.MzLowerValue,
                 PeakSpotNavigatorViewModel.MzUpperValue,
                 PeakSpotNavigatorViewModel.RtLowerValue,
@@ -128,8 +134,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             .AddTo(Disposables);
 
             ProteomicsPeakTableViewModel = new LcmsProteomicsPeakTableViewModel(
-                this.model.PeakTableModel,
-                Observable.Return(this.model.EicLoader),
+                this._model.PeakTableModel,
+                Observable.Return(this._model.EicLoader),
                 PeakSpotNavigatorViewModel.MzLowerValue,
                 PeakSpotNavigatorViewModel.MzUpperValue,
                 PeakSpotNavigatorViewModel.RtLowerValue,
@@ -143,7 +149,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 PeakSpotNavigatorViewModel.IsEditting)
             .AddTo(Disposables);
 
-            SearchCompoundCommand = this.model.CanSearchCompound
+            SearchCompoundCommand = this._model.CanSearchCompound
                 .ToReactiveCommand()
                 .WithSubscribe(SearchCompound)
                 .AddTo(Disposables);
@@ -170,11 +176,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             ProteinResultContainerAsObservable = Observable.Return(model.ProteinResultContainerModel);
         }
 
-        private readonly LcmsAnalysisModel model;
-        private readonly IWindowService<CompoundSearchVM> compoundSearchService;
-        private readonly IWindowService<PeakSpotTableViewModelBase> peakSpotTableService;
-        private readonly IWindowService<PeakSpotTableViewModelBase> proteomicsTableService;
-
         public AnalysisPeakPlotViewModel PlotViewModel { get; }
         public EicViewModel EicViewModel { get; }
         public RawDecSpectrumsViewModel RawDecSpectrumsViewModel { get; }
@@ -193,12 +194,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public ReactiveCommand SearchCompoundCommand { get; }
 
         private void SearchCompound() {
-            using (var csm = model.CreateCompoundSearchModel()) {
+            using (var csm = _model.CreateCompoundSearchModel()) {
                 if (csm is null) {
                     return;
                 }
                 using (var vm = new LcmsCompoundSearchViewModel(csm, SetUnknownCommand)) {
-                    compoundSearchService.ShowDialog(vm);
+                    _compoundSearchService.ShowDialog(vm);
                 }
             }
         }
@@ -207,11 +208,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand _showIonTableCommand;
 
         private void ShowIonTable() {
-            if (model.Parameter.TargetOmics == CompMs.Common.Enum.TargetOmics.Proteomics) {
-                proteomicsTableService.Show(ProteomicsPeakTableViewModel);
+            if (_model.Parameter.TargetOmics == CompMs.Common.Enum.TargetOmics.Proteomics) {
+                _proteomicsTableService.Show(ProteomicsPeakTableViewModel);
             }
             else {
-                peakSpotTableService.Show(PeakTableViewModel);
+                _peakSpotTableService.Show(PeakTableViewModel);
             }
         }
 
@@ -235,12 +236,12 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             if (sfd.ShowDialog(owner) == true) {
                 var filename = sfd.FileName;
-                this.model.SaveSpectra(filename);
+                this._model.SaveSpectra(filename);
             }
         }
 
         private bool CanSaveSpectra(Window owner) {
-            return this.model.CanSaveSpectra();
+            return this._model.CanSaveSpectra();
         }
 
         private async Task SaveRawSpectraAsync(Window owner) {
@@ -253,13 +254,16 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             if (sfd.ShowDialog(owner) == true) {
                 var filename = sfd.FileName;
-                await model.SaveRawSpectra(filename).ConfigureAwait(false);
+                await _model.SaveRawSpectra(filename).ConfigureAwait(false);
             }
         }
 
         private bool CanSaveRawSpectra(Window owner) {
-            return this.model.CanSaveRawSpectra.Value;
+            return _model.CanSaveRawSpectra.Value;
         }
+
+        // IResultViewModel
+        IResultModel IResultViewModel.Model => _model;
     }
 
 }

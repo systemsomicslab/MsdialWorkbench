@@ -67,17 +67,8 @@ namespace CompMs.App.Msdial.Model.Core {
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 
-        public void SearchFragment(ParameterBase parameter) {
-            var features = Ms1Peaks;
-            MsdialCore.Algorithm.FragmentSearcher.Search(features.Select(n => n.InnerModel).ToList(), decLoader, parameter);
-
-            foreach (var feature in features) {
-                var featureStatus = feature.InnerModel.FeatureFilterStatus;
-                if (featureStatus.IsFragmentExistFiltered) {
-                    Console.WriteLine("A fragment is found by MassQL not in alignment !!!");
-                }
-            }
-        }
+        public abstract void SearchFragment();
+        public abstract void InvokeMsfinder();
 
         public Task SaveAsync(CancellationToken token) {
             return _peakCollection.SerializeAsync(AnalysisFileModel.File, token);

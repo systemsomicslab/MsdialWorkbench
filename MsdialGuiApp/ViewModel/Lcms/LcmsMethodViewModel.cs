@@ -1,6 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
 using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.ViewModel.Chart;
@@ -194,13 +193,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand<Window> _massqlSearchSettingCommand;
 
         private void MassqlSearchSettingMethod(Window owner) {
-            MassqlSettingModel m;
-            if (SelectedViewModel.Value is IAlignmentResultViewModel) {
-                m = _model.ShowShowMassqlSearchSettingView(isAlignmentViewSelected: true);
-            }
-            else {
-                m = _model.ShowShowMassqlSearchSettingView(isAlignmentViewSelected: false);
-            }
+            MassqlSettingModel m = _model.ShowShowMassqlSearchSettingView(SelectedViewModel.Value.Model);
             if (m is null) {
                 return;
             }
@@ -236,13 +229,6 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                 return;
                 //Console.WriteLine("Please select an item in Alignment navigator!!");
             }
-        }
-
-        public DelegateCommand GoToMsfinderCommand => _goToMsfinderCommand ??  (_goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
-        private DelegateCommand _goToMsfinderCommand;
-
-        private void GoToMsfinderMethod() {
-            _model.GoToMsfinderMethod(SelectedViewModel.Value is IAlignmentResultViewModel);
         }
 
         private static IReadOnlyReactiveProperty<LcmsAnalysisViewModel> ConvertToAnalysisViewModelAsObservable(

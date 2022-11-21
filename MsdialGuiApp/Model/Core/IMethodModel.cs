@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CompMs.App.Msdial.Model.Core
 {
-    public interface IMethodModel : INotifyPropertyChanged, IDisposable {
+    internal interface IMethodModel : INotifyPropertyChanged, IDisposable {
         AnalysisFileBeanModelCollection AnalysisFileModelCollection { get; }
 
         AnalysisFileBeanModel AnalysisFileModel { get; }
@@ -23,5 +23,6 @@ namespace CompMs.App.Msdial.Model.Core
         Task LoadAsync(CancellationToken token);
         Task SaveAsync();
         Task RunAsync(ProcessOption option, CancellationToken token);
+        void InvokeMsfinder(IResultModel model);
     }
 }

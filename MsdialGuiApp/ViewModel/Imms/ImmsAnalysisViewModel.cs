@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Imms;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
@@ -137,5 +138,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private bool CanSaveSpectra() {
             return _model.CanSaveSpectra();
         }
+
+        // IResultViewModel
+        IResultModel IResultViewModel.Model => _model;
     }
 }

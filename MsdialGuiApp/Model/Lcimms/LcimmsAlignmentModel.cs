@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.ExternalApp;
+using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
@@ -16,7 +17,6 @@ using CompMs.Graphics.Design;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using CompMs.MsdialLcImMsApi.Algorithm.Annotation;
 using CompMs.MsdialLcImMsApi.Parameter;
@@ -40,14 +40,18 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> DRIFT_CHROMATOGRAM_SPOT_SERIALIZER = ChromatogramSerializerFactory.CreateSpotSerializer("CSS1", ChromXType.Drift);
 
         private readonly AlignmentFileBean _alignmentFileBean;
+        private readonly DataBaseMapper _dataBaseMapper;
+        private readonly MsdialLcImMsParameter _parameter;
         private readonly List<AnalysisFileBean> _files;
         private readonly MSDecLoader _decLoader;
 
         public LcimmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
+            AnalysisFileBeanModelCollection fileCollection,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databases,
             DataBaseMapper mapper,
+            ProjectBaseParameterModel projectBaseParameter,
             MsdialLcImMsParameter parameter,
             List<AnalysisFileBean> files,
             PeakFilterModel peakFilterModel,
@@ -57,9 +61,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 throw new ArgumentNullException(nameof(evaluator));
             }
             _alignmentFileBean = alignmentFileBean;
+            _dataBaseMapper = mapper;
+            _parameter = parameter;
             _files = files ?? throw new ArgumentNullException(nameof(files));
 
-            BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
+            BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName, fileCollection);
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
 
             var props = Container.AlignmentSpotProperties;
@@ -170,7 +176,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
-            var eicLoader = new AlignmentEicLoader(RT_CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor), Observable.Return(fileIdToFileName)).AddTo(Disposables);
+            var eicLoader = new AlignmentEicLoader(RT_CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, fileCollection, projectBaseParameter).AddTo(Disposables);
             RtAlignmentEicModel = AlignmentEicModel.Create(
                 accumulatedTarget, eicLoader, files, parameter,
                 peak => peak.Time,
@@ -196,7 +202,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
                         : $"Spot ID: {t.MasterAlignmentID} Mass m/z: {t.MassCenter:F5} Mobility [1/K0]: {t.innerModel.TimesCenter.Drift.Value:F4}"))
                 .Subscribe(title => DtMzPlotModel.GraphTitle = title)
                 .AddTo(Disposables);
-            var dtEicLoader = new AlignmentEicLoader(DRIFT_CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor), Observable.Return(fileIdToFileName)).AddTo(Disposables);
+            var dtEicLoader = new AlignmentEicLoader(DRIFT_CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, fileCollection, projectBaseParameter).AddTo(Disposables);
             DtAlignmentEicModel = AlignmentEicModel.Create(
                 target, dtEicLoader, files, parameter,
                 peak => peak.Time,
@@ -254,8 +260,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
             var classBrush = new KeyBrushMapper<BarItem, string>(classToColor, item => item.Class, Colors.Blue);
             var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", observableBarItemsLoader, Observable.Return(true));
             var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
-            RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
-            DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
+            RtBarChartModel = new BarChartModel(accumulatedTarget, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter).AddTo(Disposables);
+            DtBarChartModel = new BarChartModel(target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter).AddTo(Disposables);
 
             AlignmentSpotTableModel = new LcimmsAlignmentSpotTableModel(driftProps, target, Observable.Return(classBrush), observableBarItemsLoader).AddTo(Disposables);
 
@@ -344,15 +350,20 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel> CompoundSearchModel { get; }
 
-        public override void SearchFragment(ParameterBase parameter) {
-            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, parameter);
+        public override void SearchFragment() {
+            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, _parameter);
+        }
 
-            foreach (var feature in Ms1Spots) {
-                var featureStatus = feature.innerModel.FeatureFilterStatus;
-                if (featureStatus.IsFragmentExistFiltered) {
-                    Console.WriteLine("A fragment is found in alignment !!!");
-                }
+        public override void InvokeMsfinder() {
+            if (Target.Value is null || (MsdecResult.Value?.Spectrum).IsEmptyOrNull()) {
+                return;
             }
+            MsDialToExternalApps.SendToMsFinderProgram(
+                _alignmentFileBean,
+                Target.Value.innerModel,
+                MsdecResult.Value,
+                _dataBaseMapper,
+                _parameter);
         }
 
         public void SaveProject() {

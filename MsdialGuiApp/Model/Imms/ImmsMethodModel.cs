@@ -45,11 +45,13 @@ namespace CompMs.App.Msdial.Model.Imms
 
         private readonly IMessageBroker _broker;
         private readonly IMsdialDataStorage<MsdialImmsParameter> _storage;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly FacadeMatchResultEvaluator _matchResultEvaluator;
 
         public ImmsMethodModel(AnalysisFileBeanModelCollection analysisFileBeanModelCollection, IMsdialDataStorage<MsdialImmsParameter> storage, ProjectBaseParameterModel projectBaseParameter, IMessageBroker broker)
             : base(analysisFileBeanModelCollection, storage.AlignmentFiles, projectBaseParameter) {
             _storage = storage;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
             _matchResultEvaluator = FacadeMatchResultEvaluator.FromDataBases(storage.DataBases);
             _storage.DataBaseMapper = _storage.DataBases.CreateDataBaseMapper();
@@ -236,10 +238,12 @@ namespace CompMs.App.Msdial.Model.Imms
 
             return AlignmentModel = new ImmsAlignmentModel(
                 alignmentFile,
+                AnalysisFileModelCollection,
                 _matchResultEvaluator,
                 _storage.DataBases,
                 _storage.DataBaseMapper,
                 PeakFilterModel,
+               _projectBaseParameter,
                 _storage.Parameter,
                 _storage.AnalysisFiles)
             .AddTo(Disposables);

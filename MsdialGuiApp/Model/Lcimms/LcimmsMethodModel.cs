@@ -54,6 +54,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
 
             Storage = storage;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
             providerFactory = new StandardDataProviderFactory();
             accProviderFactory = new LcimmsAccumulateDataProviderFactory();
@@ -101,6 +102,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly IDataProviderFactory<RawMeasurement> providerFactory;
         private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly IMessageBroker _broker;
 
         public PeakFilterModel AccumulatedPeakFilterModel { get; }
@@ -133,9 +135,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
             return AlignmentModel = new LcimmsAlignmentModel(
                 alignmentFile,
+                AnalysisFileModelCollection,
                 matchResultEvaluator,
                 Storage.DataBases,
                 Storage.DataBaseMapper,
+                _projectBaseParameter,
                 Storage.Parameter,
                 Storage.AnalysisFiles,
                 PeakFilterModel,

@@ -253,9 +253,13 @@ namespace CompMs.App.MsdialConsole {
             //    @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\POS_result\lipidome_pos.csv",
             //    @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\POS_result\lipidome_pos_violin.csv");
 
+            //RnaSeqProcess.Convert2Csv4ViolinPlot(
+            //    @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\Result\table.csv",
+            //    @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\ImagingMS\Result\table_violin.csv");
+
             RnaSeqProcess.Convert2Csv4ViolinPlot(
-                @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\pic_transcriptome\UMI_count_hetero_vs_KO_all.csv",
-                @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\pic_transcriptome\UMI_count_hetero_vs_KO_all_violin.csv");
+                @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\pic_transcriptome\pic_table.csv",
+                @"E:\6_Projects\PROJECT_ImagingMS\EYE Project\pic_transcriptome\pic_table_violin.csv");
 
             //CreateStatisticsInEieioProject.WriteSummary(
             //    @"E:\6_Projects\PROJECT_SCIEXEAD\20220818_EIEIO_checked_MT\results",
