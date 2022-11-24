@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CompMs.App.Msdial.ViewModel.DataObj
 {
-    public class StandardCompoundViewModel : ViewModelBase
+    public sealed class StandardCompoundViewModel : ViewModelBase
     {
         public StandardCompoundViewModel(StandardCompoundModel compound) {
             _compound = compound;
@@ -12,6 +12,8 @@ namespace CompMs.App.Msdial.ViewModel.DataObj
         }
 
         private readonly StandardCompoundModel _compound;
+
+        public StandardCompoundModel Compound => _compound;
 
         public void Refresh() {
             StandardName = _compound.StandardName;
