@@ -73,7 +73,7 @@ namespace CompMs.App.Msdial.Model.Statistics {
                     var metName = metaboliteName == null || metaboliteName == string.Empty ? "Unknown" : metaboliteName;
                     if (metName.Contains("(d")) continue; // should be internal standards
                     var rgba = new byte[] { 128, 128, 128, 255 }; // gray
-                    if (ChemOntologyColorConverter.Ontology2RgbString.ContainsKey(ontology)) {
+                    if (!(ontology is null) && ChemOntologyColorConverter.Ontology2RgbString.ContainsKey(ontology)) {
                         var colorcode = ChemOntologyColorConverter.Ontology2RgbString[ontology];
                         var rgb = colorcode.Trim(new char[] { 'r', 'g', 'b', '(', ')' }).Split(',').Select(s => Convert.ToByte(s)).ToArray();
                         Array.Copy(rgb, 0, rgba, 0, 3);
