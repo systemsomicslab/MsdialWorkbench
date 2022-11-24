@@ -28,7 +28,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid>
+        <Grid Margin="0,64,0,0">
             <Grid.Style>
                 <Style TargetType="Grid">
                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -41,21 +41,20 @@
             </Grid.Style>
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="4*"/>
-                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="4*" MaxWidth="540"/>
+                <ColumnDefinition Width="2*" MaxWidth="260"/>
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
                 <RowDefinition Height="4*"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="*" MaxHeight="120"/>
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Top"
                         Margin="0,0,16,0"
-                        Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
+                        Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
                 <StackPanel.Resources>
                     <Style TargetType="Button">
                         <Setter Property="Width" Value="48"/>
@@ -77,14 +76,14 @@
                 </Button>
             </StackPanel>
 
-            <StackPanel Grid.Row="1" Grid.Column="0"
+            <StackPanel Grid.Row="0" Grid.Column="0"
                         VerticalAlignment="Center">
                 <Image Source="/Resources/msdial_icon.png" Width="240"/>
                 <TextBlock Text="MS-DIAL" FontSize="72" FontFamily="arial" VerticalAlignment="Center" HorizontalAlignment="Center" />
                 <TextBlock Text="{x:Static properties:Resources.VERSION}" FontSize="48" FontFamily="arial" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </StackPanel>
 
-            <StackPanel VerticalAlignment="Center" Grid.Row="1" Grid.Column="1">
+            <StackPanel VerticalAlignment="Center" Grid.Row="0" Grid.Column="1">
                 <StackPanel.Resources>
                     <Style TargetType="Button">
                         <Setter Property="Height" Value="100"/>
@@ -123,14 +122,20 @@
                 </Button>
             </StackPanel>
 
-            <StackPanel Grid.Row="1" Grid.Column="2"
-                        Margin="8">
-                <TextBlock Text="Open recent projects" FontSize="20" Margin="0,8"/>
-                <ItemsControl ItemsSource="{Binding PreviousProjects}">
+            <DockPanel Grid.Row="0" Grid.Column="2"
+                       Margin="8">
+                <TextBlock Text="Open recent projects" FontSize="20" Margin="0,8"
+                           DockPanel.Dock="Top"/>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding PreviousProjects}"
+                              BorderThickness="0.5"
+                              BorderBrush="Black">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Button Command="{Binding Path=DataContext.OpenPreviousProjectCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                     CommandParameter="{Binding}"
+                                    HorizontalContentAlignment="Stretch"
+                                    BorderThickness="0"
                                     Background="Transparent">
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -152,12 +157,13 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-            </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
 
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Top"
-                        Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
+                        Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
                 <Button Command="{Binding GoToTutorialCommand}"
                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                         Background="Transparent"
