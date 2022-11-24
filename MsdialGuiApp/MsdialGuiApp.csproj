@@ -162,7 +162,10 @@
     <Compile Include="Model\DataObj\AnalysisFileBeanModelCollection.cs" />
     <Compile Include="Model\DataObj\BarItemCollection.cs" />
     <Compile Include="Model\DataObj\IPeakSpotModel.cs" />
+    <Compile Include="Model\Export\AlignmentExportGroupModel.cs" />
     <Compile Include="Model\Export\AlignmentResultExportModel.cs" />
+    <Compile Include="Model\Export\ExportFormat.cs" />
+    <Compile Include="Model\Export\ExportType.cs" />
     <Compile Include="Model\Imaging\ImagingImageModel.cs" />
     <Compile Include="Model\Imaging\ImagingRoiModel.cs" />
     <Compile Include="Model\Imaging\ImaginRoiCompareModel.cs" />
@@ -322,6 +325,7 @@
     <Compile Include="ViewModel\Core\IAnalysisResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IResultViewModel.cs" />
     <Compile Include="ViewModel\DataObj\PeptideViewModel.cs" />
+    <Compile Include="ViewModel\Export\AlignmentExportGroupViewModel.cs" />
     <Compile Include="ViewModel\ImagingImms\ImagingMainViewModel.cs" />
     <Compile Include="ViewModel\Imaging\ImagingImageViewModel.cs" />
     <Compile Include="ViewModel\Imaging\ImagingRoiCompareViewModel.cs" />

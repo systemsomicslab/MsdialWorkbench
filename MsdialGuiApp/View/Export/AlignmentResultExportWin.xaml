@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Export"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Export"
         xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
         mc:Ignorable="d"
@@ -49,69 +48,77 @@
                     Grid.Column="2"/>
         </Grid>
 
-        <StackPanel Margin="8" Grid.Row="1">
-            <TextBlock Text="Export option" FontStyle="Italic"/>
-            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                <TextBlock Text="File:"
-                           VerticalAlignment="Center"
-                           Margin="0,0,8,0"/>
-                <ComboBox ItemsSource="{Binding AlignmentFiles}"
-                          IsSynchronizedWithCurrentItem="True"
-                          DisplayMemberPath="FileName"
-                          SelectedItem="{Binding AlignmentFile, Mode=OneWayToSource}"
-                          HorizontalAlignment="Stretch"/>
-            </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="8" Grid.Row="1">
+            <TextBlock Text="File:"
+                       VerticalAlignment="Center"
+                       Margin="0,0,8,0"/>
+            <ComboBox ItemsSource="{Binding AlignmentFiles}"
+                      IsSynchronizedWithCurrentItem="True"
+                      DisplayMemberPath="FileName"
+                      SelectedItem="{Binding AlignmentFile, Mode=OneWayToSource}"
+                      HorizontalAlignment="Stretch"/>
         </StackPanel>
 
-        <ItemsControl ItemsSource="{Binding ExportTypes}"
-                      Margin="8"
-                      Grid.Row="2">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel/>
-                    <!--<UniformGrid Columns="2"/>-->
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <CheckBox Content="{Binding Label}"
-                              IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                              HorizontalAlignment="Left" VerticalAlignment="Center"
-                              Margin="8,8,0,0" Width="180"
-                              />
+        <ItemsControl ItemsSource="{Binding Groups}" Margin="8" Grid.Row="2" Grid.RowSpan="4">
+            <ItemsControl.Resources>
+                <DataTemplate DataType="{x:Type vm:AlignmentExportGroupViewModel}">
+                    <Expander Header="{Binding Label, Mode=OneTime}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ItemsControl ItemsSource="{Binding Types}"
+                                          Margin="8" Grid.Row="0">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Content="{Binding Label}"
+                                                  IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                  Margin="8,8,0,0" Width="180"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <StackPanel Orientation="Horizontal"
+                                        VerticalAlignment="Bottom"
+                                        Margin="8"
+                                        Height="30"
+                                        Grid.Row="1">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Export format:"
+                                               VerticalAlignment="Center"
+                                               Margin="8,0,0,0"/>
+                                    <ComboBox ItemsSource="{Binding Formats, Mode=OneTime}"
+                                              DisplayMemberPath="Label"
+                                              SelectedValue="{Binding Format, Mode=OneWayToSource}"
+                                              SelectedIndex="0"
+                                              VerticalContentAlignment="Center"
+                                              Width="100" Margin="8,0,0,0"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="8,0,0,0">
+                                    <TextBlock Text="Spectra type:"
+                                               VerticalAlignment="Center"
+                                               Margin="8,0,0,0"/>
+                                    <ComboBox ItemsSource="{Binding SpectraTypes, Mode=OneTime}"
+                                              SelectedValue="{Binding SpectraType, Mode=OneWayToSource}"
+                                              SelectedIndex="0"
+                                              VerticalContentAlignment="Center"
+                                              Width="100" Margin="8,0,0,0"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Expander>
                 </DataTemplate>
-            </ItemsControl.ItemTemplate>
+            </ItemsControl.Resources>
         </ItemsControl>
-
-        <StackPanel Orientation="Horizontal"
-                    VerticalAlignment="Bottom"
-                    Margin="8"
-                    Height="30"
-                    Grid.Row="5">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Export format:"
-                           VerticalAlignment="Center"
-                           Margin="8,0,0,0"/>
-                <ComboBox ItemsSource="{Binding Formats, Mode=OneTime}"
-                          DisplayMemberPath="Label"
-                          SelectedValue="{Binding Format, Mode=OneWayToSource}"
-                          SelectedIndex="0"
-                          VerticalContentAlignment="Center"
-                          Width="100" Margin="8,0,0,0"/>
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal"
-                        Margin="8,0,0,0">
-                <TextBlock Text="Spectra type:"
-                           VerticalAlignment="Center"
-                           Margin="8,0,0,0"/>
-                <ComboBox ItemsSource="{Binding SpectraTypes, Mode=OneTime}"
-                          SelectedValue="{Binding SpectraType, Mode=OneWayToSource}"
-                          SelectedIndex="0"
-                          VerticalContentAlignment="Center"
-                          Width="100" Margin="8,0,0,0"/>
-            </StackPanel>
-        </StackPanel>
 
         <StackPanel Orientation="Horizontal"
                     VerticalAlignment="Center" HorizontalAlignment="Right"
@@ -122,8 +129,7 @@
                     Click="ExportButton_Click"
                     Width="64" Margin="8,0"/>
             <Button Content="Cancel"
-                    Command="{Binding CancelCommand, Mode=OneTime}"
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}, Mode=OneTime}"
+                    Click="CancelButton_Click"
                     Width="64" Margin="8,0"/>
         </StackPanel>
     </Grid>

@@ -65,23 +65,36 @@ namespace CompMs.App.Msdial.Model.Lcms
             CanShowProteinGroupTable = Observable.Return(storage.Parameter.TargetOmics == TargetOmics.Proteomics);
 
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
-            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, storage.AlignmentFiles, storage);
             var  metadataAccessor = storage.Parameter.TargetOmics == TargetOmics.Proteomics
                 ? (IMetadataAccessor)new LcmsProteomicsMetadataAccessor(storage.DataBaseMapper, storage.Parameter)
                 : (IMetadataAccessor)new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
-            AlignmentResultExportModel.AddExportTypes(
-                new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
-                new ExportType("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
-                new ExportType("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats),
-                new ExportType("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats),
-                new ExportType("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
-                new ExportType("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", storage.Parameter), "Mz"),
-                new ExportType("Retention time", metadataAccessor, new LegacyQuantValueAccessor("RT", storage.Parameter), "Rt"),
-                new ExportType("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
-                new ExportType("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"));
+            var group = new AlignmentExportGroupModel(
+                "Peaks",
+                new[]
+                {
+                    new ExportFormat("txt", "txt", new AlignmentCSVExporter()),
+                    new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ",")),
+                },
+                new[]
+                {
+                    new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
+                    new ExportType("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
+                    new ExportType("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats),
+                    new ExportType("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats),
+                    new ExportType("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
+                    new ExportType("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", storage.Parameter), "Mz"),
+                    new ExportType("Retention time", metadataAccessor, new LegacyQuantValueAccessor("RT", storage.Parameter), "Rt"),
+                    new ExportType("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
+                    new ExportType("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded")
+                },
+                new[]
+                {
+                    ExportspectraType.deconvoluted,
+                });
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
-                AlignmentResultExportModel.AddExportTypes(new ExportType("Protein assembled", metadataAccessor, new LegacyQuantValueAccessor("Protein", storage.Parameter), "Protein"));
+                group.AddExportTypes(new ExportType("Protein assembled", metadataAccessor, new LegacyQuantValueAccessor("Protein", storage.Parameter), "Protein"));
             }
+            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, storage.AlignmentFiles, storage, new[] { group });
             this.ObserveProperty(m => m.AlignmentFile)
                 .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
                 .AddTo(Disposables);
