@@ -424,7 +424,7 @@
     <Compile Include="ViewModel\Setting\DisplayEicSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\FragmentQuerySettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\IdentifySettingViewModel.cs" />
-    <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
+    <Compile Include="ViewModel\Export\AlignmentResultExportViewModel.cs" />
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsCompoundSearchVM.cs" />
     <Compile Include="ViewModel\Imms\ImmsDataCollectionSettingViewModel.cs" />

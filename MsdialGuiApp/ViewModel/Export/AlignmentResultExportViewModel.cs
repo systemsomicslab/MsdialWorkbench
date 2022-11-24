@@ -13,12 +13,12 @@ using System.Windows.Data;
 
 namespace CompMs.App.Msdial.ViewModel.Export
 {
-    internal sealed class AlignmentResultExport2VM : ViewModelBase
+    internal sealed class AlignmentResultExportViewModel : ViewModelBase
     {
         private readonly IMessageBroker _broker;
         private readonly AlignmentResultExportModel _model;
 
-        internal AlignmentResultExport2VM(AlignmentResultExportModel model, IMessageBroker broker) {
+        internal AlignmentResultExportViewModel(AlignmentResultExportModel model, IMessageBroker broker) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
             _broker = broker ?? MessageBroker.Default;
 

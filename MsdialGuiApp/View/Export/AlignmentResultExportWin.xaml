@@ -7,7 +7,7 @@
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Export"
         xmlns:common="clr-namespace:CompMs.Common.Enum;assembly=Common"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance Type={x:Type vm:AlignmentResultExport2VM}}"
+        d:DataContext="{d:DesignInstance Type={x:Type vm:AlignmentResultExportViewModel}}"
         Title="Alignment result export" SizeToContent="Height" Width="450">
     <Window.Resources>
         <ObjectDataProvider x:Key="ExportSpectraType" MethodName="GetValues"

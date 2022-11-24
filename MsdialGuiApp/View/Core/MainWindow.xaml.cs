@@ -90,7 +90,7 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(OpenMultivariateAnalysisSettingView);
             broker.ToObservable<PCAPLSResultViewModel>()
                 .Subscribe(OpenPCAPLSResultView);
-            broker.ToObservable<AlignmentResultExport2VM>()
+            broker.ToObservable<AlignmentResultExportViewModel>()
                 .Subscribe(OpenAlignmentResultExportDialog);
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
@@ -341,7 +341,7 @@ namespace CompMs.App.Msdial.View.Core
             });
         }
 
-        private void OpenAlignmentResultExportDialog(AlignmentResultExport2VM vm) {
+        private void OpenAlignmentResultExportDialog(AlignmentResultExportViewModel vm) {
             var dialog = new AlignmentResultExportWin
             {
                 DataContext = vm,
