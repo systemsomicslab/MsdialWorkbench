@@ -68,7 +68,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var  metadataAccessor = storage.Parameter.TargetOmics == TargetOmics.Proteomics
                 ? (IMetadataAccessor)new LcmsProteomicsMetadataAccessor(storage.DataBaseMapper, storage.Parameter)
                 : (IMetadataAccessor)new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
-            var group = new AlignmentExportGroupModel(
+            var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
                 new[]
                 {
@@ -91,10 +91,24 @@ namespace CompMs.App.Msdial.Model.Lcms
                 {
                     ExportspectraType.deconvoluted,
                 });
+            var spectraGroup = new AlignmentExportGroupModel(
+                "Spectra",
+                new[]
+                {
+                    new ExportFormat("msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
+                },
+                new[]
+                {
+                    new ExportType("MS/MS spectra", null, null, "Spectra"),
+                },
+                new[]
+                {
+                    ExportspectraType.deconvoluted,
+                });
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
-                group.AddExportTypes(new ExportType("Protein assembled", metadataAccessor, new LegacyQuantValueAccessor("Protein", storage.Parameter), "Protein"));
+                peakGroup.AddExportTypes(new ExportType("Protein assembled", metadataAccessor, new LegacyQuantValueAccessor("Protein", storage.Parameter), "Protein"));
             }
-            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, storage.AlignmentFiles, storage, new[] { group });
+            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, storage.AlignmentFiles, storage, new[] { peakGroup, spectraGroup, });
             this.ObserveProperty(m => m.AlignmentFile)
                 .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
                 .AddTo(Disposables);

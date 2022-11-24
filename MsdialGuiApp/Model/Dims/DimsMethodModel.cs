@@ -81,7 +81,21 @@ namespace CompMs.App.Msdial.Model.Dims
                 {
                     ExportspectraType.deconvoluted,
                 });
-            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, AlignmentFiles, storage, new[] { peakGroup, });
+            var spectraGroup = new AlignmentExportGroupModel(
+                "Spectra",
+                new[]
+                {
+                    new ExportFormat("msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
+                },
+                new[]
+                {
+                    new ExportType("MS/MS spectra", null, null, "Spectra"),
+                },
+                new[]
+                {
+                    ExportspectraType.deconvoluted,
+                });
+            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, AlignmentFiles, storage, new[] { peakGroup, spectraGroup, });
             this.ObserveProperty(m => m.AlignmentFile)
                 .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
                 .AddTo(Disposables);
