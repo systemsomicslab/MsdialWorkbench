@@ -2,11 +2,11 @@
 using CompMs.App.Msdial.Model.Service;
 using CompMs.App.Msdial.Model.Setting;
 using CompMs.CommonMVVM;
-using CompMs.MsdialCore.Parameter;
 using Reactive.Bindings.Notifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -62,6 +62,14 @@ namespace CompMs.App.Msdial.Model.Core
         private Task SetNewProject(IProjectModel project) {
             CurrentProject = project;
             ProjectSetting = new ProjectSettingModel(SetNewProject, _broker);
+            var currentCrumb = new ProjectCrumb(project.Storage.ProjectParameter);
+            if (_previousProjects.Any(currentCrumb.MaybeSame)) {
+                _previousProjects.RemoveAll(currentCrumb.MaybeSame);
+            }
+            _previousProjects.Insert(0, currentCrumb);
+            if (_previousProjects.Count > 50) {
+                _previousProjects.RemoveRange(50, _previousProjects.Count - 50);
+            }
             return Task.CompletedTask;
         }
 
@@ -96,6 +104,9 @@ namespace CompMs.App.Msdial.Model.Core
                         RestoreDirectory = true,
                     };
                     _broker.Publish(request);
+                    if (!File.Exists(projectPath)) {
+                        return;
+                    }
                     var loadedProject = await ProjectModel.LoadAsync(projectPath, _broker).ConfigureAwait(false);
                     if (!(loadedProject is null)) {
                         CurrentProject = loadedProject;
@@ -121,6 +132,9 @@ namespace CompMs.App.Msdial.Model.Core
         public async Task LoadProjectAsync(ProjectCrumb projectCrumb) {
             using (nowLoading.ProcessStart()) {
                 try {
+                    if (!File.Exists(projectCrumb.FilePath)) {
+                        return;
+                    }
                     var loadedProject = await ProjectModel.LoadAsync(projectCrumb.FilePath, _broker).ConfigureAwait(true);
                     if (!(loadedProject is null)) {
                         CurrentProject = loadedProject;
