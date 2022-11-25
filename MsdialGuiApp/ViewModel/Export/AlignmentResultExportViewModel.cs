@@ -6,6 +6,7 @@ using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         private readonly AlignmentResultExportModel _model;
 
         internal AlignmentResultExportViewModel(AlignmentResultExportModel model, IMessageBroker broker) {
-            _model = model ?? throw new System.ArgumentNullException(nameof(model));
+            _model = model ?? throw new ArgumentNullException(nameof(model));
             _broker = broker ?? MessageBroker.Default;
 
             AlignmentFiles = CollectionViewSource.GetDefaultView(_model.AlignmentFiles);
@@ -27,7 +28,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
                 AlignmentFiles.MoveCurrentTo(_model.AlignmentFile);
             }
 
-            Groups = model.Groups.ToReadOnlyReactiveCollection(m => new AlignmentExportGroupViewModel(m, ExportCommand)).AddTo(Disposables);
+            Groups = model.Groups.ToReadOnlyReactiveCollection(m => MapToViewModel(m, ExportCommand)).AddTo(Disposables);
             if (Groups.Any()) {
                 Groups.First().IsExpanded = true;
             }
@@ -59,11 +60,12 @@ namespace CompMs.App.Msdial.ViewModel.Export
                 }
             }
         }
+
         private AlignmentFileBean _alignmentFile;
 
         public ICollectionView AlignmentFiles { get; }
 
-        public ReadOnlyReactiveCollection<AlignmentExportGroupViewModel> Groups { get; }
+        public ReadOnlyReactiveCollection<IAlignmentResultExportViewModel> Groups { get; }
 
         public DelegateCommand BrowseDirectoryCommand => _browseDirectoryCommand ?? (_browseDirectoryCommand = new DelegateCommand(BrowseDirectory));
         private DelegateCommand _browseDirectoryCommand;
@@ -91,6 +93,17 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
         private bool CanExportAlignmentResult() {
             return !HasValidationErrors && !Groups.Any(g => g.HasValidationErrors) && _model.CanExportAlignmentResult();
+        }
+
+        private static IAlignmentResultExportViewModel MapToViewModel(IAlignmentResultExportModel model, DelegateCommand exportCommand) {
+            switch (model) {
+                case AlignmentExportGroupModel gm:
+                    return new AlignmentExportGroupViewModel(gm, exportCommand);
+                case ProteinGroupExportModel pm:
+                    return new ProteinGroupExportViewModel(pm);
+                default:
+                    throw new NotSupportedException(model.GetType().FullName);
+            }
         }
     }
 }

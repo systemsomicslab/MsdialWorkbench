@@ -9,11 +9,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace CompMs.App.Msdial.Model.Export
 {
-    internal sealed class AlignmentExportGroupModel : BindableBase {
+    internal interface IAlignmentResultExportModel {
+        void Export(IMsdialDataStorage<ParameterBase> storage, AlignmentFileBean alignmentFile, string exportDirectory, Action<double, string> notification);
+    }
+
+    internal sealed class AlignmentExportGroupModel : BindableBase, IAlignmentResultExportModel {
         public AlignmentExportGroupModel(string label, IEnumerable<ExportFormat> formats, IEnumerable<ExportType> types, IEnumerable<ExportspectraType> spectraTypes) {
             Label = label;
             _types = new ObservableCollection<ExportType>(types);
@@ -54,10 +57,9 @@ namespace CompMs.App.Msdial.Model.Export
 
         private readonly ObservableCollection<ExportspectraType> _spectraTypes;
 
-        public void ExportAlignmentResult(IMsdialDataStorage<ParameterBase> container_, AlignmentFileBean alignmentFile, string exportDirectory, Action<double, string> notification = null) {
-            var files = container_.AnalysisFiles;
+        public void ExportAlignmentResult(IMsdialDataStorage<ParameterBase> storage, AlignmentFileBean alignmentFile, string exportDirectory, Action<double, string> notification = null) {
+            var files = storage.AnalysisFiles;
             var dt = DateTime.Now;
-
             var resultContainer = AlignmentResultContainer.Load(alignmentFile);
             var msdecResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
             var exportTypes = Types.Where(type => type.IsSelected).ToArray();
@@ -68,41 +70,20 @@ namespace CompMs.App.Msdial.Model.Export
                 notification?.Invoke(((double)index) / exportTypes.Length, $"Exporting {outName}");
 
                 using (var outstream = File.Open(outfile, FileMode.Create, FileAccess.Write)) {
-                    if (exportType.FilePrefix == "Protein") {
-                        var container = MsdialProteomicsSerializer.LoadProteinResultContainer(alignmentFile.ProteinAssembledResultFilePath);
-                        var header = new List<string>() {
-                            "Protein group ID", "Protein ID", "Protein name", "Protein description", "Coverage", "Score", "Peptide count", "Unique peptide count"
-                        };
-                        foreach (var file in files) header.Add(file.AnalysisFileName);
-                        using (var sw = new StreamWriter(outstream, Encoding.ASCII)) {
-                            sw.WriteLine(string.Join("\t", header));
-                            foreach (var group in container.ProteinGroups) {
-                                foreach (var protein in group.ProteinMsResults) {
-
-                                    var values = new List<string>() {
-                                        group.GroupID.ToString(), protein.FastaProperty.UniqueIdentifier, protein.FastaProperty.ProteinName, protein.FastaProperty.Description,
-                                        protein.PeptideCoverage.ToString(), protein.Score.ToString(), protein.MatchedPeptideResults.Count().ToString(), protein.UniquePeptides.Count().ToString()
-                                    };
-
-                                    foreach (var height in protein.PeakHeights) values.Add(height.ToString());
-                                    sw.WriteLine(string.Join("\t", values));
-                                }
-                            }
-                        }
-                    }
-                    else {
-                        var exporter = Format.Exporter;
-                        exporter.Export(
-                        outstream,
-                        resultContainer.AlignmentSpotProperties,
-                        msdecResults,
-                        files,
-                        exportType.MetadataAccessor,
-                        exportType.QuantValueAccessor,
-                        exportType.Stats);
-                    }
+                    var exporter = Format.Exporter;
+                    exporter.Export(
+                    outstream,
+                    resultContainer.AlignmentSpotProperties,
+                    msdecResults,
+                    files,
+                    exportType.MetadataAccessor,
+                    exportType.QuantValueAccessor,
+                    exportType.Stats);
                 }
             }
         }
+
+        void IAlignmentResultExportModel.Export(IMsdialDataStorage<ParameterBase> storage, AlignmentFileBean alignmentFile, string exportDirectory, Action<double, string> notification)
+            => ExportAlignmentResult(storage, alignmentFile, exportDirectory, notification);
     }
 }

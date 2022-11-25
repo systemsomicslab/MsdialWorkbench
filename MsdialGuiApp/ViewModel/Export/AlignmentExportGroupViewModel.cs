@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CompMs.App.Msdial.ViewModel.Export
 {
-    internal sealed class AlignmentExportGroupViewModel : ViewModelBase {
+    internal sealed class AlignmentExportGroupViewModel : ViewModelBase, IAlignmentResultExportViewModel {
         private readonly AlignmentExportGroupModel _model;
         private readonly DelegateCommand _exportCommand;
 
@@ -56,9 +56,5 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public ReadOnlyObservableCollection<ExportspectraType> SpectraTypes => _model.SpectraTypes;
 
         public ReadOnlyObservableCollection<ExportType> Types => _model.Types;
-
-        public void AddExportTypes(params ExportType[] exportTypes) {
-            _model.AddExportTypes(exportTypes);
-        }
     }
 }

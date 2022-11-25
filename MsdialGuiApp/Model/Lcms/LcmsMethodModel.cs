@@ -105,10 +105,11 @@ namespace CompMs.App.Msdial.Model.Lcms
                 {
                     ExportspectraType.deconvoluted,
                 });
+            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, };
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
-                peakGroup.AddExportTypes(new ExportType("Protein assembled", metadataAccessor, new LegacyQuantValueAccessor("Protein", storage.Parameter), "Protein"));
+                exportGroups.Add(new ProteinGroupExportModel(new ProteinGroupExporter()));
             }
-            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, storage.AlignmentFiles, storage, new[] { peakGroup, spectraGroup, });
+            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, storage.AlignmentFiles, storage, exportGroups);
             this.ObserveProperty(m => m.AlignmentFile)
                 .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
                 .AddTo(Disposables);

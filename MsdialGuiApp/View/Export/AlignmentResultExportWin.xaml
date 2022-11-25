@@ -117,6 +117,16 @@
                         </Grid>
                     </Expander>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:ProteinGroupExportViewModel}">
+                    <Expander Header="Proteins" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+                        <Grid Margin="8">
+                            <CheckBox Content="Protein assembled"
+                                      IsChecked="{Binding IsSelected.Value, Mode=TwoWay}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center"
+                                      Margin="8,8,0,0" Width="180"/>
+                        </Grid>
+                    </Expander>
+                </DataTemplate>
             </ItemsControl.Resources>
         </ItemsControl>
 

@@ -12,12 +12,12 @@ namespace CompMs.App.Msdial.Model.Export
     {
         private readonly IMsdialDataStorage<ParameterBase> _container;
 
-        public AlignmentResultExportModel(AlignmentFileBean alignmentFile, IReadOnlyList<AlignmentFileBean> alignmentFiles, IMsdialDataStorage<ParameterBase> container, IEnumerable<AlignmentExportGroupModel> exportGroups) {
+        public AlignmentResultExportModel(AlignmentFileBean alignmentFile, IReadOnlyList<AlignmentFileBean> alignmentFiles, IMsdialDataStorage<ParameterBase> container, IEnumerable<IAlignmentResultExportModel> exportGroups) {
             _container = container ?? throw new ArgumentNullException(nameof(container));
             AlignmentFiles = alignmentFiles;
             AlignmentFile = alignmentFile;
-            var groups = new ObservableCollection<AlignmentExportGroupModel>(exportGroups);
-            Groups = new ReadOnlyObservableCollection<AlignmentExportGroupModel>(groups);
+            var groups = new ObservableCollection<IAlignmentResultExportModel>(exportGroups);
+            Groups = new ReadOnlyObservableCollection<IAlignmentResultExportModel>(groups);
         }
 
         public string ExportDirectory {
@@ -34,11 +34,11 @@ namespace CompMs.App.Msdial.Model.Export
 
         public IReadOnlyList<AlignmentFileBean> AlignmentFiles { get; }
 
-        public ReadOnlyObservableCollection<AlignmentExportGroupModel> Groups { get; }
+        public ReadOnlyObservableCollection<IAlignmentResultExportModel> Groups { get; }
 
         public void ExportAlignmentResult(Action<double, string> notification = null) {
             foreach (var group in Groups) {
-                group.ExportAlignmentResult(_container, AlignmentFile, ExportDirectory, notification);
+                group.Export(_container, AlignmentFile, ExportDirectory, notification);
             }
         }
 
