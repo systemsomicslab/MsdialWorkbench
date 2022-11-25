@@ -21,7 +21,13 @@ namespace CompMs.MsdialCore.Export
             _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
         }
 
-        public void Export(Stream stream, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults, IReadOnlyList<AnalysisFileBean> files, IMetadataAccessor metaFormatter, IQuantValueAccessor quantAccessor, IReadOnlyList<StatsValue> stats) {
+        public void Export(Stream stream, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults) {
+            foreach (var (spot, result) in spots.Zip(msdecResults, (s, r) => (s, r))) {
+                SpectraExport.SaveSpectraTableAsNistFormat(stream, spot, result.Spectrum, _refer, _parameter);
+            }
+        }
+
+        void IAlignmentExporter.Export(Stream stream, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults, IReadOnlyList<AnalysisFileBean> files, IMetadataAccessor metaFormatter, IQuantValueAccessor quantAccessor, IReadOnlyList<StatsValue> stats) {
             foreach (var (spot, result) in spots.Zip(msdecResults, (s, r) => (s, r))) {
                 SpectraExport.SaveSpectraTableAsNistFormat(stream, spot, result.Spectrum, _refer, _parameter);
             }

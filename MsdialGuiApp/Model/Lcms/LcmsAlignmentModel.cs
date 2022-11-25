@@ -90,7 +90,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 ProteinResultContainerModel = proteinResultContainerModel;
             }
 
-            _decLoader = new MSDecLoader(_alignmentFile.SpectraFilePath);
+            _decLoader = new MSDecLoader(_alignmentFile.SpectraFilePath).AddTo(Disposables);
             _msdecResult = Target.Where(t => t != null)
                 .Select(t => _decLoader.LoadMSDecResult(t.MasterAlignmentID))
                 .ToReadOnlyReactivePropertySlim()

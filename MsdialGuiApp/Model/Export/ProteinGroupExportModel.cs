@@ -1,9 +1,9 @@
 ﻿using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
-using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Parser;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace CompMs.App.Msdial.Model.Export
@@ -11,9 +11,11 @@ namespace CompMs.App.Msdial.Model.Export
     internal sealed class ProteinGroupExportModel : BindableBase, IAlignmentResultExportModel
     {
         private readonly ProteinGroupExporter _exporter;
+        private readonly IReadOnlyList<AnalysisFileBean> _analysisFiles;
 
-        public ProteinGroupExportModel(ProteinGroupExporter exporter) {
+        public ProteinGroupExportModel(ProteinGroupExporter exporter, IReadOnlyList<AnalysisFileBean> analysisFiles) {
             _exporter = exporter;
+            _analysisFiles = analysisFiles ?? throw new ArgumentNullException(nameof(analysisFiles));
         }
 
         public bool IsSelected {
@@ -22,11 +24,17 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private bool _isSelected = false;
 
-        void IAlignmentResultExportModel.Export(IMsdialDataStorage<ParameterBase> storage, AlignmentFileBean alignmentFile, string exportDirectory, Action<double, string> notification) {
-            var outfile = Path.Combine(exportDirectory, $"Protein_{alignmentFile.FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.txt");
+        public int CountExportFiles() {
+            return 1;
+        }
+
+        public void Export(AlignmentFileBean alignmentFile, string exportDirectory, Action<string> notification) {
+            string outFile = $"Protein_{alignmentFile.FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.txt";
+            var outPath = Path.Combine(exportDirectory, outFile);
             var resultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(alignmentFile.ProteinAssembledResultFilePath);
-            using (var outstream = File.Open(outfile, FileMode.Create, FileAccess.Write)) {
-                _exporter.Export(outstream, resultContainer, storage.AnalysisFiles);
+            notification?.Invoke(outFile);
+            using (var outstream = File.Open(outPath, FileMode.Create, FileAccess.Write)) {
+                _exporter.Export(outstream, resultContainer, _analysisFiles);
             }
         }
     }

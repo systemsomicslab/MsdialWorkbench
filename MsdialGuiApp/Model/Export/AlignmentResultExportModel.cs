@@ -1,19 +1,17 @@
 ﻿using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.Parameter;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Threading;
 
 namespace CompMs.App.Msdial.Model.Export
 {
     internal sealed class AlignmentResultExportModel : DisposableModelBase
     {
-        private readonly IMsdialDataStorage<ParameterBase> _container;
-
-        public AlignmentResultExportModel(AlignmentFileBean alignmentFile, IReadOnlyList<AlignmentFileBean> alignmentFiles, IMsdialDataStorage<ParameterBase> container, IEnumerable<IAlignmentResultExportModel> exportGroups) {
-            _container = container ?? throw new ArgumentNullException(nameof(container));
+        public AlignmentResultExportModel(IEnumerable<IAlignmentResultExportModel> exportGroups, AlignmentFileBean alignmentFile, IReadOnlyList<AlignmentFileBean> alignmentFiles) {
             AlignmentFiles = alignmentFiles;
             AlignmentFile = alignmentFile;
             var groups = new ObservableCollection<IAlignmentResultExportModel>(exportGroups);
@@ -37,8 +35,13 @@ namespace CompMs.App.Msdial.Model.Export
         public ReadOnlyObservableCollection<IAlignmentResultExportModel> Groups { get; }
 
         public void ExportAlignmentResult(Action<double, string> notification = null) {
+            var numExportFile = (double)Groups.Sum(group => group.CountExportFiles());
+            var count = 0;
+            void notify(string file) {
+                notification?.Invoke(Interlocked.Increment(ref count) / numExportFile, file);
+            }
             foreach (var group in Groups) {
-                group.Export(_container, AlignmentFile, ExportDirectory, notification);
+                group.Export(AlignmentFile, ExportDirectory, notify);
             }
         }
 

@@ -164,6 +164,7 @@
     <Compile Include="Model\DataObj\IPeakSpotModel.cs" />
     <Compile Include="Model\Export\AlignmentExportGroupModel.cs" />
     <Compile Include="Model\Export\AlignmentResultExportModel.cs" />
+    <Compile Include="Model\Export\AlignmentSpectraExportGroupModel.cs" />
     <Compile Include="Model\Export\ExportFormat.cs" />
     <Compile Include="Model\Export\ExportType.cs" />
     <Compile Include="Model\Export\ProteinGroupExportModel.cs" />
@@ -327,6 +328,7 @@
     <Compile Include="ViewModel\Core\IResultViewModel.cs" />
     <Compile Include="ViewModel\DataObj\PeptideViewModel.cs" />
     <Compile Include="ViewModel\Export\AlignmentExportGroupViewModel.cs" />
+    <Compile Include="ViewModel\Export\AlignmentSpectraExportGroupViewModel.cs" />
     <Compile Include="ViewModel\Export\IAlignmentResultExportViewModel.cs" />
     <Compile Include="ViewModel\Export\ProteinGroupExportViewModel.cs" />
     <Compile Include="ViewModel\ImagingImms\ImagingMainViewModel.cs" />
@@ -1311,6 +1313,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <None Include="AlignmentExports.cd" />
     <None Include="Normalizations.cd" />
     <None Include="packages.config" />
     <None Include="PeakFiltering.cd" />

@@ -13,7 +13,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public AlignmentExportGroupViewModel(AlignmentExportGroupModel model, DelegateCommand exportCommand) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
             _exportCommand = exportCommand;
-            _format = model.Format;
+            _format = model.ExportMethod.Format;
             _spectraType = model.SpectraType;
         }
 
@@ -31,14 +31,14 @@ namespace CompMs.App.Msdial.ViewModel.Export
             set {
                 if (SetProperty(ref _format, value)) {
                     if (!ContainsError(nameof(Format))) {
-                        _model.Format = _format;
+                        _model.ExportMethod.Format = _format;
                     }
                     _exportCommand?.RaiseCanExecuteChanged();
                 }
             }
         }
         private ExportFormat _format;
-        public ReadOnlyObservableCollection<ExportFormat> Formats => _model.Formats;
+        public ExportFormat[] Formats => _model.ExportMethod.Formats;
 
         [Required(ErrorMessage = "Please select spectra type.")]
         public ExportspectraType SpectraType {

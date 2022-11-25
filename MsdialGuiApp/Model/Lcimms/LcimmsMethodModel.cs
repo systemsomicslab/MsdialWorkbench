@@ -62,15 +62,16 @@ namespace CompMs.App.Msdial.Model.Lcimms
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
             AccumulatedPeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
 
+            List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
             var metadataAccessor = new LcimmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
-                new[]
-                {
+                new ExportMethod(
+                    analysisFiles,
                     new ExportFormat("txt", "txt", new AlignmentCSVExporter()),
-                    new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ",")),
-                },
+                    new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ","))
+                ),
                 new[]
                 {
                     new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
@@ -89,21 +90,13 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 {
                     ExportspectraType.deconvoluted,
                 });
-            var spectraGroup = new AlignmentExportGroupModel(
-                "Spectra",
-                new[]
-                {
-                    new ExportFormat("msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
-                },
-                new[]
-                {
-                    new ExportType("MS/MS spectra", null, null, "Spectra"),
-                },
+            var spectraGroup = new AlignmentSpectraExportGroupModel(
+                new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter),
                 new[]
                 {
                     ExportspectraType.deconvoluted,
                 });
-            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, storage.AlignmentFiles, storage, new[] { peakGroup, spectraGroup, });
+            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, }, AlignmentFile, storage.AlignmentFiles);
             this.ObserveProperty(m => m.AlignmentFile)
                 .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
                 .AddTo(Disposables);

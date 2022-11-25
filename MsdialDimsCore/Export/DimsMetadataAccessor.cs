@@ -2,6 +2,7 @@
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
@@ -55,7 +56,7 @@ namespace CompMs.MsdialDimsCore.Export
 
         protected override Dictionary<string, string> GetContentCore(
             AlignmentSpotProperty spot,
-            MSDecResult msdec,
+            IMSScanProperty msdec,
             MoleculeMsReference reference,
             MsScanMatchResult matchResult) {
             var content = base.GetContentCore(spot, msdec, reference, matchResult);

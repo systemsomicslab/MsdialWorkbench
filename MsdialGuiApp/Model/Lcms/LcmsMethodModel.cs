@@ -64,17 +64,18 @@ namespace CompMs.App.Msdial.Model.Lcms
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
             CanShowProteinGroupTable = Observable.Return(storage.Parameter.TargetOmics == TargetOmics.Proteomics);
 
+            List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
             var  metadataAccessor = storage.Parameter.TargetOmics == TargetOmics.Proteomics
                 ? (IMetadataAccessor)new LcmsProteomicsMetadataAccessor(storage.DataBaseMapper, storage.Parameter)
                 : (IMetadataAccessor)new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
-                new[]
-                {
+                new ExportMethod(
+                    analysisFiles,
                     new ExportFormat("txt", "txt", new AlignmentCSVExporter()),
-                    new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ",")),
-                },
+                    new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ","))
+                ),
                 new[]
                 {
                     new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
@@ -91,25 +92,18 @@ namespace CompMs.App.Msdial.Model.Lcms
                 {
                     ExportspectraType.deconvoluted,
                 });
-            var spectraGroup = new AlignmentExportGroupModel(
-                "Spectra",
-                new[]
-                {
-                    new ExportFormat("msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
-                },
-                new[]
-                {
-                    new ExportType("MS/MS spectra", null, null, "Spectra"),
-                },
+            var spectraGroup = new AlignmentSpectraExportGroupModel(
+                new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter),
                 new[]
                 {
                     ExportspectraType.deconvoluted,
                 });
             var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, };
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
-                exportGroups.Add(new ProteinGroupExportModel(new ProteinGroupExporter()));
+                exportGroups.Add(new ProteinGroupExportModel(new ProteinGroupExporter(), analysisFiles));
             }
-            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, storage.AlignmentFiles, storage, exportGroups);
+
+            AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, AlignmentFile, storage.AlignmentFiles);
             this.ObserveProperty(m => m.AlignmentFile)
                 .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
                 .AddTo(Disposables);
