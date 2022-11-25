@@ -64,19 +64,46 @@ namespace CompMs.App.Msdial.Model.Imms
 
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
 
-            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, storage.AlignmentFiles, storage);
             var metadataAccessor = new ImmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
-            AlignmentResultExportModel.AddExportTypes(
-                new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }, true),
-                new ExportType("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
-                new ExportType("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
-                new ExportType("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
-                new ExportType("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
-                new ExportType("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", storage.Parameter), "Mz"),
-                new ExportType("Mobility", metadataAccessor, new LegacyQuantValueAccessor("Mobility", storage.Parameter), "Mobility"),
-                new ExportType("CCS", metadataAccessor, new LegacyQuantValueAccessor("CCS", storage.Parameter), "CCS"),
-                new ExportType("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
-                new ExportType("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"));
+            var peakGroup = new AlignmentExportGroupModel(
+                "Peaks",
+                new[]
+                {
+                    new ExportFormat("txt", "txt", new AlignmentCSVExporter()),
+                    new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ",")),
+                },
+                new[]
+                {
+                    new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }, true),
+                    new ExportType("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
+                    new ExportType("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
+                    new ExportType("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
+                    new ExportType("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
+                    new ExportType("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", storage.Parameter), "Mz"),
+                    new ExportType("Mobility", metadataAccessor, new LegacyQuantValueAccessor("Mobility", storage.Parameter), "Mobility"),
+                    new ExportType("CCS", metadataAccessor, new LegacyQuantValueAccessor("CCS", storage.Parameter), "CCS"),
+                    new ExportType("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
+                    new ExportType("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded")
+                },
+                new[]
+                {
+                    ExportspectraType.deconvoluted,
+                });
+            var spectraGroup = new AlignmentExportGroupModel(
+                "Spectra",
+                new[]
+                {
+                    new ExportFormat("msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
+                },
+                new[]
+                {
+                    new ExportType("MS/MS spectra", null, null, "Spectra"),
+                },
+                new[]
+                {
+                    ExportspectraType.deconvoluted,
+                });
+            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, storage.AlignmentFiles, storage, new[] { peakGroup, spectraGroup, });
             this.ObserveProperty(m => m.AlignmentFile)
                 .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
                 .AddTo(Disposables);
@@ -249,41 +276,23 @@ namespace CompMs.App.Msdial.Model.Imms
             .AddTo(Disposables);
         }
 
-        public AlignmentResultExportModel ExportAlignment() {
-            var container = _storage;
-            var metadataAccessor = new ImmsMetadataAccessor(container.DataBaseMapper, container.Parameter);
-            var model = new AlignmentResultExportModel(AlignmentFile, container.AlignmentFiles, container);
-            model.AddExportTypes(
-                new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", container.Parameter), "Height", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }, true),
-                new ExportType("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", container.Parameter), "Area", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
-                new ExportType("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", container.Parameter), "NormalizedHeight", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
-                new ExportType("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", container.Parameter), "NormalizedArea", new List<StatsValue> { StatsValue.Average, StatsValue.Stdev }),
-                new ExportType("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", container.Parameter), "PeakID"),
-                new ExportType("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", container.Parameter), "Mz"),
-                new ExportType("Mobility", metadataAccessor, new LegacyQuantValueAccessor("Mobility", container.Parameter), "Mobility"),
-                new ExportType("CCS", metadataAccessor, new LegacyQuantValueAccessor("CCS", container.Parameter), "CCS"),
-                new ExportType("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", container.Parameter), "SN"),
-                new ExportType("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", container.Parameter), "MsmsIncluded"));
-            return model;
-        }
-
         public void ExportAnalysis(Window owner) {
             var container = _storage;
-            var spectraTypes = new List<Export.SpectraType>
+            var spectraTypes = new List<SpectraType>
             {
-                new Export.SpectraType(
+                new SpectraType(
                     ExportspectraType.deconvoluted,
                     new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.deconvoluted)),
-                new Export.SpectraType(
+                new SpectraType(
                     ExportspectraType.centroid,
                     new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.centroid)),
-                new Export.SpectraType(
+                new SpectraType(
                     ExportspectraType.profile,
                     new ImmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.profile)),
             };
-            var spectraFormats = new List<Export.SpectraFormat>
+            var spectraFormats = new List<SpectraFormat>
             {
-                new Export.SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
+                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
             };
 
             using (var vm = new AnalysisResultExportViewModel(container.AnalysisFiles, spectraTypes, spectraFormats, ProviderFactory)) {

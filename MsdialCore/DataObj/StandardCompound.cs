@@ -1,13 +1,11 @@
 ﻿using MessagePack;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CompMs.MsdialCore.DataObj {
+namespace CompMs.MsdialCore.DataObj
+{
     [MessagePackObject]
-    public class StandardCompound {
+    public sealed class StandardCompound {
+        public static readonly string AnyOthers = "Any others";
+
         [Key(0)]
         public string StandardName { get; set; }
         [Key(1)]

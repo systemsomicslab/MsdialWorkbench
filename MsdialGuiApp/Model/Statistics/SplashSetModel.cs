@@ -43,7 +43,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             _evaluator = evaluator;
             _broker = broker;
             var targetMetabolites = LipidomicsConverter.GetLipidClasses();
-            targetMetabolites.Add("Any others");
+            targetMetabolites.Add(StandardCompound.AnyOthers); ;
             TargetMetabolites = targetMetabolites.AsReadOnly();
 
             SplashProducts = new ObservableCollection<SplashProduct>(GlobalResources.Instance.IsLabPrivate ? GetPrivateSplashResource() : GetPublicSplashResource());
@@ -99,6 +99,20 @@ namespace CompMs.App.Msdial.Model.Statistics
                     }
                 }
             }
+        }
+
+        public void AddLast() {
+            if (SplashProduct is null) {
+                return;
+            }
+            SplashProduct.AddLast();
+        }
+
+        public void Delete() {
+            if (SplashProduct is null) {
+                return;
+            }
+            SplashProduct.Delete();
         }
 
         public void Normalize() {

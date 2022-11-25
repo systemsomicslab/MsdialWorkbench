@@ -1,9 +1,7 @@
-﻿using CompMs.App.Msdial.ViewModel;
-using CompMs.Common.Parameter;
+﻿using CompMs.Common.Parameter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 
-namespace CompMs.App.Msdial.ViewModel.Tests
+namespace CompMs.App.Msdial.ViewModel.DataObj.Tests
 {
     [TestClass()]
     public class MsRefSearchParameterBaseViewModelTests

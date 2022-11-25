@@ -515,7 +515,7 @@
                                             <chart:RepRefView.ContextMenu>
                                                 <ContextMenu>
                                                     <MenuItem Header="Save spectra table as.."
-                                                              Command="{Binding SaveMs2SpectrumCommand}"/>
+                                                              Command="{Binding Path=(vm:LcmsAlignmentViewModel.SaveSpectraCommand)}"/>
                                                     <MenuItem Header="Save image as...">
                                                         <MenuItem Header="Save as emf"
                                                                   Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"

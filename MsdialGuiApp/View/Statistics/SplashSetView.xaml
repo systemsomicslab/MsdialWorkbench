@@ -29,10 +29,44 @@
         </Grid.RowDefinitions>
 
         <Grid Margin="8,4">
+            <Grid.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Margin" Value="8,0"/>
+                </Style>
+                <Style TargetType="ComboBox">
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                </Style>
+                <Style TargetType="{x:Type ui:LabeledContent}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ui:LabeledContent}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="{TemplateBinding PrependLabel}"
+                                           Foreground="{TemplateBinding Foreground}"
+                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                           Grid.Column="0"/>
+                                    <ContentPresenter Grid.Column="1"/>
+                                    <Label Content="{TemplateBinding AppendLabel}"
+                                           Foreground="{TemplateBinding Foreground}"
+                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                           Grid.Column="2"/>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="80"/>
+                <ColumnDefinition Width="80"/>
             </Grid.ColumnDefinitions>
             <ui:LabeledContent PrependLabel="SPLASH products:"
                                AppendLabel=""
@@ -40,32 +74,35 @@
                 <ComboBox ItemsSource="{Binding SplashProducts}"
                           SelectedValue="{Binding SplashProduct.Value, Mode=TwoWay}"
                           DisplayMemberPath="Label"
-                          IsSynchronizedWithCurrentItem="True"
-                          VerticalContentAlignment="Center"
-                          Width="160"
-                          HorizontalAlignment="Left"/>
+                          IsSynchronizedWithCurrentItem="True"/>
             </ui:LabeledContent>
             <ui:LabeledContent PrependLabel="Concentration unit:"
                                AppendLabel=""
                                Grid.Column="1">
                 <ComboBox ItemsSource="{Binding OutputUnits}"
                           SelectedValue="{Binding OutputUnit.Value, Mode=TwoWay}"
-                          DisplayMemberPath="Label"
-                          VerticalContentAlignment="Center"
-                          Width="160"
-                          HorizontalAlignment="Left"/>
+                          DisplayMemberPath="Label"/>
             </ui:LabeledContent>
             <Button Content="Find compounds"
                     Command="{Binding FindCommand}"
                     Grid.Column="2"/>
+            <Button Content="Add last"
+                    Command="{Binding AddLastCommand}"
+                    Grid.Column="3"/>
+            <Button Content="Delete"
+                    Command="{Binding DeleteCommand}"
+                    Grid.Column="4"/>
         </Grid>
 
-        <DataGrid Margin="8,0"
-                  ItemsSource="{Binding Path=SplashProduct.Value.Lipids}"
+        <DataGrid DataContext="{Binding SplashProduct.Value}"
+                  ItemsSource="{Binding Path=Lipids}"
+                  SelectedItem="{Binding SelectedLipid.Value}"
                   AutoGenerateColumns="False"
                   VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto"
                   CanUserReorderColumns="False" ClipboardCopyMode="ExcludeHeader"
+                  CanUserAddRows="False" CanUserDeleteRows="False"
                   behavior:DataGridPasteBehavior.Enable="True"
+                  Margin="8,0"
                   Grid.Row="1">
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
@@ -89,7 +126,7 @@
                                         Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ComboBox ItemsSource="{Binding Path=DataContext.TargetMetabolites, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGrid}}, Mode=OneWay}"
+                            <ComboBox ItemsSource="{Binding Path=DataContext.TargetMetabolites, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Mode=OneWay}"
                                       SelectedValue="{Binding TargetClass}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

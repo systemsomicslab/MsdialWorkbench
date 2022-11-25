@@ -104,7 +104,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         private DelegateCommand _exportAlignmentResultCommand;
 
         private void ExportAlignment() {
-            using (var vm = new AlignmentResultExport2VM(_model.AlignmentResultExportModel, _broker)) {
+            using (var vm = new AlignmentResultExportViewModel(_model.AlignmentResultExportModel, _broker)) {
                 _broker.Publish(vm);
             }
         }

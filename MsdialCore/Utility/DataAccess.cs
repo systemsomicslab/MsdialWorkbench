@@ -1188,7 +1188,7 @@ namespace CompMs.MsdialCore.Utility {
 
         private static void SetMoleculePropertyCore(IMoleculeProperty property, MoleculeMsReference reference) {
             property.Formula = reference.Formula;
-            property.Ontology = string.IsNullOrEmpty(reference.Ontology) ? reference.CompoundClass : reference.Ontology;
+            property.Ontology = (!string.IsNullOrEmpty(reference.Ontology) ? reference.Ontology : reference.CompoundClass) ?? string.Empty;
             property.SMILES = reference.SMILES;
             property.InChIKey = reference.InChIKey;
         }

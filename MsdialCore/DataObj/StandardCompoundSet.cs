@@ -12,8 +12,8 @@ namespace CompMs.MsdialCore.DataObj
 
         public StandardCompoundSet(IReadOnlyList<StandardCompound> standardCompounds) {
             _standardCompounds = standardCompounds ?? throw new ArgumentNullException(nameof(standardCompounds));
-            _stdCompoundsTable = Compounds.Where(lipid => lipid.TargetClass != "Any others").ToLookup(compound => compound.TargetClass);
-            _otherCompound = Compounds.FirstOrDefault(lipid => lipid.TargetClass == "Any others");
+            _stdCompoundsTable = Compounds.Where(lipid => lipid.TargetClass != StandardCompound.AnyOthers).ToLookup(compound => compound.TargetClass);
+            _otherCompound = Compounds.FirstOrDefault(lipid => lipid.TargetClass == StandardCompound.AnyOthers);
         }
 
         public IReadOnlyList<StandardCompound> Compounds => _standardCompounds;
