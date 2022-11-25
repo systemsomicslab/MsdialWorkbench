@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 
 namespace CompMs.App.Msdial.Model.Export
 {
@@ -43,18 +42,17 @@ namespace CompMs.App.Msdial.Model.Export
         private readonly ObservableCollection<ExportspectraType> _spectraTypes;
 
         public int CountExportFiles() {
+            if (ExportMethod.IsLongFormat) {
+                return 2;
+            }
             return Types.Count(type => type.IsSelected);
         }
 
         public void Export(AlignmentFileBean alignmentFile, string exportDirectory, Action<string> notification) {
-            var dt = DateTime.Now;
+            var outNameTemplate = $"{{0}}_{alignmentFile.FileID}_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
             var resultContainer = AlignmentResultContainer.Load(alignmentFile);
             var msdecResults = MsdecResultsReader.ReadMSDecResults(alignmentFile.SpectraFilePath, out _, out _);
-
-            foreach (var exportType in Types.Where(type => type.IsSelected)) {
-                var outName = $"{exportType.FilePrefix}_{alignmentFile.FileID}_{dt:yyyy_MM_dd_HH_mm_ss}";
-                ExportMethod.Export(outName, exportType, exportDirectory, resultContainer, msdecResults, notification);
-            }
+            ExportMethod.Export(outNameTemplate, exportDirectory, resultContainer, msdecResults, notification, Types.Where(type => type.IsSelected));
         }
     }
 }

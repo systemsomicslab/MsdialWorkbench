@@ -13,8 +13,9 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public AlignmentExportGroupViewModel(AlignmentExportGroupModel model, DelegateCommand exportCommand) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
             _exportCommand = exportCommand;
-            _format = model.ExportMethod.Format;
-            _spectraType = model.SpectraType;
+            Format = model.ExportMethod.Format;
+            SpectraType = model.SpectraType;
+            IsLongFormat = model.ExportMethod.IsLongFormat;
         }
 
         public string Label => _model.Label;
@@ -56,5 +57,15 @@ namespace CompMs.App.Msdial.ViewModel.Export
         public ReadOnlyObservableCollection<ExportspectraType> SpectraTypes => _model.SpectraTypes;
 
         public ReadOnlyObservableCollection<ExportType> Types => _model.Types;
+
+        public bool IsLongFormat {
+            get => _isLongFormat;
+            set {
+                if (SetProperty(ref _isLongFormat, value)) {
+                    _model.ExportMethod.IsLongFormat = _isLongFormat;
+                }
+            }
+        }
+        private bool _isLongFormat;
     }
 }

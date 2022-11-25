@@ -67,6 +67,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <ItemsControl ItemsSource="{Binding Types}"
                                           Margin="8" Grid.Row="0">
@@ -113,6 +114,13 @@
                                               VerticalContentAlignment="Center"
                                               Width="100" Margin="8,0,0,0"/>
                                 </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal"
+                                        VerticalAlignment="Bottom"
+                                        Margin="8"
+                                        Height="30"
+                                        Grid.Row="2">
+                                <CheckBox Content="Long format" IsChecked="{Binding IsLongFormat, Mode=TwoWay}"/>
                             </StackPanel>
                         </Grid>
                     </Expander>

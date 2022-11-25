@@ -73,20 +73,20 @@ namespace CompMs.App.Msdial.Model.Lcms
                 "Peaks",
                 new ExportMethod(
                     analysisFiles,
-                    new ExportFormat("txt", "txt", new AlignmentCSVExporter()),
-                    new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ","))
+                    new ExportFormat("txt", "txt", new AlignmentCSVExporter(), new AlignmentLongCSVExporter(), metadataAccessor),
+                    new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ","), new AlignmentLongCSVExporter(separator: ","), metadataAccessor)
                 ),
                 new[]
                 {
-                    new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
-                    new ExportType("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
-                    new ExportType("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats),
-                    new ExportType("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats),
-                    new ExportType("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
-                    new ExportType("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", storage.Parameter), "Mz"),
-                    new ExportType("Retention time", metadataAccessor, new LegacyQuantValueAccessor("RT", storage.Parameter), "Rt"),
-                    new ExportType("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
-                    new ExportType("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded")
+                    new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
+                    new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
+                    new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats),
+                    new ExportType("Normalized data (Area)", new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats),
+                    new ExportType("Peak ID", new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
+                    new ExportType("m/z", new LegacyQuantValueAccessor("MZ", storage.Parameter), "Mz"),
+                    new ExportType("Retention time", new LegacyQuantValueAccessor("RT", storage.Parameter), "Rt"),
+                    new ExportType("S/N", new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
+                    new ExportType("MS/MS included", new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded")
                 },
                 new[]
                 {
