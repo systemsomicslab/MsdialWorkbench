@@ -6391,6 +6391,57 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                        totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
+            else if (adduct.IonMode == IonMode.Positive)
+            {
+                if (adduct.AdductIonName == "[M+H]+") // DEMD derv.
+                {
+                    // from here, acyl level annotation is executed.
+                    var candidates = new List<LipidMolecule>();
+                    for (int sn1Carbon = minSnCarbon; sn1Carbon <= maxSnCarbon; sn1Carbon++)
+                    {
+                        for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
+                        {
+                            if (sn1Double > 0)
+                            {
+                                if ((double)(sn1Carbon / sn1Double) < 3) break;
+                            }
+
+                            var sn2Carbon = totalCarbon - sn1Carbon;
+                            var sn2Double = totalDoubleBond - sn1Double;
+
+                            if (sn2Double > 0)
+                            {
+                                if ((double)(sn2Carbon / sn2Double) < 3) break;
+                            }
+
+                            var NL_SN1 = theoreticalMz - acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass; // extra FA loss
+                            var NL_SN1_header = NL_SN1 - 12 * 2 - MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass * 7;
+
+                            var query = new List<Peak>
+                                        {
+                                        new Peak() { Mz = NL_SN1, Intensity = 10.0 },
+                                        new Peak() { Mz = NL_SN1_header, Intensity = 10.0 },
+                                        };
+
+                            var foundCount = 0;
+                            var averageIntensity = 0.0;
+                            countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+
+                            if (foundCount == 2)
+                            {
+                                var molecule = new LipidMolecule();
+                                molecule = getFahfaMoleculeObjAsLevel2_0("FAHFA", LbmClass.FAHFA, sn1Carbon, sn1Double,
+                            sn2Carbon, sn2Double, averageIntensity);
+                                candidates.Add(molecule);
+                            }
+                        }
+                    }
+                    if (candidates.Count == 0) return null;
+
+                    return returnAnnotationResult("FAHFA", LbmClass.FAHFA, "", theoreticalMz, adduct,
+                       totalCarbon, totalDoubleBond, 0, candidates, 2);
+                }
+            }
             return null;
         }
 

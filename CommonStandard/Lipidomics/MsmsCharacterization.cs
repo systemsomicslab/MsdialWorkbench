@@ -6463,6 +6463,57 @@ AdductIon adduct)
                        totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
+            else if (adduct.IonMode == IonMode.Positive)
+            {
+                if (adduct.AdductIonName == "[M+H]+") // DEMD derv.
+                {
+                    // from here, acyl level annotation is executed.
+                    var candidates = new List<LipidMolecule>();
+                    for (int sn1Carbon = minSnCarbon; sn1Carbon <= maxSnCarbon; sn1Carbon++)
+                    {
+                        for (int sn1Double = minSnDoubleBond; sn1Double <= maxSnDoubleBond; sn1Double++)
+                        {
+                            if (sn1Double > 0)
+                            {
+                                if ((double)(sn1Carbon / sn1Double) < 3) break;
+                            }
+
+                            var sn2Carbon = totalCarbon - sn1Carbon;
+                            var sn2Double = totalDoubleBond - sn1Double;
+
+                            if (sn2Double > 0)
+                            {
+                                if ((double)(sn2Carbon / sn2Double) < 3) break;
+                            }
+
+                            var NL_SN1 = theoreticalMz - acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass; // extra FA loss
+                            var NL_SN1_header = NL_SN1 - 12 * 2 - MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass * 7; 
+
+                            var query = new List<SpectrumPeak>
+                                        {
+                                        new SpectrumPeak() { Mass = NL_SN1, Intensity = 10.0 },
+                                        new SpectrumPeak() { Mass = NL_SN1_header, Intensity = 10.0 },
+                                        };
+
+                            var foundCount = 0;
+                            var averageIntensity = 0.0;
+                            countFragmentExistence(spectrum, query, ms2Tolerance, out foundCount, out averageIntensity);
+
+                            if (foundCount == 2)
+                            {
+                                var molecule = new LipidMolecule();
+                                    molecule = getFahfaMoleculeObjAsLevel2_0("FAHFA", LbmClass.FAHFA, sn1Carbon, sn1Double,
+                                sn2Carbon, sn2Double, averageIntensity);
+                                candidates.Add(molecule);
+                            }
+                        }
+                    }
+                    if (candidates.Count == 0) return null;
+
+                    return returnAnnotationResult("FAHFA", LbmClass.FAHFA, "", theoreticalMz, adduct,
+                       totalCarbon, totalDoubleBond, 0, candidates, 2);
+                }
+            }
             return null;
         }
 
@@ -6547,7 +6598,7 @@ AdductIon adduct)
                     // reject HexCer
                     var threshold = 1.0;
                     var diagnosticMz = theoreticalMz - 162.052833 - H2O;
-                    if(isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold)) { return null; }
+                    if (isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz, threshold)) { return null; }
                     var candidates = new List<LipidMolecule>();
                     for (int sphCarbon = minSphCarbon; sphCarbon <= maxSphCarbon; sphCarbon++)
                     {
@@ -7067,7 +7118,7 @@ AdductIon adduct)
                             var sphChain_loss = diagnosticMz1 - ((sphCarbon - 2) * 12) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1)) -
                                      2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass; // as [FA+NCCO-3H]- 
                             var sphFragment = ((sphCarbon - 2) * 12) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2) - 1) + MassDiffDictionary.OxygenMass; // [Sph-NCC-3H]-
-                            //var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) - 1) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.NitrogenMass;
+                                                                                                                                                                                      //var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) - 1) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.NitrogenMass;
                             var acylFragment = fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // 
 
                             var query = new List<SpectrumPeak> {
@@ -7259,7 +7310,7 @@ AdductIon adduct)
                             var acylDouble = totalDoubleBond - sphDouble;
                             var acylFragment = acylCainMass(acylCarbon, acylDouble) + MassDiffDictionary.NitrogenMass
                                 + MassDiffDictionary.HydrogenMass * 4 + 12 * 2 + MassDiffDictionary.OxygenMass - Proton; // as [FAA+C2H3-H]- fix 20220905
-                            //Console.WriteLine("HexCer-O " + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble + " " + acylFragment);
+                                                                                                                         //Console.WriteLine("HexCer-O " + sphCarbon + ":" + sphDouble + "/" + acylCarbon + ":" + acylDouble + " " + acylFragment);
                             var query = new List<SpectrumPeak> {
                                 new SpectrumPeak() { Mass = acylFragment, Intensity = 0.1 }
                             };
@@ -7271,7 +7322,7 @@ AdductIon adduct)
                             if (foundCount >= 1)
                             {
                                 { // 
-                                    //var header = sphDouble == 0 ? "HexCer-HDS" : "HexCer-HS";
+                                  //var header = sphDouble == 0 ? "HexCer-HDS" : "HexCer-HS";
                                     var header = "HexCer";
                                     var lbm = sphDouble == 0 ? LbmClass.HexCer_HDS : LbmClass.HexCer_HS;
 
@@ -7434,7 +7485,7 @@ AdductIon adduct)
                         var sphChain_loss = diagnosticMz1 - ((sphCarbon - 2) * 12) - (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2 + 1)) -
                                  2 * MassDiffDictionary.OxygenMass - MassDiffDictionary.HydrogenMass; // as [FA+NCCO-3H]- 
                         var sphFragment = ((sphCarbon - 2) * 12) + (MassDiffDictionary.HydrogenMass * ((sphCarbon - 2) * 2 - sphDouble * 2) - 1) + MassDiffDictionary.OxygenMass; // [Sph-NCC-3H]-
-                        //var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) - 1) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.NitrogenMass;
+                                                                                                                                                                                  //var acylamide = acylCarbon * 12 + (((2 * acylCarbon) - (2 * acylDouble) - 1) * MassDiffDictionary.HydrogenMass) + MassDiffDictionary.NitrogenMass;
                         var acylFragment = fattyacidProductIon(acylCarbon, acylDouble) - MassDiffDictionary.OxygenMass - 2 * MassDiffDictionary.HydrogenMass; // 
 
                         var query = new List<SpectrumPeak> {
@@ -7520,7 +7571,7 @@ AdductIon adduct)
 
                             if (foundCount >= 2)
                             { // 
-                                //var header = sphDouble == 0 ? "Cer-HDS" : "Cer-HS";
+                              //var header = sphDouble == 0 ? "Cer-HDS" : "Cer-HS";
                                 var header = "Cer";
                                 var lbm = sphDouble == 0 ? LbmClass.Cer_HDS : LbmClass.Cer_HS;
 
@@ -8855,7 +8906,8 @@ AdductIon adduct)
                         }
                     }
                     return returnAnnotationResult("Cer", LbmClass.Cer_NP, "t", theoreticalMz, adduct,
-                        totalCarbon, totalDoubleBond, 0, candidates, 2);                }
+                        totalCarbon, totalDoubleBond, 0, candidates, 2);
+                }
             }
             else if (adduct.IonMode == IonMode.Negative)
             { // negative ion mode 
@@ -9116,7 +9168,7 @@ AdductIon adduct)
                     }
                     //if (isClassIonFound == false && candidates.Count == 0) return null;
                     if (candidates.Count == 0) return null; // 20201203 edit
-                    // extra esteracyl contains "2O" and 1DoubleBond
+                                                            // extra esteracyl contains "2O" and 1DoubleBond
                     var extraOxygen = 2;
                     //totalDoubleBond = totalDoubleBond + 1;
 
@@ -9159,7 +9211,7 @@ AdductIon adduct)
                             }
                         }
                     }
-                    if (candidates.Count == 0) return null; 
+                    if (candidates.Count == 0) return null;
                     // extra esteracyl contains "2O" and 1DoubleBond
                     var extraOxygen = 2;
                     return returnAnnotationResult("Cer", LbmClass.Cer_EOS, "d", theoreticalMz, adduct,
@@ -9497,7 +9549,7 @@ AdductIon adduct)
                             }
                         }
                     }
-                    if (candidates.Count == 0) return null; 
+                    if (candidates.Count == 0) return null;
                     var extraOxygen = 2;
                     totalDoubleBond = totalDoubleBond + 1;
 
@@ -9722,7 +9774,7 @@ AdductIon adduct)
                                     var acylDouble = totalDoubleBond - sphDouble - extDouble;
 
                                     var extAcylloss = theoreticalMz - fattyacidProductIon(extCarbon, extDouble) - MassDiffDictionary.HydrogenMass + Electron;  // 
-                                    //Console.WriteLine("ASM {0} Unique mass {1}", "d" + sphCarbon + acylCarbon + ":" + sphDouble + acylDouble + "-O-" + extCarbon + ":" + extDouble, extAcylloss);
+                                                                                                                                                               //Console.WriteLine("ASM {0} Unique mass {1}", "d" + sphCarbon + acylCarbon + ":" + sphDouble + acylDouble + "-O-" + extCarbon + ":" + extDouble, extAcylloss);
 
                                     var query = new List<SpectrumPeak> {
                                         new SpectrumPeak() { Mass = extAcylloss, Intensity = 0.01 },
@@ -10731,7 +10783,7 @@ AdductIon adduct)
                     var threshold = 5.0;
                     var diagnosticMz2 = diagnosticMz - H2O - (12 * 11 + MassDiffDictionary.HydrogenMass * 17
                         + MassDiffDictionary.NitrogenMass * 1 + MassDiffDictionary.OxygenMass * 9); // fix 20220905
-                    // seek M-H2O-307-1sugar
+                                                                                                    // seek M-H2O-307-1sugar
                     var diagnosticMz3 = diagnosticMz2 - (12 * 6 + MassDiffDictionary.HydrogenMass * 10 + MassDiffDictionary.OxygenMass * 5);
                     var isClassIon2Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz2, threshold);
                     var isClassIon3Found = isDiagnosticFragmentExist(spectrum, ms2Tolerance, diagnosticMz3, threshold);

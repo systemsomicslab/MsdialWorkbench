@@ -108,6 +108,9 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.CAR:
                     return CAREadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
 
+                case LbmClass.FAHFA:
+                    return FAHFAEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+
                 default: return (null, new double[2] { 0.0, 0.0 });
             }
         }

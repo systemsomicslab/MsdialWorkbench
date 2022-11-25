@@ -282,6 +282,11 @@ namespace CompMs.MspGenerator
 
                 {"ST",  new List<string>(){ "[M+H]+", "[M+NH4]+", "[M+Na]+", "[M+H-H2O]+" } },
 
+
+                //FAHFA-DMED 20221122
+                {"FAHFA-DMED",  new List<string>(){ "[M+H]+" } },
+
+
     };
 
 

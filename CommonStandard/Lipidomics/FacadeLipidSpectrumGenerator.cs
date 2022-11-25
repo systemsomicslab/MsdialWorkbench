@@ -80,6 +80,7 @@ namespace CompMs.Common.Lipidomics
                     generator.Add(LbmClass.GM3, new GM3SpectrumGenerator());
                     generator.Add(LbmClass.SHexCer, new SHexCerSpectrumGenerator());
                     generator.Add(LbmClass.CAR, new CARSpectrumGenerator());
+                    generator.Add(LbmClass.FAHFA, new FAHFASpectrumGenerator());
 
                     @default = generator;
                 }
