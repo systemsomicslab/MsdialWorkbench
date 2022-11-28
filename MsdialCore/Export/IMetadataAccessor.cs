@@ -1,9 +1,9 @@
 ﻿using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Extension;
+using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
-using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
 using CompMs.MsdialCore.Utility;
 using System;
@@ -16,7 +16,7 @@ namespace CompMs.MsdialCore.Export
     public interface IMetadataAccessor
     {
         string[] GetHeaders();
-        ReadOnlyDictionary<string, string> GetContent(AlignmentSpotProperty spot, MSDecResult msdec);
+        ReadOnlyDictionary<string, string> GetContent(AlignmentSpotProperty spot, IMSScanProperty msdec);
     }
 
     public abstract class BaseMetadataAccessor : IMetadataAccessor {
@@ -31,7 +31,7 @@ namespace CompMs.MsdialCore.Export
 
         public string[] GetHeaders() => GetHeadersCore();
 
-        public ReadOnlyDictionary<string, string> GetContent(AlignmentSpotProperty spot, MSDecResult msdec) {
+        public ReadOnlyDictionary<string, string> GetContent(AlignmentSpotProperty spot, IMSScanProperty msdec) {
             var matchResult = spot.MatchResults.Representative;
             var reference = refer?.Refer(matchResult);
             return new ReadOnlyDictionary<string, string>(GetContentCore(spot, msdec, reference, matchResult));
@@ -74,7 +74,7 @@ namespace CompMs.MsdialCore.Export
 
         protected virtual Dictionary<string, string> GetContentCore(
             AlignmentSpotProperty spot,
-            MSDecResult msdec,
+            IMSScanProperty msdec,
             MoleculeMsReference reference,
             MsScanMatchResult matchResult){
 
@@ -119,7 +119,7 @@ namespace CompMs.MsdialCore.Export
             return string.Join(";", isotopes.Select(isotope => string.Format("{0:F5} {1:F0}", isotope.Mass, isotope.AbsoluteAbundance)));
         }
 
-        protected string GetSpectrumListContent(MSDecResult msdec) {
+        protected string GetSpectrumListContent(IMSScanProperty msdec) {
             var spectrum = msdec?.Spectrum;
             if (spectrum.IsEmptyOrNull()) {
                 return "null";

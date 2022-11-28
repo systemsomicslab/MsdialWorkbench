@@ -60,7 +60,6 @@ namespace CompMs.App.Msdial.ViewModel.Export
                 }
             }
         }
-
         private AlignmentFileBean _alignmentFile;
 
         public ICollectionView AlignmentFiles { get; }
@@ -87,8 +86,8 @@ namespace CompMs.App.Msdial.ViewModel.Export
         private void ExportAlignmentResult() {
             var task = TaskNotification.Start($"Exporting {AlignmentFile.FileName}");
             _broker.Publish(task);
-            _model.ExportAlignmentResult((progress, label) => _broker.Publish(TaskNotification.Progress(task, progress, label)));
-            _broker.Publish(TaskNotification.End(task));
+            _model.ExportAlignmentResult((progress, label) => _broker.Publish(task.Progress(progress, label)));
+            _broker.Publish(task.End());
         }
 
         private bool CanExportAlignmentResult() {
@@ -97,10 +96,12 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
         private static IAlignmentResultExportViewModel MapToViewModel(IAlignmentResultExportModel model, DelegateCommand exportCommand) {
             switch (model) {
-                case AlignmentExportGroupModel gm:
-                    return new AlignmentExportGroupViewModel(gm, exportCommand);
-                case ProteinGroupExportModel pm:
-                    return new ProteinGroupExportViewModel(pm);
+                case AlignmentExportGroupModel m:
+                    return new AlignmentExportGroupViewModel(m, exportCommand);
+                case ProteinGroupExportModel m:
+                    return new ProteinGroupExportViewModel(m);
+                case AlignmentSpectraExportGroupModel m:
+                    return new AlignmentSpectraExportGroupViewModel(m, exportCommand);
                 default:
                     throw new NotSupportedException(model.GetType().FullName);
             }

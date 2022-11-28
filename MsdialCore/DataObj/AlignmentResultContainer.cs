@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj {
@@ -111,7 +112,7 @@ namespace CompMs.MsdialCore.DataObj {
             return result;
         }
 
-        public static AlignmentResultContainer LoadLazy(AlignmentFileBean file) {
+        public static AlignmentResultContainer LoadLazy(AlignmentFileBean file, CancellationToken token = default) {
             var containerFile = file.FilePath;
             var result = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(containerFile);
             if (result is null) {
@@ -134,13 +135,24 @@ namespace CompMs.MsdialCore.DataObj {
                     var alignmentChromPeakFeatures = MessagePackDefaultHandler.LoadIncrementalLargerListFromFile<List<AlignmentChromPeakFeature>>(chromatogramPeakFile).SelectMany(featuress => featuress);
                     var enumerator = alignmentChromPeakFeatures.GetEnumerator();
                     foreach (var c in collection) {
-                        c.AlignedPeakPropertiesTask = task = task.ContinueWith(_ => enumerator.MoveNext() ? enumerator.Current : new List<AlignmentChromPeakFeature>(0));
+                        c.AlignedPeakPropertiesTask = task = task.ContinueWith(_ =>
+                        {
+                            if (enumerator.MoveNext()) {
+                                return enumerator.Current;
+                            }
+                            return new List<AlignmentChromPeakFeature>(0);
+                        },
+                        token);
                     }
                     var allTaskCompleted = Task.Run(async () =>
                     {
-                        await task.ConfigureAwait(false);
-                        enumerator.Dispose();
-                    });
+                        try {
+                            await task.ConfigureAwait(false);
+                        }
+                        finally {
+                            enumerator.Dispose();
+                        }
+                    }, token);
                     result.LoadAlginedPeakPropertiesTask = allTaskCompleted;
                 }
             }

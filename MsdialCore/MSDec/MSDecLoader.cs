@@ -5,13 +5,18 @@ using System.IO;
 
 namespace CompMs.MsdialCore.MSDec {
     public sealed class MSDecLoader : IDisposable {
+        private Stream _deconvolutionStream;
+        private readonly int _version;
+        private readonly List<long> _seekPointers;
+        private readonly bool _isAnnotationInfoIncluded;
+
         public MSDecLoader(Stream fs) {
             if (fs is null || !fs.CanSeek) {
                 throw new ArgumentException(nameof(fs));
             }
 
-            deconvolutionStream = fs;
-            MsdecResultsReader.GetSeekPointers(deconvolutionStream, out version, out seekPointers, out isAnnotationInfoIncluded);
+            _deconvolutionStream = fs;
+            MsdecResultsReader.GetSeekPointers(_deconvolutionStream, out _version, out _seekPointers, out _isAnnotationInfoIncluded);
         }
 
         public MSDecLoader(string deconvolutionFile) : this(FileOpen(deconvolutionFile)) {
@@ -26,31 +31,28 @@ namespace CompMs.MsdialCore.MSDec {
             return File.Open(deconvolutionFile, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
-        private readonly Stream deconvolutionStream;
-        private readonly int version;
-        private readonly List<long> seekPointers;
-        private readonly bool isAnnotationInfoIncluded;
-
         public MSDecResult LoadMSDecResult(int idx) {
-            if (disposedValue) {
+            if (_disposedValue) {
                 return null;
             }
             return LoadMSDecResultCore(idx);
         }
 
         private MSDecResult LoadMSDecResultCore(int idx) {
-            return MsdecResultsReader.ReadMSDecResult(deconvolutionStream, seekPointers[idx], version, isAnnotationInfoIncluded);
+            return MsdecResultsReader.ReadMSDecResult(_deconvolutionStream, _seekPointers[idx], _version, _isAnnotationInfoIncluded);
         }
 
-        private bool disposedValue;
+        // IDisposable
+        private bool _disposedValue;
 
         private void Dispose(bool disposing) {
-            if (!disposedValue) {
+            if (!_disposedValue) {
                 if (disposing) {
-                    deconvolutionStream.Close();
+                    _deconvolutionStream.Close();
+                    _deconvolutionStream = null;
                 }
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

@@ -2,12 +2,12 @@
 using CompMs.Common.DataObj;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
 using CompMs.MsdialCore.Parameter;
-using System;
 using System.Collections.Generic;
 
 namespace CompMs.MsdialImmsCore.Export
@@ -61,7 +61,7 @@ namespace CompMs.MsdialImmsCore.Export
 
         protected override Dictionary<string, string> GetContentCore(
             AlignmentSpotProperty spot,
-            MSDecResult msdec,
+            IMSScanProperty msdec,
             MoleculeMsReference reference,
             MsScanMatchResult matchResult) {
 

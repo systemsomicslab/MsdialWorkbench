@@ -67,6 +67,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <ItemsControl ItemsSource="{Binding Types}"
                                           Margin="8" Grid.Row="0">
@@ -114,6 +115,13 @@
                                               Width="100" Margin="8,0,0,0"/>
                                 </StackPanel>
                             </StackPanel>
+                            <StackPanel Orientation="Horizontal"
+                                        VerticalAlignment="Bottom"
+                                        Margin="8"
+                                        Height="30"
+                                        Grid.Row="2">
+                                <CheckBox Content="Long format" IsChecked="{Binding IsLongFormat, Mode=TwoWay}"/>
+                            </StackPanel>
                         </Grid>
                     </Expander>
                 </DataTemplate>
@@ -124,6 +132,34 @@
                                       IsChecked="{Binding IsSelected.Value, Mode=TwoWay}"
                                       HorizontalAlignment="Left" VerticalAlignment="Center"
                                       Margin="8,8,0,0" Width="180"/>
+                        </Grid>
+                    </Expander>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:AlignmentSpectraExportGroupViewModel}">
+                    <Expander Header="Spectra" IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+                        <Grid Margin="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <CheckBox Content="MS/MS spectra (msp)"
+                                      IsChecked="{Binding IsSelected.Value, Mode=TwoWay}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center"
+                                      Margin="8,8,0,0" Width="180"/>
+                            <StackPanel Orientation="Horizontal"
+                                        VerticalAlignment="Bottom"
+                                        Margin="8"
+                                        Height="30"
+                                        Grid.Row="1">
+                                <TextBlock Text="Spectra type:"
+                                           VerticalAlignment="Center"
+                                           Margin="8,0,0,0"/>
+                                <ComboBox ItemsSource="{Binding SpectraTypes, Mode=OneTime}"
+                                          SelectedValue="{Binding SpectraType, Mode=OneWayToSource}"
+                                          SelectedIndex="0"
+                                          VerticalContentAlignment="Center"
+                                          Width="100" Margin="8,0,0,0"/>
+                            </StackPanel>
                         </Grid>
                     </Expander>
                 </DataTemplate>

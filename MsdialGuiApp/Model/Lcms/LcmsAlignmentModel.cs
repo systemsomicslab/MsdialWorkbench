@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Media;
 
@@ -89,7 +90,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 ProteinResultContainerModel = proteinResultContainerModel;
             }
 
-            _decLoader = new MSDecLoader(_alignmentFile.SpectraFilePath);
+            _decLoader = new MSDecLoader(_alignmentFile.SpectraFilePath).AddTo(Disposables);
             _msdecResult = Target.Where(t => t != null)
                 .Select(t => _decLoader.LoadMSDecResult(t.MasterAlignmentID))
                 .ToReadOnlyReactivePropertySlim()
@@ -184,16 +185,12 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Observable.Return(lowerSpecBrush)).AddTo(Disposables);
 
             // Class intensity bar chart
-            var classToColorAsObservable = Observable.Return(projectBaseParameter.ClassProperties)
-                .Select(
-                    properties => new[] {
-                        properties.ObserveElementProperty(property => property.Color).ToUnit(),
-                        properties.CollectionChangedAsObservable().ToUnit(),
-                    }.Merge().Select(_ => properties)).Switch()
-                .Select(properties => properties.ToDictionary(property => property.Name, property => property.Color))
-                .ToReactiveProperty().AddTo(Disposables);
-            var classBrush = classToColorAsObservable
-                .Select(dict => new KeyBrushMapper<string>(dict ?? new Dictionary<string, Color>(), Colors.Blue))
+            var classBrush = projectBaseParameter.ClassProperties
+                .CollectionChangedAsObservable().ToUnit()
+                .StartWith(Unit.Default)
+                .Select(_ => projectBaseParameter.ClassProperties.Select(prop => prop.ObserveProperty(p => p.Color).Select(_2 => prop)).CombineLatest())
+                .Switch()
+                .Select(lst => new KeyBrushMapper<string>(lst.ToDictionary(item => item.Name, item => item.Color)))
                 .ToReactiveProperty().AddTo(Disposables);
             var barBrush = classBrush.Select(bm => bm.Contramap((BarItem item) => item.Class));
 
