@@ -103,7 +103,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
             
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
+            MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, };
 
             ProteinResultContainerAsObservable = Observable.Return(model.ProteinResultContainerModel);
 
@@ -146,6 +147,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public FocusNavigatorViewModel FocusNavigatorViewModel { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
+        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
         public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable { get; }
         public ICommand InternalStandardSetCommand { get; }

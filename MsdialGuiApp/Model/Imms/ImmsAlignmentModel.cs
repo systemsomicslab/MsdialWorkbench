@@ -210,6 +210,10 @@ namespace CompMs.App.Msdial.Model.Imms
                 r_ => new CcsSimilarity(r_?.CcsSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
+
+            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+            MoleculeStructureModel = moleculeStructureModel;
+            Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
         }
 
         static ImmsAlignmentModel() {
@@ -258,6 +262,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private BrushMapData<AlignmentSpotPropertyModel> _selectedBrush;
 
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
+        public MoleculeStructureModel MoleculeStructureModel { get; }
 
         public void SaveSpectra(string filename) {
             using (var file = File.Open(filename, FileMode.Create)) {

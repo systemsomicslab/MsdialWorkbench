@@ -194,6 +194,9 @@ namespace CompMs.App.Msdial.Model.Imms
                 r_ => new CcsSimilarity(r_?.CcsSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
+            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+            MoleculeStructureModel = moleculeStructureModel;
+            Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
         }
 
         public AnalysisPeakPlotModel PlotModel { get; }
@@ -214,6 +217,7 @@ namespace CompMs.App.Msdial.Model.Imms
         public CompoundDetailModel CompoundDetailModel { get; }
 
         public EicLoader EicLoader { get; }
+        public MoleculeStructureModel MoleculeStructureModel { get; }
 
         private Task<List<SpectrumPeakWrapper>> LoadMsSpectrumAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             if (target is null || target.MS1RawSpectrumIdTop < 0) {

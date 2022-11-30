@@ -365,7 +365,10 @@
                                         </DataTemplate>                              
                                         <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
                                             <infoview:CompoundDetailView/>
-                                        </DataTemplate>                              
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
+                                            <infoview:MoleculeStructureView/>
+                                        </DataTemplate>
                                     </DataTemplate.Resources>
                                     <ContentPresenter Content="{Binding}"/>
                                 </DataTemplate>
@@ -379,6 +382,10 @@
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
                                             <TextBlock Text="Compund detail"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
+                                            <TextBlock Text="Structure"
                                                        VerticalAlignment="Stretch"/>
                                         </DataTemplate>
                                     </DataTemplate.Resources>

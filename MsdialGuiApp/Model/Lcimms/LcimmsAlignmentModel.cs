@@ -300,6 +300,10 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
 
+            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+            MoleculeStructureModel = moleculeStructureModel;
+            Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
+
             var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam);
             CompoundSearchModel = target
                 .CombineLatest(MsdecResult, (t, r) => t is null || r is null ? null : new LcimmsCompoundSearchModel(_files[t.RepresentativeFileID], t, r, searcherCollection.Items))
@@ -328,10 +332,8 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public FocusNavigatorModel FocusNavigatorModel { get; }
 
         public PeakInformationAlignmentModel PeakInformationModel { get; }
-
         public CompoundDetailModel CompoundDetailModel { get; }
-
-        // public LcimmsAlignmentSpotTableModel AlignmentSpotTableModel { get; }
+        public MoleculeStructureModel MoleculeStructureModel { get; }
 
         public List<BrushMapData<AlignmentSpotPropertyModel>> Brushes { get; }
 

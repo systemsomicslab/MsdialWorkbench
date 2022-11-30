@@ -170,8 +170,8 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
 
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
-            var _peakDetailViewModels = new ReactiveCollection<ViewModelBase>().AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
+            MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, };
 
             ProteinResultContainerAsObservable = Observable.Return(model.ProteinResultContainerModel);
         }
@@ -222,6 +222,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         public AsyncReactiveCommand<Window> SaveMs2RawSpectrumCommand { get; }
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
+        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
         public ReadOnlyReactivePropertySlim<ExperimentSpectrumViewModel> ExperimentSpectrumViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
         public IObservable<ProteinResultContainerModel> ProteinResultContainerAsObservable { get; }
