@@ -164,6 +164,7 @@
     <Compile Include="Model\DataObj\IPeakSpotModel.cs" />
     <Compile Include="Model\Export\AlignmentExportGroupModel.cs" />
     <Compile Include="Model\Export\AlignmentResultExportModel.cs" />
+    <Compile Include="Model\Export\AlignmentSpectraExportFormat.cs" />
     <Compile Include="Model\Export\AlignmentSpectraExportGroupModel.cs" />
     <Compile Include="Model\Export\ExportFormat.cs" />
     <Compile Include="Model\Export\ExportType.cs" />

@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Export
 {
-    public sealed class AlignmentMspExporter : IAlignmentExporter
+    public sealed class AlignmentMspExporter : IAlignmentExporter, IAlignmentSpectraExporter
     {
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
         private readonly ParameterBase _parameter;

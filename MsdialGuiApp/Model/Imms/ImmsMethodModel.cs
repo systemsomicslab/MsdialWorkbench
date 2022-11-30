@@ -91,11 +91,12 @@ namespace CompMs.App.Msdial.Model.Imms
                     ExportspectraType.deconvoluted,
                 });
             var spectraGroup = new AlignmentSpectraExportGroupModel(
-                new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter),
                 new[]
                 {
                     ExportspectraType.deconvoluted,
-                });
+                },
+                new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
+                new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()));
             AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, }, AlignmentFile, storage.AlignmentFiles);
             this.ObserveProperty(m => m.AlignmentFile)
                 .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)

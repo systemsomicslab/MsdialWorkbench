@@ -93,11 +93,12 @@ namespace CompMs.App.Msdial.Model.Lcms
                     ExportspectraType.deconvoluted,
                 });
             var spectraGroup = new AlignmentSpectraExportGroupModel(
-                new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter),
                 new[]
                 {
                     ExportspectraType.deconvoluted,
-                });
+                },
+                new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
+                new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()));
             var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, };
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
                 exportGroups.Add(new ProteinGroupExportModel(new ProteinGroupExporter(), analysisFiles));

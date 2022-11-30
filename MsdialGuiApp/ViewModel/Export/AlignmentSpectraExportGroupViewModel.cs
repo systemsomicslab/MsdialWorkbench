@@ -1,8 +1,6 @@
 ﻿using CompMs.App.Msdial.Model.Export;
 using CompMs.Common.Enum;
 using CompMs.CommonMVVM;
-using Reactive.Bindings;
-using Reactive.Bindings.Extensions;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -14,10 +12,10 @@ namespace CompMs.App.Msdial.ViewModel.Export
         private readonly DelegateCommand _exportCommand;
 
         public AlignmentSpectraExportGroupViewModel(AlignmentSpectraExportGroupModel model, DelegateCommand exportCommand) {
-            IsSelected = model.ToReactivePropertySlimAsSynchronized(m => m.IsSelected).AddTo(Disposables);
             _model = model;
             _exportCommand = exportCommand;
             SpectraTypes = new ReadOnlyObservableCollection<ExportspectraType>(model.SpectraTypes);
+            Formats = new ReadOnlyObservableCollection<AlignmentSpectraExportFormat>(model.Formats);
         }
 
         public bool IsExpanded {
@@ -25,8 +23,6 @@ namespace CompMs.App.Msdial.ViewModel.Export
             set => SetProperty(ref _isExpanded, value);
         }
         private bool _isExpanded = false;
-
-        public ReactivePropertySlim<bool> IsSelected { get; }
 
         [Required(ErrorMessage = "Please select spectra type.")]
         public ExportspectraType SpectraType {
@@ -43,5 +39,7 @@ namespace CompMs.App.Msdial.ViewModel.Export
         private ExportspectraType _spectraType = ExportspectraType.deconvoluted;
 
         public ReadOnlyObservableCollection<ExportspectraType> SpectraTypes { get; }
+
+        public ReadOnlyObservableCollection<AlignmentSpectraExportFormat> Formats { get; }
     }
 }
