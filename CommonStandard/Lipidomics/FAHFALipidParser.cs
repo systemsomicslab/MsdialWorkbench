@@ -20,7 +20,7 @@ namespace CompMs.Common.Lipidomics
             {
                 var group = match.Groups;
                 var chains = chainsParser.Parse(group["sn"].Value);
-                return new Lipid(LbmClass.DMEDFAHFA, chains.Mass + MassDiffDictionary.OxygenMass, chains);
+                return new Lipid(LbmClass.DMEDFAHFA, chains.Mass + 86.08439833, chains);
             }
             return null;
         }
