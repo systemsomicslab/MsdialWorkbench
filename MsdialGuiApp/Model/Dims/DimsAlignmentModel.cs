@@ -230,6 +230,10 @@ namespace CompMs.App.Msdial.Model.Dims
                 r_ => new MzSimilarity(r_?.AcurateMassSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
+
+            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+            MoleculeStructureModel = moleculeStructureModel;
+            Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
         }
 
         public ObservableCollection<AlignmentSpotPropertyModel> Ms1Spots { get; }
@@ -250,6 +254,7 @@ namespace CompMs.App.Msdial.Model.Dims
         public FocusNavigatorModel FocusNavigatorModel { get; }
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
+        public MoleculeStructureModel MoleculeStructureModel { get; }
 
         public ICompoundSearchModel BuildCompoundSearchModel() {
             return new CompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers.Items);

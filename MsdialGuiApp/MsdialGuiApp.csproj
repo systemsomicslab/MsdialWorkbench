@@ -164,6 +164,7 @@
     <Compile Include="Model\DataObj\IPeakSpotModel.cs" />
     <Compile Include="Model\Export\AlignmentExportGroupModel.cs" />
     <Compile Include="Model\Export\AlignmentResultExportModel.cs" />
+    <Compile Include="Model\Export\AlignmentSpectraExportFormat.cs" />
     <Compile Include="Model\Export\AlignmentSpectraExportGroupModel.cs" />
     <Compile Include="Model\Export\ExportFormat.cs" />
     <Compile Include="Model\Export\ExportType.cs" />
@@ -176,6 +177,7 @@
     <Compile Include="Model\Imaging\WholeImageResultModel.cs" />
     <Compile Include="Model\ImagingImms\ImagingImmsMethodModel.cs" />
     <Compile Include="Model\Information\CompoundDetailModel.cs" />
+    <Compile Include="Model\Information\MoleculeStructureModel.cs" />
     <Compile Include="Model\Information\PeakInformationModel.cs" />
     <Compile Include="Model\DataObj\PeptideGroupModel.cs" />
     <Compile Include="Model\DataObj\ProteinResultContainerModel.cs" />
@@ -339,6 +341,7 @@
     <Compile Include="ViewModel\Imaging\RoiViewModel.cs" />
     <Compile Include="ViewModel\Imaging\WholeImageResultViewModel.cs" />
     <Compile Include="ViewModel\Information\CompoundDetailViewModel.cs" />
+    <Compile Include="ViewModel\Information\MoleculeStructureViewModel.cs" />
     <Compile Include="ViewModel\Information\PeakInformationViewModel.cs" />
     <Compile Include="ViewModel\DataObj\ProteinGroupViewModel.cs" />
     <Compile Include="ViewModel\DataObj\ProteinViewModel.cs" />
@@ -577,6 +580,9 @@
     </Compile>
     <Compile Include="View\Information\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Information\MoleculeStructureView.xaml.cs">
+      <DependentUpon>MoleculeStructureView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Information\PeakInformationView.xaml.cs">
       <DependentUpon>PeakInformationView.xaml</DependentUpon>
@@ -985,6 +991,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Information\MoleculeStructureView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Information\PeakInformationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1369,6 +1379,14 @@
     <ProjectReference Include="..\MsdialLcMsApi\MsdialLcMsApi.csproj">
       <Project>{A45C80BC-85BB-4953-AA7D-941633964F08}</Project>
       <Name>MsdialLcMsApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NCDK.Display\NCDK.Display.csproj">
+      <Project>{20E728F8-C648-4F96-AE56-B7A7A185D941}</Project>
+      <Name>NCDK.Display</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NCDK\NCDK.csproj">
+      <Project>{7976AEFC-8382-47D3-BA50-55FA18BABADF}</Project>
+      <Name>NCDK</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

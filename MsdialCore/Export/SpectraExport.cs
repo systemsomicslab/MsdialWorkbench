@@ -59,7 +59,7 @@ namespace CompMs.MsdialCore.Export
                     SaveSpectraTableAsNistFormat(exportStream, spotProperty, scan.Spectrum, mapper, parameter);
                     break;
                 case ExportSpectraFileFormat.mgf:
-                    SaveSpectraTableAsMgfFormat(exportStream, spotProperty, scan.Spectrum, mapper, parameter);
+                    SaveSpectraTableAsMgfFormat(exportStream, spotProperty, scan.Spectrum);
                     break;
                 case ExportSpectraFileFormat.mat:
                     SaveSpectraTableAsMatFormat(exportStream, spotProperty, scan.Spectrum, mapper, parameter, isotopeTrackedLastSpot);
@@ -194,32 +194,24 @@ namespace CompMs.MsdialCore.Export
             ParameterBase parameter) {
             using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
                 sw.WriteLine("BEGIN IONS");
-                WriteChromPeakFeatureInfoAsMgf(sw, chromPeakFeature, mapper);
+                WriteChromPeakFeatureInfoAsMgf(sw, chromPeakFeature);
                 WriteSpectrumPeakInfo(sw, massSpectra);
                 sw.WriteLine("END IONS");
                 sw.WriteLine();
             }
         }
 
-        public static void SaveSpectraTableAsMgfFormat(
-            Stream stream, 
-            AlignmentSpotProperty spotProperty, 
-            IEnumerable<ISpectrumPeak> spectrum, 
-            DataBaseMapper mapper, 
-            ParameterBase parameter) {
+        public static void SaveSpectraTableAsMgfFormat(Stream stream, AlignmentSpotProperty spotProperty, IEnumerable<ISpectrumPeak> spectrum) {
             using (StreamWriter sw = new StreamWriter(stream, Encoding.ASCII, 4096, true)) {
                 sw.WriteLine("BEGIN IONS");
-                WriteChromPeakFeatureInfoAsMgf(sw, spotProperty, mapper);
+                WriteChromPeakFeatureInfoAsMgf(sw, spotProperty);
                 WriteSpectrumPeakInfo(sw, spectrum);
                 sw.WriteLine("END IONS");
                 sw.WriteLine();
             }
         }
 
-        public static void WriteChromPeakFeatureInfoAsMgf(
-            StreamWriter sw, 
-            ChromatogramPeakFeature feature, 
-            DataBaseMapper mapper) {
+        public static void WriteChromPeakFeatureInfoAsMgf(StreamWriter sw, ChromatogramPeakFeature feature) {
             var nameField = GetNameField(feature);
             var commentField = GetCommentField(feature);
             var chargeChar = feature.AdductType.IonMode == IonMode.Positive ? "+" : "-";
@@ -234,8 +226,7 @@ namespace CompMs.MsdialCore.Export
 
         public static void WriteChromPeakFeatureInfoAsMgf(
             StreamWriter sw,
-            AlignmentSpotProperty feature,
-            DataBaseMapper mapper) {
+            AlignmentSpotProperty feature) {
             var nameField = GetNameField(feature);
             var commentField = GetCommentField(feature);
             var chargeChar = feature.AdductType.IonMode == IonMode.Positive ? "+" : "-";

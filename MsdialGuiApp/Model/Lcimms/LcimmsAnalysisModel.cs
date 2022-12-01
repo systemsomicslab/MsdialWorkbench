@@ -342,6 +342,9 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 r_ => new CcsSimilarity(r_?.CcsSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
+            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+            MoleculeStructureModel = moleculeStructureModel;
+            Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
 
             var searcherCollection = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam);
             CompoundSearchModel = target
@@ -373,6 +376,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         public FocusNavigatorModel FocusNavigatorModel { get; }
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
+        public MoleculeStructureModel MoleculeStructureModel { get; }
 
         public ReadOnlyReactivePropertySlim<LcimmsCompoundSearchModel> CompoundSearchModel { get; }
         public IObservable<bool> CanSearchCompound { get; }
@@ -406,6 +410,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             get => _displayLabel;
             set => SetProperty(ref _displayLabel, value);
         }
+
         private string _displayLabel = string.Empty;
 
         public void SearchFragment() {

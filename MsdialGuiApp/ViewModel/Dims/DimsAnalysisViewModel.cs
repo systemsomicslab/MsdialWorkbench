@@ -83,8 +83,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
-            var _peakDetailViewModels = new ReactiveCollection<ViewModelBase>().AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
+            MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, };
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -100,6 +100,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
+        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ICommand SetUnknownCommand { get; }

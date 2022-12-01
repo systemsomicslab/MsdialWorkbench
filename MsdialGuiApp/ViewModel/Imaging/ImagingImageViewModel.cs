@@ -14,7 +14,8 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
             RoiViewModels = model.ImagingRoiModels.ToReadOnlyReactiveCollection(m => new ImagingRoiViewModel(m)).AddTo(Disposables);
             ImageResultViewModel = new WholeImageResultViewModel(model.ImageResult).AddTo(Disposables);
             var peakInfo = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { peakInfo, };
+            var moleculeStructure = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { peakInfo, moleculeStructure, };
             Ms2ViewModels = new ViewModelBase[0];
         }
 
