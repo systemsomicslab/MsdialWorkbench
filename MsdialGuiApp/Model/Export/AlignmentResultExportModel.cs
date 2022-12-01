@@ -11,8 +11,9 @@ namespace CompMs.App.Msdial.Model.Export
 {
     internal sealed class AlignmentResultExportModel : DisposableModelBase
     {
-        public AlignmentResultExportModel(IEnumerable<IAlignmentResultExportModel> exportGroups, AlignmentFileBean alignmentFile, IReadOnlyList<AlignmentFileBean> alignmentFiles) {
+        public AlignmentResultExportModel(IEnumerable<IAlignmentResultExportModel> exportGroups, AlignmentFileBean alignmentFile, IReadOnlyList<AlignmentFileBean> alignmentFiles, AlignmentPeakSpotSupplyer peakSpotSupplyer) {
             AlignmentFiles = alignmentFiles;
+            PeakSpotSupplyer = peakSpotSupplyer ?? throw new ArgumentNullException(nameof(peakSpotSupplyer));
             AlignmentFile = alignmentFile;
             var groups = new ObservableCollection<IAlignmentResultExportModel>(exportGroups);
             Groups = new ReadOnlyObservableCollection<IAlignmentResultExportModel>(groups);
@@ -31,7 +32,7 @@ namespace CompMs.App.Msdial.Model.Export
         private AlignmentFileBean _alignmentFile;
 
         public IReadOnlyList<AlignmentFileBean> AlignmentFiles { get; }
-
+        public AlignmentPeakSpotSupplyer PeakSpotSupplyer { get; }
         public ReadOnlyObservableCollection<IAlignmentResultExportModel> Groups { get; }
 
         public void ExportAlignmentResult(Action<double, string> notification = null) {

@@ -1,4 +1,6 @@
-﻿using CompMs.CommonMVVM;
+﻿using CompMs.App.Msdial.Model.Search;
+using CompMs.CommonMVVM;
+using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.Export;
 using CompMs.MsdialCore.MSDec;
@@ -53,16 +55,16 @@ namespace CompMs.App.Msdial.Model.Export
         }
         private bool _isLongFormat = false;
 
-        public void Export(string outNameTemplate, string exportDirectory, AlignmentResultContainer resultContainer, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
+        public void Export(string outNameTemplate, string exportDirectory, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
             if (IsLongFormat) {
-                ExportLong(outNameTemplate, exportDirectory, resultContainer, msdecResults, notification, exportTypes);
+                ExportLong(outNameTemplate, exportDirectory, spots, msdecResults, notification, exportTypes);
             }
             else {
-                ExportWide(outNameTemplate, exportDirectory, resultContainer, msdecResults, notification, exportTypes);
+                ExportWide(outNameTemplate, exportDirectory, spots, msdecResults, notification, exportTypes);
             }
         }
 
-        public void ExportLong(string outNameTemplate, string exportDirectory, AlignmentResultContainer resultContainer, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
+        public void ExportLong(string outNameTemplate, string exportDirectory, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
             var outMetaName = string.Format(outNameTemplate, "PeakMaster");
             var outMetaFile = Format.WithExtension(outMetaName);
             var outMetaPath = Path.Combine(exportDirectory, outMetaFile);
@@ -70,7 +72,7 @@ namespace CompMs.App.Msdial.Model.Export
             using (var outstream = File.Open(outMetaPath, FileMode.Create, FileAccess.Write)) {
                 Format.LongExporter.ExportMeta(
                     outstream,
-                    resultContainer.AlignmentSpotProperties,
+                    spots,
                     msdecResults,
                     Format.MetaAccessor);
             }
@@ -82,13 +84,13 @@ namespace CompMs.App.Msdial.Model.Export
             using (var outstream = File.Open(outValuePath, FileMode.Create, FileAccess.Write)) {
                 Format.LongExporter.ExportValue(
                     outstream,
-                    resultContainer.AlignmentSpotProperties,
+                    spots,
                     _analysisFiles,
                     exportTypes.Select(type => (type.TargetLabel, type.QuantValueAccessor)).ToArray());
             }
         }
 
-        public void ExportWide(string outNameTemplate, string exportDirectory, AlignmentResultContainer resultContainer, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
+        public void ExportWide(string outNameTemplate, string exportDirectory, IReadOnlyList<AlignmentSpotProperty> spots, IReadOnlyList<MSDecResult> msdecResults, Action<string> notification, IEnumerable<ExportType> exportTypes) {
             foreach (var exportType in exportTypes) {
                 var outName = string.Format(outNameTemplate, exportType.TargetLabel);
                 var outFile = Format.WithExtension(outName);
@@ -98,7 +100,7 @@ namespace CompMs.App.Msdial.Model.Export
                 using (var outstream = File.Open(outPath, FileMode.Create, FileAccess.Write)) {
                     Format.Exporter.Export(
                         outstream,
-                        resultContainer.AlignmentSpotProperties,
+                        spots,
                         msdecResults,
                         _analysisFiles,
                         Format.MetaAccessor,
