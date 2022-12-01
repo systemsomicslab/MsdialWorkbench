@@ -69,6 +69,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             var  metadataAccessor = storage.Parameter.TargetOmics == TargetOmics.Proteomics
                 ? (IMetadataAccessor)new LcmsProteomicsMetadataAccessor(storage.DataBaseMapper, storage.Parameter)
                 : (IMetadataAccessor)new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
+            AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(PeakFilterModel, _matchResultEvaluator.Contramap((IFilterable filterable) => filterable.MatchResults.Representative));
             var peakGroup = new AlignmentExportGroupModel(
                 "Peaks",
                 new ExportMethod(
@@ -91,12 +92,14 @@ namespace CompMs.App.Msdial.Model.Lcms
                 new[]
                 {
                     ExportspectraType.deconvoluted,
-                });
+                },
+                peakSpotSupplyer);
             var spectraGroup = new AlignmentSpectraExportGroupModel(
                 new[]
                 {
                     ExportspectraType.deconvoluted,
                 },
+                peakSpotSupplyer,
                 new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
                 new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()));
             var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, };
@@ -104,7 +107,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 exportGroups.Add(new ProteinGroupExportModel(new ProteinGroupExporter(), analysisFiles));
             }
 
-            AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, AlignmentFile, storage.AlignmentFiles);
+            AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, AlignmentFile, storage.AlignmentFiles, peakSpotSupplyer);
             this.ObserveProperty(m => m.AlignmentFile)
                 .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
                 .AddTo(Disposables);

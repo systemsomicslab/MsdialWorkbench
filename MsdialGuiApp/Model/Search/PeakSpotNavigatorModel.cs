@@ -34,6 +34,10 @@ namespace CompMs.App.Msdial.Model.Search
 
     public sealed class PeakSpotNavigatorModel : DisposableModelBase
     {
+        private readonly Dictionary<ICollectionView, Predicate<object>> _viewToPredicate = new Dictionary<ICollectionView, Predicate<object>>();
+        private readonly Dictionary<ICollectionView, List<PeakFilterModel>> _viewToFilters = new Dictionary<ICollectionView, List<PeakFilterModel>>();
+        private readonly FilterEnableStatus _status;
+
         public PeakSpotNavigatorModel(IReadOnlyList<IFilterable> peakSpots, PeakFilterModel peakFilterModel, IMatchResultEvaluator<MsScanMatchResult> evaluator, FilterEnableStatus status) {
             if (evaluator is null) {
                 throw new ArgumentNullException(nameof(evaluator));
@@ -41,6 +45,7 @@ namespace CompMs.App.Msdial.Model.Search
 
             PeakSpots = peakSpots ?? throw new ArgumentNullException(nameof(peakSpots));
             PeakFilterModel = peakFilterModel ?? throw new ArgumentNullException(nameof(peakFilterModel));
+            _status = status;
             _evaluator = evaluator.Contramap<IFilterable, MsScanMatchResult>(filterable => filterable.MatchResults.Representative, (e, f) => f.MatchResults.IsReferenceMatched(e), (e, f) => f.MatchResults.IsAnnotationSuggested(e));
             AmplitudeLowerValue = 0d;
             AmplitudeUpperValue = 1d;
@@ -243,8 +248,6 @@ namespace CompMs.App.Msdial.Model.Search
 
         public PeakFilterModel PeakFilterModel { get; }
 
-        private readonly Dictionary<ICollectionView, Predicate<object>> _viewToPredicate = new Dictionary<ICollectionView, Predicate<object>>();
-        private readonly Dictionary<ICollectionView, List<PeakFilterModel>> _viewToFilters = new Dictionary<ICollectionView, List<PeakFilterModel>>();
         public ObservableCollection<PeakFilterModel> PeakFilters { get; } = new ObservableCollection<PeakFilterModel>();
 
         public void AttachFilter(ICollectionView view, PeakFilterModel peakFilterModel, FilterEnableStatus status, IMatchResultEvaluator<IFilterable> evaluator = null) {
@@ -291,7 +294,23 @@ namespace CompMs.App.Msdial.Model.Search
             DetatchFilter(CollectionViewSource.GetDefaultView(peaks));
         }
 
+        public Predicate<IFilterable> CreateCurrentFilter() {
+            var results = CreateFilters(PeakFilterModel, _status, _evaluator);
+            bool Pred(IFilterable filterable) {
+                return results.All(pred => pred(filterable));
+            }
+            return Pred;
+        }
+
         private Predicate<object> CreateFilter(PeakFilterModel peakFilterModel, FilterEnableStatus status, IMatchResultEvaluator<IFilterable> evaluator) {
+            var results = CreateFilters(peakFilterModel, status, evaluator);
+            bool Pred(object obj) {
+                return obj is IFilterable filterable && results.All(pred => pred(filterable));
+            }
+            return Pred;
+        }
+
+        private List<Predicate<IFilterable>> CreateFilters(PeakFilterModel peakFilterModel, FilterEnableStatus status, IMatchResultEvaluator<IFilterable> evaluator) {
             List<Predicate<IFilterable>> results = new List<Predicate<IFilterable>>();
             results.Add(filterable => peakFilterModel.PeakFilter(filterable, evaluator));
             if ((status & FilterEnableStatus.Rt) != FilterEnableStatus.None) {
@@ -323,9 +342,7 @@ namespace CompMs.App.Msdial.Model.Search
             if ((status & FilterEnableStatus.Ontology) != FilterEnableStatus.None) {
                 results.Add(filterable => OntologyFilter(filterable, OntologyFilterKeywords));
             }
-
-
-            return (object obj) => obj is IFilterable filterable && results.All(pred => pred(filterable));
+            return results;
         }
 
         private bool MzFilter(IChromatogramPeak peak) {

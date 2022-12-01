@@ -168,6 +168,7 @@
     <Compile Include="Model\Export\AlignmentSpectraExportGroupModel.cs" />
     <Compile Include="Model\Export\ExportFormat.cs" />
     <Compile Include="Model\Export\ExportType.cs" />
+    <Compile Include="Model\Export\IAlignmentResultExportModel.cs" />
     <Compile Include="Model\Export\ProteinGroupExportModel.cs" />
     <Compile Include="Model\Imaging\ImagingImageModel.cs" />
     <Compile Include="Model\Imaging\ImagingRoiModel.cs" />
@@ -197,6 +198,7 @@
     <Compile Include="Model\Loader\BarItemsLoaderData.cs" />
     <Compile Include="Model\Loader\IChromatogramLoader.cs" />
     <Compile Include="Model\Loader\MsSelectionItem.cs" />
+    <Compile Include="Model\Export\AlignmentPeakSpotSupplyer.cs" />
     <Compile Include="Model\Service\OpenFileRequest.cs" />
     <Compile Include="Model\Service\ShortMessageRequest.cs" />
     <Compile Include="Model\Setting\ProcessSettingModel.cs" />

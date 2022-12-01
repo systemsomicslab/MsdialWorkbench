@@ -66,6 +66,14 @@ namespace CompMs.App.Msdial.ViewModel.Export
 
         public ReadOnlyReactiveCollection<IAlignmentResultExportViewModel> Groups { get; }
 
+        public bool UseFilter {
+            get => _model.PeakSpotSupplyer.UseFilter;
+            set {
+                _model.PeakSpotSupplyer.UseFilter = value;
+                OnPropertyChanged(nameof(UseFilter));
+            }
+        }
+
         public DelegateCommand BrowseDirectoryCommand => _browseDirectoryCommand ?? (_browseDirectoryCommand = new DelegateCommand(BrowseDirectory));
         private DelegateCommand _browseDirectoryCommand;
 
