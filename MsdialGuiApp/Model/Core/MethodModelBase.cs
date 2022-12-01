@@ -47,8 +47,15 @@ namespace CompMs.App.Msdial.Model.Core
                 return Task.CompletedTask;
             }
             var task = AnalysisModelBase?.SaveAsync(token) ?? Task.CompletedTask;
-            AnalysisFileModel = analysisFile;
-            AnalysisModelBase = LoadAnalysisFileCore(AnalysisFileModel);
+
+            try {
+                AnalysisFileModel = analysisFile;
+                AnalysisModelBase = LoadAnalysisFileCore(AnalysisFileModel);
+            }
+            catch {
+                task.Wait();
+                throw;
+            }
 
             return task;
         }
@@ -74,8 +81,14 @@ namespace CompMs.App.Msdial.Model.Core
             }
             var task = AlignmentModelBase?.SaveAsync() ?? Task.CompletedTask;
 
-            AlignmentFile = alignmentFile;
-            AlignmentModelBase = LoadAlignmentFileCore(AlignmentFile);
+            try {
+                AlignmentFile = alignmentFile;
+                AlignmentModelBase = LoadAlignmentFileCore(AlignmentFile);
+            }
+            catch {
+                task.Wait();
+                throw;
+            }
 
             return task;
         }
