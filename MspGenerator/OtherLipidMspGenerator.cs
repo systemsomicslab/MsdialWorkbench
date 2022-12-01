@@ -157,7 +157,7 @@ namespace CompMs.MspGenerator
                             var fra01comment = "[M-H]-";
                             fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
-                            name = "FA" + " " + fa1Chain + ":" + fa1Double + ";" + fa1Ox + "O";
+                            name = "FA" + " " + fa1Chain + ":" + fa1Double + ";O" + fa1Ox;
                         }
 
                         //
@@ -726,7 +726,7 @@ namespace CompMs.MspGenerator
                                 name = cholicAcid[lipidClass] + "/" + chain1String;
                                 if (chain1Ox > 0)
                                 {
-                                    name = name + ";" + chain1Ox + "O";
+                                    name = name + ";O" + chain1Ox;
                                 }
                                 break;
 

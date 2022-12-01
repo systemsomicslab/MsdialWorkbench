@@ -132,7 +132,7 @@ namespace CompMs.Common.Lipidomics.Tests
         public void reParseTest()
         {
             var alkyl = new AcylChain(18, DoubleBond.CreateFromPosition(9), new Oxidized(0));
-            var lipid = new Lipid(LbmClass.EtherLPC, 521.348140016, new PositionLevelChains(alkyl));
+            var lipid = new Lipid(LbmClass.EtherLPE, 465.3219, new PositionLevelChains(alkyl));
 
             var parser = new EtherLPELipidParser();
             //var lipid = parser.Parse("LPE O-18:1");

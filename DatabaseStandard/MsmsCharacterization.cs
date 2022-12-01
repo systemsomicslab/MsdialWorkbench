@@ -14075,10 +14075,10 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     hydroxyString1 = ";O";
                     break;
                 case "d":
-                    hydroxyString1 = ";2O";
+                    hydroxyString1 = ";O2";
                     break;
                 case "t":
-                    hydroxyString1 = ";3O";
+                    hydroxyString1 = ";O3";
                     break;
             }
             //if (lipidClass == "AcylCer-BDS" || lipidClass == "HexCer-AP" || lipidClass == "AcylSM")  hydroxyString1 = "";
@@ -14301,10 +14301,10 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             }
 
             var totalCarbon = sn1Carbon + sn2Carbon;
-            var totalOxydized = sn1Oxydized + sn2Oxydized;
+            var totalOxidized = sn1Oxydized + sn2Oxydized;
             var totalDB = sn1Double + sn2Double;
-            //var totalString = totalCarbon + ":" + totalDB + chainSuffix + "+" + totalOxydized + "O";
-            var totalString = chainPrefix + totalCarbon + ":" + totalDB + ";" + totalOxydized + "O";
+            var totalOxidizedString = totalOxidized > 1 ? ";O" + totalOxidized : ";O";
+            var totalString = chainPrefix + totalCarbon + ":" + totalDB + totalOxidizedString;
             var totalName = lipidClass + " " + totalString;
             //
             var acyls = new List<int[]>() {
@@ -14322,10 +14322,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             var sn1OxydizedString = "";
             var sn2OxydizedString = "";
 
-            //if (sn1OxydizedCount != 0) { sn1OxydizedString = "+" + sn1OxydizedCount + "O"; }
-            //if (sn2OxydizedCount != 0) { sn2OxydizedString = "+" + sn2OxydizedCount + "O"; }
-            if (sn1OxydizedCount != 0) { sn1OxydizedString = ";" + sn1OxydizedCount + "O"; }
-            if (sn2OxydizedCount != 0) { sn2OxydizedString = ";" + sn2OxydizedCount + "O"; }
+            if (sn1OxydizedCount != 0) { sn1OxydizedString = sn1OxydizedCount > 1 ? ";O" + sn1OxydizedCount : ";O"; }
+            if (sn2OxydizedCount != 0) { sn2OxydizedString = sn2OxydizedCount > 1 ? ";O" + sn2OxydizedCount : ";O"; }
 
             //var sn1ChainString = sn1CarbonCount + ":" + sn1DbCount + chainSuffix + sn1OxydizedString;
             var sn1ChainString = chainPrefix + sn1CarbonCount + ":" + sn1DbCount + sn1OxydizedString;
@@ -14360,9 +14358,9 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
         {
             var totalCarbon = sn1Carbon + sn2Carbon;
             var totalDB = sn1Double + sn2Double;
-            var totalOxydized = sn1Oxydized + sn2Oxydized;
-            var totalOxidizedString = totalOxydized > 1 ? ";" + totalOxydized + "O" : ";O";
-            //var totalString = totalCarbon + ":" + totalDB + "+" + totalOxydized + "O";
+            var totalOxidized = sn1Oxydized + sn2Oxydized;
+            var totalOxidizedString = totalOxidized > 1 ? ";O" + totalOxidized : ";O";
+            //var totalString = totalCarbon + ":" + totalDB + "+" + totalOxidized + "O";
             var totalString = totalCarbon + ":" + totalDB + totalOxidizedString;
             var totalName = lipidClass + " " + totalString;
             //
@@ -14391,8 +14389,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             //if (sn1OxydizedCount != 0) { sn1OxydizedString = "+" + sn1OxydizedCount + "O"; }
             //if (sn2OxydizedCount != 0) { sn2OxydizedString = "+" + sn2OxydizedCount + "O"; }
-            if (sn1OxydizedCount != 0) { sn1OxydizedString = sn1OxydizedCount == 1 ? ";O" : ";" + sn1OxydizedCount + "O"; }
-            if (sn2OxydizedCount != 0) { sn2OxydizedString = sn2OxydizedCount == 1 ? ";O" : ";" + sn2OxydizedCount + "O"; }
+            if (sn1OxydizedCount != 0) { sn1OxydizedString = sn1OxydizedCount == 1 ? ";O" : ";O" + sn1OxydizedCount; }
+            if (sn2OxydizedCount != 0) { sn2OxydizedString = sn2OxydizedCount == 1 ? ";O" : ";O" + sn2OxydizedCount; }
 
             var sn1ChainString = sn1CarbonCount + ":" + sn1DbCount + sn1OxydizedString;
             var sn2ChainString = sn2CarbonCount + ":" + sn2DbCount + sn2OxydizedString;
@@ -14419,12 +14417,12 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             };
         }
         private static LipidMolecule getOxydizedPhospholipidMoleculeObjAsLevel1(string lipidClass, LbmClass lbmClass,
-    int totalCarbon, int totalDB, int totalOxydized, double score)
+    int totalCarbon, int totalDB, int totalOxidized, double score)
         {
             var totalString = totalCarbon + ":" + totalDB;
             var totalName = lipidClass + " " + totalString;
-            //var chainString = totalString + "+" + totalOxydized + "O";
-            var chainString = totalString + ";" + totalOxydized + "O";
+            var totalOxidizedString = totalOxidized > 1 ? ";O" + totalOxidized : ";O";
+            var chainString = totalString + totalOxidizedString;
             var lipidName = lipidClass + " " + chainString;
 
             return new LipidMolecule()
@@ -14476,11 +14474,12 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
         }
 
         private static LipidMolecule getSingleacyloxMoleculeObjAsLevel1(string lipidClass, LbmClass lbmClass,
-    int sn1Carbon, int sn1Double, int totalOxydized, double score)
+    int sn1Carbon, int sn1Double, int totalOxidized, double score)
         {
             var totalString = sn1Carbon + ":" + sn1Double;
-            //var totalName = lipidClass + " " + totalString + "+" + totalOxydized + "O";
-            var totalName = lipidClass + " " + totalString + ";" + totalOxydized + "O";
+            //var totalName = lipidClass + " " + totalString + "+" + totalOxidized + "O";
+            var totalOxidizedString = totalOxidized > 1 ? ";O" + totalOxidized : ";O";
+            var totalName = lipidClass + " " + totalString + totalOxidizedString;
 
             return new LipidMolecule()
             {
@@ -14495,7 +14494,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                 Sn1CarbonCount = sn1Carbon,
                 Sn1DoubleBondCount = sn1Double,
                 Sn1AcylChainString = totalString,
-                TotalOxidizedCount = totalOxydized
+                TotalOxidizedCount = totalOxidized
             };
         }
 
@@ -14696,13 +14695,13 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             var totalCarbon = sphCarbon + acylCarbon + esterCarbon;
             var totalDB = sphDouble + acylDouble + (esterDouble + 1);
             var totalString = totalCarbon + ":" + totalDB;
-            var totalName = lipidClass + " " + totalString + ";" + (sphHydroxyCount + 2).ToString() + "O";
+            var totalName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + 2).ToString();
 
-            var sphChainString = sphCarbon.ToString() + ":" + sphDouble + ";" + sphHydroxyCount.ToString() + "O";
+            var sphChainString = sphCarbon.ToString() + ":" + sphDouble + ";O" + sphHydroxyCount.ToString();
             var acylChainString = acylCarbon + ":" + acylDouble + ";O";
             if (lbmClass == LbmClass.Cer_EBDS)
             {
-                acylChainString = acylCarbon + ":" + acylDouble + ";(3OH)";
+                acylChainString = acylCarbon + ":" + acylDouble + "(3OH)";
             }
             var esterChainString = "(FA " + esterCarbon + ":" + esterDouble + ")";
 
@@ -14768,9 +14767,9 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             var totalCarbon = cerCarbon + esterCarbon;
             var totalDB = cerDouble + (esterDouble + 1);
             var totalString = totalCarbon + ":" + totalDB;
-            var totalName = lipidClass + " " + totalString + ";" + (sphHydroxyCount + 2).ToString() + "O";
+            var totalName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + 2).ToString();
 
-            var cerChainString = cerCarbon.ToString() + ":" + cerDouble + ";" + (sphHydroxyCount + 1).ToString() + "O";
+            var cerChainString = cerCarbon.ToString() + ":" + cerDouble + ";O" + (sphHydroxyCount + 1).ToString();
             var esterChainString = "(FA " + esterCarbon + ":" + esterDouble + ")";
 
             var chainString = cerChainString + esterChainString;
@@ -14817,11 +14816,11 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             //var totalDB = sphDouble + (acylDouble + 1);
             var totalDB = sphDouble + acylDouble;
             var totalString = totalCarbon + ":" + totalDB;
-            var totalName = lipidClass + " " + totalString + ";" + (sphHydroxyCount + 2).ToString() + "O";
+            var totalName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + 2).ToString();
 
-            var sphChainString = sphCarbon.ToString() + ":" + sphDouble + ";" + sphHydroxyCount.ToString() + "O";
+            var sphChainString = sphCarbon.ToString() + ":" + sphDouble + ";O" + sphHydroxyCount.ToString() ;
             //var acylChainString = acylCarbon.ToString() + ":" + (acylDouble + 1) + ";2O";
-            var acylChainString = acylCarbon.ToString() + ":" + acylDouble.ToString() + ";2O";
+            var acylChainString = acylCarbon.ToString() + ":" + acylDouble.ToString() + ";O2";
 
             var chainString = sphChainString + "/" + acylChainString;
             var lipidName = lipidClass + " " + chainString;
@@ -14868,11 +14867,11 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             var totalDB = sphDouble + acylDouble + esterDouble;
             var totalString = totalCarbon + ":" + totalDB;
             //var totalName = lipidClass + " " + hydroxyString + totalString + acylHydroString;
-            var totalName = lipidClass + " " + totalString + ";" + (sphHydroxyCount + 1).ToString() + "O";
+            var totalName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + 1).ToString();
 
 
             //var sphChainString = hydroxyString.ToString() + sphCarbon.ToString() + ":" + sphDouble;
-            var sphChainString = sphCarbon.ToString() + ":" + sphDouble + ";" + sphHydroxyCount.ToString() + "O";
+            var sphChainString = sphCarbon.ToString() + ":" + sphDouble + ";O" + sphHydroxyCount.ToString();
             var acylChainString = acylCarbon + ":" + acylDouble + ";O";
             //var esterChainString = esterCarbon + ":" + esterDouble;
             var esterChainString = "(O-" + esterCarbon + ":" + esterDouble + ")";
@@ -14926,11 +14925,11 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             var totalDB = ceramideDouble + esterDouble;
             var totalString = totalCarbon + ":" + totalDB;
             //var totalName = lipidClass + " " + hydroxyString + totalString + acylHydroString;
-            var totalName = lipidClass + " " + totalString + ";" + (sphHydroxyCount + 1).ToString() + "O";
+            var totalName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + 1).ToString();
 
             //var ceramideString = hydroxyString.ToString() + ceramideCarbon + ":" + ceramideDouble + acylHydroString;
             //var esterChainString = esterCarbon + ":" + esterDouble;
-            var ceramideString = ceramideCarbon + ":" + ceramideDouble + ";" + (sphHydroxyCount + 1).ToString() + "O";
+            var ceramideString = ceramideCarbon + ":" + ceramideDouble + ";O" + (sphHydroxyCount + 1).ToString();
             var esterChainString = "(O-" + esterCarbon + ":" + esterDouble + ")";
 
             //var chainString = esterChainString + "/" + ceramideString;
@@ -14978,16 +14977,16 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             var totalDB = sphDouble + acylDouble;
             var totalString = totalCarbon + ":" + totalDB;
             //var totalName = lipidClass + " " + hydroxyString + totalString + acylHydroString;
-            var totalName = lipidClass + " " + totalString + ";" + (sphHydroxyCount + 1).ToString() + "O";
+            var totalName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + 1).ToString();
 
             //var sphChainString = hydroxyString.ToString() + sphCarbon.ToString() + ":" + sphDouble;
             //var acylChainString = acylCarbon + ":" + acylDouble + acylHydroString;
-            var sphChainString = sphCarbon.ToString() + ":" + sphDouble + ";" + sphHydroxyCount.ToString() + "O";
+            var sphChainString = sphCarbon.ToString() + ":" + sphDouble + ";O" + sphHydroxyCount.ToString();
             var acylChainString = acylCarbon + ":" + acylDouble + ";O";
 
             var chainString = sphChainString + "/" + acylChainString;
             //var lipidName = lipidClass + " " + chainString;
-            var lipidName = lipidClass + " " + totalString + ";" + (sphHydroxyCount + 1).ToString() + "O"; // 
+            var lipidName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + 1).ToString(); // 
 
             return new LipidMolecule()
             {
@@ -15033,13 +15032,13 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             var totalDB = sphDouble + acylDouble + esterDouble;
             var totalString = totalCarbon + ":" + totalDB;
             //var totalName = lipidClass + " " + hydroxyString1 + totalString;
-            var totalName = lipidClass + " " + totalString + ";" + (sphHydroxyCount + 1).ToString() + "O";
+            var totalName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + 1).ToString();
 
 
             //var sphChainString = hydroxyString.ToString() + sphCarbon.ToString() + ":" + sphDouble;
             //var acylChainString = acylCarbon + ":" + acylDouble;
             //var esterChainString = esterCarbon + ":" + esterDouble;
-            var sphChainString = sphCarbon.ToString() + ":" + sphDouble + ";" + sphHydroxyCount.ToString() + "O";
+            var sphChainString = sphCarbon.ToString() + ":" + sphDouble + ";O" + sphHydroxyCount.ToString();
             var acylChainString = acylCarbon + ":" + acylDouble;
             var esterChainString = "(FA " + esterCarbon + ":" + esterDouble + ")";
 
@@ -15094,9 +15093,9 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             var totalCarbon = cerCarbon + esterCarbon;
             var totalDB = cerDouble + (esterDouble + 1);
             var totalString = totalCarbon + ":" + totalDB;
-            var totalName = lipidClass + " " + totalString + ";" + (sphHydroxyCount + 1).ToString() + "O";
+            var totalName = lipidClass + " " + totalString + ";O" + (sphHydroxyCount + 1).ToString();
 
-            var cerChainString = cerCarbon.ToString() + ":" + cerDouble + ";" + sphHydroxyCount.ToString() + "O";
+            var cerChainString = cerCarbon.ToString() + ":" + cerDouble + ";O" + sphHydroxyCount.ToString();
             var esterChainString = "(FA " + esterCarbon + ":" + esterDouble + ")";
 
             var chainString = cerChainString + esterChainString;
@@ -15536,7 +15535,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             var totalCarbon = sn1Carbon + sn2Carbon;
             var totalDB = sn1Double + sn2Double + 1;
-            var totalString = totalCarbon + ":" + totalDB + ";2O";
+            var totalString = totalCarbon + ":" + totalDB + ";O2";
             var totalName = lipidClass + " " + totalString;
 
             //
@@ -15619,15 +15618,15 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             {
                 case "m":
                     sphHydroxyCount = 1;
-                    sphHydroxyString = "O";
+                    sphHydroxyString = ";O";
                     break;
                 case "d":
                     sphHydroxyCount = 2;
-                    sphHydroxyString = "2O";
+                    sphHydroxyString = ";O2";
                     break;
                 case "t":
                     sphHydroxyCount = 3;
-                    sphHydroxyString = "3O";
+                    sphHydroxyString = ";O3";
                     break;
             }
             var acylHydroxyString = "O";
@@ -15659,14 +15658,14 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             var totalString = acylOxidized == 0 ?
                 totalCarbon + ":" + totalDB + ";" + sphHydroxyString :
-                totalCarbon + ":" + totalDB + ";" + (sphHydroxyCount + acylOxidized).ToString() + "O";
+                totalCarbon + ":" + totalDB + ";O" + (sphHydroxyCount + acylOxidized).ToString();
 
             var totalName = lipidClass + " " + totalString;
 
             var sphChainString = sphCarbon.ToString() + ":" + sphDouble + ";" + sphHydroxyString;
             var acylChainString = acylOxidized == 0 ?
                 acylCarbon + ":" + acylDouble :
-                acylCarbon + ":" + acylDouble + ";" + acylHydroxyString;
+                acylCarbon + ":" + acylDouble  + acylHydroxyString;
             var chainString = sphChainString + "/" + acylChainString;
             var lipidName = lipidClass + " " + chainString;
 
@@ -15692,7 +15691,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
         private static LipidMolecule getAlphaOxfaMoleculeObjAsLevel1(string lipidClass, LbmClass lbmClass,
             int totalCarbon, int totalDB, int totalOxidized, double score)
         {
-            var totalString = totalCarbon + ":" + totalDB + ";(2OH)";
+            var totalString = totalCarbon + ":" + totalDB + "(2OH)";
             var totalName = lipidClass + " " + totalString;
 
             return new LipidMolecule()
@@ -15720,7 +15719,8 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             var totalCarbon = sn1Carbon + sn2Carbon + sn3Carbon;
             var totalDB = sn1Double + sn2Double + sn3Double;
-            var totalString = totalCarbon + ":" + totalDB + ";" + totalOxidized + "O";
+            var totalOxidizedString = totalOxidized > 1 ? ";O" + totalOxidized : ";O";
+            var totalString = totalCarbon + ":" + totalDB + totalOxidizedString;
             var totalName = lipidClass + " " + totalString;
 
             var acyls = new List<int[]>() {
@@ -15737,7 +15737,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
 
             var sn1ChainString = sn1CarbonCount + ":" + sn1DbCount;
             var sn2ChainString = sn2CarbonCount + ":" + sn2DbCount;
-            var sn3ChainString = sn3CarbonCount + ":" + sn3DbCount + ";" + totalOxidized + "O";
+            var sn3ChainString = sn3CarbonCount + ":" + sn3DbCount + totalOxidizedString;
             //var chainString = sn1ChainString + "-" + sn2ChainString + "-" + sn3ChainString;
             var chainString = sn1ChainString + "_" + sn2ChainString + "_" + sn3ChainString;
             var lipidName = lipidClass + " " + chainString;
@@ -15867,7 +15867,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             //                    totalCarbon + ":" + totalDB + hydroxyString + "+" + totalOxygen + "O";
             //}
 
-            var totalOxygenString = totalOxygen == 0 ? string.Empty : totalOxygen == 1 ? ";O" : ";" + totalOxygen + "O";
+            var totalOxygenString = totalOxygen == 0 ? string.Empty : totalOxygen == 1 ? ";O" : ";O" + totalOxygen;
             var totalString = totalCarbon + ":" + totalDB + hydroxyString + totalOxygenString;
 
             switch (hydroxyString)
@@ -15881,17 +15881,17 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                 case "m":
                     totalString = totalOxygen == 0 ?
                         totalCarbon + ":" + totalDB + ";O" :
-                        totalCarbon + ":" + totalDB + ";" + (totalOxygen + 1).ToString() + "O";
+                        totalCarbon + ":" + totalDB + ";O" + (totalOxygen + 1).ToString();
                     break;
                 case "d":
                     totalString = totalOxygen == 0 ?
-                        totalCarbon + ":" + totalDB + ";2O" :
-                        totalCarbon + ":" + totalDB + ";" + (totalOxygen + 2).ToString() + "O";
+                        totalCarbon + ":" + totalDB + ";O2" :
+                        totalCarbon + ":" + totalDB + ";O" + (totalOxygen + 2).ToString();
                     break;
                 case "t":
                     totalString = totalOxygen == 0 ?
                         totalCarbon + ":" + totalDB + ";3O" :
-                        totalCarbon + ":" + totalDB + ";" + (totalOxygen + 3).ToString() + "O";
+                        totalCarbon + ":" + totalDB + ";O" + (totalOxygen + 3).ToString();
                     break;
             }
 

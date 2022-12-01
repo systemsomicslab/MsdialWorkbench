@@ -382,38 +382,38 @@ namespace CompMs.MspGenerator
                                 break;
                             case "OxPC":
                                 GlycerolipidFragmentation.oxPcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain2Ox);
-                                name = "PC " + chain1String + "_" + chain2String + ";" + chain2Ox + "O";
-                                shortName = "PC " + totalChain + ":" + totalBond + ";" + chain2Ox + "O";
+                                name = "PC " + chain1String + "_" + chain2String + ";O" + chain2Ox;
+                                shortName = "PC " + totalChain + ":" + totalBond + ";O" + chain2Ox;
                                 break;
                             case "OxPE":
                                 GlycerolipidFragmentation.oxPeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain2Ox);
-                                name = "PE " + chain1String + "_" + chain2String + ";" + chain2Ox + "O";
-                                shortName = "PE " + totalChain + ":" + totalBond + ";" + chain2Ox + "O";
+                                name = "PE " + chain1String + "_" + chain2String + ";O" + chain2Ox;
+                                shortName = "PE " + totalChain + ":" + totalBond + ";O" + chain2Ox;
                                 break;
                             case "OxPG":
                                 GlycerolipidFragmentation.oxPgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain2Ox);
-                                name = "PG " + chain1String + "_" + chain2String + ";" + chain2Ox + "O";
-                                shortName = "PG " + totalChain + ":" + totalBond + ";" + chain2Ox + "O";
+                                name = "PG " + chain1String + "_" + chain2String + ";O" + chain2Ox;
+                                shortName = "PG " + totalChain + ":" + totalBond + ";O" + chain2Ox;
                                 break;
                             case "OxPI":
                                 GlycerolipidFragmentation.oxPiFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain2Ox);
-                                name = "PI " + chain1String + "_" + chain2String + ";" + chain2Ox + "O";
-                                shortName = "PI " + totalChain + ":" + totalBond + ";" + chain2Ox + "O";
+                                name = "PI " + chain1String + "_" + chain2String + ";O" + chain2Ox;
+                                shortName = "PI " + totalChain + ":" + totalBond + ";O" + chain2Ox;
                                 break;
                             case "OxPS":
                                 GlycerolipidFragmentation.oxPsFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain2Ox);
-                                name = "PS " + chain1String + "_" + chain2String + ";" + chain2Ox + "O";
-                                shortName = "PS " + totalChain + ":" + totalBond + ";" + chain2Ox + "O";
+                                name = "PS " + chain1String + "_" + chain2String + ";O" + chain2Ox;
+                                shortName = "PS " + totalChain + ":" + totalBond + ";O" + chain2Ox;
                                 break;
                             case "EtherOxPC":
                                 GlycerolipidFragmentation.etherOxPcFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain2Ox);
-                                name = "PC O-" + chain1String + "_" + chain2String + ";" + chain2Ox + "O";
-                                shortName = "PC O-" + totalChain + ":" + totalBond + ";" + chain2Ox + "O";
+                                name = "PC O-" + chain1String + "_" + chain2String + ";O" + chain2Ox;
+                                shortName = "PC O-" + totalChain + ":" + totalBond + ";O" + chain2Ox;
                                 break;
                             case "EtherOxPE":
                                 GlycerolipidFragmentation.etherOxPeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain2Ox);
-                                name = "PE O-" + chain1String + "_" + chain2String + ";" + chain2Ox + "O";
-                                shortName = "PE O-" + totalChain + ":" + totalBond + ";" + chain2Ox + "O";
+                                name = "PE O-" + chain1String + "_" + chain2String + ";O" + chain2Ox;
+                                shortName = "PE O-" + totalChain + ":" + totalBond + ";O" + chain2Ox;
                                 break;
                             case "LNAPE":
                                 GlycerolipidFragmentation.lnapeFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double);
@@ -877,7 +877,7 @@ namespace CompMs.MspGenerator
                                 break;
                             case "OxTG":
                                 GlycerolipidFragmentation.oxTgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double, chain3Ox);
-                                name = "TG" + " " + chain1String + "_" + chain2String + "_" + chain3String + ";" + chain3Ox + "O";
+                                name = "TG" + " " + chain1String + "_" + chain2String + "_" + chain3String + ";O" + chain3Ox;
                                 break;
                             case "EtherTG":
                                 GlycerolipidFragmentation.etherTgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double);
@@ -1158,7 +1158,7 @@ namespace CompMs.MspGenerator
                         {
                             //normal
                             case "TG_EST": // 
-                                name = "TG" + " " + chain1String + "_" + chain2String + "_" + chain3String + ";1O(FA " + chain4String + ")";
+                                name = "TG" + " " + chain1String + "_" + chain2String + "_" + chain3String + ";O(FA " + chain4String + ")";
                                 GlycerolipidFragmentation.fahfaTgFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, chain1Carbon, chain1Double, chain2Carbon, chain2Double, chain3Carbon, chain3Double, chain4Carbon, chain4Double);
                                 break;
 

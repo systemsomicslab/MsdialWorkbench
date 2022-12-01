@@ -28,14 +28,14 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(0, alkyl.DoubleBondCount);
             Assert.AreEqual(1, alkyl.OxidizedCount);
 
-            //alkyl = parser.Parse("O-20:4;O4");
-            alkyl = parser.Parse("O-20:4;4O");
+            alkyl = parser.Parse("O-20:4;O4");
+            //alkyl = parser.Parse("O-20:4;4O");
             Assert.IsInstanceOfType(alkyl, typeof(AlkylChain));
             Assert.AreEqual(20, alkyl.CarbonCount);
             Assert.AreEqual(4, alkyl.DoubleBondCount);
             Assert.AreEqual(4, alkyl.OxidizedCount);
 
-            alkyl = parser.Parse("O-20:4;5OH,6OH,11OH,12OH");
+            alkyl = parser.Parse("O-20:4(5OH,6OH,11OH,12OH)");
             Assert.IsInstanceOfType(alkyl, typeof(AlkylChain));
             Assert.AreEqual(20, alkyl.CarbonCount);
             Assert.AreEqual(4, alkyl.DoubleBondCount);
@@ -75,14 +75,14 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(1, alkyl.DoubleBondCount);
             Assert.AreEqual(1, alkyl.OxidizedCount);
 
-            //alkyl = parser.Parse("P-20:4;O4");
-            alkyl = parser.Parse("P-20:4;4O");
+            alkyl = parser.Parse("P-20:4;O4");
+            //alkyl = parser.Parse("P-20:4;4O");
             Assert.IsInstanceOfType(alkyl, typeof(AlkylChain));
             Assert.AreEqual(20, alkyl.CarbonCount);
             Assert.AreEqual(5, alkyl.DoubleBondCount);
             Assert.AreEqual(4, alkyl.OxidizedCount);
 
-            alkyl = parser.Parse("P-20:4;5OH,6OH,11OH,12OH");
+            alkyl = parser.Parse("P-20:4(5OH,6OH,11OH,12OH)");
             Assert.IsInstanceOfType(alkyl, typeof(AlkylChain));
             Assert.AreEqual(20, alkyl.CarbonCount);
             Assert.AreEqual(5, alkyl.DoubleBondCount);
