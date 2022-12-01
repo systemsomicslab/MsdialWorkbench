@@ -204,6 +204,7 @@ namespace Rfx.Riken.OsakaUniv
             if (iter < 3) iter = 3; if (fold < 2) fold = 7;
 
             var span = minSpan;
+            if (x.Length == 0) return span;
             var minTrainSpan = getMinimumTrainSpan(x, fold);
             if (span < minTrainSpan) span = minTrainSpan;
 
@@ -218,12 +219,12 @@ namespace Rfx.Riken.OsakaUniv
                     var xTest = StatisticsMathematics.GetCrossValidationTestArray(x, i, fold);
 
                     if (xTrain == null || xTest == null) continue;
+                    if (xTrain.Length < 2) continue;
 
                     var yTrain = StatisticsMathematics.GetCrossValidationTrainArray(y, i, fold);
                     var yTest = StatisticsMathematics.GetCrossValidationTestArray(y, i, fold);
 
                     if (yTrain == null || yTest == null) continue;
-
 
                     var yLoessPreArray = SmootherMathematics.Lowess(xTrain, yTrain, span, iter);
                     var ySplineDeviArray = SmootherMathematics.Spline(xTrain, yLoessPreArray, double.MaxValue, double.MaxValue);

@@ -203,6 +203,7 @@ namespace CompMs.Common.Mathematics.Basic {
             if (iter < 3) iter = 3; if (fold < 2) fold = 7;
 
             var span = minSpan;
+            if (x.Count == 0) return span;
             var minTrainSpan = getMinimumTrainSpan(x, fold);
             if (span < minTrainSpan) span = minTrainSpan;
 
@@ -217,6 +218,7 @@ namespace CompMs.Common.Mathematics.Basic {
                     var xTest = StatisticsMathematics.GetCrossValidationTestArray(x, i, fold);
 
                     if (xTrain == null || xTest == null) continue;
+                    if (xTrain.Length < 2) continue;
 
                     var yTrain = StatisticsMathematics.GetCrossValidationTrainArray(y, i, fold);
                     var yTest = StatisticsMathematics.GetCrossValidationTestArray(y, i, fold);
