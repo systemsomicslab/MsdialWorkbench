@@ -169,6 +169,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 592.3975492 ,//Sn2-4-H
                 593.4053742 ,//Sn2-4
                 594.4131992 ,//Sn2-4+H
+                601.5190 ,//Precursor-Header
                 602.3818991 ,//Sn1-5-H
                 603.3897241 ,//Sn1-5
                 604.3975492 ,//Sn1-5+H
@@ -283,6 +284,7 @@ namespace CompMs.Common.Lipidomics.Tests
                 614.3794934 ,//Sn2-4-H
                 615.3873184 ,//Sn2-4
                 616.3951435 ,//Sn2-4+H
+                623.501026 ,//Precursor-Header
                 624.3638433 ,//Sn1-5-H
                 625.3716684 ,//Sn1-5
                 625.5179442 ,// precursor - header

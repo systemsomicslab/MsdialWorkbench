@@ -48,7 +48,8 @@ namespace CompMs.Common.Enum
         ST,
         DGTA, LDGTA,
         NATau, NAPhe,
-        PT
+        PT,
+        DMEDFAHFA
     }
 
     /// <summary>

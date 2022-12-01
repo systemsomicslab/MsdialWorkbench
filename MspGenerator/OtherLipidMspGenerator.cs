@@ -157,7 +157,7 @@ namespace CompMs.MspGenerator
                             var fra01comment = "[M-H]-";
                             fragmentList.Add(fra01mass + "\t" + fra01int + "\t" + fra01comment);
 
-                            name = "FA" + " " + fa1Chain + ":" + fa1Double + ";" + fa1Ox + "O";
+                            name = "FA" + " " + fa1Chain + ":" + fa1Double + ";O" + fa1Ox;
                         }
 
                         //
@@ -433,16 +433,16 @@ namespace CompMs.MspGenerator
                         var extraChainSmiles = extraChain[3];
 
                         var name = "";
-                        var shortName = "FAHFA" + " " + totalChain + ":" + totalBond + ";O";
+                        var shortName = "DMEDFAHFA " + " " + totalChain + ":" + totalBond + ";O";
 
-                        var exportLipidClassName = "FAHFA";
+                        var exportLipidClassName = "DMEDFAHFA ";
                         var rawSmiles = extraChainSmiles + "%10." + baseChainSmiles;
                         var meta = Common.getMetaProperty(rawSmiles);
 
                         // fragment
                         var fragmentList = new List<string>();
                         OtherLipidFragmentation.fahfaDmedFragment(fragmentList, adduct.AdductIonName, meta.ExactMass, baseChainCarbon, baseChainDouble, extraChainCarbon, extraChainDouble, baseChainOxposition);
-                        name = "FAHFA" + " " + chainArray[1] + "/" + baseChainString;
+                        name = "DMEDFAHFA " + " " + chainArray[1] + "/" + baseChainString;
                         if (chainNameList.Contains(name))
                         {
                             continue;
@@ -726,7 +726,7 @@ namespace CompMs.MspGenerator
                                 name = cholicAcid[lipidClass] + "/" + chain1String;
                                 if (chain1Ox > 0)
                                 {
-                                    name = name + ";" + chain1Ox + "O";
+                                    name = name + ";O" + chain1Ox;
                                 }
                                 break;
 

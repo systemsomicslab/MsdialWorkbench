@@ -3,7 +3,7 @@ using CompMs.Common.Interfaces;
 
 namespace CompMs.Common.Lipidomics
 {
-    internal class FAHFAEadMsCharacterization
+    internal class DMEDFAHFAEadMsCharacterization
     {
         public static (ILipid, double[]) Characterize(
             IMSScanProperty scan, ILipid molecule, MoleculeMsReference reference,

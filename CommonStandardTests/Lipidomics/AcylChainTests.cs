@@ -32,7 +32,7 @@ namespace CompMs.Common.Lipidomics.Tests
             Assert.AreEqual(2, chain.DoubleBondCount);
             Assert.AreEqual(2, chain.OxidizedCount);
             Assert.AreEqual(295.22731858097, chain.Mass, 0.00001); // C18H31O3
-            Assert.AreEqual("18:2;2O", chain.ToString());
+            Assert.AreEqual("18:2;O2", chain.ToString());
         }
 
         class MockGenerator : IChainGenerator
