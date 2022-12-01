@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace CompMs.Common.Lipidomics
 {
-    public class FAHFASpectrumGenerator : ILipidSpectrumGenerator
+    public class DMEDFAHFASpectrumGenerator : ILipidSpectrumGenerator
     {
 
         private static readonly double CH2 = new[]
@@ -46,12 +46,12 @@ namespace CompMs.Common.Lipidomics
             MassDiffDictionary.OxygenMass,
         }.Sum();
 
-        public FAHFASpectrumGenerator()
+        public DMEDFAHFASpectrumGenerator()
         {
             spectrumGenerator = new SpectrumPeakGenerator();
         }
 
-        public FAHFASpectrumGenerator(ISpectrumPeakGenerator spectrumGenerator)
+        public DMEDFAHFASpectrumGenerator(ISpectrumPeakGenerator spectrumGenerator)
         {
             this.spectrumGenerator = spectrumGenerator ?? throw new ArgumentNullException(nameof(spectrumGenerator));
         }
@@ -60,7 +60,7 @@ namespace CompMs.Common.Lipidomics
 
         public bool CanGenerate(ILipid lipid, AdductIon adduct)
         {
-            if (lipid.LipidClass == LbmClass.FAHFA)
+            if (lipid.LipidClass == LbmClass.DMEDFAHFA)
             {
                 if (adduct.AdductIonName == "[M+H]+")
                 {
@@ -74,7 +74,7 @@ namespace CompMs.Common.Lipidomics
         {
             var nlMass = 0.0;
             var spectrum = new List<SpectrumPeak>();
-            spectrum.AddRange(GetFAHFASpectrum(lipid, adduct));
+            spectrum.AddRange(GetDMEDFAHFASpectrum(lipid, adduct));
             if (lipid.Chains is MolecularSpeciesLevelChains mlChains)
             {
                 spectrum.AddRange(GetAcylLevelSpectrum(lipid, (AcylChain)mlChains.Chains[1], adduct));
@@ -150,7 +150,7 @@ namespace CompMs.Common.Lipidomics
             );
             return spectrum.ToArray();
         }
-        private SpectrumPeak[] GetFAHFASpectrum(ILipid lipid, AdductIon adduct)
+        private SpectrumPeak[] GetDMEDFAHFASpectrum(ILipid lipid, AdductIon adduct)
         {
             var spectrum = new List<SpectrumPeak>
             {

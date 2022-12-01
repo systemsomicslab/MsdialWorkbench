@@ -425,6 +425,7 @@ namespace Riken.Metabolomics.Lipoquality {
                     else
                         return "http://jcbl.jp/wiki/Lipoquality:Resource?lc=" + "FA " + lipidinfo.Sn1AcylChain + "&ct=c";
                 case "FAHFA":
+                case "DMEDFAHFA":
                     if (lipidinfo.Sn1AcylChain != string.Empty && lipidinfo.Sn2AcylChain != string.Empty) {
                         return "http://jcbl.jp/wiki/Lipoquality:Resource?lc=" + "DAG "
                             + lipidinfo.Sn1AcylChain + "/" + lipidinfo.Sn2AcylChain + "&ct=c";

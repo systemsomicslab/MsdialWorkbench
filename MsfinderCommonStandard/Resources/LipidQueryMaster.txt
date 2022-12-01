@@ -139,7 +139,7 @@ TDCAE	[M+NH4]+	Positive	FALSE
 TLCAE	[M+NH4]+	Positive	FALSE
 FA	[M-H]-	Negative	TRUE
 FAHFA	[M-H]-	Negative	TRUE
-FAHFA	[M+H]+	Positive	FALSE
+DMEDFAHFA	[M+H]+	Positive	FALSE
 NAGly	[M-H]-	Negative	TRUE
 NAGly	[M+H]+	Positive	TRUE
 NAGly	[M+NH4]+	Positive	TRUE

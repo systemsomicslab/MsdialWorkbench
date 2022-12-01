@@ -2824,7 +2824,7 @@ namespace CompMs.Common.Lipidomics
             if (lipidclass == LbmClass.Cer_EODS || lipidclass == LbmClass.Cer_EBDS
                 || lipidclass == LbmClass.ASM
                 || lipidclass == LbmClass.FAHFA || lipidclass == LbmClass.NAGly || lipidclass == LbmClass.NAGlySer || lipidclass == LbmClass.NAGlySer
-                || lipidclass == LbmClass.TG_EST)
+                || lipidclass == LbmClass.TG_EST || lipidclass == LbmClass.DMEDFAHFA)
             {
                 rdbString = (rdb + 1).ToString();
                 oxidized = oxidized + 1;
@@ -3865,6 +3865,7 @@ namespace CompMs.Common.Lipidomics
                 case LbmClass.NAGlySer: return "NAGlySer";
                 case LbmClass.NAOrn: return "NAOrn";
                 case LbmClass.FAHFA: return "FAHFA";
+                case LbmClass.DMEDFAHFA: return "DMEDFAHFA";
                 case LbmClass.PhytoSph: return "PhytoSph";
                 case LbmClass.DHSph: return "DHSph";
                 case LbmClass.Sph: return "Sph";
@@ -4266,6 +4267,7 @@ namespace CompMs.Common.Lipidomics
                 case "FA": return LbmClass.FA;
                 case "OxFA": return LbmClass.OxFA;
                 case "FAHFA": return LbmClass.FAHFA;
+                case "DMEDFAHFA": return LbmClass.DMEDFAHFA;
 
                 case "NAE": return LbmClass.NAE;
                 case "NAGly": return LbmClass.NAGly;
@@ -4575,6 +4577,7 @@ namespace CompMs.Common.Lipidomics
                 case "FA": return "FattyAcyls";
                 case "OxFA": return "FattyAcyls";
                 case "FAHFA": return "FattyAcyls";
+                case "DMEDFAHFA": return "FattyAcyls";
 
                 case "MG": return "Glycerolipids";
                 case "DG": return "Glycerolipids";

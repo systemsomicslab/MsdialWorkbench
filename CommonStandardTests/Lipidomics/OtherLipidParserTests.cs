@@ -220,20 +220,20 @@ namespace CompMs.Common.Lipidomics.Tests
     }
 
     [TestClass()]
-    public class FAHFALipidParserTests
+    public class DMEDFAHFALipidParserTests
     {
         [TestMethod()]
         public void ParseTest()
         {
-            var parser = new FAHFALipidParser();
+            var parser = new DMEDFAHFALipidParser();
 
-            var lipid = parser.Parse("FAHFA 38:5;O");
+            var lipid = parser.Parse("DMEDFAHFA 38:5;O");
             Assert.AreEqual(584.4804605, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.FAHFA, lipid.LipidClass);
+            Assert.AreEqual(LbmClass.DMEDFAHFA, lipid.LipidClass);
 
-            lipid = parser.Parse("FAHFA 20:4/18:1;O");
+            lipid = parser.Parse("DMEDFAHFA 20:4/18:1;O");
             Assert.AreEqual(584.4804605, lipid.Mass, 0.01);
-            Assert.AreEqual(LbmClass.FAHFA, lipid.LipidClass);
+            Assert.AreEqual(LbmClass.DMEDFAHFA, lipid.LipidClass);
         }
     }
 

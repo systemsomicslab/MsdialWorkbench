@@ -6380,8 +6380,6 @@ AdductIon adduct)
             return null;
         }
 
-
-
         public static LipidMolecule JudgeIfFahfa(IMSScanProperty msScanProp, double ms2Tolerance,
            double theoreticalMz, int totalCarbon, int totalDoubleBond,
            int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
@@ -6463,7 +6461,18 @@ AdductIon adduct)
                        totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
-            else if (adduct.IonMode == IonMode.Positive)
+            return null;
+        }
+        public static LipidMolecule JudgeIfFahfaDMED(IMSScanProperty msScanProp, double ms2Tolerance,
+           double theoreticalMz, int totalCarbon, int totalDoubleBond,
+           int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
+           AdductIon adduct)
+        {
+            var spectrum = msScanProp.Spectrum;
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (maxSnCarbon > totalCarbon) maxSnCarbon = totalCarbon;
+            if (maxSnDoubleBond > totalDoubleBond) maxSnDoubleBond = totalDoubleBond;
+            if (adduct.IonMode == IonMode.Positive)
             {
                 if (adduct.AdductIonName == "[M+H]+") // DEMD derv.
                 {
@@ -6487,7 +6496,7 @@ AdductIon adduct)
                             }
 
                             var NL_SN1 = theoreticalMz - acylCainMass(sn1Carbon, sn1Double) - H2O + MassDiffDictionary.HydrogenMass; // extra FA loss
-                            var NL_SN1_header = NL_SN1 - 12 * 2 - MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass * 7; 
+                            var NL_SN1_header = NL_SN1 - 12 * 2 - MassDiffDictionary.NitrogenMass - MassDiffDictionary.HydrogenMass * 7;
 
                             var query = new List<SpectrumPeak>
                                         {
@@ -6502,15 +6511,15 @@ AdductIon adduct)
                             if (foundCount == 2)
                             {
                                 var molecule = new LipidMolecule();
-                                    molecule = getFahfaMoleculeObjAsLevel2_0("FAHFA", LbmClass.FAHFA, sn1Carbon, sn1Double,
-                                sn2Carbon, sn2Double, averageIntensity);
+                                molecule = getFahfaMoleculeObjAsLevel2_0("DMEDFAHFA", LbmClass.DMEDFAHFA, sn1Carbon, sn1Double,
+                            sn2Carbon, sn2Double, averageIntensity);
                                 candidates.Add(molecule);
                             }
                         }
                     }
                     if (candidates.Count == 0) return null;
 
-                    return returnAnnotationResult("FAHFA", LbmClass.FAHFA, "", theoreticalMz, adduct,
+                    return returnAnnotationResult("DMEDFAHFA", LbmClass.DMEDFAHFA, "", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
@@ -15805,7 +15814,7 @@ AdductIon adduct)
                     sphHydroxyString = ";O3";
                     break;
             }
-            var acylHydroxyString = "O";
+            var acylHydroxyString = acylOxidized > 1 ? ";O" + acylOxidized: ";O";
             var lbmClassString = lbmClass.ToString();
             if (lbmClassString.Contains("_A"))
             {
@@ -15833,12 +15842,12 @@ AdductIon adduct)
             //var chainString = sphChainString + "/" + acylChainString;
 
             var totalString = acylOxidized == 0 ?
-                totalCarbon + ":" + totalDB + ";" + sphHydroxyString :
+                totalCarbon + ":" + totalDB + sphHydroxyString :
                 totalCarbon + ":" + totalDB + ";O" + (sphHydroxyCount + acylOxidized).ToString();
 
             var totalName = lipidClass + " " + totalString;
 
-            var sphChainString = sphCarbon.ToString() + ":" + sphDouble + ";" + sphHydroxyString;
+            var sphChainString = sphCarbon.ToString() + ":" + sphDouble + sphHydroxyString;
             var acylChainString = acylOxidized == 0 ?
                 acylCarbon + ":" + acylDouble :
                 acylCarbon + ":" + acylDouble + acylHydroxyString;

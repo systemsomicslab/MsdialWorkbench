@@ -6391,7 +6391,17 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                        totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
-            else if (adduct.IonMode == IonMode.Positive)
+            return null;
+        }
+        public static LipidMolecule JudgeIfFahfaDMED(ObservableCollection<double[]> spectrum, double ms2Tolerance,
+               double theoreticalMz, int totalCarbon, int totalDoubleBond,
+               int minSnCarbon, int maxSnCarbon, int minSnDoubleBond, int maxSnDoubleBond,
+               AdductIon adduct)
+        {
+            if (spectrum == null || spectrum.Count == 0) return null;
+            if (maxSnCarbon > totalCarbon) maxSnCarbon = totalCarbon;
+            if (maxSnDoubleBond > totalDoubleBond) maxSnDoubleBond = totalDoubleBond;
+            if (adduct.IonMode == IonMode.Positive)
             {
                 if (adduct.AdductIonName == "[M+H]+") // DEMD derv.
                 {
@@ -6430,7 +6440,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                             if (foundCount == 2)
                             {
                                 var molecule = new LipidMolecule();
-                                molecule = getFahfaMoleculeObjAsLevel2_0("FAHFA", LbmClass.FAHFA, sn1Carbon, sn1Double,
+                                molecule = getFahfaMoleculeObjAsLevel2_0("DMEDFAHFA", LbmClass.DMEDFAHFA, sn1Carbon, sn1Double,
                             sn2Carbon, sn2Double, averageIntensity);
                                 candidates.Add(molecule);
                             }
@@ -6438,7 +6448,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     }
                     if (candidates.Count == 0) return null;
 
-                    return returnAnnotationResult("FAHFA", LbmClass.FAHFA, "", theoreticalMz, adduct,
+                    return returnAnnotationResult("DMEDFAHFA", LbmClass.DMEDFAHFA, "", theoreticalMz, adduct,
                        totalCarbon, totalDoubleBond, 0, candidates, 2);
                 }
             }
@@ -15629,7 +15639,7 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
                     sphHydroxyString = ";O3";
                     break;
             }
-            var acylHydroxyString = "O";
+            var acylHydroxyString = acylOxidized > 1 ? ";O" + acylOxidized : ";O";
             var lbmClassString = lbmClass.ToString();
             if (lbmClassString.Contains("_A") || lbmClassString == "MIPC")
             {
@@ -15657,12 +15667,12 @@ namespace Riken.Metabolomics.Lipidomics.Searcher
             //var chainString = sphChainString + "/" + acylChainString;
 
             var totalString = acylOxidized == 0 ?
-                totalCarbon + ":" + totalDB + ";" + sphHydroxyString :
+                totalCarbon + ":" + totalDB +  sphHydroxyString :
                 totalCarbon + ":" + totalDB + ";O" + (sphHydroxyCount + acylOxidized).ToString();
 
             var totalName = lipidClass + " " + totalString;
 
-            var sphChainString = sphCarbon.ToString() + ":" + sphDouble + ";" + sphHydroxyString;
+            var sphChainString = sphCarbon.ToString() + ":" + sphDouble + sphHydroxyString;
             var acylChainString = acylOxidized == 0 ?
                 acylCarbon + ":" + acylDouble :
                 acylCarbon + ":" + acylDouble  + acylHydroxyString;

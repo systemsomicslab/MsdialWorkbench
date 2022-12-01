@@ -29,7 +29,7 @@ namespace CompMs.MspGenerator
 
 
             ///// RTCCS Prediction
-            var workingDirectry = @"d:\mikikot\Desktop\Tsugawa-san_work\20221125_nomenclature\padel\";//作業用フォルダ
+            var workingDirectry = @"D:\mikikot\Desktop\Tsugawa-san_work\20221121_FAHFA\re\";//作業用フォルダ
             var toPredictFileName = workingDirectry + @"\txt\20221201103217_conventional_notfound.txt"; // 計算させたいInChIKeyとSMILESのリスト
 
             var predictionWorkingDirectry = @"F:\takahashi\RTprediction\~from_MSP\setting\";
@@ -74,10 +74,10 @@ namespace CompMs.MspGenerator
             //MergeRTandCCSintoMsp.generateDicOfPredictVs2(predictedFilesDirectry, dbFileName);
 
 
-            //var outputResultFolderPath = workingDirectry + "\\mergeToMsp\\";　// mergeした結果の出力フォルダ
-            //var mspFilePath = @"D:\takahashi\desktop\Tsugawa-san_work\20210315_addLibrary_ganglioside\predict3" + @"\msp\Msp20210326132118.jointedmsp"; //mergeするmspファイル
-
-            //MergeRTandCCSintoMsp.mergeRTandCCSintoMspVs2(mspFilePath, dbFileName, outputResultFolderPath,"IMS");
+            //var outputResultFolderPath = workingDirectry;// + "\\mergeToMsp\\";　// mergeした結果の出力フォルダ
+            //var mspFilePath = @"D:\mikikot\Desktop\Tsugawa-san_work\20221121_FAHFA\re\FAHFA-DMED_H_Pos.msp"; //mergeするmspファイル
+            //var dbFileName = @"D:\mikikot\Desktop\Tsugawa-san_work\20221121_FAHFA\re\predictResult\FAHFA-DMED_20221124100326.txt_predicted.txt";
+            //MergeRTandCCSintoMsp.mergeRTandCCSintoMspVs2(mspFilePath, dbFileName, outputResultFolderPath,"TUAT");
 
 
 
@@ -152,7 +152,7 @@ namespace CompMs.MspGenerator
             //var faChain2 = new List<string>();
             //var faChain3 = new List<string>();
 
-            //var outputFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
+            //var outputFolder = @"D:\mikikot\Desktop\Tsugawa-san_work\20221121_FAHFA\re";
 
             //// check
             //outputFolder = @"D:\MSDIALmsp_generator\outputFolder\test\";
@@ -544,7 +544,9 @@ namespace CompMs.MspGenerator
             //faChain1 = Common.GenerateAcylChains(12, 0, 38, 12);
             //Common.switchingLipid(faChain1, "DSMSE", outputFolder);
 
-            ////////FAHFA-DMED 20221122
+            //////FAHFA-DMED 20221122
+            //var outputFolder = @"D:\mikikot\Desktop\Tsugawa-san_work\20221121_FAHFA\re\";
+
             //var baseChains = new List<string> // FAHFA-DMEDのみで有効
             //{
             //    "16:0(9OH)" ,"16:0(10OH)" ,"16:0(2OH)"  ,"18:0(9OH)" ,"18:0(10OH)" ,"18:0(12OH)" ,"18:0(13OH)","18:0(2OH)" ,"18:0(5OH)","18:1(15OH)","18:1(2OH)","18:2(15OH)"

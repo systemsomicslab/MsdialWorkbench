@@ -306,6 +306,10 @@ namespace Riken.Metabolomics.Lipidomics
                         result = LipidMsmsCharacterization.JudgeIfFahfa(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
                         break;
+                    case LbmClass.DMEDFAHFA:
+                        result = LipidMsmsCharacterization.JudgeIfFahfaDMED(spectrum, ms2tol, refMz,
+                             totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct);
+                        break;
                     case LbmClass.OxFA:
                         result = LipidMsmsCharacterization.JudgeIfOxfattyacid(spectrum, ms2tol, refMz,
                              totalCarbon, totalDbBond, sn1MinCarbon, sn1MaxCarbon, sn1MinDbBond, sn1MaxDbBond, adduct, totalOxidized);

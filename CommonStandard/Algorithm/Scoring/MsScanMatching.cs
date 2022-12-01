@@ -108,8 +108,8 @@ namespace CompMs.Common.Algorithm.Scoring {
                 case LbmClass.CAR:
                     return CAREadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
 
-                case LbmClass.FAHFA:
-                    return FAHFAEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
+                case LbmClass.DMEDFAHFA:
+                    return DMEDFAHFAEadMsCharacterization.Characterize(scan, (Lipid)lipid, reference, tolerance, mzBegin, mzEnd);
 
                 default: return (null, new double[2] { 0.0, 0.0 });
             }
@@ -1048,6 +1048,10 @@ namespace CompMs.Common.Algorithm.Scoring {
 
                 case LbmClass.FAHFA:
                     return LipidMsmsCharacterization.JudgeIfFahfa(msScanProp, ms2tol, refMz,
+                         totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
+
+                case LbmClass.DMEDFAHFA:
+                    return LipidMsmsCharacterization.JudgeIfFahfaDMED(msScanProp, ms2tol, refMz,
                          totalCarbon, totalDbBond, sn1Carbon, sn1Carbon, sn1DbBond, sn1DbBond, adduct);
 
                 case LbmClass.OxFA:

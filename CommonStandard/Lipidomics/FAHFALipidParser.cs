@@ -5,12 +5,12 @@ using System.Text.RegularExpressions;
 
 namespace CompMs.Common.Lipidomics
 {
-    public class FAHFALipidParser : ILipidParser
+    public class DMEDFAHFALipidParser : ILipidParser
     {
-        public string Target { get; } = "FAHFA";
+        public string Target { get; } = "DMEDFAHFA";
 
         private static readonly TotalChainParser chainsParser = TotalChainParser.BuildParser(2);
-        public static readonly string Pattern = $"^FAHFA\\s*(?<sn>{chainsParser.Pattern})$";
+        public static readonly string Pattern = $"^DMEDFAHFA\\s*(?<sn>{chainsParser.Pattern})$";
         private static readonly Regex pattern = new Regex(Pattern, RegexOptions.Compiled);
 
         public ILipid Parse(string lipidStr)
@@ -20,7 +20,7 @@ namespace CompMs.Common.Lipidomics
             {
                 var group = match.Groups;
                 var chains = chainsParser.Parse(group["sn"].Value);
-                return new Lipid(LbmClass.FAHFA, chains.Mass + MassDiffDictionary.OxygenMass, chains);
+                return new Lipid(LbmClass.DMEDFAHFA, chains.Mass + MassDiffDictionary.OxygenMass, chains);
             }
             return null;
         }
