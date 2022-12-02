@@ -25,11 +25,16 @@ namespace CompMs.Graphics.Behavior
 
         private static void OnPositionBaseChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is FrameworkElement fe) {
-                var isEnabled = GetIsEnabled(d);
-                if (isEnabled && e.OldValue != null) {
+                if (e.OldValue != null) {
                     OnDetached(fe);
                 }
-                if (isEnabled && e.NewValue != null) {
+                if (e.OldValue is null && e.NewValue != null) {
+                    fe.RenderTransform = new MatrixTransform(new Matrix(1, 0, 0, 1, 0, 0));
+                }
+                if (e.NewValue is null) {
+                    fe.RenderTransform = null;
+                }
+                if (e.NewValue != null && GetIsEnabled(d)) {
                     OnAttaching(fe);
                 }
             }
@@ -53,11 +58,13 @@ namespace CompMs.Graphics.Behavior
         private static void OnIsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             if (d is FrameworkElement fe) {
                 FrameworkElement positionBase = GetPositionBase(d);
-                if ((bool)e.OldValue && positionBase != null) {
-                    OnDetached(fe);
+                if ((bool)e.NewValue) {
+                    if (positionBase != null) {
+                        OnAttaching(fe);
+                    }
                 }
-                if ((bool)e.NewValue && positionBase != null) {
-                    OnAttaching(fe);
+                else {
+                    OnDetached(fe);
                 }
             }
         }
@@ -98,7 +105,6 @@ namespace CompMs.Graphics.Behavior
             => d.SetValue(DragInitialPointProperty, value);
 
         private static void OnDetached(FrameworkElement fe) {
-            fe.RenderTransform = null;
             fe.MouseWheel -= OnMouseWheel;
             fe.MouseMove -= OnMouseMove;
             fe.MouseLeave -= OnMouseLeave;
@@ -109,7 +115,6 @@ namespace CompMs.Graphics.Behavior
         }
 
         private static void OnAttaching(FrameworkElement fe) {
-            fe.RenderTransform = new MatrixTransform(new Matrix(1, 0, 0, 1, 0, 0));
             fe.MouseWheel += OnMouseWheel;
             fe.MouseMove += OnMouseMove;
             fe.MouseLeave += OnMouseLeave;
@@ -205,10 +210,15 @@ namespace CompMs.Graphics.Behavior
             var rubber = GetDragRubber(fe);
             if (rubber != null) {
                 var initial = GetDragInitialPoint(fe);
+                var current = e.GetPosition(fe);
                 SetDragRubber(fe, null);
                 fe.ReleaseMouseCapture();
                 rubber.Detach();
-                var transition = e.GetPosition(fe) - initial;
+                var transition = current - initial;
+                    if (Math.Abs(transition.X) < SystemParameters.MinimumHorizontalDragDistance ||
+                        Math.Abs(transition.Y) < SystemParameters.MinimumVerticalDragDistance)
+                        return;
+
                 var matrix = GetTransformMatrix(fe);
                 var center = initial + transition / 2;
                 var displayCenter = matrix.Transform(center);
@@ -236,10 +246,6 @@ namespace CompMs.Graphics.Behavior
 
         private static Matrix GetTransformMatrix(FrameworkElement fe) {
             return ((MatrixTransform)fe.RenderTransform).Matrix;
-        }
-
-        private static Matrix Inverse(Matrix matrix) {
-            return new Matrix(1 / matrix.M11, 0, 0, 1 / matrix.M22, -matrix.OffsetX / matrix.M11, -matrix.OffsetY / matrix.M22);
         }
     }
 }

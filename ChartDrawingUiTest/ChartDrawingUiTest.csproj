@@ -168,6 +168,9 @@
     </Compile>
     <Compile Include="Scatter\ScatterVM3.cs" />
     <Compile Include="Scatter\ScatterVM4.cs" />
+    <Compile Include="UI\AreaSelector.xaml.cs">
+      <DependentUpon>AreaSelector.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\BindingStaticResource.xaml.cs">
       <DependentUpon>BindingStaticResource.xaml</DependentUpon>
     </Compile>
@@ -315,6 +318,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Scatter\Scatter4.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\AreaSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
