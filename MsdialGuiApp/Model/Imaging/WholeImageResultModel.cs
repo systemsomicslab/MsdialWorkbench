@@ -7,7 +7,6 @@ using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -18,6 +17,8 @@ namespace CompMs.App.Msdial.Model.Imaging
     internal sealed class WholeImageResultModel : DisposableModelBase
     {
         private readonly ChromatogramPeakFeatureCollection _peaks;
+        private readonly ObservableCollection<RoiIntensitiesModel> _intensities;
+        private int _roiId = 0;
 
         public WholeImageResultModel(AnalysisFileBeanModel file) {
             File = file ?? throw new ArgumentNullException(nameof(file));
@@ -33,7 +34,7 @@ namespace CompMs.App.Msdial.Model.Imaging
                         enableCache: true),
                     "Abundance");
             var brushes = new[] { intensityBrush, };
-            Target = new ReactiveProperty<ChromatogramPeakFeatureModel>().AddTo(Disposables);
+            Target = new ReactiveProperty<ChromatogramPeakFeatureModel>(initialValue: Peaks.FirstOrDefault()).AddTo(Disposables);
             PeakPlotModel = new AnalysisPeakPlotModel(
                 Peaks,
                 peak => peak.ChromXValue ?? 0d,
@@ -47,15 +48,34 @@ namespace CompMs.App.Msdial.Model.Imaging
                 HorizontalProperty = nameof(ChromatogramPeakFeatureModel.ChromXValue),
                 VerticalProperty = nameof(ChromatogramPeakFeatureModel.Mass),
             }.AddTo(Disposables);
+
+            var maldiFrameInfos = new MaldiFrames(file.File.GetMaldiFrames());
+            var wholeRoi = new RoiModel(file, maldiFrameInfos, Colors.Red);
+            var elements = Peaks.Select(item => new Raw2DElement(item.Mass, item.Drift.Value)).ToList();
+            var rawSpectraOnPixels = wholeRoi.RetrieveRawSpectraOnPixels(elements);
+            ImagingRoiModel = new ImagingRoiModel($"ROI{_roiId++}", wholeRoi, rawSpectraOnPixels, Peaks, Target).AddTo(Disposables);
+
+            MaldiFrameLaserInfo laserInfo = file.File.GetMaldiFrameLaserInfo();
+            _intensities = new ObservableCollection<RoiIntensitiesModel>(
+                Peaks.Zip(rawSpectraOnPixels.PixelPeakFeaturesList,
+                    (peak, pixelPeaks) => new RoiIntensitiesModel(pixelPeaks, maldiFrameInfos, peak, laserInfo)));
+            Intensities = new ReadOnlyObservableCollection<RoiIntensitiesModel>(_intensities);
+            Target.Select(p => _intensities.FirstOrDefault(intensity => intensity.Peak == p))
+                .Where(p => p != null)
+                .Subscribe(intensity => SelectedPeakIntensities = intensity)
+                .AddTo(Disposables);
         }
 
         public AnalysisFileBeanModel File { get; }
         public ObservableCollection<ChromatogramPeakFeatureModel> Peaks { get; }
         public AnalysisPeakPlotModel PeakPlotModel { get; }
         public ReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
-
-        public List<(Raw2DElement, ChromatogramPeakFeatureModel)> GetTargetElements() {
-            return Peaks.Select(item => (new Raw2DElement(item.Mass, item.InnerModel.PeakFeature.ChromXsTop.Drift.Value), item)).ToList();
+        public ImagingRoiModel ImagingRoiModel { get; }
+        public ReadOnlyObservableCollection<RoiIntensitiesModel> Intensities { get; }
+        public RoiIntensitiesModel SelectedPeakIntensities {
+            get => _selectedPeakIntensities;
+            set => SetProperty(ref _selectedPeakIntensities, value);
         }
+        private RoiIntensitiesModel _selectedPeakIntensities;
     }
 }

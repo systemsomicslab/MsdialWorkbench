@@ -10,6 +10,7 @@
              xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.ImagingImms"
              xmlns:chartvm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
              xmlns:infovm="clr-namespace:CompMs.App.Msdial.ViewModel.Information"
+             xmlns:behavior="clr-namespace:CompMs.Graphics.Behavior;assembly=ChartDrawing"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type={x:Type vm:ImagingMainViewModel}}"
              d:Background="White"
@@ -27,8 +28,7 @@
                             <Run Text="{Binding ImageTitle, Mode=OneWay}"/>
                         </Expander.Header>
                         <ListBox ItemsSource="{Binding RoiViewModels}"
-                                 SelectedItem="{Binding SelectedRoiViewModel}"
-                                 IsSynchronizedWithCurrentItem="True"/>
+                                 SelectedItem="{Binding SelectedRoiViewModel}"/>
                     </Expander>
                 </DataTemplate>
             </DataTemplate.Resources>
@@ -94,14 +94,16 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-                <ComboBox ItemsSource="{Binding SelectedImageViewModel.SelectedRoiViewModel.Intensities}"
-                          SelectedItem="{Binding SelectedImageViewModel.SelectedRoiViewModel.SelectedPeakIntensities.Value}"
-                          IsSynchronizedWithCurrentItem="True"
-                          DisplayMemberPath="Title"
-                          DockPanel.Dock="Top"/>
-                <chart:BitmapImageView DataContext="{Binding SelectedImageViewModel.SelectedRoiViewModel.Intensities/BitmapImageViewModel}"/>
-            </DockPanel>
+            <Border x:Name="ImageContainer"
+                    ClipToBounds="True"
+                    Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+                <Grid behavior:AddMovabilityBehavior.PositionBase="{Binding ElementName=ImageContainer}">
+                    <chart:BitmapImageView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.SelectedPeakIntensities.Value.BitmapImageViewModel}"
+                                           behavior:AddMovabilityBehavior.IsEnabled="False"/>
+                    <chart:BitmapImageView DataContext="{Binding SelectedImageViewModel.SelectedRoiViewModel.Roi.RoiImage}"
+                                           behavior:AddMovabilityBehavior.IsEnabled="False"/>
+                </Grid>
+            </Border>
             <chart:PeakView DataContext="{Binding SelectedImageViewModel.ImageResultViewModel.PeakPlotViewModel}"
                             Grid.Row="1" Grid.Column="1"/>
             <chart:BarChartView DataContext="{Binding SelectedRoiCompareViewModel.BarChartViewModel}"

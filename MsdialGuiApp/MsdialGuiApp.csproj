@@ -156,7 +156,6 @@
     <Compile Include="Model\Chart\BitmapImageModel.cs" />
     <Compile Include="Model\Chart\Ms2ChromatogramsModel.cs" />
     <Compile Include="Model\Chart\MsSpectrum.cs" />
-    <Compile Include="Model\Chart\SampleImageModel.cs" />
     <Compile Include="Model\Core\IResultModel.cs" />
     <Compile Include="Model\DataObj\AnalysisFileBeanModel.cs" />
     <Compile Include="Model\DataObj\AnalysisFileBeanModelCollection.cs" />
@@ -173,8 +172,10 @@
     <Compile Include="Model\Imaging\ImagingImageModel.cs" />
     <Compile Include="Model\Imaging\ImagingRoiModel.cs" />
     <Compile Include="Model\Imaging\ImaginRoiCompareModel.cs" />
+    <Compile Include="Model\Imaging\MaldiFrames.cs" />
     <Compile Include="Model\Imaging\RoiModel.cs" />
     <Compile Include="Model\Imaging\RoiIntensitiesModel.cs" />
+    <Compile Include="Model\Imaging\RoiPeakSummaryModel.cs" />
     <Compile Include="Model\Imaging\WholeImageResultModel.cs" />
     <Compile Include="Model\ImagingImms\ImagingImmsMethodModel.cs" />
     <Compile Include="Model\Information\CompoundDetailModel.cs" />
@@ -323,7 +324,6 @@
     <Compile Include="Utility\GlobalResources.cs" />
     <Compile Include="Utility\ObservableExtensions.cs" />
     <Compile Include="ViewModel\Chart\BitmapImageViewModel.cs" />
-    <Compile Include="ViewModel\Chart\SampleImageViewModel.cs" />
     <Compile Include="ViewModel\Chart\Ms2ChromatogramsViewModel.cs" />
     <Compile Include="ViewModel\Chart\MultiAlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\Chart\MultiBarChartViewModel.cs" />
@@ -340,6 +340,7 @@
     <Compile Include="ViewModel\Imaging\ImagingRoiCompareViewModel.cs" />
     <Compile Include="ViewModel\Imaging\ImagingRoiViewModel.cs" />
     <Compile Include="ViewModel\Imaging\RoiIntensitiesViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\RoiPeakSummaryViewModel.cs" />
     <Compile Include="ViewModel\Imaging\RoiViewModel.cs" />
     <Compile Include="ViewModel\Imaging\WholeImageResultViewModel.cs" />
     <Compile Include="ViewModel\Information\CompoundDetailViewModel.cs" />
@@ -498,9 +499,6 @@
     </Compile>
     <Compile Include="View\Chart\ExpRefView.xaml.cs">
       <DependentUpon>ExpRefView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Chart\SampleImageView.xaml.cs">
-      <DependentUpon>SampleImageView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\Ms2ChromatogramsView.xaml.cs">
       <DependentUpon>Ms2ChromatogramsView.xaml</DependentUpon>
@@ -870,10 +868,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Chart\ExpRefView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Chart\SampleImageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1325,10 +1319,11 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <None Include="AlignmentExports.cd" />
-    <None Include="Normalizations.cd" />
+    <None Include="ClassDiagrams\AlignmentExports.cd" />
+    <None Include="ClassDiagrams\Normalizations.cd" />
+    <None Include="Model\ImagingImms\ImmsImagingModels.cd" />
     <None Include="packages.config" />
-    <None Include="PeakFiltering.cd" />
+    <None Include="ClassDiagrams\PeakFiltering.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
