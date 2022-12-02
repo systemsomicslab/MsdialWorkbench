@@ -149,25 +149,37 @@
     <Compile Include="Common\ChartBrushes.cs" />
     <Compile Include="Common\Colormaps.cs" />
     <Compile Include="Common\CommonEnums.cs" />
+    <Compile Include="Dto\ProjectCrumb.cs" />
     <Compile Include="External Applications\MsDialIniField.cs" />
     <Compile Include="External Applications\MsDialIniParcer.cs" />
     <Compile Include="External Applications\MsDialToExternalApps.cs" />
     <Compile Include="Model\Chart\BitmapImageModel.cs" />
     <Compile Include="Model\Chart\Ms2ChromatogramsModel.cs" />
     <Compile Include="Model\Chart\MsSpectrum.cs" />
-    <Compile Include="Model\Chart\SampleImageModel.cs" />
+    <Compile Include="Model\Core\IResultModel.cs" />
     <Compile Include="Model\DataObj\AnalysisFileBeanModel.cs" />
     <Compile Include="Model\DataObj\AnalysisFileBeanModelCollection.cs" />
     <Compile Include="Model\DataObj\BarItemCollection.cs" />
+    <Compile Include="Model\DataObj\IPeakSpotModel.cs" />
+    <Compile Include="Model\Export\AlignmentExportGroupModel.cs" />
     <Compile Include="Model\Export\AlignmentResultExportModel.cs" />
+    <Compile Include="Model\Export\AlignmentSpectraExportFormat.cs" />
+    <Compile Include="Model\Export\AlignmentSpectraExportGroupModel.cs" />
+    <Compile Include="Model\Export\ExportFormat.cs" />
+    <Compile Include="Model\Export\ExportType.cs" />
+    <Compile Include="Model\Export\IAlignmentResultExportModel.cs" />
+    <Compile Include="Model\Export\ProteinGroupExportModel.cs" />
     <Compile Include="Model\Imaging\ImagingImageModel.cs" />
     <Compile Include="Model\Imaging\ImagingRoiModel.cs" />
     <Compile Include="Model\Imaging\ImaginRoiCompareModel.cs" />
+    <Compile Include="Model\Imaging\MaldiFrames.cs" />
     <Compile Include="Model\Imaging\RoiModel.cs" />
-    <Compile Include="Model\Imaging\RoiIntensitiesModel.cs" />
+    <Compile Include="Model\Imaging\IntensityImageModel.cs" />
+    <Compile Include="Model\Imaging\RoiPeakSummaryModel.cs" />
     <Compile Include="Model\Imaging\WholeImageResultModel.cs" />
     <Compile Include="Model\ImagingImms\ImagingImmsMethodModel.cs" />
     <Compile Include="Model\Information\CompoundDetailModel.cs" />
+    <Compile Include="Model\Information\MoleculeStructureModel.cs" />
     <Compile Include="Model\Information\PeakInformationModel.cs" />
     <Compile Include="Model\DataObj\PeptideGroupModel.cs" />
     <Compile Include="Model\DataObj\ProteinResultContainerModel.cs" />
@@ -187,8 +199,10 @@
     <Compile Include="Model\Loader\BarItemsLoaderData.cs" />
     <Compile Include="Model\Loader\IChromatogramLoader.cs" />
     <Compile Include="Model\Loader\MsSelectionItem.cs" />
+    <Compile Include="Model\Export\AlignmentPeakSpotSupplyer.cs" />
     <Compile Include="Model\Service\OpenFileRequest.cs" />
     <Compile Include="Model\Service\ShortMessageRequest.cs" />
+    <Compile Include="Model\Setting\ProcessSettingModel.cs" />
     <Compile Include="Model\Statistics\InternalStandardLowessNormalizeModel.cs" />
     <Compile Include="Model\Statistics\InternalStandardNormalizeModel.cs" />
     <Compile Include="Model\Statistics\IonAbundance.cs" />
@@ -282,7 +296,6 @@
     <Compile Include="Model\Imms\ImmsMethodModel.cs" />
     <Compile Include="Model\Imms\ImmsPeakSpotTableModel.cs" />
     <Compile Include="Model\Core\MethodModelBase.cs" />
-    <Compile Include="Model\Core\AnalysisParameterSetModelBase.cs" />
     <Compile Include="Model\Setting\IAnnotatorSettingModel.cs" />
     <Compile Include="Model\Setting\AnalysisFilePropertyResetModel.cs" />
     <Compile Include="Model\Setting\DataBaseSettingModel.cs" />
@@ -306,12 +319,11 @@
     <Compile Include="Model\Setting\DataBaseAnnotationSettingModelBase.cs" />
     <Compile Include="Model\Setting\ModificationSettingModel.cs" />
     <Compile Include="Model\Setting\MspAnnotationSettingModel.cs" />
-    <Compile Include="Model\Statistics\PCAPLSResultModel.cs" />
     <Compile Include="Model\Table\PeakSpotTableModelBase.cs" />
+    <Compile Include="Properties\Settings.Manual.cs" />
     <Compile Include="Utility\GlobalResources.cs" />
     <Compile Include="Utility\ObservableExtensions.cs" />
     <Compile Include="ViewModel\Chart\BitmapImageViewModel.cs" />
-    <Compile Include="ViewModel\Chart\SampleImageViewModel.cs" />
     <Compile Include="ViewModel\Chart\Ms2ChromatogramsViewModel.cs" />
     <Compile Include="ViewModel\Chart\MultiAlignmentEicViewModel.cs" />
     <Compile Include="ViewModel\Chart\MultiBarChartViewModel.cs" />
@@ -319,14 +331,20 @@
     <Compile Include="ViewModel\Core\IAnalysisResultViewModel.cs" />
     <Compile Include="ViewModel\Core\IResultViewModel.cs" />
     <Compile Include="ViewModel\DataObj\PeptideViewModel.cs" />
+    <Compile Include="ViewModel\Export\AlignmentExportGroupViewModel.cs" />
+    <Compile Include="ViewModel\Export\AlignmentSpectraExportGroupViewModel.cs" />
+    <Compile Include="ViewModel\Export\IAlignmentResultExportViewModel.cs" />
+    <Compile Include="ViewModel\Export\ProteinGroupExportViewModel.cs" />
+    <Compile Include="ViewModel\ImagingImms\ImagingMainViewModel.cs" />
     <Compile Include="ViewModel\Imaging\ImagingImageViewModel.cs" />
-    <Compile Include="ViewModel\Imaging\ImagingMainViewModel.cs" />
     <Compile Include="ViewModel\Imaging\ImagingRoiCompareViewModel.cs" />
     <Compile Include="ViewModel\Imaging\ImagingRoiViewModel.cs" />
-    <Compile Include="ViewModel\Imaging\RoiIntensitiesViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\IntensityImageViewModel.cs" />
+    <Compile Include="ViewModel\Imaging\RoiPeakSummaryViewModel.cs" />
     <Compile Include="ViewModel\Imaging\RoiViewModel.cs" />
     <Compile Include="ViewModel\Imaging\WholeImageResultViewModel.cs" />
     <Compile Include="ViewModel\Information\CompoundDetailViewModel.cs" />
+    <Compile Include="ViewModel\Information\MoleculeStructureViewModel.cs" />
     <Compile Include="ViewModel\Information\PeakInformationViewModel.cs" />
     <Compile Include="ViewModel\DataObj\ProteinGroupViewModel.cs" />
     <Compile Include="ViewModel\DataObj\ProteinViewModel.cs" />
@@ -359,7 +377,7 @@
     <Compile Include="Model\Lcimms\LcimmsAnalysisModel.cs" />
     <Compile Include="Model\Lcimms\LcimmsMethodModel.cs" />
     <Compile Include="Model\Statistics\SplashSetModel.cs" />
-    <Compile Include="ViewModel\CcsCalibrationInfoVS.cs" />
+    <Compile Include="ViewModel\DataObj\CcsCalibrationInfoVS.cs" />
     <Compile Include="ViewModel\Chart\SingleSpectrumViewModel.cs" />
     <Compile Include="ViewModel\Chart\SmallClassBarChartViewModel.cs" />
     <Compile Include="ViewModel\Chart\SpectrumViewModel.cs" />
@@ -417,7 +435,7 @@
     <Compile Include="ViewModel\Setting\DisplayEicSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\FragmentQuerySettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\IdentifySettingViewModel.cs" />
-    <Compile Include="ViewModel\Export\AlignmentResultExport2VM.cs" />
+    <Compile Include="ViewModel\Export\AlignmentResultExportViewModel.cs" />
     <Compile Include="ViewModel\Export\AnalysisResultExportViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsCompoundSearchVM.cs" />
     <Compile Include="ViewModel\Imms\ImmsDataCollectionSettingViewModel.cs" />
@@ -430,7 +448,7 @@
     <Compile Include="ViewModel\Lcms\LcmsPeakSpotTableViewModel.cs" />
     <Compile Include="ViewModel\Statistics\NormalizationSetViewModel.cs" />
     <Compile Include="ViewModel\Statistics\SplashSetViewModel.cs" />
-    <Compile Include="ViewModel\ProteomicsParameterVM.cs" />
+    <Compile Include="ViewModel\DataObj\ProteomicsParameterVM.cs" />
     <Compile Include="ViewModel\Setting\AnnotationProcessSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\DataBaseSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\EnzymeSettingViewModel.cs" />
@@ -450,12 +468,8 @@
     <Compile Include="ViewModel\Setting\ProjectParameterSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\ProjectSettingViewModel.cs" />
     <Compile Include="ViewModel\Setting\RetentionTimeCorrectionViewModelLegacy.cs" />
-    <Compile Include="ViewModel\Statistics\PCAPLSResultViewModel.cs" />
     <Compile Include="ViewModel\Table\PeakSpotTableViewModelBase.cs" />
     <Compile Include="ViewModel\Table\ProteinGroupTableViewModel.cs" />
-    <Compile Include="View\AdductView.xaml.cs">
-      <DependentUpon>AdductView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\ChartSetting\BarChartOfAlignedSpotSettingRibbonTab.xaml.cs">
       <DependentUpon>BarChartOfAlignedSpotSettingRibbonTab.xaml</DependentUpon>
     </Compile>
@@ -485,9 +499,6 @@
     </Compile>
     <Compile Include="View\Chart\ExpRefView.xaml.cs">
       <DependentUpon>ExpRefView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Chart\SampleImageView.xaml.cs">
-      <DependentUpon>SampleImageView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Chart\Ms2ChromatogramsView.xaml.cs">
       <DependentUpon>Ms2ChromatogramsView.xaml</DependentUpon>
@@ -543,14 +554,14 @@
     <Compile Include="View\Export\SaveImageAsWinLegacy.xaml.cs">
       <DependentUpon>SaveImageAsWinLegacy.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imaging\ImagingMainView.xaml.cs">
+    <Compile Include="View\Help\HelpAboutDialog.xaml.cs">
+      <DependentUpon>HelpAboutDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ImagingImms\ImagingMainView.xaml.cs">
       <DependentUpon>ImagingMainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imaging\ImmsImagingRibbon.xaml.cs">
+    <Compile Include="View\ImagingImms\ImmsImagingRibbon.xaml.cs">
       <DependentUpon>ImmsImagingRibbon.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Imms\CompoundDetailView.xaml.cs">
-      <DependentUpon>CompoundDetailView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Imms\ImmsAnalysisPeakTableView.xaml.cs">
       <DependentUpon>ImmsAnalysisPeakTableView.xaml</DependentUpon>
@@ -567,11 +578,11 @@
     <Compile Include="View\Imms\ImmsMainView.xaml.cs">
       <DependentUpon>ImmsMainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Imms\PeakPropertyView.xaml.cs">
-      <DependentUpon>PeakPropertyView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Information\CompoundDetailView.xaml.cs">
       <DependentUpon>CompoundDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Information\MoleculeStructureView.xaml.cs">
+      <DependentUpon>MoleculeStructureView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Information\PeakInformationView.xaml.cs">
       <DependentUpon>PeakInformationView.xaml</DependentUpon>
@@ -684,26 +695,24 @@
     <Compile Include="Utility\ParameterFactory.cs" />
     <Compile Include="ViewModel\Dims\DimsAlignmentViewModel.cs" />
     <Compile Include="ViewModel\Dims\DimsAnalysisViewModel.cs" />
-    <Compile Include="ViewModel\CompoundSearchVM.cs" />
+    <Compile Include="ViewModel\Search\CompoundSearchVM.cs" />
     <Compile Include="ViewModel\Dims\DimsMethodViewModel.cs" />
     <Compile Include="Model\Search\DisplayFilter.cs" />
-    <Compile Include="ViewModel\AdductIonVM.cs" />
+    <Compile Include="ViewModel\DataObj\AdductIonVM.cs" />
     <Compile Include="ViewModel\Imms\ImmsAlignmentViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsAnalysisViewModel.cs" />
     <Compile Include="ViewModel\Imms\ImmsMethodViewModel.cs" />
-    <Compile Include="ViewModel\MsdialProjectParameterFactory.cs" />
-    <Compile Include="ViewModel\MzSearchQueryVM.cs" />
-    <Compile Include="ViewModel\MsRefSearchParameterBaseVM.cs" />
+    <Compile Include="ViewModel\DataObj\MzSearchQueryVM.cs" />
+    <Compile Include="ViewModel\DataObj\MsRefSearchParameterBaseViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsAlignmentViewModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsAnalysisViewModel.cs" />
     <Compile Include="Model\DataObj\BarItem.cs" />
     <Compile Include="Model\DataObj\Chromatogram.cs" />
-    <Compile Include="Model\DataObj\ChromatogramPeakWrapper.cs" />
     <Compile Include="Model\DataObj\AlignmentSpotPropertyModel.cs" />
     <Compile Include="Model\DataObj\ChromatogramPeakFeatureModel.cs" />
     <Compile Include="ViewModel\Lcms\LcmsMethodViewModel.cs" />
-    <Compile Include="ViewModel\MethodVM.cs" />
-    <Compile Include="ViewModel\ParameterBaseVM.cs" />
+    <Compile Include="ViewModel\Core\MethodViewModel.cs" />
+    <Compile Include="ViewModel\DataObj\ParameterBaseVM.cs" />
     <Compile Include="Model\DataObj\PeakItem.cs" />
     <Compile Include="Model\DataObj\SpectrumPeakWrapper.cs" />
     <Compile Include="View\Dims\AlignmentClassBar.xaml.cs">
@@ -712,10 +721,7 @@
     <Compile Include="View\Dims\ChromatogramView.xaml.cs">
       <DependentUpon>ChromatogramView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\CompoundDetailView.xaml.cs">
-      <DependentUpon>CompoundDetailView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\CompoundSearchWindow.xaml.cs">
+    <Compile Include="View\Search\CompoundSearchWindow.xaml.cs">
       <DependentUpon>CompoundSearchWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Dims\Footer.xaml.cs">
@@ -724,16 +730,12 @@
     <Compile Include="View\Dims\DimsMainView.xaml.cs">
       <DependentUpon>DimsMainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Dims\PeakPropertyView.xaml.cs">
-      <DependentUpon>PeakPropertyView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Export\AlignmentResultExportWin.xaml.cs">
       <DependentUpon>AlignmentResultExportWin.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Imms\AlignmentParameterView.xaml.cs">
       <DependentUpon>AlignmentParameterView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\UserDefinedAdductSetVM.cs" />
     <Compile Include="View\Setting\AnnotationProcessSettingView.xaml.cs">
       <DependentUpon>AnnotationProcessSettingView.xaml</DependentUpon>
     </Compile>
@@ -800,12 +802,6 @@
     <Compile Include="View\Table\ProteomicsSpotTable.xaml.cs">
       <DependentUpon>ProteomicsSpotTable.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Lcms\CompoundDetailView.xaml.cs">
-      <DependentUpon>CompoundDetailView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Lcms\PeakPropertyView.xaml.cs">
-      <DependentUpon>PeakPropertyView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Lcms\Footer.xaml.cs">
       <DependentUpon>Footer.xaml</DependentUpon>
     </Compile>
@@ -821,20 +817,13 @@
     <Compile Include="View\Lcms\RawPurifiedView.xaml.cs">
       <DependentUpon>RawPurifiedView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Navigator.xaml.cs">
+    <Compile Include="View\Core\Navigator.xaml.cs">
       <DependentUpon>Navigator.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Lcms\AlignmentView.xaml.cs">
       <DependentUpon>AlignmentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\PeakSpotNavigator.xaml.cs">
-      <DependentUpon>PeakSpotNavigator.xaml</DependentUpon>
-    </Compile>
     <Page Include="Icons.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\AdductView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -879,10 +868,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Chart\ExpRefView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Chart\SampleImageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -962,21 +947,21 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Imaging\ImagingMainView.xaml">
+    <Page Include="View\Help\HelpAboutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Imaging\ImmsImagingRibbon.xaml">
+    <Page Include="View\ImagingImms\ImagingMainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ImagingImms\ImmsImagingRibbon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Imms\AnnotationSettingStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Imms\CompoundDetailView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Imms\ImmsAnalysisPeakTableView.xaml">
       <SubType>Designer</SubType>
@@ -998,11 +983,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Imms\PeakPropertyView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="View\Information\CompoundDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Information\MoleculeStructureView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1174,11 +1159,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Dims\CompoundDetailView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\CompoundSearchWindow.xaml">
+    <Page Include="View\Search\CompoundSearchWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1187,10 +1168,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\Dims\DimsMainView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Dims\PeakPropertyView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1290,14 +1267,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Lcms\CompoundDetailView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\Lcms\PeakPropertyView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\Lcms\Footer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1322,15 +1291,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Navigator.xaml">
+    <Page Include="View\Core\Navigator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Lcms\AlignmentView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\PeakSpotNavigator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1354,9 +1319,11 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <None Include="Normalizations.cd" />
+    <None Include="ClassDiagrams\AlignmentExports.cd" />
+    <None Include="ClassDiagrams\Normalizations.cd" />
+    <None Include="Model\ImagingImms\ImmsImagingModels.cd" />
     <None Include="packages.config" />
-    <None Include="PeakFiltering.cd" />
+    <None Include="ClassDiagrams\PeakFiltering.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1410,6 +1377,14 @@
       <Project>{A45C80BC-85BB-4953-AA7D-941633964F08}</Project>
       <Name>MsdialLcMsApi</Name>
     </ProjectReference>
+    <ProjectReference Include="..\NCDK.Display\NCDK.Display.csproj">
+      <Project>{20E728F8-C648-4F96-AE56-B7A7A185D941}</Project>
+      <Name>NCDK.Display</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NCDK\NCDK.csproj">
+      <Project>{7976AEFC-8382-47D3-BA50-55FA18BABADF}</Project>
+      <Name>NCDK</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Table.png" />
@@ -1446,6 +1421,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\SplashLipids.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="View\Imaging\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

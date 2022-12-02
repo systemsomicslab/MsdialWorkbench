@@ -1,8 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:CompMs.App.Msdial.View.Lcms"
                     xmlns:localVM="clr-namespace:CompMs.App.Msdial.ViewModel.Lcms"
-                    xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel"
+                    xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.DataObj"
+                    xmlns:SearchVM="clr-namespace:CompMs.App.Msdial.ViewModel.Search"
                     xmlns:ui="clr-namespace:CompMs.Graphics.UI;assembly=ChartDrawing">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/View/Setting/AnnotationSettingStyle.xaml"/>
@@ -193,7 +193,7 @@
         <ContentControl Content="{Binding}" ContentTemplate="{StaticResource LcmsAnnotatorTemplate}"/>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type vm:CompoundSearchVM}"
+    <DataTemplate DataType="{x:Type SearchVM:CompoundSearchVM}"
                   x:Key="LcmsAnnotatorSetting">
         <ScrollViewer>
             <StackPanel>
@@ -207,7 +207,7 @@
         </ScrollViewer>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type vm:CompoundSearchVM}"
+    <DataTemplate DataType="{x:Type SearchVM:CompoundSearchVM}"
                   x:Key="LcmsAnnotatorSettingWithMs2">
         <ScrollViewer>
             <StackPanel>

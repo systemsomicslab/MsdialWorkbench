@@ -5,7 +5,9 @@ using CompMs.MsdialCore.DataObj;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -45,8 +47,15 @@ namespace CompMs.App.Msdial.Model.Core
                 return Task.CompletedTask;
             }
             var task = AnalysisModelBase?.SaveAsync(token) ?? Task.CompletedTask;
-            AnalysisFileModel = analysisFile;
-            AnalysisModelBase = LoadAnalysisFileCore(AnalysisFileModel);
+
+            try {
+                AnalysisFileModel = analysisFile;
+                AnalysisModelBase = LoadAnalysisFileCore(AnalysisFileModel);
+            }
+            catch {
+                task.Wait();
+                throw;
+            }
 
             return task;
         }
@@ -72,8 +81,14 @@ namespace CompMs.App.Msdial.Model.Core
             }
             var task = AlignmentModelBase?.SaveAsync() ?? Task.CompletedTask;
 
-            AlignmentFile = alignmentFile;
-            AlignmentModelBase = LoadAlignmentFileCore(AlignmentFile);
+            try {
+                AlignmentFile = alignmentFile;
+                AlignmentModelBase = LoadAlignmentFileCore(AlignmentFile);
+            }
+            catch {
+                task.Wait();
+                throw;
+            }
 
             return task;
         }
@@ -81,6 +96,15 @@ namespace CompMs.App.Msdial.Model.Core
         protected abstract IAlignmentModel LoadAlignmentFileCore(AlignmentFileBean alignmentFile);
 
         public abstract Task RunAsync(ProcessOption option, CancellationToken token);
+
+        public virtual Task LoadAsync(CancellationToken token) {
+            var analysisFile = AnalysisFileModelCollection.IncludedAnalysisFiles.FirstOrDefault();
+            if (AnalysisFileModel != analysisFile && !(analysisFile is null)) {
+                AnalysisFileModel = analysisFile;
+                AnalysisModelBase = LoadAnalysisFileCore(AnalysisFileModel);
+            }
+            return Task.CompletedTask;
+        }
 
         public virtual Task SaveAsync() {
             return Task.WhenAll(new List<Task>
@@ -90,16 +114,21 @@ namespace CompMs.App.Msdial.Model.Core
             });
         }
 
-        private bool disposedValue;
+        public void InvokeMsfinder(IResultModel model) {
+            model.InvokeMsfinder();
+        }
+
+        // IDisposable interface
+        private bool _disposedValue;
         protected CompositeDisposable Disposables = new CompositeDisposable();
 
         protected virtual void Dispose(bool disposing) {
-            if (!disposedValue) {
+            if (!_disposedValue) {
                 if (disposing) {
                     Disposables.Dispose();
                 }
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

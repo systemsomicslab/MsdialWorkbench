@@ -39,7 +39,7 @@ namespace CompMs.App.Msdial.Model.Dims
             _relativeRange = relativeRange;
         }
 
-        protected override Task<List<ChromatogramPeakWrapper>> LoadEicCoreAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
+        protected override Task<List<PeakItem>> LoadEicCoreAsync(ChromatogramPeakFeatureModel target, CancellationToken token) {
             var width = _isRelative
                 ? target.InnerModel.PeakWidth(ChromXType.Mz) / 2d * _relativeRange
                 : MZ_MARGIN;
@@ -50,7 +50,7 @@ namespace CompMs.App.Msdial.Model.Dims
                 var spectra = await provider.LoadMs1SpectrumsAsync(token).ConfigureAwait(false);
                 return new CompMs.Common.Components.Chromatogram(DataAccess.ConvertRawPeakElementToChromatogramPeakList(spectra.Argmax(spectrum => spectrum.Spectrum.Length).Spectrum, leftMz, rightMz), ChromXType.Mz, ChromXUnit.Mz)
                     .Smoothing(parameter.SmoothingMethod, parameter.SmoothingLevel)
-                    .Select(peak => new ChromatogramPeakWrapper(peak))
+                    .Select(peak => new PeakItem(peak))
                     .ToList();
             });
         }

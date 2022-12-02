@@ -56,6 +56,12 @@ namespace CompMs.MsdialCore.DataObj {
         [Key(54)]
         public AdductIon AdductType { get; set; } = new AdductIon();
 
+        public void SetAdductType(AdductIon adduct) {
+            AdductType = adduct;
+            PeakCharacter.AdductType = adduct;
+            PeakCharacter.Charge = adduct.ChargeNumber;
+        }
+
         // Annotation
         // set for IMoleculeProperty (for representative)
         [Key(12)]

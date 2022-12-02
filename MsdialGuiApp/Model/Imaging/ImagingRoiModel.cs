@@ -4,6 +4,7 @@ using CompMs.Common.Extension;
 using CompMs.CommonMVVM;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -13,20 +14,21 @@ namespace CompMs.App.Msdial.Model.Imaging
 {
     internal sealed class ImagingRoiModel : DisposableModelBase
     {
-        private readonly ObservableCollection<RoiIntensitiesModel> _intensities;
-
-        public ImagingRoiModel(RoiModel roi, List<(Raw2DElement, ChromatogramPeakFeatureModel)> elements, ReactiveProperty<ChromatogramPeakFeatureModel> peak,  MaldiFrameLaserInfo laserInfo) {
-            Roi = roi ?? throw new System.ArgumentNullException(nameof(roi));
-            var rawSpectraOnPixels = roi.RetrieveRawSpectraOnPixels(elements.Select(element => element.Item1).ToList());
-            _intensities = new ObservableCollection<RoiIntensitiesModel>(
-                elements.Zip(rawSpectraOnPixels.PixelPeakFeaturesList,
-                    (element, pixelPeaks) => new RoiIntensitiesModel(pixelPeaks, rawSpectraOnPixels.XYFrames, roi, element.Item1, element.Item2, laserInfo)));
-            Intensities = new ReadOnlyObservableCollection<RoiIntensitiesModel>(_intensities);
-            SelectedPeakIntensities = _intensities.Select(m => peak.Where(p => m.Peak == p).Select(_ => m)).Merge().ToReactiveProperty().AddTo(Disposables);
+        public ImagingRoiModel(string id, RoiModel roi, RawSpectraOnPixels rawSpectraOnPixels, IEnumerable<ChromatogramPeakFeatureModel> peaks, ReactiveProperty<ChromatogramPeakFeatureModel> selectedPeak) {
+            Id = id;
+            Roi = roi ?? throw new ArgumentNullException(nameof(roi));
+            RoiPeakSummaries = new ObservableCollection<RoiPeakSummaryModel>(
+                rawSpectraOnPixels.PixelPeakFeaturesList.Zip(peaks, (pixelFeaturs, peak) => new RoiPeakSummaryModel(roi, pixelFeaturs, peak)));
+            RoiPeakSummaries.Select(m => selectedPeak.Where(p => m.Peak == p).Select(_ => m)).Merge().Subscribe(m => SelectedRoiPeakSummary = m).AddTo(Disposables);
         }
 
+        public string Id { get; }
         public RoiModel Roi { get; }
-        public ReadOnlyObservableCollection<RoiIntensitiesModel> Intensities { get; }
-        public ReactiveProperty<RoiIntensitiesModel> SelectedPeakIntensities { get; }
+        public ObservableCollection<RoiPeakSummaryModel> RoiPeakSummaries { get; }
+        public RoiPeakSummaryModel SelectedRoiPeakSummary {
+            get => _selectedRoiPeakSummary;
+            set => SetProperty(ref _selectedRoiPeakSummary, value);
+        }
+        private RoiPeakSummaryModel _selectedRoiPeakSummary;
     }
 }

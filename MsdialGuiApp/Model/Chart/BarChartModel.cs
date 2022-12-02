@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.CommonMVVM;
+using CompMs.Graphics.AxisManager.Generic;
 using CompMs.Graphics.Base;
 using CompMs.Graphics.Core.Base;
 using CompMs.Graphics.Design;
@@ -16,7 +17,7 @@ using System.Windows.Media;
 namespace CompMs.App.Msdial.Model.Chart
 {
     internal sealed class BarChartModel : DisposableModelBase {
-        public BarChartModel(IObservable<AlignmentSpotPropertyModel> source, IReactiveProperty<BarItemsLoaderData> barItemsLoaderData, IList<BarItemsLoaderData> barItemsLoaderDatas, IObservable<IBrushMapper<BarItem>> classBrush) {
+        public BarChartModel(IObservable<AlignmentSpotPropertyModel> source, IReactiveProperty<BarItemsLoaderData> barItemsLoaderData, IList<BarItemsLoaderData> barItemsLoaderDatas, IObservable<IBrushMapper<BarItem>> classBrush, ProjectBaseParameterModel projectBaseParameter) {
             var barItemsLoader = barItemsLoaderData.Where(data => !(data is null)).Select(data => data.ObservableLoader).Switch().ToReactiveProperty().AddTo(Disposables);
             var barItemCollectionSource = source.CombineLatest(barItemsLoader,
                     (src, loader) => src is null || loader is null
@@ -33,14 +34,6 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Select(collection => collection.ObservableLoading)
                 .Switch();
 
-            if (classBrush is null) {
-                classBrush = BarItemsSource.Select(
-                    items => new KeyBrushMapper<BarItem>(
-                        items.Zip(ChartBrushes.SolidColorBrushList, (item, brush) => (item, brush))
-                            .ToDictionary(p => p.item, p => (Brush)p.brush),
-                        Brushes.Blue
-                    ));
-            }
             ClassBrush = classBrush;
             BarItemsLoaderData = barItemsLoaderData;
             BarItemsLoaderDatas = barItemsLoaderDatas;
@@ -66,6 +59,9 @@ namespace CompMs.App.Msdial.Model.Chart
                 .Switch()
                 .Subscribe(label => Elements.VerticalTitle = label)
                 .AddTo(Disposables);
+
+            var classToOrder = projectBaseParameter.ObserveProperty(p => p.ClassProperties).Select(props => props.ToDictionary(prop => prop.Name, prop => prop.ObserveProperty(p => p.Order))).ToReactiveProperty().AddTo(Disposables);
+            OrderedClasses = barItemCollectionSource.Select(src => src.ObservableItems).Switch().CombineLatest(classToOrder, (items, c2o) => items.Select(item => c2o.TryGetValue(item.Class, out var order) ? order.Select(o => (o, item.Class)) : Observable.Return((-1, item.Class))).CombineLatest()).Switch().Select(pairs => pairs.OrderBy(pair => pair.Item1).Select(pair => pair.Item2).ToList());
         }
 
         public IObservable<List<BarItem>> BarItemsSource { get; }
@@ -76,5 +72,6 @@ namespace CompMs.App.Msdial.Model.Chart
         public GraphElements Elements { get; } = new GraphElements();
 
         public IObservable<bool> IsLoading { get; }
+        public IObservable<List<string>> OrderedClasses { get; }
     }
 }

@@ -20,6 +20,7 @@ namespace CompMs.App.Msdial.Model.Setting
             IsReadOnlyDatasetParameter = true;
             handler = null;
 
+            Result = model;
             DatasetFileSettingModel = new DatasetFileSettingModel(model.Storage.AnalysisFiles);
             DatasetParameterSettingModel = new DatasetParameterSettingModel(model.Storage.Parameter, DatasetFileSettingModel, broker);
         }

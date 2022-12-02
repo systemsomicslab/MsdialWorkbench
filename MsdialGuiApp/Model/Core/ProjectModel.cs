@@ -91,74 +91,63 @@ namespace CompMs.App.Msdial.Model.Core
             }
         }
 
-        public static async Task<ProjectModel> LoadAsync(IMessageBroker broker) {
-            var ofd = new OpenFileDialog
-            {
-                Filter = "MS project file(.mdproject)|*.mdproject", //|MTD3 file(.mtd3)|*.mtd3|All(*)|*",
-                Title = "Import a project file",
-                RestoreDirectory = true
-            };
+        public static async Task<ProjectModel> LoadAsync(string projectPath, IMessageBroker broker) {
+            var projectDir = Path.GetDirectoryName(projectPath);
+            using (var fs = File.Open(projectPath, FileMode.Open))
+            using (var streamManager = ZipStreamManager.OpenGet(fs)) {
+                var deserializer = new MsdialIntegrateSerializer();
 
-            if (ofd.ShowDialog() == true) {
-                var projectDir = Path.GetDirectoryName(ofd.FileName);
-                using (var fs = File.Open(ofd.FileName, FileMode.Open))
-                using (var streamManager = ZipStreamManager.OpenGet(fs)) {
-                    var deserializer = new MsdialIntegrateSerializer();
+                Mouse.OverrideCursor = Cursors.Wait;
+                var message = new ShortMessageWindow()
+                {
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Text = "Loading project...",
+                };
+                message.Show();
 
-                    Mouse.OverrideCursor = Cursors.Wait;
-                    var message = new ShortMessageWindow()
+                var projectDataStorage = await ProjectDataStorage.LoadAsync(
+                    streamManager,
+                    deserializer,
+                    path => new DirectoryTreeStreamManager(path),
+                    projectDir,
+                    async parameter =>
                     {
-                        WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                        Text = "Loading project...",
-                    };
-                    message.Show();
-
-                    var projectDataStorage = await ProjectDataStorage.LoadAsync(
-                        streamManager,
-                        deserializer,
-                        path => new DirectoryTreeStreamManager(path),
-                        projectDir,
-                        async parameter =>
+                        string result = null;
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
                         {
-                            string result = null;
-                            await Application.Current.Dispatcher.InvokeAsync(() =>
+                            var newofd = new OpenFileDialog
                             {
-                                var newofd = new OpenFileDialog
-                                {
-                                    Filter = "Dataset file(.mddata)|*.mddata|All(*)|*",
-                                    Title = "Import a project file",
-                                    RestoreDirectory = true
-                                };
-                                if (newofd.ShowDialog() == true) {
-                                    result = newofd.FileName;
-                                }
-                            });
-                            return result;
-                        },
-                        parameter => Application.Current.Dispatcher.Invoke(() => MessageBox.Show($"{parameter.ProjectFilePath} is not found.")));
-                    if (projectDataStorage == null) {
-                        MessageBox.Show("Msdial cannot open the project: \n" + ofd.FileName, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        throw new Exception($"Msdial cannot open the project: \n{ofd.FileName}");
-                    }
-                    projectDataStorage.FixProjectFolder(projectDir);
-                    var model = new ProjectModel(projectDataStorage, broker);
-                    model.Datasets.Clear();
-                    foreach (var dataset in projectDataStorage.Storages.Select(storage => new DatasetModel(storage, broker))){
-                        model.Datasets.Add(dataset);
-                    }
-                    model.CurrentDataset = model.Datasets.LastOrDefault();
-                    if (!(model.CurrentDataset is null)) {
-                        await model.CurrentDataset.LoadAsync();
-                    }
-
-                    message.Close();
-                    Mouse.OverrideCursor = null;
-
-                    return model;
+                                Filter = "Dataset file(.mddata)|*.mddata|All(*)|*",
+                                Title = "Import a project file",
+                                RestoreDirectory = true
+                            };
+                            if (newofd.ShowDialog() == true) {
+                                result = newofd.FileName;
+                            }
+                        });
+                        return result;
+                    },
+                    parameter => Application.Current.Dispatcher.Invoke(() => MessageBox.Show($"{parameter.ProjectFilePath} is not found.")));
+                if (projectDataStorage == null) {
+                    MessageBox.Show("Msdial cannot open the project: \n" + projectPath, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    throw new Exception($"Msdial cannot open the project: \n{projectPath}");
                 }
-            }
+                projectDataStorage.FixProjectFolder(projectDir);
+                var model = new ProjectModel(projectDataStorage, broker);
+                model.Datasets.Clear();
+                foreach (var dataset in projectDataStorage.Storages.Select(storage => new DatasetModel(storage, broker))){
+                    model.Datasets.Add(dataset);
+                }
+                model.CurrentDataset = model.Datasets.LastOrDefault();
+                if (!(model.CurrentDataset is null)) {
+                    await model.CurrentDataset.LoadAsync();
+                }
 
-            return null;
+                message.Close();
+                Mouse.OverrideCursor = null;
+
+                return model;
+            }
         }
     }
 }

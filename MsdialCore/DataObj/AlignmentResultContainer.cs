@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CompMs.MsdialCore.DataObj {
@@ -29,26 +30,52 @@ namespace CompMs.MsdialCore.DataObj {
 
         public void Save(AlignmentFileBean file) {
             var containerFile = file.FilePath;
-            var chromatogramPeakFile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_PeakProperties" + Path.GetExtension(file.FilePath));
-            var driftSpotFile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_DriftSopts" + Path.GetExtension(file.FilePath));
+            Save(containerFile);
+            //var chromatogramPeakFile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_PeakProperties" + Path.GetExtension(file.FilePath));
+            //var driftSpotFile = Path.Combine(Path.GetDirectoryName(file.FilePath), Path.GetFileNameWithoutExtension(file.FilePath) + "_DriftSopts" + Path.GetExtension(file.FilePath));
+
+            //var collection = AlignmentSpotProperties;
+
+            //var peakProperty = collection.Select(x => x.AlignedPeakProperties).ToList();
+            //var driftProperty = collection.Select(prop => prop.AlignmentDriftSpotFeatures).ToList();
+
+            //foreach (var b in collection)
+            //{
+            //    b.AlignedPeakProperties = null;
+            //    b.AlignmentDriftSpotFeatures = null;
+            //}
+
+            //MessagePackHandler.SaveToFile(this, containerFile);
+            //MessagePackDefaultHandler.SaveLargeListToFile(peakProperty, chromatogramPeakFile);
+            //MessagePackDefaultHandler.SaveLargeListToFile(driftProperty, driftSpotFile);
+
+            //for (var i = 0; i < peakProperty.Count; i++)
+            //{
+            //    collection[i].AlignedPeakProperties = peakProperty[i];
+            //    collection[i].AlignmentDriftSpotFeatures = driftProperty[i];
+            //}
+        }
+
+        public void Save(string containerFile) {
+            var chromatogramPeakFile = Path.Combine(Path.GetDirectoryName(containerFile), Path.GetFileNameWithoutExtension(containerFile) + "_PeakProperties" + Path.GetExtension(containerFile));
+            var driftSpotFile = Path.Combine(Path.GetDirectoryName(containerFile), Path.GetFileNameWithoutExtension(containerFile) + "_DriftSopts" + Path.GetExtension(containerFile));
 
             var collection = AlignmentSpotProperties;
 
             var peakProperty = collection.Select(x => x.AlignedPeakProperties).ToList();
             var driftProperty = collection.Select(prop => prop.AlignmentDriftSpotFeatures).ToList();
 
-            foreach (var b in collection)
-            {
+            foreach (var b in collection) {
                 b.AlignedPeakProperties = null;
                 b.AlignmentDriftSpotFeatures = null;
             }
 
             MessagePackHandler.SaveToFile(this, containerFile);
+            LoadAlginedPeakPropertiesTask.Wait();
             MessagePackDefaultHandler.SaveLargeListToFile(peakProperty, chromatogramPeakFile);
             MessagePackDefaultHandler.SaveLargeListToFile(driftProperty, driftSpotFile);
 
-            for (var i = 0; i < peakProperty.Count; i++)
-            {
+            for (var i = 0; i < peakProperty.Count; i++) {
                 collection[i].AlignedPeakProperties = peakProperty[i];
                 collection[i].AlignmentDriftSpotFeatures = driftProperty[i];
             }
@@ -85,7 +112,7 @@ namespace CompMs.MsdialCore.DataObj {
             return result;
         }
 
-        public static AlignmentResultContainer LoadLazy(AlignmentFileBean file) {
+        public static AlignmentResultContainer LoadLazy(AlignmentFileBean file, CancellationToken token = default) {
             var containerFile = file.FilePath;
             var result = MessagePackHandler.LoadFromFile<AlignmentResultContainer>(containerFile);
             if (result is null) {
@@ -108,9 +135,25 @@ namespace CompMs.MsdialCore.DataObj {
                     var alignmentChromPeakFeatures = MessagePackDefaultHandler.LoadIncrementalLargerListFromFile<List<AlignmentChromPeakFeature>>(chromatogramPeakFile).SelectMany(featuress => featuress);
                     var enumerator = alignmentChromPeakFeatures.GetEnumerator();
                     foreach (var c in collection) {
-                        c.AlignedPeakPropertiesTask = task = task.ContinueWith(_ => enumerator.MoveNext() ? enumerator.Current : new List<AlignmentChromPeakFeature>(0));
+                        c.AlignedPeakPropertiesTask = task = task.ContinueWith(_ =>
+                        {
+                            if (enumerator.MoveNext()) {
+                                return enumerator.Current;
+                            }
+                            return new List<AlignmentChromPeakFeature>(0);
+                        },
+                        token);
                     }
-                    result.LoadAlginedPeakPropertiesTask = Task.Run(async () => await task.ConfigureAwait(false));
+                    var allTaskCompleted = Task.Run(async () =>
+                    {
+                        try {
+                            await task.ConfigureAwait(false);
+                        }
+                        finally {
+                            enumerator.Dispose();
+                        }
+                    }, token);
+                    result.LoadAlginedPeakPropertiesTask = allTaskCompleted;
                 }
             }
             return result;

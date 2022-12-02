@@ -5,7 +5,6 @@ using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
 using CompMs.App.Msdial.Model.Loader;
 using CompMs.App.Msdial.Model.Search;
-using CompMs.App.Msdial.Model.Setting;
 using CompMs.App.Msdial.Model.Statistics;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
@@ -29,6 +28,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Media;
 
@@ -84,28 +84,13 @@ namespace CompMs.App.Msdial.Model.Lcms
             InternalStandardSetModel = new InternalStandardSetModel(Ms1Spots, TargetMsMethod.Lcms).AddTo(Disposables);
             NormalizationSetModel = new NormalizationSetModel(Container, files, fileCollection, mapper, evaluator, InternalStandardSetModel, parameter, messageBroker).AddTo(Disposables);
 
-            var fileIdToClassNameAsObservable = projectBaseParameter.ObserveProperty(p => p.FileIdToClassName).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
-            var heightLoader = new BarItemsLoaderData("Peak height", Observable.Return("Height"), Observable.Return(new HeightBarItemsLoader(fileIdToClassNameAsObservable)), Observable.Return(true));
-            var areaBaselineLoader = new BarItemsLoaderData("Peak area above base line", Observable.Return("Area"), Observable.Return(new AreaAboveBaseLineBarItemsLoader(fileIdToClassNameAsObservable)), Observable.Return(true));
-            var areaZeroLoader = new BarItemsLoaderData("Peak area above zero", Observable.Return("Area"), Observable.Return(new AreaAboveZeroBarItemsLoader(fileIdToClassNameAsObservable)), Observable.Return(true));
-            var normalizedHeightLoader = new BarItemsLoaderData("Normalized peak height", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), Observable.Return(new NormalizedHeightBarItemsLoader(fileIdToClassNameAsObservable)), NormalizationSetModel.IsNormalized);
-            var normalizedAreaBaselineLoader = new BarItemsLoaderData("Normalized peak area above base line", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), Observable.Return(new NormalizedAreaAboveBaseLineBarItemsLoader(fileIdToClassNameAsObservable)), NormalizationSetModel.IsNormalized);
-            var normalizedAreaZeroLoader = new BarItemsLoaderData("Normalized peak area above zero", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), Observable.Return(new NormalizedAreaAboveZeroBarItemsLoader(fileIdToClassNameAsObservable)), NormalizationSetModel.IsNormalized);
-            var barItemLoaderDatas = new[]
-            {
-                heightLoader, areaBaselineLoader, areaZeroLoader,
-                normalizedHeightLoader, normalizedAreaBaselineLoader, normalizedAreaZeroLoader,
-            };
-            var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.Select(_ => normalizedHeightLoader).ToReactiveProperty(barItemLoaderDatas.First()).AddTo(Disposables);
-            var barItemsLoaderProperty = barItemsLoaderDataProperty.Where(data => !(data is null)).Select(data => data.ObservableLoader).Switch().ToReactiveProperty().AddTo(Disposables);
-
             if (parameter.TargetOmics == TargetOmics.Proteomics) {
                 var proteinResultContainer = MsdialProteomicsSerializer.LoadProteinResultContainer(alignmentFileBean.ProteinAssembledResultFilePath);
                 var proteinResultContainerModel = new ProteinResultContainerModel(proteinResultContainer, Ms1Spots, Target);
                 ProteinResultContainerModel = proteinResultContainerModel;
             }
 
-            _decLoader = new MSDecLoader(_alignmentFile.SpectraFilePath);
+            _decLoader = new MSDecLoader(_alignmentFile.SpectraFilePath).AddTo(Disposables);
             _msdecResult = Target.Where(t => t != null)
                 .Select(t => _decLoader.LoadMSDecResult(t.MasterAlignmentID))
                 .ToReadOnlyReactivePropertySlim()
@@ -200,25 +185,35 @@ namespace CompMs.App.Msdial.Model.Lcms
                 Observable.Return(lowerSpecBrush)).AddTo(Disposables);
 
             // Class intensity bar chart
-            var classToColorAsObservable = Observable.Return(projectBaseParameter.ClassProperties)
-                .Select(
-                    properties => new[] {
-                        properties.ObserveElementProperty(property => property.Color).ToUnit(),
-                        properties.CollectionChangedAsObservable().ToUnit(),
-                    }.Merge().Select(_ => properties)).Switch()
-                .Select(properties => properties.ToDictionary(property => property.Name, property => property.Color))
-                .ToReactiveProperty().AddTo(Disposables);
-            var classBrush = classToColorAsObservable
-                .Select(dict => new KeyBrushMapper<string>(dict ?? new Dictionary<string, Color>(), Colors.Blue))
+            var classBrush = projectBaseParameter.ClassProperties
+                .CollectionChangedAsObservable().ToUnit()
+                .StartWith(Unit.Default)
+                .Select(_ => projectBaseParameter.ClassProperties.Select(prop => prop.ObserveProperty(p => p.Color).Select(_2 => prop)).CombineLatest())
+                .Switch()
+                .Select(lst => new KeyBrushMapper<string>(lst.ToDictionary(item => item.Name, item => item.Color)))
                 .ToReactiveProperty().AddTo(Disposables);
             var barBrush = classBrush.Select(bm => bm.Contramap((BarItem item) => item.Class));
-            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush).AddTo(Disposables);
+
+            var fileIdToClassNameAsObservable = projectBaseParameter.ObserveProperty(p => p.FileIdToClassName).ToReadOnlyReactivePropertySlim().AddTo(Disposables);
+            var normalizedAreaZeroLoader = new BarItemsLoaderData("Normalized peak area above zero", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), Observable.Return(new NormalizedAreaAboveZeroBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), NormalizationSetModel.IsNormalized);
+            var normalizedAreaBaselineLoader = new BarItemsLoaderData("Normalized peak area above base line", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), Observable.Return(new NormalizedAreaAboveBaseLineBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), NormalizationSetModel.IsNormalized);
+            var normalizedHeightLoader = new BarItemsLoaderData("Normalized peak height", Target.OfType<AlignmentSpotPropertyModel>().Select(t => t.IonAbundanceUnit.ToLabel()), Observable.Return(new NormalizedHeightBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), NormalizationSetModel.IsNormalized);
+            var areaZeroLoader = new BarItemsLoaderData("Peak area above zero", Observable.Return("Area"), Observable.Return(new AreaAboveZeroBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), Observable.Return(true));
+            var areaBaselineLoader = new BarItemsLoaderData("Peak area above base line", Observable.Return("Area"), Observable.Return(new AreaAboveBaseLineBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), Observable.Return(true));
+            var heightLoader = new BarItemsLoaderData("Peak height", Observable.Return("Height"), Observable.Return(new HeightBarItemsLoader(fileIdToClassNameAsObservable, fileCollection)), Observable.Return(true));
+            var barItemLoaderDatas = new[]
+            {
+                heightLoader, areaBaselineLoader, areaZeroLoader,
+                normalizedHeightLoader, normalizedAreaBaselineLoader, normalizedAreaZeroLoader,
+            };
+            var barItemsLoaderDataProperty = NormalizationSetModel.Normalized.Select(_ => normalizedHeightLoader).ToReactiveProperty(barItemLoaderDatas.First()).AddTo(Disposables);
+            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, barItemLoaderDatas, barBrush, projectBaseParameter).AddTo(Disposables);
 
             // Class eic
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target,
-                new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, projectBaseParameter.ObserveProperty(p => p.FileIdToClassName), classToColorAsObservable, Observable.Return(fileIdToFileName)).AddTo(Disposables),
+                new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, alignmentFileBean.EicFilePath, fileCollection, projectBaseParameter).AddTo(Disposables),
                 files, parameter,
                 peak => peak.Time,
                 peak => peak.Intensity).AddTo(Disposables);
@@ -228,6 +223,7 @@ namespace CompMs.App.Msdial.Model.Lcms
             AlignmentEicModel.Elements.HorizontalProperty = nameof(PeakItem.Time);
             AlignmentEicModel.Elements.VerticalProperty = nameof(PeakItem.Intensity);
 
+            var barItemsLoaderProperty = barItemsLoaderDataProperty.Where(data => !(data is null)).Select(data => data.ObservableLoader).Switch().ToReactiveProperty().AddTo(Disposables);
             AlignmentSpotTableModel = new LcmsAlignmentSpotTableModel(Ms1Spots, Target, barBrush, barItemsLoaderProperty).AddTo(Disposables);
 
             CanSearchCompound = new[]
@@ -263,6 +259,10 @@ namespace CompMs.App.Msdial.Model.Lcms
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
 
+            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+            MoleculeStructureModel = moleculeStructureModel;
+            Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
+
             MultivariateAnalysisSettingModel = new MultivariateAnalysisSettingModel(parameter, Ms1Spots, evaluator, files, classBrush);
         }
 
@@ -284,14 +284,11 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
         public PeakInformationAlignmentModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
+        public MoleculeStructureModel MoleculeStructureModel { get; }
         public ProteinResultContainerModel ProteinResultContainerModel { get; }
 
-        public CompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {
-            return new LcmsCompoundSearchModel<AlignmentSpotProperty>(
-                _files[Target.Value.RepresentativeFileID],
-                Target.Value.innerModel,
-                _msdecResult.Value,
-                _compoundSearchers);
+        public ICompoundSearchModel CreateCompoundSearchModel() {
+            return new LcmsCompoundSearchModel(_files[Target.Value.RepresentativeFileID], Target.Value, _msdecResult.Value, _compoundSearchers);
         }
 
         public void SaveSpectra(string filename) {
@@ -308,20 +305,14 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public bool CanSaveSpectra() => Target.Value.innerModel != null && _msdecResult.Value != null;
 
-        public void FragmentSearcher() {
-            var features = Ms1Spots;
-            MsdialCore.Algorithm.FragmentSearcher.Search(features.Select(n => n.innerModel).ToList(), this._decLoader, Parameter);
-
-            foreach (var feature in features) {
-                var featureStatus = feature.innerModel.FeatureFilterStatus;
-                if (featureStatus.IsFragmentExistFiltered) {
-                    Console.WriteLine("A fragment is found in alignment !!!");
-                }
-            }
-
+        public override void SearchFragment() {
+            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, Parameter);
         }
 
-        public void GoToMsfinderMethod() {
+        public override void InvokeMsfinder() {
+            if (Target.Value is null || (_msdecResult.Value?.Spectrum).IsEmptyOrNull()) {
+                return;
+            }
             MsDialToExternalApps.SendToMsFinderProgram(
                 _alignmentFile,
                 Target.Value.innerModel,

@@ -51,7 +51,7 @@ namespace CompMs.Graphics.Core.Base
             }
         }
 
-        void OnHorizontalRangeChanged(object sender, EventArgs e) {
+        protected virtual void OnHorizontalRangeChanged(object sender, EventArgs e) {
             InvalidateVisual();
         }
 
@@ -97,7 +97,7 @@ namespace CompMs.Graphics.Core.Base
             }
         }
 
-        void OnVerticalRangeChanged(object sender, EventArgs e) {
+        protected virtual void OnVerticalRangeChanged(object sender, EventArgs e) {
             InvalidateVisual();
         }
 

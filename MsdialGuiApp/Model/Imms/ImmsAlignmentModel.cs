@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.ExternalApp;
+using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Information;
@@ -8,6 +9,7 @@ using CompMs.App.Msdial.Model.Statistics;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
+using CompMs.Common.Extension;
 using CompMs.Common.MessagePack;
 using CompMs.CommonMVVM.ChemView;
 using CompMs.Graphics.Design;
@@ -38,13 +40,16 @@ namespace CompMs.App.Msdial.Model.Imms
         private readonly ParameterBase _parameter;
         private readonly DataBaseMapper _dataBaseMapper;
         private readonly IReadOnlyList<CompoundSearcher> _compoundSearchers;
+        private readonly MSDecLoader _decLoader;
 
         public ImmsAlignmentModel(
             AlignmentFileBean alignmentFileBean,
+            AnalysisFileBeanModelCollection fileCollection,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
             DataBaseStorage databases,
             DataBaseMapper mapper,
             PeakFilterModel peakFilterModel,
+            ProjectBaseParameterModel projectBaseParameter,
             ParameterBase parameter,
             List<AnalysisFileBean> files)
             : base(alignmentFileBean, alignmentFileBean.FilePath) {
@@ -56,7 +61,7 @@ namespace CompMs.App.Msdial.Model.Imms
             MatchResultEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _compoundSearchers = CompoundSearcherCollection.BuildSearchers(databases, mapper, parameter.PeakPickBaseParam).Items;
 
-            var BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName);
+            var BarItemsLoader = new HeightBarItemsLoader(parameter.FileID_ClassName, fileCollection);
             var observableBarItemsLoader = Observable.Return(BarItemsLoader);
             Ms1Spots = new ObservableCollection<AlignmentSpotPropertyModel>(Container.AlignmentSpotProperties.Select(prop => new AlignmentSpotPropertyModel(prop)));
 
@@ -106,6 +111,7 @@ namespace CompMs.App.Msdial.Model.Imms
             }.AddTo(Disposables);
 
             var loader = new MSDecLoader(alignmentFileBean.SpectraFilePath);
+            _decLoader = loader;
             var decLoader = new MsDecSpectrumLoader(loader, Ms1Spots);
             var refLoader = new MsRefSpectrumLoader(mapper);
             var upperSpecBrush = new KeyBrushMapper<SpectrumComment, string>(
@@ -158,13 +164,13 @@ namespace CompMs.App.Msdial.Model.Imms
                 Colors.Blue);
             var barItemsLoaderData = new BarItemsLoaderData("Loader", "Intensity", observableBarItemsLoader, Observable.Return(true));
             var barItemsLoaderDataProperty = new ReactiveProperty<BarItemsLoaderData>(barItemsLoaderData).AddTo(Disposables);
-            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush)).AddTo(Disposables);
+            BarChartModel = new BarChartModel(Target, barItemsLoaderDataProperty, new[] { barItemsLoaderData, }, Observable.Return(classBrush), projectBaseParameter).AddTo(Disposables);
 
             var eicFile = alignmentFileBean.EicFilePath;
             var classToColor = parameter.ClassnameToColorBytes
                 .ToDictionary(kvp => kvp.Key, kvp => Color.FromRgb(kvp.Value[0], kvp.Value[1], kvp.Value[2]));
             var fileIdToFileName = files.ToDictionary(file => file.AnalysisFileId, file => file.AnalysisFileName);
-            var eicLoader = new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, eicFile, Observable.Return(parameter.FileID_ClassName), Observable.Return(classToColor), Observable.Return(fileIdToFileName)).AddTo(Disposables);
+            var eicLoader = new AlignmentEicLoader(CHROMATOGRAM_SPOT_SERIALIZER, eicFile, fileCollection, projectBaseParameter).AddTo(Disposables);
             AlignmentEicModel = AlignmentEicModel.Create(
                 Target, eicLoader, files, parameter,
                 peak => peak.Time,
@@ -204,6 +210,10 @@ namespace CompMs.App.Msdial.Model.Imms
                 r_ => new CcsSimilarity(r_?.CcsSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
+
+            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+            MoleculeStructureModel = moleculeStructureModel;
+            Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.innerModel)).AddTo(Disposables);
         }
 
         static ImmsAlignmentModel() {
@@ -231,14 +241,14 @@ namespace CompMs.App.Msdial.Model.Imms
 
         public ReadOnlyReactivePropertySlim<bool> CanSearchCompound { get; }
 
-        public ImmsCompoundSearchModel<AlignmentSpotProperty> CreateCompoundSearchModel() {
+        public ImmsCompoundSearchModel CreateCompoundSearchModel() {
             if (Target.Value?.innerModel is null || MsdecResult.Value is null) {
                 return null;
             }
 
-            return new ImmsCompoundSearchModel<AlignmentSpotProperty>(
+            return new ImmsCompoundSearchModel(
                 _files[Target.Value.RepresentativeFileID],
-                Target.Value.innerModel,
+                Target.Value,
                 MsdecResult.Value,
                 _compoundSearchers);
         }
@@ -252,6 +262,7 @@ namespace CompMs.App.Msdial.Model.Imms
         private BrushMapData<AlignmentSpotPropertyModel> _selectedBrush;
 
         public IMatchResultEvaluator<MsScanMatchResult> MatchResultEvaluator { get; }
+        public MoleculeStructureModel MoleculeStructureModel { get; }
 
         public void SaveSpectra(string filename) {
             using (var file = File.Open(filename, FileMode.Create)) {
@@ -266,6 +277,22 @@ namespace CompMs.App.Msdial.Model.Imms
         }
 
         public bool CanSaveSpectra() => Target.Value.innerModel != null && MsdecResult.Value != null;
+
+        public override void SearchFragment() {
+            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Spots.Select(n => n.innerModel).ToList(), _decLoader, _parameter);
+        }
+
+        public override void InvokeMsfinder() {
+            if (Target.Value is null || (MsdecResult.Value?.Spectrum).IsEmptyOrNull()) {
+                return;
+            }
+            MsDialToExternalApps.SendToMsFinderProgram(
+                _alignmentFile,
+                Target.Value.innerModel,
+                MsdecResult.Value,
+                _dataBaseMapper,
+                _parameter);
+        }
 
         public void SaveProject() {
             MessagePackHandler.SaveToFile(Container, _alignmentFile.FilePath);

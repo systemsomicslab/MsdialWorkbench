@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Lcms"
-             xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
+             xmlns:commonview="clr-namespace:CompMs.App.Msdial.View.Core"
              xmlns:search="clr-namespace:CompMs.App.Msdial.View.Search"
              mc:Ignorable="d" 
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj"
@@ -407,7 +407,10 @@
                                         </DataTemplate>                              
                                         <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
                                             <infoview:CompoundDetailView/>
-                                        </DataTemplate>                              
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
+                                            <infoview:MoleculeStructureView/>
+                                        </DataTemplate>
                                     </DataTemplate.Resources>
                                     <ContentPresenter Content="{Binding}"/>
                                 </DataTemplate>
@@ -421,6 +424,10 @@
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
                                             <TextBlock Text="Compund detail"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
+                                            <TextBlock Text="Structure"
                                                        VerticalAlignment="Stretch"/>
                                         </DataTemplate>
                                     </DataTemplate.Resources>
@@ -515,7 +522,7 @@
                                             <chart:RepRefView.ContextMenu>
                                                 <ContextMenu>
                                                     <MenuItem Header="Save spectra table as.."
-                                                              Command="{Binding SaveMs2SpectrumCommand}"/>
+                                                              Command="{Binding Path=(vm:LcmsAlignmentViewModel.SaveSpectraCommand)}"/>
                                                     <MenuItem Header="Save image as...">
                                                         <MenuItem Header="Save as emf"
                                                                   Command="{x:Static graphio:SaveImageAsCommand.EmfInstance}"

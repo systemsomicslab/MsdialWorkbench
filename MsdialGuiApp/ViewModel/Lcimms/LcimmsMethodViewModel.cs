@@ -2,6 +2,7 @@
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
@@ -56,11 +57,11 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
             return _model.LoadAlignmentFileAsync(alignmentFile.File, token);
         }
 
-        public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(ExportAlignment));
-        private DelegateCommand<Window> exportAlignmentResultCommand;
+        public DelegateCommand ExportAlignmentResultCommand => _exportAlignmentResultCommand ?? (_exportAlignmentResultCommand = new DelegateCommand(ExportAlignment));
+        private DelegateCommand _exportAlignmentResultCommand;
 
-        private void ExportAlignment(Window owner) {
-            using (var vm = new AlignmentResultExport2VM(_model.AlignmentResultExportModel, _broker)) {
+        private void ExportAlignment() {
+            using (var vm = new AlignmentResultExportViewModel(_model.AlignmentResultExportModel, _broker)) {
                 _broker.Publish(vm);
             }
         }

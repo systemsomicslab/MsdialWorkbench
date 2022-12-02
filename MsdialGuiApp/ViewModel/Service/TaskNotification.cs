@@ -28,15 +28,15 @@ namespace CompMs.App.Msdial.ViewModel.Service
             return new TaskStartNotification(identifier, label);
         }
 
-        public static ITaskNotification Progress(ITaskNotification task, double progressionRate) {
+        public static ITaskNotification Progress(this ITaskNotification task, double progressionRate) {
             return new TaskProgressionNotification(task.Identifier, progressionRate, null);
         }
 
-        public static ITaskNotification Progress(ITaskNotification task, double progressionRate, string label) {
+        public static ITaskNotification Progress(this ITaskNotification task, double progressionRate, string label) {
             return new TaskProgressionNotification(task.Identifier, progressionRate, label);
         }
 
-        public static ITaskNotification End(ITaskNotification task) {
+        public static ITaskNotification End(this ITaskNotification task) {
             return new TaskEndNotification(task.Identifier);
         }
     }

@@ -1,8 +1,14 @@
 ﻿using CompMs.App.Msdial.Model.Lcms;
+using CompMs.App.Msdial.Model.Setting;
+using CompMs.App.Msdial.View.Export;
+using CompMs.App.Msdial.View.Setting;
+using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.DataObj;
 using CompMs.App.Msdial.ViewModel.Export;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
+using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Table;
 using CompMs.CommonMVVM;
 using CompMs.CommonMVVM.WindowService;
@@ -19,7 +25,7 @@ using System.Windows;
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
     internal sealed class LcmsMethodViewModel : MethodViewModel {
-        private readonly LcmsMethodModel model;
+        private readonly LcmsMethodModel _model;
         private readonly IMessageBroker _broker;
 
         private LcmsMethodViewModel(
@@ -33,7 +39,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
                   PrepareChromatogramViewModels(analysisAsObservable, alignmentAsObservable),
                   PrepareMassSpectrumViewModels(analysisAsObservable, alignmentAsObservable)) {
 
-            this.model = model;
+            _model = model;
             _broker = broker;
             Disposables.Add(focusControlManager);
 
@@ -64,98 +70,164 @@ namespace CompMs.App.Msdial.ViewModel.Lcms
         }
 
         protected override Task LoadAnalysisFileCoreAsync(AnalysisFileBeanViewModel analysisFile, CancellationToken token) {
-            if (analysisFile?.File == null || analysisFile.File == model.AnalysisFileModel) {
+            if (analysisFile?.File == null || analysisFile.File == _model.AnalysisFileModel) {
                 return Task.CompletedTask;
             }
-            return model.LoadAnalysisFileAsync(analysisFile.File, token);
+            return _model.LoadAnalysisFileAsync(analysisFile.File, token);
         }
 
         protected override Task LoadAlignmentFileCoreAsync(AlignmentFileBeanViewModel alignmentFile, CancellationToken token) {
-            if (alignmentFile?.File == null || alignmentFile.File == model.AlignmentFile) {
+            if (alignmentFile?.File == null || alignmentFile.File == _model.AlignmentFile) {
                 return Task.CompletedTask;
             }
-            return model.LoadAlignmentFileAsync(alignmentFile.File, token);
+            return _model.LoadAlignmentFileAsync(alignmentFile.File, token);
         }
 
-        public DelegateCommand<Window> ExportAnalysisResultCommand => exportAnalysisResultCommand ?? (exportAnalysisResultCommand = new DelegateCommand<Window>(model.ExportAnalysis));
-        private DelegateCommand<Window> exportAnalysisResultCommand;
+        public DelegateCommand<Window> ExportAnalysisResultCommand => _exportAnalysisResultCommand ?? (_exportAnalysisResultCommand = new DelegateCommand<Window>(ExportAnalysis));
+        private DelegateCommand<Window> _exportAnalysisResultCommand;
 
-        public DelegateCommand<Window> ExportAlignmentResultCommand => exportAlignmentResultCommand ?? (exportAlignmentResultCommand = new DelegateCommand<Window>(ExportAlignment));
-        private DelegateCommand<Window> exportAlignmentResultCommand;
+        private void ExportAnalysis(Window owner) {
+            var m = _model.ExportAnalysis();
+            using (var vm = new AnalysisResultExportViewModel(m)) {
+                var dialog = new AnalysisResultExportWin
+                {
+                    DataContext = vm,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                };
 
-        private void ExportAlignment(Window owner) {
-            var model_ = model.AlignmentResultExportModel;
-            using (var vm = new AlignmentResultExport2VM(model_, _broker)) {
+                dialog.ShowDialog();
+            }
+        }
+
+        public DelegateCommand ExportAlignmentResultCommand => _exportAlignmentResultCommand ?? (_exportAlignmentResultCommand = new DelegateCommand(ExportAlignment));
+        private DelegateCommand _exportAlignmentResultCommand;
+
+        private void ExportAlignment() {
+            using (var vm = new AlignmentResultExportViewModel(_model.AlignmentResultExportModel, _broker)) {
                 _broker.Publish(vm);
             }
         }
 
-        public DelegateCommand<Window> ShowTicCommand => showTicCommand ?? (showTicCommand = new DelegateCommand<Window>(model.ShowTIC));
-        private DelegateCommand<Window> showTicCommand;
+        public DelegateCommand ShowTicCommand => _showTicCommand ?? (_showTicCommand = new DelegateCommand(ShowTIC));
+        private DelegateCommand _showTicCommand;
 
-        public DelegateCommand<Window> ShowBpcCommand => showBpcCommand ?? (showBpcCommand = new DelegateCommand<Window>(model.ShowBPC));
-        private DelegateCommand<Window> showBpcCommand;
+        private void ShowTIC() {
+            var m = _model.ShowTIC();
+            if (m is null) {
+                return;
+            }
+            var vm = new ChromatogramsViewModel(m);
+            _broker.Publish(vm);
+        }
 
-        public DelegateCommand<Window> ShowTicBpcRepEICCommand => showTicBpcRepEIC ?? (showTicBpcRepEIC = new DelegateCommand<Window>(model.ShowTicBpcRepEIC));
-        private DelegateCommand<Window> showTicBpcRepEIC;
+        public DelegateCommand ShowBpcCommand => _showBpcCommand ?? (_showBpcCommand = new DelegateCommand(ShowBPC));
+        private DelegateCommand _showBpcCommand;
 
-        public DelegateCommand<Window> ShowEicCommand => showEicCommand ?? (showEicCommand = new DelegateCommand<Window>(model.ShowEIC));
-        private DelegateCommand<Window> showEicCommand;
+        private void ShowBPC() {
+            var m = _model.ShowBPC();
+            if (m is null) {
+                return;
+            }
+            var vm = new ChromatogramsViewModel(m);
+            _broker.Publish(vm);
+        }
+
+        public DelegateCommand ShowEicCommand => _showEicCommand ?? (_showEicCommand = new DelegateCommand(ShowEIC));
+        private DelegateCommand _showEicCommand;
+
+        private void ShowEIC() {
+            var m = _model.ShowEIC();
+            using (var settingvm = new DisplayEicSettingViewModel(m)) {
+                _broker.Publish(settingvm);
+                if (!settingvm.DialogResult) {
+                    return;
+                }
+            }
+            var chromatograms = m.PrepareChromatograms();
+            if (chromatograms is null) {
+                return;
+            }
+            var vm = new ChromatogramsViewModel(chromatograms);
+            _broker.Publish(vm);
+        }
+
+        public DelegateCommand ShowTicBpcRepEICCommand => _showTicBpcRepEIC ?? (_showTicBpcRepEIC = new DelegateCommand(ShowTicBpcRepEIC));
+        private DelegateCommand _showTicBpcRepEIC;
+
+        private void ShowTicBpcRepEIC() {
+            var m = _model.ShowTicBpcRepEIC();
+            if (m is null) {
+                return;
+            }
+            var vm = new ChromatogramsViewModel(m);
+            _broker.Publish(vm);
+        }
 
         public ReactiveCommand ShowProteinGroupTableCommand { get; }
 
         public ReactiveCommand ShowExperimentSpectrumCommand { get; }
 
-        public DelegateCommand<Window> ShowFragmentSearchSettingCommand => fragmentSearchSettingCommand ??
-            (fragmentSearchSettingCommand = new DelegateCommand<Window>(FragmentSearchSettingMethod));
-        private DelegateCommand<Window> fragmentSearchSettingCommand;
+        public DelegateCommand<Window> ShowFragmentSearchSettingCommand => _fragmentSearchSettingCommand ??
+            (_fragmentSearchSettingCommand = new DelegateCommand<Window>(FragmentSearchSettingMethod));
+        private DelegateCommand<Window> _fragmentSearchSettingCommand;
 
-        public DelegateCommand<Window> ShowMassqlSearchSettingCommand => massqlSearchSettingCommand ??
-            (massqlSearchSettingCommand= new DelegateCommand<Window>(MassqlSearchSettingMethod));
-        private DelegateCommand<Window> massqlSearchSettingCommand;
+        private void FragmentSearchSettingMethod(Window owner) {
+            var m = _model.ShowShowFragmentSearchSettingView();
 
-        public DelegateCommand<Window> ShowMscleanrFilterSettingCommand => mscleanrFilterSettingCommand ??
-            (mscleanrFilterSettingCommand = new DelegateCommand<Window>(MscleanrFilterSettingMethod));
-        private DelegateCommand<Window> mscleanrFilterSettingCommand;
+            var vm = new FragmentQuerySettingViewModel(m);
+            vm.IsAlignSpotViewSelected.Value = SelectedViewModel.Value is IAlignmentResultViewModel;
 
-        private void FragmentSearchSettingMethod(Window obj) {
-            if (SelectedViewModel.Value is IAlignmentResultViewModel) {
-                model.ShowShowFragmentSearchSettingView(obj, true);
-            }
-            else {
-                model.ShowShowFragmentSearchSettingView(obj, false);
-            }
-        }
-
-        private void MassqlSearchSettingMethod(Window obj) {
-            if (SelectedViewModel.Value is IAlignmentResultViewModel) {
-                model.ShowShowMassqlSearchSettingView(obj, true);
-            }
-            else {
-                model.ShowShowMassqlSearchSettingView(obj, false);
+            var dialog = new FragmentQuerySettingView() {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            if (dialog.ShowDialog() == true) {
+                m.Search();
             }
         }
 
-        private void MscleanrFilterSettingMethod(Window obj) {
+        public DelegateCommand<Window> ShowMassqlSearchSettingCommand => _massqlSearchSettingCommand ??
+            (_massqlSearchSettingCommand= new DelegateCommand<Window>(MassqlSearchSettingMethod));
+        private DelegateCommand<Window> _massqlSearchSettingCommand;
+
+        private void MassqlSearchSettingMethod(Window owner) {
+            MassqlSettingModel m = _model.ShowShowMassqlSearchSettingView(SelectedViewModel.Value.Model);
+            if (m is null) {
+                return;
+            }
+
+            var vm = new MassqlSettingViewModel(m);
+            var dialog = new MassqlSettingView()
+            {
+                DataContext = vm,
+                Owner = owner,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            dialog.Show();
+        }
+
+        public DelegateCommand<Window> ShowMscleanrFilterSettingCommand => _mscleanrFilterSettingCommand ??
+            (_mscleanrFilterSettingCommand = new DelegateCommand<Window>(MscleanrFilterSettingMethod));
+        private DelegateCommand<Window> _mscleanrFilterSettingCommand;
+
+        private void MscleanrFilterSettingMethod(Window owner) {
             if (SelectedViewModel.Value is IAlignmentResultViewModel) {
-                model.ShowShowMscleanrFilterSettingView(obj);
+                var m = _model.ShowShowMscleanrFilterSettingView();
+                var vm = new MscleanrSettingViewModel(m);
+                var dialog = new MscleanrSettingView()
+                {
+                    DataContext = vm,
+                    Owner = owner,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                };
+                dialog.Show();
             }
             else {
                 MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
                 //Console.WriteLine("Please select an item in Alignment navigator!!");
-            }
-        }
-
-        public DelegateCommand GoToMsfinderCommand => goToMsfinderCommand ??  (goToMsfinderCommand = new DelegateCommand(GoToMsfinderMethod));
-        private DelegateCommand goToMsfinderCommand;
-
-        private void GoToMsfinderMethod() {
-            if (SelectedViewModel.Value is IAlignmentResultViewModel) {
-                model.GoToMsfinderMethod(true);
-            }
-            else {
-                model.GoToMsfinderMethod(false);
             }
         }
 

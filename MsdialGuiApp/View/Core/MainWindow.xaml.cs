@@ -4,14 +4,15 @@ using CompMs.App.Msdial.Utility;
 using CompMs.App.Msdial.View.Chart;
 using CompMs.App.Msdial.View.Export;
 using CompMs.App.Msdial.View.PeakCuration;
+using CompMs.App.Msdial.View.Search;
 using CompMs.App.Msdial.View.Setting;
 using CompMs.App.Msdial.View.Statistics;
 using CompMs.App.Msdial.View.Table;
-using CompMs.App.Msdial.ViewModel;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Export;
 using CompMs.App.Msdial.ViewModel.PeakCuration;
+using CompMs.App.Msdial.ViewModel.Search;
 using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.App.Msdial.ViewModel.Statistics;
@@ -73,6 +74,10 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(OpenFileDialog);
             broker.ToObservable<ErrorMessageBoxRequest>()
                 .Subscribe(ShowErrorComfirmationMessage);
+            broker.ToObservable<ChromatogramsViewModel>()
+                .Subscribe(ShowDisplayChromatogramsView);
+            broker.ToObservable<DisplayEicSettingViewModel>()
+                .Subscribe(ShowDialogOfEicSettingView);
             broker.ToObservable<AlignedChromatogramModificationViewModelLegacy>()
                 .Subscribe(CreateAlignedChromatogramModificationDialog);
             broker.ToObservable<SampleTableViewerInAlignmentViewModelLegacy>()
@@ -85,7 +90,7 @@ namespace CompMs.App.Msdial.View.Core
                 .Subscribe(OpenMultivariateAnalysisSettingView);
             broker.ToObservable<PCAPLSResultViewModel>()
                 .Subscribe(OpenPCAPLSResultView);
-            broker.ToObservable<AlignmentResultExport2VM>()
+            broker.ToObservable<AlignmentResultExportViewModel>()
                 .Subscribe(OpenAlignmentResultExportDialog);
 #if RELEASE
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
@@ -291,6 +296,25 @@ namespace CompMs.App.Msdial.View.Core
             });
         }
 
+        private void ShowDisplayChromatogramsView(ChromatogramsViewModel viewmodel) {
+            var view = new DisplayChromatogramsView {
+                DataContext = viewmodel,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            view.Show();
+        }
+
+        private void ShowDialogOfEicSettingView(DisplayEicSettingViewModel viewmodel) {
+            var view = new EICDisplaySettingView
+            {
+                DataContext = viewmodel,
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            view.ShowDialog();
+        }
+
         private void CreateAlignedChromatogramModificationDialog(AlignedChromatogramModificationViewModelLegacy vm) {
             Dispatcher.Invoke(() =>
             {
@@ -317,7 +341,7 @@ namespace CompMs.App.Msdial.View.Core
             });
         }
 
-        private void OpenAlignmentResultExportDialog(AlignmentResultExport2VM vm) {
+        private void OpenAlignmentResultExportDialog(AlignmentResultExportViewModel vm) {
             var dialog = new AlignmentResultExportWin
             {
                 DataContext = vm,
@@ -360,6 +384,10 @@ namespace CompMs.App.Msdial.View.Core
                     e.Cancel = true;
                 }
             }
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e) {
+            System.Diagnostics.Process.Start(e.Uri.ToString());
         }
     }
 }

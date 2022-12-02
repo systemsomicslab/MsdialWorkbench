@@ -1,4 +1,5 @@
 ﻿using CompMs.Common.Enum;
+using CompMs.Common.Interfaces;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialCore.MSDec;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -77,7 +78,7 @@ ID,Name,File 1,File 2,File 3,A,B
 
         class MockMetaAccessor : IMetadataAccessor
         {
-            public ReadOnlyDictionary<string, string> GetContent(AlignmentSpotProperty spot, MSDecResult msdec) {
+            public ReadOnlyDictionary<string, string> GetContent(AlignmentSpotProperty spot, IMSScanProperty msdec) {
                 return new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
                 {
                     { "ID", spot.MasterAlignmentID.ToString() },

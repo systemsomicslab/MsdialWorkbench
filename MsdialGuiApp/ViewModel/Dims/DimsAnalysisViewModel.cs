@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Dims;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.Dims;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
@@ -82,8 +83,8 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
-            var _peakDetailViewModels = new ReactiveCollection<ViewModelBase>().AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
+            MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel, };
         }
 
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
@@ -99,6 +100,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
 
         public PeakInformationViewModel PeakInformationViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
+        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ICommand SetUnknownCommand { get; }
@@ -140,5 +142,7 @@ namespace CompMs.App.Msdial.ViewModel.Dims
         public DelegateCommand CopyMs2SpectrumCommand => _copyMs2SpectrumCommand ?? (_copyMs2SpectrumCommand = new DelegateCommand(_model.CopySpectrum, _model.CanSaveSpectra));
         private DelegateCommand _copyMs2SpectrumCommand;
 
+        // IResultViewModel
+        IResultModel IResultViewModel.Model => _model;
     }
 }

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Dims"
-             xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
+             xmlns:commonview="clr-namespace:CompMs.App.Msdial.View.Core"
              xmlns:behavior="clr-namespace:CompMs.CommonMVVM.Behaviors;assembly=CommonMVVM"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:chartvm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
@@ -364,7 +364,10 @@
                                         </DataTemplate>                              
                                         <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
                                             <infoview:CompoundDetailView/>
-                                        </DataTemplate>                              
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
+                                            <infoview:MoleculeStructureView/>
+                                        </DataTemplate>
                                     </DataTemplate.Resources>
                                     <ContentPresenter Content="{Binding}"/>
                                 </DataTemplate>
@@ -378,6 +381,10 @@
                                         </DataTemplate>
                                         <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
                                             <TextBlock Text="Compund detail"
+                                                       VerticalAlignment="Stretch"/>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
+                                            <TextBlock Text="Structure"
                                                        VerticalAlignment="Stretch"/>
                                         </DataTemplate>
                                     </DataTemplate.Resources>

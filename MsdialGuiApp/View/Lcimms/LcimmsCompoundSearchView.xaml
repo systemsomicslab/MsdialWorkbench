@@ -159,10 +159,10 @@
                 <ContentControl Content="{Binding File, Mode=OneTime}"
                                 ContentTemplate="{StaticResource FileInfoTemplate}"
                                 Margin="8"/>
-                <ContentControl Content="{Binding MSIonProperty, Mode=OneTime}"
+                <ContentControl Content="{Binding PeakSpot.MSIon, Mode=OneTime}"
                                 ContentTemplate="{StaticResource PeakInfoTemplate}"
                                 Margin="8"/>
-                <ContentControl Content="{Binding MoleculeProperty, Mode=OneTime}"
+                <ContentControl Content="{Binding PeakSpot.Molecule, Mode=OneTime}"
                                 ContentTemplate="{StaticResource AnnotationInfoTemplate}"
                                 Margin="8"/>
             </WrapPanel>

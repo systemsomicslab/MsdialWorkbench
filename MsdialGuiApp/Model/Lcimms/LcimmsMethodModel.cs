@@ -54,6 +54,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
 
             Storage = storage;
+            _projectBaseParameter = projectBaseParameter ?? throw new ArgumentNullException(nameof(projectBaseParameter));
             _broker = broker;
             providerFactory = new StandardDataProviderFactory();
             accProviderFactory = new LcimmsAccumulateDataProviderFactory();
@@ -61,21 +62,45 @@ namespace CompMs.App.Msdial.Model.Lcimms
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All);
             AccumulatedPeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
 
+            List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
-            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, storage.AlignmentFiles, storage);
             var metadataAccessor = new LcimmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
-            AlignmentResultExportModel.AddExportTypes(
-                new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
-                new ExportType("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
-                new ExportType("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats),
-                new ExportType("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats),
-                new ExportType("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
-                new ExportType("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", storage.Parameter), "Mz"),
-                new ExportType("Retention time", metadataAccessor, new LegacyQuantValueAccessor("RT", storage.Parameter), "Rt"),
-                new ExportType("Mobility", metadataAccessor, new LegacyQuantValueAccessor("Mobility", storage.Parameter), "Mobility"),
-                new ExportType("CCS", metadataAccessor, new LegacyQuantValueAccessor("CCS", storage.Parameter), "CCS"),
-                new ExportType("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
-                new ExportType("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"));
+            AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(PeakFilterModel, matchResultEvaluator.Contramap((IFilterable filterable) => filterable.MatchResults.Representative));
+            var peakGroup = new AlignmentExportGroupModel(
+                "Peaks",
+                new ExportMethod(
+                    analysisFiles,
+                    new ExportFormat("txt", "txt", new AlignmentCSVExporter(), new AlignmentLongCSVExporter(), metadataAccessor),
+                    new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ","), new AlignmentLongCSVExporter(separator: ","), metadataAccessor)
+                ),
+                new[]
+                {
+                    new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
+                    new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
+                    new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats),
+                    new ExportType("Normalized data (Area)", new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats),
+                    new ExportType("Peak ID", new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
+                    new ExportType("m/z", new LegacyQuantValueAccessor("MZ", storage.Parameter), "Mz"),
+                    new ExportType("Retention time", new LegacyQuantValueAccessor("RT", storage.Parameter), "Rt"),
+                    new ExportType("Mobility", new LegacyQuantValueAccessor("Mobility", storage.Parameter), "Mobility"),
+                    new ExportType("CCS", new LegacyQuantValueAccessor("CCS", storage.Parameter), "CCS"),
+                    new ExportType("S/N", new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
+                    new ExportType("MS/MS included", new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"),
+                },
+                new[]
+                {
+                    ExportspectraType.deconvoluted,
+                },
+                peakSpotSupplyer);
+            var spectraGroup = new AlignmentSpectraExportGroupModel(
+                new[]
+                {
+                    ExportspectraType.deconvoluted,
+                },
+                peakSpotSupplyer,
+                new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
+                new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()));
+            AlignmentResultExportModel = new AlignmentResultExportModel(new IAlignmentResultExportModel[] { peakGroup, spectraGroup, }, AlignmentFile, storage.AlignmentFiles, peakSpotSupplyer);
             this.ObserveProperty(m => m.AlignmentFile)
                 .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
                 .AddTo(Disposables);
@@ -101,6 +126,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
         private static readonly ChromatogramSerializer<ChromatogramSpotInfo> chromatogramSpotSerializer;
         private readonly IDataProviderFactory<RawMeasurement> providerFactory;
         private readonly IDataProviderFactory<RawMeasurement> accProviderFactory;
+        private readonly ProjectBaseParameterModel _projectBaseParameter;
         private readonly IMessageBroker _broker;
 
         public PeakFilterModel AccumulatedPeakFilterModel { get; }
@@ -133,9 +159,11 @@ namespace CompMs.App.Msdial.Model.Lcimms
             }
             return AlignmentModel = new LcimmsAlignmentModel(
                 alignmentFile,
+                AnalysisFileModelCollection,
                 matchResultEvaluator,
                 Storage.DataBases,
                 Storage.DataBaseMapper,
+                _projectBaseParameter,
                 Storage.Parameter,
                 Storage.AnalysisFiles,
                 PeakFilterModel,
@@ -237,14 +265,14 @@ namespace CompMs.App.Msdial.Model.Lcimms
                 streams = files.Select(file => File.OpenRead(file.DeconvolutionFilePath)).ToList();
                 foreach (var spot in spots) {
                     var repID = spot.RepresentativeFileID;
-                    var peakID = spot.AlignedPeakProperties[repID].MasterPeakID;
+                    var peakID = spot.AlignedPeakProperties[repID].GetMSDecResultID();
                     var decResult = MsdecResultsReader.ReadMSDecResult(
                         streams[repID], pointerss[repID].pointers[peakID],
                         pointerss[repID].version, pointerss[repID].isAnnotationInfo);
                     yield return decResult;
                     foreach (var dSpot in spot.AlignmentDriftSpotFeatures) {
                         var dRepID = dSpot.RepresentativeFileID;
-                        var dPeakID = dSpot.AlignedPeakProperties[dRepID].MasterPeakID;
+                        var dPeakID = dSpot.AlignedPeakProperties[dRepID].GetMSDecResultID();
                         var dDecResult = MsdecResultsReader.ReadMSDecResult(
                             streams[dRepID], pointerss[dRepID].pointers[dPeakID],
                             pointerss[dRepID].version, pointerss[dRepID].isAnnotationInfo);
@@ -300,7 +328,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
             if (analysisModel is null) return;
 
             var param = container.Parameter;
-            var model = new Setting.DisplayEicSettingModel(param);
+            var model = new Setting.DisplayEicSettingModel(analysisModel.EicLoader, param);
             var dialog = new EICDisplaySettingView() {
                 DataContext = new DisplayEicSettingViewModel(model),
                 Owner = owner,

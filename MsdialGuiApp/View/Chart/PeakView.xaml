@@ -65,13 +65,13 @@
                 <chart:ScatterControlSlim.ToolTip>
                     <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
                         <StackPanel Orientation="Vertical">
-                            <TextBlock Text="{Binding FocusedItem.MasterPeakID, StringFormat=ID: {0}}"/>
-                            <TextBlock Text="{Binding FocusedItem.Name, StringFormat=Name: {0}}"/>
-                            <TextBlock Text="{Binding FocusedItem.AdductIonName, StringFormat=Ionform: {0}}"/>
-                            <TextBlock Text="{Binding FocusedItem.ChromXValue, StringFormat=Time: {0:0.000}}"/>
-                            <TextBlock Text="{Binding FocusedItem.Mass, StringFormat=m/z: {0:0.0000}}"/>
-                            <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Height: {0:0}}"/>
-                            <TextBlock Text="{Binding FocusedItem.PeakArea, StringFormat=Area: {0:0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:ChromatogramPeakFeatureModel.MasterPeakID), StringFormat=ID: {0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:ChromatogramPeakFeatureModel.Name), StringFormat=Name: {0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:ChromatogramPeakFeatureModel.AdductIonName), StringFormat=Ionform: {0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:ChromatogramPeakFeatureModel.ChromXValue), StringFormat=Time: {0:F3}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:ChromatogramPeakFeatureModel.Mass), StringFormat=m/z: {0:F4}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:ChromatogramPeakFeatureModel.Intensity), StringFormat=Height: {0:F0}}"/>
+                            <TextBlock Text="{Binding Path=(chart:ScatterControlSlim.FocusedItem).(do:ChromatogramPeakFeatureModel.PeakArea), StringFormat=Area: {0:F0}}"/>
                         </StackPanel>
                     </ToolTip>
                 </chart:ScatterControlSlim.ToolTip>

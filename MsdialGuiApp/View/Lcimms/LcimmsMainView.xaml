@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              xmlns:do="clr-namespace:CompMs.App.Msdial.Model.DataObj" 
-             xmlns:commonview="clr-namespace:CompMs.App.Msdial.View"
+             xmlns:commonview="clr-namespace:CompMs.App.Msdial.View.Core"
              xmlns:chart="clr-namespace:CompMs.App.Msdial.View.Chart"
              xmlns:local="clr-namespace:CompMs.App.Msdial.View.Lcimms"
              xmlns:search="clr-namespace:CompMs.App.Msdial.View.Search"
@@ -371,7 +371,10 @@
                                     </DataTemplate>                              
                                     <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
                                         <infoview:CompoundDetailView/>
-                                    </DataTemplate>                              
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
+                                        <infoview:MoleculeStructureView/>
+                                    </DataTemplate>
                                 </DataTemplate.Resources>
                                 <ContentPresenter Content="{Binding}"/>
                             </DataTemplate>
@@ -385,6 +388,10 @@
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type info:CompoundDetailViewModel}">
                                         <TextBlock Text="Compund detail"
+                                                   VerticalAlignment="Stretch"/>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type info:MoleculeStructureViewModel}">
+                                        <TextBlock Text="Structure"
                                                    VerticalAlignment="Stretch"/>
                                     </DataTemplate>
                                 </DataTemplate.Resources>

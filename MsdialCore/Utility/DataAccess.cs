@@ -60,7 +60,7 @@ namespace CompMs.MsdialCore.Utility {
         }
 
         public static RawMeasurement LoadMeasurement(AnalysisFileBean file, bool isImagingMsData, bool isGuiProcess, int retry, int sleepMilliSeconds) {
-            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, false, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
+            using (var access = new RawDataAccess(file.AnalysisFilePath, 0, false, isImagingMsData, isGuiProcess, file.RetentionTimeCorrectionBean.PredictedRt)) {
                 for (var i = 0; i < retry; i++) {
                     var rawObj = access.GetMeasurement();
                     if (rawObj != null)
@@ -1129,7 +1129,7 @@ namespace CompMs.MsdialCore.Utility {
             var adductString = "[M+" + chargeString + "H]" + chargeString + "+";
             var type = AdductIonParser.GetAdductIonBean(adductString);
 
-            feature.AddAdductType(type);
+            feature.SetAdductType(type);
         }
 
         private static void SetPeptidePropertyCore(IMoleculeProperty property, PeptideMsReference reference) {
@@ -1148,14 +1148,14 @@ namespace CompMs.MsdialCore.Utility {
             var adductString = "[M+" + chargeString + "H]" + chargeString + "+";
             var type = AdductIonParser.GetAdductIonBean(adductString);
 
-            feature.AddAdductType(type);
+            feature.SetAdductType(type);
             feature.Name = "w/o MS2: " + result.Name;
         }
 
         public static void SetMoleculeMsProperty(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result, bool isTextDB = false) {
             SetMoleculePropertyCore(feature, reference);
             feature.Name = result.Name;
-            feature.AddAdductType(reference.AdductType);
+            feature.SetAdductType(reference.AdductType);
             if (isTextDB) return;
             //if (!result.IsSpectrumMatch) {
             //    feature.Name = "w/o MS2: " + result.Name;
@@ -1168,27 +1168,27 @@ namespace CompMs.MsdialCore.Utility {
 
         public static void SetMoleculeMsPropertyAsSuggested(ChromatogramPeakFeature feature, MoleculeMsReference reference, MsScanMatchResult result) {
             SetMoleculePropertyCore(feature, reference);
-            feature.AddAdductType(reference.AdductType);
+            feature.SetAdductType(reference.AdductType);
             feature.Name = "w/o MS2: " + result.Name;
         }
 
         public static void SetMoleculeMsPropertyAsConfidence<T>(T feature, MoleculeMsReference reference, MsScanMatchResult result)
             where T: IMoleculeProperty, IIonProperty {
             SetMoleculePropertyCore(feature, reference);
-            feature.AdductType = reference.AdductType;
+            feature.SetAdductType(reference.AdductType);
             feature.Name = result.Name;
         }
 
         public static void SetMoleculeMsPropertyAsUnsettled<T>(T feature, MoleculeMsReference reference, MsScanMatchResult result)
             where T: IMoleculeProperty, IIonProperty {
             SetMoleculePropertyCore(feature, reference);
-            feature.AdductType = reference.AdductType;
+            feature.SetAdductType(reference.AdductType);
             feature.Name = $"Unsettled: {result.Name}";
         }
 
         private static void SetMoleculePropertyCore(IMoleculeProperty property, MoleculeMsReference reference) {
             property.Formula = reference.Formula;
-            property.Ontology = string.IsNullOrEmpty(reference.Ontology) ? reference.CompoundClass : reference.Ontology;
+            property.Ontology = (!string.IsNullOrEmpty(reference.Ontology) ? reference.Ontology : reference.CompoundClass) ?? string.Empty;
             property.SMILES = reference.SMILES;
             property.InChIKey = reference.InChIKey;
         }

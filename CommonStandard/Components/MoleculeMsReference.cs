@@ -61,6 +61,11 @@ namespace CompMs.Common.Components {
         // ion physiochemical information
         [Key(10)]
         public AdductIon AdductType { get; set; }
+
+        public void SetAdductType(AdductIon adduct) {
+            AdductType = adduct;
+        }
+
         [Key(11)]
         public double CollisionCrossSection { get; set; }
         [Key(12)]

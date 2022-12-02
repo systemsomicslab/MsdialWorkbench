@@ -1,16 +1,9 @@
-﻿using CompMs.App.Msdial.Common;
-using CompMs.App.Msdial.Model.Chart;
+﻿using CompMs.App.Msdial.Model.Chart;
 using CompMs.App.Msdial.Model.Core;
 using CompMs.App.Msdial.Model.DataObj;
 using CompMs.App.Msdial.Model.Export;
 using CompMs.App.Msdial.Model.Search;
 using CompMs.App.Msdial.Model.Setting;
-using CompMs.App.Msdial.View.Chart;
-using CompMs.App.Msdial.View.Export;
-using CompMs.App.Msdial.View.Setting;
-using CompMs.App.Msdial.ViewModel.Chart;
-using CompMs.App.Msdial.ViewModel.Export;
-using CompMs.App.Msdial.ViewModel.Setting;
 using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.Common.Enum;
@@ -36,7 +29,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Lcms
@@ -72,24 +64,50 @@ namespace CompMs.App.Msdial.Model.Lcms
             PeakFilterModel = new PeakFilterModel(DisplayFilter.All & ~DisplayFilter.CcsMatched);
             CanShowProteinGroupTable = Observable.Return(storage.Parameter.TargetOmics == TargetOmics.Proteomics);
 
+            List<AnalysisFileBean> analysisFiles = analysisFileBeanModelCollection.AnalysisFiles.Select(f => f.File).ToList();
             var stats = new List<StatsValue> { StatsValue.Average, StatsValue.Stdev, };
-            AlignmentResultExportModel = new AlignmentResultExportModel(AlignmentFile, storage.AlignmentFiles, storage);
             var  metadataAccessor = storage.Parameter.TargetOmics == TargetOmics.Proteomics
                 ? (IMetadataAccessor)new LcmsProteomicsMetadataAccessor(storage.DataBaseMapper, storage.Parameter)
                 : (IMetadataAccessor)new LcmsMetadataAccessor(storage.DataBaseMapper, storage.Parameter);
-            AlignmentResultExportModel.AddExportTypes(
-                new ExportType("Raw data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
-                new ExportType("Raw data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
-                new ExportType("Normalized data (Height)", metadataAccessor, new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats),
-                new ExportType("Normalized data (Area)", metadataAccessor, new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats),
-                new ExportType("Peak ID", metadataAccessor, new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
-                new ExportType("m/z", metadataAccessor, new LegacyQuantValueAccessor("MZ", storage.Parameter), "Mz"),
-                new ExportType("Retention time", metadataAccessor, new LegacyQuantValueAccessor("RT", storage.Parameter), "Rt"),
-                new ExportType("S/N", metadataAccessor, new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
-                new ExportType("MS/MS included", metadataAccessor, new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded"));
+            AlignmentPeakSpotSupplyer peakSpotSupplyer = new AlignmentPeakSpotSupplyer(PeakFilterModel, _matchResultEvaluator.Contramap((IFilterable filterable) => filterable.MatchResults.Representative));
+            var peakGroup = new AlignmentExportGroupModel(
+                "Peaks",
+                new ExportMethod(
+                    analysisFiles,
+                    new ExportFormat("txt", "txt", new AlignmentCSVExporter(), new AlignmentLongCSVExporter(), metadataAccessor),
+                    new ExportFormat("csv", "csv", new AlignmentCSVExporter(separator: ","), new AlignmentLongCSVExporter(separator: ","), metadataAccessor)
+                ),
+                new[]
+                {
+                    new ExportType("Raw data (Height)", new LegacyQuantValueAccessor("Height", storage.Parameter), "Height", stats, true),
+                    new ExportType("Raw data (Area)", new LegacyQuantValueAccessor("Area", storage.Parameter), "Area", stats),
+                    new ExportType("Normalized data (Height)", new LegacyQuantValueAccessor("Normalized height", storage.Parameter), "NormalizedHeight", stats),
+                    new ExportType("Normalized data (Area)", new LegacyQuantValueAccessor("Normalized area", storage.Parameter), "NormalizedArea", stats),
+                    new ExportType("Peak ID", new LegacyQuantValueAccessor("ID", storage.Parameter), "PeakID"),
+                    new ExportType("m/z", new LegacyQuantValueAccessor("MZ", storage.Parameter), "Mz"),
+                    new ExportType("Retention time", new LegacyQuantValueAccessor("RT", storage.Parameter), "Rt"),
+                    new ExportType("S/N", new LegacyQuantValueAccessor("SN", storage.Parameter), "SN"),
+                    new ExportType("MS/MS included", new LegacyQuantValueAccessor("MSMS", storage.Parameter), "MsmsIncluded")
+                },
+                new[]
+                {
+                    ExportspectraType.deconvoluted,
+                },
+                peakSpotSupplyer);
+            var spectraGroup = new AlignmentSpectraExportGroupModel(
+                new[]
+                {
+                    ExportspectraType.deconvoluted,
+                },
+                peakSpotSupplyer,
+                new AlignmentSpectraExportFormat("Msp", "msp", new AlignmentMspExporter(storage.DataBaseMapper, storage.Parameter)),
+                new AlignmentSpectraExportFormat("Mgf", "mgf", new AlignmentMgfExporter()));
+            var exportGroups = new List<IAlignmentResultExportModel> { peakGroup, spectraGroup, };
             if (storage.Parameter.TargetOmics == TargetOmics.Proteomics) {
-                AlignmentResultExportModel.AddExportTypes(new ExportType("Protein assembled", metadataAccessor, new LegacyQuantValueAccessor("Protein", storage.Parameter), "Protein"));
+                exportGroups.Add(new ProteinGroupExportModel(new ProteinGroupExporter(), analysisFiles));
             }
+
+            AlignmentResultExportModel = new AlignmentResultExportModel(exportGroups, AlignmentFile, storage.AlignmentFiles, peakSpotSupplyer);
             this.ObserveProperty(m => m.AlignmentFile)
                 .Subscribe(file => AlignmentResultExportModel.AlignmentFile = file)
                 .AddTo(Disposables);
@@ -298,7 +316,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                     var alignmentFile = storage.AlignmentFiles.Last();
                     var result = await Task.Run(() => aligner.Alignment(storage.AnalysisFiles, alignmentFile, CHROMATOGRAM_SPOT_SERIALIZER)).ConfigureAwait(false);
 
-                    if (!storage.DataBaseMapper.PeptideAnnotators.IsEmptyOrNull()) {
+                    if (storage.DataBases.ProteomicsDataBases.Any()) {
                         new ProteomeDataAnnotator().MappingToProteinDatabase(
                             alignmentFile.ProteinAssembledResultFilePath,
                             result,
@@ -329,7 +347,7 @@ namespace CompMs.App.Msdial.Model.Lcms
                 streams = files.Select(file => System.IO.File.OpenRead(file.DeconvolutionFilePath)).ToList();
                 foreach (var spot in spots.OrEmptyIfNull()) {
                     var repID = spot.RepresentativeFileID;
-                    var peakID = spot.AlignedPeakProperties[repID].MSDecResultIdUsed;
+                    var peakID = spot.AlignedPeakProperties[repID].GetMSDecResultID();
 
                     Console.WriteLine("RepID {0}, Peak ID {1}", repID, peakID);
 
@@ -344,115 +362,62 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
         }
 
-        public void ExportAnalysis(Window owner) {
+        public AnalysisResultExportModel ExportAnalysis() {
             var container = _storage;
-            var spectraTypes = new List<Export.SpectraType>
+            var spectraTypes = new List<SpectraType>
             {
-                new Export.SpectraType(
+                new SpectraType(
                     ExportspectraType.deconvoluted,
                     new LcmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.deconvoluted)),
-                new Export.SpectraType(
+                new SpectraType(
                     ExportspectraType.centroid,
                     new LcmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.centroid)),
-                new Export.SpectraType(
+                new SpectraType(
                     ExportspectraType.profile,
                     new LcmsAnalysisMetadataAccessor(container.DataBaseMapper, container.Parameter, ExportspectraType.profile)),
             };
-            var spectraFormats = new List<Export.SpectraFormat>
+            var spectraFormats = new List<SpectraFormat>
             {
-                new Export.SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
+                new SpectraFormat(ExportSpectraFileFormat.txt, new AnalysisCSVExporter()),
             };
 
-            using (var vm = new AnalysisResultExportViewModel(
-                container.AnalysisFiles, 
-                spectraTypes, 
-                spectraFormats, 
-                _providerFactory)) {
-                var dialog = new AnalysisResultExportWin
-                {
-                    DataContext = vm,
-                    Owner = owner,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                };
-
-                dialog.ShowDialog();
-            }
+            return new AnalysisResultExportModel(container.AnalysisFiles, spectraTypes, spectraFormats, _providerFactory);
         }
 
-        public void ShowTIC(Window owner) {
+        public ChromatogramsModel ShowTIC() {
             var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
+            if (analysisModel is null) {
+                return null;
+            }
 
             var tic = analysisModel.EicLoader.LoadTic();
-            var vm = new ChromatogramsViewModel(
-                new ChromatogramsModel("Total ion chromatogram", 
-                new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"),
-                "Total ion chromatogram", "Retention time", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
+            var chromatogram = new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC");
+            return new ChromatogramsModel("Total ion chromatogram", chromatogram, "Total ion chromatogram", "Retention time", "Absolute ion abundance");
         }
 
-        public void ShowBPC(Window owner) {
+        public ChromatogramsModel ShowBPC() {
             var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
-
-            var bpc = analysisModel.EicLoader.LoadBpc();
-            var vm = new ChromatogramsViewModel(
-                new ChromatogramsModel("Base peak chromatogram",
-                new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"),
-                "Base peak chromatogram", "Retention time", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
-        }
-
-        public void ShowEIC(Window owner) {
-            var container = _storage;
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
-
-            var param = container.Parameter;
-            var model = new DisplayEicSettingModel(param);
-            var dialog = new EICDisplaySettingView() {
-                DataContext = new DisplayEicSettingViewModel(model),
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            if (dialog.ShowDialog() == true) {
-                param.DiplayEicSettingValues = model.DiplayEicSettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0).ToList();
-                var displayEICs = param.DiplayEicSettingValues;
-                if (!displayEICs.IsEmptyOrNull()) {
-                    var displayChroms = new List<DisplayChromatogram>();
-                    var counter = 0;
-                    foreach (var set in displayEICs.Where(n => n.Mass > 0 && n.MassTolerance > 0)) {
-                        var eic = analysisModel.EicLoader.LoadEicTrace(set.Mass, set.MassTolerance);
-                        var subtitle = "[" + Math.Round(set.Mass - set.MassTolerance, 4).ToString() + "-" + Math.Round(set.Mass + set.MassTolerance, 4).ToString() + "]";
-                        var chrom = new DisplayChromatogram(eic, new Pen(ChartBrushes.GetChartBrush(counter), 1.0), set.Title + "; " + subtitle);
-                        counter++;
-                        displayChroms.Add(chrom);
-                    }
-                    var vm = new ChromatogramsViewModel(new ChromatogramsModel("EIC", displayChroms, "EIC", "Retention time [min]", "Absolute ion abundance"));
-                    var view = new DisplayChromatogramsView() {
-                        DataContext = vm,
-                        Owner = owner,
-                        WindowStartupLocation = WindowStartupLocation.CenterOwner
-                    };
-                    view.Show();
-                }
+            if (analysisModel is null) {
+                return null;
             }
+            var bpc = analysisModel.EicLoader.LoadBpc();
+            var chromatogram = new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC");
+            return new ChromatogramsModel("Base peak chromatogram", chromatogram, "Base peak chromatogram", "Retention time", "Absolute ion abundance");
         }
 
-        public void ShowTicBpcRepEIC(Window owner) {
+        public DisplayEicSettingModel ShowEIC() {
+            if (AnalysisModel is null) {
+                return null;
+            }
+            return new DisplayEicSettingModel(AnalysisModel.EicLoader, _storage.Parameter);
+        }
+
+        public ChromatogramsModel ShowTicBpcRepEIC() {
             var container = _storage;
             var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
+            if (analysisModel is null) {
+                return null;
+            }
 
             var tic = analysisModel.EicLoader.LoadTic();
             var bpc = analysisModel.EicLoader.LoadBpc();
@@ -460,105 +425,31 @@ namespace CompMs.App.Msdial.Model.Lcms
 
             var maxPeakMz = analysisModel.Ms1Peaks.Argmax(n => n.Intensity).Mass;
 
-
             var displayChroms = new List<DisplayChromatogram>() {
                 new DisplayChromatogram(tic, new Pen(Brushes.Black, 1.0), "TIC"),
                 new DisplayChromatogram(bpc, new Pen(Brushes.Red, 1.0), "BPC"),
                 new DisplayChromatogram(eic, new Pen(Brushes.Blue, 1.0), "EIC of m/z " + Math.Round(maxPeakMz, 5).ToString())
             };
 
-            var vm = new ChromatogramsViewModel(new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Retention time [min]", "Absolute ion abundance"));
-            var view = new DisplayChromatogramsView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            view.Show();
+            return new ChromatogramsModel("TIC, BPC, and highest peak m/z's EIC", displayChroms, "TIC, BPC, and highest peak m/z's EIC", "Retention time [min]", "Absolute ion abundance");
         }
 
-        public void ShowShowFragmentSearchSettingView(Window owner, bool isAlignmentViewSelected) {
-            var container = _storage;
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
-            var alignmentModel = AlignmentModel;
-            var param = container.Parameter;
-            
-            var model = new FragmentQuerySettingModel(container.Parameter, isAlignmentViewSelected);
-            var vm = new FragmentQuerySettingViewModel(model);
-            var dialog = new FragmentQuerySettingView() {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-
-            if (dialog.ShowDialog() == true) {
-                param.FragmentSearchSettingValues = model.FragmentQuerySettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();
-                param.AndOrAtFragmentSearch = model.SearchOption.Value;
-                if (model.IsAlignSpotViewSelected.Value && alignmentModel is null) {
-                    MessageBox.Show("Please select an alignment result file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-                if (model.IsAlignSpotViewSelected.Value) {
-                    alignmentModel.FragmentSearcher();
-                } else {
-                    analysisModel.FragmentSearcher();
-                }
-            }
+        public FragmentQuerySettingModel ShowShowFragmentSearchSettingView() {
+            return new FragmentQuerySettingModel(_storage.Parameter.AdvancedProcessOptionBaseParam, AnalysisModel, AlignmentModel);
         }
 
-        public void ShowShowMassqlSearchSettingView(Window owner, bool isAlignmentViewSelected) {
-            var container = _storage;
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
-            var alignmentModel = AlignmentModel;
-            var param = container.Parameter;
-
-            MassqlSettingModel model;
-            if (isAlignmentViewSelected) {
-                model = new MassqlSettingModel(container.Parameter, alignmentModel.FragmentSearcher);
+        public MassqlSettingModel ShowShowMassqlSearchSettingView(IResultModel model) {
+            if (model is null) {
+                return null;
             }
-            else {
-                model = new MassqlSettingModel(container.Parameter, analysisModel.FragmentSearcher);
-            }
-            var vm = new MassqlSettingViewModel(model);
-            var dialog = new MassqlSettingView()
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            dialog.Show();
+            return new MassqlSettingModel(model, _storage.Parameter.AdvancedProcessOptionBaseParam);
         }
 
-        public void ShowShowMscleanrFilterSettingView(Window owner) {
-            var container = _storage;
-            var analysisModel = AnalysisModel;
-            if (analysisModel is null) return;
-            var alignmentModel = AlignmentModel;
-            var spotprops = alignmentModel.Ms1Spots;
-
-            MscleanrSettingModel model;
-            model = new MscleanrSettingModel(container.Parameter, spotprops);
-            var vm = new MscleanrSettingViewModel(model);
-            var dialog = new MscleanrSettingView()
-            {
-                DataContext = vm,
-                Owner = owner,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            dialog.Show();
-
-            //param.FragmentSearchSettingValues = model.FragmentQuerySettingValues.Where(n => n.Mass > 0 && n.MassTolerance > 0 && n.RelativeIntensityCutoff > 0).ToList();
-            //param.AndOrAtFragmentSearch = model.SearchOption.Value;
-        }
-
-        public void GoToMsfinderMethod(bool isAlignmentView) {
-            if (isAlignmentView) {
-                AlignmentModel.GoToMsfinderMethod();
+        public MscleanrSettingModel ShowShowMscleanrFilterSettingView() {
+            if (AlignmentModel is null) {
+                return null;
             }
-            else {
-                AnalysisModel.GoToMsfinderMethod();
-            }
+            return new MscleanrSettingModel(_storage.Parameter, AlignmentModel.Ms1Spots);
         }
     }
 }

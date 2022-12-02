@@ -28,7 +28,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid>
+        <Grid Margin="0,64,0,0">
             <Grid.Style>
                 <Style TargetType="Grid">
                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -40,69 +40,153 @@
                 </Style>
             </Grid.Style>
 
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Center">
-                <StackPanel VerticalAlignment="Center">
-                    <Image Source="/Resources/msdial_icon.png" Width="200"/>
-                    <TextBlock Text="MS-DIAL" FontSize="100" FontFamily="arial" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    <TextBlock Text="{x:Static properties:Resources.VERSION}" FontSize="70" FontFamily="arial" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                </StackPanel>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*" MaxWidth="540"/>
+                <ColumnDefinition Width="2*" MaxWidth="260"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="4*"/>
+                <RowDefinition Height="*" MaxHeight="120"/>
+            </Grid.RowDefinitions>
 
-                <StackPanel VerticalAlignment="Center"
-                            Margin="100,0,0,0" >
-                    <StackPanel.Resources>
-                        <Style TargetType="Button">
-                            <Setter Property="Height" Value="100"/>
-                            <Setter Property="BorderThickness" Value="0"/>
-                            <Setter Property="Padding" Value="5"/>
-                        </Style>
-                    </StackPanel.Resources>
-                    <Button Command="{Binding CreateNewProjectCommand}"
-                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                            Background="Transparent"
-                            ToolTip="Start new project.">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="{StaticResource New_project_is}"
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Margin="0,0,16,0"
+                        Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+                <StackPanel.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Width" Value="48"/>
+                        <Setter Property="Margin" Value="8"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                    </Style>
+                </StackPanel.Resources>
+                <Button Command="{Binding ShowAboutCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                        Background="Transparent"
+                        ToolTip="About this program...">
+                    <Image Source="{StaticResource Version_is}"/>
+                </Button>
+                <Button Command="{Binding GoToLicenceCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                        Background="Transparent"
+                        ToolTip="About this program...">
+                    <Image Source="{StaticResource Licence_is}"/>
+                </Button>
+            </StackPanel>
+
+            <StackPanel Grid.Row="0" Grid.Column="0"
+                        VerticalAlignment="Center">
+                <Image Source="/Resources/msdial_icon.png" Width="240"/>
+                <TextBlock Text="MS-DIAL" FontSize="72" FontFamily="arial" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                <TextBlock Text="{x:Static properties:Resources.VERSION}" FontSize="48" FontFamily="arial" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </StackPanel>
+
+            <StackPanel VerticalAlignment="Center" Grid.Row="0" Grid.Column="1">
+                <StackPanel.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Height" Value="100"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Padding" Value="-24,0,24,0"/>
+                    </Style>
+                </StackPanel.Resources>
+                <Button Command="{Binding CreateNewProjectCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                        Background="Transparent"
+                        ToolTip="Start new project.">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{StaticResource New_project_is}"
+                               VerticalAlignment="Center"
+                               Margin="15,0,0,0"/>
+                        <TextBlock Text="New project"
+                                   FontSize="20"
                                    VerticalAlignment="Center"
-                                   Margin="15,0,0,0"
-                                   />
-                            <TextBlock Text="New project"
-                                       FontSize="20"
-                                       VerticalAlignment="Center"
-                                       Margin="20,0,0,0"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Command="{Binding OpenProjectCommand}"
-                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                            Background="Transparent"
-                            Margin="0,50,0,0"
-                            ToolTip="Load project">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                            <Image Source="{StaticResource Open_is}"
+                                   Margin="20,0,0,0"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding OpenProjectCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                        Background="Transparent"
+                        Margin="0,50,0,0"
+                        ToolTip="Load project">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                        <Image Source="{StaticResource Open_is}"
+                               VerticalAlignment="Center"
+                               Margin="25,0,0,0"/>
+                        <TextBlock Text="Load project"
+                                   FontSize="20"
                                    VerticalAlignment="Center"
-                                   Margin="25,0,0,0"/>
-                            <TextBlock Text="Load project"
-                                       FontSize="20"
-                                       VerticalAlignment="Center"
-                                       Margin="20,0,0,0"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Command="{Binding GoToTutorialCommand}"
-                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                            Margin="0,50,0,0"
-                            Background="Transparent"
-                            ToolTip="MS-DIAL tutorial">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="{StaticResource Tutorial_is}"
-                                   VerticalAlignment="Center"
-                                   Margin="-20,0,0,0"/>
-                            <TextBlock Text="Tutorial"
-                                       FontSize="20"
-                                       VerticalAlignment="Center"
-                                       Margin="20,0,0,0"/>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
+                                   Margin="20,0,0,0"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+            <DockPanel Grid.Row="0" Grid.Column="2"
+                       Margin="8">
+                <TextBlock Text="Open recent projects" FontSize="20" Margin="0,8"
+                           DockPanel.Dock="Top"/>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding PreviousProjects}"
+                              BorderThickness="0.5"
+                              BorderBrush="Black">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Command="{Binding Path=DataContext.OpenPreviousProjectCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}"
+                                    HorizontalContentAlignment="Stretch"
+                                    BorderThickness="0"
+                                    Background="Transparent">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="{Binding Title, Mode=OneTime}" FontSize="14"/>
+                                    <TextBlock Text="{Binding FinalSavedDate, Mode=OneTime}"
+                                               FontSize="8"
+                                               HorizontalAlignment="Right"/>
+                                    <TextBlock Text="{Binding FilePath, Mode=OneTime}" FontSize="12" Grid.Row="1"/>
+                                </Grid>
+                                <Button.ToolTip>
+                                    <ToolTip DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                        <TextBlock Text="{Binding FilePath}"/>
+                                    </ToolTip>
+                                </Button.ToolTip>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+                <Button Command="{Binding GoToTutorialCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Height="64"
+                        ToolTip="MS-DIAL tutorial">
+                    <Image Source="{StaticResource Tutorial_is}"/>
+                </Button>
+
+                <TextBlock FontSize="28" VerticalAlignment="Center"
+                           Margin="80,0">
+                    <Hyperlink NavigateUri="https://www.youtube.com/@msdialproject"
+                               RequestNavigate="Hyperlink_RequestNavigate">
+                        YouTube
+                    </Hyperlink>
+                </TextBlock>
+
+                <TextBlock FontSize="28" VerticalAlignment="Center">
+                    <Hyperlink NavigateUri="https://twitter.com/msdial_project"
+                               RequestNavigate="Hyperlink_RequestNavigate">
+                        Twitter
+                    </Hyperlink>
+                </TextBlock>
             </StackPanel>
         </Grid>
 
@@ -129,8 +213,8 @@
                     <lcimvw:LcimmsMainView />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type iimvm:ImagingMainViewModel}"
-                              xmlns:iimvm="clr-namespace:CompMs.App.Msdial.ViewModel.Imaging"
-                              xmlns:iimvw="clr-namespace:CompMs.App.Msdial.View.Imaging">
+                              xmlns:iimvm="clr-namespace:CompMs.App.Msdial.ViewModel.ImagingImms"
+                              xmlns:iimvw="clr-namespace:CompMs.App.Msdial.View.ImagingImms">
                     <iimvw:ImagingMainView/>
                 </DataTemplate>
             </ContentControl.Resources>

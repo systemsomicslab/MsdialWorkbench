@@ -1,4 +1,5 @@
-﻿using CompMs.Graphics.Core.Adorner;
+﻿using CompMs.Graphics.Base;
+using CompMs.Graphics.Core.Adorner;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -16,10 +17,50 @@ namespace CompMs.Graphics.Behavior
                 new PropertyMetadata(
                     null,
                     OnPositionBaseChanged));
+
         public static FrameworkElement GetPositionBase(DependencyObject d)
             => (FrameworkElement)d.GetValue(PositionBaseProperty);
         public static void SetPositionBase(DependencyObject d, FrameworkElement value)
             => d.SetValue(PositionBaseProperty, value);
+
+        private static void OnPositionBaseChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is FrameworkElement fe) {
+                var isEnabled = GetIsEnabled(d);
+                if (isEnabled && e.OldValue != null) {
+                    OnDetached(fe);
+                }
+                if (isEnabled && e.NewValue != null) {
+                    OnAttaching(fe);
+                }
+            }
+        }
+
+        public static readonly DependencyProperty IsEnabledProperty =
+            DependencyProperty.RegisterAttached(
+                "IsEnabled",
+                typeof(bool),
+                typeof(AddMovabilityBehavior),
+                new FrameworkPropertyMetadata(
+                    BooleanBoxes.TrueBox,
+                    FrameworkPropertyMetadataOptions.Inherits,
+                    OnIsEnabledChanged));
+
+        public static bool GetIsEnabled(DependencyObject d)
+            => (bool)d.GetValue(IsEnabledProperty);
+        public static void SetIsEnabled(DependencyObject d, bool value)
+            => d.SetValue(IsEnabledProperty, BooleanBoxes.Box(value));
+
+        private static void OnIsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is FrameworkElement fe) {
+                FrameworkElement positionBase = GetPositionBase(d);
+                if ((bool)e.OldValue && positionBase != null) {
+                    OnDetached(fe);
+                }
+                if ((bool)e.NewValue && positionBase != null) {
+                    OnAttaching(fe);
+                }
+            }
+        }
 
         private static readonly DependencyProperty IsMovingProperty =
             DependencyProperty.RegisterAttached("IsMoving", typeof(bool), typeof(AddMovabilityBehavior));
@@ -56,18 +97,6 @@ namespace CompMs.Graphics.Behavior
         private static void SetDragInitialPoint(DependencyObject d, Point value)
             => d.SetValue(DragInitialPointProperty, value);
 
-
-        private static void OnPositionBaseChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            if (d is FrameworkElement fe) {
-                if (e.OldValue != null) {
-                    OnDetached(fe);
-                }
-                if (e.NewValue != null) {
-                    OnAttaching(fe);
-                }
-            }
-        }
-
         private static void OnDetached(FrameworkElement fe) {
             fe.RenderTransform = null;
             fe.MouseWheel -= OnMouseWheel;
@@ -98,13 +127,15 @@ namespace CompMs.Graphics.Behavior
             var position = e.GetPosition(fe);
             if (e.Delta > 0) {
                 var matrix = GetTransformMatrix(fe);
-                matrix.ScaleAt(1.1d, 1.1d, position.X, position.Y);
-                fe.RenderTransform = new MatrixTransform(matrix);
+                var displayPosition = matrix.Transform(position);
+                matrix.ScaleAt(1.1d, 1.1d, displayPosition.X, displayPosition.Y);
+                ((MatrixTransform)fe.RenderTransform).Matrix = matrix;
             }
             else if (e.Delta < 0) {
                 var matrix = GetTransformMatrix(fe);
-                matrix.ScaleAt(1/1.1, 1/1.1, position.X, position.Y);
-                fe.RenderTransform = new MatrixTransform(matrix);
+                var displayPosition = matrix.Transform(position);
+                matrix.ScaleAt(1 / 1.1d, 1 / 1.1d, displayPosition.X, displayPosition.Y);
+                ((MatrixTransform)fe.RenderTransform).Matrix = matrix;
             }
         }
 
@@ -179,11 +210,12 @@ namespace CompMs.Graphics.Behavior
                 rubber.Detach();
                 var transition = e.GetPosition(fe) - initial;
                 var matrix = GetTransformMatrix(fe);
-                var inv = matrix;
-                inv.Invert();
-                var center = inv.Transform(initial + transition / 2);
-                // transition = inv.Transform(transition);
-                matrix = new Matrix(matrix.M11 * fe.ActualWidth / Math.Abs(transition.X), 0, 0, matrix.M22 * fe.ActualHeight / Math.Abs(transition.Y), -center.X * matrix.M11 * fe.ActualWidth / Math.Abs(transition.X), -center.Y * matrix.M22 * fe.ActualHeight / Math.Abs(transition.Y));
+                var center = initial + transition / 2;
+                var displayCenter = matrix.Transform(center);
+                var displayTransition = matrix.Transform(transition);
+                var scalex = fe.ActualWidth / displayTransition.X;
+                var scaley = fe.ActualHeight / displayTransition.Y;
+                matrix.ScaleAt(scalex, scaley, displayCenter.X, displayCenter.Y);
                 fe.RenderTransform = new MatrixTransform(matrix);
             }
         }
@@ -204,6 +236,10 @@ namespace CompMs.Graphics.Behavior
 
         private static Matrix GetTransformMatrix(FrameworkElement fe) {
             return ((MatrixTransform)fe.RenderTransform).Matrix;
+        }
+
+        private static Matrix Inverse(Matrix matrix) {
+            return new Matrix(1 / matrix.M11, 0, 0, 1 / matrix.M22, -matrix.OffsetX / matrix.M11, -matrix.OffsetY / matrix.M22);
         }
     }
 }

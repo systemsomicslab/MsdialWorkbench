@@ -6,14 +6,11 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.Notifiers;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
-namespace CompMs.App.Msdial.ViewModel.Statistics {
+namespace CompMs.App.Msdial.ViewModel.Statistics
+{
     internal class MultivariateAnalysisSettingViewModel : ViewModelBase {
         private readonly MultivariateAnalysisSettingModel model;
         private readonly IMessageBroker _broker;
@@ -51,9 +48,10 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
             .ToReadOnlyReactivePropertySlim()
             .AddTo(Disposables);
         }
+
         [Required(ErrorMessage = "Max component number is required.")]
         [RegularExpression(@"\d*\.?\d+", ErrorMessage = "Invalid character entered.")]
-        [Range(0, int.MaxValue, ErrorMessage = "Amplitude should be positive value.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Amplitude should be positive value.")]
         public ReactiveProperty<string> MaxPcNumber { get; }
         public ReactivePropertySlim<bool> IsAutoFit { get; }
         public ReactivePropertySlim<ScaleMethod> ScaleMethod { get; }
@@ -76,7 +74,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
                     MessageBox.Show("No variables for statistical analyses", "Error", MessageBoxButton.OK);
                     return;
                 }
-                var vm = new PCAPLSResultViewModel(model.PCAPLSResultModel);
+                var vm = new PCAPLSResultViewModel(model.PCAPLSResultModel, _broker);
                 _broker.Publish(vm);
             }
             else if (MultivariateAnalysisOption.Value == CompMs.Common.Enum.MultivariateAnalysisOption.Hca) {
@@ -94,7 +92,7 @@ namespace CompMs.App.Msdial.ViewModel.Statistics {
                     MessageBox.Show("No variables for statistical analyses", "Error", MessageBoxButton.OK);
                     return;
                 }
-                var vm = new PCAPLSResultViewModel(model.PCAPLSResultModel);
+                var vm = new PCAPLSResultViewModel(model.PCAPLSResultModel, _broker);
                 _broker.Publish(vm);
             }
         }

@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.ViewModel.Service;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.ViewModel.Service;
 using CompMs.Common.Enum;
 using CompMs.Common.FormulaGenerator.Function;
 using CompMs.CommonMVVM;
@@ -13,29 +14,23 @@ using System.Net;
 using System.Runtime.Serialization;
 
 namespace CompMs.App.Msdial.Model.Setting {
-    public class MassqlSettingModel : BindableBase {
-        //private readonly ParameterBase _parameter;
-        //private readonly bool _isAlignmentResultTargeted;
-        //private readonly List<ChromatogramPeakFeature> _chromatogramPeakFeatures;
-        //private readonly List<AlignmentSpotProperty> _alignmentSpotProperties;
-        //private readonly MSDecLoader _mSDecLoader;
+    internal sealed class MassqlSettingModel : BindableBase {
+        private readonly IResultModel _model;
+        private readonly AdvancedProcessOptionBaseParameter _parameter;
 
-        public string Massql {
-            get => massql;
-            set => SetProperty(ref massql, value);
-        }
-        private string massql;
-
-        private readonly ParameterBase _parameter;
-        private readonly Action _fragmentSearchAction;
-
-        public MassqlSettingModel(ParameterBase parameter, Action fragmentSearchAction) {
+        public MassqlSettingModel(IResultModel model, AdvancedProcessOptionBaseParameter parameter) {
+            _model = model ?? throw new ArgumentNullException(nameof(model));
+            _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
             if (parameter.FragmentSearchSettingValues is null) {
                 parameter.FragmentSearchSettingValues = new List<PeakFeatureSearchValue>();
             }
-            _parameter = parameter;
-            _fragmentSearchAction = fragmentSearchAction;
         }
+
+        public string Massql {
+            get => _massql;
+            set => SetProperty(ref _massql, value);
+        }
+        private string _massql;
 
         public void SendMassql() {
             var massql = "https://msql.ucsd.edu/parse?query=" + Massql;
@@ -81,7 +76,7 @@ namespace CompMs.App.Msdial.Model.Setting {
                 if (_parameter.FragmentSearchSettingValues.Count > 1) {
                     _parameter.AndOrAtFragmentSearch = AndOr.AND;
                 }
-                _fragmentSearchAction?.Invoke();
+                _model.SearchFragment();
             }
             catch (WebException) {
                 var request = new ErrorMessageBoxRequest

@@ -26,6 +26,7 @@ namespace CompMs.App.MsdialConsole.Export {
                 sw.WriteLine("Sample,Ion,Lipid");
                 for (int i = 1; i < header.Length; i++) {
                     for (int j = 0; j < arraylist.Count; j++) {
+                        if (arraylist[j][i] == "0") continue;
                         sw.WriteLine(header[i] + "," + arraylist[j][i] + "," + arraylist[j][0]);
                     }
                 }

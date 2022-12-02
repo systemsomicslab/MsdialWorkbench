@@ -183,8 +183,8 @@ namespace CompMs.MsdialCore.Normalize.Tests
             var lipids = new List<StandardCompound>
             {
                 new StandardCompound { Concentration = 10, TargetClass = "PC", PeakID = 5 },
-                new StandardCompound { Concentration = 5, TargetClass = "Any others", PeakID = 6 },
-                new StandardCompound { Concentration = 3, TargetClass = "Any others", PeakID = 7 },
+                new StandardCompound { Concentration = 5, TargetClass = StandardCompound.AnyOthers, PeakID = 6 },
+                new StandardCompound { Concentration = 3, TargetClass = StandardCompound.AnyOthers, PeakID = 7 },
             };
 
             Normalization.SplashNormalize(spots, refer, lipids, IonAbundanceUnit.nmol_per_microL_plasma, new FacadeMatchResultEvaluator());

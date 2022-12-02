@@ -4,6 +4,6 @@ namespace CompMs.App.Msdial.Model.Imaging
 {
     internal sealed class ImaginRoiCompareModel : BindableBase
     {
-        private readonly ImagingRoiModel[] _imagingRoiModels;
+        // private readonly ImagingRoiModel[] _imagingRoiModels;
     }
 }

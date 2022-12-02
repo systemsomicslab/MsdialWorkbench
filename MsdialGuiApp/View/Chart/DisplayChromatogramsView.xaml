@@ -3,10 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CompMs.App.Msdial.View.Chart"
         mc:Ignorable="d"
         xmlns:chart="clr-namespace:CompMs.Graphics.Chart;assembly=ChartDrawing"
-        xmlns:PresentationOptions="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
         xmlns:vm="clr-namespace:CompMs.App.Msdial.ViewModel.Chart"
         Name="ChromatogramsPlot"
         d:DataContext="{d:DesignInstance Type={x:Type vm:ChromatogramsViewModel}}"
@@ -42,16 +40,7 @@
                         <chart:LineChartControl ItemsSource="{Binding ChromatogramPeaks}"
                                                LinePen="{Binding LinePen}"
                                                HorizontalPropertyName="{Binding DataContext.HorizontalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"
-                                               VerticalPropertyName="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}">
-                            <chart:LineChartControl.ToolTip>
-                                <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{Binding FocusedItem.ChromXValue, StringFormat=RT: {0}}"/>
-                                        <TextBlock Text="{Binding FocusedItem.Intensity, StringFormat=Intensity: {0}}"/>
-                                    </StackPanel>
-                                </ToolTip>
-                            </chart:LineChartControl.ToolTip>
-                        </chart:LineChartControl>
+                                               VerticalPropertyName="{Binding DataContext.VerticalProperty, RelativeSource={RelativeSource AncestorType={x:Type chart:MultiChart}}}"/>
                     </Grid>
                 </DataTemplate>
             </chart:MultiChart.ItemTemplate>

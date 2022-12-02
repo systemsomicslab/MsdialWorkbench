@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.ViewModel.Search;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -11,7 +12,7 @@ namespace CompMs.App.Msdial.ViewModel.Lcimms
 {
     internal sealed class LcimmsCompoundSearchViewModel : CompoundSearchVM
     {
-        public LcimmsCompoundSearchViewModel(CompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
+        public LcimmsCompoundSearchViewModel(ICompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
             ParameterHasErrors = ParameterVM.Select(parameter =>
                 parameter is null
                     ? Observable.Return(true)

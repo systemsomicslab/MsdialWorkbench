@@ -12,14 +12,17 @@ using System.Linq;
 
 namespace CompMs.App.Msdial.Model.DataObj
 {
-    public class ChromatogramPeakFeatureModel : BindableBase, IFilterable, IChromatogramPeak, IAnnotatedObject
+    public sealed class ChromatogramPeakFeatureModel : BindableBase, IPeakSpotModel, IFilterable, IChromatogramPeak, IAnnotatedObject
     {
         #region Property
         public int MasterPeakID => innerModel.MasterPeakID;
         public double? ChromXValue => innerModel.ChromXs.Value;
-        public double? ChromXLeftValue => innerModel.ChromXsLeft.Value;
-        public double? ChromXRightValue => innerModel.ChromXsRight.Value;
+        public double? ChromXLeftValue => innerModel.PeakFeature.ChromXsLeft.Value;
+        public double? ChromXRightValue => innerModel.PeakFeature.ChromXsRight.Value;
         public double CollisionCrossSection => innerModel.CollisionCrossSection;
+        public MzValue Mz => innerModel.ChromXs.Mz;
+        public DriftTime Drift => innerModel.ChromXs.Drift;
+        public RetentionTime RT => innerModel.ChromXs.RT;
         public double Mass {
             get => innerModel.PeakFeature.Mass;
             set {
@@ -40,7 +43,7 @@ namespace CompMs.App.Msdial.Model.DataObj
             }
         }
 
-        public double PeakArea => innerModel.PeakAreaAboveZero;
+        public double PeakArea => innerModel.PeakFeature.PeakAreaAboveZero;
         public int MS1RawSpectrumIdTop => innerModel.MS1RawSpectrumIdTop;
         public int MS1RawSpectrumIdLeft => innerModel.MS1RawSpectrumIdLeft;
         public int MS1RawSpectrumIdRight => innerModel.MS1RawSpectrumIdRight;
@@ -194,14 +197,31 @@ namespace CompMs.App.Msdial.Model.DataObj
             innerModel = feature;
         }
 
-        public void RaisePropertyChanged() {
+
+        // IPeakSpotModel
+        IMSIonProperty IPeakSpotModel.MSIon => innerModel;
+        IMoleculeProperty IPeakSpotModel.Molecule => innerModel;
+
+        void IPeakSpotModel.SetConfidence(MoleculeMsReference reference, MsScanMatchResult result) {
+            DataAccess.SetMoleculeMsPropertyAsConfidence(innerModel, reference, result);
+            MatchResults.RemoveManuallyResults();
+            MatchResults.AddResult(result);
             OnPropertyChanged(string.Empty);
         }
+
+        void IPeakSpotModel.SetUnsettled(MoleculeMsReference reference, MsScanMatchResult result) {
+            DataAccess.SetMoleculeMsPropertyAsUnsettled(innerModel, reference, result);
+            MatchResults.RemoveManuallyResults();
+            MatchResults.AddResult(result);
+            OnPropertyChanged(string.Empty);
+        }
+
 
         public void SetUnknown() {
             DataAccess.ClearMoleculePropertyInfomation(this);
             MatchResults.RemoveManuallyResults();
             MatchResults.AddResult(new MsScanMatchResult { Source = SourceType.Manual | SourceType.Unknown });
+            OnPropertyChanged(string.Empty);
         }
     }
 }

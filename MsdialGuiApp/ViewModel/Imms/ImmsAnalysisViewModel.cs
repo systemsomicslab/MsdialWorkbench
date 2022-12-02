@@ -1,4 +1,5 @@
-﻿using CompMs.App.Msdial.Model.Imms;
+﻿using CompMs.App.Msdial.Model.Core;
+using CompMs.App.Msdial.Model.Imms;
 using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.App.Msdial.ViewModel.Core;
 using CompMs.App.Msdial.ViewModel.Information;
@@ -82,8 +83,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
 
             PeakInformationViewModel = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
             CompoundDetailViewModel = new CompoundDetailViewModel(model.CompoundDetailModel).AddTo(Disposables);
-            var _peakDetailViewModels = new ReactiveCollection<ViewModelBase>().AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, };
+            MoleculeStructureViewModel = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { PeakInformationViewModel, CompoundDetailViewModel, MoleculeStructureViewModel };
         }
 
         public AnalysisPeakPlotViewModel PlotViewModel { get; }
@@ -94,6 +95,7 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         public ImmsAnalysisPeakTableViewModel PeakTableViewModel { get; }
         public PeakSpotNavigatorViewModel PeakSpotNavigatorViewModel { get; }
         public CompoundDetailViewModel CompoundDetailViewModel { get; }
+        public MoleculeStructureViewModel MoleculeStructureViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
 
         public ReactiveCommand SearchCompoundCommand { get; }
@@ -137,5 +139,8 @@ namespace CompMs.App.Msdial.ViewModel.Imms
         private bool CanSaveSpectra() {
             return _model.CanSaveSpectra();
         }
+
+        // IResultViewModel
+        IResultModel IResultViewModel.Model => _model;
     }
 }

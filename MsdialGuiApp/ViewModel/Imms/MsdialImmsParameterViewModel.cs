@@ -1,4 +1,5 @@
-﻿using CompMs.Common.Enum;
+﻿using CompMs.App.Msdial.ViewModel.DataObj;
+using CompMs.Common.Enum;
 using CompMs.Common.Parameter;
 using CompMs.MsdialImmsCore.Parameter;
 using Reactive.Bindings;

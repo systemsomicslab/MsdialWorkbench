@@ -10,7 +10,7 @@ namespace CompMs.Common.MessagePack {
     public static class MessagePackDefaultHandler {
         public static T LoadFromFile<T>(string path) {
             T res;
-            using (var fs = new FileStream(path, FileMode.Open)) {
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read)) {
                 res = LoadFromStream<T>(fs);
             }
             return res;
@@ -211,7 +211,7 @@ namespace CompMs.Common.MessagePack {
 
         public static object LoadFromXmlFile(string path, Type type) {
             var serializer = new DataContractSerializer(type);
-            var fs = new FileStream(path, FileMode.Open);
+            var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
             object obj = serializer.ReadObject(fs);
             fs.Close();
             return obj;

@@ -257,6 +257,9 @@ namespace CompMs.App.Msdial.Model.Lcms
                 r_ => new RtSimilarity(r_?.RtSimilarity ?? 0d),
                 r_ => new SpectrumSimilarity(r_?.WeightedDotProduct ?? 0d, r_?.ReverseDotProduct ?? 0d));
             CompoundDetailModel = compoundDetailModel;
+            var moleculeStructureModel = new MoleculeStructureModel().AddTo(Disposables);
+            MoleculeStructureModel = moleculeStructureModel;
+            Target.Subscribe(t => moleculeStructureModel.UpdateMolecule(t?.InnerModel)).AddTo(Disposables);
         }
 
         private static readonly double RtTol = 0.5;
@@ -289,29 +292,16 @@ namespace CompMs.App.Msdial.Model.Lcms
 
         public PeakSpotNavigatorModel PeakSpotNavigatorModel { get; }
 
-        public CompoundSearchModel<ChromatogramPeakFeature> CreateCompoundSearchModel() {
+        public ICompoundSearchModel CreateCompoundSearchModel() {
             if (Target.Value?.InnerModel is null || MsdecResult.Value is null) {
                 return null;
             }
 
-            return new LcmsCompoundSearchModel<ChromatogramPeakFeature>(
-                AnalysisFileModel,
-                Target.Value.InnerModel,
-                MsdecResult.Value,
-                CompoundSearchers);
+            return new LcmsCompoundSearchModel(AnalysisFileModel, Target.Value, MsdecResult.Value, CompoundSearchers);
         }
 
-        public void FragmentSearcher() {
-            var features = this.Ms1Peaks;
-            MsdialCore.Algorithm.FragmentSearcher.Search(features.Select(n => n.InnerModel).ToList(), this.decLoader, Parameter);
-
-            foreach (var feature in features) {
-                var featureStatus = feature.InnerModel.FeatureFilterStatus;
-                if (featureStatus.IsFragmentExistFiltered) {
-                    Console.WriteLine("A fragment is found by MassQL not in alignment !!!");
-                }
-            }
-
+        public override void SearchFragment() {
+            MsdialCore.Algorithm.FragmentSearcher.Search(Ms1Peaks.Select(n => n.InnerModel).ToList(), decLoader, Parameter);
         }
 
         public void SaveSpectra(string filename) {
@@ -347,9 +337,13 @@ namespace CompMs.App.Msdial.Model.Lcms
         public ReadOnlyReactivePropertySlim<bool> CanSaveRawSpectra { get; }
         public PeakInformationAnalysisModel PeakInformationModel { get; }
         public CompoundDetailModel CompoundDetailModel { get; }
+        public MoleculeStructureModel MoleculeStructureModel { get; }
         public ProteinResultContainerModel ProteinResultContainerModel { get; }
 
-        public void GoToMsfinderMethod() {
+        public override void InvokeMsfinder() {
+            if (Target.Value is null || (MsdecResult.Value?.Spectrum).IsEmptyOrNull()) {
+                return;
+            }
             MsDialToExternalApps.SendToMsFinderProgram(
                 AnalysisFileModel,
                 Target.Value.InnerModel,

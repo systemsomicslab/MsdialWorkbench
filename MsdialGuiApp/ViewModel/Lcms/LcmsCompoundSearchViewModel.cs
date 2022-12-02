@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.Search;
+using CompMs.App.Msdial.ViewModel.Search;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -9,9 +10,9 @@ using System.Windows.Input;
 
 namespace CompMs.App.Msdial.ViewModel.Lcms
 {
-    public class LcmsCompoundSearchViewModel : CompoundSearchVM
+    internal sealed class LcmsCompoundSearchViewModel : CompoundSearchVM
     {
-        public LcmsCompoundSearchViewModel(CompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
+        public LcmsCompoundSearchViewModel(ICompoundSearchModel model, ICommand setUnknownCommand) : base(model, setUnknownCommand) {
             ParameterHasErrors = ParameterVM.Select(parameter =>
                 parameter is null
                     ? Observable.Return(true)

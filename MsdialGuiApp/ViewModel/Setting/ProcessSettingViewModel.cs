@@ -14,7 +14,10 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 {
     internal sealed class ProcessSettingViewModel : ViewModelBase
     {
+        private readonly ProcessSettingModel _model;
+
         public ProcessSettingViewModel(ProjectSettingModel projectSettingModel) {
+            _model = new ProcessSettingModel(projectSettingModel).AddTo(Disposables);
             var project = Observable.Return(new ProjectSettingViewModel(projectSettingModel).AddTo(Disposables));
             ProjectSettingViewModel = project
                 .ToReadOnlyReactivePropertySlim()
@@ -63,11 +66,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .AddTo(Disposables);
             ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
-            RunCommand = SelectedParentSettingViewModel
+            CanRun = SelectedParentSettingViewModel
                 .Switch(vm => vm is MethodSettingViewModel
                     ? vm.ObserveHasErrors
                     : Observable.Return(true))
                 .Inverse()
+                .ToReactiveProperty()
+                .AddTo(Disposables);
+            RunCommand = CanRun
                 .ToAsyncReactiveCommand()
                 .WithSubscribe(RunProcessAsync)
                 .AddTo(Disposables);
@@ -79,6 +85,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ProcessSettingViewModel(IProjectModel projectModel, IMessageBroker broker) {
             var projectSettingModel = new ProjectSettingModel(projectModel, broker);
+            _model = new ProcessSettingModel(projectSettingModel).AddTo(Disposables);
             var project = Observable.Return(new ProjectSettingViewModel(projectSettingModel).AddTo(Disposables));
             ProjectSettingViewModel = project
                 .ToReadOnlyReactivePropertySlim()
@@ -128,11 +135,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .AddTo(Disposables);
             ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
-            RunCommand = SelectedParentSettingViewModel
+            CanRun = SelectedParentSettingViewModel
                 .Switch(vm => vm is MethodSettingViewModel
                     ? vm.ObserveHasErrors
                     : Observable.Return(true))
                 .Inverse()
+                .ToReactiveProperty()
+                .AddTo(Disposables);
+            RunCommand = CanRun
                 .ToAsyncReactiveCommand()
                 .WithSubscribe(RunProcessAsync)
                 .AddTo(Disposables);
@@ -144,11 +154,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ProcessSettingViewModel(IProjectModel projectModel, IDatasetModel datasetModel, IMessageBroker broker) {
             var projectSettingModel = new ProjectSettingModel(projectModel, broker);
+            var datasetSettingModel = new DatasetSettingModel(datasetModel, broker);
+            _model = new ProcessSettingModel(projectSettingModel, datasetSettingModel).AddTo(Disposables);
             var project = Observable.Return(new ProjectSettingViewModel(projectSettingModel).AddTo(Disposables));
             ProjectSettingViewModel = project
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            var datasetSettingModel = new DatasetSettingModel(datasetModel, broker);
             var dataset = Observable.Return(new DatasetSettingViewModel(datasetSettingModel, Observable.Return(true)).AddTo(Disposables));
             DatasetSettingViewModel = dataset
                 .ToReadOnlyReactivePropertySlim()
@@ -193,11 +204,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             ContinueCommand.Subscribe(Next)
                 .AddTo(Disposables);
 
-            RunCommand = SelectedParentSettingViewModel
+            CanRun = SelectedParentSettingViewModel
                 .Switch(vm => vm is MethodSettingViewModel
                     ? vm.ObserveHasErrors
                     : Observable.Return(true))
                 .Inverse()
+                .ToReactiveProperty()
+                .AddTo(Disposables);
+            RunCommand = CanRun
                 .ToAsyncReactiveCommand()
                 .WithSubscribe(RunProcessAsync)
                 .AddTo(Disposables);
@@ -209,11 +223,12 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ProcessSettingViewModel(IProjectModel projectModel, IDatasetModel datasetModel, MethodSettingModel methodSettingModel, IMessageBroker broker) {
             var projectSettingModel = new ProjectSettingModel(projectModel, broker);
+            var datasetSettingModel = new DatasetSettingModel(datasetModel, broker);
+            _model = new ProcessSettingModel(projectSettingModel, datasetSettingModel, methodSettingModel).AddTo(Disposables);
             var project = Observable.Return(new ProjectSettingViewModel(projectSettingModel).AddTo(Disposables));
             ProjectSettingViewModel = project
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(Disposables);
-            var datasetSettingModel = new DatasetSettingModel(datasetModel, broker);
             var dataset = Observable.Return(new DatasetSettingViewModel(datasetSettingModel, Observable.Return(true)).AddTo(Disposables));
             DatasetSettingViewModel = dataset
                 .ToReadOnlyReactivePropertySlim()
@@ -255,11 +270,14 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .AddTo(Disposables);
             ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
-            RunCommand = SelectedParentSettingViewModel
+            CanRun = SelectedParentSettingViewModel
                 .Switch(vm => vm is MethodSettingViewModel
                     ? vm.ObserveHasErrors
                     : Observable.Return(true))
                 .Inverse()
+                .ToReactiveProperty()
+                .AddTo(Disposables);
+            RunCommand = CanRun
                 .ToAsyncReactiveCommand()
                 .WithSubscribe(RunProcessAsync)
                 .AddTo(Disposables);
@@ -269,6 +287,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             SelectedSettingViewModel.Value = DatasetSettingViewModel.Value.SettingViewModels.FirstOrDefault();
         }
         public ProcessSettingViewModel(ProjectSettingModel projectSettingModel, DatasetSettingModel datasetSettingModel, MethodSettingModel methodSettingModel) {
+            _model = new ProcessSettingModel(projectSettingModel, datasetSettingModel, methodSettingModel).AddTo(Disposables);
             var project = Observable.Return(new ProjectSettingViewModel(projectSettingModel).AddTo(Disposables));
             ProjectSettingViewModel = project
                 .ToReadOnlyReactivePropertySlim()
@@ -314,11 +333,13 @@ namespace CompMs.App.Msdial.ViewModel.Setting
                 .AddTo(Disposables);
             ContinueCommand.Subscribe(Next).AddTo(Disposables);
 
-            RunCommand = SelectedParentSettingViewModel
+            CanRun = SelectedParentSettingViewModel
                 .Switch(vm => vm is MethodSettingViewModel
-                    ? vm.ObserveHasErrors
-                    : Observable.Return(true))
-                .Inverse()
+                    ? vm.ObserveHasErrors.Inverse()
+                    : Observable.Return(false))
+                .ToReactiveProperty()
+                .AddTo(Disposables);
+            RunCommand = CanRun
                 .ToAsyncReactiveCommand()
                 .WithSubscribe(RunProcessAsync)
                 .AddTo(Disposables);
@@ -328,6 +349,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             SelectedSettingViewModel.Value = MethodSettingViewModel.Value.SettingViewModels.FirstOrDefault();
         }
 
+        public ProcessSettingModel Model => _model;
         public ReadOnlyReactivePropertySlim<ProjectSettingViewModel> ProjectSettingViewModel { get; }
 
         public ReadOnlyReactivePropertySlim<DatasetSettingViewModel> DatasetSettingViewModel { get; }
@@ -340,6 +362,7 @@ namespace CompMs.App.Msdial.ViewModel.Setting
 
         public ReactiveCommand ContinueCommand { get; } 
 
+        public ReactiveProperty<bool> CanRun { get; }
         public AsyncReactiveCommand RunCommand { get; } 
 
         public ReactivePropertySlim<bool> DialogResult { get; } 
@@ -383,17 +406,9 @@ namespace CompMs.App.Msdial.ViewModel.Setting
             }
         }
 
-        private async Task RunProcessAsync() {
-            var runSuccess = await MethodSettingViewModel.Value.TryRunAsync();
-            if (!runSuccess) {
-                return;
-            }
-            DatasetSettingViewModel.Value.Run();
-            var projectRunTask = ProjectSettingViewModel.Value.RunAsync();
-            await projectRunTask;
-            if (projectRunTask.IsCompleted) {
-                DialogResult.Value = true;
-            }
+        private Task RunProcessAsync() {
+            DialogResult.Value = true;
+            return Task.CompletedTask;
         }
     }
 }

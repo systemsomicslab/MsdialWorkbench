@@ -19,6 +19,15 @@ namespace ChartDrawingUiTest.Chart
         public List<double> XError { get; }
         public List<double> YError { get; }
 
+        public double CapWidth {
+            get => _capWidth;
+            set {
+                _capWidth = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CapWidth)));
+            }
+        }
+        private double _capWidth = 5d;
+
         public ErrorBarVM1() {
             Series = new List<DataPoint>
             {

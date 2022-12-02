@@ -1,4 +1,5 @@
 ﻿using CompMs.App.Msdial.Model.DataObj;
+using CompMs.CommonMVVM;
 using CompMs.MsdialCore.DataObj;
 using Reactive.Bindings.Extensions;
 using System;
@@ -10,7 +11,7 @@ using System.Xml.Linq;
 
 namespace CompMs.App.Msdial.Model.Statistics
 {
-    internal class SplashProduct
+    internal sealed class SplashProduct : BindableBase
     {
         public SplashProduct(string label, IEnumerable<StandardCompoundModel> lipids) {
             if (lipids is null) {
@@ -18,13 +19,38 @@ namespace CompMs.App.Msdial.Model.Statistics
             }
 
             Label = label;
-            var lipids_ = new ObservableCollection<StandardCompoundModel>(lipids);
-            Lipids = new ReadOnlyObservableCollection<StandardCompoundModel>(lipids_);
+            Lipids = new ObservableCollection<StandardCompoundModel>(lipids);
         }
 
         public string Label { get; }
 
-        public ReadOnlyObservableCollection<StandardCompoundModel> Lipids { get; }
+        public ObservableCollection<StandardCompoundModel> Lipids { get; }
+
+        public StandardCompoundModel SelectedLipid {
+            get => _selectedLipid;
+            set => SetProperty(ref _selectedLipid, value);
+        }
+        private StandardCompoundModel _selectedLipid;
+
+        public void AddLast() {
+            var compound = new StandardCompound
+            {
+                Concentration = 1d,
+                DilutionRate = 1d,
+                PeakID = -1,
+                TargetClass = StandardCompound.AnyOthers,
+            };
+            Lipids.Add(new StandardCompoundModel(compound));
+        }
+
+        public void Delete() {
+            var idx = Lipids.IndexOf(SelectedLipid);
+            if (idx < 0) {
+                return;
+            }
+            Lipids.RemoveAt(idx);
+            SelectedLipid = Lipids.ElementAtOrDefault(idx);
+        }
 
         public IObservable<bool> CanNormalize(IReadOnlyList<AlignmentSpotProperty> spots) {
             return Lipids.ObserveElementPropertyChanged()

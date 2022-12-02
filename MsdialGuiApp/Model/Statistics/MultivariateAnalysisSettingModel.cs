@@ -11,12 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace CompMs.App.Msdial.Model.Statistics {
-    internal class MultivariateAnalysisSettingModel : BindableBase {
+    internal sealed class MultivariateAnalysisSettingModel : BindableBase {
         private readonly ParameterBase _parameter;
         private readonly ObservableCollection<AlignmentSpotPropertyModel> _spotprops;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
@@ -29,61 +27,61 @@ namespace CompMs.App.Msdial.Model.Statistics {
            List<AnalysisFileBean> analysisfiles,
            IObservable<KeyBrushMapper<string>> brushmaps
            ) {
-            _parameter = parameter ?? throw new System.ArgumentNullException(nameof(parameter));
-            _spotprops = spotprops ?? throw new System.ArgumentNullException(nameof(spotprops));
-            _analysisfiles = analysisfiles ?? throw new System.ArgumentNullException(nameof(analysisfiles));
-            _evaluator = evaluator ?? throw new System.ArgumentNullException(nameof(evaluator));
-            _brushmaps = brushmaps ?? throw new System.ArgumentNullException(nameof(brushmaps));
-            maxPcNumber = 5;
+            _parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
+            _spotprops = spotprops ?? throw new ArgumentNullException(nameof(spotprops));
+            _analysisfiles = analysisfiles ?? throw new ArgumentNullException(nameof(analysisfiles));
+            _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
+            _brushmaps = brushmaps ?? throw new ArgumentNullException(nameof(brushmaps));
+            _maxPcNumber = 5;
         }
 
         public int MaxPcNumber {
-            get => maxPcNumber;
-            set => SetProperty(ref maxPcNumber, value);
+            get => _maxPcNumber;
+            set => SetProperty(ref _maxPcNumber, value);
         }
-        private int maxPcNumber;
+        private int _maxPcNumber;
 
         public bool IsAutoFit {
-            get => isAutoFit;
-            set => SetProperty(ref isAutoFit, value);
+            get => _isAutoFit;
+            set => SetProperty(ref _isAutoFit, value);
         }
-        private bool isAutoFit;
+        private bool _isAutoFit;
 
         public ScaleMethod ScaleMethod {
-            get => scaleMethod;
-            set => SetProperty(ref scaleMethod, value);
+            get => _scaleMethod;
+            set => SetProperty(ref _scaleMethod, value);
         }
-        private ScaleMethod scaleMethod;
+        private ScaleMethod _scaleMethod;
 
         public TransformMethod TransformMethod {
-            get => transformMethod;
-            set => SetProperty(ref transformMethod, value);
+            get => _transformMethod;
+            set => SetProperty(ref _transformMethod, value);
         }
-        private TransformMethod transformMethod;
+        private TransformMethod _transformMethod;
 
         public MultivariateAnalysisOption MultivariateAnalysisOption {
-            get => multivariateAnalysisOption;
-            set => SetProperty(ref multivariateAnalysisOption, value);
+            get => _multivariateAnalysisOption;
+            set => SetProperty(ref _multivariateAnalysisOption, value);
         }
-        private MultivariateAnalysisOption multivariateAnalysisOption;
+        private MultivariateAnalysisOption _multivariateAnalysisOption;
 
         public bool IsIdentifiedImportedInStatistics {
-            get => isIdentifiedImportedInStatistics;
-            set => SetProperty(ref isIdentifiedImportedInStatistics, value);
+            get => _isIdentifiedImportedInStatistics;
+            set => SetProperty(ref _isIdentifiedImportedInStatistics, value);
         }
-        private bool isIdentifiedImportedInStatistics;
+        private bool _isIdentifiedImportedInStatistics;
 
         public bool IsAnnotatedImportedInStatistics {
-            get => isAnnotatedImportedInStatistics;
-            set => SetProperty(ref isAnnotatedImportedInStatistics, value);
+            get => _isAnnotatedImportedInStatistics;
+            set => SetProperty(ref _isAnnotatedImportedInStatistics, value);
         }
-        private bool isAnnotatedImportedInStatistics;
+        private bool _isAnnotatedImportedInStatistics;
 
         public bool IsUnknownImportedInStatistics {
-            get => isUnknownImportedInStatistics;
-            set => SetProperty(ref isUnknownImportedInStatistics, value);
+            get => _isUnknownImportedInStatistics;
+            set => SetProperty(ref _isUnknownImportedInStatistics, value);
         }
-        private bool isUnknownImportedInStatistics;
+        private bool _isUnknownImportedInStatistics;
 
         public PCAPLSResultModel PCAPLSResultModel {
             get => _pcaplsResultModel;
@@ -94,43 +92,47 @@ namespace CompMs.App.Msdial.Model.Statistics {
         public MultivariateAnalysisResult HCAResult { get; set; }
 
         public void ExecutePCA() {
-            if (!variableChecker()) return;
+            if (!SelectedSomeMetaboliteSelectionOptions()) {
+                MessageBox.Show("Please select at least one metabolite selection option.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             if (MaxPcNumber <= 0) {
                 MessageBox.Show("Component number should be a positive integer value.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            setParameters();
+            SetParameters();
             var observableSpots = new ObservableCollection<AlignmentSpotPropertyModel>();
             var result = StatisticsObjectConverter.PrincipalComponentAnalysis(_analysisfiles, _spotprops, _parameter, _evaluator, ref observableSpots);
-            if (result == null) return;
+            if (result == null) {
+                return;
+            }
+
             PCAPLSResultModel = new PCAPLSResultModel(result, _parameter, observableSpots, _analysisfiles, _brushmaps);
         }
 
-        private bool variableChecker() {
-            if (isIdentifiedImportedInStatistics == false &&
-                isAnnotatedImportedInStatistics == false &&
-                isUnknownImportedInStatistics == false) {
-                MessageBox.Show("Please select at least one metabolite selection option.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
-            else {
-                return true;
-            }
+        private bool SelectedSomeMetaboliteSelectionOptions() {
+            return _isIdentifiedImportedInStatistics || _isAnnotatedImportedInStatistics || _isUnknownImportedInStatistics;
         }
 
         public void ExecuteHCA() {
-            if (!variableChecker()) return;
+            if (!SelectedSomeMetaboliteSelectionOptions()) {
+                MessageBox.Show("Please select at least one metabolite selection option.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
-            setParameters();
+            SetParameters();
             var observableSpots = new ObservableCollection<AlignmentSpotPropertyModel>();
             var result = StatisticsObjectConverter.HierarchicalClusteringAnalysis(_analysisfiles, _spotprops, _parameter, _evaluator, ref observableSpots);
-            if (result == null) return;
+            if (result is null) return;
 
             HCAResult = result;
         }
 
         public void ExecutePLS() {
-            if (!variableChecker()) return;
+            if (!SelectedSomeMetaboliteSelectionOptions()) {
+                MessageBox.Show("Please select at least one metabolite selection option.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             if (IsAutoFit == false && MaxPcNumber <= 0) {
                 MessageBox.Show("For user-defined component calculations, a positive integer value should be added.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -165,15 +167,15 @@ namespace CompMs.App.Msdial.Model.Statistics {
                 }
             }
 
-            setParameters();
+            SetParameters();
             var observableSpots = new ObservableCollection<AlignmentSpotPropertyModel>();
             var result = StatisticsObjectConverter.PartialLeastSquares(_analysisfiles, _spotprops, _parameter, _evaluator, ref observableSpots);
             if (result == null) return;
             PCAPLSResultModel = new PCAPLSResultModel(result, _parameter, observableSpots, _analysisfiles, _brushmaps);
         }
 
-        private void setParameters() {
-            var statsParam = this._parameter.StatisticsBaseParam;
+        private void SetParameters() {
+            var statsParam = _parameter.StatisticsBaseParam;
             statsParam.MultivariateAnalysisOption = MultivariateAnalysisOption;
             statsParam.MaxComponent = MaxPcNumber;
             statsParam.Scale = ScaleMethod;

@@ -14,5 +14,10 @@ namespace CompMs.App.Msdial.View.Export
         private void ExportButton_Click(object sender, RoutedEventArgs e) {
             Close();
         }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e) {
+            DialogResult = false;
+            Close();
+        }
     }
 }

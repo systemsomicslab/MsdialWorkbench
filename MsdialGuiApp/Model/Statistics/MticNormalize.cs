@@ -14,11 +14,13 @@ namespace CompMs.App.Msdial.Model.Statistics
     internal sealed class MticNormalizeModel : BindableBase
     {
         private readonly AlignmentResultContainer _container;
+        private readonly InternalStandardSetModel _internalStandardSetModel;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly IMessageBroker _messageBroker;
 
-        public MticNormalizeModel(AlignmentResultContainer container, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker messageBroker) {
+        public MticNormalizeModel(AlignmentResultContainer container, InternalStandardSetModel internalStandardSetModel, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker messageBroker) {
             _container = container ?? throw new ArgumentNullException(nameof(container));
+            _internalStandardSetModel = internalStandardSetModel ?? throw new ArgumentNullException(nameof(internalStandardSetModel));
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _messageBroker = messageBroker ?? throw new ArgumentNullException(nameof(messageBroker));
         }
@@ -28,7 +30,7 @@ namespace CompMs.App.Msdial.Model.Statistics
             var task = TaskNotification.Start("Normalize..");
             var publisher = new TaskProgressPublisher(_broker, task);
             using (publisher.Start()) {
-                Normalization.NormalizeByMaxPeakOnNamedPeaks(_container.AlignmentSpotProperties, _evaluator);
+                Normalization.NormalizeByMaxPeakOnNamedPeaks(_internalStandardSetModel.Spots, _evaluator);
                 _container.IsNormalized = true;
             }
         }

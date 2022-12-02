@@ -1,4 +1,5 @@
-﻿using CompMs.MsdialCore.Algorithm;
+﻿using CompMs.Common.DataObj;
+using CompMs.MsdialCore.Algorithm;
 using CompMs.MsdialCore.DataObj;
 using CompMs.MsdialImmsCore.Algorithm;
 using MessagePack;
@@ -10,6 +11,7 @@ namespace CompMs.MsdialImmsCore.Parameter
     public interface IImmsDataProviderFactoryParameter
     {
         IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess);
+        IDataProviderFactory<RawMeasurement> Create();
     }
 
     [MessagePackObject]
@@ -27,6 +29,10 @@ namespace CompMs.MsdialImmsCore.Parameter
 
         public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
             return new ImmsRepresentativeDataProviderFactory(TimeBegin, TimeEnd, retry, isGuiProcess);
+        }
+
+        public IDataProviderFactory<RawMeasurement> Create() {
+            return new ImmsRepresentativeDataProviderFactory(TimeBegin, TimeEnd);
         }
     }
 
@@ -51,6 +57,10 @@ namespace CompMs.MsdialImmsCore.Parameter
 
         public IDataProviderFactory<AnalysisFileBean> Create(int retry, bool isGuiProcess) {
             return new ImmsAverageDataProviderFactory(MassTolerance, DriftTolerance, TimeBegin, TimeEnd, retry, isGuiProcess);
+        }
+
+        public IDataProviderFactory<RawMeasurement> Create() {
+            return new ImmsRepresentativeDataProviderFactory(TimeBegin, TimeEnd);
         }
     }
 }

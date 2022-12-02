@@ -27,21 +27,23 @@ namespace CompMs.App.Msdial.Model.Statistics
     internal sealed class SplashSetModel : DisposableModelBase
     {
         private readonly AlignmentResultContainer _container;
+        private readonly InternalStandardSetModel _internalStandardSetModel;
         private readonly IReadOnlyList<AlignmentSpotProperty> _spots;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
         private readonly ParameterBase _parameter;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly IMessageBroker _broker;
 
-        public SplashSetModel(AlignmentResultContainer container, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker broker) {
+        public SplashSetModel(AlignmentResultContainer container, InternalStandardSetModel internalStandardSetModel, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer, ParameterBase parameter, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMessageBroker broker) {
             _container = container;
+            _internalStandardSetModel = internalStandardSetModel ?? throw new System.ArgumentNullException(nameof(internalStandardSetModel));
             _spots = container.AlignmentSpotProperties;
             _refer = refer;
             _parameter = parameter;
             _evaluator = evaluator;
             _broker = broker;
             var targetMetabolites = LipidomicsConverter.GetLipidClasses();
-            targetMetabolites.Add("Any others");
+            targetMetabolites.Add(StandardCompound.AnyOthers); ;
             TargetMetabolites = targetMetabolites.AsReadOnly();
 
             SplashProducts = new ObservableCollection<SplashProduct>(GlobalResources.Instance.IsLabPrivate ? GetPrivateSplashResource() : GetPublicSplashResource());
@@ -63,7 +65,9 @@ namespace CompMs.App.Msdial.Model.Statistics
                 new IonAbundance(IonAbundanceUnit.fmol_per_mg_tissue),
                 new IonAbundance(IonAbundanceUnit.nmol_per_10E6_cells),
                 new IonAbundance(IonAbundanceUnit.pmol_per_10E6_cells),
-                new IonAbundance(IonAbundanceUnit.fmol_per_10E6_cells) };
+                new IonAbundance(IonAbundanceUnit.fmol_per_10E6_cells),
+                new IonAbundance(IonAbundanceUnit.NormalizedByInternalStandardPeakHeight),
+            };
             OutputUnit = OutputUnits.FirstOrDefault();
 
             CanNormalizeProperty = this.ObserveProperty(m => m.SplashProduct).Select(product => product?.CanNormalize(_spots) ?? Observable.Return(false)).Switch().ToReadOnlyReactivePropertySlim().AddTo(Disposables);
@@ -97,6 +101,20 @@ namespace CompMs.App.Msdial.Model.Statistics
             }
         }
 
+        public void AddLast() {
+            if (SplashProduct is null) {
+                return;
+            }
+            SplashProduct.AddLast();
+        }
+
+        public void Delete() {
+            if (SplashProduct is null) {
+                return;
+            }
+            SplashProduct.Delete();
+        }
+
         public void Normalize() {
             // TODO: For ion mobility, it need to flatten spots and check compound PeakID.
             var task = TaskNotification.Start("Normalize..");
@@ -111,7 +129,7 @@ namespace CompMs.App.Msdial.Model.Statistics
                     compound.Commit();
                 }
                 var compounds = compoundModels.Select(lipid => lipid.Compound).ToList();
-                Normalization.SplashNormalize(_spots, _refer, compounds, OutputUnit.Unit, _evaluator);
+                Normalization.SplashNormalize(_internalStandardSetModel.Spots, _refer, compounds, OutputUnit.Unit, _evaluator);
                 _parameter.StandardCompounds = compounds;
                 foreach (var compound in compoundModels) {
                     compound.Refresh();

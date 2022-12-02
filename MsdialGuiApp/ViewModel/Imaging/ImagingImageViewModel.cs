@@ -9,12 +9,15 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
 {
     internal sealed class ImagingImageViewModel : ViewModelBase
     {
+        private readonly ImagingImageModel _model;
+
         public ImagingImageViewModel(ImagingImageModel model) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
             RoiViewModels = model.ImagingRoiModels.ToReadOnlyReactiveCollection(m => new ImagingRoiViewModel(m)).AddTo(Disposables);
             ImageResultViewModel = new WholeImageResultViewModel(model.ImageResult).AddTo(Disposables);
             var peakInfo = new PeakInformationViewModel(model.PeakInformationModel).AddTo(Disposables);
-            PeakDetailViewModels = new ViewModelBase[] { peakInfo, };
+            var moleculeStructure = new MoleculeStructureViewModel(model.MoleculeStructureModel).AddTo(Disposables);
+            PeakDetailViewModels = new ViewModelBase[] { peakInfo, moleculeStructure, };
             Ms2ViewModels = new ViewModelBase[0];
         }
 
@@ -25,8 +28,6 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
             set => SetProperty(ref _selectedRoiViewModel, value);
         }
         private ImagingRoiViewModel _selectedRoiViewModel;
-        private readonly ImagingImageModel _model;
-
         public WholeImageResultViewModel ImageResultViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
         public ViewModelBase[] Ms2ViewModels { get; }
