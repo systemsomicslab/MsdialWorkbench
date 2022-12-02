@@ -1,4 +1,5 @@
-﻿using CompMs.Graphics.Core.Adorner;
+﻿using CompMs.Graphics.Base;
+using CompMs.Graphics.Core.Adorner;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -16,10 +17,50 @@ namespace CompMs.Graphics.Behavior
                 new PropertyMetadata(
                     null,
                     OnPositionBaseChanged));
+
         public static FrameworkElement GetPositionBase(DependencyObject d)
             => (FrameworkElement)d.GetValue(PositionBaseProperty);
         public static void SetPositionBase(DependencyObject d, FrameworkElement value)
             => d.SetValue(PositionBaseProperty, value);
+
+        private static void OnPositionBaseChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is FrameworkElement fe) {
+                var isEnabled = GetIsEnabled(d);
+                if (isEnabled && e.OldValue != null) {
+                    OnDetached(fe);
+                }
+                if (isEnabled && e.NewValue != null) {
+                    OnAttaching(fe);
+                }
+            }
+        }
+
+        public static readonly DependencyProperty IsEnabledProperty =
+            DependencyProperty.RegisterAttached(
+                "IsEnabled",
+                typeof(bool),
+                typeof(AddMovabilityBehavior),
+                new FrameworkPropertyMetadata(
+                    BooleanBoxes.TrueBox,
+                    FrameworkPropertyMetadataOptions.Inherits,
+                    OnIsEnabledChanged));
+
+        public static bool GetIsEnabled(DependencyObject d)
+            => (bool)d.GetValue(IsEnabledProperty);
+        public static void SetIsEnabled(DependencyObject d, bool value)
+            => d.SetValue(IsEnabledProperty, BooleanBoxes.Box(value));
+
+        private static void OnIsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (d is FrameworkElement fe) {
+                FrameworkElement positionBase = GetPositionBase(d);
+                if ((bool)e.OldValue && positionBase != null) {
+                    OnDetached(fe);
+                }
+                if ((bool)e.NewValue && positionBase != null) {
+                    OnAttaching(fe);
+                }
+            }
+        }
 
         private static readonly DependencyProperty IsMovingProperty =
             DependencyProperty.RegisterAttached("IsMoving", typeof(bool), typeof(AddMovabilityBehavior));
@@ -55,18 +96,6 @@ namespace CompMs.Graphics.Behavior
             => (Point)d.GetValue(DragInitialPointProperty);
         private static void SetDragInitialPoint(DependencyObject d, Point value)
             => d.SetValue(DragInitialPointProperty, value);
-
-
-        private static void OnPositionBaseChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            if (d is FrameworkElement fe) {
-                if (e.OldValue != null) {
-                    OnDetached(fe);
-                }
-                if (e.NewValue != null) {
-                    OnAttaching(fe);
-                }
-            }
-        }
 
         private static void OnDetached(FrameworkElement fe) {
             fe.RenderTransform = null;
