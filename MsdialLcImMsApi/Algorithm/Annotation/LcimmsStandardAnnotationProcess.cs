@@ -19,7 +19,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
 {
     public sealed class LcimmsStandardAnnotationProcess : IAnnotationProcess
     {
-        public LcimmsStandardAnnotationProcess(IReadOnlyList<ICallableAnnotationQueryFactory<MsScanMatchResult>> queryFactories, IReadOnlyList<MsRefSearchParameterBase> searchParameters, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
+        public LcimmsStandardAnnotationProcess(IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> queryFactories, IReadOnlyList<MsRefSearchParameterBase> searchParameters, IMatchResultEvaluator<MsScanMatchResult> evaluator, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
             Debug.Assert(queryFactories.Count == searchParameters.Count, "Query factories and search parameters sizes are different.");
             _queryFacotries = queryFactories ?? throw new ArgumentNullException(nameof(queryFactories));
             _searchParameters = searchParameters ?? throw new ArgumentNullException(nameof(searchParameters));
@@ -27,7 +27,7 @@ namespace CompMs.MsdialLcImMsApi.Algorithm.Annotation
             _refer = refer ?? throw new ArgumentNullException(nameof(refer));
         }
 
-        private readonly IReadOnlyList<ICallableAnnotationQueryFactory<MsScanMatchResult>> _queryFacotries;
+        private readonly IReadOnlyList<IAnnotationQueryFactory<MsScanMatchResult>> _queryFacotries;
         private readonly IReadOnlyList<MsRefSearchParameterBase> _searchParameters;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
         private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;

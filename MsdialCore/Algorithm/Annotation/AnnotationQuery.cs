@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class AnnotationQuery : IAnnotationQuery, ICallableAnnotationQuery<MsScanMatchResult>
+    public class AnnotationQuery : IAnnotationQuery<MsScanMatchResult>
     {
         public IMSIonProperty Property { get; }
         public IMSScanProperty Scan { get; }

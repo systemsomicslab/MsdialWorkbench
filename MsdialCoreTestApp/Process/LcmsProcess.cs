@@ -54,12 +54,15 @@ namespace CompMs.App.MsdialConsole.Process
             var annotator = new LcmsMspAnnotator(database, storage.Parameter.MspSearchParam, storage.Parameter.TargetOmics, storage.Parameter.MspFilePath, 1);
             var textdatabase = new MoleculeDataBase(storage.TextDB, storage.Parameter.TextDBFilePath, DataBaseSource.Text, SourceType.TextDB);
             var textannotator = new LcmsTextDBAnnotator(database, storage.Parameter.TextDbSearchParam, storage.Parameter.TextDBFilePath, 2);
+            var mapper = new DataBaseMapper();
+            mapper.Add(annotator);
+            mapper.Add(textannotator);
             var annotationProcess = new StandardAnnotationProcess<AnnotationQuery>(
                 new AnnotationQueryWithoutIsotopeFactory(annotator),
-                new IAnnotatorContainer<AnnotationQuery, MoleculeMsReference, MsScanMatchResult>[] {
-                    new AnnotatorContainer<AnnotationQuery, MoleculeMsReference, MsScanMatchResult>(annotator, storage.Parameter.MspSearchParam),
-                    new AnnotatorContainer<AnnotationQuery, MoleculeMsReference, MsScanMatchResult>(textannotator, storage.Parameter.TextDbSearchParam),
-                });
+                evaluator,
+                mapper,
+                storage.Parameter.MspSearchParam,
+                storage.Parameter.TextDbSearchParam);
             var process = new FileProcess(new StandardDataProviderFactory(5, false), storage, annotationProcess, evaluator);
             var sem = new SemaphoreSlim(Environment.ProcessorCount / 2);
             foreach ((var file, var idx) in files.WithIndex()) {

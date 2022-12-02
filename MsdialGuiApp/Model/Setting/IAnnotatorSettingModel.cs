@@ -20,7 +20,7 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         MsRefSearchParameterBase SearchParameter { get; }
 
-        List<ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, int priority, TargetOmics omics);
+        List<ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> CreateAnnotator(MoleculeDataBase db, int priority, TargetOmics omics);
     }
 
     public interface IProteomicsAnnotatorSettingModel : IAnnotatorSettingModel
@@ -34,7 +34,7 @@ namespace CompMs.App.Msdial.Model.Setting
     {
         MsRefSearchParameterBase SearchParameter { get; }
 
-        List<ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>> CreateAnnotator(EadLipidDatabase db, int priority);
+        List<ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>> CreateAnnotator(EadLipidDatabase db, int priority);
     }
 
     public interface IAnnotatorSettingModelFactory

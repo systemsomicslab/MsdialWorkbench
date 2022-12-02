@@ -10,10 +10,10 @@ using System.Linq;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class AnnotationQueryWithReference : ICallableAnnotationQuery<MsScanMatchResult>
+    public class AnnotationQueryWithReference : IAnnotationQuery<MsScanMatchResult>
     {
         private readonly MoleculeMsReference reference;
-        private readonly IMatchResultFinder<(IAnnotationQuery, MoleculeMsReference), MsScanMatchResult> annotator;
+        private readonly IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> annotator;
 
         public AnnotationQueryWithReference(
             IMSIonProperty property,
@@ -22,7 +22,7 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             IReadOnlyList<IsotopicPeak> isotopes,
             IonFeatureCharacter ionFeature,
             MsRefSearchParameterBase parameter,
-            IMatchResultFinder<(IAnnotationQuery, MoleculeMsReference), MsScanMatchResult> annotator) {
+            IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> annotator) {
 
             Property = property ?? throw new ArgumentNullException(nameof(property));
             Scan = scan ?? throw new ArgumentNullException(nameof(scan));

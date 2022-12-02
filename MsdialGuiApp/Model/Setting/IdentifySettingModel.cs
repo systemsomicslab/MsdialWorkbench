@@ -176,7 +176,7 @@ namespace CompMs.App.Msdial.Model.Setting
                             if (db is null) {
                                 return;
                             }
-                            var results = new List<IAnnotatorParameterPair<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>();
+                            var results = new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>();
                             foreach (var annotatorModel in group) {
                                 var index = AnnotatorModels.IndexOf(annotatorModel);
                                 var annotators = annotatorModel.CreateAnnotator(db, AnnotatorModels.Count - index, parameter.TargetOmics);
@@ -232,7 +232,7 @@ namespace CompMs.App.Msdial.Model.Setting
                             if (db is null) {
                                 return;
                             }
-                            var results = new List<IAnnotatorParameterPair<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>>();
+                            var results = new List<IAnnotatorParameterPair<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>>();
                             foreach (var annotatorModel in group) {
                                 var index = AnnotatorModels.IndexOf(annotatorModel);
                                 var annotators = annotatorModel.CreateAnnotator(db, AnnotatorModels.Count - index);

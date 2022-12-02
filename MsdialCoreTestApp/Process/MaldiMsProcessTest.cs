@@ -83,7 +83,7 @@ namespace CompMs.App.MsdialConsole.Process
             container.DataBases = DataBaseStorage.CreateEmpty();
             container.DataBases.AddMoleculeDataBase(
                 database,
-                new List<IAnnotatorParameterPair<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> { 
+                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> { 
                     new MetabolomicsAnnotatorParameterPair(annotator, param.TextDbSearchParam)
                 }
             );
@@ -186,7 +186,7 @@ namespace CompMs.App.MsdialConsole.Process
             container.DataBases = new DataBaseStorage(null, null, null);
             container.DataBases.AddMoleculeDataBase(
                 database,
-                new List<IAnnotatorParameterPair<IAnnotationQuery, Common.Components.MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, Common.Components.MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
                     new MetabolomicsAnnotatorParameterPair(annotator, param.TextDbSearchParam)
                 }
             );
@@ -229,15 +229,17 @@ namespace CompMs.App.MsdialConsole.Process
         }
 
         private static IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage) {
-            var containers = new List<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
+            var containers = new List<IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>>();
             foreach (var annotators in storage.MetabolomicsDataBases) {
                 containers.AddRange(annotators.Pairs.Select(annotator => annotator.ConvertToAnnotatorContainer()));
             }
-            return new StandardAnnotationProcess<IAnnotationQuery>(
+            return new StandardAnnotationProcess<IAnnotationQuery<MsScanMatchResult>>(
                 containers.Select(container => (
-                    new AnnotationQueryWithoutIsotopeFactory(container.Annotator) as IAnnotationQueryFactory<IAnnotationQuery>,
-                    container
-                )).ToList());
+                    new AnnotationQueryWithoutIsotopeFactory(container.Annotator) as IAnnotationQueryFactory<MsScanMatchResult>,
+                    container.Parameter
+                )).ToList(),
+                FacadeMatchResultEvaluator.FromDataBases(storage),
+                storage.CreateDataBaseMapper());
         }
     }
 

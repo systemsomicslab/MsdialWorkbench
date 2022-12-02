@@ -37,7 +37,7 @@ namespace CompMs.MsdialGcMsApi.DataObj.Tests
             var dbs = storage.DataBases;
             dbs.AddMoleculeDataBase(
                 db,
-                new List<IAnnotatorParameterPair<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
                     new MetabolomicsAnnotatorParameterPair(new MassAnnotator(db, searchParameter, TargetOmics.Metabolomics, SourceType.MspDB, "DummyAnnotator", 8), searchParameter) 
                 }
             );

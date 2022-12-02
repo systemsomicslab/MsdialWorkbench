@@ -16,7 +16,7 @@ namespace CompMs.MsdialCore.DataObj
     [MessagePackObject]
     public sealed class DataBaseMapper : IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>, IMatchResultRefer<PeptideMsReference, MsScanMatchResult> {
         public DataBaseMapper() {
-            MoleculeAnnotators = new List<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
+            MoleculeAnnotators = new List<ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>>();
             PeptideAnnotators = new List<ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>>();
 
             keyToPeptideAnnotator = new Dictionary<string, IAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>>();
@@ -63,7 +63,7 @@ namespace CompMs.MsdialCore.DataObj
         [IgnoreMember]
         [Obsolete("DataBaseMapper will no longer hold Annotator in the future.")]
         // Should not use setter.
-        public List<ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> MoleculeAnnotators { get; set; }
+        public List<ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>> MoleculeAnnotators { get; set; }
         [IgnoreMember]
         [Obsolete("DataBaseMapper will no longer hold Annotator in the future.")]
         public List<ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>> PeptideAnnotators { get; set; }
@@ -71,9 +71,9 @@ namespace CompMs.MsdialCore.DataObj
         private readonly Dictionary<string, IMatchResultRefer<MoleculeMsReference, MsScanMatchResult>> keyToRefers;
 
         [IgnoreMember]
-        public ReadOnlyDictionary<string, IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> KeyToAnnotator
-            => new ReadOnlyDictionary<string, IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>(keyToAnnotator);
-        private readonly Dictionary<string, IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> keyToAnnotator = new Dictionary<string, IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>>();
+        public ReadOnlyDictionary<string, IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>> KeyToAnnotator
+            => new ReadOnlyDictionary<string, IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>>(keyToAnnotator);
+        private readonly Dictionary<string, IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>> keyToAnnotator = new Dictionary<string, IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>>();
 
         private readonly Dictionary<string, IAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>> keyToPeptideAnnotator;
 
@@ -117,13 +117,13 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
-        public void Add(ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotatorContainer) {
+        public void Add(ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> annotatorContainer) {
             keyToAnnotator[annotatorContainer.AnnotatorID] = annotatorContainer;
             MoleculeAnnotators.Add(annotatorContainer);
             keyToRefers[annotatorContainer.AnnotatorID] = annotatorContainer.Annotator;
         }
 
-        public void Add(ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> annotator, MoleculeDataBase database) {
+        public void Add(ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> annotator, MoleculeDataBase database) {
             Add(new DatabaseAnnotatorContainer(annotator, database, new MsRefSearchParameterBase()));
         }
 
@@ -140,7 +140,7 @@ namespace CompMs.MsdialCore.DataObj
             Add(new ShotgunProteomicsDBAnnotatorContainer(annotator, database, new Parameter.ProteomicsParameter(), new MsRefSearchParameterBase()));
         }
 
-        public void Remove(ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotatorContainer) {
+        public void Remove(ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> annotatorContainer) {
             keyToAnnotator.Remove(annotatorContainer.AnnotatorID);
             MoleculeAnnotators.Remove(annotatorContainer);
             keyToRefers.Remove(annotatorContainer.AnnotatorID);
@@ -173,7 +173,7 @@ namespace CompMs.MsdialCore.DataObj
         }
 
        [Obsolete("DataBaseMapper will no longer hold Annotator in the future.")]
-        public IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> FindMoleculeAnnotator(MsScanMatchResult result) {
+        public IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> FindMoleculeAnnotator(MsScanMatchResult result) {
             if (result?.AnnotatorID != null && KeyToAnnotator.TryGetValue(result.AnnotatorID, out var annotatorContainer)) {
                 return annotatorContainer;
             }

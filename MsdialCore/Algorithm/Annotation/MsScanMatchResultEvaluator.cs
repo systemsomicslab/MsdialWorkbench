@@ -9,10 +9,8 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
 {
     public class MsScanMatchResultEvaluator : IMatchResultEvaluator<MsScanMatchResult>
     {
-        private readonly MsRefSearchParameterBase searchParameter;
-
         private MsScanMatchResultEvaluator(MsRefSearchParameterBase searchParameter) {
-            this.searchParameter = searchParameter ?? throw new ArgumentNullException(nameof(searchParameter));
+
         }
 
         public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results) {
@@ -60,6 +58,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             }
 
             return new MsScanMatchResultEvaluator(searchParameter);
+        }
+
+        public bool CanEvaluate(MsScanMatchResult result) {
+            return true;
         }
     }
 }

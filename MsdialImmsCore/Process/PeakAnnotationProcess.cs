@@ -17,15 +17,15 @@ namespace CompMs.MsdialImmsCore.Process
     internal sealed class PeakAnnotationProcess
     {
         private readonly IMsdialDataStorage<MsdialImmsParameter> _storage;
-        private readonly IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> _mspAnnotator;
-        private readonly IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> _textDBAnnotator;
+        private readonly IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> _mspAnnotator;
+        private readonly IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> _textDBAnnotator;
         private readonly IMatchResultEvaluator<MsScanMatchResult> _evaluator;
 
         public PeakAnnotationProcess(
             IMsdialDataStorage<MsdialImmsParameter> storage,
             IMatchResultEvaluator<MsScanMatchResult> evaluator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator) {
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator) {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
             _mspAnnotator = mspAnnotator;
             _textDBAnnotator = textDBAnnotator;
@@ -66,9 +66,9 @@ namespace CompMs.MsdialImmsCore.Process
             IReadOnlyList<MSDecResultCollection> mSDecResultCollections,
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
-            IReadOnlyCollection<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
+            IReadOnlyCollection<IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             MsdialImmsParameter parameter,
             Action<int> reportAction, CancellationToken token) {
 
@@ -91,9 +91,9 @@ namespace CompMs.MsdialImmsCore.Process
             Dictionary<double, List<MSDecResult>> targetCE2MSDecResults,
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
-            IReadOnlyCollection<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
+            IReadOnlyCollection<IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             MsdialImmsParameter parameter,
             Action<int> reportAction, CancellationToken token) {
 

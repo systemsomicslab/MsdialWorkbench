@@ -32,37 +32,9 @@ namespace CompMs.MsdialImmsCore.Algorithm
             IDataProvider provider,
             IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
             IReadOnlyList<MSDecResult> msdecResults,
-            IReadOnlyCollection<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
-            MsdialImmsParameter parameter, Action<int> reportAction) {
-
-            if (chromPeakFeatures.Count != msdecResults.Count)
-                throw new ArgumentException("Number of ChromatogramPeakFeature and MSDecResult are different.");
-
-            if (mspAnnotator == null && textDBAnnotator == null) {
-                reportAction?.Invoke((int)ProgressMax);
-                return;
-            }
-
-            var spectrumList = provider.LoadMs1Spectrums();
-            for (int i = 0; i < chromPeakFeatures.Count; i++) {
-                var chromPeakFeature = chromPeakFeatures[i];
-                var msdecResult = msdecResults[i];
-                if (chromPeakFeature.PeakCharacter.IsotopeWeightNumber == 0) {
-                    ImmsMatchMethod(chromPeakFeature, msdecResult, spectrumList[chromPeakFeature.MS1RawSpectrumIdTop].Spectrum, annotatorContainers, mspAnnotator, textDBAnnotator, parameter);
-                }
-                ReportProgress.Show(InitialProgress, ProgressMax, i, chromPeakFeatures.Count, reportAction);
-            }
-        }
-
-        public void Run(
-            IDataProvider provider,
-            IReadOnlyList<ChromatogramPeakFeature> chromPeakFeatures,
-            IReadOnlyList<MSDecResult> msdecResults,
-            IReadOnlyCollection<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
+            IReadOnlyCollection<IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             MsdialImmsParameter parameter,
             Action<int> reportAction, int numThreads, System.Threading.CancellationToken token) {
 
@@ -93,15 +65,15 @@ namespace CompMs.MsdialImmsCore.Algorithm
         private static void ImmsMatchMethod(
             ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult,
             IReadOnlyList<RawPeakElement> spectrum,
-            IReadOnlyCollection<IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator, MsdialImmsParameter parameter) {
+            IReadOnlyCollection<IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>> annotatorContainers,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator, MsdialImmsParameter parameter) {
             //if (Math.Abs(chromPeakFeature.Mass - 770.509484372875) < 0.02) {
             //    Console.WriteLine();
             //}
             var isotopes = DataAccess.GetIsotopicPeaks(spectrum, (float)chromPeakFeature.Mass, parameter.CentroidMs1Tolerance);
 
-            SetMspAnnotationResult(chromPeakFeature, msdecResult, isotopes, mspAnnotator, parameter.MspSearchParam, parameter.TargetOmics);
+            SetMspAnnotationResult(chromPeakFeature, msdecResult, isotopes, mspAnnotator, parameter.MspSearchParam);
             SetTextDBAnnotationResult(chromPeakFeature, msdecResult, isotopes, textDBAnnotator, parameter.TextDbSearchParam);
 
             foreach (var annotatorContainer in annotatorContainers) {
@@ -123,7 +95,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         private static void SetMspAnnotationResult(
             ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult, List<IsotopicPeak> isotopes,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator, MsRefSearchParameterBase mspSearchParameter, TargetOmics omics) {
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator, MsRefSearchParameterBase mspSearchParameter) {
 
             if (mspAnnotator == null)
                 return;
@@ -149,7 +121,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         private static void SetTextDBAnnotationResult(
             ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult, List<IsotopicPeak> isotopes,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator, MsRefSearchParameterBase textDBSearchParameter) {
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator, MsRefSearchParameterBase textDBSearchParameter) {
 
             if (textDBAnnotator == null)
                 return;
@@ -170,7 +142,7 @@ namespace CompMs.MsdialImmsCore.Algorithm
 
         private static void SetAnnotationResult(
             ChromatogramPeakFeature chromPeakFeature, MSDecResult msdecResult, List<IsotopicPeak> isotopes,
-            IAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> annotatorContainer) {
+            IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> annotatorContainer) {
 
             var annotator = annotatorContainer.Annotator;
 

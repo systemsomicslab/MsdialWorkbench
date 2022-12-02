@@ -25,7 +25,7 @@ namespace CompMs.MsdialCore.Parser
 
    
     [MessagePack.MessagePackObject]
-    public abstract class DataBaseRestorationKey : IReferRestorationKey<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
+    public abstract class DataBaseRestorationKey : IReferRestorationKey<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
     {
         public DataBaseRestorationKey(string key, int priority) {
             Key = key;
@@ -38,7 +38,7 @@ namespace CompMs.MsdialCore.Parser
         [MessagePack.Key(nameof(Priority))]
         public int Priority { get; }
 
-        public abstract ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database);
+        public abstract ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database);
     }
 
     [MessagePack.MessagePackObject]
@@ -48,7 +48,7 @@ namespace CompMs.MsdialCore.Parser
 
         }
 
-        public override ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
+        public override ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
             return visitor.Visit(this, database);
         }
     }
@@ -60,7 +60,7 @@ namespace CompMs.MsdialCore.Parser
 
         }
 
-        public override ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
+        public override ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
             return visitor.Visit(this, database);
         }
     }
@@ -79,7 +79,7 @@ namespace CompMs.MsdialCore.Parser
         [MessagePack.Key(nameof(SourceType))]
         public SourceType SourceType { get; set; }
 
-        public override ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
+        public override ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
             return visitor.Visit(this, database);
         }
     }
@@ -129,7 +129,7 @@ namespace CompMs.MsdialCore.Parser
     }
 
     [MessagePack.MessagePackObject]
-    public class EadLipidDatabaseRestorationKey : IReferRestorationKey<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>
+    public class EadLipidDatabaseRestorationKey : IReferRestorationKey<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase>
     {
         public EadLipidDatabaseRestorationKey(string key, int priority, MsRefSearchParameterBase msRefSearchParameter, SourceType sourceType) {
             Key = key;
@@ -150,7 +150,7 @@ namespace CompMs.MsdialCore.Parser
         [MessagePack.Key(nameof(SourceType))]
         public SourceType SourceType { get; set; }
 
-        public ISerializableAnnotator<(IAnnotationQuery, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Accept(ILoadAnnotatorVisitor visitor, EadLipidDatabase database) {
+        public ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Accept(ILoadAnnotatorVisitor visitor, EadLipidDatabase database) {
             return visitor.Visit(this, database);
         }
     }

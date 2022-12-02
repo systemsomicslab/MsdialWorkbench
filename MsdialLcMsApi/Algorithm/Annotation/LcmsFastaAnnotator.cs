@@ -220,6 +220,10 @@ namespace CompMs.MsdialLcMsApi.Algorithm.Annotation {
         public bool IsAnnotationSuggested(MsScanMatchResult result) {
             return evaluator.IsAnnotationSuggested(result);
         }
+
+        bool IMatchResultEvaluator<MsScanMatchResult>.CanEvaluate(MsScanMatchResult result) {
+            return evaluator.CanEvaluate(result);
+        }
     }
 }
 

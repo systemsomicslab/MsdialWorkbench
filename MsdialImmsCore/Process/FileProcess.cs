@@ -23,8 +23,8 @@ namespace CompMs.MsdialImmsCore.Process
 
         public FileProcess(
             IMsdialDataStorage<MsdialImmsParameter> storage,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
-            IAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> mspAnnotator,
+            IAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> textDBAnnotator,
             IMatchResultEvaluator<MsScanMatchResult> evaluator) {
             if (storage is null) {
                 throw new ArgumentNullException(nameof(storage));

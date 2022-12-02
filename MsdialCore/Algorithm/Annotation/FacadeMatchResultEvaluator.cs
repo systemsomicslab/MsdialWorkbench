@@ -48,6 +48,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
                 .Argmax(result => (result?.Source ?? SourceType.None, result?.Priority ?? -1, result?.TotalScore ?? 0));
         }
 
+        public bool CanEvaluate(MsScanMatchResult result) {
+            return !(Get(result?.AnnotatorID) is null);
+        }
+
         [Obsolete("This method is for refactoring and will be removed in the near future.")]
         public static FacadeMatchResultEvaluator FromDataBaseMapper(DataBaseMapper mapper) {
             var evaluator = new FacadeMatchResultEvaluator();

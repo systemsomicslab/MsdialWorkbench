@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 {
-    public class DimsTextDBAnnotator : StandardRestorableBase, ISerializableAnnotator<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
+    public class DimsTextDBAnnotator : StandardRestorableBase, ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>
     {
         public DimsTextDBAnnotator(MoleculeDataBase textDB, MsRefSearchParameterBase parameter, string id, int priority)
             : base(textDB.Database, parameter, id, priority, SourceType.TextDB) {
@@ -28,11 +28,11 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
         private readonly MassReferenceSearcher<MoleculeMsReference> searcher;
         private readonly IMatchResultEvaluator<MsScanMatchResult> evaluator;
 
-        public MsScanMatchResult Annotate(IAnnotationQuery query) {
+        public MsScanMatchResult Annotate(IAnnotationQuery<MsScanMatchResult> query) {
             return SelectTopHit(FindCandidatesCore(query.Property, query.Parameter ?? Parameter));
         }
 
-        public List<MsScanMatchResult> FindCandidates(IAnnotationQuery query) {
+        public List<MsScanMatchResult> FindCandidates(IAnnotationQuery<MsScanMatchResult> query) {
             return FindCandidatesCore(query.Property, query.Parameter ?? Parameter)
                 .OrderByDescending(result => result.TotalScore)
                 .ToList();
@@ -43,7 +43,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
                 .Select(candidate => CalculateScoreCore(property, candidate, parameter));
         }
 
-        public List<MoleculeMsReference> Search(IAnnotationQuery query) {
+        public List<MoleculeMsReference> Search(IAnnotationQuery<MsScanMatchResult> query) {
             var parameter = query.Parameter ?? Parameter;
             return SearchCore(query.Property, parameter.Ms1Tolerance).ToList();
         }
@@ -60,7 +60,7 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
             return MolecularFormulaUtility.ConvertPpmToMassAccuracy(mass, ppm);
         }
 
-        public MsScanMatchResult CalculateScore(IAnnotationQuery query, MoleculeMsReference reference) {
+        public MsScanMatchResult CalculateScore(IAnnotationQuery<MsScanMatchResult> query, MoleculeMsReference reference) {
             return CalculateScoreCore(query.Property, reference, query.Parameter ?? Parameter);
         }
 
@@ -111,6 +111,10 @@ namespace CompMs.MsdialDimsCore.Algorithm.Annotation
 
         public override MoleculeMsReference Refer(MsScanMatchResult result) {
             return referObject.Refer(result);
+        }
+
+        public bool CanEvaluate(MsScanMatchResult result) {
+            return evaluator.CanEvaluate(result);
         }
     }
 }

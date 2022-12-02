@@ -40,7 +40,7 @@ namespace CompMs.MsdialLcMsApi.DataObj.Tests
             var dbs = storage.DataBases;
             dbs.AddMoleculeDataBase(
                 db,
-                new List<IAnnotatorParameterPair<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
                     new MetabolomicsAnnotatorParameterPair(new LcmsMspAnnotator(db, searchParameter, TargetOmics.Metabolomics, "DummyAnnotator", 8), searchParameter) 
                 }
             );

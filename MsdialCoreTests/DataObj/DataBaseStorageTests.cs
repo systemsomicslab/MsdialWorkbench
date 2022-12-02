@@ -22,7 +22,7 @@ namespace CompMs.MsdialCore.DataObj.Tests
             var searchParameter = new MsRefSearchParameterBase { MassRangeBegin = 300, };
             dbs.AddMoleculeDataBase(
                 db,
-                new List<IAnnotatorParameterPair<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
                     new MetabolomicsAnnotatorParameterPair(new MassAnnotator(db, searchParameter, TargetOmics.Metabolomics, SourceType.MspDB, "DummyAnnotator", 1), searchParameter) 
                 }
             );

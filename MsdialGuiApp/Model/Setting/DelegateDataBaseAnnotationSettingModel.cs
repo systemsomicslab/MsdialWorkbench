@@ -13,7 +13,7 @@ namespace CompMs.App.Msdial.Model.Setting
         }
         private IAnnotationSettingModel implement;
 
-        public ISerializableAnnotatorContainer<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult> Build(ParameterBase parameter) {
+        public ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> Build(ParameterBase parameter) {
             return Implement.Build(parameter);
         }
     }

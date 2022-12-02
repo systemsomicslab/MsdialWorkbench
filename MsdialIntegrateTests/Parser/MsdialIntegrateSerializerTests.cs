@@ -50,7 +50,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             var dbs = storage.DataBases;
             dbs.AddMoleculeDataBase(
                 db,
-                new List<IAnnotatorParameterPair<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
                     new MetabolomicsAnnotatorParameterPair(new DimsMspAnnotator(db, searchParameter, TargetOmics.Metabolomics, "DummyAnnotator", 8), searchParameter) 
                 }
             );
@@ -104,7 +104,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             var dbs = storage.DataBases;
             dbs.AddMoleculeDataBase(
                 db,
-                new List<IAnnotatorParameterPair<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
                     new MetabolomicsAnnotatorParameterPair(new LcmsMspAnnotator(db, searchParameter, TargetOmics.Metabolomics, "DummyAnnotator", 8), searchParameter) 
                 }
             );
@@ -154,7 +154,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             var dbs = storage.DataBases;
             dbs.AddMoleculeDataBase(
                 db,
-                new List<IAnnotatorParameterPair<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
                     new MetabolomicsAnnotatorParameterPair(new ImmsMspAnnotator(db, searchParameter, TargetOmics.Metabolomics, "DummyAnnotator", 8), searchParameter) 
                 }
             );
@@ -206,7 +206,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             var dbs = storage.DataBases;
             dbs.AddMoleculeDataBase(
                 db,
-                new List<IAnnotatorParameterPair<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
                     new MetabolomicsAnnotatorParameterPair(new MassAnnotator(db, searchParameter, TargetOmics.Metabolomics, SourceType.MspDB, "DummyAnnotator", 8), searchParameter) 
                 }
             );
@@ -257,7 +257,7 @@ namespace CompMs.MsdialIntegrate.Parser.Tests
             var dbs = storage.DataBases;
             dbs.AddMoleculeDataBase(
                 db,
-                new List<IAnnotatorParameterPair<IAnnotationQuery, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
                     new MetabolomicsAnnotatorParameterPair(new MassAnnotator(db, searchParameter, TargetOmics.Metabolomics, SourceType.MspDB, "DummyAnnotator", 8), searchParameter) 
                 }
             );

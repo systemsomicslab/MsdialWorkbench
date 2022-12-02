@@ -111,6 +111,10 @@ namespace CompMs.MsdialCore.Normalize.Tests
                 _isRefmatched = isRefmatched;
             }
 
+            public bool CanEvaluate(MsScanMatchResult result) {
+                return true;
+            }
+
             public List<MsScanMatchResult> FilterByThreshold(IEnumerable<MsScanMatchResult> results) {
                 throw new System.NotImplementedException();
             }

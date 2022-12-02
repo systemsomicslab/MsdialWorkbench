@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace CompMs.MsdialCore.Algorithm.Annotation
 {
-    public class PepAnnotationQuery : IPepAnnotationQuery, ICallableAnnotationQuery<MsScanMatchResult> {
+    public class PepAnnotationQuery : IPepAnnotationQuery, IAnnotationQuery<MsScanMatchResult> {
         public IMSIonProperty Property { get; }
         public IMSScanProperty Scan { get; }
         public IMSScanProperty NormalizedScan {
