@@ -17,7 +17,7 @@ namespace CompMs.App.Msdial.Model.Imaging
     internal sealed class WholeImageResultModel : DisposableModelBase
     {
         private readonly ChromatogramPeakFeatureCollection _peaks;
-        private readonly ObservableCollection<RoiIntensitiesModel> _intensities;
+        private readonly ObservableCollection<IntensityImageModel> _intensities;
         private int _roiId = 0;
 
         public WholeImageResultModel(AnalysisFileBeanModel file) {
@@ -56,10 +56,10 @@ namespace CompMs.App.Msdial.Model.Imaging
             ImagingRoiModel = new ImagingRoiModel($"ROI{_roiId++}", wholeRoi, rawSpectraOnPixels, Peaks, Target).AddTo(Disposables);
 
             MaldiFrameLaserInfo laserInfo = file.File.GetMaldiFrameLaserInfo();
-            _intensities = new ObservableCollection<RoiIntensitiesModel>(
+            _intensities = new ObservableCollection<IntensityImageModel>(
                 Peaks.Zip(rawSpectraOnPixels.PixelPeakFeaturesList,
-                    (peak, pixelPeaks) => new RoiIntensitiesModel(pixelPeaks, maldiFrameInfos, peak, laserInfo)));
-            Intensities = new ReadOnlyObservableCollection<RoiIntensitiesModel>(_intensities);
+                    (peak, pixelPeaks) => new IntensityImageModel(pixelPeaks, maldiFrameInfos, peak, laserInfo)));
+            Intensities = new ReadOnlyObservableCollection<IntensityImageModel>(_intensities);
             Target.Select(p => _intensities.FirstOrDefault(intensity => intensity.Peak == p))
                 .Where(p => p != null)
                 .Subscribe(intensity => SelectedPeakIntensities = intensity)
@@ -71,11 +71,11 @@ namespace CompMs.App.Msdial.Model.Imaging
         public AnalysisPeakPlotModel PeakPlotModel { get; }
         public ReactiveProperty<ChromatogramPeakFeatureModel> Target { get; }
         public ImagingRoiModel ImagingRoiModel { get; }
-        public ReadOnlyObservableCollection<RoiIntensitiesModel> Intensities { get; }
-        public RoiIntensitiesModel SelectedPeakIntensities {
+        public ReadOnlyObservableCollection<IntensityImageModel> Intensities { get; }
+        public IntensityImageModel SelectedPeakIntensities {
             get => _selectedPeakIntensities;
             set => SetProperty(ref _selectedPeakIntensities, value);
         }
-        private RoiIntensitiesModel _selectedPeakIntensities;
+        private IntensityImageModel _selectedPeakIntensities;
     }
 }

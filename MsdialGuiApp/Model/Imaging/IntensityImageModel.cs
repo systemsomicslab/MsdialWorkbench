@@ -10,9 +10,9 @@ using System.Windows.Media;
 
 namespace CompMs.App.Msdial.Model.Imaging
 {
-    internal sealed class RoiIntensitiesModel : BindableBase
+    internal sealed class IntensityImageModel : BindableBase
     {
-        public RoiIntensitiesModel(RawPixelFeatures features, MaldiFrames frameInfos, ChromatogramPeakFeatureModel peak, MaldiFrameLaserInfo laserInfo) {
+        public IntensityImageModel(RawPixelFeatures features, MaldiFrames frameInfos, ChromatogramPeakFeatureModel peak, MaldiFrameLaserInfo laserInfo) {
             if (features is null) {
                 throw new ArgumentNullException(nameof(features));
             }

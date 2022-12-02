@@ -17,7 +17,7 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
             PeakPlotViewModel = new AnalysisPeakPlotViewModel(model.PeakPlotModel, () => { }, Observable.Never<bool>());
 
-            Intensities = model.Intensities.ToReadOnlyReactiveCollection(intensity => new RoiIntensitiesViewModel(intensity)).AddTo(Disposables);
+            Intensities = model.Intensities.ToReadOnlyReactiveCollection(intensity => new IntensityImageViewModel(intensity)).AddTo(Disposables);
             SelectedPeakIntensities = model.ToReactivePropertyAsSynchronized(
                 m => m.SelectedPeakIntensities,
                 mox => mox.Select(m => Intensities.FirstOrDefault(vm => vm.Model == m)),
@@ -28,8 +28,8 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
 
         public AnalysisPeakPlotViewModel PeakPlotViewModel { get; }
         public ReactiveProperty<ChromatogramPeakFeatureModel> Target => _model.Target;
-        public ReadOnlyReactiveCollection<RoiIntensitiesViewModel> Intensities { get; }
-        public ReactiveProperty<RoiIntensitiesViewModel> SelectedPeakIntensities { get; }
+        public ReadOnlyReactiveCollection<IntensityImageViewModel> Intensities { get; }
+        public ReactiveProperty<IntensityImageViewModel> SelectedPeakIntensities { get; }
         public ImagingRoiViewModel ImagingRoiViewModel { get; }
     }
 }
