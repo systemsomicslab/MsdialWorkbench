@@ -172,7 +172,7 @@ namespace CompMs.Common.Lipidomics
             //// Dehydroxy HFA chain spectrum 
             if (acylChain[1].Oxidized.Oxidises.Count == 1)
             {
-                nlMass = acylChain[0].Mass + MassDiffDictionary.OxygenMass + MassDiffDictionary.HydrogenMass;
+                nlMass = acylChain[0].Mass + H2O * acylChain[1].Oxidized.Count - MassDiffDictionary.HydrogenMass;
                 var hfaOx = acylChain[1].Oxidized.Oxidises;
                 var HfaDb = acylChain[1].DoubleBond;
                 foreach (var ox in hfaOx)

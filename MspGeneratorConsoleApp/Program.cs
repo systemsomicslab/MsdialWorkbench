@@ -110,7 +110,6 @@ namespace CompMs.MspGenerator
             ////// 指定のフォルダの中にある.mspファイルを結合します。
             //var mspFolder = @"\\MTBDT\Mtb_info\software\lipidmics database\Library kit\LipidBlast_MSP_NEW_2020\";
             //var exportFileName = "Msp" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".jointedmsp";
-            //////var exportFileName = @"\Msp20221202142137.jointedmsp";
             //Common.jointMspFiles(mspFolder, exportFileName);
             ////////結合したファイルを下記フォルダに移動
             //var workingDirectry = mspFolder + @"\LBM\";
