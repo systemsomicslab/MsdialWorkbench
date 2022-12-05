@@ -3783,7 +3783,7 @@ namespace Riken.Metabolomics.Lipidomics
             if (moleculeString.Split(' ').Length == 1) return null;
 
             // pattern [1] ADGGA 12:0_12:0_12:0
-            // pattern [2] AHexCer (O-14:0)16:1;2O/14:0;O
+            // pattern [2] AHexCer (O-14:0)16:1;2O/14:0;O, ADGGA (O-24:0)17:2_22:6  
             // pattern [3] SM 30:1;2O(FA 14:0)
             // pattern [4] Cer 14:0;2O/12:0;(3OH)(FA 12:0) -> [0]14:0;2O, [1]12:0;(3OH), [3]12:0
             // pattern [5] Cer 14:1;2O/12:0;(2OH)
@@ -3812,10 +3812,11 @@ namespace Riken.Metabolomics.Lipidomics
             Regex reg = new Regex(@"\(d([0-9]*)\)");
             chainString = reg.Replace(chainString, "");
 
-            var pattern2 = @"(\()(?<chain1>.+?)(\))(?<chain2>.+?)(/)(?<chain3>.+?$)";
+            var pattern2 = @"(\()(?<chain1>.+?)(\))(?<chain2>.+?)([/_])(?<chain3>.+?$)";
             var pattern3 = @"(?<chain1>.+?)(\(FA )(?<chain2>.+?)(\))";
             var pattern4 = @"(?<chain1>.+?)(/)(?<chain2>.+?)(\(FA )(?<chain3>.+?)(\))";
             var pattern12 = @"(\(FA )(?<chain2>.+?)(\))(?<chain1>.+?$)";
+            var pattern13 = @"(\()(?<chain1>.+?)(\))(?<chain2>.+?)(_)(?<chain3>.+?$)";
 
             if (chainString.Contains("/") && chainString.Contains("(FA"))
             { // pattern 4
@@ -3844,13 +3845,13 @@ namespace Riken.Metabolomics.Lipidomics
                 }
                 //Console.WriteLine();
             }
-            else if (chainString.Contains("(O-") && chainString.Contains("/"))
+            else if (chainString.Contains("(O-") && Regex.IsMatch(chainString,"[/_]"))
             { // pattern 2
                 var regexes = Regex.Match(chainString, pattern2).Groups;
                 chains = new List<string>() { regexes["chain1"].Value, regexes["chain2"].Value, regexes["chain3"].Value };
                 //Console.WriteLine();
             }
-            else
+             else
             {
                 chainString = chainString.Replace('/', '_');
                 acylArray = chainString.Split('_');
