@@ -3300,7 +3300,7 @@ namespace CompMs.Common.Lipidomics
             if (chainString.Contains(";"))
             { // e.g. 18:2;2O, 18:2;(2OH)
                 var chain = chainString.Split(';')[0];
-                var oxidizedmoiety = chainString.Split(';')[1]; //2O, (2OH)
+                var oxidizedmoiety = chainString.Split(';')[1]; //2O, O2
                 //modified by MT 2020/12/11 & 2021/01/12
                 var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
                 if (expectedOxCount == string.Empty || expectedOxCount == "")
@@ -3319,6 +3319,23 @@ namespace CompMs.Common.Lipidomics
                 var chain = chainString.Split('+')[0]; // 20:3
                 var expectedOxCount = chainString.Split('+')[1].Replace("O", ""); //2
                 if (expectedOxCount == string.Empty || expectedOxCount == "")
+                {
+                    expectedOxCount = "1";
+                }
+                int.TryParse(expectedOxCount, out oxidizedCount);
+                chainString = chain;
+            }
+            else if (chainString.Contains("("))
+            { // e.g. 18:2;2O, 18:2;(2OH)
+                var chain = chainString.Split('(')[0];
+                var oxidizedmoiety = chainString.Split('(')[1]; //2OH)
+                //modified by MT 2020/12/11 & 2021/01/12
+                var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
+                if (expectedOxCount == string.Empty || expectedOxCount == "")
+                {
+                    expectedOxCount = "1";
+                }
+                else if (oxidizedmoiety.Contains("2OH)") || oxidizedmoiety.Contains("3OH)"))
                 {
                     expectedOxCount = "1";
                 }

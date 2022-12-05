@@ -3521,14 +3521,14 @@ namespace Riken.Metabolomics.Lipidomics
             doubleBondCount = 0;
             oxidizedCount = 0;
 
-            //pattern: 18:1, 18:1e, 18:1p d18:1, t20:0, n-18:0, N-19:0, 20:3+3O, 18:2-SN1, O-18:1, P-18:1, N-18:1, 16:0;O, 18:2;2O, 18:2;(2OH)
+            //pattern: 18:1, 18:1e, 18:1p d18:1, t20:0, n-18:0, N-19:0, 20:3+3O, 18:2-SN1, O-18:1, P-18:1, N-18:1, 16:0;O, 18:2;2O -> 18:2;O2, 18:2;(2OH) -> 18:2(2OH)
             //try convertion
             var isPlasmenyl = chainString.Contains("P-") ? true : false;
             chainString = chainString.Replace("O-", "").Replace("P-", "").Replace("N-", "").Replace("e", "").Replace("p", "").Replace("m", "").Replace("n-", "").Replace("d", "").Replace("t", "");
 
             // for oxidized moiety parser
             if (chainString.Contains(";"))
-            { // e.g. 18:2;2O, 18:2;(2OH)
+            { // e.g. 18:2;2O, 18:2;(2OH),18:2;O2
                 var chain = chainString.Split(';')[0];
                 var oxidizedmoiety = chainString.Split(';')[1]; //2O, (2OH)
                 //modified by MT 2020/12/11 & 2021/01/12
@@ -3549,6 +3549,23 @@ namespace Riken.Metabolomics.Lipidomics
                 var chain = chainString.Split('+')[0]; // 20:3
                 var expectedOxCount = chainString.Split('+')[1].Replace("O", ""); //2
                 if (expectedOxCount == string.Empty || expectedOxCount == "")
+                {
+                    expectedOxCount = "1";
+                }
+                int.TryParse(expectedOxCount, out oxidizedCount);
+                chainString = chain;
+            }
+            else if (chainString.Contains("("))
+            { // e.g. 18:2(2OH)
+                var chain = chainString.Split('(')[0];
+                var oxidizedmoiety = chainString.Split('(')[1]; //2OH)
+                //modified by MT 2020/12/11 & 2021/01/12
+                var expectedOxCount = oxidizedmoiety.Replace("O", string.Empty).Replace("H", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty);
+                if (expectedOxCount == string.Empty || expectedOxCount == "")
+                {
+                    expectedOxCount = "1";
+                }
+                else if (oxidizedmoiety.Contains("2OH)") || oxidizedmoiety.Contains("3OH)"))
                 {
                     expectedOxCount = "1";
                 }
