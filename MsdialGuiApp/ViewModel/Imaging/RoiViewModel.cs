@@ -1,5 +1,7 @@
 ﻿using CompMs.App.Msdial.Model.Imaging;
+using CompMs.App.Msdial.ViewModel.Chart;
 using CompMs.CommonMVVM;
+using Reactive.Bindings.Extensions;
 
 namespace CompMs.App.Msdial.ViewModel.Imaging
 {
@@ -9,6 +11,9 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
 
         public RoiViewModel(RoiModel model) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
+            RoiImage = new BitmapImageViewModel(model.RoiImage).AddTo(Disposables);
         }
+
+        public BitmapImageViewModel RoiImage { get; }
     }
 }

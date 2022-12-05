@@ -10,13 +10,13 @@ namespace CompMs.App.Msdial.Model.Imaging
     internal sealed class ImagingImageModel : DisposableModelBase
     {
         public ImagingImageModel(AnalysisFileBeanModel file) {
-            File = file ?? throw new System.ArgumentNullException(nameof(file));
-            ImagingRoiModels = new ObservableCollection<ImagingRoiModel>();
+            File = file ?? throw new ArgumentNullException(nameof(file));
             ImageResult = new WholeImageResultModel(file).AddTo(Disposables);
 
-            Roi = new RoiModel(file, file.File.GetMaldiFrames());
-            var frameLaserInfo = file.File.GetMaldiFrameLaserInfo();
-            ImagingRoiModels.Add(new ImagingRoiModel(Roi, ImageResult.GetTargetElements(), ImageResult.Target, frameLaserInfo).AddTo(Disposables));
+            ImagingRoiModels = new ObservableCollection<ImagingRoiModel>
+            {
+                ImageResult.ImagingRoiModel
+            };
 
             PeakInformationModel = new PeakInformationAnalysisModel(ImageResult.Target).AddTo(Disposables);
             PeakInformationModel.Add(
@@ -32,7 +32,6 @@ namespace CompMs.App.Msdial.Model.Imaging
         }
 
         public WholeImageResultModel ImageResult { get; }
-        public RoiModel Roi { get; }
         public ObservableCollection<ImagingRoiModel> ImagingRoiModels { get; }
         public AnalysisFileBeanModel File { get; }
         public PeakInformationAnalysisModel PeakInformationModel { get; }

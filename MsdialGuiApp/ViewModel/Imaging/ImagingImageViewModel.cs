@@ -9,6 +9,8 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
 {
     internal sealed class ImagingImageViewModel : ViewModelBase
     {
+        private readonly ImagingImageModel _model;
+
         public ImagingImageViewModel(ImagingImageModel model) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
             RoiViewModels = model.ImagingRoiModels.ToReadOnlyReactiveCollection(m => new ImagingRoiViewModel(m)).AddTo(Disposables);
@@ -26,8 +28,6 @@ namespace CompMs.App.Msdial.ViewModel.Imaging
             set => SetProperty(ref _selectedRoiViewModel, value);
         }
         private ImagingRoiViewModel _selectedRoiViewModel;
-        private readonly ImagingImageModel _model;
-
         public WholeImageResultViewModel ImageResultViewModel { get; }
         public ViewModelBase[] PeakDetailViewModels { get; }
         public ViewModelBase[] Ms2ViewModels { get; }

@@ -1,24 +1,67 @@
-﻿using CompMs.App.Msdial.Model.DataObj;
+﻿using CompMs.App.Msdial.Model.Chart;
+using CompMs.App.Msdial.Model.DataObj;
 using CompMs.Common.DataObj;
 using CompMs.CommonMVVM;
 using CompMs.RawDataHandler.Core;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace CompMs.App.Msdial.Model.Imaging
 {
     internal sealed class RoiModel : BindableBase {
-        public AnalysisFileBeanModel File { get; }
-        public List<MaldiFrameInfo> Pixels { get; }
-
-        public RoiModel(AnalysisFileBeanModel file, List<MaldiFrameInfo> pixels) {
+        public RoiModel(AnalysisFileBeanModel file, MaldiFrames frames, Color color) {
             File = file ?? throw new ArgumentNullException(nameof(file));
-            Pixels = pixels ?? throw new ArgumentNullException(nameof(pixels));
+            Frames = frames ?? throw new ArgumentNullException(nameof(frames));
+
+            var image = new ulong[frames.XIndexWidth + 2, (frames.YIndexHeight + 2 + 63) / 64];
+            foreach (var frame in frames.Infos) {
+                image[frame.XIndexPos - frames.XIndexPosMin + 1, (frame.YIndexPos - frames.YIndexPosMin + 1) / 64] |= 1ul << ((frame.YIndexPos - frames.YIndexPosMin + 1) % 64);
+            }
+            var mask = new ulong[frames.XIndexWidth + 2, (frames.YIndexHeight + 2 + 63) / 64];
+            var m = image.GetLength(0);
+            var n = image.GetLength(1);
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < n; j++) {
+                    mask[i, j] |= image[i, j] >> 1;
+                    mask[i, j] |= image[i, j] << 1;
+                    if (i >= 1) {
+                        mask[i, j] |= image[i - 1, j];
+                    }
+                    if (i + 1 < m) {
+                        mask[i, j] |= image[i + 1, j];
+                    }
+                    if (j >= 1) {
+                        mask[i, j] |= image[i, j - 1] >> 63;
+                    }
+                    if (j + 1 < n) {
+                        mask[i, j] |= image[i, j + 1] << 63;
+                    }
+                    mask[i, j] &= ~image[i, j];
+                }
+            }
+            var imageBytes = new byte[(frames.XIndexWidth + 2) * (frames.YIndexHeight + 2)];
+            var k = frames.XIndexWidth + 2;
+            var l = frames.YIndexHeight + 2;
+            for (int i = 0; i < k; i++) {
+                for (int j = 0; j < l; j++) {
+                    imageBytes[j * k + i] = (byte)((mask[i, j / 64] >> (j % 64)) & 1); 
+                }
+            }
+            var bp = new BitmapPalette(Enumerable.Repeat(color, 1 << 8 - 1).Prepend(Color.FromArgb(0, 0, 0, 0)).ToArray());
+            // var bp = new BitmapPalette(new[] { Color.FromArgb(0, 0, 0, 0), color});
+            RoiImage = BitmapImageModel.Create(imageBytes, frames.XIndexWidth + 2, frames.YIndexHeight + 2, PixelFormats.Indexed8, bp, "ROI");
         }
+
+        public AnalysisFileBeanModel File { get; }
+        public MaldiFrames Frames { get; }
+        public BitmapImageModel RoiImage { get; }
 
         public RawSpectraOnPixels RetrieveRawSpectraOnPixels(List<Raw2DElement> targetElements) {
             using (RawDataAccess rawDataAccess = new RawDataAccess(File.AnalysisFilePath, 0, true, true, true)) {
-                return rawDataAccess.GetRawPixelFeatures(targetElements, Pixels)
+                return rawDataAccess.GetRawPixelFeatures(targetElements, Frames.Infos.ToList())
                     ?? new RawSpectraOnPixels { PixelPeakFeaturesList = new List<RawPixelFeatures>(0), XYFrames = new List<MaldiFrameInfo>(0), };
             }
         }

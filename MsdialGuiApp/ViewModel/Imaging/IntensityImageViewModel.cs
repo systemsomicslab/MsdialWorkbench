@@ -5,16 +5,16 @@ using Reactive.Bindings.Extensions;
 
 namespace CompMs.App.Msdial.ViewModel.Imaging
 {
-    internal sealed class RoiIntensitiesViewModel : ViewModelBase
+    internal sealed class IntensityImageViewModel : ViewModelBase
     {
-        private readonly RoiIntensitiesModel _model;
+        private readonly IntensityImageModel _model;
 
-        public RoiIntensitiesViewModel(RoiIntensitiesModel model) {
+        public IntensityImageViewModel(IntensityImageModel model) {
             _model = model ?? throw new System.ArgumentNullException(nameof(model));
             BitmapImageViewModel = new BitmapImageViewModel(model.BitmapImageModel).AddTo(Disposables);
         }
 
-        public RoiIntensitiesModel Model => _model;
+        public IntensityImageModel Model => _model;
 
         public string Title => $"{_model.Mz} {_model.Drift}";
 
