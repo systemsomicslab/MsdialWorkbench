@@ -69,6 +69,7 @@ namespace CompMs.MsdialCore.DataObj {
         [IgnoreMember]
         public float Score { get; set; }
         public float GetScore() {
+            if (MatchedPeptideResults == null) return 0;
             return MatchedPeptideResults.Select(n => n.PEPScore).Aggregate((x, y) => x * y);
         }
         [IgnoreMember]
