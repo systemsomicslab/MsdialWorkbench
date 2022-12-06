@@ -134,16 +134,17 @@ namespace CompMs.Common.Lipidomics
             var lipidMass = lipid.Mass + adductmass;
             var spectrum = new List<SpectrumPeak>();
             if (acylChain.Oxidized.UnDecidedCount > 0 || acylChain.Oxidized.Count > 1) { return spectrum.ToArray(); }
+            var separatedChainMass = CH2 * (acylChain.Oxidized.Oxidises[0] - 2) - MassDiffDictionary.HydrogenMass*2*(acylChain.DoubleBond.Bonds.Where(n => n.Position < acylChain.Oxidized.Oxidises[0]).Count());
             spectrum.AddRange
             (
                  new[]
                  {
                         new SpectrumPeak(adduct.ConvertToMz(
-                            C4N2H10 
-                            + MassDiffDictionary.HydrogenMass * 2 
+                            C4N2H10
+                            + MassDiffDictionary.HydrogenMass * 2
                             + 12 * 2
                             + MassDiffDictionary.OxygenMass * 2
-                            + CH2 * (acylChain.Oxidized.Oxidises[0]-2)
+                            + separatedChainMass
                             )
                             , 300d, $"{acylChain} O position") { SpectrumComment = SpectrumComment.snposition, IsAbsolutelyRequiredFragmentForAnnotation = true  },
                  }
@@ -165,10 +166,23 @@ namespace CompMs.Common.Lipidomics
             nlMass = 0.0;
             var spectrum = new List<SpectrumPeak>();
             var acylChain = acylChains.ToList();
-            spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acylChain[0], adduct, nlMass, 25d));
-            return spectrum.ToArray();
+            var abundance = 25d;
+            spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acylChain[0], adduct, nlMass, abundance));
 
-            //return acylChains.SelectMany(acylChain => spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, acylChain, adduct, nlMass, 25d));
+            //// Dehydroxy HFA chain spectrum 
+            if (acylChain[1].Oxidized.Oxidises.Count == 1)
+            {
+                nlMass = acylChain[0].Mass + H2O * acylChain[1].Oxidized.Count - MassDiffDictionary.HydrogenMass;
+                var hfaOx = acylChain[1].Oxidized.Oxidises;
+                var HfaDb = acylChain[1].DoubleBond;
+                foreach (var ox in hfaOx)
+                {
+                    HfaDb.Add(DoubleBondInfo.Create(ox));
+                }
+                var HfaNoDBChain = new AcylChain(acylChain[1].CarbonCount, HfaDb, new Oxidized(0));
+                spectrum.AddRange(spectrumGenerator.GetAcylDoubleBondSpectrum(lipid, HfaNoDBChain, adduct, nlMass, abundance));
+            }
+            return spectrum.ToArray();
         }
 
         private static readonly IEqualityComparer<SpectrumPeak> comparer = new SpectrumEqualityComparer();
