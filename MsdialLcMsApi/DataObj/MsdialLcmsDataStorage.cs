@@ -21,10 +21,6 @@ namespace CompMs.MsdialLcMsApi.DataObj
             MessagePackDefaultHandler.SaveToStream(this, stream);
         }
 
-        protected override void SaveDataBaseMapper(Stream stream) {
-
-        }
-
         public Task SaveParameterAsync(Stream stream) {
             MessagePackDefaultHandler.SaveToStream(MsdialLcmsParameter, stream);
             return Task.CompletedTask;

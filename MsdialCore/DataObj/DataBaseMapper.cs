@@ -3,13 +3,10 @@ using CompMs.Common.DataObj.Result;
 using CompMs.Common.Parameter;
 using CompMs.Common.Proteomics.DataObj;
 using CompMs.MsdialCore.Algorithm.Annotation;
-using CompMs.MsdialCore.Parser;
 using MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.IO.Compression;
 
 namespace CompMs.MsdialCore.DataObj
 {
@@ -76,25 +73,6 @@ namespace CompMs.MsdialCore.DataObj
         private readonly Dictionary<string, IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>> keyToAnnotator = new Dictionary<string, IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult>>();
 
         private readonly Dictionary<string, IAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>> keyToPeptideAnnotator;
-
-        [Obsolete("DataBaseMapper will not be saved in the future.")]
-        public void Save(Stream stream) {
-            using (var archive = new ZipArchive(stream, ZipArchiveMode.Update, leaveOpen: true)) {
-                foreach (var annotator in MoleculeAnnotators) {
-                    var entry = archive.CreateEntry(annotator.AnnotatorID, CompressionLevel.Optimal);
-                    using (var entry_stream = entry.Open()) {
-                        annotator.Save(entry_stream);
-                    }
-                }
-
-                foreach (var annotator in PeptideAnnotators) {
-                    var entry = archive.CreateEntry(annotator.AnnotatorID, CompressionLevel.Optimal);
-                    using (var entry_stream = entry.Open()) {
-                        annotator.Save(entry_stream);
-                    }
-                }
-            }
-        }
 
         public void Add(ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> annotatorContainer) {
             keyToAnnotator[annotatorContainer.AnnotatorID] = annotatorContainer;

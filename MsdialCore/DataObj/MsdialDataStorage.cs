@@ -55,9 +55,6 @@ namespace CompMs.MsdialCore.DataObj
             using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, MsdialSerializer.GetNewMspFileName(projectTitle))).ConfigureAwait(false)) {
                 SaveMspDB(stream);
             }
-            using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, MsdialSerializer.GetNewZippedDatabaseFileName(projectTitle))).ConfigureAwait(false)) {
-                SaveDataBaseMapper(stream);
-            }
             using (var stream = await streamManager.Create(MsdialSerializer.Combine(prefix, MsdialSerializer.GetDataBasesFileName(projectTitle))).ConfigureAwait(false)) {
                 await Task.Run(() => SaveDataBases(stream)).ConfigureAwait(false);
             }
@@ -73,10 +70,6 @@ namespace CompMs.MsdialCore.DataObj
 
         protected virtual void SaveMspDB(Stream stream) {
             MoleculeMsRefMethods.SaveMspToStream(MspDB, stream);
-        }
-
-        protected virtual void SaveDataBaseMapper(Stream stream) {
-            DataBaseMapper?.Save(stream);
         }
 
         protected virtual void SaveDataBases(Stream stream) {

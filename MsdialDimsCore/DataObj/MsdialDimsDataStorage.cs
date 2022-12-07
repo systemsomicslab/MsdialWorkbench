@@ -21,10 +21,6 @@ namespace CompMs.MsdialDimsCore.DataObj
             MessagePackDefaultHandler.SaveToStream(this, stream);
         }
 
-        protected override void SaveDataBaseMapper(Stream stream) {
-
-        }
-
         public Task SaveParameterAsync(Stream stream) {
             MessagePackDefaultHandler.SaveToStream(MsdialDimsParameter, stream);
             return Task.CompletedTask;
