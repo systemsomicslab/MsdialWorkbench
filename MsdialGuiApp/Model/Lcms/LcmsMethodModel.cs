@@ -215,7 +215,7 @@ namespace CompMs.App.Msdial.Model.Lcms
         private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
             var containerPairs = new List<(IAnnotationQueryFactory<MsScanMatchResult>, MsRefSearchParameterBase)>();
             foreach (var annotators in storage.MetabolomicsDataBases) {
-                containerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter) as IAnnotationQueryFactory<MsScanMatchResult>, annotator.ConvertToAnnotatorContainer().Parameter)));
+                containerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter, annotator.SearchParameter) as IAnnotationQueryFactory<MsScanMatchResult>, annotator.ConvertToAnnotatorContainer().Parameter)));
             }
             return new StandardAnnotationProcess<IAnnotationQuery<MsScanMatchResult>>(containerPairs, _matchResultEvaluator, storage.CreateDataBaseMapper());
         }
@@ -231,11 +231,11 @@ namespace CompMs.App.Msdial.Model.Lcms
             }
             return new AnnotationProcessOfProteoMetabolomics(
                 containers.Select(container => (
-                    (IAnnotationQueryFactory<MsScanMatchResult>)new PepAnnotationQueryFactory(container.Annotator, parameter.PeakPickBaseParam, parameter.ProteomicsParam),
+                    (IAnnotationQueryFactory<MsScanMatchResult>)new PepAnnotationQueryFactory(container.Annotator, parameter.PeakPickBaseParam, container.Parameter, parameter.ProteomicsParam),
                     container.Parameter
                 )).ToList(),
                 pepContainers.Select(container => (
-                    (IAnnotationQueryFactory<MsScanMatchResult>)new PepAnnotationQueryFactory(container.Annotator, parameter.PeakPickBaseParam, parameter.ProteomicsParam),
+                    (IAnnotationQueryFactory<MsScanMatchResult>)new PepAnnotationQueryFactory(container.Annotator, parameter.PeakPickBaseParam, container.Parameter, parameter.ProteomicsParam),
                     container.Parameter
                 )).ToList(),
                 _matchResultEvaluator,
@@ -246,11 +246,11 @@ namespace CompMs.App.Msdial.Model.Lcms
         private IAnnotationProcess BuildEadLipidomicsAnnotationProcess(DataBaseStorage storage, DataBaseMapper mapper, ParameterBase parameter) {
             var containerPairs = new List<(IAnnotationQueryFactory<MsScanMatchResult>, MsRefSearchParameterBase)>();
             foreach (var annotators in storage.MetabolomicsDataBases) {
-                containerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<MsScanMatchResult>, annotator.SearchParameter)));
+                containerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter.PeakPickBaseParam, annotator.SearchParameter) as IAnnotationQueryFactory<MsScanMatchResult>, annotator.SearchParameter)));
             }
             var eadAnnotationQueryFactoryTriple = new List<(IAnnotationQueryFactory<MsScanMatchResult>, MsRefSearchParameterBase)>();
             foreach (var annotators in storage.EadLipidomicsDatabases) {
-                eadAnnotationQueryFactoryTriple.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryWithReferenceFactory(mapper, annotator.SerializableAnnotator, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<MsScanMatchResult>, annotator.SearchParameter)));
+                eadAnnotationQueryFactoryTriple.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryWithReferenceFactory(mapper, annotator.SerializableAnnotator, parameter.PeakPickBaseParam, annotator.SearchParameter) as IAnnotationQueryFactory<MsScanMatchResult>, annotator.SearchParameter)));
             }
             return new EadLipidomicsAnnotationProcess(containerPairs, eadAnnotationQueryFactoryTriple, mapper, _matchResultEvaluator);
         }

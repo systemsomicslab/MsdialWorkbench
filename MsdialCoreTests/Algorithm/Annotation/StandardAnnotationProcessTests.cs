@@ -184,6 +184,10 @@ namespace CompMs.MsdialCore.Algorithm.Annotation.Tests
             public IAnnotationQuery<MsScanMatchResult> Create(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature, MsRefSearchParameterBase parameter) {
                 return new MockQuery();
             }
+
+            MsRefSearchParameterBase IAnnotationQueryFactory<MsScanMatchResult>.PrepareParameter() {
+                return new MsRefSearchParameterBase();
+            }
         }
 
         class MockAnnotatorContainer : IAnnotatorContainer<MockQuery, MoleculeMsReference, MsScanMatchResult>

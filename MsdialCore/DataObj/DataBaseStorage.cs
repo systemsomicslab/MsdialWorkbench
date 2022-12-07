@@ -10,6 +10,7 @@ using MessagePack;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 
 namespace CompMs.MsdialCore.DataObj
 {
@@ -150,6 +151,13 @@ namespace CompMs.MsdialCore.DataObj
             return mapper;
         }
 
+        public AnnotationQueryFactoryStorage CreateQueryFactories(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor) {
+            return new AnnotationQueryFactoryStorage(
+                MetabolomicsDataBases.SelectMany(db => db.CreateQueryFactories(factoryVisitor, annotatorVisitor)),
+                    ProteomicsDataBases.SelectMany(db => db.CreateQueryFactories(factoryVisitor, annotatorVisitor)),
+                    EadLipidomicsDatabases.SelectMany(db => db.CreateQueryFactories(factoryVisitor, annotatorVisitor)));
+        }
+
         public static DataBaseStorage CreateEmpty() {
             return new DataBaseStorage(
                 new List<DataBaseItem<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>>(),
@@ -209,6 +217,11 @@ namespace CompMs.MsdialCore.DataObj
                 }
             }
         }
+
+        public List<IAnnotationQueryFactory<MsScanMatchResult>> CreateQueryFactories(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor) {
+            var result = new List<IAnnotationQueryFactory<MsScanMatchResult>>();
+            return Pairs.Select(pair => pair.CreateQueryFactory(factoryVisitor, annotatorVisitor, DataBase)).ToList();
+        }
     }
 
     [Union(0, typeof(MetabolomicsAnnotatorParameterPair))]
@@ -221,6 +234,7 @@ namespace CompMs.MsdialCore.DataObj
         ISerializableAnnotator<TQuery, TReference, TResult, TDataBase> SerializableAnnotator { get; }
         void Save(Stream stream);
         void Load(Stream stream, ILoadAnnotatorVisitor visitor, TDataBase database);
+        IAnnotationQueryFactory<MsScanMatchResult> CreateQueryFactory(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, TDataBase database);
         IAnnotatorContainer<TQuery, TReference, TResult> ConvertToAnnotatorContainer();
                
     }
@@ -260,6 +274,10 @@ namespace CompMs.MsdialCore.DataObj
 
         public void Load(Stream stream, ILoadAnnotatorVisitor visitor, MoleculeDataBase dataBase) {
             SerializableAnnotator = SerializableAnnotatorKey.Accept(visitor, dataBase);
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> CreateQueryFactory(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase dataBase) {
+            return SerializableAnnotatorKey.Accept(factoryVisitor, annotatorVisitor, dataBase);
         }
 
         public IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> ConvertToAnnotatorContainer() {
@@ -311,6 +329,10 @@ namespace CompMs.MsdialCore.DataObj
             SerializableAnnotator = SerializableAnnotatorKey.Accept(visitor, dataBase);
         }
 
+        public IAnnotationQueryFactory<MsScanMatchResult> CreateQueryFactory(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, ShotgunProteomicsDB dataBase) {
+            return SerializableAnnotatorKey.Accept(factoryVisitor, annotatorVisitor, dataBase);
+        }
+
         public IAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> ConvertToAnnotatorContainer() {
             return new AnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult>(SerializableAnnotator, SearchParameter);
         }
@@ -351,6 +373,10 @@ namespace CompMs.MsdialCore.DataObj
 
         public void Load(Stream stream, ILoadAnnotatorVisitor visitor, EadLipidDatabase dataBase) {
             SerializableAnnotator = SerializableAnnotatorKey.Accept(visitor, dataBase);
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> CreateQueryFactory(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, EadLipidDatabase dataBase) {
+            return SerializableAnnotatorKey.Accept(factoryVisitor, annotatorVisitor, dataBase);
         }
 
         public IAnnotatorContainer<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult> ConvertToAnnotatorContainer() {

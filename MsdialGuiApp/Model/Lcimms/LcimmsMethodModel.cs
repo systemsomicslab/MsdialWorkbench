@@ -196,7 +196,7 @@ namespace CompMs.App.Msdial.Model.Lcimms
 
         private IAnnotationProcess BuildAnnotationProcess(DataBaseStorage storage, PeakPickBaseParameter parameter) {
             var pairs = storage.MetabolomicsDataBases.SelectMany(db => db.Pairs).ToArray();
-            var factories = pairs.Select(pair => new AnnotationQueryFactory(pair.SerializableAnnotator, parameter)).ToArray();
+            var factories = pairs.Select(pair => new AnnotationQueryFactory(pair.SerializableAnnotator, parameter, pair.SearchParameter)).ToArray();
             var parameters = pairs.Select(pair => pair.SearchParameter).ToArray();
             var evaluator = new FacadeMatchResultEvaluator();
             var refer = storage.CreateDataBaseMapper();

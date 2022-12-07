@@ -36,4 +36,34 @@ namespace CompMs.MsdialCore.Parser
             throw new NotImplementedException();
         }
     }
+
+    public sealed class StandardCreateAnnotationQueryFactoryVisitor : ICreateAnnotationQueryFactoryVisitor {
+        private readonly PeakPickBaseParameter _peakPickParameter;
+        private readonly RefSpecMatchBaseParameter _searchParameter;
+
+        public StandardCreateAnnotationQueryFactoryVisitor(PeakPickBaseParameter peakPickParameter, RefSpecMatchBaseParameter searchParameter) {
+            _peakPickParameter = peakPickParameter ?? throw new ArgumentNullException(nameof(peakPickParameter));
+            _searchParameter = searchParameter;
+        }       
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Visit(StandardRestorationKey key, IMatchResultFinder<AnnotationQuery, MsScanMatchResult> finder) {
+            return new AnnotationQueryFactory(finder, _peakPickParameter, key.Parameter);
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Visit(MspDbRestorationKey key, IMatchResultFinder<AnnotationQuery, MsScanMatchResult> finder) {
+            return new AnnotationQueryFactory(finder, _peakPickParameter, _searchParameter.MspSearchParam);
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Visit(TextDbRestorationKey key, IMatchResultFinder<AnnotationQuery, MsScanMatchResult> finder) {
+            return new AnnotationQueryFactory(finder, _peakPickParameter, _searchParameter.TextDbSearchParam);
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Visit(ShotgunProteomicsRestorationKey key, IMatchResultFinder<PepAnnotationQuery, MsScanMatchResult> finder) {
+            throw new NotImplementedException();
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Visit(EadLipidDatabaseRestorationKey key, IMatchResultFinder<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MsScanMatchResult> finder) {
+            throw new NotImplementedException();
+        }
+    }
 }

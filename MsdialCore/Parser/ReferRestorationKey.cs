@@ -17,6 +17,7 @@ namespace CompMs.MsdialCore.Parser
     public interface IReferRestorationKey<in TQuery, TReference, TResult, in TDatabase>
     {
         ISerializableAnnotator<TQuery, TReference, TResult, TDatabase> Accept(ILoadAnnotatorVisitor visitor, TDatabase database);
+        IAnnotationQueryFactory<MsScanMatchResult> Accept(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, TDatabase database);
 
         string Key { get; }
 
@@ -39,6 +40,7 @@ namespace CompMs.MsdialCore.Parser
         public int Priority { get; }
 
         public abstract ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database);
+        public abstract IAnnotationQueryFactory<MsScanMatchResult> Accept(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase database);
     }
 
     [MessagePack.MessagePackObject]
@@ -51,6 +53,10 @@ namespace CompMs.MsdialCore.Parser
         public override ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
             return visitor.Visit(this, database);
         }
+
+        public override IAnnotationQueryFactory<MsScanMatchResult> Accept(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase database) {
+            return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
+        }
     }
 
     [MessagePack.MessagePackObject]
@@ -62,6 +68,10 @@ namespace CompMs.MsdialCore.Parser
 
         public override ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
             return visitor.Visit(this, database);
+        }
+
+        public override IAnnotationQueryFactory<MsScanMatchResult> Accept(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase database) {
+            return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
         }
     }
 
@@ -82,11 +92,14 @@ namespace CompMs.MsdialCore.Parser
         public override ISerializableAnnotator<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase> Accept(ILoadAnnotatorVisitor visitor, MoleculeDataBase database) {
             return visitor.Visit(this, database);
         }
+
+        public override IAnnotationQueryFactory<MsScanMatchResult> Accept(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, MoleculeDataBase database) {
+            return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
+        }
     }
 
     [MessagePack.MessagePackObject]
-    public abstract class FastaDbRestorationKey : 
-        IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> {
+    public abstract class FastaDbRestorationKey : IReferRestorationKey<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> {
         public FastaDbRestorationKey(string key, int priority) {
             Key = key;
             Priority = priority;
@@ -99,6 +112,7 @@ namespace CompMs.MsdialCore.Parser
         public int Priority { get; }
 
         public abstract ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Accept(ILoadAnnotatorVisitor visitor, ShotgunProteomicsDB database);
+        public abstract IAnnotationQueryFactory<MsScanMatchResult> Accept(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, ShotgunProteomicsDB database);
     }
 
     [MessagePack.MessagePackObject]
@@ -126,6 +140,10 @@ namespace CompMs.MsdialCore.Parser
         public override ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> Accept(ILoadAnnotatorVisitor visitor, ShotgunProteomicsDB database) {
             return visitor.Visit(this, database);
         }
+
+        public override IAnnotationQueryFactory<MsScanMatchResult> Accept(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, ShotgunProteomicsDB database) {
+            return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
+        }
     }
 
     [MessagePack.MessagePackObject]
@@ -152,6 +170,10 @@ namespace CompMs.MsdialCore.Parser
 
         public ISerializableAnnotator<(IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference), MoleculeMsReference, MsScanMatchResult, EadLipidDatabase> Accept(ILoadAnnotatorVisitor visitor, EadLipidDatabase database) {
             return visitor.Visit(this, database);
+        }
+
+        public IAnnotationQueryFactory<MsScanMatchResult> Accept(ICreateAnnotationQueryFactoryVisitor factoryVisitor, ILoadAnnotatorVisitor annotatorVisitor, EadLipidDatabase database) {
+            return factoryVisitor.Visit(this, annotatorVisitor.Visit(this, database));
         }
     }
 }

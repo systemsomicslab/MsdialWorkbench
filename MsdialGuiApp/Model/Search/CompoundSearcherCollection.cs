@@ -26,14 +26,14 @@ namespace CompMs.App.Msdial.Model.Search
                 .MetabolomicsDataBases
                 .SelectMany(db => db.Pairs)
                 .Select(pair => new CompoundSearcher(
-                    new AnnotationQueryWithoutIsotopeFactory(pair.SerializableAnnotator),
+                    new AnnotationQueryWithoutIsotopeFactory(pair.SerializableAnnotator, pair.SearchParameter),
                     pair.SearchParameter,
                     pair.SerializableAnnotator));
             var lipidomicsSearchers = databases
                 .EadLipidomicsDatabases
                 .SelectMany(db => db.Pairs)
                 .Select(pair => new CompoundSearcher(
-                    new AnnotationQueryWithReferenceFactory(mapper, pair.SerializableAnnotator, parameter),
+                    new AnnotationQueryWithReferenceFactory(mapper, pair.SerializableAnnotator, parameter, pair.SearchParameter),
                     pair.SearchParameter,
                     pair.SerializableAnnotator));
             return new CompoundSearcherCollection(metabolomicsSearchers.Concat(lipidomicsSearchers));

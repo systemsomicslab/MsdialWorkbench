@@ -47,8 +47,8 @@ namespace CompMs.App.MsdialConsole.Process
             var annotationProcess = new StandardAnnotationProcess<IAnnotationQuery<MsScanMatchResult>>(
                 new List<(IAnnotationQueryFactory<MsScanMatchResult>, MsRefSearchParameterBase)>
                 {
-                    (new AnnotationQueryWithoutIsotopeFactory(mspAnnotator) as IAnnotationQueryFactory<MsScanMatchResult>, storage.MsdialDimsParameter.MspSearchParam),
-                    (new AnnotationQueryWithoutIsotopeFactory(textAnnotator) as IAnnotationQueryFactory<MsScanMatchResult>,storage.MsdialDimsParameter.TextDbSearchParam)
+                    (new AnnotationQueryWithoutIsotopeFactory(mspAnnotator, storage.MsdialDimsParameter.MspSearchParam), storage.MsdialDimsParameter.MspSearchParam),
+                    (new AnnotationQueryWithoutIsotopeFactory(textAnnotator, storage.MsdialDimsParameter.TextDbSearchParam), storage.MsdialDimsParameter.TextDbSearchParam)
                 },
                 evaluator,
                 mapper);

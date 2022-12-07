@@ -48,7 +48,7 @@ namespace CompMs.App.MsdialConsole.Process {
             var annotator = new LcimmsMspAnnotator(database, container.MsdialLcImMsParameter.MspSearchParam, container.MsdialLcImMsParameter.TargetOmics, container.MsdialLcImMsParameter.MspFilePath, 1);
             var evaluator = FacadeMatchResultEvaluator.FromDataBases(container.DataBases);
             var annotationProcess = new StandardAnnotationProcess<AnnotationQuery>(
-                new AnnotationQueryWithoutIsotopeFactory(annotator),
+                new AnnotationQueryFactory(annotator, container.MsdialLcImMsParameter.PeakPickBaseParam, container.MsdialLcImMsParameter.MspSearchParam),
                 evaluator,
                 annotator,
                 container.MsdialLcImMsParameter.MspSearchParam);

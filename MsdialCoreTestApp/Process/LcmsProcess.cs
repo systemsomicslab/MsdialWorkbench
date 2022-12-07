@@ -58,7 +58,7 @@ namespace CompMs.App.MsdialConsole.Process
             mapper.Add(annotator);
             mapper.Add(textannotator);
             var annotationProcess = new StandardAnnotationProcess<AnnotationQuery>(
-                new AnnotationQueryWithoutIsotopeFactory(annotator),
+                new AnnotationQueryFactory(annotator, storage.Parameter.PeakPickBaseParam, storage.Parameter.MspSearchParam),
                 evaluator,
                 mapper,
                 storage.Parameter.MspSearchParam,

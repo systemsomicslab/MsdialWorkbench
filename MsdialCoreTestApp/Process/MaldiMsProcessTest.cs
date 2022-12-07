@@ -235,7 +235,7 @@ namespace CompMs.App.MsdialConsole.Process
             }
             return new StandardAnnotationProcess<IAnnotationQuery<MsScanMatchResult>>(
                 containers.Select(container => (
-                    new AnnotationQueryWithoutIsotopeFactory(container.Annotator) as IAnnotationQueryFactory<MsScanMatchResult>,
+                    new AnnotationQueryWithoutIsotopeFactory(container.Annotator, container.Parameter) as IAnnotationQueryFactory<MsScanMatchResult>,
                     container.Parameter
                 )).ToList(),
                 FacadeMatchResultEvaluator.FromDataBases(storage),

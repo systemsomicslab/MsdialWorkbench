@@ -135,7 +135,7 @@ namespace CompMs.App.Msdial.Model.Dims
             }
             return new StandardAnnotationProcess<IAnnotationQuery<MsScanMatchResult>>(
                 containers.Select(container => (
-                    new AnnotationQueryWithoutIsotopeFactory(container.Annotator) as IAnnotationQueryFactory<MsScanMatchResult>,
+                    new AnnotationQueryWithoutIsotopeFactory(container.Annotator, container.Parameter) as IAnnotationQueryFactory<MsScanMatchResult>,
                     container.Parameter
                 )).ToList(),
                 FacadeMatchResultEvaluator.FromDataBases(storage),
@@ -145,11 +145,11 @@ namespace CompMs.App.Msdial.Model.Dims
         private IAnnotationProcess BuildEadLipidomicsAnnotationProcess(DataBaseStorage storage, DataBaseMapper mapper, ParameterBase parameter) {
             var containerPairs = new List<(IAnnotationQueryFactory<MsScanMatchResult>, MsRefSearchParameterBase)>();
             foreach (var annotators in storage.MetabolomicsDataBases) {
-                containerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryFactory(annotator.SerializableAnnotator, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<MsScanMatchResult>, annotator.SearchParameter)));
+                containerPairs.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryWithoutIsotopeFactory(annotator.SerializableAnnotator, annotator.SearchParameter) as IAnnotationQueryFactory<MsScanMatchResult>, annotator.SearchParameter)));
             }
             var eadAnnotationQueryFactoryTriple = new List<(IAnnotationQueryFactory<MsScanMatchResult>, MsRefSearchParameterBase)>();
             foreach (var annotators in storage.EadLipidomicsDatabases) {
-                eadAnnotationQueryFactoryTriple.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryWithReferenceFactory(mapper, annotator.SerializableAnnotator, parameter.PeakPickBaseParam) as IAnnotationQueryFactory<MsScanMatchResult>, annotator.SearchParameter)));
+                eadAnnotationQueryFactoryTriple.AddRange(annotators.Pairs.Select(annotator => (new AnnotationQueryWithReferenceFactory(mapper, annotator.SerializableAnnotator, parameter.PeakPickBaseParam, annotator.SearchParameter) as IAnnotationQueryFactory<MsScanMatchResult>, annotator.SearchParameter)));
             }
             return new EadLipidomicsAnnotationProcess(containerPairs, eadAnnotationQueryFactoryTriple, mapper, _matchResultEvaluator);
         }

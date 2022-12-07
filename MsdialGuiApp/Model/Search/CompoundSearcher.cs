@@ -14,18 +14,18 @@ namespace CompMs.App.Msdial.Model.Search
 {
     public class CompoundSearcher
     {
-        private readonly IAnnotationQueryFactory<MsScanMatchResult> queryFactory;
-        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer;
+        private readonly IAnnotationQueryFactory<MsScanMatchResult> _queryFactory;
+        private readonly IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> _refer;
 
         public CompoundSearcher(
             IAnnotationQueryFactory<MsScanMatchResult> queryFactory,
             MsRefSearchParameterBase msRefSearchParameter,
             IMatchResultRefer<MoleculeMsReference, MsScanMatchResult> refer) {
-            queryFactory = queryFactory ?? throw new ArgumentNullException(nameof(queryFactory));
+            _queryFactory = queryFactory ?? throw new ArgumentNullException(nameof(queryFactory));
             MsRefSearchParameter = msRefSearchParameter is null
                 ? new MsRefSearchParameterBase()
                 : new MsRefSearchParameterBase(msRefSearchParameter);
-            this.refer = refer ?? throw new ArgumentNullException(nameof(refer));
+            _refer = refer ?? throw new ArgumentNullException(nameof(refer));
 
             Id = queryFactory.AnnotatorId;
         }
@@ -35,7 +35,7 @@ namespace CompMs.App.Msdial.Model.Search
         public MsRefSearchParameterBase MsRefSearchParameter { get; }
 
         public IEnumerable<ICompoundResult> Search(IMSIonProperty property, IMSScanProperty scan, IReadOnlyList<RawPeakElement> spectrum, IonFeatureCharacter ionFeature) {
-            var candidates = queryFactory.Create(
+            var candidates = _queryFactory.Create(
                 property,
                 scan,
                 spectrum,
@@ -47,7 +47,7 @@ namespace CompMs.App.Msdial.Model.Search
             }
             return candidates
                 .OrderByDescending(result => result.TotalScore)
-                .Select(result => new CompoundResult(refer.Refer(result), result));
+                .Select(result => new CompoundResult(_refer.Refer(result), result));
         }
     }
 }
