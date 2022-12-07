@@ -96,27 +96,6 @@ namespace CompMs.MsdialCore.DataObj
             }
         }
 
-        [Obsolete("DataBaseMapper will not be saved in the future.")]
-        public void Restore(ILoadAnnotatorVisitor visitor, Stream stream) {
-            using (var archive = new ZipArchive(stream, ZipArchiveMode.Read, leaveOpen: true)) {
-                foreach (var annotator in MoleculeAnnotators) {
-                    var entry = archive.GetEntry(annotator.AnnotatorID);
-                    using (var entry_stream = entry.Open()) {
-                        annotator.Load(entry_stream, visitor);
-                        keyToAnnotator[annotator.AnnotatorID] = annotator;
-                    }
-                }
-
-                foreach (var annotator in PeptideAnnotators) {
-                    var entry = archive.GetEntry(annotator.AnnotatorID);
-                    using (var entry_stream = entry.Open()) {
-                        annotator.Load(entry_stream, visitor);
-                        keyToPeptideAnnotator[annotator.AnnotatorID] = annotator;
-                    }
-                }
-            }
-        }
-
         public void Add(ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> annotatorContainer) {
             keyToAnnotator[annotatorContainer.AnnotatorID] = annotatorContainer;
             MoleculeAnnotators.Add(annotatorContainer);
@@ -138,56 +117,6 @@ namespace CompMs.MsdialCore.DataObj
 
         public void Add(ISerializableAnnotator<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult, ShotgunProteomicsDB> annotator, ShotgunProteomicsDB database) {
             Add(new ShotgunProteomicsDBAnnotatorContainer(annotator, database, new Parameter.ProteomicsParameter(), new MsRefSearchParameterBase()));
-        }
-
-        public void Remove(ISerializableAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> annotatorContainer) {
-            keyToAnnotator.Remove(annotatorContainer.AnnotatorID);
-            MoleculeAnnotators.Remove(annotatorContainer);
-            keyToRefers.Remove(annotatorContainer.AnnotatorID);
-        }
-
-        public void Remove(string annotatorID) {
-            if (keyToAnnotator.ContainsKey(annotatorID)) {
-                keyToAnnotator.Remove(annotatorID);
-                var target = MoleculeAnnotators.Find(annotator => annotator.AnnotatorID == annotatorID);
-                if (!(target is null)) {
-                    MoleculeAnnotators.Remove(target);
-                }
-            }
-            else if (keyToRefers.ContainsKey(annotatorID)) {
-                keyToRefers.Remove(annotatorID);
-            }
-            else if (keyToPeptideAnnotator.ContainsKey(annotatorID)) {
-                keyToPeptideAnnotator.Remove(annotatorID);
-                var target = PeptideAnnotators.Find(annotator => annotator.AnnotatorID == annotatorID);
-                if (!(target is null)) {
-                    PeptideAnnotators.Remove(target);
-                }
-            }
-            
-        }
-
-        public void Remove(ISerializableAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> annotatorContainer) {
-            keyToPeptideAnnotator.Remove(annotatorContainer.AnnotatorID);
-            PeptideAnnotators.Remove(annotatorContainer);
-        }
-
-       [Obsolete("DataBaseMapper will no longer hold Annotator in the future.")]
-        public IAnnotatorContainer<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult> FindMoleculeAnnotator(MsScanMatchResult result) {
-            if (result?.AnnotatorID != null && KeyToAnnotator.TryGetValue(result.AnnotatorID, out var annotatorContainer)) {
-                return annotatorContainer;
-            }
-            
-            return null;
-        }
-
-       [Obsolete("DataBaseMapper will no longer hold Annotator in the future.")]
-        public IAnnotatorContainer<IPepAnnotationQuery, PeptideMsReference, MsScanMatchResult> FindPeptideAnnotator(MsScanMatchResult result) {
-            if (result?.AnnotatorID != null && keyToPeptideAnnotator.TryGetValue(result.AnnotatorID, out var annotatorContainer)) {
-                return annotatorContainer;
-            }
-
-            return null;
         }
     }
 }

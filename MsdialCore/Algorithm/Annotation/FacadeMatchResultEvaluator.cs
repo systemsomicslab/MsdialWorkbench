@@ -52,18 +52,6 @@ namespace CompMs.MsdialCore.Algorithm.Annotation
             return !(Get(result?.AnnotatorID) is null);
         }
 
-        [Obsolete("This method is for refactoring and will be removed in the near future.")]
-        public static FacadeMatchResultEvaluator FromDataBaseMapper(DataBaseMapper mapper) {
-            var evaluator = new FacadeMatchResultEvaluator();
-            foreach (var annotator in mapper.MoleculeAnnotators) {
-                evaluator.Add(annotator.AnnotatorID, annotator.Annotator);
-            }
-            foreach (var annotator in mapper.PeptideAnnotators) {
-                evaluator.Add(annotator.AnnotatorID, annotator.Annotator);
-            }
-            return evaluator;
-        }
-
         public static FacadeMatchResultEvaluator FromDataBases(DataBaseStorage storage) {
             var evaluator = new FacadeMatchResultEvaluator();
             foreach (var db in storage.MetabolomicsDataBases) {

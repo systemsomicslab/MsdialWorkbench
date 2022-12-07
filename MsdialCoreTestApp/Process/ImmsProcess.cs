@@ -1,4 +1,5 @@
 ﻿using CompMs.App.MsdialConsole.Parser;
+using CompMs.Common.Components;
 using CompMs.Common.DataObj.Result;
 using CompMs.MsdialCore.Algorithm.Annotation;
 using CompMs.MsdialCore.DataObj;
@@ -36,9 +37,23 @@ namespace CompMs.App.MsdialConsole.Process
 
         private int Execute(IMsdialDataStorage<MsdialImmsParameter> storage, string outputFolder, bool isProjectSaved) {
             var files = storage.AnalysisFiles;
-            var evaluator = FacadeMatchResultEvaluator.FromDataBaseMapper(storage.DataBaseMapper);
-            var mspAnnotator = new ImmsMspAnnotator(new MoleculeDataBase(storage.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB), storage.Parameter.MspSearchParam, storage.Parameter.TargetOmics, "MspDB", -1);
-            var textDBAnnotator = new ImmsTextDBAnnotator(new MoleculeDataBase(storage.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB), storage.Parameter.TextDbSearchParam, "TextDB", -1);
+            var db = DataBaseStorage.CreateEmpty();
+            var mdb = new MoleculeDataBase(storage.MspDB, "MspDB", DataBaseSource.Msp, SourceType.MspDB);
+            var mspAnnotator = new ImmsMspAnnotator(mdb, storage.Parameter.MspSearchParam, storage.Parameter.TargetOmics, "MspDB", -1);
+            db.AddMoleculeDataBase(
+                mdb,
+                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+                    new MetabolomicsAnnotatorParameterPair(mspAnnotator, storage.Parameter.MspSearchParam)
+                });
+            var tdb = new MoleculeDataBase(storage.TextDB, "TextDB", DataBaseSource.Text, SourceType.TextDB);
+            var textDBAnnotator = new ImmsTextDBAnnotator(tdb, storage.Parameter.TextDbSearchParam, "TextDB", -1);
+            db.AddMoleculeDataBase(
+                tdb,
+                new List<IAnnotatorParameterPair<IAnnotationQuery<MsScanMatchResult>, MoleculeMsReference, MsScanMatchResult, MoleculeDataBase>> {
+                    new MetabolomicsAnnotatorParameterPair(textDBAnnotator, storage.Parameter.TextDbSearchParam)
+                });
+            var evaluator = FacadeMatchResultEvaluator.FromDataBases(db);
+            storage.DataBases = db;
             var providerFactory = new ImmsAverageDataProviderFactory(0.001, 0.002, 5, false);
             var processor = new FileProcess(storage, mspAnnotator, textDBAnnotator, evaluator);
             processor.RunAllAsync(files, files.Select(providerFactory.Create), files.Select(_ => (Action<int>)null), storage.Parameter.NumThreads, () => { }).Wait();

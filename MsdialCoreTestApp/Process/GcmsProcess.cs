@@ -178,7 +178,7 @@ namespace CompMs.App.MsdialConsole.Process
             }
 
             var alignmentFile = storage.AlignmentFiles.First();
-            var factory = new GcmsAlignmentProcessFactory(files, storage, FacadeMatchResultEvaluator.FromDataBaseMapper(storage.DataBaseMapper));
+            var factory = new GcmsAlignmentProcessFactory(files, storage, FacadeMatchResultEvaluator.FromDataBases(storage.DataBases));
             var aligner = factory.CreatePeakAligner();
             var result = aligner.Alignment(files, alignmentFile, null);
 
